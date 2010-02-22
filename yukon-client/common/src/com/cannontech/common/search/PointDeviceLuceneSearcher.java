@@ -55,7 +55,8 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
         }
     }
     
-    public SearchResult<UltraLightPoint> allPoints(YukonObjectCriteria criteria, int start, int count) {
+    public SearchResult<UltraLightPoint> all(YukonObjectCriteria criteria,
+            int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
             return doSearch(query, sort, start, count);
@@ -63,5 +64,4 @@ public class PointDeviceLuceneSearcher extends AbstractLuceneSearcher<UltraLight
             throw new RuntimeException(e);
         }
     }
-    
 }

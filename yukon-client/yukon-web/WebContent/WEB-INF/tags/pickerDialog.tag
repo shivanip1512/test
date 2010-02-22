@@ -5,7 +5,9 @@
 <%@ attribute name="multiSelectMode" type="java.lang.Boolean" %>
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" %>
 <%@ attribute name="endAction" %>
+<%@ attribute name="memoryGroup" %>
 <%@ attribute name="asButton" type="java.lang.Boolean" %>
+<%@ attribute name="styleClass" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -28,14 +30,18 @@
     <c:if test="${!empty pageScope.destinationFieldId}">
         ${pageScope.id}.destinationFieldId = '${pageScope.destinationFieldId}';
     </c:if>
+    <c:if test="${!empty pageScope.memoryGroup}">
+        ${pageScope.id}.memoryGroup = '${pageScope.memoryGroup}';
+    </c:if>
 </script>
 <span id="picker_${pageScope.id}_inputArea"></span>
 
-<c:if test="${!pageScope.asButton}">
+<div class="pickerLink ${styleClass}">
+    <c:if test="${!pageScope.asButton}">
     <a href="javascript:${pageScope.id}.show()"><jsp:doBody/></a>
-</c:if>
-<c:if test="${pageScope.asButton}">
-    <input type="button" value="<jsp:doBody/>"
-        style="width:140px;"
-        onclick="javascript:${pageScope.id}.show()"/>
-</c:if>
+    </c:if>
+    <c:if test="${pageScope.asButton}">
+        <input type="button" value="<jsp:doBody/>"
+            onclick="javascript:${pageScope.id}.show()"/>
+    </c:if>
+</div>

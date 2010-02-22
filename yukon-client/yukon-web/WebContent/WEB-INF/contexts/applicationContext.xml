@@ -1272,51 +1272,101 @@
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 
-    <bean name="paoPicker" class="com.cannontech.web.picker.v2.PaoPicker"/>
-    <bean name="programPicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.LMProgramCriteria"/>
+    <bean id="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker"
+          abstract="true">
+        <property name="searcher" ref="paoTypeSearcherLucene"/>
     </bean>
-    <bean name="cbcSubBusPicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.CBCSubBusCriteria"/>
+    <bean name="paoPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker"/>
+    <bean name="programPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.LMProgramCriteria"/>
+        </property>
     </bean>
-    <bean name="cbcDevicePicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.CBCDeviceCriteria"/>
+    <bean name="cbcSubBusPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CBCSubBusCriteria"/>
+        </property>
     </bean>
-    <bean name="lmDevicePicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.LMDeviceCriteria"/>
+    <bean name="cbcDevicePicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CBCDeviceCriteria"/>
+        </property>
     </bean>
-    <bean name="devicePicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.DeviceCriteria"/>
+    <bean name="lmDevicePicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.LMDeviceCriteria"/>
+        </property>
     </bean>
-    <bean name="meterPicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.MeterCriteria"/>
+    <bean name="devicePicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.DeviceCriteria"/>
+        </property>
     </bean>
-    <bean name="ltcPicker" class="com.cannontech.web.picker.v2.PaoPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.LtcTypeCriteria"/>
+    <bean name="meterPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.MeterCriteria"/>
+        </property>
+    </bean>
+    <bean name="ltcPicker" parent="abstractPaoPicker"
+        class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.LtcTypeCriteria"/>
+        </property>
     </bean>
 
-    <bean name="pointPicker" class="com.cannontech.web.picker.v2.PointPicker"/>
-    <bean name="voltReductionPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.VoltReductionCriteria"/>
+    <bean id="abstractPointPicker" class="com.cannontech.web.picker.v2.PointPicker"
+          abstract="true">
+        <property name="searcher" ref="paoTypeSearcherLucene"/>
     </bean>
-    <bean name="varPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.CCVarCriteria"/>
+    <bean name="pointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker"/>
+    <bean name="voltReductionPointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.VoltReductionCriteria"/>
+        </property>
     </bean>
-    <bean name="wattPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.CCWattCriteria"/>
+    <bean name="varPointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CCVarCriteria"/>
+        </property>
     </bean>
-    <bean name="voltPointPicker" class="com.cannontech.web.picker.v2.PointPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.CCVoltCriteria"/>
+    <bean name="wattPointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CCWattCriteria"/>
+        </property>
     </bean>
-    <bean name="twoStatePointPicker" class="com.cannontech.web.picker.v2.PointPicker">
-        <property name="criteria" value="com.cannontech.common.search.criteria.CCTwoStatePointCriteria"/>
+    <bean name="voltPointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CCVoltCriteria"/>
+        </property>
+    </bean>
+    <bean name="twoStatePointPicker" parent="abstractPointPicker"
+        class="com.cannontech.web.picker.v2.PointPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.CCTwoStatePointCriteria"/>
+        </property>
     </bean>
 
-    <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker"/>
-    <bean name="loginGroupPicker" class="com.cannontech.web.picker.v2.LoginGroupPicker"/>
+    <bean name="userPicker" class="com.cannontech.web.picker.v2.UserPicker">
+        <property name="searcher" ref="userSearcherLucene"/>
+    </bean>
+    <bean name="loginGroupPicker" class="com.cannontech.web.picker.v2.LoginGroupPicker">
+        <property name="searcher" ref="loginGroupSearcherLucene"/>
+    </bean>
 
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"
-            value="com.cannontech.web.picker.v2.service.PickerService" />
+            value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
 </beans>

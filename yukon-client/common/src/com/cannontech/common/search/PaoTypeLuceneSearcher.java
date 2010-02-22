@@ -51,8 +51,9 @@ public class PaoTypeLuceneSearcher extends AbstractLuceneSearcher<UltraLightPao>
             throw new RuntimeException(e);
         }
     }
-    
-    public SearchResult<UltraLightPao> allPaos(final YukonObjectCriteria criteria, final int start, final int count) {
+
+    public SearchResult<UltraLightPao> all(final YukonObjectCriteria criteria,
+            final int start, final int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
             return doSearch(query, sort, start, count);

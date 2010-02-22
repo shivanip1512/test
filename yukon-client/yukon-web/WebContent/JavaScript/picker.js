@@ -1,9 +1,29 @@
 Picker = Class.create();
 
-Picker.prototype = {
-	debugMode: true,
-	rememberedSearches: {},
+/**
+ * If "memoryGroup" is set to something other than false, a picker will
+ * check here for the last search using memoryGroup as the key.  This allows
+ * multiple pickers on the same page to share the last search text.
+ */
+Picker.rememberedSearches = {};
 
+Picker.prototype = {
+	/**
+	 * Instantiate the picker.
+	 * 
+	 * - pickerType is the name of the picker bean.
+	 * - destinationFieldName is the name the picker will use when creating
+	 *   hidden form fields to store the selected items.
+	 * - pickerId is used to uniquely identify the picker.  This should
+	 *   be the same as the name of the Javascript variable the picker
+	 *   is stored in so the picker can close itself. 
+	 * - extraDestinationFields are used when a selection has been made
+	 *   and the picker is closed.  It's a semicolon separated list of:
+	 *     [property]:[fieldId]
+	 *   where fieldId specifies the id of an HTML element to be updated
+	 *   and property specifies a property of the data to be placed into
+	 *   this HTML element (using innerHTML).
+	 */
 	initialize: function (pickerType, destinationFieldName, pickerId,
 			extraDestinationFields) {
 		this.pickerType = pickerType;
@@ -29,48 +49,43 @@ Picker.prototype = {
 				}
 			}
 		}
+
+		this.resultAreaId = 'picker_' + this.pickerId + '_resultArea';
+		this.resultAreaFixedId = 'picker_' + this.pickerId + '_resultAreaFixed';
+		this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
 	},
 
-	log: function(msg) {
-		if (!Picker.prototype.debugMode) {
-			return;
-
-		}
-
-		var debugDiv = $('debugDiv');
-		if (!debugDiv) {
-			var bodyElem = document.documentElement.getElementsByTagName('body')[0];
-			debugDiv = document.createElement('pre');
-			debugDiv.id = 'debugDiv';
-			bodyElem.appendChild(debugDiv);
-		}
-
-		var now = new Date();
-		debugDiv.appendChild(
-				document.createTextNode(now.getMinutes() + ':' +
-						now.getSeconds() + '.' + now.getMilliseconds() + ' ' +
-						this.pickerId + ' ' + msg + "\n"));
-	},
-
+	/**
+	 * Reset things that need to be reset when first popping up the picker
+	 * or when clearing it.
+	 * 
+	 * - clearRecent is true for showAll but false for just showing the
+	 *   picker (where we want to re-use the previous search).
+	 */
 	reset: function(clearRecent) {
 		if (clearRecent && this.memoryGroup) {
-			Picker.prototype.rememberedSearches[this.memoryGroup] = '';
+			Picker.rememberedSearches[this.memoryGroup] = '';
 		}
 		this.currentSearch = '';
 		this.inSearch = false;
 		this.previousIndex = -1;
 		this.nextIndex = -1;
-		var pickerSS = $('picker_' + this.pickerId + '_ss');
-		if (pickerSS) {
-			pickerSS.value = '';
+		if (this.ssInput) {
+			this.ssInput.value = '';
 		}
 		this.selectedItems = new Array();
 	},
 
+	/**
+	 * Attached to the onkeyup event of the search text input field.
+	 */
 	doKeyUp: function() {
+		this.nothingSelectedDiv.hide();
 		var pickerThis = this;
 		var timerFunction = function() {
-			var ss = escape($('picker_' + pickerThis.pickerId + '_ss').value);
+			var ss = escape(pickerThis.ssInput.value);
+			// Don't do the search if it hasn't changed.  This could be
+			// because they type a character and deleted it.
 			if (!pickerThis.inSearch && pickerThis.currentSearch != ss) {
 				pickerThis.doSearch();
 			} else {
@@ -78,53 +93,75 @@ Picker.prototype = {
 			}
 		};
 		var quietDelay = 300;
-		var ss = escape($('picker_' + pickerThis.pickerId + '_ss').value);
+		// Don't do the search if it hasn't changed.  This can happen if
+		// the use the cursor key or alt-tab to another window and back.
+		var ss = escape(pickerThis.ssInput.value);
 		if (pickerThis.currentSearch != ss) {
 			setTimeout(timerFunction, quietDelay);
 			this.showBusy();
 		}
 	},
 
+	/**
+	 * Actually do the search.  This method sets up a request to the server
+	 * for new data based on the entered search text.
+	 * 
+	 * - start is the index of the first result to show.
+	 */
 	doSearch: function(start) {
 		this.inSearch = true;
 		this.showBusy();
-		var ss = escape($('picker_' + this.pickerId + '_ss').value);
+		var ss = escape(this.ssInput.value);
 		if (ss) {
-			$('picker_' + this.pickerId + '_showAllLink').show();
+			this.showAllLink.show();
 		} else {
-			$('picker_' + this.pickerId + '_showAllLink').hide();
+			this.showAllLink.hide();
 		}
 		this.currentSearch = ss;
 		if (this.memoryGroup) {
-			Picker.prototype.rememberedSearches[this.memoryGroup] = ss;
+			Picker.rememberedSearches[this.memoryGroup] = ss;
 		}
 
-		var url = '/picker/v2/search?type=' + this.pickerType + '&pickerId=' +
-		this.pickerId + '&ss=' + ss;
+		var parameters = {
+				'type' : this.pickerType,
+				'ss' : ss
+			};
 		if (start) {
-			url += '&start=' + start;
+			parameters.start = start;
 		}
 
-		new Ajax.Request(url,
-				{'method': 'get',
-				'onComplete': this.updateSearchResults.bind(this),
-				'onFailure': this.ajaxError.bind(this)});
+		new Ajax.Request('/picker/v2/search', {
+			'method': 'get',
+			'parameters': parameters,
+			'onComplete': this.updateSearchResults.bind(this),
+			'onFailure': this.ajaxError.bind(this)
+			});
 	},
 
+	/**
+	 * This is the primary externally called method.  It pops the picker up
+	 * and does the initial search.
+	 */
 	show: function() {
 		this.reset(false);
 		var pickerThis = this;
 		var doShow = function(transport, json) {
-			if (pickerThis.memoryGroup && Picker.prototype.rememberedSearches[pickerThis.memoryGroup]) {
-				$('picker_' + pickerThis.pickerId + '_ss').value =
-					unescape(Picker.prototype.rememberedSearches[pickerThis.memoryGroup]);
-			}
-			$(pickerThis.pickerId).show();
-			$('picker_' + pickerThis.pickerId + '_ss').focus();
 			if (json) {
+				pickerThis.ssInput = $('picker_' + pickerThis.pickerId + '_ss');
+				pickerThis.showAllLink = $('picker_' + pickerThis.pickerId + '_showAllLink');
+				pickerThis.inputAreaDiv = $('picker_' + pickerThis.pickerId + '_inputArea');
+				pickerThis.resultsDiv = $('picker_' + pickerThis.pickerId + '_results');
+				pickerThis.noResultsDiv = $('picker_' + pickerThis.pickerId + '_noResults');
+				pickerThis.nothingSelectedDiv = $('picker_' + pickerThis.pickerId + '_nothingSelected');
 				pickerThis.outputColumns = json.outputColumns;
 				pickerThis.idFieldName = json.idFieldName;
 			}
+			if (pickerThis.memoryGroup && Picker.rememberedSearches[pickerThis.memoryGroup]) {
+				pickerThis.ssInput.value =
+					unescape(Picker.rememberedSearches[pickerThis.memoryGroup]);
+			}
+			$(pickerThis.pickerId).show();
+			pickerThis.ssInput.focus();
 			pickerThis.doSearch();
 		};
 		var errorCallback = function() {
@@ -140,6 +177,7 @@ Picker.prototype = {
 					'id' : this.pickerId,
 					'immediateSelectMode' : this.immediateSelectMode
 				},
+				'evalScripts': true,
 				'onFailure' : errorCallback,
 				'onComplete': doShow
 			});
@@ -148,6 +186,9 @@ Picker.prototype = {
 		}
 	},
 
+	/**
+	 * Hide the picker.
+	 */
 	hide: function() {
 		$(this.pickerId).hide();
 	},
@@ -162,21 +203,20 @@ Picker.prototype = {
 
 	okPressed: function() {
 		if (this.selectedItems.size() == 0) {
-			alert('You have not selected any Devices.');	
+			this.nothingSelectedDiv.show();
 		} else {
 			if (this.destinationFieldId) {
 				$(this.destinationFieldId).value =
 					this.selectedItems.pluck(this.idFieldName).join(',');
 			} else {
 				var pickerThis = this;
-				var inputArea = $('picker_' + this.pickerId + '_inputArea');
-				inputArea.innerHTML = '';
+				this.inputAreaDiv.innerHTML = '';
 				this.selectedItems.each(function(selectedItem) {
 					var inputElement = document.createElement('input');
 					inputElement.type = 'hidden';
 					inputElement.value = selectedItem[pickerThis.idFieldName];
 					inputElement.name = pickerThis.destinationFieldName;
-					inputArea.appendChild(inputElement);
+					this.inputAreaDiv.appendChild(inputElement);
 				});
 			}
 
@@ -196,6 +236,7 @@ Picker.prototype = {
 		if (this.previousIndex == -1) {
 			return;
 		}
+		this.ssInput.focus();
 		this.doSearch(this.previousIndex);
 	},
 
@@ -203,30 +244,36 @@ Picker.prototype = {
 		if (this.nextIndex == -1) {
 			return;
 		}
+		this.ssInput.focus();
 		this.doSearch(this.nextIndex);
 	},
 
 	showAll: function() {
 		this.reset(true);
-		$('picker_' + this.pickerId + '_ss').focus();
+		this.ssInput.focus();
 		this.doSearch();
 	},
 
+	/**
+	 * Update the UI with data from the search results.  This method calls
+	 * renderTalbeResults to update the table itself and then updates the
+	 * previous and next buttons appropriately.
+	 */
 	updateSearchResults: function(transport, json) {
 		var newResultArea = this.renderTableResults(json);
 		this.updatePagingArea(json);
-		var oldResultArea = $('picker_' + this.pickerId + '_resultArea');
-		var resultHolder = $('picker_' + this.pickerId + '_results');
+		var oldResultArea = $(this.resultAreaId);
+		var resultHolder = this.resultsDiv;
 		if (oldResultArea) {
 			resultHolder.removeChild(oldResultArea);
 		}
-		var oldError = $('picker_' + this.pickerId + '_errorHolder');
+		var oldError = $(this.errorHolderId);
 		if (oldError) {
 			resultHolder.removeChild(oldError);
 		}
 		resultHolder.appendChild(newResultArea);
 
-		var ss = escape($('picker_' + this.pickerId + '_ss').value);
+		var ss = escape(this.ssInput.value);
 		if (this.currentSearch != ss) {
 			// do another search
 			this.doSearch();
@@ -239,23 +286,28 @@ Picker.prototype = {
 	ajaxError: function(transport, json) {
 		this.inSearch = false;
 		this.hideBusy();
-		$('picker_' + this.pickerId + '_results').innerHTML = '';
+		this.resultsDiv.innerHTML = '';
 		errorHolder = document.createElement('div');
-		errorHolder.id = 'picker_' + this.pickerId + '_errorHolder';
+		errorHolder.id = this.errorHolderId;
 		errorHolder.innerHTML = 'There was a problem searching the index: ' +
 		transport.responseText;
-		$('picker_' + this.pickerId + '_results').appendChild(errorHolder);
+		this.resultsDiv.appendChild(errorHolder);
 	},
 
+	/**
+	 * Render the table portion of the search results.
+	 */
 	renderTableResults: function(json) {
-		var hitList = json.hitList;
+		var hitList = json.hits.resultList;
 		var resultArea = document.createElement('div');
-		resultArea.id = 'picker_' + this.pickerId + '_resultArea';
+		resultArea.id = this.resultAreaId;
 		var resultAreaFixed = document.createElement('div');
-		resultAreaFixed.id = 'picker_' + this.pickerId + '_resultAreaFixed';
+		resultAreaFixed.id = this.resultAreaFixedId;
 		resultArea.appendChild(resultAreaFixed);
 
 		if (hitList && hitList.length && hitList.length > 0) {
+			this.noResultsDiv.hide();
+			this.resultsDiv.show();
 			var pickerThis = this;
 			var createItemLink = function(hit, link) {
 				if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) != -1) {
@@ -285,7 +337,7 @@ Picker.prototype = {
 		 	var processRowForRender = function (rowElement, rowObject) {
 		 		if (pickerThis.excludeIds.indexOf(rowObject[pickerThis.idFieldName]) != -1) {
 		 			$(rowElement).addClassName("disabled");
-		 			$(rowElement).setAttribute("title", "Already Selected");
+		 			$(rowElement).setAttribute('title', Picker.alreadySelectedHoverMessage);
 		 		} else {
 		 			pickerThis.selectedItems.each(function(item){
 		 				if (rowObject[pickerThis.idFieldName] == item[pickerThis.idFieldName]) {
@@ -304,31 +356,31 @@ Picker.prototype = {
 			resultTable.className = 'compactResultsTable pickerResultTable';
 			resultAreaFixed.appendChild(resultTable);
 		} else {
-			var emptyResultDiv = document.createElement('div');
-			emptyResultDiv.id = 'picker_' + this.pickerId + '_noResult';
-			var noResultText = 'No results found';
-			emptyResultDiv.appendChild(document.createTextNode(noResultText));
-			resultAreaFixed.appendChild(emptyResultDiv);
+			this.noResultsDiv.show();
+			this.resultsDiv.hide();
 		}
 
 		return resultArea;
 	},
 
+	/**
+	 * Update the paging area of the form for the current search results.
+	 */
 	updatePagingArea: function(json) {
 		var pickerDiv = $(this.pickerId);
 		this.previousIndex = -1;
 		this.nextIndex = -1;
 
-		if (json.startIndex > 0) {
-			this.previousIndex = json.previousIndex;
+		if (json.hits.startIndex > 0) {
+			this.previousIndex = json.hits.previousStartIndex;
 			pickerDiv.getElementsBySelector('.previousLink .enabledAction')[0].show();
 			pickerDiv.getElementsBySelector('.previousLink .disabledAction')[0].hide();
 		} else {
 			pickerDiv.getElementsBySelector('.previousLink .enabledAction')[0].hide();
 			pickerDiv.getElementsBySelector('.previousLink .disabledAction')[0].show();
 		}
-		if (json.endIndex < json.hitCount) {
-			this.nextIndex = json.nextIndex;
+		if (json.hits.endIndex < json.hits.hitCount) {
+			this.nextIndex = json.hits.endIndex;
 			pickerDiv.getElementsBySelector('.nextLink .enabledAction')[0].show();
 			pickerDiv.getElementsBySelector('.nextLink .disabledAction')[0].hide();
 		} else {
@@ -336,12 +388,15 @@ Picker.prototype = {
 			pickerDiv.getElementsBySelector('.nextLink .disabledAction')[0].show();
 		}
 
-		var pageNumText = (json.startIndex + 1) + ' - '
-			+ json.endIndex + ' of ' + json.hitCount;
-		pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = pageNumText;
+		pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = json.pages;
 	},
 
+	/**
+	 * This method called when the user clicks on a row for selection. 
+	 */
 	selectThisItem: function(hit, link) {
+		this.nothingSelectedDiv.hide();
+
 		if (this.immediateSelectMode) {
 	 		this.selectedItems = [hit];
 	 		this.okPressed();

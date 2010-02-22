@@ -35,8 +35,14 @@ ${addPao} = function() {
                 <span class="widgetActionLink">
                     <tags:pickerDialog type="${widgetParameters.pickerType}" id="${pickerId}"
                        destinationFieldId="${newPaoId}" endAction="${addPao}"
-                       immediateSelectMode="true">Add</tags:pickerDialog>
+                       multiSelectMode="true" memoryGroup="${pickerId}">Add</tags:pickerDialog>
                     <input id="${newPaoId}" name="newPaoId" type="hidden">
+					<script type="text/javascript">
+						${pickerId}.excludeIds = [
+						<c:forEach var="pao" varStatus="status" items="${paoList}">
+						    ${pao.paoId}<c:if test="${!status.last}">,</c:if>
+						</c:forEach> ];
+					</script>
                 </span>
                 <span id="${addPaoSpanId}">
                     <span class="widgetAction_waiting" style="display:none">

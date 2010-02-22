@@ -46,7 +46,7 @@ public class PointPickerController extends YukonObjectPickerController {
         boolean blank = StringUtils.isBlank(queryString);
         SearchResult<UltraLightPoint> hits;
         if (blank) {
-            hits = pointDeviceSearcher.allPoints(criteria, start, count);
+            hits = pointDeviceSearcher.all(criteria, start, count);
         } else {
             hits = pointDeviceSearcher.search(queryString, criteria, start , count);
         }

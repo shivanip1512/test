@@ -25,8 +25,9 @@ public class LoginGroupLuceneSearcher extends AbstractLuceneSearcher<UltraLightL
         };
         return ultra;
     }
-    
-    public SearchResult<UltraLightLoginGroup> allLoginGroups(YukonObjectCriteria criteria, int start, int count) {
+
+    public SearchResult<UltraLightLoginGroup> all(YukonObjectCriteria criteria,
+            int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
             return doSearch(query, sort, start, count);
@@ -34,5 +35,4 @@ public class LoginGroupLuceneSearcher extends AbstractLuceneSearcher<UltraLightL
             throw new RuntimeException(e);
         }
     }
-
 }

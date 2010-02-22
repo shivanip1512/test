@@ -42,7 +42,7 @@ public class PaoPickerController extends YukonObjectPickerController {
         int start = getStartParameter(request);
         int count = getCountParameter(request);
         YukonObjectCriteria criteria = getCriteria(request);
-        SearchResult<UltraLightPao> hits = paoTypeSearcher.allPaos(criteria, start, count);
+        SearchResult<UltraLightPao> hits = paoTypeSearcher.all(criteria, start, count);
         processHitList(mav, hits);
         mav.addObject("showAll", true);
         
@@ -58,7 +58,7 @@ public class PaoPickerController extends YukonObjectPickerController {
         boolean blank = StringUtils.isBlank(queryString);
         SearchResult<UltraLightPao> hits;
         if (blank) {
-            hits = paoTypeSearcher.allPaos(criteria, start, count);
+            hits = paoTypeSearcher.all(criteria, start, count);
         } else {
             hits = paoTypeSearcher.search(queryString, criteria, start , count);
         }

@@ -11,7 +11,9 @@ public abstract class BasePicker<T> implements Picker<T>, BeanNameAware {
 
     public MessageSourceResolvable getDialogTitle() {
         if (dialogTitle == null) {
-            setDialogTitle("yukon.web.modules.picker." + beanName + ".dialogTitle");
+            this.dialogTitle =
+                new YukonMessageSourceResolvable("yukon.web.picker." +
+                                                 beanName + ".dialogTitle");
         }
         return dialogTitle;
     }
@@ -19,11 +21,6 @@ public abstract class BasePicker<T> implements Picker<T>, BeanNameAware {
     @Override
     public void setBeanName(String beanName) {
         this.beanName = beanName;
-    }
-
-    public void setDialogTitle(String dialogTitleKey, Object...arguments) {
-        this.dialogTitle =
-            new YukonMessageSourceResolvable(dialogTitleKey, arguments);
     }
 
     public void setDialogTitle(MessageSourceResolvable dialogTitle) {

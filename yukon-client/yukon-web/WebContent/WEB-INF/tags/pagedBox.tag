@@ -56,7 +56,7 @@
                             baseUrl="${pageScope.baseUrl}"/>
                     </c:if>
                 </td>
-                <tags:nextPrevLinks searchResult="${pageScope.searchResults}"
+                <tags:nextPrevLinks searchResult="${pageScope.searchResult}"
                     baseUrl="${pageScope.baseUrl}" mode="jsp"/>
             </tr>
         </table>

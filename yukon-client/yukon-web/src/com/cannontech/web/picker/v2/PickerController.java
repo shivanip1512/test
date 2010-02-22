@@ -7,25 +7,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.picker.v2.service.PickerService;
-import com.cannontech.web.util.JsonView;
+import com.cannontech.web.picker.v2.service.PickerFactory;
 import com.google.common.collect.Lists;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 @Controller
 @RequestMapping("/v2/*")
 public class PickerController {
-    private PickerService pickerService;
+    private PickerFactory pickerService;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
     @RequestMapping
@@ -47,31 +49,28 @@ public class PickerController {
     }
 
     @RequestMapping
-    public ModelAndView search(String type, String ss,
+    public void search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
-            Integer count, String pickerArgs)
+            Integer count, YukonUserContext userContext)
             throws ServletException {
-        int start = 0;
-        try {
-            start = Integer.parseInt(startStr);
-        } catch (NumberFormatException nfe) {
-            // just keep 0
-        }
+        int start = NumberUtils.toInt(startStr, 0);
         count = count == null ? 20 : count;
 
         Picker<?> picker = pickerService.getPicker(type);
         SearchResult<?> hits = picker.search(ss, start, count);
 
-        ModelAndView mav = new ModelAndView(new JsonView());
-        mav.addObject("hitList", hits.getResultList());
-        mav.addObject("hitCount", hits.getHitCount());
-        mav.addObject("resultCount", hits.getResultCount());
-        mav.addObject("startIndex", hits.getStartIndex());
-        mav.addObject("endIndex", hits.getEndIndex());
-        mav.addObject("previousIndex", hits.getPreviousStartIndex());
-        mav.addObject("nextIndex", hits.getEndIndex());
-
-        return mav;
+        JSONObject object = new JSONObject();
+        object.put("hits", JSONObject.fromBean(hits));
+        MessageSourceAccessor messageSourceAccessor = 
+            messageSourceResolver.getMessageSourceAccessor(userContext);
+        MessageSourceResolvable pagesResolvable =
+            new YukonMessageSourceResolvable("yukon.common.paging.viewing",
+                                             hits.getStartIndex() + 1,
+                                             hits.getEndIndex(),
+                                             hits.getHitCount());
+        String pages = messageSourceAccessor.getMessage(pagesResolvable);
+        object.put("pages", pages);
+        response.addHeader("X-JSON", object.toString());
     }
 
     /**
@@ -99,7 +98,7 @@ public class PickerController {
     }
 
     @Autowired
-    public void setPickerService(PickerService pickerService) {
+    public void setPickerService(PickerFactory pickerService) {
         this.pickerService = pickerService;
     }
 

@@ -716,10 +716,13 @@ div.pagedBox table.boxTable {
 .pickerHeader {
 	display: block;
 	font-size: 12px;
-/*	background-color: #d6d6d6; */
 	padding: 5px 0px;
     margin-top: 5px;
     margin-bottom: 10px;
+}
+
+.pickerHeader table {
+	width: 100%;
 }
 
 .pickerHeader table .queryStringArea {
@@ -744,6 +747,10 @@ div.pagedBox table.boxTable {
 
 .pickerResults table.compactResultsTable td {
     font-size: 12px;
+}
+
+.pickerLink input {
+	width: 140px;
 }
 
 .logoImage {

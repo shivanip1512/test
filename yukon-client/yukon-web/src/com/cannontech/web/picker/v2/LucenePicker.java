@@ -2,23 +2,36 @@ package com.cannontech.web.picker.v2;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.search.Searcher;
 import com.cannontech.common.search.YukonObjectCriteria;
 
 public abstract class LucenePicker<T> extends BasePicker<T> {
     protected YukonObjectCriteria criteria = null;
+    protected Searcher<T> searcher;
 
-    public void setCriteria(String criteriaClassName) {
-        if (StringUtils.isNotBlank(criteriaClassName)) {
-            try {
-                Class<?> criteriaClass = getClass().getClassLoader().loadClass(criteriaClassName);
-                this.criteria = (YukonObjectCriteria) criteriaClass.newInstance();
-            } catch (ClassNotFoundException cnfe) {
-                throw new RuntimeException("could not find class " + criteriaClassName, cnfe);
-            } catch (IllegalAccessException iae) {
-                throw new RuntimeException("error instantiating class " + criteriaClassName, iae);
-            } catch (InstantiationException ie) {
-                throw new RuntimeException("error instantiating class " + criteriaClassName, ie);
-            }
+    public YukonObjectCriteria getCriteria() {
+        return criteria;
+    }
+
+
+    @Override
+    public SearchResult<T> search(String ss, int start,
+            int count) {
+        SearchResult<T> hits;
+        if (StringUtils.isBlank(ss)) {
+            hits = searcher.all(criteria, start, count);
+        } else {
+            hits = searcher.search(ss, criteria, start , count);
         }
+        return hits;
+    }
+
+    public void setCriteria(YukonObjectCriteria criteria) {
+        this.criteria = criteria;
+    }
+
+    public void setSearcher(Searcher<T> searcher) {
+        this.searcher = searcher;
     }
 }

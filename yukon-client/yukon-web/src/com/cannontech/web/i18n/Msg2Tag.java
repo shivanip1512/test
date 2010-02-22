@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.MessageSourceResolvable;
@@ -19,8 +18,6 @@ import org.springframework.web.util.TagUtils;
 
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.web.taglib.MessageScopeHelper;
-import com.cannontech.web.taglib.StandardPageInfo;
-import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.YukonTagSupport;
 import com.google.common.collect.Maps;
 
@@ -41,8 +38,6 @@ public class Msg2Tag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        StandardPageInfo info = StandardPageTag.getStandardPageInfo(getRequest());
-        Validate.notNull(info, "Must be called from within the scope of a StandardPageTag.");
         Object[] resolvedArguments = resolveArguments(arguments);
 
         key = key == null ? "" : key;

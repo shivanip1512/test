@@ -35,7 +35,8 @@ public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUs
         return ultra;
     }
 
-    public SearchResult<UltraLightYukonUser> allUsers(YukonObjectCriteria criteria, int start, int count) {
+    public SearchResult<UltraLightYukonUser> all(YukonObjectCriteria criteria,
+            int start, int count) {
         try {
             final Query query = compileAndCombine(new MatchAllDocsQuery(), criteria);
             return doSearch(query, sort, start, count);
@@ -54,5 +55,4 @@ public class UserLuceneSearcher extends AbstractLuceneSearcher<UltraLightYukonUs
         }
         return groupNames.toString();
     }
-
 }

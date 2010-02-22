@@ -104,17 +104,18 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
     public ModelAndView addPao(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String paoIdList = WidgetParameterHelper.getRequiredStringParameter(request,"paoIdsList");
-        Integer paoId = WidgetParameterHelper.getRequiredIntParameter(request, "newPaoId");
-
         List<Integer> idList = ServletUtil.getIntegerListFromString(paoIdList);
 
-        // Add pao
-        if (!idList.contains(paoId)) {
-            idList.add(paoId);
+        String newPaoIdStr = WidgetParameterHelper.getRequiredStringParameter(request, "newPaoId");
+        List<Integer> newPaoIds = ServletUtil.getIntegerListFromString(newPaoIdStr);
+
+        for (Integer paoId : newPaoIds) {
+            if (!idList.contains(paoId)) {
+                idList.add(paoId);
+            }
         }
 
         return this.getPaoTableMav(idList);
-
     }
 
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws Exception {
