@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/22/2010 12:50:46 PM                        */
+/* Created on:     2/23/2010 4:43:33 PM                         */
 /*==============================================================*/
 
 
@@ -2443,6 +2443,7 @@ create table CommandRequestExec  (
    UserName             VARCHAR2(64),
    CommandRequestType   VARCHAR2(100)                   not null,
    CommandRequestExecContextId NUMBER                          not null,
+   ExecutionStatus      VARCHAR2(100)                   not null,
    constraint PK_CommandRequestExec primary key (CommandRequestExecId)
 );
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/22/2010 12:49:11 PM                        */
+/* Created on:     2/23/2010 4:44:56 PM                         */
 /*==============================================================*/
 
 
@@ -5092,6 +5092,7 @@ create table CommandRequestExec (
    UserName             varchar(64)          null,
    CommandRequestType   varchar(100)         not null,
    CommandRequestExecContextId numeric              not null,
+   ExecutionStatus      varchar(100)         not null,
    constraint PK_CommandRequestExec primary key (CommandRequestExecId)
 )
 go
