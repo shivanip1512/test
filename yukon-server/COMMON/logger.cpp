@@ -254,7 +254,7 @@ void CtiLogger::doOutput()
 
             int outputCount = 0;
             strstream* to_write;
-            bool wasRateLimited = false;
+            bool truncated_output_printed = false;
             while( _queue.tryRead(to_write) )
             {
                 int n = to_write->pcount();
@@ -264,30 +264,30 @@ void CtiLogger::doOutput()
                     // print to screen rate limiting. This always prints the first 100 lines then
                     // only prints the last 100 or so. This only applies to the console and helps
                     // console mode keep up.
-                    if( _std_out && (++outputCount < 100 || _queue.entries() < 100) )
+                    if( _std_out )
                     {
-                        int acquireloops = 0;
-
-                        RWMutexLock::TryLockGuard guard(coutMux);
-
-                        while( !guard.isAcquired() && acquireloops++ < 60)
+                        if( ++outputCount < 100 || _queue.entries() < 100 )
                         {
-                            Sleep(500L);
-
-                            guard.tryAcquire();
+                            int acquireloops = 0;
+    
+                            RWMutexLock::TryLockGuard guard(coutMux);
+    
+                            while( !guard.isAcquired() && acquireloops++ < 60)
+                            {
+                                Sleep(500L);
+    
+                                guard.tryAcquire();
+                            }
+    
+                            cout.write( to_write->str(), n );
                         }
-
-                        cout.write( to_write->str(), n );
-                    }
-                    else if( _std_out )
-                    {
-                        if( !wasRateLimited )
+                        else if( !truncated_output_printed )
                         {
-                            wasRateLimited = true;
-                            cout << " ******* COUT Output Truncated ******** " << endl;
+                            truncated_output_printed = true;
+                            cout << " ******** Console Output Truncated ******** " << endl;
                         }
-
                     }
+                    
 
                     if( outfile )
                     {
