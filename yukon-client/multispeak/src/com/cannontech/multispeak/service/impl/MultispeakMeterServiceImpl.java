@@ -678,13 +678,18 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
                         	for (Meter mspMeter : mspMeters) {
                         		String meterNumber = mspMeter.getMeterNo();
-                        		com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-                        		
-                        		changeMeter(mspMeter, meter, mspVendor, paoAlias, SERV_LOC_CHANGED_STRING);
-                        		
-                                //Update billing cycle information
-                                String billingCycle = mspServiceLocation.getBillingCycle();
-                                updateBillingCyle(billingCycle, meterNumber, meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                        		try {
+                            		com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
+                            		
+                            		changeMeter(mspMeter, meter, mspVendor, paoAlias, SERV_LOC_CHANGED_STRING);
+                            		
+                                    //Update billing cycle information
+                                    String billingCycle = mspServiceLocation.getBillingCycle();
+                                    updateBillingCyle(billingCycle, meterNumber, meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                        		} catch ( NotFoundException e) {
+                                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                                    errorObjects.add(err);            
+                                }
                         	}
                                
                         } else {
