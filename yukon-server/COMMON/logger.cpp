@@ -252,6 +252,7 @@ void CtiLogger::doOutput()
                 outfile.write(s.str(), s.pcount());
             }
 
+            int outputCount = 0;
             strstream* to_write;
             while( _queue.tryRead(to_write) )
             {
@@ -259,7 +260,10 @@ void CtiLogger::doOutput()
 
                 if( n > 0 )
                 {
-                    if( _std_out )
+                    // print to screen rate limiting. This always prints the first 100 lines then
+                    // only prints the last 100 or so. This only applies to the console and helps
+                    // console mode keep up.
+                    if( _std_out && (++outputCount < 100 || _queue.entries() < 100) )
                     {
                         int acquireloops = 0;
 
