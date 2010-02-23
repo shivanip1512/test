@@ -254,6 +254,7 @@ void CtiLogger::doOutput()
 
             int outputCount = 0;
             strstream* to_write;
+            bool wasRateLimited = false;
             while( _queue.tryRead(to_write) )
             {
                 int n = to_write->pcount();
@@ -277,6 +278,15 @@ void CtiLogger::doOutput()
                         }
 
                         cout.write( to_write->str(), n );
+                    }
+                    else if( _std_out )
+                    {
+                        if( !wasRateLimited )
+                        {
+                            wasRateLimited = true;
+                            cout << " ******* COUT Output Truncated ******** " << endl;
+                        }
+
                     }
 
                     if( outfile )
