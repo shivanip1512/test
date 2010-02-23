@@ -108,9 +108,12 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
         sql.append("yukonpaobject yp2, yukonpaobject yp3, ");
         sql.append("yukonpaobject yp4, yukonpaobject yp5, ");
         sql.append("ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ");
-        sql.append("ccfeederbanklist fb ");
+        sql.append("ccfeederbanklist fb, ");
+        sql.append("point p ");
         sql.append("where yp.paobjectid = c.deviceid ");
         sql.append("and yp1.paobjectid = c.controldeviceid ");
+        sql.append("and p.pointid = el.pointid ");
+        sql.append("and p.paobjectid = c.deviceid ");
         sql.append("and c.deviceid = fb.deviceid ");
         sql.append("and fb.feederid = fs.feederid ");
         sql.append("and yp5.paobjectid = fb.feederid ");
