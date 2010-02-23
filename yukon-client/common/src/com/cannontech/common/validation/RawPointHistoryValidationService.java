@@ -294,7 +294,7 @@ public class RawPointHistoryValidationService {
              .append("where rph.POINTID").eq(workUnit.pointId)
              .append("  and CHANGEID").lt(workUnit.thisValue.changeId)
              .append("  and Timestamp").lt(workUnit.thisValue.timestamp)
-             .append("order by Timestamp desc, ChangeId desc;");
+             .append("order by Timestamp desc, ChangeId desc");
 
         SqlBuilder sql1b = builder1.buildOther();
         sql1b.append("select * from (")
@@ -306,7 +306,7 @@ public class RawPointHistoryValidationService {
              .append("    and Timestamp").lt(workUnit.thisValue.timestamp)
              .append(") numberedRows")
              .append("where numberedRows.rn <= 2")
-             .append("order by Timestamp desc, ChangeId desc;");
+             .append("order by Timestamp desc, ChangeId desc");
         
         VendorSpecificSqlBuilder builder2 = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder sql2a = builder2.buildFor(DatabaseVendor.MS2000);
@@ -315,7 +315,7 @@ public class RawPointHistoryValidationService {
              .append("where rph.POINTID = ").eq(workUnit.pointId)
              .append("  and CHANGEID").lt(workUnit.thisValue.changeId)
              .append("  and Timestamp").gt(workUnit.thisValue.timestamp)
-             .append("order by Timestamp, ChangeId;");
+             .append("order by Timestamp, ChangeId");
         
         SqlBuilder sql2b = builder2.buildOther();
         sql2b.append("select * from (")
@@ -327,7 +327,7 @@ public class RawPointHistoryValidationService {
              .append("    and Timestamp").gt(workUnit.thisValue.timestamp)
              .append(") numberedRows")
              .append("where numberedRows.rn <= 2")
-             .append("order by Timestamp, ChangeId;");
+             .append("order by Timestamp, ChangeId");
         
         List<RawPointHistoryWrapper> valuesBefore = yukonJdbcTemplate.query(builder1, rawPointHistoryRowMapper);
         List<RawPointHistoryWrapper> valuesAfter = yukonJdbcTemplate.query(builder2, rawPointHistoryRowMapper);
