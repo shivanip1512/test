@@ -296,7 +296,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     void updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
-    BOOL isAlreadyControlled(LONG minConfirmPercent,
+    bool isAlreadyControlled(LONG minConfirmPercent,
                              LONG currentVarPointQuality, DOUBLE varAValueBeforeControl,
                              DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl,
                              DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue,

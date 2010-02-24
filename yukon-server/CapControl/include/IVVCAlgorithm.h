@@ -1,13 +1,19 @@
 #pragma once
 
 #include "ccsubstationbus.h"
-#include "IVVCStrategy.h"
-#include "GroupPointDataRequest.h"
+#include "IVVCState.h"
+#include "PointDataRequestFactory.h"
+
+class IVVCStrategy;
 
 class IVVCAlgorithm
 {
     public:
-        static void execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool);
+        IVVCAlgorithm();
+
+        void execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning);
+
+        void setPointDataRequestFactory(PointDataRequestFactoryPtr& factory);
 
     private:
         static bool checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow);
@@ -20,5 +26,7 @@ class IVVCAlgorithm
 
         static void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
         static void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+
+        PointDataRequestFactoryPtr _requestFactory;
 };
 

@@ -28,6 +28,7 @@
 #include "dbaccess.h"
 #include "connection.h"
 #include "DispatchConnection.h"
+#include "CapControlDispatchConnection.h"
 #include "MessageListener.h"
 #include "message.h"
 #include "msg_multi.h"

@@ -94,7 +94,8 @@ $(OBJ)\CapControlPointDataHandler.obj \
 $(OBJ)\PointValueHolder.obj \
 $(OBJ)\ccutil.obj \
 $(OBJ)\IVVCAlgorithm.obj \
-$(OBJ)\IVVCState.obj
+$(OBJ)\IVVCState.obj \
+$(OBJ)\CapControlDispatchConnection.obj
 
 TARGS = capcontrol.exe
 
@@ -161,7 +162,8 @@ test_ccexecuter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PointDataListener.h MessageListener.h ccutil.h devicetypes.h \
 		StrategyLoader.h AttributeService.h PointAttribute.h \
 		ccexecutor.h msg_signal.h ctdpcptrq.h ccUnitTestUtil.h \
-		capcontroller.h DispatchConnection.h configparms.h ctibase.h \
+		capcontroller.h DispatchConnection.h \
+		CapControlDispatchConnection.h configparms.h ctibase.h \
 		ctinexus.h
 test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
@@ -185,8 +187,9 @@ test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		PointDataListener.h MessageListener.h ccutil.h devicetypes.h \
 		StrategyLoader.h AttributeService.h PointAttribute.h \
 		ccUnitTestUtil.h capcontroller.h DispatchConnection.h \
-		configparms.h ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h \
-		ctinexus.h PFactorKWKVarStrategy.h
+		CapControlDispatchConnection.h configparms.h ccexecutor.h \
+		msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
+		PFactorKWKVarStrategy.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -202,7 +205,8 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		StrategyManager.h readers_writer_lock.h critical_section.h \
 		ControlStrategy.h regression.h Controllable.h \
 		TimeOfDayStrategy.h ccsubstation.h ccarea.h capcontroller.h \
-		DispatchConnection.h MessageListener.h configparms.h \
+		DispatchConnection.h MessageListener.h \
+		CapControlDispatchConnection.h configparms.h \
 		ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h ccstatsobject.h LoadTapChanger.h LitePoint.h \
 		PointValueHolder.h UpdatablePao.h \
@@ -228,7 +232,8 @@ test_ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		StrategyManager.h readers_writer_lock.h critical_section.h \
 		ControlStrategy.h regression.h Controllable.h \
 		TimeOfDayStrategy.h ccsubstation.h ccarea.h capcontroller.h \
-		DispatchConnection.h MessageListener.h configparms.h \
+		DispatchConnection.h MessageListener.h \
+		CapControlDispatchConnection.h configparms.h \
 		ccsubstationbusstore.h ccsparea.h ccid.h ccstate.h \
 		ccmessage.h ccstatsobject.h LoadTapChanger.h LitePoint.h \
 		PointValueHolder.h UpdatablePao.h \
@@ -237,7 +242,8 @@ test_ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		AttributeService.h PointAttribute.h ccexecutor.h msg_signal.h \
 		ctdpcptrq.h ctibase.h ctinexus.h mgr_paosched.h \
 		pao_schedule.h pao_event.h dbmemobject.h ccUnitTestUtil.h \
-		IVVCStrategy.h IVVCState.h GroupPointDataRequest.h
+		IVVCStrategy.h IVVCAlgorithm.h IVVCState.h PointDataRequest.h \
+		PointDataRequestFactory.h
 test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -259,9 +265,10 @@ test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		CapControlPointDataHandler.h PointDataHandler.h \
 		PointDataListener.h MessageListener.h ccutil.h devicetypes.h \
 		StrategyLoader.h AttributeService.h PointAttribute.h \
-		capcontroller.h DispatchConnection.h configparms.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h \
-		KVarStrategy.h PFactorKWKVarStrategy.h VoltStrategy.h
+		capcontroller.h DispatchConnection.h \
+		CapControlDispatchConnection.h configparms.h ccexecutor.h \
+		msg_signal.h ctdpcptrq.h ctibase.h ctinexus.h KVarStrategy.h \
+		PFactorKWKVarStrategy.h VoltStrategy.h
 test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PointValueHolder.h pointtypes.h msg_pdata.h dlldefs.h \
 		pointdefs.h message.h collectable.h rwutil.h ctitime.h \

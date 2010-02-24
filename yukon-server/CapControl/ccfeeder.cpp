@@ -4394,15 +4394,17 @@ void CtiCCFeeder::fillOutBusOptimizedInfo(BOOL peakTimeFlag)
     are reflected in the current var level before the max confirm time
 
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPointQuality,
+bool CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPointQuality,
                                          DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
                                          DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue,
                                          DOUBLE varCValue, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue,
                                          const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC,
                                          BOOL usePhaseData, BOOL useTotalizedControl)
 {
-    BOOL returnBoolean = FALSE;
-    BOOL found = FALSE;
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    bool returnBoolean = false;
+    bool found = false;
+
     double timeSeconds = CtiTime().seconds();
     if( _IGNORE_NOT_NORMAL_FLAG && currentVarPointQuality != NormalQuality )
     {
@@ -4413,17 +4415,41 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
         return false;
     }
 
-    DOUBLE oldVarValue = varValueBeforeControl;
-    DOUBLE newVarValue = currentVarLoadPointValue;
-    LONG i;
+    double oldVarValue = varValueBeforeControl;
+    double newVarValue = currentVarLoadPointValue;
+    long bankId = getLastCapBankControlledDeviceId();
 
-    for(i=0;i<_cccapbanks.size();i++)
+    CtiCCCapBankPtr currentCapBank = store->getCapBankByPaoId(bankId);
+
+    if (currentCapBank != NULL)
     {
-        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-        if( currentCapBank->getPaoId() != getLastCapBankControlledDeviceId() )
+        found = true;
+    }
+    else
+    {
+        // Check all other banks on this feeder for a pending state...
+
+        // Not adding return statements to keep the functionality the same.
+        // In the error case of multiple pending banks, the last one in the list will be determining the return variable.
+        for (int i=0; i < _cccapbanks.size(); ++i)
         {
-            continue;
+            CtiCCCapBank* bank = (CtiCCCapBank*)_cccapbanks[i];
+            if (bank->getControlStatus() == CtiCCCapBank::OpenPending ||
+                bank->getControlStatus() == CtiCCCapBank::ClosePending )
+            {
+                if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
+                {
+                    bankId = currentCapBank->getPaoId();
+                    setLastCapBankControlledDeviceId(bankId);
+                    currentCapBank = bank;
+                    found = true;
+                }
+            }
         }
+    }
+
+    if (found == true)
+    {
         if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
             currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
         {
@@ -4487,111 +4513,18 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
         else
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Last Cap Bank: "<<getLastCapBankControlledDeviceId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-            break;
-        }
-        //found, but is not to be confirmed. Do not want to check the rest
-        return false;
-    }
-
-    // Check all other banks on this feeder for a pending state...
-
-    // Not adding return statements to keep the functionality the same.
-    // In the error case of multiple pending banks, the last one in the list will be determining the return variable.
-    for(i=0;i<_cccapbanks.size();i++)
-    {
-        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-        if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-            currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-        {
-            if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
-            {
-                setLastCapBankControlledDeviceId(currentCapBank->getPaoId());
-            }
-            if (usePhaseData && !useTotalizedControl)
-            {
-                double ratioA;
-                double ratioB;
-                double ratioC;
-                int banksize = currentCapBank->getBankSize() / 3;
-
-                if( checkForRateOfChange(reg,regA,regB,regC) )
-                {
-                    ratioA = fabs((varAValue - (regA.regression(timeSeconds))) / banksize);
-                    ratioB = fabs((varBValue - (regB.regression(timeSeconds))) / banksize);
-                    ratioC = fabs((varCValue - (regC.regression(timeSeconds))) / banksize);
-                }
-                else
-                {
-                    ratioA = fabs((varAValue - varAValueBeforeControl) / banksize);
-                    ratioB = fabs((varBValue - varBValueBeforeControl) / banksize);
-                    ratioC = fabs((varCValue - varCValueBeforeControl) / banksize);
-                }
-
-                if( areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent ) )
-                {
-                    returnBoolean = true;
-                }
-                else
-                {
-                    returnBoolean = false;
-                }
-                found = true;
-            }
-            else
-            {
-                double change;
-                double ratio;
-                int banksize = currentCapBank->getBankSize();
-
-                if( checkForRateOfChange(reg,regA,regB,regC) )
-                {
-                    if(currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
-                    {
-                        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " Regression Value: " << reg.regression(timeSeconds) << endl;
-                        }
-                        change = fabs(newVarValue - reg.regression(timeSeconds));
-                    }
-                    else
-                    {
-                        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " Regression Value: " << reg.regression(timeSeconds) << endl;
-                        }
-                        change = fabs(newVarValue - reg.regression(timeSeconds));
-                    }
-                }
-                else
-                {
-                    change = fabs(newVarValue - oldVarValue);
-                }
-
-                ratio = change/banksize;
-
-                if( ratio >= minConfirmPercent*.01 )
-                {
-                    returnBoolean = true;
-                }
-                else
-                {
-                    returnBoolean = false;
-                }
-                found = true;
-            }
+            dout << CtiTime() << " - Last Cap Bank: " << bankId << " controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+            return true;
         }
     }
-    if(found == FALSE)
+    else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
-        returnBoolean = TRUE;
+        return true;
     }
 
-    return returnBoolean;
+    return false;
 }
 
 /*---------------------------------------------------------------------------

@@ -1,16 +1,16 @@
 #include "yukon.h"
 
-#include "GroupPointDataRequest.h"
+#include "DispatchPointDataRequest.h"
 #include "msg_signal.h"
 #include "pointdefs.h"
 
-GroupPointDataRequest::GroupPointDataRequest(DispatchConnectionPtr connection) : _complete(false), _pointsSet(false)
+DispatchPointDataRequest::DispatchPointDataRequest() :
+    _complete(false),
+    _pointsSet(false)
 {
-    _connection = connection;
-    _connection->addMessageListener(this);
 }
 
-GroupPointDataRequest::~GroupPointDataRequest()
+DispatchPointDataRequest::~DispatchPointDataRequest()
 {
     if (_connection.get() != NULL)
     {
@@ -26,7 +26,13 @@ GroupPointDataRequest::~GroupPointDataRequest()
     }
 }
 
-void GroupPointDataRequest::processNewMessage(CtiMessage* message)
+void DispatchPointDataRequest::setDispatchConnection(DispatchConnectionPtr connection)
+{
+    _connection = connection;
+    _connection->addMessageListener(this);
+}
+
+void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
 {
     bool processMessage = false;
 
@@ -73,32 +79,39 @@ void GroupPointDataRequest::processNewMessage(CtiMessage* message)
     delete message;
 }
 
-bool GroupPointDataRequest::watchPoints(std::list<long> points)
+bool DispatchPointDataRequest::watchPoints(std::list<long> points)
 {
-    if (_pointsSet == true)
+    if (_connection.get() != NULL)
     {
-        //Already called.
+        if (_pointsSet == true)
+        {
+            //Already called.
+            return false;
+        }
+
+        _connection->registerForPoints(this,points);
+
+        for each (int point in points)
+        {
+            _points.insert(point);
+        }
+
+        _pointsSet = true;
+
+        return true;
+    }
+    else
+    {
         return false;
     }
-
-    _connection->registerForPoints(this,points);
-
-    for each (int point in points)
-    {
-        _points.insert(point);
-    }
-
-    _pointsSet = true;
-
-    return true;
 }
 
-bool GroupPointDataRequest::isComplete()
+bool DispatchPointDataRequest::isComplete()
 {
     return _complete;
 }
 
-std::map<long,PointValue> GroupPointDataRequest::getPointValues()
+std::map<long,PointValue> DispatchPointDataRequest::getPointValues()
 {
     return _values;
 }

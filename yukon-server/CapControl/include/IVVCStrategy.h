@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <string>
@@ -8,10 +7,12 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include "IVVCAlgorithm.h"
 #include "guard.h"
 #include "mutex.h"
 #include "ControlStrategy.h"
 #include "IVVCState.h"
+#include "PointDataRequestFactory.h"
 
 class IVVCStrategy : public ControlStrategy
 {
@@ -55,7 +56,12 @@ public:
     virtual double getOffPeakLead() const;
     virtual double getPeakPFSetPoint() const;
 
+    //Allows unit test to change this out
+    void setPointDataRequestFactory(PointDataRequestFactoryPtr& factory);
+
 private:
+
+    IVVCAlgorithm _ivvcAlgorithm;
 
     double _peakUpperVoltLimit;
     double _offpeakUpperVoltLimit;

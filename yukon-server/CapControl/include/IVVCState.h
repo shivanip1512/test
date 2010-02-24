@@ -2,8 +2,9 @@
 
 #include "yukon.h"
 #include "ctitime.h"
-#include "GroupPointDataRequest.h"
 #include "cccapbank.h"
+#include "PointDataRequest.h"
+
 
 #include <boost/shared_ptr.hpp>
 
@@ -37,8 +38,8 @@ class IVVCState
         const CtiTime& getNextControlTime();
         void setNextControlTime(const CtiTime& time);
 
-        const GroupRequestPtr& getGroupRequest();
-        void setGroupRequest(const GroupRequestPtr& groupRequest);
+        const PointDataRequestPtr& getGroupRequest();
+        void setGroupRequest(const PointDataRequestPtr& groupRequest);
 
         const CtiTime& getLastTapOpTime();
         void setLastTapOpTime(const CtiTime& opTime);
@@ -51,6 +52,9 @@ class IVVCState
 
         bool isRemoteMode();
         void setRemoteMode(bool remoteMode);
+
+        bool isFirstPass();
+        void setFirstPass(bool firstPass);
 
         struct EstimatedData
         {
@@ -73,7 +77,7 @@ class IVVCState
         CtiTime _nextControlTime;
         CtiTime _lastTapOpTime;
 
-        GroupRequestPtr _groupRequest;
+        PointDataRequestPtr _groupRequest;
 
         bool _scannedRequest;
         State _state;
@@ -82,6 +86,7 @@ class IVVCState
         long _paoId;
 
         bool _remoteMode;
+        bool _firstPass;
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;

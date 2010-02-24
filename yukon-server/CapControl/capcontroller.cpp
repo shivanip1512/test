@@ -45,7 +45,7 @@
 #include "thread_monitor.h"
 #include "utility.h"
 #include "ctitime.h"
-
+#include "ControlStrategy.h"
 
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
@@ -324,19 +324,47 @@ void CtiCapController::ivvcKeepAlive()
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
                 LtcMap* ltcMap = store->getLtcMap();
-                for each (const LtcMap::value_type& p in *ltcMap)
+                for each (const LtcMap::value_type& ltc in *ltcMap)
                 {
-                    CtiCCCommand* keepAliveCmd = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, p.second->getPaoId() );//consumed in executor
+                    long ltcId = ltc.second->getPaoId();
+                    CtiCCSubstationBusPtr subBus = store->findSubBusByLtcId(ltcId);
 
-                    CtiCCExecutorFactory::createExecutor(keepAliveCmd)->execute();
+                    if (subBus->getDisableFlag() == false)
+                    {
+                        LitePoint remotePoint = ltc.second->getAutoRemotePoint();
+                        double value = -1.0;
+                        ltc.second->getPointValue(remotePoint.getPointId(),value);
+
+                        if (value == 0.0)//Remote Mode
+                        {
+                            if( _CC_DEBUG & CC_DEBUG_IVVC )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
+                            }
+                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, ltcId))->execute();
+                        }
+                        else
+                        {
+                            if( _CC_DEBUG & CC_DEBUG_IVVC )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - LTC Keep Alive NOT sent. LTC is in Local Mode." << endl;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if( _CC_DEBUG & CC_DEBUG_IVVC )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - LTC Keep Alive NOT sent. Bus is disabled." << endl;
+                        }
+                    }
                 }
             }
 
-            if( _CC_DEBUG & CC_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
-            }
+
 
             rwnow = rwnow.now();
             if (rwnow.seconds() > tickleTime.seconds())
@@ -1584,8 +1612,10 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
 
             if( _dispatchConnection == NULL )
             {
+
+                CapControlDispatchConnection* conn = new CapControlDispatchConnection("CC to Dispatch", dispatch_port, dispatch_host);
                 //Connect to Dispatch
-                _dispatchConnection = DispatchConnectionPtr(new DispatchConnection( "CC to Dispatch", dispatch_port, dispatch_host ));
+                _dispatchConnection = DispatchConnectionPtr((DispatchConnection*)conn);
 
                 //Send a registration message to Dispatch
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
@@ -3120,7 +3150,10 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        currentSubstationBus->figureAndSetTargetVarValue();
+                        if (currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar)
+                        {
+                            currentSubstationBus->figureAndSetTargetVarValue();
+                        }
                     }
 
                 }

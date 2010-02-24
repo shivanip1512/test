@@ -107,6 +107,8 @@ yukon-client/yukonappserver/bin
 yukon-client/yukonappserver/build
 yukon-install/build
 yukon-server/.git
+yukon-server/Message/vc90.idb
+yukon-server/Message/vc90.pdb
 yukon-server/Simulator/*.idb
 yukon-server/Simulator/*.obj
 yukon-server/Simulator/*.pdb

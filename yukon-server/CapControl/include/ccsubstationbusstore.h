@@ -195,6 +195,7 @@ public:
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
     LoadTapChangerPtr findLtcById(long ltcId);
+    CtiCCSubstationBusPtr findSubBusByLtcId(long ltcId);
 
     long findAreaIDbySubstationID(long substationId);
     long findSpecialAreaIDbySubstationID(long substationId);
@@ -203,6 +204,7 @@ public:
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
     long findCapBankIDbyCbcID(long cbcId);
+    long findSubBusIdByLtcId(long ltcId);
 
     long findSubIDbyAltSubID(long altSubId, int index);
 
@@ -622,7 +624,7 @@ private:
     list <long> _orphanedCapBanks;
     list <long> _orphanedFeeders;
 
-    map< long, MaxKvarObject > maxKvarMap;
+    map< long, MaxKvarObject > _maxKvarMap;
 
     mutable RWRecursiveLock<RWMutexLock> _storeMutex;
 };

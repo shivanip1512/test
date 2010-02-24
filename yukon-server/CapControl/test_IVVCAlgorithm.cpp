@@ -43,7 +43,10 @@ class StrategyUnitTestLoader : public StrategyLoader
 
 public:
 
-    // default construction and destruction is OK
+    StrategyUnitTestLoader()
+    {
+        requestFactory.reset(new test_PointDataRequestFactory);
+    }
 
     virtual StrategyManager::StrategyMap load(const long ID)
     {
@@ -52,7 +55,7 @@ public:
         if (ID < 0)
         {
             long IDs[] = { 100 };
-    
+
             for (int i = 0; i < sizeof(IDs)/ sizeof(*IDs); i++)
             {
                 loadSingle(IDs[i], loaded);
@@ -68,6 +71,8 @@ public:
 
 private:
 
+    PointDataRequestFactoryPtr requestFactory;
+
     void loadSingle(const long ID, StrategyManager::StrategyMap &strategies)
     {
         bool doInsertion = true;
@@ -78,8 +83,10 @@ private:
         {
             case 100:
             {
-                newStrategy.reset( new IVVCStrategy );
-                newStrategy->setStrategyName("Test IVVC Strategy");
+                IVVCStrategy* strat = new IVVCStrategy();
+                strat->setPointDataRequestFactory(requestFactory);
+                strat->setStrategyName("Test IVVC Strategy");
+                newStrategy.reset(strat);
                 break;
             }
             default:
@@ -174,6 +181,31 @@ void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, 
     cap->setControlPointId(1);
 }
 
+
+BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
+{
+    PointDataRequestFactoryPtr factory(new test_PointDataRequestFactory);
+    PointDataRequestPtr request = factory->createDispatchPointDataRequest(DispatchConnectionPtr());
+
+    std::list<long> points;
+    points.push_back(1);
+    points.push_back(2);
+    points.push_back(3);
+    points.push_back(4);
+
+    request->watchPoints(points);
+
+    BOOST_CHECK(request->isComplete() == true);
+    PointValueMap valueMap = request->getPointValues();
+
+    BOOST_CHECK(valueMap.size() == 4);
+
+    for each( PointValueMap::value_type value in valueMap)
+    {
+        BOOST_CHECK(value.second.value == 1.0);
+        BOOST_CHECK(value.second.quality == NormalQuality);
+    }
+}
 
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm)
 {

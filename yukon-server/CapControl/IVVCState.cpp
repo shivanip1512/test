@@ -49,12 +49,12 @@ void IVVCState::setNextControlTime(const CtiTime& time)
     _nextControlTime = time;
 }
 
-const GroupRequestPtr& IVVCState::getGroupRequest()
+const PointDataRequestPtr& IVVCState::getGroupRequest()
 {
     return _groupRequest;
 }
 
-void IVVCState::setGroupRequest(const GroupRequestPtr& groupRequest)
+void IVVCState::setGroupRequest(const PointDataRequestPtr& groupRequest)
 {
     _groupRequest.reset();
     _groupRequest = groupRequest;
@@ -103,4 +103,14 @@ bool IVVCState::isRemoteMode()
 void IVVCState::setRemoteMode(bool remoteMode)
 {
     _remoteMode = remoteMode;
+}
+
+bool IVVCState::isFirstPass()
+{
+    return _firstPass;
+}
+
+void IVVCState::setFirstPass(bool firstPass)
+{
+    _firstPass = firstPass;
 }

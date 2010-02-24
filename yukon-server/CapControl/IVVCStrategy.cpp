@@ -5,7 +5,6 @@
 #include <cstdlib>
 
 #include "IVVCStrategy.h"
-#include "IVVCAlgorithm.h"
 #include "ccutil.h"
 #include "ccsubstationbusstore.h"
 
@@ -30,7 +29,8 @@ IVVCStrategy::IVVCStrategy()
     _peakVoltageRegulationMargin(1.0),
     _offpeakVoltageRegulationMargin(1.0)
 {
-    // empty!
+    PointDataRequestFactoryPtr factory(new PointDataRequestFactory());
+    _ivvcAlgorithm.setPointDataRequestFactory(factory);
 }
 
 
@@ -39,6 +39,10 @@ IVVCStrategy::~IVVCStrategy()
     // empty!
 }
 
+void IVVCStrategy::setPointDataRequestFactory(PointDataRequestFactoryPtr& factory)
+{
+    _ivvcAlgorithm.setPointDataRequestFactory(factory);
+}
 
 void IVVCStrategy::restoreParameters( const std::string &name, const std::string &type, const std::string &value )
 {
@@ -343,7 +347,7 @@ void IVVCStrategy::execute()
         busPtr = store->findSubBusByPAObjectID( (*b)->getPaoId());
         if (busPtr != NULL)
         {
-            IVVCAlgorithm::execute( *b, busPtr, this, true);
+            _ivvcAlgorithm.execute( *b, busPtr, this, true);
         }
         else
         {

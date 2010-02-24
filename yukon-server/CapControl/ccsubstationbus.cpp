@@ -2577,12 +2577,14 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 }
 
 
-                if( !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
+                if(!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ||
                    !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKQControlUnit) )
+                {
                     setPoint = (getPeakTimeFlag()?getStrategy()->getPeakPFSetPoint():getStrategy()->getOffPeakPFSetPoint());
+                }
+
                 setKVARSolution(calculateKVARSolution(getStrategy()->getControlUnits(),setPoint, getIVControl(), getIWControl()));
                 setTargetVarValue( getKVARSolution() + getIVControl());
-
 
                 if( !_IGNORE_NOT_NORMAL_FLAG ||
                     ( getCurrentVarPointQuality() == NormalQuality ||

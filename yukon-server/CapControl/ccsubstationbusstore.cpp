@@ -443,6 +443,12 @@ LoadTapChangerPtr CtiCCSubstationBusStore::findLtcById(long ltcId)
     return (iter == _paobject_ltc_map.end() ? NULL : iter->second);
 }
 
+CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByLtcId(long ltcId)
+{
+    long subBusId = findSubBusIdByLtcId(ltcId);
+    return findSubBusByPAObjectID(subBusId);
+}
+
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobject_id)
 {
     map< long, CtiCCSubstationBusPtr >::iterator iter = _paobject_subbus_map.find(paobject_id);
@@ -499,6 +505,11 @@ long CtiCCSubstationBusStore::findCapBankIDbyCbcID(long cbcId)
     return (iter == _cbc_capbank_map.end() ? NULL : iter->second);
 }
 
+long CtiCCSubstationBusStore::findSubBusIdByLtcId(long ltcId)
+{
+    map< long, long >::iterator iter = _ltc_subbus_map.find(ltcId);
+    return (iter == _ltc_subbus_map.end() ? NULL : iter->second);
+}
 
 
 long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
@@ -5953,6 +5964,7 @@ void CtiCCSubstationBusStore::reloadLtcFromDatabase(long ltcId)
                 if (currentBus != NULL)
                 {
                     currentBus->setLtcId(ltcId);
+                    _ltc_subbus_map[ltcId] = subbusId;
                 }
                 else
                 {
@@ -10979,14 +10991,14 @@ bool CtiCCSubstationBusStore::addKVAROperation( long capbankId, long kvar )
         return false;
 
     MaxKvarObject obj(kvar,capbankId,CtiTime());
-    maxKvarMap.insert( make_pair(capbankId, obj ) );
+    _maxKvarMap.insert( make_pair(capbankId, obj ) );
 
     return true;
 }
 
 bool CtiCCSubstationBusStore::removeKVAROperation( long capbankId )
 {
-    int removed = maxKvarMap.erase(capbankId);
+    int removed = _maxKvarMap.erase(capbankId);
 
     return ( removed > 0 );
 }
@@ -10998,7 +11010,7 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
         return true;
 
     long kvarInList = 0;
-    for( std::map<long,MaxKvarObject>::iterator itr = maxKvarMap.begin(); itr != maxKvarMap.end();  )
+    for( std::map<long,MaxKvarObject>::iterator itr = _maxKvarMap.begin(); itr != _maxKvarMap.end();  )
     {
         MaxKvarObject obj = (*itr).second;
         CtiTime now;
@@ -11007,7 +11019,7 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " Expired kvar request, removing: " << obj.getPaoId() << endl;
-            maxKvarMap.erase(itr++);
+            _maxKvarMap.erase(itr++);
         }
         else
         {
