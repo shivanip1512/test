@@ -13,27 +13,12 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableSet;
 //This models has the following:
 //		1st Level = Ports YukonPAOBjects
 //		2nd Level = Devices YukonPAOBjects
 
 public class CommChannelTreeModel extends DBTreeModel 
 {
-    private static final ImmutableSet<Integer> validPortTypes = 
-        ImmutableSet.of(com.cannontech.database.data.pao.PortTypes.LOCAL_DIRECT,
-                        com.cannontech.database.data.pao.PortTypes.LOCAL_SHARED,
-                        com.cannontech.database.data.pao.PortTypes.LOCAL_RADIO,
-                        com.cannontech.database.data.pao.PortTypes.LOCAL_DIALUP,
-                        com.cannontech.database.data.pao.PortTypes.TSERVER_DIRECT,
-                        com.cannontech.database.data.pao.PortTypes.TSERVER_SHARED,
-                        com.cannontech.database.data.pao.PortTypes.TSERVER_RADIO,
-                        com.cannontech.database.data.pao.PortTypes.TSERVER_DIALUP,
-                        com.cannontech.database.data.pao.PortTypes.LOCAL_DIALBACK,
-                        com.cannontech.database.data.pao.PortTypes.DIALOUT_POOL,
-                        com.cannontech.database.data.pao.PortTypes.TCPPORT,
-                        com.cannontech.database.data.pao.PortTypes.UDPPORT);
-	
 	//a mutable lite point used for comparisons
 	private static final LiteYukonPAObject DUMMY_LITE_PAO = 
 					new LiteYukonPAObject(Integer.MIN_VALUE, "**DUMMY**");
@@ -74,7 +59,7 @@ public boolean isTreePrimaryForObject(LiteBase lb) {
     
     boolean isDeviceValid = isDeviceValid(paoType.getPaoCategory().getCategoryId(), paoType.getPaoClass().getPaoClassId(), paoType.getDeviceTypeId());
     boolean isCoreDevice = com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( paoType.getPaoClass().getPaoClassId() );
-    boolean isCommChannPort = isValidPortType(paoType.getDeviceTypeId());
+    boolean isCommChannPort = PAOGroups.isValidPortType(paoType.getDeviceTypeId());
     if( isCommChannPort ) {
         return true;
     }
@@ -176,7 +161,7 @@ public boolean insertTreeObject( LiteBase lb )
 	{
 		LiteYukonPAObject liteYuk = (LiteYukonPAObject)lb;
 
-		if( isValidPortType( liteYuk.getType() ) )
+		if( PAOGroups.isValidPortType( liteYuk.getType() ) )
 		{
 			DBTreeNode node = new DBTreeNode(lb);
 
@@ -210,11 +195,6 @@ public boolean isDeviceValid( int category_, int deviceClass, int type_ )
 			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.GRID
 			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.SYSTEM );
 
-}
-
-public boolean isValidPortType( int portType )
-{
-    return validPortTypes.contains(portType);
 }
 
 /**

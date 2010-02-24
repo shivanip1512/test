@@ -1,8 +1,7 @@
 package com.cannontech.database.data.pao;
 
 import com.cannontech.message.macs.message.Schedule;
-
-//import com.cannontech.database.data.customer.*;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * This type was created in VisualAge.
@@ -33,6 +32,20 @@ public final class PAOGroups implements RouteTypes, PortTypes, DeviceTypes, CapC
    	public static final int CLASS_CUSTOMER = CAT_CUSTOMER;
    	public static final int CLASS_CAPCONTROL = CAT_CAPCONTROL;
    	public static final int CLASS_LOADMANAGEMENT = CAT_LOADCONTROL;
+   	
+   	private static final ImmutableSet<Integer> validPortTypes = 
+        ImmutableSet.of(com.cannontech.database.data.pao.PortTypes.LOCAL_DIRECT,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_SHARED,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_RADIO,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_DIALUP,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_DIRECT,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_SHARED,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_RADIO,
+                        com.cannontech.database.data.pao.PortTypes.TSERVER_DIALUP,
+                        com.cannontech.database.data.pao.PortTypes.LOCAL_DIALBACK,
+                        com.cannontech.database.data.pao.PortTypes.DIALOUT_POOL,
+                        com.cannontech.database.data.pao.PortTypes.TCPPORT,
+                        com.cannontech.database.data.pao.PortTypes.UDPPORT);
 	
 /**
  * This method was created in VisualAge.
@@ -875,6 +888,17 @@ public final static boolean isCapControl( com.cannontech.database.data.lite.Lite
 				   || lite.getCategory() == com.cannontech.database.data.pao.PAOGroups.CAT_DEVICE )
 				 && lite.getPaoClass() == com.cannontech.database.data.pao.PAOGroups.CLASS_CAPCONTROL);
 }
+
+/**
+ * Returns whether or not the given port type is valid.
+ * @return boolean
+ * @param int
+ */
+public static final boolean isValidPortType( int portType )
+{
+    return validPortTypes.contains(portType);
+}
+
 /**
  * This method was created in VisualAge.
  * @return boolean
