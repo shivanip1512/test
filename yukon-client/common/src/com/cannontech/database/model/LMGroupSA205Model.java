@@ -14,7 +14,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
-public class LMGroupSA205Model extends DeviceTreeModel 
+public class LMGroupSA205Model extends AbstractDeviceTreeModel 
 {
 /**
  * LMGroupVersacomModel constructor comment.

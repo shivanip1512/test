@@ -14,6 +14,7 @@ import javax.swing.tree.TreePath;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.model.DeviceTreeModel;
 
 /**
  * Creation date: (1/11/2002 11:43:34 AM)
@@ -22,7 +23,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class DeviceSelectionPanel extends JPanel implements TreeWillExpandListener {
     private JTree ivjDevicePointTree = null;
     private JScrollPane ivjJScrollPane1 = null;
-    private com.cannontech.database.model.ActualDeviceTreeModel ivjActualDeviceTreeModel = null;
+    private DeviceTreeModel deviceTreeModel = null;
     
     /**
      * PointSelectionPanel constructor comment.
@@ -75,17 +76,17 @@ public class DeviceSelectionPanel extends JPanel implements TreeWillExpandListen
     
     /**
      * Return the DeviceTreeModel property value.
-     * @return com.cannontech.database.model.DeviceTreeModel
+     * @return DeviceTreeModel
      */
-    private com.cannontech.database.model.ActualDeviceTreeModel getDeviceTreeModel() {
-        if (ivjActualDeviceTreeModel == null) {
+    private DeviceTreeModel getDeviceTreeModel() {
+        if (deviceTreeModel == null) {
             try {
-                ivjActualDeviceTreeModel = new com.cannontech.database.model.ActualDeviceTreeModel(false);
+                deviceTreeModel = new DeviceTreeModel(false);
             } catch (java.lang.Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return ivjActualDeviceTreeModel;
+        return deviceTreeModel;
     }
     
     /**

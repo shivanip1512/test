@@ -6,7 +6,7 @@ package com.cannontech.database.model;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class LMGroupVersacomModel extends DeviceTreeModel 
+public class LMGroupVersacomModel extends AbstractDeviceTreeModel 
 {
 /**
  * LMGroupVersacomModel constructor comment.

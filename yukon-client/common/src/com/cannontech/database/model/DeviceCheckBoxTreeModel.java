@@ -19,7 +19,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class DeviceCheckBoxTreeModel extends DeviceTreeModel implements Checkable
+public class DeviceCheckBoxTreeModel extends AbstractDeviceTreeModel implements Checkable
 {
 	//Contains CheckNodes (hopefully) values.  DOES NOT CONTAIN THE PARENT!!!
 	private Vector checkedNodes = null;

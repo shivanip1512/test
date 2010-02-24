@@ -6,7 +6,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * This type was created in VisualAge.
  */
 
-public class LMGroupsModel extends DeviceTreeModel 
+public class LMGroupsModel extends AbstractDeviceTreeModel 
 {
 /**
  * LMGroupEmetconModel constructor comment.

@@ -14,7 +14,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * @author: 
  * @Version: <version>
  */
-public class TDCDeviceTreeModel extends DeviceTreeModel
+public class TDCDeviceTreeModel extends AbstractDeviceTreeModel
 {
 
 	

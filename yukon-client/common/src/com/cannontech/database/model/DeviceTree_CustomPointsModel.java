@@ -4,7 +4,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 
-public class DeviceTree_CustomPointsModel extends DeviceTreeModel {
+public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
 
     private long includePoints = 0x00000000;
 

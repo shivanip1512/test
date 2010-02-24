@@ -18,8 +18,7 @@ public class SimpleSchedulePanel extends com.cannontech.common.gui.util.DataInpu
 	private com.cannontech.database.model.DBTreeModel[] TREE_MODELS = 
 	{
 		new com.cannontech.database.model.LMGroupsModel(false),
-		new com.cannontech.database.model.ActualDeviceTreeModel(false)
-		//new SimpleScheduleDeviceTreeModel()
+		new com.cannontech.database.model.DeviceTreeModel(false)
 	};
 	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldInterval = null;
 	private javax.swing.JLabel ivjJLabelMinsFormat = null;

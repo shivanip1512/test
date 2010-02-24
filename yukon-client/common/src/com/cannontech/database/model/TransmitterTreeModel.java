@@ -3,7 +3,7 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-public class TransmitterTreeModel extends DeviceTreeModel 
+public class TransmitterTreeModel extends AbstractDeviceTreeModel 
 {
 /**
  * TransmitterTreeModel constructor comment.

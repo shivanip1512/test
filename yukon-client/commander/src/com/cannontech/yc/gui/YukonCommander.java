@@ -1365,7 +1365,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
         for (int i = 0; i < modelIds.length; i++)
 		{
 			if( modelIds[i] == ModelFactory.DEVICE)
-				models.add(new com.cannontech.database.model.ActualDeviceTreeModel(false));
+				models.add(new com.cannontech.database.model.DeviceTreeModel(false));
 			else if ( modelIds[i] == ModelFactory.LMGROUPS)
 				models.add(new com.cannontech.database.model.LMGroupsModel(false));
 			else if ( modelIds[i] == ModelFactory.CAPBANKCONTROLLER )

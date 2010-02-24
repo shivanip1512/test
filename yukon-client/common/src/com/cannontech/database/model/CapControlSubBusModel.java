@@ -5,7 +5,7 @@ import com.cannontech.yukon.IDatabaseCache;
 /**
  * This type was created in VisualAge.
  */
-public class CapControlSubBusModel extends DeviceTreeModel 
+public class CapControlSubBusModel extends AbstractDeviceTreeModel 
 {
 /**
  * IEDTreeModel constructor comment.

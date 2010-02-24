@@ -6,7 +6,7 @@ package com.cannontech.database.model;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
-public class IEDTreeModel extends DeviceTreeModel 
+public class IEDTreeModel extends AbstractDeviceTreeModel 
 {
 /**
  * IEDTreeModel constructor comment.

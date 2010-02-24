@@ -5,7 +5,7 @@ package com.cannontech.database.model;
  */
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 
-public class ReceiverTreeModel extends DeviceTreeModel 
+public class ReceiverTreeModel extends AbstractDeviceTreeModel 
 {
 /**
  * RtuTreeModel constructor comment.

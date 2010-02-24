@@ -5,7 +5,7 @@ package com.cannontech.database.model;
  */
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 
-public class MeterTreeModel extends DeviceTreeModel 
+public class MeterTreeModel extends AbstractDeviceTreeModel 
 {
 /**
  * MeterTreeModel constructor comment.

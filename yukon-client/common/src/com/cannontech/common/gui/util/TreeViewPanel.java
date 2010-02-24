@@ -114,7 +114,7 @@ public Object getSelectedItem() {
 	
 }
 
-public boolean isItemSelected() {
+public boolean hasItemSelected() {
     Object selectedObject = getSelectedItem();
     return (selectedObject != null);
 }
@@ -406,7 +406,7 @@ public void itemStateChanged(ItemEvent event) {
 public void refresh() 
 {
     //logic to avoid calling update twice on refresh when model extends DbBackgroundTreeModel
-    if ( getCurrentTreeModel() instanceof DbBackgroundTreeModel && isItemSelected() ) {
+    if ( getCurrentTreeModel() instanceof DbBackgroundTreeModel && hasItemSelected() ) {
         final LiteBaseTreeModel model = getCurrentTreeModel();
         final LiteBase liteBase = (LiteBase) getSelectedItem();
         selectLiteObjectAndUpdate( model, liteBase );

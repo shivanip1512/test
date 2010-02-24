@@ -5,7 +5,7 @@ import com.cannontech.yukon.IDatabaseCache;
 /**
  * This type was created in VisualAge.
  */
-public class RouteTreeModel extends DeviceTreeModel 
+public class RouteTreeModel extends AbstractDeviceTreeModel 
 {
 /**
  * RouteTreeModel constructor comment.

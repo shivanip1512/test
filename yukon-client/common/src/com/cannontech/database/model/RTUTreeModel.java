@@ -6,7 +6,7 @@ package com.cannontech.database.model;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.PAOGroups;
 
-public class RTUTreeModel extends DeviceTreeModel 
+public class RTUTreeModel extends AbstractDeviceTreeModel 
 {
 /**
  * RtuTreeModel constructor comment.

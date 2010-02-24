@@ -4,7 +4,7 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
-public class MCTTreeModel extends DeviceTreeModel
+public class MCTTreeModel extends AbstractDeviceTreeModel
 {
 /**
  * MCTTreeModel constructor comment.

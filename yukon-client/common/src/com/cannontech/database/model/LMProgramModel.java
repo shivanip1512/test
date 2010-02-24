@@ -6,7 +6,7 @@ package com.cannontech.database.model;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class LMProgramModel extends DeviceTreeModel
+public class LMProgramModel extends AbstractDeviceTreeModel
 {
 /**
  * LMGroupEmetconModel constructor comment.

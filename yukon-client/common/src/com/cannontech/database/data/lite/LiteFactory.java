@@ -12,6 +12,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.notification.NotificationGroup;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.DBPersistent;
@@ -292,13 +293,15 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
     			((com.cannontech.database.data.point.PointBase)val).getPoint().getPointName() );
 	    } 
 	    else {
+	        PointBase pointBase = (PointBase)val;
+	        int pointType = PointType.getForString(pointBase.getPoint().getPointType()).getPointTypeId();
     	    returnLite = new LitePoint(
-    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPointID().intValue(),
-    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPointName(),
-    	                               PointType.getForString(((com.cannontech.database.data.point.PointBase)val).getPoint().getPointType()).getPointTypeId(),
-    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPaoID(),
-    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getPointOffset(),
-    	                               ((com.cannontech.database.data.point.PointBase)val).getPoint().getStateGroupID());
+    	                               pointBase.getPoint().getPointID().intValue(),
+    	                               pointBase.getPoint().getPointName(),
+    	                               pointType,
+    	                               pointBase.getPoint().getPaoID(),
+    	                               pointBase.getPoint().getPointOffset(),
+    	                               pointBase.getPoint().getStateGroupID());
 	    }
 			
 	}

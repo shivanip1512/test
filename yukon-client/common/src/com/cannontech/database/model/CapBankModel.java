@@ -5,7 +5,7 @@ package com.cannontech.database.model;
  */
 import com.cannontech.database.data.pao.PAOGroups;
 
-public class CapBankModel extends DeviceTreeModel 
+public class CapBankModel extends AbstractDeviceTreeModel 
 {
 /**
  * IEDTreeModel constructor comment.

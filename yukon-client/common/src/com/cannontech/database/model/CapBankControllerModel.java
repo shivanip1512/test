@@ -4,7 +4,7 @@ package com.cannontech.database.model;
  * This type was created in VisualAge.
  */
 
-public class CapBankControllerModel extends DeviceTreeModel
+public class CapBankControllerModel extends AbstractDeviceTreeModel
 {
 /**
  * IEDTreeModel constructor comment.

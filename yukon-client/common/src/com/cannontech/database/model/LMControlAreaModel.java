@@ -6,7 +6,7 @@ package com.cannontech.database.model;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.yukon.IDatabaseCache;
 
-public class LMControlAreaModel extends DeviceTreeModel 
+public class LMControlAreaModel extends AbstractDeviceTreeModel 
 {
 /**
  * LMGroupEmetconModel constructor comment.
