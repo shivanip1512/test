@@ -9,11 +9,11 @@ public class CommandRequestExecutionReportLayoutData implements ReportLayoutData
     public CommandRequestExecutionReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Command", "command", 200),
-            new ColumnLayoutData("Status", "status", 200),
-            new ColumnLayoutData("Device Name", "deviceName", 180),
-            new ColumnLayoutData("Route Name", "routeName", 150),
-            new ColumnLayoutData("Completed", "completeTime", 150, "BOTH"),
+            new ColumnLayoutData("Command", "command", 120),
+            new ColumnLayoutData("Status", "status", 250),
+            new ColumnLayoutData("Device Name", "deviceName", 130),
+            new ColumnLayoutData("Route Name", "routeName", 130),
+            new ColumnLayoutData("Completed", "completeTime", 100, "BOTH"),
         };
     }
     
