@@ -130,12 +130,12 @@
                         disabled="#{!capControlForm.editingAuthorized}"/>
 					
 					<x:outputLabel for="CapBank_OthrComments" value="Other Comments " title="" />
-					<x:inputText id="CapBank_OthrComments" value="#{capBankEditor.additionalInfo.otherComments}" required="true" maxlength="150" size="50">
+					<x:inputText id="CapBank_OthrComments" value="#{capBankEditor.additionalInfo.otherComments}" required="false" maxlength="150" size="50">
 						<f:validateLength minimum="1" maximum="150" />
 					</x:inputText>
 					
 					<x:outputLabel for="CapBank_OpTeamComments" value="Op Team Comments " title="" />
-					<x:inputText id="CapBank_OpTeamComments" value="#{capBankEditor.additionalInfo.opTeamComments}" required="true" maxlength="150" size="50">
+					<x:inputText id="CapBank_OpTeamComments" value="#{capBankEditor.additionalInfo.opTeamComments}" required="false" maxlength="150" size="50">
 						<f:validateLength minimum="1" maximum="150" />
 					</x:inputText>
 					
@@ -143,7 +143,7 @@
 					<x:inputDate id="CapBank_CBCInstallDate" value="#{capBankEditor.additionalInfo.cbcBattInstallDate}" type="both" popupCalendar="true" />
 					
 					<x:outputLabel for="CapBank_DriveDir" value="Driving Directions " title="" />
-					<x:inputText id="CapBank_DriveDir" value="#{capBankEditor.additionalInfo.driveDir}" required="true" maxlength="120" size="50">
+					<x:inputText id="CapBank_DriveDir" value="#{capBankEditor.additionalInfo.driveDir}" required="false" maxlength="120" size="50">
 						<f:validateLength minimum="1" maximum="120" />
 					</x:inputText>
 				

@@ -1076,9 +1076,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			addDBObject(ccStrat, facesMsg);
 			// clear out the memory of the any list of Strategies
 			cbcStrategies = null;
+			cbcHolidayStrategies = null;
 			setEditingCBCStrategy(true);
 			facesMsg.setDetail("CapControl Strategy add was SUCCESSFUL");
 			cbcStrategiesMap.put(newId, ccStrat);
+			getCbcHolidayStrategiesMap().put(newId, ccStrat);
 			JSFUtil.redirect("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_STRATEGY + "&itemid=" + newId);
 		} catch (TransactionException te) {
 			// do nothing since the appropriate actions was taken in the super
