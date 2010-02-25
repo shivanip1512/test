@@ -44,6 +44,12 @@ public:
 
     void executeAll() const;
 
+    void saveStates(const long ID);
+    void saveAllStates();
+
+    void restoreStates(const long ID);
+    void restoreAllStates();
+    
 private:
 
     mutable Lock    _lock;
@@ -51,8 +57,8 @@ private:
     static const SharedPtr    _defaultStrategy;
 
     StrategyMap _strategies;
+    StrategyMap _strategyBackup;
 
     std::auto_ptr<StrategyLoader>   _loader;
-
 };
 

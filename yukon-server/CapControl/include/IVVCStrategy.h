@@ -56,6 +56,9 @@ public:
     virtual double getOffPeakLead() const;
     virtual double getPeakPFSetPoint() const;
 
+    // The following is for saving and restoring the embedded states for a database reload.
+    virtual void restoreStates(const ControlStrategy * backup);
+
     //Allows unit test to change this out
     void setPointDataRequestFactory(PointDataRequestFactoryPtr& factory);
 

@@ -88,3 +88,72 @@ void StrategyManager::executeAll() const
     }
 }
 
+
+void StrategyManager::saveAllStates()
+{
+    saveStates(-1);
+}
+
+
+void StrategyManager::saveStates(const long ID)
+{
+    ReaderGuard guard(_lock);
+
+    _strategyBackup.clear();
+
+    if ( ID < 0 )   // backup all strategies
+    {
+        _strategyBackup.insert( _strategies.begin(), _strategies.end() );
+    }
+    else            // back up strategy ID if it exists
+    {
+        StrategyMap::const_iterator iter = _strategies.find(ID);
+
+        if ( iter != _strategies.end() )
+        {
+            _strategyBackup.insert( *iter );
+        }
+    }
+}
+
+
+void StrategyManager::restoreAllStates()
+{
+    restoreStates(-1);
+}
+
+
+void StrategyManager::restoreStates(const long ID)
+{
+    ReaderGuard guard(_lock);
+
+    if ( ID < 0 )   // restore states for all strategies
+    {
+        for ( StrategyMap::const_iterator b = _strategies.begin(), e = _strategies.end(); b != e; ++b )
+        {
+            StrategyMap::const_iterator iter = _strategyBackup.find( b->first );
+
+            if ( iter != _strategyBackup.end() )
+            {
+                b->second->restoreStates( iter->second.get() );
+            }
+        }
+    }
+    else            // only restore states for strategy ID
+    {
+        StrategyMap::const_iterator target = _strategies.find(ID);
+
+        if ( target != _strategies.end() )
+        {
+            StrategyMap::const_iterator iter = _strategyBackup.find(ID);
+
+            if ( iter != _strategyBackup.end() )
+            {
+                target->second->restoreStates( iter->second.get() );
+            }
+        }
+    }
+
+    _strategyBackup.clear();
+}
+

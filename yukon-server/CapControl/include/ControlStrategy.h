@@ -146,6 +146,9 @@ public:
     void       setPeakTimeFlag(const bool flag);
     const bool getPeakTimeFlag() const;
 
+    // The following is for saving and restoring the embedded states for a database reload.
+    virtual void restoreStates(const ControlStrategy * backup);
+
 private:
 
     long        _strategyID;

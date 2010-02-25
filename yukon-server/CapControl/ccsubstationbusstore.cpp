@@ -3781,17 +3781,20 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
-    if (strategyId == -1)
-    {
-        _strategyManager.reloadAll();
-    }
-    else
-    {
-        _strategyManager.reload(strategyId);
-    }
-
     try
     {
+        // First save states, then reload the strategy.
+        if (strategyId == -1)
+        {
+            _strategyManager.saveAllStates();
+            _strategyManager.reloadAll();
+        }
+        else
+        {
+            _strategyManager.saveStates(strategyId);
+            _strategyManager.reload(strategyId);
+        }
+
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         {
@@ -4045,6 +4048,16 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 
                 }
             }
+        }
+
+        // After the strategy has been properly assigned everywhere, restore the states
+        if (strategyId == -1)
+        {
+            _strategyManager.restoreAllStates();
+        }
+        else
+        {
+            _strategyManager.restoreStates(strategyId);
         }
     }
     catch(...)

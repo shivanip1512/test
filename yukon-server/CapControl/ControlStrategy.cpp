@@ -568,6 +568,12 @@ const bool ControlStrategy::getPeakTimeFlag() const
 }
 
 
+void ControlStrategy::restoreStates(const ControlStrategy * backup)
+{
+    // empty!
+}
+
+
 const std::string ControlStrategy::NoControlMethod                  = "(none)";
 const std::string ControlStrategy::IndividualFeederControlMethod    = "IndividualFeeder";
 const std::string ControlStrategy::SubstationBusControlMethod       = "SubstationBus";

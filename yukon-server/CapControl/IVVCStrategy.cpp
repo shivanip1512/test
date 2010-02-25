@@ -314,6 +314,25 @@ void IVVCStrategy::unregisterControllable(const long paoid)
 }
 
 
+void IVVCStrategy::restoreStates(const ControlStrategy * backup)
+{
+    const IVVCStrategy* p = dynamic_cast<const IVVCStrategy*>( backup );
+
+    if (p)
+    {
+        for (PaoToStateMap::iterator b = _paoStateMap.begin(), e = _paoStateMap.end(); b != e; ++b)
+        {
+            PaoToStateMap::const_iterator target = p->_paoStateMap.find( b->first );
+
+            if ( target != p->_paoStateMap.end() )
+            {
+                b->second.second = target->second.second;
+            }
+        }
+    }
+}
+
+
 void IVVCStrategy::execute()
 {
     std::list<IVVCStatePtr>     runList;
