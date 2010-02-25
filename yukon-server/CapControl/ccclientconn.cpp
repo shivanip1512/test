@@ -121,6 +121,14 @@ void CtiCCClientConnection::close()
 
     oStream->vflush();
 
+    // Note this is similar to connection.cpp. First we tell the thread to stop
+    // then we delete the stream that should unblock the thread.
+    if( !_recvrunnable.isSelf() )
+        _recvrunnable.requestCancellation(1);
+
+    if( !_sendrunnable.isSelf() )
+        _sendrunnable.requestCancellation(1);
+
     delete _portal;
     delete sinbuf;
     delete soubuf;
@@ -136,10 +144,14 @@ void CtiCCClientConnection::close()
     //unblock the in and out thread
     RWCollectable* unblocker = new RWCollectable();
     _queue.write(unblocker);
-    _sendrunnable.requestCancellation();
-    _recvrunnable.requestCancellation();
-    _recvrunnable.join();
-    _sendrunnable.join();
+
+    if( !_recvrunnable.isSelf() )
+       _recvrunnable.join(2000);
+
+
+    if( !_sendrunnable.isSelf() )
+        _sendrunnable.join(2000);
+
 
     RWCollectable* c;
     _queue.close();
