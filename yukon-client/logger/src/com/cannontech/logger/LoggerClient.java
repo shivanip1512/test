@@ -41,10 +41,16 @@ public class LoggerClient extends com.cannontech.clientutils.ClientBase
  */
 public LoggerClient( Enumeration pointEnum, Logger stream ) 
 {
-	super();
+    super();
 	this.outStream = stream;
 	this.pointEnum = pointEnum;
+	registerForPoints();
 }
+
+private void registerForPoints() {
+    getConnection().write(buildRegistrationMessage());
+}
+
 /**
  * This method was created in VisualAge.
  */
@@ -55,7 +61,7 @@ public Message buildRegistrationMessage()
 	reg.setAppName( CtiUtilities.getApplicationName() );
 	reg.setAppIsUnique(0);
 	reg.setAppKnownPort(0);
-	reg.setAppExpirationDelay( 1000000 );
+	reg.setAppExpirationDelay( 500 );
 
 	// create our own point registration
 	PointRegistration pReg = new PointRegistration();	

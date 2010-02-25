@@ -62,7 +62,7 @@ public boolean connected()
  * This method was created in VisualAge.
  * @return boolean
  */
-private IServerConnection getConnection() {
+protected IServerConnection getConnection() {
     return ConnPool.getInstance().getDefDispatchConn();
 }
 
