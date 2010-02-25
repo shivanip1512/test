@@ -631,7 +631,7 @@ error_t Ccu710::sendReply(CommsOut &comms_out, const reply_holder &external_repl
 }
 
 
-error_t Ccu710::sendReply(CommsOut &comms_out, reply_t &reply) const
+error_t Ccu710::sendReply(CommsOut &comms_out, const reply_t &reply) const
 {
     if( !comms_out.write(reply.message) )
     {

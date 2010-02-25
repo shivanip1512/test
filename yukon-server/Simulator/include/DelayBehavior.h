@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CommsBehaviorInterface.h"
+#include "CommsBehavior.h"
 #include "logger.h"
 
 namespace Cti {

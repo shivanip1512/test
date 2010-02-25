@@ -9,6 +9,24 @@ using namespace std;
 namespace Cti {
 namespace Simulator {
 
+bool Comms::write(const bytes &buf)
+{
+    bytes temp_buf = buf;
+    ProcessMessage(temp_buf);
+    writeMessage(temp_buf);
+    
+    return true;
+}
+
+bool Comms::ProcessMessage(bytes &buf)
+{
+    if( _behaviorCollection.processMessage(buf) )
+    {
+        return true;
+    }
+    return false;
+}
+
 SocketComms::SocketComms(CTINEXUS &nexus, unsigned baud) :
     _nexus(nexus)
 {
@@ -68,12 +86,15 @@ bool SocketComms::available(unsigned aCount)
     return bytes_read == aCount;
 }
 
-bool SocketComms::write(bytes &buf)
+bool SocketComms::writeMessage(const bytes &buf)
 {
-    _applicator.ProcessMessage(buf);
     boost::scoped_array<unsigned char> temp(new unsigned char[buf.size()]);
 
     copy(buf.begin(), buf.end(), temp.get());
+
+    bytes temp_buf = buf;
+
+    _behaviorCollection.processMessage(temp_buf);
 
     unsigned long bytes_written = 0;
 
@@ -84,9 +105,9 @@ bool SocketComms::write(bytes &buf)
     return bytes_written == buf.size();
 }
 
-void SocketComms::setBehavior(CommsBehavior* behavior)
+void SocketComms::setBehavior(std::auto_ptr<CommsBehavior> behavior)
 {
-    _applicator.setBehavior(behavior);
+    _behaviorCollection.addBehavior(behavior);
 }
 
 void SocketComms::clear()

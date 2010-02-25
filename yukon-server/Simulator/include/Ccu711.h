@@ -4,7 +4,7 @@
 #include "ctitime.h"
 #include "fifo_multiset.h"
 #include "PlcTransmitter.h"
-#include "CommsBehaviorApplicator.h"
+#include "BehaviorCollection.h"
 
 #include "CommInterface.h"
 #include "portlogger.h"
@@ -375,7 +375,7 @@ private:
     string describeGeneralReply  (const reply_info   &reply_info) const;
     string describeStatuses      (const status_info  &statuses)   const;
 
-    error_t sendReply(Comms &comms, idlc_reply &reply) const;
+    error_t sendReply(Comms &comms, const idlc_reply &reply) const;
 
     error_t writeIdlcHeader (const idlc_header &header,  byte_appender &out_itr) const;
     error_t writeReplyInfo  (const reply_info  &info,    byte_appender &out_itr) const;

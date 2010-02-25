@@ -1174,7 +1174,7 @@ string Ccu711::describeStatuses(const status_info &statuses) const
 }
 
 
-error_t Ccu711::sendReply(Comms &comms, idlc_reply &reply) const
+error_t Ccu711::sendReply(Comms &comms, const idlc_reply &reply) const
 {
     if( !comms.write(reply.message) )
     {

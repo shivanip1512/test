@@ -5,13 +5,15 @@
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include "PlcInfrastructure.h"
 #include "Ccu710.h"
 #include "Ccu711.h"
 #include "PortLogger.h"
 #include "CommInterface.h"
-#include "CommsBehaviorApplicator.h"
+#include "BehaviorCollection.h"
 #include "DelayBehavior.h"
 #include "cparms.h"
 
@@ -50,6 +52,8 @@ DLLIMPORT extern CtiLogger dout;
 
 int main(int argc, char *argv[])
 {
+    srand(time(NULL));
+
     int strategy = 0,
         port_min = 0,
         port_max = 0;
@@ -221,7 +225,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
                 dout << "********* DELAY FILTER ENABLED! *************" << endl;
             }
             int chance = gConfigParms.getValueAsInt("SIMULATOR_ERROR_DELAY_PERCENT");
-            DelayBehavior* d = new DelayBehavior();
+            std::auto_ptr<CommsBehavior> d(new DelayBehavior());
             d->setChance(chance);
             socket_interface.setBehavior(d);
             break;

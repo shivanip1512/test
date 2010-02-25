@@ -3,7 +3,7 @@
 #include "portlogger.h"
 #include "emetconwords.h"
 #include "PlcTransmitter.h"
-#include "CommsBehaviorApplicator.h"
+#include "BehaviorCollection.h"
 
 #include "CommInterface.h"
 #include "types.h"
@@ -179,7 +179,7 @@ private:
 
     std::string describeReply(const reply_t &reply) const;
 
-    error_t sendReply(CommsOut &comms, reply_t &reply) const;
+    error_t sendReply(CommsOut &comms, const reply_t &reply) const;
 };
 
 }

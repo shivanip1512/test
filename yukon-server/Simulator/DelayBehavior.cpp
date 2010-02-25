@@ -1,9 +1,7 @@
 #include "yukon.h"
 #include "DelayBehavior.h"
-#include "cparms.h"
 
 #include <ctime>
-#include <boost/random/uniform_int.hpp>
 #include <random>
 
 namespace Cti {
@@ -11,15 +9,18 @@ namespace Simulator{
 
 DelayBehavior::DelayBehavior()
 {
-    srand(time(NULL));
 }
 
 void DelayBehavior::applyBehavior(bytes &message)
 {
     if (_delayed.empty())
     {
-        double dist = rand() / double(RAND_MAX);
+        double dist = rand() / double(RAND_MAX+1);
         int chance = int(dist * 100);
+        {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << "\n\nRandom number = " << chance << endl << endl;
+        }
         if (chance < _chance)
         {
             {

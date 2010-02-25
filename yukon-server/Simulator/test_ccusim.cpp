@@ -18,6 +18,7 @@
 #include <sstream>    // for istringstream
 #include <time.h>
 #include <locale>
+#include <fstream>
 
 #define BOOST_AUTO_TEST_MAIN "Test ccuSim"
 
@@ -32,6 +33,8 @@
 #include "yukon.h"
 #include "rwutil.h"
 #include "numstr.h"
+#include "dev_mct410.h"
+#include "Mct410.h"
 
 #include "types.h"
 
@@ -190,6 +193,34 @@ BOOST_AUTO_TEST_CASE( test_getValueKwh_noqueue )
     //bool ok = TestTransaction(testCCU,input,output);
 
 }
+
+
+namespace Cti {
+namespace Simulator {
+
+class test_MCT410 : public Mct410Sim
+{
+public:
+
+    test_MCT410(unsigned address) :
+        Mct410Sim(address)
+    {
+    }
+    //static double makeValue_consumption(const unsigned address, const CtiTime &c_time, const unsigned duration)
+    //{
+    //return Mct410Sim::makeValue_consumption(address, c_time, duration);
+    //}
+
+    unsigned getHectoWattHours(const unsigned _address, const CtiTime c_time)
+    {
+        unsigned hWh = Mct410Sim::getHectoWattHours(_address, c_time);
+        return hWh;
+    }
+
+};
+
+}
+}
 */
 
 using namespace Cti::Simulator;
@@ -217,4 +248,67 @@ BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
     BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 36,  8), 0x00);
     BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 44,  2), 0x01);
     BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 46,  6), 0x1a);
+
 }
+/*
+BOOST_AUTO_TEST_CASE( test_makevalue_consumption )
+{
+    ofstream outFile;
+    outFile.open("C:\\Dev\\trunk\\yukon-server-d\\bin\\hWhLog.txt");
+
+    const unsigned address = 1500;
+    test_MCT410 test_device(address);
+    bool flag = false;
+    static const CtiTime end_of_time = CtiTime::CtiTime(CtiDate::CtiDate(31, 12, 2007), 0, 0, 0);
+    CtiTime test_time = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005), 0, 0, 0);
+    // BOOST_CHECK_EQUAL(makeValue_consumption(address, begin_of_time.seconds(), duration), WhoCares);
+
+    outFile << "Consumption Value Test Log\n";
+    outFile << "Date/Time of Test: " << CtiTime::now() << endl << "Meter Address: " << address << endl << endl;
+
+    test_time.addDays(1, flag);
+
+    for( ; test_time.seconds() <  end_of_time.seconds() - 600000; test_time.addDays(1, flag))
+    {
+        if(!(outFile << test_time.asString() << ", " << test_device.getHectoWattHours(address, test_time) / 10.0 << " \tkWh\n"))
+        {
+            std::cout << "ERROR WRITING TO OUTPUT FILE";
+        }
+    }
+
+    outFile.close();
+
+}
+
+BOOST_AUTO_TEST_CASE( test_random_generator )
+{
+    ofstream outFile;
+    outFile.open("C:\\Dev\\trunk\\yukon-server-d\\bin\\randLog.txt");
+
+    double dist;
+    int chance;
+    int tally[100];
+
+    for (int i = 0; i < 100; i++ )
+    {
+        tally[i] = 0;
+    }
+
+    srand(time(NULL));
+
+    for (int i = 0; i < 100000; i++ )
+    {
+        dist = rand() / double(RAND_MAX+1);
+        chance = int(dist * 100);
+        tally[chance]++;
+    }
+
+    for (int i = 0; i < 100; i++ )
+    {
+        outFile << i << " " << tally[i] << endl;
+    }
+
+    outFile.close();
+}
+
+*/

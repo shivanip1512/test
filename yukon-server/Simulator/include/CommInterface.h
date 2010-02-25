@@ -2,9 +2,11 @@
 
 #include "types.h"
 #include "ctinexus.h"
-#include "CommsBehaviorApplicator.h"
+#include "BehaviorCollection.h"
+#include "CommsBehavior.h"
 
 #include <boost/utility.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace Cti {
 namespace Simulator {
@@ -21,16 +23,19 @@ public:
 class CommsOut : boost::noncopyable
 {
 public:
-    virtual bool write(bytes &buf) = 0;
+    virtual bool write(const bytes &buf) = 0;
 };
 
 class Comms : public CommsIn, virtual public CommsOut
 {
 protected:
-    CommsBehaviorApplicator _applicator;
+    BehaviorCollection<CommsBehavior> _behaviorCollection;
 public:
     CommsIn  &asInput()  { return *(static_cast<CommsIn *> (this)); };
     CommsOut &asOutput() { return *(static_cast<CommsOut *>(this)); };
+    virtual bool write(const bytes &buf);
+    virtual bool writeMessage(const bytes &buf)=0;
+    bool ProcessMessage(bytes &buf);
 };
 
 
@@ -52,9 +57,9 @@ public:
 
     virtual bool available(unsigned aCount);
 
-    virtual bool write(bytes &buf);
+    virtual bool writeMessage(const bytes &buf);
 
-    void setBehavior(CommsBehavior* behavior);
+    void setBehavior(std::auto_ptr<CommsBehavior> behavior);
     void clear();
 };
 
