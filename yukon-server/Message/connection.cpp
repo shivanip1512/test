@@ -244,6 +244,9 @@ void CtiConnection::InThread()
 {
     int           nRet = 0;
 
+    int              failCount = 0;
+    static const int FailCountLimit = 1000; // arbitrary limit, chosen as it is large.
+
     CtiMessage    *MsgPtr;
 
     RWCollectable *c;
@@ -316,6 +319,41 @@ void CtiConnection::InThread()
 
                 NowTime = NowTime.now();
 
+                // If we fail, we need to take care of business. If c exists, it must be deleted.
+                // If c does not exist, we are likely trying to read bad data off the stream.
+                // fail() means it should be recoverable. Do what we need and try again.
+                if( _exchange->In().fail() )
+                {
+                    _exchange->In().clear(); // resets all flags
+                    failCount++;
+
+                    string whoStr = who();
+                    if( c != rwnil )
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << NowTime << " Message fail indicator received for " << whoStr << endl;
+                        }
+                        delete c;
+                        c = rwnil;
+                    }
+
+                    // This is expected to let RW read bytes off one at a time with In >> c.
+                    // After FailCountLimit bytes we give up.
+                    if( failCount > FailCountLimit )
+                    {
+                        string whoStr = who();
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Fail limit of " << FailCountLimit << " reached " << whoStr <<", shutting down the InThread." << endl;
+                        }
+
+                        _bQuit = TRUE;
+                    }
+
+                    continue; // We deleted the incoming message, no reason to keep going
+                }
+
                 if( c == rwnil )                 // What happened here? No exception, but no message either....
                 {
                     // Assume the connection has expired....
@@ -365,19 +403,6 @@ void CtiConnection::InThread()
                 {
                     if( c != NULL )
                     {
-                        if( _exchange->In().fail() ) // If fail, c is not valid.
-                        {
-                            string whoStr = who();
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << NowTime << " Message fail indicator received for " << whoStr << endl;
-                            }
-
-                            delete c;
-                            c = NULL;
-                            continue; // We deleted the incoming message, no reason to keep going
-                        }
-
                         try
                         {
                             MsgPtr = (CtiMessage*)c;
@@ -422,6 +447,7 @@ void CtiConnection::InThread()
                             writeIncomingMessageToQueue(MsgPtr);
 
                             _preventInThreadReset = false; // It seems the conn is valid, so I can reset if needed
+                            failCount = 0;
                             //inQueue->putQueue(MsgPtr);
                         }
                         else
