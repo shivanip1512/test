@@ -44,11 +44,7 @@ public class ProgramControlHistoryRequestEndpoint {
         
         String programName = requestTemplate.evaluateAsString(programNameExpressionStr);
         Date startTime = requestTemplate.evaluateAsDate(startTimeExpressionStr);
-        Date stopTime = null;
-        String stopTimeStr = requestTemplate.evaluateAsString(stopTimeExpressionStr);
-        if (StringUtils.isNotBlank(stopTimeStr)) {
-        	stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
-        }
+        Date stopTime = requestTemplate.evaluateAsDate(stopTimeExpressionStr);
 
         // init response
         Element resp = new Element("programControlHistoryResponse", ns);
