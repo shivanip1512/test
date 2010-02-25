@@ -20,6 +20,7 @@ public interface ScheduledGroupRequestExecutionDao {
 												List<CommandRequestExecutionType> types, 
 												ScheduleGroupRequestExecutionDaoEnabledFilter enabled, 
 												ScheduleGroupRequestExecutionDaoPendingFilter pending,
+												ScheduleGroupRequestExecutionDaoOnetimeFilter onetime,
 												boolean acsending);
 			
 	public List<CommandRequestExecution> getCommandRequestExecutionsByJobId(int jobId, Date startTime, Date stopTime, boolean acsending);

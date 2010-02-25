@@ -500,7 +500,7 @@ public class HighBillController extends MultiActionController {
             optionalAttributeDefaults.put("menuSelection", "meters");
             optionalAttributeDefaults.put("viewJsp", "MENU");
             
-            String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView", true);
+            String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "extView", true);
             String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView", true);
             String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView", true);
             msgData.put("reportHtmlUrl", reportHtmlUrl);

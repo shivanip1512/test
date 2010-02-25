@@ -20,9 +20,9 @@
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.timeFrequency">Time/Frequency</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry">Retry</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.checkbox">Use Request Retry Strategy</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.retryCount">Number of times to retry failed requests.</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.stopRetryAfterHoursCount">Maximum number of hours to retry, leave blank for no time limit.</entry>
-    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.turnOffQueuingAfterRetryCount">Number of retries after which request queuing should be turned off, leave blank to always remain queued.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.queuedRetryCount">Number of queued retries.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.nonQueuedRetryCount">Number of non-queued retries.</entry>
+    <entry key="yukon.common.device.scheduledGroupRequestExecution.home.retry.maxTotalRunTimeHours">Maximum total run-time hours, leave blank for no limit.</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleState">Schedule Status</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.scheduleButton">Schedule</entry>
     <entry key="yukon.common.device.scheduledGroupRequestExecution.home.updateButton">Update</entry>
@@ -59,6 +59,7 @@
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.enabled">Enabled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.disabled">Disabled</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.excludePending">Exclude Pending</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.includeOnetime">Include One-Time</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.allWord">All</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.section">Schedules</entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.scheduleName">Name</entry>
@@ -115,9 +116,9 @@
 	     <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.retryCount">Number of times to retry failed requests.</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.stopRetryAfterHoursCount">Maximum number of hours to retry.</entry>
-    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.turnOffQueuingAfterRetryCount">Number of retries after which request queuing should be turned off.</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.queuedRetryCount">Number of queued retries</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.nonQueuedRetryCount">Number of non-queued retries.</entry>
+    <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.maxTotalRunTimeHours">Maximum total run-time hours.</entry>
     
     <!-- Misc -->
     <!-- ================================================================================================================================================= -->

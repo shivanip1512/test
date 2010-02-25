@@ -17,6 +17,7 @@
 <cti:msg var="mainDetailNumberOfOutagesOutagesText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages.outages" />
 <cti:msg var="mainDetailTimePeriodText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod" />
 <cti:msg var="mainDetailTimePeriodDaysText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod.days" />
+<cti:msg var="mainDetailEditText" key="yukon.web.modules.amr.outageProcessing.section.mainDetail.edit" />
 <cti:msg var="readOutageLogsSectionTitleText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title" />
 <cti:msg var="readOutageLogsButtonText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button" />
 <cti:msg var="readOutageLogsSectionNoteLabelText" key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.noteLabel" />
@@ -73,10 +74,7 @@
 	<tags:nameValueContainer>
 
 		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
-			<cti:url var="outageMonitorEditUrl" value="/spring/amr/outageProcessing/monitorEditor/edit">
-				<cti:param name="outageMonitorId" value="${outageMonitor.outageMonitorId}"/>
-			</cti:url>
-			<a href="${outageMonitorEditUrl}">${outageMonitor.outageMonitorName}</a>
+			${outageMonitor.outageMonitorName}
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailViolationsText}">
@@ -128,6 +126,12 @@
 		
 	</tags:nameValueContainer>
 	
+	<form id="editMonitorForm" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
+		<input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
+	</form>
+	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" width="100px"/>
+	
+	
 	</tags:sectionContainer>
 	<br>
 	<br>
@@ -154,7 +158,7 @@
 		
 			<%-- remove after read checkbox --%>
 			<span style="white-space:nowrap;">
-			<tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}"/>
+			<tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}" width="100px"/>
 			<input type="checkbox" name="removeFromOutageGroupAfterRead" checked>
 			${readOutageLogsSectionRemoveAfterReadText}
 			</span>

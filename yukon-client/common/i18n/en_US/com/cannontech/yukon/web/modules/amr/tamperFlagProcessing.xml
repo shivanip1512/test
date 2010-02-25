@@ -70,6 +70,7 @@
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup">Tamper Flag Group</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.violations">Violations</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.monitoring">Monitoring</entry>
+    <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.edit">Edit</entry>
     
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.title">Read Internal Flags</entry>
     <entry key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.button">Read Flags</entry>

@@ -27,7 +27,7 @@
 			<cti:simpleReportLinkFromNameTag 
 				parameterAttributes="${targetReportInfo[targetId]}"
 				definitionName="${targetReportInfo[targetId].definitionName}"
-				viewType="htmlView">HTML</cti:simpleReportLinkFromNameTag>
+				viewType="extView">HTML</cti:simpleReportLinkFromNameTag>
 			|
 			<cti:simpleReportLinkFromNameTag 
 				parameterAttributes="${targetReportInfo[targetId]}"

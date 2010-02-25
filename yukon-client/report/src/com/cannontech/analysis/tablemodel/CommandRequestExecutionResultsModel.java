@@ -32,7 +32,7 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     String resultsFilterType;
     
     // member variables
-    private static String title = "Command Request Exectuion Results";
+    private static String title = "Command Request Execution Results";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
     
@@ -86,14 +86,21 @@ public class CommandRequestExecutionResultsModel extends BareReportModelBase<Com
     		CommandRequestExecutionResultsModel.ModelRow row = new CommandRequestExecutionResultsModel.ModelRow();
     		row.command = result.getCommand();
     		
-    		DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(result.getErrorCode());
-    		row.status = deviceErrorDescription.getPorter();
+    		int errorCode = result.getErrorCode();
+    		if (errorCode != 0) {
+	    		DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(result.getErrorCode());
+	    		row.status = "(Err: " + errorCode + ") " + deviceErrorDescription.getPorter();
+    		} else {
+    			row.status = "Successful";
+    		}
     		
     		DisplayablePao device = deviceLookup.get(result.getDeviceId());
     		row.deviceName = device != null ? device.getName() : null;
     		
     		DisplayablePao route = deviceLookup.get(result.getRouteId());
-    		row.routeName = route != null ? route.getName() : null;
+    		row.routeName = route != null ? route.getName() : "(auto)";
+    		
+    		row.completeTime = result.getCompleteTime();
     		
     		data.add(row);
     	}

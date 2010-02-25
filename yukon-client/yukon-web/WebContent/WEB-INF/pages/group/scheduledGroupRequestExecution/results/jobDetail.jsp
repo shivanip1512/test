@@ -26,9 +26,9 @@
 <cti:msg var="deviceGroupPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.deviceGroup" />
 <cti:msg var="executionsPopupInfoText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.executions" />
 <cti:msg var="editScheduleButtonText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton" />
-<cti:msg var="retryCountText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.retryCount"/>
-<cti:msg var="stopRetryAfterHoursCountText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.stopRetryAfterHoursCount"/>
-<cti:msg var="turnOffQueuingAfterRetryCountText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.turnOffQueuingAfterRetryCount"/>
+<cti:msg var="queuedRetryCountText" key="yukon.common.device.scheduledGroupRequestExecution.home.retry.queuedRetryCount"/>
+<cti:msg var="nonQueuedRetryCountText" key="yukon.common.device.scheduledGroupRequestExecution.home.retry.nonQueuedRetryCount"/>
+<cti:msg var="maxTotalRunTimeHoursText" key="yukon.common.device.scheduledGroupRequestExecution.home.retry.maxTotalRunTimeHours"/>
     
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -110,28 +110,28 @@
 			<%-- retry setup --%>
 			<c:if test="${jobWrapper.retrySetup}">
 				<tags:nameValue name="Retry Options">
-					<tags:hideReveal title="View" showInitially="false">
 					
-						<table class="compactResultsTable">
-							<tr>
-								<td style="width:15px;">${jobWrapper.retryCount}</td>
-								<td>${retryCountText}</td>
-							</tr>
-							<c:if test="${not empty jobWrapper.stopRetryAfterHoursCount}">
-							<tr>
-								<td>${jobWrapper.stopRetryAfterHoursCount}</td>
-								<td>${stopRetryAfterHoursCountText}</td>
-							</tr>
-							</c:if>
-							<c:if test="${not empty jobWrapper.turnOffQueuingAfterRetryCount}">
-							<tr>
-								<td>${jobWrapper.turnOffQueuingAfterRetryCount}</td>
-								<td>${turnOffQueuingAfterRetryCountText}</td>
-							</tr>
-							</c:if>
-						</table>
+					<table class="compactResultsTable">
+						<c:if test="${not empty jobWrapper.queuedRetryCount}">
+						<tr>
+							<td style="width:15px;">${jobWrapper.queuedRetryCount}</td>
+							<td>${queuedRetryCountText}</td>
+						</tr>
+						</c:if>
+						<c:if test="${not empty jobWrapper.nonQueuedRetryCount}">
+						<tr>
+							<td>${jobWrapper.nonQueuedRetryCount}</td>
+							<td>${nonQueuedRetryCountText}</td>
+						</tr>
+						<c:if test="${not empty jobWrapper.stopRetryAfterHoursCount}">
+						<tr>
+							<td>${jobWrapper.stopRetryAfterHoursCount}</td>
+							<td>${maxTotalRunTimeHoursText}</td>
+						</tr>
+						</c:if>
+						</c:if>
+					</table>
 					
-					</tags:hideReveal>
 				</tags:nameValue>
 			</c:if>
 			

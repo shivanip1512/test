@@ -108,6 +108,7 @@
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.numberOfOutages.outages">Outages</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod">Number of Days</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.timePeriod.days">Days</entry>
+    <entry key="yukon.web.modules.amr.outageProcessing.section.mainDetail.edit">Edit</entry>
     
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.title">Read Outage Logs</entry>
     <entry key="yukon.web.modules.amr.outageProcessing.section.readOutageLogs.button">Read Logs</entry>

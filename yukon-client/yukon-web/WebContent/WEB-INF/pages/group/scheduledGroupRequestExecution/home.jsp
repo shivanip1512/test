@@ -122,7 +122,7 @@
         		 		</tags:nameValue>
         		 		
         		 		<tags:nameValue name="${retryLabel}">
-        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" retryCount="${retryCount}" stopRetryAfterHoursCount="${stopRetryAfterHoursCount}" turnOffQueuingAfterRetryCount="${turnOffQueuingAfterRetryCount}" />
+        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
         		 		</tags:nameValue>
         		 		
         		 		<c:if test="${editMode}">
@@ -208,7 +208,7 @@
         		 		</tags:nameValue>
         		 		
         		 		<tags:nameValue name="${retryLabel}">
-        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" retryCount="${retryCount}" stopRetryAfterHoursCount="${stopRetryAfterHoursCount}" turnOffQueuingAfterRetryCount="${turnOffQueuingAfterRetryCount}" />
+        		 			<tags:requestRetryOptions retryCheckbox="${retryCheckbox}" queuedRetryCount="${queuedRetryCount}" nonQueuedRetryCount="${nonQueuedRetryCount}" maxTotalRunTimeHours="${maxTotalRunTimeHours}" />
         		 		</tags:nameValue>
         		 		
         		 		<c:if test="${editMode}">

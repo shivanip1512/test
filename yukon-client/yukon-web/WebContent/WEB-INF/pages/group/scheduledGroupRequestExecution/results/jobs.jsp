@@ -15,6 +15,7 @@
 <cti:msg var="filterDisabledText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.disabled" />
 <cti:msg var="filterAllWordText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.allWord" />
 <cti:msg var="filterExcludePendingText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.excludePending" />
+<cti:msg var="filterIncludeOnetimeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.filter.includeOnetime" />
 <cti:msg var="executionsSectionText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.section" />
 <cti:msg var="scheduleNameText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.scheduleName" />
 <cti:msg var="executionsTypeText" key="yukon.web.modules.amr.scheduledGroupRequests.results.jobs.executions.tableHeader.type" />
@@ -84,6 +85,10 @@
 		    		<input type="checkbox" name="excludePendingFilter" <c:if test="${excludePendingFilter == 'EXECUTED_ONLY'}">checked</c:if>>
 		    	</tags:nameValue>
 		    	
+		    	<tags:nameValue name="${filterIncludeOnetimeText}">
+		    		<input type="checkbox" name="includeOnetimeFilter" <c:if test="${includeOnetimeFilter == 'INCLUDE_ONETIME'}">checked</c:if>>
+		    	</tags:nameValue>
+		    	
 		    	<tags:nameValue name="${filterTypeText}">
 		    		<select name="typeFilter">
 						<option value="ANY">${filterTypeAnyText}</option>
@@ -151,17 +156,20 @@
 				<td class="${tdClass}">${jobWrapper.scheduleDescription}</td>
 				<td class="${tdClass}" style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${jobWrapper.lastRun}" nullText="N/A"/></td>
 				<td class="${tdClass}" style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${jobWrapper.nextRun}" nullText="N/A"/></td>
-				<td class="${tdClass}" style="text-align:center;"">
+				<td class="${tdClass}">
 					<c:choose>
-						<c:when test="${jobWrapper.job.disabled}">
-							${filterDisabledText}
+						<c:when test="${jobWrapper.jobStatus == 'RUNNING'}">
+							<c:set var="statusSpanClass" value="okGreen"/>
 						</c:when>
 						<c:otherwise>
-							${filterEnabledText}
+							<c:set var="statusSpanClass" value=""/>
 						</c:otherwise>
 					</c:choose>
+					<span class="${statusSpanClass}">
+						<cti:msg key="${jobWrapper.jobStatus.formatKey}"/>
+					</span>
 				</td>
-				<td class="${tdClass}" style="text-align:center;">${jobWrapper.job.userContext.yukonUser.username}</td>
+				<td class="${tdClass}">${jobWrapper.job.userContext.yukonUser.username}</td>
 				
 			</tr>
 		

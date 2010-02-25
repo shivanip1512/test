@@ -57,13 +57,12 @@
 		
 		<tr>
 			
+			<cti:url var="viewOutageProcessingUrl" value="/spring/amr/outageProcessing/process/process">
+				<cti:param name="outageMonitorId" value="${monitorId}"/>
+			</cti:url>
+				
 			<%-- action icons --%>
 			<td>
-				
-				<%-- monitor widget --%>
-				<cti:url var="viewOutageProcessingUrl" value="/spring/amr/outageProcessing/process/process">
-					<cti:param name="outageMonitorId" value="${monitorId}"/>
-				</cti:url>
 				
 				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
 					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
@@ -72,12 +71,8 @@
 			</td>
 			
 			<%-- monitor name --%>
-			<cti:url var="viewOutageMonitorEditorUrl" value="/spring/amr/outageProcessing/monitorEditor/edit">
-				<cti:param name="outageMonitorId" value="${monitorId}"/>
-			</cti:url>
-				
 			<td class="${tdClass}">
-				<a href="${viewOutageMonitorEditorUrl}" title="${editActionTitleText}">${monitorName}</a>
+				<a href="${viewOutageProcessingUrl}" title="${outageProcessingActionTitleText} (${monitorName})">${monitorName}</a>
 			</td>
 			
 			<%-- violations count --%>

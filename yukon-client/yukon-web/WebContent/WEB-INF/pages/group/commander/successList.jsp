@@ -10,7 +10,7 @@
         <br>
         <div style="font-size:11px;">
             Tabular Data: 
-            <cti:simpleReportLinkFromNameTag definitionName="groupCommanderSuccessResultDefinition" viewType="htmlView" resultKey="${result.key}">HTML</cti:simpleReportLinkFromNameTag>
+            <cti:simpleReportLinkFromNameTag definitionName="groupCommanderSuccessResultDefinition" viewType="extView" resultKey="${result.key}">HTML</cti:simpleReportLinkFromNameTag>
             |
             <cti:simpleReportLinkFromNameTag definitionName="groupCommanderSuccessResultDefinition" viewType="csvView" resultKey="${result.key}">CSV</cti:simpleReportLinkFromNameTag>
             |

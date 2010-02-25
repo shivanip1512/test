@@ -78,39 +78,29 @@
 
 	<c:forEach var="jobWrapper" items="${jobWrappers}">
 	
+		<cti:url var="viewScheduleDetailsUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail" >
+			<cti:param name="jobId" value="${jobWrapper.job.id}"/>
+		</cti:url>
+		
 		<tr id="tr_${jobWrapper.job.id}">
 			
-			<%-- actions --%>	
+			<%-- actions --%>
 			<td>
 			
 				<cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
-			
-				<%-- view details --%>
-				<cti:url var="viewScheduleDetailsUrl" value="/spring/group/scheduledGroupRequestExecutionResults/detail" >
-					<cti:param name="jobId" value="${jobWrapper.job.id}"/>
-				</cti:url>
 				
 				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${jobWrapper.name})" style="text-decoration:none;" >
 					<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
 				</a>
-					
 			</td>
 			
 			<%-- name --%>	
 			<td style="white-space:nowrap;">
-				<c:choose>
-					<c:when test="${canManage}">
-						<cti:url var="editScheduleUrl" value="/spring/group/scheduledGroupRequestExecution/home">
-							<cti:param name="editJobId" value="${jobWrapper.job.id}"/>
-						</cti:url>
-						<a href="${editScheduleUrl}" title="${editScheduleTitleText}">
-							${jobWrapper.name}
-						</a>
-					</c:when>
-					<c:otherwise>
-						${jobWrapper.name}
-					</c:otherwise>
-				</c:choose>
+			
+				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${jobWrapper.name})" >
+					${jobWrapper.name}
+				</a>
+				
 			</td>
 			
 			<%-- schedule description --%>
@@ -132,7 +122,7 @@
 					<tags:widgetActionRefreshImage method="toggleEnabled" imgSrc="${disabledImg}" imgSrcHover="${disabledImg}" jobId="${jobWrapper.job.id}" title="${enableText} (${jobWrapper.name})"/>
 				</td>
 			</c:if>
-				
+					
 		</tr>
 	
 	</c:forEach>

@@ -32,22 +32,72 @@ public class ReportsController extends MultiActionController  {
     private SimpleReportService simpleReportService = null;
     private SimpleReportOutputter simpleReportOutputter = null;
     
-    /**
-     * htmlView - export report data as an HTML table
-     * 
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
+    
     public ModelAndView htmlView(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	
+    	// get report definition, model
+        //-----------------------------------------------------------------------------------------
+        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, true); // note we do actually load data
+        
+        // BASE
+    	ModelAndView mav = baseHtmlExtView(reportDefinition, reportModel, request, response);
+    	
+        // data
+        //-----------------------------------------------------------------------------------------
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        List<List<String>> data = simpleReportService.getFormattedData(reportDefinition, reportModel, userContext);
+        
+        mav.addObject("pureHtml", true);
+        mav.addObject("data", data);
+        
+    	return mav;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ModelAndView extView(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	
+    	// get report definition, model
+        //-----------------------------------------------------------------------------------------
+        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
+        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
+        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, false); // note we don't actually load data, that is the job of jsonData()
+        
+        // BASE
+    	ModelAndView mav = baseHtmlExtView(reportDefinition, reportModel, request, response);
+    	
+    	// more optional values
+        //-----------------------------------------------------------------------------------------
+        boolean showLoadMask = ServletRequestUtils.getBooleanParameter(request, "showLoadMask", true);
+        int refreshRate = ServletRequestUtils.getIntParameter(request, "refreshRate", 0);
+        int width = ServletRequestUtils.getIntParameter(request, "width", 0);
+        int height = ServletRequestUtils.getIntParameter(request, "height", 350);
+        mav.addObject("showLoadMask", showLoadMask);
+        mav.addObject("refreshRate", refreshRate);
+        mav.addObject("width", width);
+        mav.addObject("height", height);
+        
+        // jsonData URL
+        //-----------------------------------------------------------------------------------------
+        Map<String, String> inputMap = (Map<String, String>)mav.getModelMap().get("inputMap");
+        String queryString = ServletUtil.buildSafeQueryStringFromMap(inputMap, true);
+        String dataUrl = "/spring/reports/simple/jsonData?" + queryString;
+        dataUrl = ServletUtil.createSafeUrl(request, dataUrl);
+        mav.addObject("dataUrl", dataUrl);
+        
+    	return mav;
+    }
+    
+    /**
+     * Prepares the mav with basic objects that both HTML and EXT report view need.
+     */
+    public ModelAndView baseHtmlExtView(YukonReportDefinition<BareReportModel> reportDefinition, BareReportModel reportModel, HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
         String viewJsp = ServletRequestUtils.getRequiredStringParameter(request, "viewJsp");
         String jspPath = SimpleReportViewJsp.valueOf(viewJsp).getJspPath();
         ModelAndView mav = new ModelAndView(jspPath);
-        
-        String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
@@ -56,25 +106,10 @@ public class ReportsController extends MultiActionController  {
         String module = ServletRequestUtils.getStringParameter(request, "module", "blank");
         Boolean showMenu = ServletRequestUtils.getBooleanParameter(request, "showMenu", false);
         String menuSelection = ServletRequestUtils.getStringParameter(request, "menuSelection", "");
-        boolean showLoadMask = ServletRequestUtils.getBooleanParameter(request, "showLoadMask", true);
-        int refreshRate = ServletRequestUtils.getIntParameter(request, "refreshRate", 0);
-        int width = ServletRequestUtils.getIntParameter(request, "width", 0);
-        int height = ServletRequestUtils.getIntParameter(request, "height", 350);
         
         mav.addObject("module", module);
         mav.addObject("showMenu", showMenu);
         mav.addObject("menuSelection", menuSelection);
-        mav.addObject("showLoadMask", showLoadMask);
-        mav.addObject("refreshRate", refreshRate);
-        mav.addObject("width", width);
-        mav.addObject("height", height);
-        
-        
-        // get report definition, model
-        //-----------------------------------------------------------------------------------------
-        Map<String, String> parameterMap = ServletUtil.getParameterMap(request);
-        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
-        BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap, false);
         
         // title
         //-----------------------------------------------------------------------------------------
@@ -88,11 +123,10 @@ public class ReportsController extends MultiActionController  {
         
         mav.addObject("columnInfo", columnInfo);
         
-        
         // include definition name and model in order to create links to other styles of the same report
         //-----------------------------------------------------------------------------------------
         mav.addObject("reportModel",reportModel);
-        mav.addObject("definitionName", definitionName);
+        mav.addObject("definitionName", reportDefinition.getName());
 
 
         // include random info map
@@ -106,13 +140,8 @@ public class ReportsController extends MultiActionController  {
         // include input values map
         //-----------------------------------------------------------------------------------------
         Map<String, String> inputMap = InputUtil.extractProperties(reportDefinition.getInputs(), reportModel);
+        inputMap.put("def", reportDefinition.getName());
         mav.addObject("inputMap", inputMap);
-        
-        inputMap.put("def", definitionName);
-        String queryString = ServletUtil.buildSafeQueryStringFromMap(inputMap, true);
-        String dataUrl = "/spring/reports/simple/jsonData?" + queryString;
-        dataUrl = ServletUtil.createSafeUrl(request, dataUrl);
-        mav.addObject("dataUrl", dataUrl);
         
         return mav;
     }

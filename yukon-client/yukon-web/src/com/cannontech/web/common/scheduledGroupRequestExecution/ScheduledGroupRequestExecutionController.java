@@ -83,9 +83,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
 		String cronExpression = ServletRequestUtils.getStringParameter(request, "cronExpression", null);
 		boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
-		String retryCount = ServletRequestUtils.getStringParameter(request, "retryCount", null);
-		String stopRetryAfterHoursCount = ServletRequestUtils.getStringParameter(request, "stopRetryAfterHoursCount", null);
-		String turnOffQueuingAfterRetryCount = ServletRequestUtils.getStringParameter(request, "turnOffQueuingAfterRetryCount", null);
+		String queuedRetryCount = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+		String nonQueuedRetryCount = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+		String maxTotalRunTimeHours = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
 		
 		// edit existing job
@@ -132,16 +132,18 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			if (cronExpression == null) {
 				cronExpression = existingJob.getCronString();
 			}
-			if (retryCount == null && existingTask.getRetryCount() > 0) {
-			    retryCount = String.valueOf(existingTask.getRetryCount());
+			if (queuedRetryCount == null && existingTask.getTurnOffQueuingAfterRetryCount() > 0) {
+				queuedRetryCount = String.valueOf(existingTask.getTurnOffQueuingAfterRetryCount());
 			}
-			if (stopRetryAfterHoursCount == null && existingTask.getStopRetryAfterHoursCount() != null && existingTask.getStopRetryAfterHoursCount() > 0) {
-			    stopRetryAfterHoursCount = String.valueOf(existingTask.getStopRetryAfterHoursCount());
+			if (nonQueuedRetryCount == null 
+					&& existingTask.getTurnOffQueuingAfterRetryCount() != null
+					&& (existingTask.getRetryCount() - existingTask.getTurnOffQueuingAfterRetryCount()) > 0) {
+				nonQueuedRetryCount = String.valueOf(existingTask.getRetryCount() - existingTask.getTurnOffQueuingAfterRetryCount());
 			}
-			if (turnOffQueuingAfterRetryCount == null && existingTask.getTurnOffQueuingAfterRetryCount() != null && existingTask.getTurnOffQueuingAfterRetryCount() > 0) {
-			    turnOffQueuingAfterRetryCount = String.valueOf(existingTask.getTurnOffQueuingAfterRetryCount());
+			if (maxTotalRunTimeHours == null && existingTask.getStopRetryAfterHoursCount() != null && existingTask.getStopRetryAfterHoursCount() > 0) {
+				maxTotalRunTimeHours = String.valueOf(existingTask.getStopRetryAfterHoursCount());
 			}
-			if (!StringUtils.isBlank(retryCount) || !StringUtils.isBlank(stopRetryAfterHoursCount) || !StringUtils.isBlank(turnOffQueuingAfterRetryCount)) {
+			if (!StringUtils.isBlank(queuedRetryCount) || !StringUtils.isBlank(nonQueuedRetryCount) || !StringUtils.isBlank(maxTotalRunTimeHours)) {
 			    retryCheckbox = true;
 			}
 			if (deviceGroupName == null) {
@@ -166,9 +168,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("scheduleName", scheduleName);
 		mav.addObject("cronExpression", cronExpression);
 		mav.addObject("retryCheckbox", retryCheckbox);
-		mav.addObject("retryCount", retryCount);
-		mav.addObject("stopRetryAfterHoursCount", stopRetryAfterHoursCount);
-		mav.addObject("turnOffQueuingAfterRetryCount", turnOffQueuingAfterRetryCount);
+		mav.addObject("queuedRetryCount", queuedRetryCount);
+		mav.addObject("nonQueuedRetryCount", nonQueuedRetryCount);
+		mav.addObject("maxTotalRunTimeHours", maxTotalRunTimeHours);
 		mav.addObject("deviceGroupName", deviceGroupName);
 		
 		// attributes
@@ -210,11 +212,11 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
 			boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
-			String retryCountStr = ServletRequestUtils.getStringParameter(request, "retryCount", null);
-            String stopRetryAfterHoursCountStr = ServletRequestUtils.getStringParameter(request, "stopRetryAfterHoursCount", null);
-            String turnOffQueuingAfterRetryCountStr = ServletRequestUtils.getStringParameter(request, "turnOffQueuingAfterRetryCount", null);
+			String queuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 			return makeErrorMav("Invalid Schedule Time.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
-			                    retryCheckbox, retryCountStr, stopRetryAfterHoursCountStr, turnOffQueuingAfterRetryCountStr);
+			                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
 		}
 		
 		// validate device group
@@ -226,11 +228,11 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
             String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
             String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
             boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
-            String retryCountStr = ServletRequestUtils.getStringParameter(request, "retryCount", null);
-            String stopRetryAfterHoursCountStr = ServletRequestUtils.getStringParameter(request, "stopRetryAfterHoursCount", null);
-            String turnOffQueuingAfterRetryCountStr = ServletRequestUtils.getStringParameter(request, "turnOffQueuingAfterRetryCount", null);
+            String queuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
             return makeErrorMav("No Device Group Selected.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, null,
-                                retryCheckbox, retryCountStr, stopRetryAfterHoursCountStr, turnOffQueuingAfterRetryCountStr);
+                                retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
         }
 		
 		// validate schedule name
@@ -241,71 +243,79 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
 			String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
 			boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
-            String retryCountStr = ServletRequestUtils.getStringParameter(request, "retryCount", null);
-            String stopRetryAfterHoursCountStr = ServletRequestUtils.getStringParameter(request, "stopRetryAfterHoursCount", null);
-            String turnOffQueuingAfterRetryCountStr = ServletRequestUtils.getStringParameter(request, "turnOffQueuingAfterRetryCount", null);
+			String queuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 			return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
-			                    retryCheckbox, retryCountStr, stopRetryAfterHoursCountStr, turnOffQueuingAfterRetryCountStr);
+			                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
 		}
 		
 		// validate retry options
 		String retryErrorReason = null;
 		
 		boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
-		int retryCount = 0;
-		Integer stopRetryAfterHoursCount = null;
-		Integer turnOffQueuingAfterRetryCount = null;
+		Integer queuedRetryCount = null;
+		Integer nonQueuedRetryCount = null;
+		Integer maxTotalRunTimeHours = null;
 		
 		if (retryCheckbox) {
 		    
-		    String retryCountStr = ServletRequestUtils.getStringParameter(request, "retryCount", null);
-	        String stopRetryAfterHoursCountStr = ServletRequestUtils.getStringParameter(request, "stopRetryAfterHoursCount", null);
-	        String turnOffQueuingAfterRetryCountStr = ServletRequestUtils.getStringParameter(request, "turnOffQueuingAfterRetryCount", null);
+			String queuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+			String nonQueuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+			String maxTotalRunTimeHoursStr = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
 	        
 	        // parse retry options
-	        if (!StringUtils.isBlank(retryCountStr)) {
+	        if (!StringUtils.isBlank(queuedRetryCountStr)) {
     	        try {
-	                retryCount = Integer.valueOf(retryCountStr);
+    	        	queuedRetryCount = Integer.valueOf(queuedRetryCountStr);
     	        } catch (NumberFormatException e) {
     	            if (retryErrorReason == null) {
-    	                retryErrorReason = "Invalid value: " + retryCountStr;
+    	                retryErrorReason = "Invalid value: " + queuedRetryCountStr;
     	            }
     	        }
 	        }
-	        if (!StringUtils.isBlank(stopRetryAfterHoursCountStr)) {
+	        if (!StringUtils.isBlank(nonQueuedRetryCountStr)) {
     	        try {
-	                stopRetryAfterHoursCount = Integer.valueOf(stopRetryAfterHoursCountStr);
+    	        	nonQueuedRetryCount = Integer.valueOf(nonQueuedRetryCountStr);
                 } catch (NumberFormatException e) {
                     if (retryErrorReason == null) {
-                        retryErrorReason = "Invalid value: " + stopRetryAfterHoursCountStr;
+                        retryErrorReason = "Invalid value: " + nonQueuedRetryCountStr;
                     }
                 }
 	        }
-	        if (!StringUtils.isBlank(turnOffQueuingAfterRetryCountStr)) {
+	        if (!StringUtils.isBlank(maxTotalRunTimeHoursStr)) {
                 try {
-                    turnOffQueuingAfterRetryCount = Integer.valueOf(turnOffQueuingAfterRetryCountStr);
+                	maxTotalRunTimeHours = Integer.valueOf(maxTotalRunTimeHoursStr);
                 } catch (NumberFormatException e) {
                     if (retryErrorReason == null) {
-                        retryErrorReason = "Invalid value: " + turnOffQueuingAfterRetryCountStr;
+                        retryErrorReason = "Invalid value: " + maxTotalRunTimeHoursStr;
                     }
                 }
 	        }
             
             // additional retry options validation
-            if (retryErrorReason == null && retryCount < 1 || retryCount > 10) {
-                retryErrorReason = "Retry count must be between 1-10.";
+	        if (retryErrorReason == null && queuedRetryCount != null && queuedRetryCount < 0) {
+	        	retryErrorReason = "Invalid value: " + queuedRetryCountStr;
             }
-            
-            if (retryErrorReason == null && retryCount < 1 && stopRetryAfterHoursCount != null && stopRetryAfterHoursCount > 0) {
-                retryErrorReason = "Retry count must have a value of at least 1 for maximum number of hours to retry to have an effect.";
+	        if (retryErrorReason == null && nonQueuedRetryCount != null && nonQueuedRetryCount < 0) {
+	        	retryErrorReason = "Invalid value: " + nonQueuedRetryCountStr;
+	        }
+	        
+	        
+	        int totalRetryCount = 0;
+	        if (queuedRetryCount != null) {
+	        	totalRetryCount += queuedRetryCount;
+	        }
+	        if (nonQueuedRetryCount != null) {
+	        	totalRetryCount += nonQueuedRetryCount;
+	        }
+	        
+	        
+            if (retryErrorReason == null && totalRetryCount < 1 || totalRetryCount > 10) {
+                retryErrorReason = "Total retry count must be between 1-10.";
             }
-            
-            if (retryErrorReason == null && retryCount < 1 && turnOffQueuingAfterRetryCount != null && turnOffQueuingAfterRetryCount > 0) {
-                retryErrorReason = "Retry count must have a value of at least 1 for number of retries after which request queuing should be turned off to have an effect.";
-            }
-            
-            if (retryErrorReason == null && turnOffQueuingAfterRetryCount != null && turnOffQueuingAfterRetryCount >= 0 && turnOffQueuingAfterRetryCount > retryCount) {
-                retryErrorReason = "Number of retries after which request queuing should be turned off must be greater than or equal to the retry count.";
+            if (retryErrorReason == null && maxTotalRunTimeHours != null && maxTotalRunTimeHours < 1) {
+            	retryErrorReason = "Maximum total run-time hours must be at least 1.";
             }
             
             if (retryErrorReason != null) {
@@ -314,11 +324,19 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
                 String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
                 String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
                 return makeErrorMav(retryErrorReason, requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
-                                    retryCheckbox, retryCountStr, stopRetryAfterHoursCountStr, turnOffQueuingAfterRetryCountStr);
+                                    retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr);
             }
 		}
         
-        
+		// bridge UI parameters with actual retry back end
+        // calculate retryCount, stopRetryAfterHoursCount, and turnOffQueuingAfterRetryCount 
+		// in terms of queuedRetryCount, maxTotalRunTimeHours, and nonQueuedRetryCount
+		queuedRetryCount = queuedRetryCount == null ? 0 : queuedRetryCount;
+		nonQueuedRetryCount = nonQueuedRetryCount == null ? 0 : nonQueuedRetryCount;
+		
+		int retryCount = queuedRetryCount + nonQueuedRetryCount;
+		Integer stopRetryAfterHoursCount = maxTotalRunTimeHours;
+		Integer turnOffQueuingAfterRetryCount = queuedRetryCount;
 		
 		// edit job
 		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
@@ -421,10 +439,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
         
 		return mav;
 	}
-	
+
 	// ERROR MAV
 	private ModelAndView makeErrorMav(String errorMsg, CommandRequestExecutionType requestType, String scheduleName, String cronExpression, String selectedAttributeStrs, String commandSelectValue, String commandString, String deviceGroupName,
-	                                  boolean retryCheckbox, String retryCountStr, String stopRetryAfterHoursCountStr, String turnOffQueuingAfterRetryCountStr) {
+	                                  boolean retryCheckbox, String queuedRetryCountStr, String nonQueuedRetryCountStr, String maxTotalRunTimeHoursStr) {
 		
 		ModelAndView mav = new ModelAndView("redirect:home");
 		mav.addObject("errorMsg", errorMsg);
@@ -435,9 +453,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("scheduleName", scheduleName);
 		mav.addObject("cronExpression", cronExpression);
 		mav.addObject("retryCheckbox", retryCheckbox);
-        mav.addObject("retryCount", retryCountStr);
-        mav.addObject("stopRetryAfterHoursCount", stopRetryAfterHoursCountStr);
-        mav.addObject("turnOffQueuingAfterRetryCount", turnOffQueuingAfterRetryCountStr);
+        mav.addObject("queuedRetryCount", queuedRetryCountStr);
+        mav.addObject("nonQueuedRetryCount", nonQueuedRetryCountStr);
+        mav.addObject("maxTotalRunTimeHours", maxTotalRunTimeHoursStr);
         mav.addObject("deviceGroupName", deviceGroupName);
 		
 		return mav;

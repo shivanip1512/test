@@ -117,6 +117,10 @@ public class CommandRequestRetryExecutor<T> {
 
         @Override
         public void complete() {
+        	
+        	int thisRetryNumber = (initialRetryCount - retryCount);
+        	int nextRetryNumber = thisRetryNumber + 1;
+        	log.debug("Completed request. initialRetryCount = " + initialRetryCount + ", retryNumber = " + thisRetryNumber + ", nextRetryNumber = " + nextRetryNumber);
             
             // no more retry OR time up OR no more failures
             // ok to call complete() on delegate callback
@@ -144,7 +148,8 @@ public class CommandRequestRetryExecutor<T> {
             // start new execution of failed commands with reduced retry count, same context
             log.debug("Running another retry executor after " + retryDescription + " for " +  failedCommands.size() + " failed requests. contextId= " + executionTemplate.getContextId().getId() + ". ");
             
-            boolean turnOffQueuing = turnOffQueuingAfterRetryCount != null &&  turnOffQueuingAfterRetryCount > retryCount;
+            // turnOffQueuing?
+            boolean turnOffQueuing = turnOffQueuingAfterRetryCount != null && thisRetryNumber >= turnOffQueuingAfterRetryCount;
             if (turnOffQueuing) {
                 log.debug("Retry executor will be executed with 'noqueue' after " + retryDescription + ". turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount + " contextId= " + executionTemplate.getContextId().getId() + ". ");
             }

@@ -274,7 +274,7 @@
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
                 |
                 <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${preChartStartDate}" stopDate="${preChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
                 |
@@ -331,7 +331,7 @@
                 <%-- daily usage links --%>
                 <br>
                 <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
-                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="extView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}">HTML</cti:simpleReportLinkFromNameTag>
                 |
                 <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="meters" pointId="${pointId}" startDate="${postChartStartDate}" stopDate="${postChartStopDate}">CSV</cti:simpleReportLinkFromNameTag>
                 |

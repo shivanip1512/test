@@ -19,7 +19,7 @@
 
     <cti:simpleReportUrlFromNameTag var="bodyUrl"
                                     htmlOutput="true"
-                                    viewType="htmlView"
+                                    viewType="extView"
                                     viewJsp="BODY"
                                     definitionName="deviceGroupDefinition"
                                     deviceGroup="${deviceGroup}" />

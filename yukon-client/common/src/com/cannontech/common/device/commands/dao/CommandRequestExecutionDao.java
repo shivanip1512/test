@@ -3,6 +3,7 @@ package com.cannontech.common.device.commands.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 
@@ -11,6 +12,8 @@ public interface CommandRequestExecutionDao {
 	public void saveOrUpdate(CommandRequestExecution commandRequestExecution);
 	
 	public CommandRequestExecution getById(int commandRequestExecutionId);
+	
+	public List<CommandRequestExecution> getAllByStatus(CommandRequestExecutionStatus commandRequestExecutionStatus);
 	
 	public int getRequestCountByCreId(int commandRequestExecutionId);
 	

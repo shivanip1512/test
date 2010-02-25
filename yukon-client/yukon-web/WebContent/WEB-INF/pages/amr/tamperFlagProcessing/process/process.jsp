@@ -12,6 +12,7 @@
 <cti:msg var="mainDetailTamperFlagGroupText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.tamperFlagGroup" />
 <cti:msg var="mainDetailViolationsText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.violations" />
 <cti:msg var="mainDetailMonitoringText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.monitoring" />
+<cti:msg var="mainDetailEditText" key="yukon.web.modules.amr.tamperFlagProcessing.section.mainDetail.edit" />
 <cti:msg var="readInternalFlagsSectionTitleText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.title" />
 <cti:msg var="readInternalFlagsButtonText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.button" />
 <cti:msg var="readOkText" key="yukon.web.modules.amr.tamperFlagProcessing.section.readInternalFlags.readOk" />
@@ -75,10 +76,7 @@
 	<tags:nameValueContainer>
 
 		<tags:nameValue name="${mainDetailNameText}" nameColumnWidth="250px">
-			<cti:url var="tamperFlagMonitorEditUrl" value="/spring/amr/tamperFlagProcessing/edit">
-				<cti:param name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}"/>
-			</cti:url>
-			<a href="${tamperFlagMonitorEditUrl}">${tamperFlagMonitor.tamperFlagMonitorName}</a>
+			${tamperFlagMonitor.tamperFlagMonitorName}
 		</tags:nameValue>
 		
 		<tags:nameValue name="${mainDetailViolationsText}">
@@ -124,6 +122,11 @@
 		
 	</tags:nameValueContainer>
 	
+	<form id="editMonitorForm" action="/spring/amr/tamperFlagProcessing/edit" method="get">
+		<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
+	</form>
+	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" width="100px"/>
+	
 	</tags:sectionContainer>
 	<br>
 	<br>
@@ -155,7 +158,7 @@
 	    	
 	    	<%-- read internal flags button --%>
 	    	<span style="white-space:nowrap;">
-			<tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}"/>
+			<tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}" width="100px"/>
 			
 			<%-- read ok --%>
 	    	<c:if test="${param.readOk}">
@@ -238,7 +241,7 @@
 	    	<br>
 	    	
 	    	<%-- reset internal flags button --%>
-			<tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}"/>
+			<tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}" width="100px"/>
 			
 			<%-- reset ok --%>
 	    	<c:if test="${param.resetOk}">

@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.commandRequestExecution.results.list.pageTitle" />
@@ -12,9 +13,14 @@
 <cti:msg var="filterClearText" key="yukon.web.modules.amr.commandRequestExecution.results.list.filter.clear" />
 <cti:msg var="executionsSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.section" />
 <cti:msg var="executionsTypeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.type" />
+<cti:msg var="executionsStatusText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.status" />
 <cti:msg var="executionsStartTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.startTime" />
 <cti:msg var="executionsStopTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.stopTime" />
+<cti:msg var="successCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.successCount" />
+<cti:msg var="failCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.failCount" />
+<cti:msg var="totalCountText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.totalCount" />
 <cti:msg var="executionsUserText" key="yukon.web.modules.amr.commandRequestExecution.results.list.executions.tableHeader.user" />
+<cti:msg var="noExecutionsText" key="yukon.web.modules.amr.commandRequestExecution.results.list.noExecutions" />
     
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -41,6 +47,20 @@
     
     <h2>${pageTitle}</h2>
     <br>
+    
+    <c:set var="singleJob" value="false"/>
+    <c:if test="${jobId > 0}">
+    	<c:set var="singleJob" value="true"/>
+    </c:if>
+    
+    <c:if test="${singleJob}">
+    	<tags:nameValueContainer>
+			<tags:nameValue name="${executionsTypeText}" nameColumnWidth="60px">
+				${singleJobType}
+			</tags:nameValue>    	
+    	</tags:nameValueContainer>
+    	<br>
+    </c:if>
     
 		
 	<%-- FILTER POPUP --%>
@@ -70,7 +90,7 @@
 					<tags:dateInputCalendar fieldName="toDate" fieldValue="${toDateStr}"/>
 				</tags:nameValue>
 				
-				<c:if test="${empty jobId || jobId == 0}">
+				<c:if test="${!singleJob}">
 				
 					<tags:nameValue name="${filterTypeText}">
 						<select name="typeFilter">
@@ -103,24 +123,61 @@
 	<table id="cresTable" class="resultsTable activeResultsTable">
 	
 		<tr>
-			<th>${executionsTypeText}</th>
+			<c:if test="${!singleJob}">
+				<th>${executionsTypeText}</th>
+			</c:if>
 			<th>${executionsStartTimeText}</th>
 			<th>${executionsStopTimeText}</th>
+			<th>${successCountText}</th>
+			<th>${failCountText}</th>
+			<th>${totalCountText}</th>
+			<th>${executionsStatusText}</th>
 			<th>${executionsUserText}</th>
 		</tr>
+		
+		<c:if test="${fn:length(creWrappers) <= 0}">
+			<c:set var="colCount" value="7"/>
+			<c:if test="${!singleJob}">
+				<c:set var="colCount" value="8"/>
+			</c:if>
+			<tr>
+				<td colspan="${colCount}" style="text-align:center;" class="subtleGray">${noExecutionsText}</td>
+			</tr>
+		</c:if>
 	
-		<c:forEach var="cre" items="${cres}" varStatus="status">
+		<c:forEach var="creWrapper" items="${creWrappers}" varStatus="status">
 		
 			<tr class="<tags:alternateRow odd="" even="altRow"/>" 
-				onclick="forwardToCreDetail(this, ${cre.id})" 
+				onclick="forwardToCreDetail(this, ${creWrapper.cre.id})" 
 				onmouseover="activeResultsTable_highLightRow(this)" 
 				onmouseout="activeResultsTable_unHighLightRow(this)"
-				title="${cre.commandRequestExecutionType.description} ID: ${cre.id}">
+				title="${creWrapper.cre.commandRequestExecutionType.description} ID: ${creWrapper.cre.id}">
 				
-				<td>${cre.commandRequestExecutionType.shortName}</td>
-				<td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${cre.startTime}"/></td>
-				<td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${cre.stopTime}" nullText="In Progress"/></td>
-				<td>${cre.userName}</td>
+				<c:if test="${!singleJob}">
+					<td>${creWrapper.cre.commandRequestExecutionType.shortName}</td>
+				</c:if>
+				<td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.startTime}"/></td>
+				<td style="white-space:nowrap;"><cti:formatDate type="DATEHM" value="${creWrapper.cre.stopTime}" nullText="N/A"/></td>
+				<td>${creWrapper.successCount}</td>
+				<td>${creWrapper.failCount}</td>
+				<td>${creWrapper.totalCount}</td>
+				<td style="white-space:nowrap;">
+					<c:choose>
+						<c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'FAILED'}">
+							<c:set var="statusSpanClass" value="errorRed"/>
+						</c:when>
+						<c:when test="${creWrapper.cre.commandRequestExecutionStatus == 'IN_PROGRESS'}">
+							<c:set var="statusSpanClass" value="okGreen"/>
+						</c:when>
+						<c:otherwise>
+							<c:set var="statusSpanClass" value=""/>
+						</c:otherwise>
+					</c:choose>
+					<span class="${statusSpanClass}">
+						<cti:msg key="${creWrapper.cre.commandRequestExecutionStatus.formatKey}" />
+					</span>
+				</td>
+				<td>${creWrapper.cre.userName}</td>
 				
 			</tr>
 		

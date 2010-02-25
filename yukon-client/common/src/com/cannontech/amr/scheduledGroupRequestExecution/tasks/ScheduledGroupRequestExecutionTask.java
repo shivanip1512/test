@@ -29,7 +29,6 @@ import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonTaskBase;
-
 public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 
 	private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionTask.class);
@@ -131,7 +130,7 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     private Date getStopRetryAfterDate() {
         
         Date stopRetryAfterDate = null;
-        Integer hours = getTurnOffQueuingAfterRetryCount();
+        Integer hours = getStopRetryAfterHoursCount();
         if (hours != null) {
             stopRetryAfterDate = new Date();
             stopRetryAfterDate = DateUtils.addHours(stopRetryAfterDate, hours);
@@ -197,12 +196,12 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
     }
     
 	public Integer getTurnOffQueuingAfterRetryCount() {
-        return turnOffQueuingAfterRetryCount;
-    }
+		return turnOffQueuingAfterRetryCount;
+	}
 	
 	public void setTurnOffQueuingAfterRetryCount(Integer turnOffQueuingAfterRetryCount) {
-        this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
-    }
+		this.turnOffQueuingAfterRetryCount = turnOffQueuingAfterRetryCount;
+	}
 	
     // Setters for injected services and daos
 	@Autowired

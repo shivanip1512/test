@@ -67,6 +67,7 @@
     
     <!-- Command Request Executor -->
     <entry key="yukon.common.events.porterRequests.commandFailedToTransmit">Command failed to transmit: command={2} type={1} error={3} user={4} id={7} contextId={8} </entry>
+    <entry key="yukon.common.events.porterRequests.foundFailedCre">Found IN_PROGRESS CommandRequestExecution during startup, set ExecutionStatus to FAILED. CommandRequestExecId = {7}</entry>
     
     <!-- VEE -->
     <entry key="yukon.common.events.system.rphValidation.helper.deletePointValue">Deleted point value: changeId={7} value={8} timestamp={11} paoName={1} paoType={2} pointId={9} pointType={3} pointOffset={10} user={4}</entry>

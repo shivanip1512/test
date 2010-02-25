@@ -363,7 +363,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 optionalAttributeDefaults.put("menuSelection", "meters");
                 optionalAttributeDefaults.put("viewJsp", "MENU");
                 
-                String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView", true);
+                String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "extView", true);
                 String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView", true);
                 String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView", true);
                 msgData.put("reportHtmlUrl", reportHtmlUrl);
@@ -622,7 +622,7 @@ public class ProfileWidget extends WidgetControllerBase {
         propertiesMap.put("stopDate", reportStopDateStr);
         String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
         
-        String url = "/spring/reports/simple/htmlView?" + queryString;
+        String url = "/spring/reports/simple/extView?" + queryString;
         url = ServletUtil.createSafeUrl(request, url);
         
         // redirect

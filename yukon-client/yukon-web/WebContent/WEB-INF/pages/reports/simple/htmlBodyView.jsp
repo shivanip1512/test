@@ -30,6 +30,53 @@
     </c:forEach>
 </cti:url>
 
+<%-- PURE HTML EXPORT OPTIONS --%>
+<c:if test="${pureHtml}">
+	<br>
+	<div style="text-align:right;width:95%;padding-bottom:5px;">
+		<b>Export:&nbsp;</b>
+        <a href="${csvUrl}" style="text-decoration:none;color:#000;">
+        	<img src="/WebConfig/yukon/Icons/excel.gif">
+        	CSV
+        </a>
+        |
+        <a href="${pdfUrl}" style="text-decoration:none;color:#000;">
+        	<img src="/WebConfig/yukon/Icons/pdf.gif">
+        	PDF
+        </a>
+	</div>
+</c:if>
 
-<%-- REPORT TABLE --%>
-<tags:extReportGrid title="${reportTitle}" height="${height}" width="${width}" columnInfo="${columnInfo}" dataUrl="${dataUrl}" csvUrl="${csvUrl}" pdfUrl="${pdfUrl}" showLoadMask="${showLoadMask}" refreshRate="${refreshRate}" />
+<c:choose>
+
+	<%-- EXT REPORT TABLE --%>
+	<c:when test="${!pureHtml}">
+		<tags:extReportGrid title="${reportTitle}" height="${height}" width="${width}" columnInfo="${columnInfo}" dataUrl="${dataUrl}" csvUrl="${csvUrl}" pdfUrl="${pdfUrl}" showLoadMask="${showLoadMask}" refreshRate="${refreshRate}" />
+	</c:when>
+	
+	<%-- PURE HTML REPORT TABLE --%>
+	<c:otherwise>
+		
+		<table class="resultsTable">
+		
+		    <!-- header -->
+		    <tr>
+		        <c:forEach var="ci" items="${columnInfo}">
+		            <th style="text-align:${ci.columnAlignment};width:${ci.columnWidthPercentage}%">${ci.columnName}</th>
+		        </c:forEach>
+		    </tr>
+		    
+		    <!-- data -->
+		    <c:forEach var="rowData" items="${data}">
+		        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+		            <c:forEach var="colData" items="${rowData}" varStatus="colCounter">
+		                <td>${colData}</td>
+		            </c:forEach>
+		        </tr>
+		    </c:forEach>
+		
+		</table>
+
+	</c:otherwise>
+
+</c:choose>

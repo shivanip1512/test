@@ -1243,6 +1243,7 @@
     <bean id="paoDetailUrlHelper" class="com.cannontech.web.common.pao.PaoDetailUrlHelper"/>
     
     <bean id="scheduledGroupRequestExecutionJobWrapperFactory" class="com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory"/>
+    <bean id="commandRequestExecutionWrapperFactory" class="com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionWrapperFactory"/>
     
     <!-- Cron tag handlers -->
     <bean id="cronExpressionTagService" class="com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagServiceImpl"/>

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -53,6 +54,17 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         sql.append("WHERE CRE.CommandRequestExecContextId =").append(commandRequestExecutionContextId);
         
         return yukonJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
+    }
+    
+    // IN_PROGRESS CRES
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<CommandRequestExecution> getAllByStatus(CommandRequestExecutionStatus commandRequestExecutionStatus) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT CRE.* FROM CommandRequestExec CRE WHERE ExecutionStatus = ").appendArgument(commandRequestExecutionStatus);
+        
+    	List<CommandRequestExecution> cres = yukonJdbcTemplate.query(sql, rowAndFieldMapper);
+        return cres;
     }
     
     // BY RANGE

@@ -55,14 +55,13 @@
 		
 		<tr>
 			
+			<cti:url var="viewTamperFlagProcessingUrl" value="/spring/amr/tamperFlagProcessing/process/process">
+				<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
+			</cti:url>
+				
 			<%-- action icons --%>
 			<td>
 			
-				<%-- monitor widget --%>
-				<cti:url var="viewTamperFlagProcessingUrl" value="/spring/amr/tamperFlagProcessing/process/process">
-					<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
-				</cti:url>
-				
 				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${monitorName})" style="text-decoration:none;">
 					<img src="${cog}" onmouseover="javascript:this.src='${cogOver}'" onmouseout="javascript:this.src='${cog}'">
 				</a>
@@ -70,12 +69,8 @@
 			</td>
 			
 			<%-- monitor name --%>
-			<cti:url var="viewTamperFlagMonitorEditorUrl" value="/spring/amr/tamperFlagProcessing/edit">
-				<cti:param name="tamperFlagMonitorId" value="${monitorId}"/>
-			</cti:url>
-				
 			<td class="${tdClass}">
-				<a href="${viewTamperFlagMonitorEditorUrl}" title="${editActionTitleText}">${monitorName}</a>
+				<a href="${viewTamperFlagProcessingUrl}" title="${tamperFlagProcessingActionTitleText} (${monitorName})">${monitorName}</a>
 			</td>
 			
 			<%-- violations count --%>

@@ -32,7 +32,7 @@
 
     <cti:simpleReportUrlFromNameTag var="bodyUrl"
                                     htmlOutput="false"
-                                    viewType="htmlView"
+                                    viewType="extView"
                                     viewJsp="BODY"
                                     definitionName="${definitionName}"
                                     pointId="${pointId}"

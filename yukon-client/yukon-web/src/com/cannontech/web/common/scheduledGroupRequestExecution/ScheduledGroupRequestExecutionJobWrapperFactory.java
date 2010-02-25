@@ -1,6 +1,7 @@
 package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -29,33 +30,29 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	private CronExpressionTagService cronExpressionTagService;
 	
 	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
-		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext, scheduledGroupRequestExecutionDao, jobStatusDao, jobManager);
+		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext);
+	}
+	
+	public ScheduledGroupRequestExecutionJobWrapper createJobWrapper(int jobId, Date startTime, Date stopTime, YukonUserContext userContext) {
+		ScheduledRepeatingJob job = jobManager.getRepeatingJob(jobId);
+		return new ScheduledGroupRequestExecutionJobWrapper(job, startTime, stopTime, userContext);
 	}
 	
 	public class ScheduledGroupRequestExecutionJobWrapper implements Comparable<ScheduledGroupRequestExecutionJobWrapper> {
 
 		private ScheduledRepeatingJob job;
-		private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
-		private JobStatusDao jobStatusDao;
-		private JobManager jobManager;
 		private YukonUserContext userContext;
 		
 		private ScheduledGroupRequestExecutionTask task;
 		private int creCount;
 		
-		public ScheduledGroupRequestExecutionJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext,
-							ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao,
-							JobStatusDao jobStatusDao,
-							JobManager jobManager) {
+		public ScheduledGroupRequestExecutionJobWrapper(ScheduledRepeatingJob job, Date startTime, Date stopTime, YukonUserContext userContext) {
 			
 			this.job = job;
-			this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
-			this.jobStatusDao = jobStatusDao;
-			this.jobManager = jobManager;
 			this.userContext = userContext;
 			
-			this.task = (ScheduledGroupRequestExecutionTask)this.jobManager.instantiateTask(this.job);
-	        this.creCount = this.scheduledGroupRequestExecutionDao.getDistinctCreCountByJobId(this.job.getId(), startTime, stopTime);
+			this.task = (ScheduledGroupRequestExecutionTask)jobManager.instantiateTask(this.job);
+	        this.creCount = scheduledGroupRequestExecutionDao.getDistinctCreCountByJobId(this.job.getId(), startTime, stopTime);
 		}
 		
 		public ScheduledRepeatingJob getJob() {
@@ -73,14 +70,14 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
 		public Date getLastRun() {
-			return this.jobStatusDao.getJobLastSuccessfulRunDate(this.job.getId());
+			return jobStatusDao.getJobLastSuccessfulRunDate(this.job.getId());
 		}
 		
 		public Date getNextRun() {
 			
 			Date nextRun = null;
 			try {
-				nextRun = this.jobManager.getNextRuntime(job, new Date());
+				nextRun = jobManager.getNextRuntime(job, new Date());
 			} catch (ScheduleException e) {
 			}
 			
@@ -116,14 +113,15 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		public boolean isRetrySetup() {
 			return this.task.getRetryCount() > 0;
 		}
-		public int getRetryCount() {
-			return this.task.getRetryCount();
+		public Integer getQueuedRetryCount() {
+			return this.task.getTurnOffQueuingAfterRetryCount();
+		}
+		public Integer getNonQueuedRetryCount() {
+			int getTurnOffQueuingAfterRetryCount = this.task.getTurnOffQueuingAfterRetryCount() == null ? 0 : this.task.getTurnOffQueuingAfterRetryCount();
+			return this.task.getRetryCount() - getTurnOffQueuingAfterRetryCount;
 		}
 		public Integer getStopRetryAfterHoursCount() {
 			return this.task.getStopRetryAfterHoursCount();
-		}
-		public Integer getTurnOffQueuingAfterRetryCount() {
-			return this.task.getTurnOffQueuingAfterRetryCount();
 		}
 		
 		public int getCreCount() {
@@ -138,6 +136,33 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		public int compareTo(ScheduledGroupRequestExecutionJobWrapper o) {
 			return this.task.getName().compareToIgnoreCase(o.getTask().getName());
 		}
+	}
+	
+	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getNextRunComparator() {
+		
+		return new Comparator<ScheduledGroupRequestExecutionJobWrapper>() {
+			
+			@Override
+			public int compare(ScheduledGroupRequestExecutionJobWrapper o1, ScheduledGroupRequestExecutionJobWrapper o2) {
+
+				Date o1NextRun = o1.getNextRun();
+				Date o2NextRun = o2.getNextRun();
+				
+				if (o1NextRun == null && o2NextRun == null) {
+					return o1.getName().compareTo(o2.getName());
+				} else if (o1NextRun == null) {
+					return 1;
+				} else if (o2NextRun == null) {
+					return -1;
+				} else {
+					int dateComp = o1NextRun.compareTo(o2NextRun);
+					if (dateComp == 0) {
+						return o1.getName().compareTo(o2.getName()); 
+					}
+					return dateComp;
+				}
+			}
+		};
 	}
 	
 	@Autowired

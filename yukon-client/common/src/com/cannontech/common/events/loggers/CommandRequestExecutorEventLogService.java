@@ -9,4 +9,7 @@ public interface CommandRequestExecutorEventLogService {
 
 	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="porterRequests")
     public void commandFailedToTransmit(int creId, int contextId, CommandRequestExecutionType creType, String currentCommandString, String error, LiteYukonUser user);
+
+	@YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="porterRequests")
+	public void foundFailedCre(int creId);
 }

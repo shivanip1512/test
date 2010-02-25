@@ -35,7 +35,7 @@
     
     <cti:simpleReportUrlFromNameTag var="reportUrl"
                                 htmlOutput="true"
-                                viewType="htmlView"
+                                viewType="extView"
                                 viewJsp="BODY"
                                 definitionName="deviceCollectionDefinition"
                                 deviceGroup="${tempDeviceGroup}"

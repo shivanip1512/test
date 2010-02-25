@@ -29,7 +29,11 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.commandRequestExecution.CommandRequestExecutionWrapperFactory.CommandRequestExecutionWrapper;
+import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
+import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
+import com.google.common.collect.Lists;
 
 public class CommandRequestExecutionResultsController extends MultiActionController {
 	
@@ -40,6 +44,8 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 	private TemporaryDeviceGroupService temporaryDeviceGroupService;
 	private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+	private CommandRequestExecutionWrapperFactory commandRequestExecutionWrapperFactory;
+	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	
 	// LIST
 	public ModelAndView list(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -91,6 +97,11 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		// TYPES
 		CommandRequestExecutionType[] commandRequestExecutionTypes = CommandRequestExecutionType.values();
 		mav.addObject("commandRequestExecutionTypes", commandRequestExecutionTypes);
+		if (jobId > 0) {
+			ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(jobId, null, null, userContext);
+			String singleJobType = jobWrapper.getCommandRequestTypeShortName();
+			mav.addObject("singleJobType", singleJobType);
+		}
 		
 		// CRES
 		List<CommandRequestExecution> cres;
@@ -99,7 +110,14 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		} else {
 			cres = commandRequestExecutionDao.findByRange(commandRequestExecutionId, fromDate, toDate, typeFilter, false);
 		}
-		mav.addObject("cres", cres);
+		
+		List<CommandRequestExecutionWrapper> creWrappers = Lists.newArrayListWithCapacity(cres.size());
+		for (CommandRequestExecution cre : cres) {
+			CommandRequestExecutionWrapper commandRequestExecutionWrapper = commandRequestExecutionWrapperFactory.createCommandRequestExecutionWrapper(cre);
+			creWrappers.add(commandRequestExecutionWrapper);
+		}
+		
+		mav.addObject("creWrappers", creWrappers);
 		
 		return mav;
 	}
@@ -224,4 +242,14 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 	public void setDeviceGroupCollectionHelper(DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;
     }
+	
+	@Autowired
+	public void setCommandRequestExecutionWrapperFactory(CommandRequestExecutionWrapperFactory commandRequestExecutionWrapperFactory) {
+		this.commandRequestExecutionWrapperFactory = commandRequestExecutionWrapperFactory;
+	}
+	
+	@Autowired
+	public void setScheduledGroupRequestExecutionJobWrapperFactory(ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory) {
+		this.scheduledGroupRequestExecutionJobWrapperFactory = scheduledGroupRequestExecutionJobWrapperFactory;
+	}
 }

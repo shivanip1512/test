@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -28,6 +29,7 @@ public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapp
         p.addValue("CommandRequestExecType", commandRequestExecution.getCommandRequestExecutionType().name());
         p.addValue("UserName", commandRequestExecution.getUserName());
         p.addValue("CommandRequestType", commandRequestExecution.getCommandRequestType().name());
+        p.addValue("ExecutionStatus", commandRequestExecution.getCommandRequestExecutionStatus().name());
     }
 	
 	public CommandRequestExecution mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -40,6 +42,7 @@ public class CommandRequestExecutionRowAndFieldMapper implements RowAndFieldMapp
     	commandRequestExecution.setCommandRequestExecutionType(CommandRequestExecutionType.valueOf(rs.getString("CommandRequestExecType")));
     	commandRequestExecution.setUserName(rs.getString("UserName"));
     	commandRequestExecution.setCommandRequestType(CommandRequestType.valueOf(rs.getString("CommandRequestType")));
+    	commandRequestExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.valueOf(rs.getString("ExecutionStatus")));
     	return commandRequestExecution;
 	}
 }

@@ -25,7 +25,7 @@ public class CommandRequestExecutionFailureStatsModel extends BareReportModelBas
     int commandRequestExecutionId;
     
     // member variables
-    private static String title = "Command Request Exectuion Failure Stats Report";
+    private static String title = "Command Request Execution Failure Stats Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
     
@@ -70,7 +70,7 @@ public class CommandRequestExecutionFailureStatsModel extends BareReportModelBas
     		CommandRequestExecutionFailureStatsModel.ModelRow row = new CommandRequestExecutionFailureStatsModel.ModelRow();
     		
     		DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(creStat.getErrorCode());
-    		row.status = deviceErrorDescription.getDescription();
+    		row.status = "(Err: " + creStat.getErrorCode() + ") "  + deviceErrorDescription.getDescription();
     		
     		row.count = creStat.getCount();
     		

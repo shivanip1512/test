@@ -51,6 +51,8 @@ public class OutageMonitorEditorController extends MultiActionController {
 	private static final Attribute BLINK_COUNT_ATTRIBUTE = BuiltInAttribute.BLINK_COUNT;
 	private Logger log = YukonLogManager.getLogger(OutageMonitorEditorController.class);
 	
+	private int DEFAULT_NUMBER_OF_OUTAGES = 2;
+	private int DEFAULT_TIME_PERIOD = 28;
 	
 	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
         
@@ -62,8 +64,8 @@ public class OutageMonitorEditorController extends MultiActionController {
         int outageMonitorId = ServletRequestUtils.getIntParameter(request, "outageMonitorId", 0);
         String name = ServletRequestUtils.getStringParameter(request, "name", null);
         String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
-        int numberOfOutages = ServletRequestUtils.getIntParameter(request, "numberOfOutages", 2);
-        int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", 28);
+        int numberOfOutages = ServletRequestUtils.getIntParameter(request, "numberOfOutages", DEFAULT_NUMBER_OF_OUTAGES);
+        int timePeriod = ServletRequestUtils.getIntParameter(request, "timePeriod", DEFAULT_TIME_PERIOD);
         String expression = ServletRequestUtils.getStringParameter(request, "expression", null);
         boolean scheduleGroupCommand = ServletRequestUtils.getBooleanParameter(request, "scheduleGroupCommand", false);;
         String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
@@ -76,17 +78,11 @@ public class OutageMonitorEditorController extends MultiActionController {
 	        	
 	        	outageMonitor = outageMonitorDao.getById(outageMonitorId);
 	        	
-	        	// use entered values instead of existing value if present
-	        	if (name == null) {
+	        	// use entered values instead of existing value if error
+	        	if (editError == null) {
 	        		name = outageMonitor.getOutageMonitorName();
-	        	}
-	        	if (deviceGroupName == null) {
 	        		deviceGroupName = outageMonitor.getGroupName();
-	        	}
-	        	if (numberOfOutages <= 0) {
 	        		numberOfOutages = outageMonitor.getNumberOfOutages();
-	        	}
-	        	if (timePeriod <= 0) {
 	        		timePeriod = outageMonitor.getTimePeriodDays();
 	        	}
 	        }

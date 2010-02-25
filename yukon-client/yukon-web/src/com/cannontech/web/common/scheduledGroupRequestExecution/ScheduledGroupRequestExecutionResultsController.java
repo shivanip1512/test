@@ -17,13 +17,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoEnabledFilter;
+import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoOnetimeFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.util.MappingList;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -35,6 +33,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.google.common.collect.Lists;
 
 @CheckRole(YukonRole.SCHEDULER)
 public class ScheduledGroupRequestExecutionResultsController extends MultiActionController {
@@ -94,6 +93,16 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 			excludePendingFilter = ScheduleGroupRequestExecutionDaoPendingFilter.ANY;
 		}
 		
+		// exclude one-time
+		boolean includeOnetimeFilterBool = ServletRequestUtils.getBooleanParameter(request, "includeOnetimeFilter", false);
+		ScheduleGroupRequestExecutionDaoOnetimeFilter includeOnetimeFilter;
+		if (includeOnetimeFilterBool) {
+			includeOnetimeFilter = ScheduleGroupRequestExecutionDaoOnetimeFilter.INCLUDE_ONETIME;
+		} else {
+			includeOnetimeFilter = ScheduleGroupRequestExecutionDaoOnetimeFilter.EXCLUDE_ONETIME;
+		}
+		
+		
 		// type
 		CommandRequestExecutionType typeFilter = null;
 		String typeFilterStr = ServletRequestUtils.getStringParameter(request, "typeFilter", null);
@@ -112,6 +121,7 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		mav.addObject("toDate", DateUtils.addMilliseconds(toDate, -1));
 		mav.addObject("statusFilter", statusFilter);
 		mav.addObject("excludePendingFilter", excludePendingFilter);
+		mav.addObject("includeOnetimeFilter", includeOnetimeFilter);
 		mav.addObject("typeFilter", typeFilter);
 		mav.addObject("error", error);
 		
@@ -126,17 +136,17 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		mav.addObject("scheduledCommandRequestExecutionTypes", scheduledCommandRequestExecutionTypes);
 		
 		// JOBS
-		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(jobId, fromDate, toDate, typeFilters, statusFilter, excludePendingFilter, false);
+		List<ScheduledRepeatingJob> jobs = scheduledGroupRequestExecutionDao.getJobs(jobId, fromDate, toDate, typeFilters, statusFilter, excludePendingFilter, includeOnetimeFilter, false);
 		
 		final Date startTime = fromDate;
 		final Date stopTime = toDate;
-		ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> mapper = new ObjectMapper<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>() {
-			public ScheduledGroupRequestExecutionJobWrapper map(ScheduledRepeatingJob from) throws ObjectMappingException {
-                return scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(from, startTime, stopTime, userContext);
-            }
-		};
+		List<ScheduledGroupRequestExecutionJobWrapper> jobWrappers = Lists.newArrayListWithCapacity(jobs.size());
+		for (ScheduledRepeatingJob job : jobs) {
+			ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, startTime, stopTime, userContext);
+			jobWrappers.add(jobWrapper);
+		}
 		
-		MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper> jobWrappers = new MappingList<ScheduledRepeatingJob, ScheduledGroupRequestExecutionJobWrapper>(jobs, mapper);
+		Collections.sort(jobWrappers, ScheduledGroupRequestExecutionJobWrapperFactory.getNextRunComparator());
 		mav.addObject("jobWrappers", jobWrappers);
 		
 		boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
@@ -168,7 +178,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		
 	}
 	
-
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(
 			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {

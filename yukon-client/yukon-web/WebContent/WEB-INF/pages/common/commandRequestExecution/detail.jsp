@@ -6,6 +6,7 @@
 <cti:msg var="pageTitle" key="yukon.web.modules.amr.commandRequestExecution.results.detail.pageTitle" />
 <cti:msg var="infoSectionText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.section" />
 <cti:msg var="infoTypeText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.type" />
+<cti:msg var="infoStatusText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.status" />
 <cti:msg var="infoStartTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.startTime" />
 <cti:msg var="infoStopTimeText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.stopTime" />
 <cti:msg var="infoUserText" key="yukon.web.modules.amr.commandRequestExecution.results.detail.info.user" />
@@ -118,20 +119,51 @@
 		<tags:nameValueContainer>
 
 			<tags:nameValue name="${infoTypeText}" nameColumnWidth="160px">${cre.commandRequestExecutionType.shortName}</tags:nameValue>
+			
+			<tags:nameValue name="${infoStatusText}">
+				<c:choose>
+					<c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}">
+						<c:set var="statusSpanClass" value="errorRed"/>
+					</c:when>
+					<c:when test="${cre.commandRequestExecutionStatus == 'IN_PROGRESS'}">
+						<c:set var="statusSpanClass" value="okGreen"/>
+					</c:when>
+					<c:otherwise>
+						<c:set var="statusSpanClass" value=""/>
+					</c:otherwise>
+				</c:choose>
+				<span class="${statusSpanClass}">
+					<cti:msg key="${cre.commandRequestExecutionStatus.formatKey}" />
+				</span>
+			</tags:nameValue>
+			
 			<tags:nameValue name="${infoStartTimeText}"><cti:formatDate type="DATEHM" value="${cre.startTime}" nullText="N/A"/></tags:nameValue>
+			
 			<tags:nameValue name="${infoStopTimeText}">
 				
-				<cti:dataUpdaterCallback function="countUpdateCallback()" initialize="true" isComplete="COMMAND_REQUEST_EXECUTION/${cre.id}/IS_COMPLETE" />
+				<c:choose>
 				
-				<div id="creStopTimeDiv" <c:if test="${not isComplete}">style="display:none;"</c:if>>
-					<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${cre.id}/STOP_TIME"/>
-				</div>
-				
-				<div id="creProgressBarDiv" <c:if test="${isComplete}">style="display:none;"</c:if>>
-					<tags:updateableProgressBar totalCount="${cre.requestCount}" countKey="COMMAND_REQUEST_EXECUTION/${cre.id}/RESULTS_COUNT"/>
-				</div>
+					<c:when test="${cre.commandRequestExecutionStatus == 'FAILED'}">
+						N/A
+					</c:when>
+					
+					<c:otherwise>
+						
+						<cti:dataUpdaterCallback function="countUpdateCallback()" initialize="true" isComplete="COMMAND_REQUEST_EXECUTION/${cre.id}/IS_COMPLETE" />
+						
+						<div id="creStopTimeDiv" <c:if test="${not isComplete}">style="display:none;"</c:if>>
+							<cti:dataUpdaterValue type="COMMAND_REQUEST_EXECUTION" identifier="${cre.id}/STOP_TIME"/>
+						</div>
+						
+						<div id="creProgressBarDiv" <c:if test="${isComplete}">style="display:none;"</c:if>>
+							<tags:updateableProgressBar totalCount="${cre.requestCount}" countKey="COMMAND_REQUEST_EXECUTION/${cre.id}/RESULTS_COUNT"/>
+						</div>
+						
+					</c:otherwise>
+				</c:choose>
 				
 			</tags:nameValue>
+			
 			<tags:nameValue name="${infoUserText}">${cre.userName}</tags:nameValue>
 		
 		</tags:nameValueContainer>

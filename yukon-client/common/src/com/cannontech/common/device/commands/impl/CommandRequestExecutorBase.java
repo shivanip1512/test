@@ -36,6 +36,7 @@ import com.cannontech.common.device.commands.CommandPriority;
 import com.cannontech.common.device.commands.CommandRequestBase;
 import com.cannontech.common.device.commands.CommandRequestExecutionContextId;
 import com.cannontech.common.device.commands.CommandRequestExecutionParameterDto;
+import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.CommandRequestExecutionTemplate;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
@@ -93,6 +94,16 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
     public void initialize() {
         betweenResultsMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_BETWEEN_RESULTS_MAX_DELAY", betweenResultsMaxDelay);
         totalMaxDelay = configurationSource.getInteger("COMMAND_REQUEST_EXECUTOR_TOTAL_MAX_DELAY", totalMaxDelay);
+        // fail in progress cres
+        // if it is IN_PROGRESS during startup it will never move to COMPLETED on its own, must be FAILED.
+        List<CommandRequestExecution> inProcessCres = commandRequestExecutionDao.getAllByStatus(CommandRequestExecutionStatus.IN_PROGRESS);
+        for (CommandRequestExecution cre : inProcessCres) {
+        	
+        	cre.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.FAILED);
+        	commandRequestExecutionDao.saveOrUpdate(cre);
+        	
+        	commandRequestExecutorEventLogService.foundFailedCre(cre.getId());
+        }
     }
 
     // COMMAND RESULT MESSAGE LISTENER
@@ -180,7 +191,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                         }
                         
                         // insert CommandRequestExecutionResult record
-                    	saveCommandRequestExecutionResult(this.commandRequestExecution, command, status);
+                    	saveCommandRequestExecutionResult(this.commandRequestExecution, command, status, retMessage.getCommandString());
                         
                         pendingUserMessageIds.remove(userMessageId);
                         
@@ -210,7 +221,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     callback.complete();
                     
                     // complete the commandRequestExecution record
-                    completeCommandRequestExecutionRecord(this.commandRequestExecution);
+                    completeCommandRequestExecutionRecord(this.commandRequestExecution, CommandRequestExecutionStatus.COMPLETE);
 
                     if (debug) {
                         log.debug("Removing porter message listener because pending list is empty: " + this);
@@ -263,17 +274,18 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         }
     }
     
-    private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution) {
+    private void completeCommandRequestExecutionRecord(CommandRequestExecution commandRequestExecution, CommandRequestExecutionStatus executionStatus) {
     	
     	commandRequestExecution.setStopTime(new Date());
+    	commandRequestExecution.setCommandRequestExecutionStatus(executionStatus);
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
     }
     
-    private void saveCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status) {
+    private void saveCommandRequestExecutionResult(CommandRequestExecution commandRequestExecution, T command, int status, String returnMsgCommand) {
     	
     	CommandRequestExecutionResult commandRequestExecutionResult = new CommandRequestExecutionResult();
     	commandRequestExecutionResult.setCommandRequestExecutionId(commandRequestExecution.getId());
-    	commandRequestExecutionResult.setCommand(command.getCommand());
+    	commandRequestExecutionResult.setCommand(returnMsgCommand);
     	commandRequestExecutionResult.setCompleteTime(new Date());
     	
     	if (status != 0) {
@@ -310,7 +322,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
             throw new CommandCompletionException("Timed out while blocking for command completion", e);
         }
     }
-    
     
     // EXECUTE MULTIPLE, CALLBACK (creates a one time use parameterDto and calls executeWithParameterDto)
     public CommandRequestExecutionIdentifier execute(final List<T> commands,
@@ -362,6 +373,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         commandRequestExecution.setCommandRequestExecutionType(type);
         commandRequestExecution.setUserName(user.getUsername());
         commandRequestExecution.setCommandRequestType(getCommandRequestType());
+        commandRequestExecution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.IN_PROGRESS);
         
         commandRequestExecutionDao.saveOrUpdate(commandRequestExecution);
         CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = new CommandRequestExecutionIdentifier(commandRequestExecution.getId());
@@ -408,6 +420,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        log.debug("Addinging porter message listener: " + messageListener);
 		        porterConnection.addMessageListener(messageListener);
 		
+		        boolean exceptionOccured = false;
 		        boolean nothingWritten = true;
 		        boolean completeAndRemoveListener = false;
 		        RequestHolder currentRequestHolder = null;
@@ -437,6 +450,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            log.debug("Finished commandRequests loop. groupMessageId = " + groupMessageId);
 		        
 		        } catch (ConnectionException e) {
+		        	exceptionOccured = true;
 		        	String error = "No porter connection.";
 		        	callback.processingExceptionOccured(error);
 		        	completeAndRemoveListener = true;
@@ -446,6 +460,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		        	
 		        } catch (Exception e) {
 		        	
+		        	exceptionOccured = true;
 		        	callback.processingExceptionOccured(e.getMessage());
 		        	completeAndRemoveListener = true;
 		        	log.debug("Removing porter message listener because an exception occured (" + e.getMessage() + "): " + messageListener);
@@ -461,7 +476,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 		            if (completeAndRemoveListener) {
 		            	callback.complete();
 		            	messageListener.removeListener();
-		            	completeCommandRequestExecutionRecord(commandRequestExecution);
+		            	completeCommandRequestExecutionRecord(commandRequestExecution, exceptionOccured ? CommandRequestExecutionStatus.FAILED : CommandRequestExecutionStatus.COMPLETE);
 		            }
 		            
 		            messageListener.getCommandsAreWritingLatch().countDown();
