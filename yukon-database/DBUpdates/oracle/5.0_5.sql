@@ -39,3 +39,4 @@ MODIFY ExecutionStatus VARCHAR2(100) NOT NULL;
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.0', 'Matt K', '25-FEB-2010', 'Latest Update', 5);
