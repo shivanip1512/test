@@ -221,7 +221,7 @@ Picker.prototype = {
 					inputElement.type = 'hidden';
 					inputElement.value = selectedItem[pickerThis.idFieldName];
 					inputElement.name = pickerThis.destinationFieldName;
-					this.inputAreaDiv.appendChild(inputElement);
+					pickerThis.inputAreaDiv.appendChild(inputElement);
 				});
 			}
 
