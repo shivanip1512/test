@@ -41,40 +41,53 @@ class test_DispatchPointDataRequest : public PointDataRequest
     public:
         test_DispatchPointDataRequest()
         {
-            _pointsSet = false;
         }
         virtual PointValueMap getPointValues()
         {
-            return _map;
+            return isComplete() ? _map : PointValueMap();   // return an empty map unless we are complete
         }
 
         virtual bool isComplete()
         {
-            return true;
+            if ( _pointList.empty() )
+            {
+                return false;
+            }
+
+            bool isComplete = true;
+
+            for (std::list<long>::const_iterator b = _pointList.begin(), e = _pointList.end(); isComplete && (b != e); ++b)
+            {
+                if ( _map.find(*b) == _map.end() )  // if an element in the watchlist lacks a match in the map
+                {                                   //  we are NOT complete
+                    isComplete = false;
+                }
+            }
+
+            return isComplete;
         }
 
         virtual bool watchPoints(std::list<long> points)
         {
-            if (_pointsSet == false)
+            if ( _pointList.empty() )
             {
-                CtiTime time;
-                for each (long pointId in points)
-                {
-                    PointValue pv;
-
-                    pv.timestamp = time;
-                    pv.value = 1.0;
-                    pv.quality = NormalQuality;
-
-                    _map[pointId] = pv;
-                }
+                _pointList = points;
             }
-            return true;
+
+            return ( ! _pointList.empty() );
+        }
+
+        void receivePointUpdate(const long ID, const PointValue & point)
+        {
+            if ( _pointList.end() != std::find(_pointList.begin(), _pointList.end(), ID) )
+            {
+                _map[ID] = point;
+            }
         }
 
     private:
         PointValueMap _map;
-        bool _pointsSet;
+        std::list<long> _pointList;
 };
 
 class test_PointDataRequestFactory : public PointDataRequestFactory
@@ -87,7 +100,7 @@ class test_PointDataRequestFactory : public PointDataRequestFactory
 
         virtual PointDataRequestPtr createDispatchPointDataRequest(DispatchConnectionPtr conn)
         {
-            PointDataRequestPtr pRequest(new test_DispatchPointDataRequest());
+            PointDataRequestPtr pRequest(new test_DispatchPointDataRequest);
             return pRequest;
         }
 };
