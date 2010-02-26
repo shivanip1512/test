@@ -443,6 +443,7 @@ DLLEXPORT RWBoolean isCarrierLPDevice(CtiDeviceSPtr &pDevice)
     case TYPEMCT310IL:
     case TYPEMCT318L:
     case TYPEMCT410:
+    case TYPEMCT430:
     case TYPEMCT470:
         result = TRUE;
         break;
