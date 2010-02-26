@@ -3,7 +3,6 @@
 #include "yukon.h"
 #include "boostutil.h"
 #include "BehaviorCollection.h"
-#include "logger.h"
 
 #include <boost/test/unit_test.hpp>
 
@@ -41,10 +40,10 @@ using namespace Cti::Simulator;
 BOOST_AUTO_TEST_CASE(test_behavior_collection)
 {
     BehaviorCollection<IntBehavior> behaviorCollection;
-    std::auto_ptr<IntBehavior> a(new MultByTwentyBehavior());
-    std::auto_ptr<IntBehavior> m(new AddOneBehavior());
-    behaviorCollection.addBehavior(a);
-    behaviorCollection.addBehavior(m);
+    std::auto_ptr<IntBehavior> multiply(new MultByTwentyBehavior());
+    std::auto_ptr<IntBehavior> add(new AddOneBehavior());
+    behaviorCollection.push_back_behavior(multiply);
+    behaviorCollection.push_back_behavior(add);
 
     int value = 3;
 
@@ -56,10 +55,10 @@ BOOST_AUTO_TEST_CASE(test_behavior_collection)
 
     value = 10;
 
-    std::auto_ptr<IntBehavior> a2(new MultByTwentyBehavior());
-    std::auto_ptr<IntBehavior> m2(new AddOneBehavior());
-    behaviorCollection.addBehavior(m2);
-    behaviorCollection.addBehavior(a2);
+    std::auto_ptr<IntBehavior> multiply2(new MultByTwentyBehavior());
+    std::auto_ptr<IntBehavior> add2(new AddOneBehavior());
+    behaviorCollection.push_back_behavior(add2);
+    behaviorCollection.push_back_behavior(multiply2);
 
     behaviorCollection.processMessage(value);
 

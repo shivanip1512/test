@@ -4,7 +4,9 @@
 * File:   test_ccusim.cpp
 *
 * Date:   11/30/2007
-*
+* 
+* Commented-out functions remaining in the file generate a csv file for
+* testing kWh output.
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,6 +42,33 @@
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
+using namespace Cti::Simulator;
+
+BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
+{
+    bytes b_word;
+
+    //  verifying on a B word
+
+    b_word.push_back(0xaf);
+    b_word.push_back(0xf4);
+    b_word.push_back(0xb5);
+    b_word.push_back(0xa1);
+    b_word.push_back(0xd0);
+    b_word.push_back(0x05);
+    b_word.push_back(0xa0);
+
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  0,  4), 0x0a);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  4,  5), 0x1f);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  9,  3), 0x07);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 12, 22), 1234567);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 34,  1), 0x00);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 35,  1), 0x01);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 36,  8), 0x00);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 44,  2), 0x01);
+    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 46,  6), 0x1a);
+
+}
 
 /*
 unsigned char * buildBufferForSimulatorInput(string hexString, int& retSize)
@@ -221,36 +250,7 @@ public:
 
 }
 }
-*/
 
-using namespace Cti::Simulator;
-
-BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
-{
-    bytes b_word;
-
-    //  verifying on a B word
-
-    b_word.push_back(0xaf);
-    b_word.push_back(0xf4);
-    b_word.push_back(0xb5);
-    b_word.push_back(0xa1);
-    b_word.push_back(0xd0);
-    b_word.push_back(0x05);
-    b_word.push_back(0xa0);
-
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  0,  4), 0x0a);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  4,  5), 0x1f);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word,  9,  3), 0x07);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 12, 22), 1234567);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 34,  1), 0x00);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 35,  1), 0x01);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 36,  8), 0x00);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 44,  2), 0x01);
-    BOOST_CHECK_EQUAL(EmetconWord::extract_bits(b_word, 46,  6), 0x1a);
-
-}
-/*
 BOOST_AUTO_TEST_CASE( test_makevalue_consumption )
 {
     ofstream outFile;
@@ -278,37 +278,6 @@ BOOST_AUTO_TEST_CASE( test_makevalue_consumption )
 
     outFile.close();
 
-}
-
-BOOST_AUTO_TEST_CASE( test_random_generator )
-{
-    ofstream outFile;
-    outFile.open("C:\\Dev\\trunk\\yukon-server-d\\bin\\randLog.txt");
-
-    double dist;
-    int chance;
-    int tally[100];
-
-    for (int i = 0; i < 100; i++ )
-    {
-        tally[i] = 0;
-    }
-
-    srand(time(NULL));
-
-    for (int i = 0; i < 100000; i++ )
-    {
-        dist = rand() / double(RAND_MAX+1);
-        chance = int(dist * 100);
-        tally[chance]++;
-    }
-
-    for (int i = 0; i < 100; i++ )
-    {
-        outFile << i << " " << tally[i] << endl;
-    }
-
-    outFile.close();
 }
 
 */

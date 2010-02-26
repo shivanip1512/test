@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     std::auto_ptr<CommsBehavior> d(new DelayBehavior());
     d->setChance(100);
 
-    behaviorCollection.addBehavior(d);
+    behaviorCollection.push_back_behavior(d);
 
     bytes message, temp;
     message.push_back(0x04);
@@ -45,8 +45,11 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     BOOST_CHECK_EQUAL(message.size(), 6);
     BOOST_CHECK_EQUAL(message.size(), temp.size());
 
-    for (int i = 0; i < message.size(); i++)
+    if (message.size() == temp.size())
     {
-        BOOST_CHECK_EQUAL(message.at(i), temp.at(i));
+        for (int i = 0; i < message.size(); i++)
+        {
+            BOOST_CHECK_EQUAL(message.at(i), temp.at(i));
+        }
     }
 }

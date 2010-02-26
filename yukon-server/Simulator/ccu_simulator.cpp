@@ -215,23 +215,14 @@ void CcuPort(int portNumber, int strategy)
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 {
     SocketComms socket_interface(mySocket, 1200);
+    string str;
 
-    switch( strategy )
-    {
-    case CommsBehavior::delayBehavior_enabled:
-        {
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << "********* DELAY FILTER ENABLED! *************" << endl;
-            }
-            int chance = gConfigParms.getValueAsInt("SIMULATOR_ERROR_DELAY_PERCENT");
-            std::auto_ptr<CommsBehavior> d(new DelayBehavior());
-            d->setChance(chance);
-            socket_interface.setBehavior(d);
-            break;
-        }
-    default:
-        break;
+    if( !(str = gConfigParms.getValueAsString("SIMULATOR_DELAY_BEHAVIOR_ENABLED")).empty() && (!stricmp("TRUE", str.c_str())))
+    {   
+        int chance = gConfigParms.getValueAsInt("SIMULATOR_DELAY_CHANCE_TENTHS_OF_A_PERCENT");
+        std::auto_ptr<CommsBehavior> d(new DelayBehavior());
+        d->setChance(chance);
+        socket_interface.setBehavior(d);
     }
 
     //  both the CCU-710 and CCU-711 have their address info in the first two bytes

@@ -107,7 +107,7 @@ bool SocketComms::writeMessage(const bytes &buf)
 
 void SocketComms::setBehavior(std::auto_ptr<CommsBehavior> behavior)
 {
-    _behaviorCollection.addBehavior(behavior);
+    _behaviorCollection.push_back_behavior(behavior);
 }
 
 void SocketComms::clear()

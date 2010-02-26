@@ -31,7 +31,7 @@ public:
 
         return error_t::success;
     }
-    error_t addBehavior(std::auto_ptr<T> behavior)
+    error_t push_back_behavior(std::auto_ptr<T> behavior)
     {
         _behaviors.push_back(behavior);
         return error_t::success;
