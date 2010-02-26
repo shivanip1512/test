@@ -1,7 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -26,13 +24,7 @@ public class SubstationDaoImpl implements SubstationDao {
     private NextValueHelper nextValueHelper;
     
     static {
-        rowMapper = new ParameterizedRowMapper<Substation>() {
-            public Substation mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return new Substation(rs.getInt("SubstationID"),
-                                          rs.getString("SubstationName"),
-                                          rs.getInt("LMRouteID"));
-            };
-        };
+        rowMapper = new SubstationRowMapper();
 
         insertSql = new SqlStatementBuilder();
         insertSql.append("INSERT INTO Substation (SubstationID,SubstationName,LMRouteID)");

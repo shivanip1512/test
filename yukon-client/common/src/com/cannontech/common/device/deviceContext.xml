@@ -90,6 +90,11 @@
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
     
+    <bean id="substationGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.SubstationGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>
+    
     <bean id="deviceTypeGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.DeviceTypeGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
@@ -160,6 +165,7 @@
                 <entry key="STATIC" value-ref="staticDeviceGroupProvider"/>
                 <entry key="ROLODEX" value-ref="rolodexDeviceGroupProvider"/>
                 <entry key="ROUTE" value-ref="routeGroupProvider"/>
+                <entry key="SUBSTATION_TO_ROUTE" value-ref="substationGroupProvider"/>
                 <entry key="DEVICETYPE" value-ref="deviceTypeGroupProvider"/>
                 <entry key="DEVICETAG" value-ref="deviceTagGroupProvider"/>
                 <entry key="DEVICECONFIG" value-ref="deviceConfigGroupProvider"/>

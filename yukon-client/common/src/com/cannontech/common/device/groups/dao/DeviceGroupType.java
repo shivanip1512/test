@@ -4,6 +4,7 @@ public enum DeviceGroupType {
     STATIC,
     ROLODEX,
     ROUTE,
+    SUBSTATION_TO_ROUTE,
     DEVICETYPE,
     DEVICETAG,
     DEVICECONFIG,

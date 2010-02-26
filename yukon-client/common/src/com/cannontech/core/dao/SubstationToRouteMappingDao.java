@@ -3,6 +3,8 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.common.model.Route;
+import com.cannontech.common.model.Substation;
+import com.cannontech.common.pao.YukonDevice;
 
 public interface SubstationToRouteMappingDao {
 
@@ -23,5 +25,7 @@ public interface SubstationToRouteMappingDao {
     public List<Route> getAvailableRoutesBySubstationId(int substationId);
 
     public List<Route> getAll();
+
+	public List<Substation> getSubstationsForDevice(YukonDevice device);
 
 }

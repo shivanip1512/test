@@ -8,16 +8,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
 
-	<bean id="substationDao"
-		class="com.cannontech.core.dao.impl.SubstationDaoImpl">
-		<property name="simpleJdbcTemplate"><ref bean="simpleJdbcTemplate" /></property>
-		<property name="nextValueHelper"><ref bean="nextValueHelper" /></property>
-	</bean>
 
-	<bean id="substationToRouteMappingDao" class="com.cannontech.core.dao.impl.SubstationToRouteMappingDaoImpl">
-		<property name="simpleJdbcTemplate"><ref bean="simpleJdbcTemplate" /></property>
-	</bean>
-	
   <bean id="mr_server" class="com.cannontech.multispeak.deploy.service.impl.MR_ServerImpl">
   	<property name="porterConnection" ref="porterConnection"/>
     <property name="readingTypesMap">

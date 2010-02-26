@@ -5,14 +5,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.Route;
+import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.SubstationToRouteMappingDao;
+import com.cannontech.database.YukonJdbcTemplate;
 
 public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMappingDao {
     private static final SqlStatementBuilder insertSql;
@@ -22,7 +24,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
     private static final SqlStatementBuilder selectAllSql;
     private static final SqlStatementBuilder selectBySubIdSql;
     private static final SqlStatementBuilder selectAvailableSql;
-    private SimpleJdbcTemplate template;
+    private YukonJdbcTemplate template;
 
     static {
         insertSql = new SqlStatementBuilder();
@@ -134,8 +136,23 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
             }    
         });
     }
+    
+    @Override
+    public List<Substation> getSubstationsForDevice(YukonDevice device) {
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select distinct Substation.*");
+        sql.append("from Substation");
+        sql.append("  join SubstationToRouteMapping on SubstationToRouteMapping.SubstationID = Substation.SubstationID");
+        sql.append("  join DeviceRoutes on DeviceRoutes.RouteID = SubstationToRouteMapping.RouteID");
+        sql.append("where DeviceRoutes.DeviceID").eq(device.getPaoIdentifier().getPaoId());
+        sql.append("  and Substation.SubstationId != 0");
+        
+        List<Substation> result = template.query(sql, new SubstationRowMapper());
+        
+        return result;
+    }
 
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate template) {
+    public void setSimpleJdbcTemplate(final YukonJdbcTemplate template) {
         this.template = template;
     }
 
