@@ -1,10 +1,11 @@
 package com.cannontech.multispeak.client;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
+import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
@@ -78,7 +79,7 @@ public class MultispeakBean
        return multispeakFuncs.getPaoNameAlias();
    }
    
-   public MeterDisplayFieldEnum getMeterLookupField() {
+   public MultispeakMeterLookupFieldEnum getMeterLookupField() {
        return multispeakFuncs.getMeterLookupField();
    }
 

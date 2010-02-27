@@ -19,7 +19,6 @@ import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -28,6 +27,7 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -257,8 +257,8 @@ public class MultispeakFuncs
         return returnStr;
     }
 
-    public MeterDisplayFieldEnum getMeterLookupField() {
-        return rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MSP_METER_LOOKUP_FIELD, MeterDisplayFieldEnum.class, null);
+    public MultispeakMeterLookupFieldEnum getMeterLookupField() {
+        return rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class, null);
     }
     
     public int getPaoNameAlias() {

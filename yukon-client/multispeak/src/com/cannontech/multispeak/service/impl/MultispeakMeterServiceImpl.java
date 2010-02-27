@@ -52,6 +52,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.SubstationDao;
 import com.cannontech.core.dao.SubstationToRouteMappingDao;
+import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
@@ -597,23 +598,77 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) throws NotFoundException {
         
     	com.cannontech.amr.meter.model.Meter meter = null;
-    	MeterDisplayFieldEnum meterDisplayFieldEnum = multispeakFuncs.getMeterLookupField();
+    	MultispeakMeterLookupFieldEnum multispeakMeterLookupFieldEnum= multispeakFuncs.getMeterLookupField();
 
-    	if( meterDisplayFieldEnum == MeterDisplayFieldEnum.METER_NUMBER) {
-            String mspMeterNo = mspMeter.getMeterNo().trim();
-            meter = meterDao.getForMeterNumber(mspMeterNo);
-    	} else if( meterDisplayFieldEnum == MeterDisplayFieldEnum.ADDRESS ){ 
-    			String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
-    			meter = meterDao.getForPhysicalAddress(mspAddress);
-    	} else if ( meterDisplayFieldEnum == MeterDisplayFieldEnum.DEVICE_NAME ) {
-    	    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null, mspVendor);
-    	    
-    	    // TODO??? What should be done if we can't find a paoName to lookup by?  throw exception?
-            if (paoName != null) {
-                meter = meterDao.getForPaoName(paoName);
-           	}
-    	}
+    	if( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.METER_NUMBER) {
+            meter = getMeterByMeterNumber(mspMeter);
+        } else if( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.ADDRESS ){ 
+    			meter = getMeterByAddress(mspMeter);
+    	} else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.DEVICE_NAME ) {
+    	    meter = getMeterByPaoName(mspMeter, paoAlias, mspVendor);
+        } else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST) {
+	       try { //Lookup by MeterNo
+	           meter = getMeterByMeterNumber(mspMeter);
+           } catch (NotFoundException e) { //Doesn't exist by MeterNumber
+               try { //Lookup by Address
+                   meter = getMeterByAddress(mspMeter);
+               } catch (NotFoundException e2){ //Doesn't exist by Address
+                   meter = getMeterByPaoName(mspMeter, paoAlias,mspVendor);
+                   //Not Found Exception thrown in the end if never found
+               }
+           }
+        } else if ( multispeakMeterLookupFieldEnum == MultispeakMeterLookupFieldEnum.AUTO_DEVICE_NAME_FIRST) {
+            try { //Lookup by Device Name
+                meter = getMeterByPaoName(mspMeter, paoAlias,mspVendor);
+            } catch (NotFoundException e) { //Doesn't exist by Device name
+                try { //Lookup by Meter Number
+                    meter = getMeterByMeterNumber(mspMeter);
+                } catch (NotFoundException e2) {
+                    //Lookup by Address
+                    meter = getMeterByAddress(mspMeter);
+                //Not Found Exception thrown in the end if never found
+                }
+            }
+        }
+ 
     	return meter;
+    }
+
+    /**
+     * Helper method to return a Meter object for PaoName
+     * PaoName is looked up based on PaoNameAlias
+     * @param mspMeter
+     * @param paoAlias
+     * @param mspVendor
+     * @return
+     */
+    private com.cannontech.amr.meter.model.Meter getMeterByPaoName(Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) {
+        String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null, mspVendor);
+        // TODO??? What should be done if we can't find a paoName to lookup by?  throw exception?
+        if (paoName != null) {
+            return meterDao.getForPaoName(paoName);
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to return a Meter object for Address
+     * @param mspMeter
+     * @return
+     */
+    private com.cannontech.amr.meter.model.Meter getMeterByAddress(Meter mspMeter) {
+        String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+        return meterDao.getForPhysicalAddress(mspAddress);
+    }
+
+    /**
+     * Helper method to return a Meter object for Meter Number
+     * @param mspMeter
+     * @return
+     */
+    private com.cannontech.amr.meter.model.Meter getMeterByMeterNumber(Meter mspMeter) {
+        String mspMeterNo = mspMeter.getMeterNo().trim();
+        return meterDao.getForMeterNumber(mspMeterNo);
     }
     
     @Override
@@ -858,6 +913,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         // NAME
         int paoAlias = multispeakFuncs.getPaoNameAlias();
         String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber, mspVendor);
+        // it is possible that a device with this name already exists, specifically if only looking up by METER_NUMBER.
+        // So lets make sure to get one that works for us.
+        paoName = getNewPaoName(paoName);
         
         // ADDRESS
         String address = mspMeter.getNameplate().getTransponderID().trim();

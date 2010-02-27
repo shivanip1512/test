@@ -7,12 +7,13 @@
 package com.cannontech.multispeak.client;
 
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
 import org.apache.axis.message.SOAPHeaderElement;
 
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
+import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.spring.YukonSpringHook;
@@ -69,10 +70,12 @@ public class MultispeakVendor
            POLE_NUMBER_PAONAME_STRING
        };
     
-    private static MeterDisplayFieldEnum[] meterLookupFields = new MeterDisplayFieldEnum[] {
-            MeterDisplayFieldEnum.METER_NUMBER,
-            MeterDisplayFieldEnum.DEVICE_NAME,
-            MeterDisplayFieldEnum.ADDRESS
+    private static MultispeakMeterLookupFieldEnum[] meterLookupFields = new MultispeakMeterLookupFieldEnum[] {
+        MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST,
+        MultispeakMeterLookupFieldEnum.AUTO_DEVICE_NAME_FIRST,
+        MultispeakMeterLookupFieldEnum.DEVICE_NAME,
+        MultispeakMeterLookupFieldEnum.METER_NUMBER,
+        MultispeakMeterLookupFieldEnum.ADDRESS
     };
     
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
@@ -259,7 +262,7 @@ public class MultispeakVendor
         return paoNameAliasStrings;
     }
     
-    public MeterDisplayFieldEnum[] getMeterLookupFields() {
+    public MultispeakMeterLookupFieldEnum[] getMeterLookupFields() {
         return meterLookupFields;
     }
     

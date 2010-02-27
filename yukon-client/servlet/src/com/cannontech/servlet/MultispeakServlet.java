@@ -4,6 +4,7 @@
 package com.cannontech.servlet;
 
 import java.io.IOException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -18,10 +19,10 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -198,10 +199,10 @@ public class MultispeakServlet extends HttpServlet
         if (req.getParameter("mspPaoNameAlias") != null)
             mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
         
-        MeterDisplayFieldEnum oldMspMeterLookupField = multispeakFuncs.getMeterLookupField();
-        MeterDisplayFieldEnum mspMeterLookupField = oldMspMeterLookupField;
+        MultispeakMeterLookupFieldEnum oldMspMeterLookupField = multispeakFuncs.getMeterLookupField();
+        MultispeakMeterLookupFieldEnum mspMeterLookupField = oldMspMeterLookupField;
         if (req.getParameter("mspMeterLookupField") != null)
-            mspMeterLookupField = MeterDisplayFieldEnum.valueOf(req.getParameter("mspMeterLookupField"));
+            mspMeterLookupField = MultispeakMeterLookupFieldEnum.valueOf(req.getParameter("mspMeterLookupField"));
         
         //Update the role property values if they have changed.
         if ( mspPrimaryCIS != oldMspPrimaryCIS || 
