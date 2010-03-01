@@ -106,11 +106,7 @@ public interface ICapControlModel {
 
     public abstract Map<Integer, String> getPointNameMap();
 
-    public abstract void setPointNameMap(Map<Integer, String> m);
-
     public abstract Map<Integer, String> getPaoNameMap();
-
-    public abstract void setPaoNameMap(Map<Integer, String> m);
 
     public abstract EditorDataModel getDataModel();
 

@@ -1743,124 +1743,93 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     @SuppressWarnings("unchecked")
     public Map getPointNameMap () {
-        if(pointNameMap == null) {
-            pointNameMap = new HashMap();
-            int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
-            if (varPoint != PointTypes.SYS_PID_SYSTEM) {
-                pointNameMap.put(varPoint, pointDao.getPointName(varPoint));
-            }
-            int wattPoint = getControlPoint (PointUnits.UOMID_KW);
-            if (wattPoint != PointTypes.SYS_PID_SYSTEM) {
-                pointNameMap.put(wattPoint, pointDao.getPointName(wattPoint));      
-            }
-            int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
-            if (voltPoint != PointTypes.SYS_PID_SYSTEM) {
-                pointNameMap.put(voltPoint, pointDao.getPointName(voltPoint));
-            }
-            if (getDbPersistent() instanceof CapControlSubBus) {
-                CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
-                CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
-                int switchPoint = subBus.getSwitchPointID();
-                int phaseBPoint = subBus.getPhaseB();
-                int phaseCPoint = subBus.getPhaseC();
-                int voltReductionPoint = subBus.getVoltReductionPointId();
-                int disableBusPoint = subBus.getDisableBusPointId();
-                pointNameMap.put(switchPoint, pointDao.getPointName(switchPoint));
-                pointNameMap.put(phaseBPoint, pointDao.getPointName(phaseBPoint));
-                pointNameMap.put(phaseCPoint, pointDao.getPointName(phaseCPoint));
-                pointNameMap.put(voltReductionPoint, pointDao.getPointName(voltReductionPoint));
-                pointNameMap.put(disableBusPoint, pointDao.getPointName(disableBusPoint));
-            }else if(getDbPersistent() instanceof CapControlFeeder) {
-                CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlFeeder feederthinger = feeder.getCapControlFeeder();
-                int phaseBPoint = feederthinger.getPhaseB();
-                int phaseCPoint = feederthinger.getPhaseC();
-                pointNameMap.put(phaseBPoint, pointDao.getPointName(phaseBPoint));
-                pointNameMap.put(phaseCPoint, pointDao.getPointName(phaseCPoint));
-            }else if(getDbPersistent() instanceof CapControlArea) {
-                CapControlArea area = (CapControlArea) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlArea areaThinger = area.getCapControlArea();
-                int voltReductionPointId = areaThinger.getVoltReductionPointId();
-                pointNameMap.put(voltReductionPointId, pointDao.getPointName(voltReductionPointId));
-            }else if(getDbPersistent() instanceof CapControlSpecialArea) {
-                CapControlSpecialArea area = (CapControlSpecialArea) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlSpecialArea areaThinger = area.getCapControlSpecialArea();
-                int voltReductionPointId = areaThinger.getVoltReductionPointId();
-                pointNameMap.put(voltReductionPointId, pointDao.getPointName(voltReductionPointId));
-            }else if(getDbPersistent() instanceof CapControlSubstation) {
-                CapControlSubstation sub = (CapControlSubstation) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlSubstation subThinger = sub.getCapControlSubstation();
-                int voltReductionPointId = subThinger.getVoltReductionPointId();
-                pointNameMap.put(voltReductionPointId, pointDao.getPointName(voltReductionPointId));
-            }
-            pointNameMap.put(0, "(none)");
+
+        pointNameMap = new HashMap();
+        List<Integer> pointIds = new ArrayList<Integer>();
+        
+        pointIds.add(getControlPoint(PointUnits.UOMID_KVAR));
+        pointIds.add(getControlPoint(PointUnits.UOMID_KW));
+        pointIds.add(getControlPoint(PointUnits.UOMID_KVOLTS));
+
+        if (getDbPersistent() instanceof CapControlSubBus) {
+            CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
+            CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
+            pointIds.add(subBus.getSwitchPointID());
+            pointIds.add(subBus.getPhaseB());
+            pointIds.add(subBus.getPhaseC());
+            pointIds.add(subBus.getVoltReductionPointId());
+            pointIds.add(subBus.getDisableBusPointId());            
+        }else if(getDbPersistent() instanceof CapControlFeeder) {
+            CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
+            pointIds.add(feeder.getCapControlFeeder().getPhaseB());
+            pointIds.add(feeder.getCapControlFeeder().getPhaseC());
+        }else if(getDbPersistent() instanceof CapControlArea) {
+            CapControlArea area = (CapControlArea) getDbPersistent();
+            pointIds.add(area.getCapControlArea().getVoltReductionPointId());
+        }else if(getDbPersistent() instanceof CapControlSpecialArea) {
+            CapControlSpecialArea area = (CapControlSpecialArea) getDbPersistent();
+            pointIds.add(area.getCapControlSpecialArea().getVoltReductionPointId());
+        }else if(getDbPersistent() instanceof CapControlSubstation) {
+            CapControlSubstation sub = (CapControlSubstation) getDbPersistent();
+            pointIds.add(sub.getCapControlSubstation().getVoltReductionPointId());
         }
+        
+        for (Integer pointId : pointIds) {
+            setPointNameInMap(pointNameMap,pointId);
+        }
+        pointNameMap.put(0, "(none)");
+
         return pointNameMap;
      }
-     
-    public void setPointNameMap (Map<Integer, String> m) {
-         pointNameMap =  m;
-     }
+    
+    private void setPointNameInMap(Map<Integer,String> map, int pointId) {
+        map.put(pointId, pointDao.getPointName(pointId));
+    }
 
     public Map<Integer, String> getPaoNameMap () {
-        if(paoNameMap == null) {
-            paoNameMap = new HashMap<Integer, String>();
-            int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
-            int wattPoint = getControlPoint(PointUnits.UOMID_KW);
-            int voltPoint = getControlPoint(PointUnits.UOMID_KVOLTS);
-            if(varPoint != PointTypes.SYS_PID_SYSTEM) {
-                paoNameMap.put(varPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(varPoint).getPaobjectID()));
-            }
-            if(wattPoint != PointTypes.SYS_PID_SYSTEM) {
-                paoNameMap.put(wattPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(wattPoint).getPaobjectID()));
-            }
-            if(voltPoint != PointTypes.SYS_PID_SYSTEM) {
-                paoNameMap.put(voltPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(voltPoint).getPaobjectID()));
-            }
-            if(getDbPersistent() instanceof CapControlSubBus) {
-                CapControlSubstationBus subBus = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
-                int phaseBPoint = subBus.getPhaseB();
-                int phaseCPoint = subBus.getPhaseC();
-                int voltReductionPointId = subBus.getVoltReductionPointId();
-                int disableBusPointId = subBus.getDisableBusPointId();
-                int switchPoint = subBus.getSwitchPointID();
-                paoNameMap.put(switchPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(switchPoint).getPaobjectID()));
-                paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
-                paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
-                paoNameMap.put(voltReductionPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(voltReductionPointId).getPaobjectID()));
-                paoNameMap.put(disableBusPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(disableBusPointId).getPaobjectID()));
-            }else if(getDbPersistent() instanceof CapControlFeeder) {
-                CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlFeeder feederthinger = feeder.getCapControlFeeder();
-                int phaseBPoint = feederthinger.getPhaseB();
-                int phaseCPoint = feederthinger.getPhaseC();
-                paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
-                paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
-            }else if(getDbPersistent() instanceof CapControlArea) {
-                CapControlArea area = (CapControlArea) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlArea areaThinger = area.getCapControlArea();
-                int voltReductionPointId = areaThinger.getVoltReductionPointId();
-                paoNameMap.put(voltReductionPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(voltReductionPointId).getPaobjectID()));
-            }else if(getDbPersistent() instanceof CapControlSpecialArea) {
-                CapControlSpecialArea area = (CapControlSpecialArea) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlSpecialArea areaThinger = area.getCapControlSpecialArea();
-                int voltReductionPointId = areaThinger.getVoltReductionPointId();
-                paoNameMap.put(voltReductionPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(voltReductionPointId).getPaobjectID()));
-            }else if(getDbPersistent() instanceof CapControlSubstation) {
-                CapControlSubstation sub = (CapControlSubstation) getDbPersistent();
-                com.cannontech.database.db.capcontrol.CapControlSubstation subThinger = sub.getCapControlSubstation();
-                int voltReductionPointId = subThinger.getVoltReductionPointId();
-                paoNameMap.put(voltReductionPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(voltReductionPointId).getPaobjectID()));
-            }
-            paoNameMap.put(0, "(none)");
+        
+        paoNameMap = new HashMap<Integer, String>();
+        List<Integer> pointIds = new ArrayList<Integer>();
+        
+        pointIds.add(getControlPoint(PointUnits.UOMID_KVAR));
+        pointIds.add(getControlPoint(PointUnits.UOMID_KW));
+        pointIds.add(getControlPoint(PointUnits.UOMID_KVOLTS));
+        
+        if(getDbPersistent() instanceof CapControlSubBus) {
+            CapControlSubstationBus subBus = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
+            pointIds.add(subBus.getPhaseB());
+            pointIds.add(subBus.getPhaseC());
+            pointIds.add(subBus.getVoltReductionPointId());
+            pointIds.add(subBus.getDisableBusPointId());
+            pointIds.add(subBus.getSwitchPointID());
+        } else if(getDbPersistent() instanceof CapControlFeeder) {
+            CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
+            pointIds.add(feeder.getCapControlFeeder().getPhaseB());
+            pointIds.add(feeder.getCapControlFeeder().getPhaseC());
+        } else if(getDbPersistent() instanceof CapControlArea) {
+            CapControlArea area = (CapControlArea) getDbPersistent();
+            pointIds.add(area.getCapControlArea().getVoltReductionPointId());
+        } else if(getDbPersistent() instanceof CapControlSpecialArea) {
+            CapControlSpecialArea area = (CapControlSpecialArea) getDbPersistent();
+            pointIds.add(area.getCapControlSpecialArea().getVoltReductionPointId());
+        } else if(getDbPersistent() instanceof CapControlSubstation) {
+            CapControlSubstation sub = (CapControlSubstation) getDbPersistent();
+            pointIds.add(sub.getCapControlSubstation().getVoltReductionPointId());
         }
+        
+        for( Integer pointId : pointIds) {
+            setPaoNameInMap(paoNameMap,pointId);
+        }
+        //Make 0 a (none)
+        paoNameMap.put(0, "(none)");
+
         return paoNameMap;
      }
-     
-    public void setPaoNameMap (Map<Integer, String> m) {
-         paoNameMap = m;
-     }
 
+    private void setPaoNameInMap(Map<Integer,String> map, int pointId) {
+        map.put(pointId, paoDao.getYukonPAOName(pointDao.getLitePoint(pointId).getPaobjectID()));
+    }
+     
     private int getControlPoint(int uomid) {
         int pointID = 0;
         if (getPAOBase() instanceof CapControlSubBus) {
