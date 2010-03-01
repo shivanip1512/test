@@ -47,6 +47,15 @@ FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
        AND DG.ParentDeviceGroupId = 0) DG2;
 /* End YUK-8433 */
 
+/* Start YUK-8431 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'AUTO_METER_NUMBER_FIRST',
+    Description = 'Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.'
+WHERE RolePropertyId = -1604;
+
+INSERT INTO YukonGroupRole values(-274,-1,-7,-1604,'(none)'); 
+/* End YUK-8431 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

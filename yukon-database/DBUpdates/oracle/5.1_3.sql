@@ -66,6 +66,17 @@ END;
 /* @end-block */
 /* End YUK-8433 */
 
+/* Start YUK-8431 */
+UPDATE YukonRoleProperty
+SET DefaultValue = 'AUTO_METER_NUMBER_FIRST',
+    Description = 'Defines the field used to lookup a meter by in Yukon. Valid values: AUTO_METER_NUMBER_FIRST, AUTO_DEVICE_NAME_FIRST, METER_NUMBER, DEVICE_NAME, or ADDRESS.'
+WHERE RolePropertyId = -1604;
+
+/* @error ignore-begin */
+INSERT INTO YukonGroupRole values(-274,-1,-7,-1604,'(none)');
+/* @error ignore-end */
+/* End YUK-8431 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
