@@ -40,6 +40,7 @@ TESTOBJS=\
 test_ccusim.obj \
 test_behavior_collection.obj \
 test_delay_behavior.obj \
+test_mct_consumption_multiplier.obj \
 
 
 CCU_SIMULATOR_BASE_OBJS=\
@@ -114,8 +115,8 @@ ccu710.obj:	yukon.h precompiled.h ctidbgmem.h Ccu710.h portlogger.h \
 		PlcTransmitter.h BehaviorCollection.h CommsBehavior.h \
 		CommInterface.h ctinexus.h netports.h cticonnect.h \
 		Simulator.h PlcInfrastructure.h Mct410.h smartmap.h \
-		boostutil.h dllbase.h dsm2.h readers_writer_lock.h \
-		critical_section.h
+		boostutil.h dllbase.h dsm2.h dsm2err.h words.h \
+		readers_writer_lock.h critical_section.h
 ccu711.obj:	yukon.h precompiled.h ctidbgmem.h ccu711.h ccu710.h \
 		portlogger.h logger.h dlldefs.h thread.h mutex.h guard.h \
 		numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h utility.h \
@@ -124,14 +125,15 @@ ccu711.obj:	yukon.h precompiled.h ctidbgmem.h ccu711.h ccu710.h \
 		CommsBehavior.h CommInterface.h ctinexus.h netports.h \
 		cticonnect.h fifo_multiset.h boostutil.h cti_asmc.h color.h \
 		ctidate.h simulator.h PlcInfrastructure.h Mct410.h smartmap.h \
-		dllbase.h dsm2.h readers_writer_lock.h critical_section.h
+		dllbase.h dsm2.h dsm2err.h words.h readers_writer_lock.h \
+		critical_section.h
 ccu_simulator.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PlcInfrastructure.h Mct410.h EmetconWords.h types.h ctitime.h \
 		dlldefs.h smartmap.h boostutil.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h dllbase.h \
 		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		readers_writer_lock.h critical_section.h Ccu710.h \
-		portlogger.h logger.h thread.h CtiPCPtrQueue.h \
+		dsm2err.h words.h readers_writer_lock.h critical_section.h \
+		Ccu710.h portlogger.h logger.h thread.h CtiPCPtrQueue.h \
 		PlcTransmitter.h BehaviorCollection.h CommsBehavior.h \
 		CommInterface.h ctinexus.h Ccu711.h fifo_multiset.h \
 		DelayBehavior.h cparms.h rwutil.h boost_time.h configkey.h \
@@ -139,12 +141,13 @@ ccu_simulator.obj:	yukon.h precompiled.h ctidbgmem.h \
 comminterface.obj:	yukon.h precompiled.h ctidbgmem.h CommInterface.h \
 		types.h ctinexus.h dlldefs.h netports.h cticonnect.h \
 		BehaviorCollection.h CommsBehavior.h
+commsbehaviorapplicator.obj:	yukon.h precompiled.h ctidbgmem.h
 delaybehavior.obj:	yukon.h precompiled.h ctidbgmem.h DelayBehavior.h \
 		CommsBehavior.h types.h logger.h dlldefs.h thread.h mutex.h \
 		guard.h numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h \
 		utility.h queues.h cticalls.h os2_2w32.h sorted_vector.h
 emetconwords.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWords.h \
-		types.h dlldefs.h cti_asmc.h
+		types.h dlldefs.h cti_asmc.h cticalls.h os2_2w32.h
 mct410.obj:	yukon.h precompiled.h ctidbgmem.h Mct410.h EmetconWords.h \
 		types.h ctitime.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		numstr.h clrdump.h CtiPCPtrQueue.h utility.h queues.h \
@@ -154,7 +157,7 @@ plcinfrastructure.obj:	yukon.h precompiled.h ctidbgmem.h \
 		dlldefs.h smartmap.h boostutil.h utility.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h dllbase.h \
 		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
-		readers_writer_lock.h critical_section.h
+		dsm2err.h words.h readers_writer_lock.h critical_section.h
 plctransmitter.obj:	yukon.h precompiled.h ctidbgmem.h PlcTransmitter.h
 portlogger.obj:	yukon.h precompiled.h ctidbgmem.h portlogger.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
@@ -164,8 +167,7 @@ precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 test_behavior_collection.obj:	yukon.h precompiled.h ctidbgmem.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h \
-		BehaviorCollection.h CommsBehavior.h logger.h thread.h \
-		mutex.h guard.h clrdump.h CtiPCPtrQueue.h
+		BehaviorCollection.h CommsBehavior.h
 test_ccusim.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
 		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
@@ -179,4 +181,7 @@ test_delay_behavior.obj:	yukon.h precompiled.h ctidbgmem.h boostutil.h \
 		types.h numstr.h sorted_vector.h BehaviorCollection.h \
 		CommsBehavior.h DelayBehavior.h logger.h thread.h mutex.h \
 		guard.h clrdump.h CtiPCPtrQueue.h
+test_mct_consumption_multiplier.obj:	yukon.h precompiled.h ctidbgmem.h \
+		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
+		os2_2w32.h types.h numstr.h sorted_vector.h
 #ENDUPDATE#
