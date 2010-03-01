@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/23/2010 4:43:33 PM                         */
+/* Created on:     2/28/2010 2:10:08 AM                         */
 /*==============================================================*/
 
 
@@ -2794,6 +2794,7 @@ INSERT INTO DeviceGroup VALUES (22,'Disabled',15,'NOEDIT_NOMOD','METERS_DISABLED
 INSERT INTO DeviceGroup VALUES (23,'Disconnect',15,'NOEDIT_MOD','STATIC');
 INSERT INTO DeviceGroup VALUES (24,'Collars',23,'NOEDIT_MOD','METERS_DISCONNECT_COLLAR');
 INSERT INTO DeviceGroup VALUES (25,'CIS Substation',1,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup VALUES (26,'Substations',12,'NOEDIT_NOMOD','SUBSTATION_TO_ROUTE');
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId);

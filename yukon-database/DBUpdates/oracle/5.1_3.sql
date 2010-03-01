@@ -34,6 +34,38 @@ MODIFY ExecutionStatus VARCHAR2(100) NOT NULL;
 /* @error ignore-end */
 /* End YUK-8416 */ 
 
+/* Start YUK-8433 */
+/* @start-block */
+DECLARE
+    deviceGroupCount int;
+BEGIN
+    SELECT Count(*) INTO deviceGroupCount
+    FROM DeviceGroup DG
+    WHERE DG.GroupName = 'Substations'
+    AND DG.ParentDeviceGroupId = (SELECT DG1.DeviceGroupId
+                                  FROM DeviceGroup DG1
+                                  WHERE DG1.GroupName = 'System'
+                                  AND DG1.ParentDeviceGroupId = 0)
+    AND DG.Permission = 'NOEDIT_NOMOD'
+    AND DG.Type = 'SUBSTATION_TO_ROUTE';
+
+    IF deviceGroupCount = 0 THEN
+        INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+        SELECT DG1.DeviceGroupId, 'Substations', DG2.ParentDeviceGroupId, 'NOEDIT_NOMOD', 'SUBSTATION_TO_ROUTE'
+        FROM (SELECT MAX(DG.DeviceGroupID)+1 DeviceGroupId
+               FROM DeviceGroup DG
+               WHERE DG.DeviceGroupId < 100) DG1,
+              (SELECT MAX(DG.DeviceGroupId) ParentDeviceGroupId
+               FROM DeviceGroup DG
+               WHERE DG.GroupName = 'System'
+               AND DG.ParentDeviceGroupId = 0) DG2;
+
+    END IF;
+END;
+/
+/* @end-block */
+/* End YUK-8433 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
