@@ -45,6 +45,9 @@ private:
     bytes _memory_map;
 
     static const double Pi;
+    static const CtiTime Begin_of_kWh_time;
+
+    unsigned getHectoWattHours(const unsigned _address, const CtiTime c_time);
 
     static double makeValue_consumption        (const unsigned address, const CtiTime &c_time, const unsigned duration);
     static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);

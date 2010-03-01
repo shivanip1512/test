@@ -9,6 +9,8 @@ using namespace std;
 namespace Cti {
 namespace Simulator {
 
+const CtiTime Mct410Sim::Begin_of_kWh_time = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005),0, 0, 0);
+
 //  Temporary class to access protected functions in CtiDeviceMct410 and CtiDeviceMct4xx.
 //  To be deleted when we move functions to a shared location.
 struct mct410_utility : private CtiDeviceMCT410
@@ -290,16 +292,12 @@ bytes Mct410Sim::getAllCurrentMeterReadings()
 {
     bytes data = bytes(13, 0x00);
 
-    const unsigned now_seconds = CtiTime::now().seconds();
+    CtiTime now;
 
     //  ensure reads during the same minute will return the same value.
-    const unsigned beginningOfThisMinute = now_seconds - (now_seconds % SecondsPerMinute);
-    const unsigned beginningOfThisYear   = now_seconds - (now_seconds % SecondsPerYear);
+    now -= now.second();
 
-    const double   consumption_Ws  = makeValue_consumption(_address, beginningOfThisYear, beginningOfThisMinute - beginningOfThisYear);
-    const double   consumption_Wh  = consumption_Ws / SecondsPerHour;
-    //  hecto-watt-hours - the 100 watt-hour units the MCT returns
-    const unsigned consumption_hWh = consumption_Wh / 100.0;
+    const unsigned   consumption_hWh  = getHectoWattHours(_address, now);
 
     const unsigned char *byte_ptr = reinterpret_cast<const unsigned char *>(&consumption_hWh);
 
@@ -309,6 +307,17 @@ bytes Mct410Sim::getAllCurrentMeterReadings()
     return data;
 }
 
+unsigned Mct410Sim::getHectoWattHours(const unsigned _address, const CtiTime now )
+{
+    const double   consumption_Ws  = makeValue_consumption(_address, Begin_of_kWh_time, now.seconds() - Begin_of_kWh_time.seconds());
+    const double   consumption_Wh  = consumption_Ws / SecondsPerHour;
+    //  hecto-watt-hours - the 100 watt-hour units the MCT returns
+
+    // Mod the hWh by 1000000 to reduce the range from 0 to 999999,
+    // since the MCT Device reads hWh this corresponds to 99999.9 hWh
+    // which is the desired changeover point.
+    return int(consumption_Wh / 100.0) % 1000000;
+}
 
 bytes Mct410Sim::getAllRecentDemandReadings()
 {
@@ -338,6 +347,35 @@ double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c
 {
     if( duration == 0 )  return 0;
 
+    unsigned consumption_multiplier;
+
+    unsigned address_range = address % 1000;
+
+    if( address_range < 400 )               //  This section of if-statements is used to determine
+    {                                       //  the multiplier of the consumption used by a household
+        consumption_multiplier = 1.0;       //  based on the address of the meter. The following scale
+    }                                       //  shows how these multipliers are determined:
+    else if( address_range < 600 )          // 
+    {                                       //  Address % 1000:
+        consumption_multiplier = 2.0;       //     Range 000-399: 1x Consumption Multiplier - 40% of Households
+    }                                       //
+    else if( address_range < 800 )          //     Range 400-599: 2x Consumption Multiplier - 20% of Households
+    {                                       //
+        consumption_multiplier = 3.0;       //     Range 600-799: 3x Consumption Multiplier - 20% of Households
+    }                                       //
+    else if( address_range < 950 )          //     Range 800-949: 5x Consumption Multiplier - 15% of Households
+    {                                       //
+        consumption_multiplier = 5.0;       //     Range 950-994: 10x Consumption Multiplier - 4.5% of Households
+    }                                       //
+    else if( address_range < 995 )          //     Range 995-999: 20x Consumption Multiplier - 0.5% of Households
+    {                                       //
+        consumption_multiplier = 10.0;      //  This scale was made in order to represent more real-world
+    }                                       //  readings and model the fact that some households consume
+    else if( address_range < 1000 )         //  drastically more than other households do. The consumption 
+    {
+        consumption_multiplier = 20.0;
+    }
+
     const unsigned begin_seconds = c_time.seconds();
     const unsigned end_seconds   = c_time.seconds() + duration;
 
@@ -357,13 +395,17 @@ double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c
         distinguishing.                                                     */
     const double offset = (address % 1000) * 7.35 * 3600000;
 
-    const double amp_year =  1000.0;
+    /*  These multipliers affect the amplification of the curve for the 
+        consumption. amp_year being set at 700.0 gives a normalized
+        curve for the meter which results in a 1x Consumption Multiplier
+        calculating to about 775-875 kWh per month, as desired.             */
+    const double amp_year =  700.0;
     const double amp_day  =  500.0;
 
 //  TODO-P3: move all value computation into policy classes
-    return amp_year * (duration + year_period_reciprocal * (sin(begin_seconds * year_period) - sin(end_seconds * year_period))) +
+    return (amp_year * (duration + year_period_reciprocal * (sin(begin_seconds * year_period) - sin(end_seconds * year_period))) +
            amp_day  * (duration + day_period_reciprocal  * (sin(begin_seconds * day_period)  - sin(end_seconds * day_period))) +
-           offset;
+           offset) * consumption_multiplier;
 }
 
 //  Generate output using two cosine waves - 1 year period and 1 day period.
