@@ -17,39 +17,56 @@ BOOST_AUTO_TEST_CASE(test_delay_behavior)
     std::auto_ptr<CommsBehavior> d(new DelayBehavior());
     d->setChance(100);
 
-    behaviorCollection.push_back_behavior(d);
+    behaviorCollection.push_back(d);
 
-    bytes message, temp;
+    bytes message, reference;
+
+    // Pushing data onto each vector. The delayBehavior should set the
+    // message vector to be empty and hold onto the data that was sent
+    // into the behavior, while reference retains its data.
     message.push_back(0x04);
     message.push_back(0x08);
     message.push_back(0x0F);
-    temp.push_back(0x04);
-    temp.push_back(0x08);
-    temp.push_back(0x0F);
+    reference.push_back(0x04);
+    reference.push_back(0x08);
+    reference.push_back(0x0F);
 
+    // Ensure that the message size is indeed 3 after the 3 bytes were pushed on. 
     BOOST_CHECK_EQUAL(message.size(), 3);
 
     behaviorCollection.processMessage(message);
 
+    // The delayBehavior should have emptied the message vector and held onto its contents.
+    // After the message has been delayed, this vector should be of size 0.
     BOOST_CHECK_EQUAL(message.size(), 0);
 
+    // Push more data onto each of the vectors.
     message.push_back(0x10);
     message.push_back(0x17);
     message.push_back(0x2A);
-    temp.push_back(0x10);
-    temp.push_back(0x17);
-    temp.push_back(0x2A);
+    reference.push_back(0x10);
+    reference.push_back(0x17);
+    reference.push_back(0x2A);
 
     behaviorCollection.processMessage(message);
 
+    // After message has been processed the second time it should return with the 
+    // data that was initially delayed as well as all its current data.
+    // Since 3 bytes were added the first time and another 3 have been added
+    // this most recent time, the size should be 6.
     BOOST_CHECK_EQUAL(message.size(), 6);
-    BOOST_CHECK_EQUAL(message.size(), temp.size());
 
-    if (message.size() == temp.size())
+    // Both message and reference should be of size 6 after the last process.
+    BOOST_CHECK_EQUAL(message.size(), reference.size());
+
+    if (message.size() == reference.size())
     {
         for (int i = 0; i < message.size(); i++)
         {
-            BOOST_CHECK_EQUAL(message.at(i), temp.at(i));
+            // Check to see that the delayBehavior correctly 
+            // processed the message and put the information back
+            // in the intended order to match the reference vector.
+            BOOST_CHECK_EQUAL(message.at(i), reference.at(i));
         }
     }
 }

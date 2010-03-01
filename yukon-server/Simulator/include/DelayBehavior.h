@@ -10,7 +10,7 @@ class DelayBehavior : public CommsBehavior
 {
 public:
     DelayBehavior();
-    virtual void applyBehavior(bytes &message);
+    virtual void apply(bytes &message);
     void setChance(int chance);
 
 private:

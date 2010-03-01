@@ -11,14 +11,14 @@ class IntBehavior
 public:
     typedef int target_type;
 
-    virtual void applyBehavior(target_type &value)=0;
+    virtual void apply(target_type &value)=0;
 };
 
 class MultByTwentyBehavior : public IntBehavior
 {
 public:
     MultByTwentyBehavior() {};
-    virtual void applyBehavior(int &value)
+    virtual void apply(int &value)
     {
             value *= 20;
     }
@@ -28,7 +28,7 @@ class AddOneBehavior : public IntBehavior
 {
 public:
     AddOneBehavior() {};
-    virtual void applyBehavior(int &value)
+    virtual void apply(int &value)
     {
         value += 1;
     }
@@ -42,8 +42,8 @@ BOOST_AUTO_TEST_CASE(test_behavior_collection)
     BehaviorCollection<IntBehavior> behaviorCollection;
     std::auto_ptr<IntBehavior> multiply(new MultByTwentyBehavior());
     std::auto_ptr<IntBehavior> add(new AddOneBehavior());
-    behaviorCollection.push_back_behavior(multiply);
-    behaviorCollection.push_back_behavior(add);
+    behaviorCollection.push_back(multiply);
+    behaviorCollection.push_back(add);
 
     int value = 3;
 
@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(test_behavior_collection)
     
     BOOST_CHECK_EQUAL(value, 61);
 
-    behaviorCollection.emptyBehaviors();
+    behaviorCollection.clear();
 
     value = 10;
 
     std::auto_ptr<IntBehavior> multiply2(new MultByTwentyBehavior());
     std::auto_ptr<IntBehavior> add2(new AddOneBehavior());
-    behaviorCollection.push_back_behavior(add2);
-    behaviorCollection.push_back_behavior(multiply2);
+    behaviorCollection.push_back(add2);
+    behaviorCollection.push_back(multiply2);
 
     behaviorCollection.processMessage(value);
 

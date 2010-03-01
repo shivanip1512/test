@@ -34,6 +34,7 @@ public:
     CommsIn  &asInput()  { return *(static_cast<CommsIn *> (this)); };
     CommsOut &asOutput() { return *(static_cast<CommsOut *>(this)); };
     virtual bool write(const bytes &buf);
+private:
     virtual bool writeMessage(const bytes &buf)=0;
     bool ProcessMessage(bytes &buf);
 };

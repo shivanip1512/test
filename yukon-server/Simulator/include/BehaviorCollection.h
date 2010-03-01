@@ -24,19 +24,19 @@ public:
     error_t processMessage(Type &value)
     {
         boost::ptr_vector<T>::iterator itr = _behaviors.begin();
-        for(;itr != _behaviors.end(); itr++)
+        for (;itr != _behaviors.end(); itr++)
         {
-            (itr)->applyBehavior(value);
+            (itr)->apply(value);
         }
 
         return error_t::success;
     }
-    error_t push_back_behavior(std::auto_ptr<T> behavior)
+    error_t push_back(std::auto_ptr<T> behavior)
     {
         _behaviors.push_back(behavior);
         return error_t::success;
     }
-    error_t emptyBehaviors()
+    error_t clear()
     {
         _behaviors.clear();
         return error_t::success;

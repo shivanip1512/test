@@ -217,7 +217,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
     SocketComms socket_interface(mySocket, 1200);
     string str;
 
-    if( !(str = gConfigParms.getValueAsString("SIMULATOR_DELAY_BEHAVIOR_ENABLED")).empty() && (!stricmp("TRUE", str.c_str())))
+    if( gConfigParms.getValueAsInt("SIMULATOR_DELAY_CHANCE_TENTHS_OF_A_PERCENT") > 0 )
     {   
         int chance = gConfigParms.getValueAsInt("SIMULATOR_DELAY_CHANCE_TENTHS_OF_A_PERCENT");
         std::auto_ptr<CommsBehavior> d(new DelayBehavior());

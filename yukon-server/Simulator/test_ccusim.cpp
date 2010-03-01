@@ -1,15 +1,4 @@
 #include <winsock.h>
-/*-----------------------------------------------------------------------------*
-*
-* File:   test_ccusim.cpp
-*
-* Date:   11/30/2007
-* 
-* Commented-out functions remaining in the file generate a csv file for
-* testing kWh output.
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 
 #define BOOST_AUTO_TEST_MAIN "Test ccuSim"
 
@@ -22,11 +11,8 @@
 #include <locale>
 #include <fstream>
 
-#define BOOST_AUTO_TEST_MAIN "Test ccuSim"
-
 #include <boost/test/unit_test.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-
 
 #include <boost/tokenizer.hpp>
 #include "ctitime.h"
@@ -35,7 +21,6 @@
 #include "yukon.h"
 #include "rwutil.h"
 #include "numstr.h"
-#include "dev_mct410.h"
 #include "Mct410.h"
 
 #include "types.h"

@@ -1,5 +1,6 @@
 #include "yukon.h"
 #include "DelayBehavior.h"
+#include "logger.h"
 
 #include <ctime>
 #include <random>
@@ -11,7 +12,7 @@ DelayBehavior::DelayBehavior()
 {
 }
 
-void DelayBehavior::applyBehavior(bytes &message)
+void DelayBehavior::apply(bytes &message)
 {
     if (_delayed.empty())
     {
@@ -19,6 +20,10 @@ void DelayBehavior::applyBehavior(bytes &message)
         int chance = int(dist * 1000);
         if (chance < _chance)
         {
+            {
+                CtiLockGuard<CtiLogger> dout_guard(dout);
+                dout << "**********    Stalled Message    **********" << endl;
+            }
             _delayed = message;
             message.clear();
         }

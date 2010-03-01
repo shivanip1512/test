@@ -3,7 +3,6 @@
 #include "portlogger.h"
 #include "emetconwords.h"
 #include "PlcTransmitter.h"
-#include "BehaviorCollection.h"
 
 #include "CommInterface.h"
 #include "types.h"
