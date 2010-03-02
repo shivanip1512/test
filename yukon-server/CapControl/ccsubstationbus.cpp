@@ -9140,7 +9140,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
                 {
                     if (!currentFeeder->getLikeDayControlFlag() && !currentFeeder->getRecentlyControlledFlag())
                     {
-                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getControlUnits(), getMaxDailyOpsHitFlag()) )
+                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getStrategy()->getControlUnits(), getMaxDailyOpsHitFlag()) )
                         {
                             setLastOperationTime(currentDateTime);
                             setRecentlyControlledFlag(TRUE);
