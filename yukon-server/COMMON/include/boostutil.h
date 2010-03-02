@@ -16,3 +16,9 @@ namespace boost
     BOOST_CHECK_MESSAGE((x) == (y), "failed with index = " << (i)); \
     BOOST_CHECK_EQUAL((x), (y))
 
+//  for use with shared_ptr<>
+struct null_deleter
+{
+    void operator()(void const *) const  {}
+};
+

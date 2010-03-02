@@ -42,6 +42,8 @@ UnsolicitedHandler::~UnsolicitedHandler()
     delete_assoc_container(_device_records);
 
     haltLog();
+
+    UnsolicitedPortsQueue.removeClient(this);
 }
 
 
@@ -1168,7 +1170,15 @@ void UnsolicitedMessenger::addClient(UnsolicitedHandler *client)
 
     CtiLockGuard< CtiCriticalSection > lock(_client_mux);
 
-    _clients.push_back(client);
+    _clients.insert(client);
+}
+
+
+void UnsolicitedMessenger::removeClient(UnsolicitedHandler *client)
+{
+    CtiLockGuard< CtiCriticalSection > lock(_client_mux);
+
+    _clients.erase(client);
 }
 
 
