@@ -36,71 +36,12 @@ T *create_object(long objectid, string name)
     return object;
 }
 
-class test_DispatchPointDataRequest : public PointDataRequest
+
+// mock dispatch connection to test the point data request functionality
+class mock_DispatchConnection : public DispatchConnection
 {
-    public:
-        test_DispatchPointDataRequest()
-        {
-        }
-        virtual PointValueMap getPointValues()
-        {
-            return isComplete() ? _map : PointValueMap();   // return an empty map unless we are complete
-        }
+public:
 
-        virtual bool isComplete()
-        {
-            if ( _pointList.empty() )
-            {
-                return false;
-            }
-
-            bool isComplete = true;
-
-            for (std::list<long>::const_iterator b = _pointList.begin(), e = _pointList.end(); isComplete && (b != e); ++b)
-            {
-                if ( _map.find(*b) == _map.end() )  // if an element in the watchlist lacks a match in the map
-                {                                   //  we are NOT complete
-                    isComplete = false;
-                }
-            }
-
-            return isComplete;
-        }
-
-        virtual bool watchPoints(std::list<long> points)
-        {
-            if ( _pointList.empty() )
-            {
-                _pointList = points;
-            }
-
-            return ( ! _pointList.empty() );
-        }
-
-        void receivePointUpdate(const long ID, const PointValue & point)
-        {
-            if ( _pointList.end() != std::find(_pointList.begin(), _pointList.end(), ID) )
-            {
-                _map[ID] = point;
-            }
-        }
-
-    private:
-        PointValueMap _map;
-        std::list<long> _pointList;
+    mock_DispatchConnection() : DispatchConnection("mock_DispatchConnection", -1, "localhost") {  }
 };
 
-class test_PointDataRequestFactory : public PointDataRequestFactory
-{
-    public:
-        test_PointDataRequestFactory()
-        {
-
-        }
-
-        virtual PointDataRequestPtr createDispatchPointDataRequest(DispatchConnectionPtr conn)
-        {
-            PointDataRequestPtr pRequest(new test_DispatchPointDataRequest);
-            return pRequest;
-        }
-};
