@@ -21,6 +21,8 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 public class ScheduledGroupRequestExecutionJobWrapperFactory {
 
@@ -140,29 +142,25 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 	
 	public static Comparator<ScheduledGroupRequestExecutionJobWrapper> getNextRunComparator() {
 		
-		return new Comparator<ScheduledGroupRequestExecutionJobWrapper>() {
-			
-			@Override
-			public int compare(ScheduledGroupRequestExecutionJobWrapper o1, ScheduledGroupRequestExecutionJobWrapper o2) {
+		Ordering<Date> dateComparer = Ordering.natural().nullsLast();
+		Ordering<String> normalStringComparer = Ordering.natural();
 
-				Date o1NextRun = o1.getNextRun();
-				Date o2NextRun = o2.getNextRun();
-				
-				if (o1NextRun == null && o2NextRun == null) {
-					return o1.getName().compareTo(o2.getName());
-				} else if (o1NextRun == null) {
-					return 1;
-				} else if (o2NextRun == null) {
-					return -1;
-				} else {
-					int dateComp = o1NextRun.compareTo(o2NextRun);
-					if (dateComp == 0) {
-						return o1.getName().compareTo(o2.getName()); 
-					}
-					return dateComp;
+		Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNameOrdering = normalStringComparer
+			.onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, String>() {
+				public String apply(ScheduledGroupRequestExecutionJobWrapper from) {
+					return from.getName();
 				}
-			}
-		};
+			});
+
+		Ordering<ScheduledGroupRequestExecutionJobWrapper> jobNextRunOrdering = dateComparer
+			.onResultOf(new Function<ScheduledGroupRequestExecutionJobWrapper, Date>() {
+				public Date apply(ScheduledGroupRequestExecutionJobWrapper from) {
+					return from.getNextRun();
+				}
+			});
+		
+		Ordering<ScheduledGroupRequestExecutionJobWrapper> result = jobNextRunOrdering.compound(jobNameOrdering);
+		return result;
 	}
 	
 	@Autowired

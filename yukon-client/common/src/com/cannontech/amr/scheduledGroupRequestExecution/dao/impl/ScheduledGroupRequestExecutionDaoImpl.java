@@ -213,6 +213,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
 			try {
 				nextRun = this.jobManager.getNextRuntime(job, new Date());
 			} catch (ScheduleException e) {
+				// has no next run time, leave as null
 			}
 			
 			if (onetime.equals(ScheduleGroupRequestExecutionDaoOnetimeFilter.INCLUDE_ONETIME) || nextRun != null) {
