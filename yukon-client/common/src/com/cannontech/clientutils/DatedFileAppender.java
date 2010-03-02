@@ -10,6 +10,8 @@ import java.util.Date;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.cannontech.common.util.CtiUtilities;
+
 // Based on DatedFileAppender from http://minaret.biz/tips/datedFileAppender.html
 // Written by Geoff Mottram (geoff at minaret dot biz).
 // Placed in the public domain on August 28, 2004 by the author
@@ -378,14 +380,19 @@ public class DatedFileAppender extends FileAppender {
             super.activateOptions(); // close current file and open new file
             
             //append a header including version info at the start of the new log file
+            FileWriter fwriter = null;
             try{
-                FileWriter fwriter = new FileWriter(new File(fileName), true);
+                fwriter = new FileWriter(fileName, true);
                 String header = "LOG CONTINUES (Running since " + startDate + ")\n"
                                 + systemInfoString + "\n";
                 fwriter.write(header);
-                fwriter.close();
+                //fwriter.close();
             } catch(IOException e){
                 errorHandler.error("Unable to write header to new log file.");
+            } finally {
+                if(fwriter != null){    
+                    CtiUtilities.close(fwriter);
+                }
             }
         } // end outer if
 
@@ -401,16 +408,21 @@ public class DatedFileAppender extends FileAppender {
             // also set isMaxSizeReached = true so no more logging occurs for the
             // day.
             isMaxFileSizeReached = true;
-           
+            
+            FileWriter fwriter = null;
             try {
-                FileWriter fw = new FileWriter(tempFile, true);
+                fwriter = new FileWriter(tempFile, true);
                 String output = "The maximum file size of " + maxFileSize 
                                 + " bytes has been reached, logging has been turned off for today.\n";
-                fw.write("\n");
-                fw.write(output);
-                fw.close();
+                fwriter.write("\n");
+                fwriter.write(output);
+                fwriter.close();
             } catch (IOException e) {
                 errorHandler.error("Unable to write to log file--max file size exceeded for the day.");
+            } finally {
+                if(fwriter != null){
+                    CtiUtilities.close(fwriter);
+                }
             }
         }
 
