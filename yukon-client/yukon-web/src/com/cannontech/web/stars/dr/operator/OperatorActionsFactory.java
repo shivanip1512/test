@@ -91,9 +91,14 @@ public class OperatorActionsFactory {
 		
 		// accountLog
 		SimpleMenuOptionLink accountLogActionLink = new SimpleMenuOptionLink("accountLog", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.accountLog"));
-		accountLogActionLink.setLinkUrl("/spring/stars/operator/general/accountLog?" + queryString);
+		accountLogActionLink.setLinkUrl("/spring/stars/operator/general/account/accountLog?" + queryString);
 		menuOptions.add(accountLogActionLink);
-		
+
+        // FAQ
+        SimpleMenuOptionLink faqActionLink = new SimpleMenuOptionLink("FAQ", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.faq"));
+        faqActionLink.setLinkUrl("/spring/stars/operator/faq?" + queryString);
+        menuOptions.add(faqActionLink);
+
 		return new LeftSideContextualMenuOptionsProducer(menuOptions, selectedMenuId);
 	}
 

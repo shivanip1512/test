@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator.general;
 
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -154,7 +156,29 @@ public class OperatorGeneralAccountController {
 		return "redirect:/spring/stars/operator/home";
 	}
 	
-	// INIT BINDER
+	// ACCOUNT LOG
+    @RequestMapping(value = "/operator/general/account/accountLog")
+    public String accountLog(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+        
+        int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
+        int energyCompanyId = ServletRequestUtils.getRequiredIntParameter(request, "energyCompanyId");
+
+        
+        ArrayList<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountId);
+        modelMap.addAttribute("accountEvents",accountEvents);
+        
+        // basics
+        modelMap.addAttribute("accountId", accountId);
+        modelMap.addAttribute("energyCompanyId", energyCompanyId);
+        
+        // leftSideContxtualMenuLinks
+        LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = OperatorActionsFactory.getLeftSideContxtualMenuLinks(accountId, energyCompanyId, "general", userContext);
+        modelMap.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+        
+        return "operator/general/account/accountLog.jsp";
+    }
+	
+    // INIT BINDER
 	@InitBinder
 	public void initBinder(WebDataBinder binder) {
 		
