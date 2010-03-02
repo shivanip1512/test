@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == subbus->getLikeDayControlFlag());
     BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
     BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
 
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == subbus->getLikeDayControlFlag());
     BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
     BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
 
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(test_substationBus_likeday_individualfeeder)
 
     subbus->performDataOldAndFallBackNecessaryCheck();
 
-    BOOST_CHECK(FALSE == subbus->getLikeDayControlFlag());
+    BOOST_CHECK(TRUE == subbus->getLikeDayControlFlag());
     BOOST_CHECK(TRUE == feeder1->getLikeDayControlFlag());
     BOOST_CHECK(TRUE == subbus->getBusUpdatedFlag());
 

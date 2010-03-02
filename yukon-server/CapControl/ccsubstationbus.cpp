@@ -509,8 +509,8 @@ DOUBLE CtiCCSubstationBus::getCurrentVarLoadPointValue() const
         return _altSubControlValue;
     }
     if(getPrimaryBusFlag() &&
-       !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
-       !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit))
+       (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
+       !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit)))
     {
         return _altSubVarVal;
     }
@@ -9138,7 +9138,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
                 CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
                 if( !currentFeeder->getDisableFlag() )
                 {
-                    if( currentFeeder->checkForAndProvideNeededFallBackControl(currentDateTime,pointChanges,ccEvents,pilMessages))                    {
+                    if (!currentFeeder->getLikeDayControlFlag() && !currentFeeder->getRecentlyControlledFlag())
+                    {
+                        if( currentFeeder->checkForAndProvideNeededIndividualControl(currentDateTime, pointChanges, ccEvents, pilMessages, currentFeeder->getPeakTimeFlag(), getDecimalPlaces(), getControlUnits(), getMaxDailyOpsHitFlag()) )
+                        {
+                            setLastOperationTime(currentDateTime);
+                            setRecentlyControlledFlag(TRUE);
+                            setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
+                        }
+                    }
+                    else if( currentFeeder->checkForAndProvideNeededFallBackControl(currentDateTime,pointChanges,ccEvents,pilMessages))                    {
                         setLastOperationTime(currentDateTime);
                     }
                     setBusUpdatedFlag(TRUE);
@@ -9241,7 +9250,7 @@ void CtiCCSubstationBus::performDataOldAndFallBackNecessaryCheck()
 
         if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod))
         {
-            performDataOldAndFallBackNecessaryCheckOnFeeders();
+            subBusFlag = performDataOldAndFallBackNecessaryCheckOnFeeders();
         }
         else
         {
