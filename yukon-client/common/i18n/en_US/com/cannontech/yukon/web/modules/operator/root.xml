@@ -20,5 +20,6 @@
     <entry key="yukon.web.modules.operator.accountAction.serviceHistory">Service History</entry>
     <entry key="yukon.web.modules.operator.accountAction.changeLogin">Change Login</entry>
     <entry key="yukon.web.modules.operator.accountAction.accountLog">Account Log</entry>
+    <entry key="yukon.web.modules.operator.accountAction.faq">FAQ</entry>
 
 </properties>
