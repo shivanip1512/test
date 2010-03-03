@@ -444,7 +444,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 //calculate estimated power factor of the bus if current bank switches state
 
                                 state->_estimated[currentBank->getPaoId()].powerFactor =
-                                    subbus->calculatePowerFactor(varValue, wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) );
+                                    subbus->calculatePowerFactor(varValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) , wattValue);
 
                                 //calculate estimated weight of the bus if current bank switches state
 
