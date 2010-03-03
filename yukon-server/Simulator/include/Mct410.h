@@ -48,7 +48,6 @@ private:
     static const CtiTime DawnOfTime;
 
     unsigned getHectoWattHours(const unsigned _address, const CtiTime c_time);
-    static double getConsumptionMultiplier(const unsigned address);
 
     static double makeValue_consumption        (const unsigned address, const CtiTime &c_time, const unsigned duration);
     static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);
@@ -126,6 +125,9 @@ public:
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
     bool read (const words_t &request_words, words_t &response_words);
     bool write(const words_t &request_words);
+
+    // Moved to public for unit testing.
+    static double getConsumptionMultiplier(const unsigned address);
 };
 
 }

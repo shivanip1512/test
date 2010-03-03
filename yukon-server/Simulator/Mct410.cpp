@@ -328,7 +328,8 @@ bytes Mct410Sim::getAllCurrentMeterReadings()
 
 unsigned Mct410Sim::getHectoWattHours(const unsigned _address, const CtiTime now )
 {
-    const double   consumption_Ws  = makeValue_consumption(_address, DawnOfTime, now.seconds() - DawnOfTime.seconds());
+    const unsigned duration = now.seconds() - DawnOfTime.seconds();
+    const double   consumption_Ws  = makeValue_consumption(_address, DawnOfTime, duration);
     const double   consumption_Wh  = consumption_Ws / SecondsPerHour;
     //  hecto-watt-hours - the 100 watt-hour units the MCT returns
 
