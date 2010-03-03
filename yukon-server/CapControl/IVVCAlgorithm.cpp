@@ -443,8 +443,10 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                                 //calculate estimated power factor of the bus if current bank switches state
 
+                                double estVarValue = varValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() );
+
                                 state->_estimated[currentBank->getPaoId()].powerFactor =
-                                    subbus->calculatePowerFactor(varValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) , wattValue);
+                                    subbus->calculatePowerFactor(estVarValue, wattValue);
 
                                 //calculate estimated weight of the bus if current bank switches state
 
@@ -457,8 +459,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
 
-                                    dout << "Estimated Subbus Watts        : " << wattValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() ) << endl;
-                                    dout << "Estimated Subbus VARs         : " << varValue << endl;
+                                    dout << "Estimated Subbus Watts        : " << wattValue << endl;
+                                    dout << "Estimated Subbus VARs         : " << estVarValue << endl;
                                     dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << endl;
                                     dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << endl;
                                     dout << "Estimated Subbus Weight       : " << state->_estimated[currentBank->getPaoId()].busWeight << endl;
@@ -666,10 +668,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         break;
                     }
 
-                    // TODO: finish this here...
-                    // 
-                    // Something like the following - not sure what to pass it...
-                    // bank->updatePointResponseDeltas( .?. )
+                    // IS THIS RIGHT?
+                    subbus->updatePointResponseDeltas();
 
                     state->setState(IVVCState::IVVC_WAIT);
                 }
