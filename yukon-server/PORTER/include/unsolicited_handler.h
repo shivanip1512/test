@@ -193,16 +193,17 @@ class UnsolicitedMessenger
 {
 private:
 
-    typedef std::list< UnsolicitedHandler * > client_list;
+    typedef std::set< UnsolicitedHandler * > client_collection;
 
     CtiCriticalSection _client_mux;
-    client_list _clients;
+    client_collection _clients;
 
 public:
 
     UnsolicitedMessenger() {};
 
     void addClient(UnsolicitedHandler *client);
+    void removeClient(UnsolicitedHandler *client);
 
     void sendMessageToClients(const CtiDBChangeMsg *msg);
 };
