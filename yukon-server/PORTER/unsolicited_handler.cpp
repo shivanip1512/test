@@ -932,7 +932,7 @@ bool UnsolicitedHandler::processDnpInbound(device_record &dr)
 
         processCommStatus(status, dr.id, dr.id, om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr.device));
 
-        if( status && !dr.device->isTransactionComplete() && dr.work.outbound.front() )
+        if( status && !dr.device->isTransactionComplete() && !dr.work.outbound.empty() && dr.work.outbound.front() )
         {
             //  error, but we're going to keep going
             //    this is the equivalent of a "retry" in the old school code
