@@ -312,7 +312,7 @@ public class RawPointHistoryValidationService {
         SqlBuilder sql2a = builder2.buildFor(DatabaseVendor.MS2000);
         sql2a.append("select top 2 rph.ChangeId, rph.Timestamp, rph.value")
              .append("from RAWPOINTHISTORY rph")
-             .append("where rph.POINTID = ").eq(workUnit.pointId)
+             .append("where rph.POINTID").eq(workUnit.pointId)
              .append("  and CHANGEID").lt(workUnit.thisValue.changeId)
              .append("  and Timestamp").gt(workUnit.thisValue.timestamp)
              .append("order by Timestamp, ChangeId");
