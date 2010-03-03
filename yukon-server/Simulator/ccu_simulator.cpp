@@ -215,11 +215,9 @@ void CcuPort(int portNumber, int strategy)
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 {
     SocketComms socket_interface(mySocket, 1200);
-    string str;
 
-    if( gConfigParms.getValueAsInt("SIMULATOR_DELAY_CHANCE_TENTHS_OF_A_PERCENT") > 0 )
+    if( int chance = gConfigParms.getValueAsInt("SIMULATOR_DELAY_CHANCE_TENTHS_OF_A_PERCENT") )
     {   
-        int chance = gConfigParms.getValueAsInt("SIMULATOR_DELAY_CHANCE_TENTHS_OF_A_PERCENT");
         std::auto_ptr<CommsBehavior> d(new DelayBehavior());
         d->setChance(chance);
         socket_interface.setBehavior(d);
