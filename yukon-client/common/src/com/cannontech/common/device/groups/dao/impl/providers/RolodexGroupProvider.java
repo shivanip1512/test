@@ -14,6 +14,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.Device;
 
 public class RolodexGroupProvider extends CompleteBinningDeviceGroupProviderBase<Character> {
     private PaoDao paoDao;
@@ -23,6 +24,7 @@ public class RolodexGroupProvider extends CompleteBinningDeviceGroupProviderBase
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct SUBSTRING(ypo.PAOName, 1, 1)");
         sql.append("from YukonPaObject ypo");
+        sql.append("where ypo.paobjectid").neq(Device.SYSTEM_DEVICE_ID);
         sql.append("order by SUBSTRING(ypo.PAOName, 1, 1)");
         List<Character> leadCharacters = getJdbcTemplate().query(sql.getSql(), new ParameterizedRowMapper<Character>() {
             public Character mapRow(ResultSet rs, int rowNum) throws SQLException {

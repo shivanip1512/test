@@ -1,6 +1,5 @@
 package com.cannontech.common.device.groups.service.impl;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,10 +12,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
-import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.MappingSet;
 
 public class CopyDeviceGroupServiceImpl implements CopyDeviceGroupService {
     
@@ -27,13 +23,8 @@ public class CopyDeviceGroupServiceImpl implements CopyDeviceGroupService {
     public void copyGroupAndDevicesToGroup(DeviceGroup fromGroup, StoredDeviceGroup toParent) {
      
         // copy devices in fromGroup to the the new parent
-        Set<Integer> deviceIdsToAdd = new HashSet<Integer>();
         Set<SimpleDevice> deviceList = deviceGroupDao.getChildDevices(fromGroup);
-        Set<Integer> deviceIdsInGroup = new MappingSet<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
-        for (Integer deviceId : deviceIdsInGroup) {
-            deviceIdsToAdd.add(deviceId);
-        }
-        deviceGroupMemberEditorDao.addDevicesById(toParent, deviceIdsToAdd.iterator());
+        deviceGroupMemberEditorDao.addDevices(toParent, deviceList);
         
         // loop over children groups of the fromGroup and recursively copy them to the newly copied group
         List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(fromGroup);

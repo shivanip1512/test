@@ -310,7 +310,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddressRange(
+        public List<PaoIdentifier> getPaosByAddressRange(
                 int startAddress, int endAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }

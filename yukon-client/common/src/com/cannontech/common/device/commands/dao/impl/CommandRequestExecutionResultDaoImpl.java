@@ -7,23 +7,24 @@ import java.util.List;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.RowAndFieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecutionResultDao, InitializingBean {
 
 	private static final RowAndFieldMapper<CommandRequestExecutionResult> rowAndFieldMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<CommandRequestExecutionResult> template;
     
@@ -33,10 +34,6 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     private static final String selectSuccessCountById;
     private static final String selectFailCountById;
     
-    private static final String selectDeviceIdsById;
-    private static final String selectSuccessDeviceIdsById;
-    private static final String selectFailDeviceIdsById;
-    
     static {
     	
 		selectResultIdsById = "SELECT CRER.CommandRequestExecResultId FROM CommandRequestExecResult CRER WHERE CommandRequestExecId = ? ORDER BY CompleteTime";
@@ -44,10 +41,6 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 		selectCountById = "SELECT COUNT(CRER.CommandRequestExecResultId) AS CrerCount FROM CommandRequestExecResult CRER WHERE CRER.CommandRequestExecId = ?";
 		selectSuccessCountById = selectCountById + " AND CRER.ErrorCode = 0";
 		selectFailCountById = selectCountById + " AND CRER.ErrorCode > 0";
-		
-		selectDeviceIdsById = "SELECT DISTINCT CRER.DeviceId FROM CommandRequestExecResult CRER WHERE CommandRequestExecId = ?";
-		selectSuccessDeviceIdsById = selectDeviceIdsById + " AND CRER.ErrorCode = 0";
-		selectFailDeviceIdsById = selectDeviceIdsById + " AND CRER.ErrorCode > 0";
 		
 		rowAndFieldMapper = new CommandRequestExecutionResultsRowAndFieldMapper();
     }
@@ -100,15 +93,29 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 		return simpleJdbcTemplate.queryForInt(selectFailCountById, commandRequestExecutionId);
 	}
 	
-	// GET DEVICE IDS BY CRE ID
-	public List<Integer> getDeviceIdsByExecutionId(int commandRequestExecutionId) {
-		return simpleJdbcTemplate.query(selectDeviceIdsById, new IntegerRowMapper(), commandRequestExecutionId);
+	private SqlStatementBuilder getBaseDeviceSqlForExecutionId(int commandRequestExecutionId) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT DISTINCT YPO.PAObjectID, YPO.Type");
+	    sql.append("FROM CommandRequestExecResult CRER");
+	    sql.append("  JOIN YukonPAObject YPO on CRER.DeviceId = YPO.PAObjectID");
+	    sql.append("WHERE CommandRequestExecId").eq(commandRequestExecutionId);
+	    return sql;
 	}
-	public List<Integer> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId) {
-		return simpleJdbcTemplate.query(selectSuccessDeviceIdsById, new IntegerRowMapper(), commandRequestExecutionId);
+
+	public List<PaoIdentifier> getDeviceIdsByExecutionId(int commandRequestExecutionId) {
+	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
+		return simpleJdbcTemplate.query(sql, new YukonPaoRowMapper());
 	}
-	public List<Integer> getFailDeviceIdsByExecutionId(int commandRequestExecutionId) {
-		return simpleJdbcTemplate.query(selectFailDeviceIdsById, new IntegerRowMapper(), commandRequestExecutionId);
+
+	public List<PaoIdentifier> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId) {
+	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
+	    sql.append("  AND CRER.ErrorCode = 0");
+		return simpleJdbcTemplate.query(sql, new YukonPaoRowMapper());
+	}
+	public List<PaoIdentifier> getFailDeviceIdsByExecutionId(int commandRequestExecutionId) {
+	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
+	    sql.append("  AND CRER.ErrorCode > 0");
+		return simpleJdbcTemplate.query(sql, new YukonPaoRowMapper());
 	}
     
     
@@ -120,7 +127,7 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+    public void setSimpleJdbcTemplate(YukonJdbcTemplate simpleJdbcTemplate) {
 		this.simpleJdbcTemplate = simpleJdbcTemplate;
 	}
     @Autowired

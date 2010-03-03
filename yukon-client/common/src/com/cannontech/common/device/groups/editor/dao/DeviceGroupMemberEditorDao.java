@@ -40,22 +40,15 @@ public interface DeviceGroupMemberEditorDao {
     public void addDevices(StoredDeviceGroup group, YukonDevice... device);
     
     /**
-     * Extracts the deviceId for each device and delegates to addDevicesById.
-     * @param group
-     * @param devices
+     * Add devices to the group. Illegal or duplicate devices will be silently ignored.
      */
-    public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
+    public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonDevice> devices);
     
     /**
-     * Add devices to the group by device id (yukon pao id). This is currently
-     * the fundamental add method (all other delegate to it).
-     * 
-     * Duplicates are silently ignored.
-     * @param group
-     * @param deviceIds
+     * Add devices to the group. Illegal or duplicate devices will be silently ignored.
      */
-    public void addDevicesById(StoredDeviceGroup group, Iterator<Integer> deviceIds);
-
+    public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonDevice> devices);
+    
     /**
      * Remove child devices under group that are contained in the devices collection.
      * Devices that exist in the collection put are not a member of the group are

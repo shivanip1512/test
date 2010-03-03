@@ -42,7 +42,6 @@
         <property name="copyDeviceGroupService" ref="copyDeviceGroupService" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         
-        <property name="groupMetersDao" ref="groupMetersDao" />
         <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
         <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
         

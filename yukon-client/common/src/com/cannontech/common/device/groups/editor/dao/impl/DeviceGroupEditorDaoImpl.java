@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,6 +17,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.device.groups.TemporaryDeviceGroupNotFoundException;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
@@ -38,6 +40,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
@@ -45,6 +48,8 @@ import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.google.common.collect.Lists;
 
 public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGroupMemberEditorDao, PartialDeviceGroupDao {
+    private final Logger log = YukonLogManager.getLogger(DeviceGroupEditorDaoImpl.class);
+    
     private YukonJdbcOperations jdbcTemplate;
     private PaoGroupsWrapper paoGroupsWrapper;
     private NextValueHelper nextValueHelper;
@@ -53,13 +58,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private StoredDeviceGroup rootGroupCache = null;
     
     @Transactional(propagation=Propagation.REQUIRED)
-    public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices) {
-        Collection<Integer> deviceIds = new MappingCollection<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
-        addDevicesById(group, deviceIds.iterator());
+    public void addDevices(StoredDeviceGroup group, Iterable<? extends YukonDevice> devices) {
+        addDevices(group, devices.iterator());
     }
     
-    @Override
-    public void addDevicesById(StoredDeviceGroup group, Iterator<Integer> deviceIds) {
+    @Transactional(propagation=Propagation.REQUIRED)
+    public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonDevice> devices) {
         
         if (!group.isModifiable()) {
             throw new UnsupportedOperationException("Cannot add devices to a non-modifiable group.");
@@ -70,14 +74,29 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("(DeviceGroupId, YukonPaoId)");
         sql.append("values");
         sql.append("(?, ?)");
-        while (deviceIds.hasNext()) {
-            Integer deviceId = deviceIds.next();
+        while (devices.hasNext()) {
+            YukonDevice device = devices.next();
+            if (!isDeviceValid(device)) {
+                log.info("skipping illegal device, group=" + group + ", deviceId=" + device);
+                continue;
+            }
             try {
-                jdbcTemplate.update(sql.toString(), group.getId(), deviceId);
+                jdbcTemplate.update(sql.toString(), group.getId(), device.getPaoIdentifier().getPaoId());
             } catch (DataIntegrityViolationException e) {
                 // ignore - tried to insert duplicate
             }
         }
+    }
+
+    private boolean isDeviceValid(YukonDevice device) {
+        if (device == null) {
+            return false;
+        }
+        boolean systemDevice = device.getPaoIdentifier().getPaoId() == Device.SYSTEM_DEVICE_ID;
+        if (systemDevice) {
+            return false;
+        }
+        return true;
     }
 
     public List<SimpleDevice> getChildDevices(StoredDeviceGroup group) {
@@ -582,5 +601,4 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory) {
         this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
     }
-
 }

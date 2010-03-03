@@ -25,9 +25,7 @@ import com.cannontech.common.bulk.iterator.CsvColumnReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory.FileMapperEnum;
-import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MappingIterator;
 import com.cannontech.common.util.ObjectMapper;
@@ -78,15 +76,11 @@ public class DeviceFileUploadCollectionProducer implements DeviceCollectionProdu
 
         InputStream inputStream = dataFile.getInputStream();
         
-        CloseableIterator<SimpleDevice> deviceIterator =
-            getDeviceIterator(inputStream, uploadType);
+        CloseableIterator<SimpleDevice> deviceIterator = getDeviceIterator(inputStream, uploadType);
         
         DeviceCollection groupCollection;
         try {
-            MappingIterator<YukonDevice, Integer> deviceIds =
-                new MappingIterator<YukonDevice, Integer>(deviceIterator,
-                                                          new YukonDeviceToIdMapper());
-            groupCollection = deviceGroupCollectionProducer.createDeviceGroupCollection(deviceIds, originalFilename);
+            groupCollection = deviceGroupCollectionProducer.createDeviceGroupCollection(deviceIterator, originalFilename);
         } catch (ObjectMappingException e) {
         	throw new DeviceCollectionCreationException(e.getMessage()); 
         } finally {

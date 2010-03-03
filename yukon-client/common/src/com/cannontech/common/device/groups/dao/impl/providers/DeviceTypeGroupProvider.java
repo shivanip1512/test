@@ -14,6 +14,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.device.Device;
 
 public class DeviceTypeGroupProvider extends CompleteBinningDeviceGroupProviderBase<String> {
     private PaoDao paoDao;
@@ -24,6 +25,7 @@ public class DeviceTypeGroupProvider extends CompleteBinningDeviceGroupProviderB
         sql.append("SELECT DISTINCT ypo.type");
         sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
+        sql.append("WHERE ypo.paobjectid").neq(Device.SYSTEM_DEVICE_ID);
         sql.append("ORDER BY ypo.type");
 
         ParameterizedRowMapper<String> mapper = new ParameterizedRowMapper<String>() {

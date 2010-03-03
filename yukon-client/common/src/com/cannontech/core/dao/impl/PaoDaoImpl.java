@@ -42,6 +42,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.database.db.device.DeviceRoutes;
@@ -392,30 +393,24 @@ public final class PaoDaoImpl implements PaoDao {
         return liteYukonPaobects;
     }
     
-    public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddressRange(int startAddress,
-            int endAddress) {
+    public List<PaoIdentifier> getPaosByAddressRange(int startAddress, int endAddress) {
 
-        List<LiteYukonPAObject> liteYukonPaobects = new ArrayList();
         try {
-            String sqlString = 
-                "SELECT pao.PAObjectID, pao.Category, pao.PAOName, " +
-                " pao.Type, pao.PAOClass, pao.Description, pao.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " +
-                " FROM " + YukonPAObject.TABLE_NAME+ " pao " + 
-                " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " +
-                " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " +        
-                " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " +
-                " where address >= ? AND address <= ?" +
-                " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
+        	SqlStatementBuilder sql = new SqlStatementBuilder();
+        	sql.append("SELECT pao.PAObjectID, pao.Type");
+        	sql.append("FROM YukonPAObject pao");
+        	sql.append(  "JOIN DeviceCarrierSettings DCS ON pao.PAOBJECTID = DCS.DEVICEID");
+        	sql.append("WHERE address").gte(startAddress);
+        	sql.append(  "and address").lte(endAddress);
+        	sql.append(  "and pao.PAObjectID").neq(Device.SYSTEM_DEVICE_ID);
+        	sql.append("ORDER BY pao.Category, pao.PAOClass, pao.PAOName");
             
-            liteYukonPaobects = jdbcOps.query(sqlString,
-                                              new Object[] { startAddress, endAddress },
-                                              litePaoRowMapper);
-
+           List<PaoIdentifier> result = yukonJdbcOperations.query(sql, new YukonPaoRowMapper());
+           
+           return result;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No liteYukonPaobjects found in (carrier) address range(" + startAddress + " - " + endAddress + ")");
+            throw new NotFoundException("No Paos found in (carrier) address range(" + startAddress + " - " + endAddress + ")");
         }
-
-        return liteYukonPaobects;
     }
     
     public long getObjectCountByAddressRange(int startAddress, int endAddress) {

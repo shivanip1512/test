@@ -15,11 +15,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
-import com.cannontech.common.bulk.mapper.LiteYukonPAObjectToYukonDeviceMapper;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.util.MappingList;
+import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 
@@ -29,18 +28,12 @@ import com.cannontech.web.bulk.model.DeviceCollectionProducer;
 public class DeviceAddressRangeCollectionProducer implements DeviceCollectionProducer {
 
     private PaoDao paoDao = null;
-    private LiteYukonPAObjectToYukonDeviceMapper deviceMapper;
 
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
     
-    @Autowired
-    public void setDeviceMapper(LiteYukonPAObjectToYukonDeviceMapper deviceMapper) {
-        this.deviceMapper = deviceMapper;
-    }
-
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.addressRange;
     }
@@ -71,9 +64,9 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
 
             public List<SimpleDevice> getDeviceList() {
 
-                List<LiteYukonPAObject> litePaoList = paoDao.getLiteYukonPaobjectsByAddressRange(startAddress,
+                List<PaoIdentifier> paoIdentifierList = paoDao.getPaosByAddressRange(startAddress,
                                                                                                  endAddress);
-                List<SimpleDevice> deviceList = new MappingList<LiteYukonPAObject, SimpleDevice>(litePaoList, deviceMapper);
+                List<SimpleDevice> deviceList = PaoCollections.asSimpleDeviceList(paoIdentifierList);
                 return deviceList;
             }
 

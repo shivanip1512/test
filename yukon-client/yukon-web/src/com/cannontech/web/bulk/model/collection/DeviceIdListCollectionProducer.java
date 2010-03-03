@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -17,8 +18,12 @@ import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.db.device.Device;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.bulk.model.DeviceCollectionProducer;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 
 /**
  * Implementation of DeviceCollectionProducer for an address range
@@ -42,6 +47,11 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
 
         final String ids = ServletRequestUtils.getStringParameter(request,
                                                                   getSupportedType().getParameterName("ids"));
+        
+        final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
+        
+        boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
+        Validate.isTrue(!containsSystemDevice, "cannont create DeviceCollection that contains the system device");
 
         return new ListBasedDeviceCollection() {
 
@@ -59,9 +69,8 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
 
                 List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
 
-                String[] idStrings = ids.split(",");
-                for (String id : idStrings) {
-                    SimpleDevice device = deviceDao.getYukonDevice(Integer.valueOf(id));
+                for (int id : idList) {
+                    SimpleDevice device = deviceDao.getYukonDevice(id);
                     deviceList.add(device);
                 }
 
@@ -70,7 +79,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             
             @Override
             public long getDeviceCount() {
-                return ids.split(",").length;
+                return idList.size();
             }
 
             @Override

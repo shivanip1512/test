@@ -25,6 +25,9 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -33,6 +36,7 @@ import com.cannontech.web.common.commandRequestExecution.CommandRequestExecution
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory;
 import com.cannontech.web.common.scheduledGroupRequestExecution.ScheduledGroupRequestExecutionJobWrapperFactory.ScheduledGroupRequestExecutionJobWrapper;
 import com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionUpdaterTypeEnum;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 public class CommandRequestExecutionResultsController extends MultiActionController {
@@ -184,20 +188,21 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		String commandRequestExecutionUpdaterTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "commandRequestExecutionUpdaterType");
 		CommandRequestExecutionUpdaterTypeEnum commandRequestExecutionType = CommandRequestExecutionUpdaterTypeEnum.valueOf(commandRequestExecutionUpdaterTypeStr);
 		
-		List<Integer> deviceIds;
+		List<PaoIdentifier> paoIdentifiers;
 		
 		if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.REQUEST_COUNT)) {
-			deviceIds = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
+			paoIdentifiers = commandRequestExecutionResultDao.getDeviceIdsByExecutionId(commandRequestExecutionId);
 		} else if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.SUCCESS_RESULTS_COUNT)) {
-			deviceIds = commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
+			paoIdentifiers = commandRequestExecutionResultDao.getSucessDeviceIdsByExecutionId(commandRequestExecutionId);
 		} else if (commandRequestExecutionType.equals(CommandRequestExecutionUpdaterTypeEnum.FAILURE_RESULTS_COUNT)) {
-			deviceIds = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
+			paoIdentifiers = commandRequestExecutionResultDao.getFailDeviceIdsByExecutionId(commandRequestExecutionId);
 		} else {
 			throw new IllegalArgumentException("Invalid commandRequestExecutionUpdaterType parameter: " + commandRequestExecutionUpdaterTypeStr);
 		}
 		
 		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup(null);
-		deviceGroupMemberEditorDao.addDevicesById(tempGroup, deviceIds.iterator());
+		ImmutableList<YukonDevice> deviceList = PaoCollections.asDeviceList(paoIdentifiers);
+		deviceGroupMemberEditorDao.addDevices(tempGroup, deviceList);
 		
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
 		mav.addAllObjects(deviceCollection.getCollectionParameters());

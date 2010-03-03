@@ -3,6 +3,7 @@ package com.cannontech.web.group;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.meter.dao.GroupMetersDao;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.groups.composed.dao.DeviceGroupComposedDao;
@@ -33,9 +33,9 @@ import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.predicate.NullPredicate;
 import com.cannontech.common.util.predicate.Predicate;
@@ -63,7 +63,6 @@ public class GroupEditorController extends MultiActionController {
     
     private DeviceCollectionFactory deviceCollectionFactory = null;
 
-    private GroupMetersDao groupMetersDao = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
 
     private final int maxToShowImmediately = 10;
@@ -313,51 +312,6 @@ public class GroupEditorController extends MultiActionController {
         }
     }
 
-    public ModelAndView addDevice(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        rolePropertyDao.verifyProperty(YukonRoleProperty.DEVICE_GROUP_MODIFY, userContext.getYukonUser());
-        
-        ModelAndView mav = new ModelAndView("redirect:/spring/group/editor/home");
-
-        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-        mav.addObject("groupName", groupName);
-
-        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
-        if (group.isModifiable()) {
-
-            String deviceId = ServletRequestUtils.getStringParameter(request, "deviceId");
-
-            List<Integer> deviceList = convertStringToIdList(deviceId);
-
-            deviceGroupMemberEditorDao.addDevicesById(group, deviceList.iterator());
-        } else {
-            mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
-            return mav;
-        }
-
-        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices");
-        mav.addObject("showDevices", showDevices);
-
-        return mav;
-    }
-
-    private List<Integer> convertStringToIdList(String deviceId) {
-        String[] ids = StringUtils.split(deviceId, ",");
-
-        List<Integer> deviceList = new ArrayList<Integer>();
-        for (String id : ids) {
-            id = id.trim();
-            
-            if (!StringUtils.isEmpty(id)) {
-                Integer idInt = Integer.parseInt(id);
-                deviceList.add(idInt);
-            }
-        }
-        return deviceList;
-    }
-
     public ModelAndView showAddDevicesByCollection(HttpServletRequest request,
             HttpServletResponse response) throws ServletException {
 
@@ -576,7 +530,7 @@ public class GroupEditorController extends MultiActionController {
             // Make sure we can remove the group
             if (removeGroup.isEditable()) {
                 
-                List<? extends YukonDevice> deviceList = groupMetersDao.getChildMetersByGroup(removeGroup);
+                Set<SimpleDevice> deviceList = deviceGroupDao.getChildDevices(removeGroup);
                 deviceGroupMemberEditorDao.removeDevices(removeGroup, deviceList);
             } else {
                 membersErrorMessage = "Cannot remove Group: " + removeGroup.getFullName();
@@ -617,11 +571,6 @@ public class GroupEditorController extends MultiActionController {
     public void setCopyDeviceGroupService(
             CopyDeviceGroupService copyDeviceGroupService) {
         this.copyDeviceGroupService = copyDeviceGroupService;
-    }
-    
-    @Required
-    public void setGroupMetersDao(GroupMetersDao groupMetersDao) {
-        this.groupMetersDao = groupMetersDao;
     }
     
     @Required

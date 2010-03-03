@@ -18,6 +18,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHelper {
@@ -114,13 +115,13 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     @Transactional
-    public DeviceCollection createDeviceGroupCollection(Iterator<Integer> deviceIds, String descriptionHint) {
+    public DeviceCollection createDeviceGroupCollection(Iterator<? extends YukonDevice> devices, String descriptionHint) {
         
         // step 1, create a new group with random name (will delete itself in 24 hours)
         final StoredDeviceGroup group = temporaryDeviceGroupService.createTempGroup(null);
         
         // step 2, add new devices
-        deviceGroupMemberEditorDao.addDevicesById(group, deviceIds);
+        deviceGroupMemberEditorDao.addDevices(group, devices);
         
         // step 3, build DeviceCollection
         DeviceCollection deviceCollection = buildDeviceCollection(group, descriptionHint);
