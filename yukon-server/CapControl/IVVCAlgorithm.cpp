@@ -467,20 +467,22 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         }
                     }
 
+                    // Search for the minimum bus weight
+
                     long    operatePaoId = -1;
-                    double  minimumEstVf = std::numeric_limits<double>::max();
+                    double  minimumEstBw = std::numeric_limits<double>::max();
 
                     for ( IVVCState::EstimatedDataMap::iterator eb = state->_estimated.begin(), ee = state->_estimated.end(); eb != ee; ++eb )
                     {
-                        if ( eb->second.flatness <= minimumEstVf )
+                        if ( eb->second.busWeight <= minimumEstBw )
                         {
-                            minimumEstVf = eb->second.flatness;
+                            minimumEstBw = eb->second.busWeight;
                             operatePaoId = eb->first;
                         }
                     }
 
                     if ( ( operatePaoId != -1 ) &&
-                         ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoId].flatness )   // outside of the window.
+                         ( currentBusWeight - strategy->getDecisionWeight(isPeakTime) ) > state->_estimated[operatePaoId].busWeight )
                     {
                         CtiTime now;
                         state->setTimeStamp(now);
