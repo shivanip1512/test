@@ -58,8 +58,8 @@
                                 <td class="${tableDataClass}">
                                     <b><cti:msg key="${program.displayName}"></cti:msg></b>
                                     
-                                    <c:if test="${program.chanceOfControl != 'NONE'}">
-                                        <cti:msg key="yukon.dr.consumer.chanceOfControl.${program.chanceOfControl}"/>
+                                    <c:if test="${!empty program.chanceOfControl}">
+                                        <spring:escapeBody>${program.chanceOfControl}</spring:escapeBody>
                                     </c:if>
                                     
                                     <table>

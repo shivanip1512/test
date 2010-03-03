@@ -47,6 +47,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
 
 @Controller

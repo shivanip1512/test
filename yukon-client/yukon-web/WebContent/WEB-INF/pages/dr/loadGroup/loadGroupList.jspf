@@ -7,20 +7,11 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:url var="submitUrl" value="${baseUrl}"/>
-<cti:url var="clearFilterUrl" value="${baseUrl}">
-    <c:if test="${!empty param.itemsPerPage}">
-        <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
-    </c:if>
+<tags:clearFilterUrl var="clearFilterUrl" value="${baseUrl}">
     <c:if test="${!empty param.programId}">
         <cti:param name="programId" value="${param.programId}"/>
     </c:if>
-    <c:if test="${!empty param.sort}">
-        <cti:param name="sort" value="${param.sort}"/>
-    </c:if>
-    <c:if test="${!empty param.descending}">
-        <cti:param name="descending" value="${param.descending}"/>
-    </c:if>
-</cti:url>
+</tags:clearFilterUrl>
 
 <script type="text/javascript">
     function clearFilter() {
@@ -36,15 +27,7 @@
         <c:if test="${!empty param.programId}">
             <input type="hidden" name="programId" value="${param.programId}"/>
         </c:if>
-        <c:if test="${!empty param.sort}">
-            <input type="hidden" name="sort" value="${param.sort}"/>
-        </c:if>
-        <c:if test="${!empty param.descending}">
-            <input type="hidden" name="descending" value="${param.descending}"/>
-        </c:if>
-        <c:if test="${!empty param.itemsPerPage}">
-            <input type="hidden" name="itemsPerPage" value="${param.itemsPerPage}"/>
-        </c:if>
+        <tags:sortFields backingBean="${backingBean}"/>
         <cti:msg var="minStr" key="yukon.web.modules.dr.loadGroupList.filter.min"/>
         <cti:msg var="maxStr" key="yukon.web.modules.dr.loadGroupList.filter.max"/>
         <cti:msg var="toStr" key="yukon.web.modules.dr.loadGroupList.filter.to"/>

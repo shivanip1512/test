@@ -27,17 +27,7 @@
 
     <c:set var="baseUrl" value="/spring/dr/scenario/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>
-    <cti:url var="clearFilterUrl" value="${baseUrl}">
-        <c:if test="${!empty param.itemsPerPage}">
-            <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
-        </c:if>
-        <c:if test="${!empty param.sort}">
-            <cti:param name="sort" value="${param.sort}"/>
-        </c:if>
-        <c:if test="${!empty param.descending}">
-            <cti:param name="descending" value="${param.descending}"/>
-        </c:if>
-    </cti:url>
+    <tags:clearFilterUrl var="clearFilterUrl" value="${baseUrl}"/>
 
     <script type="text/javascript">
     function clearFilter() {
@@ -48,15 +38,7 @@
     <cti:msg var="filterLabel" key="yukon.web.modules.dr.scenarioList.filters"/>
     <tags:simplePopup id="filterPopup" title="${filterLabel}">
     <form:form action="${submitUrl}" commandName="backingBean" method="get">
-        <c:if test="${!empty param.sort}">
-            <input type="hidden" name="sort" value="${param.sort}"/>
-        </c:if>
-        <c:if test="${!empty param.descending}">
-            <input type="hidden" name="descending" value="${param.descending}"/>
-        </c:if>
-        <c:if test="${!empty param.itemsPerPage}">
-            <input type="hidden" name="itemsPerPage" value="${param.itemsPerPage}"/>
-        </c:if>
+        <tags:sortFields backingBean="${backingBean}"/>
 
         <table cellspacing="10">
             <tr>

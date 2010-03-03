@@ -44,6 +44,7 @@ public class PickerController {
                    makeLocal(picker.getOutputColumns(), userContext));
         object.put("idFieldName", picker.getIdFieldName());
         response.addHeader("X-JSON", object.toString());
+        response.setContentType("text/plain");
 
         return "pickerDialog";
     }
@@ -71,6 +72,7 @@ public class PickerController {
         String pages = messageSourceAccessor.getMessage(pagesResolvable);
         object.put("pages", pages);
         response.addHeader("X-JSON", object.toString());
+        response.setContentType("text/plain");
     }
 
     /**

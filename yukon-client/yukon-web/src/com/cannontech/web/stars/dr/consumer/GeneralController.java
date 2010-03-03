@@ -23,7 +23,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
-import com.cannontech.stars.dr.program.model.ChanceOfControl;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -70,7 +69,7 @@ public class GeneralController extends AbstractConsumerController {
         // if any of the enrolled programs have a chance of control, show notification
         boolean showNotification = false;
         for(DisplayableProgram program : displayablePrograms) {
-        	if(program.getProgram().getChanceOfControl() != ChanceOfControl.NONE) {
+        	if(!StringUtils.isEmpty(program.getProgram().getChanceOfControl())) {
         		showNotification = true;
         		break;
         	}

@@ -10,7 +10,6 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.stars.dr.program.model.ChanceOfControl;
 import com.cannontech.stars.dr.program.model.Program;
 
 /**
@@ -47,8 +46,7 @@ public class ProgramRowMapper extends AbstractRowMapperWithBaseQuery<Program> {
         final Program program = new Program();
         program.setProgramId(rs.getInt("ProgramID"));
         
-        String chanceOfControlString = rs.getString("ChanceOfControl");
-        ChanceOfControl chanceOfControl = ChanceOfControl.valueOfName(chanceOfControlString);
+        String chanceOfControl = rs.getString("ChanceOfControl");
         program.setChanceOfControl(chanceOfControl);
         
         program.setDescription(rs.getString("Description"));

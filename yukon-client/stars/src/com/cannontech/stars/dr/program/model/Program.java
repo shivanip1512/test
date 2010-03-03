@@ -16,7 +16,7 @@ public class Program {
     private String controlPercentDescriptionIcon;
     private String environmentDescriptionIcon;
     private String applianceCategoryLogo;
-    private ChanceOfControl chanceOfControl;
+    private String chanceOfControl;
     private int applianceCategoryId;
     
     private String descriptionUrl;
@@ -106,11 +106,11 @@ public class Program {
         this.applianceCategoryLogo = applianceCategoryLogo;
     }
 
-    public ChanceOfControl getChanceOfControl() {
+    public String getChanceOfControl() {
         return chanceOfControl;
     }
 
-    public void setChanceOfControl(ChanceOfControl chanceOfControl) {
+    public void setChanceOfControl(String chanceOfControl) {
         this.chanceOfControl = chanceOfControl;
     }
     

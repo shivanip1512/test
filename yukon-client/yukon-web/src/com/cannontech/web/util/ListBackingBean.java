@@ -1,4 +1,4 @@
-package com.cannontech.web.dr;
+package com.cannontech.web.util;
 
 public class ListBackingBean {
     private String name = null;

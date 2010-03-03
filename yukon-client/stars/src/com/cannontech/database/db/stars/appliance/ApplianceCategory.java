@@ -23,9 +23,10 @@ public class ApplianceCategory extends DBPersistent {
     private String description = "";
     private Integer categoryID = new Integer( com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID );
     private Integer webConfigurationID = new Integer( CtiUtilities.NONE_ZERO_ID );
+    private boolean consumerSelectable = true;
 
     public static final String[] SETTER_COLUMNS = {
-        "Description", "CategoryID", "WebConfigurationID"
+        "Description", "CategoryID", "WebConfigurationID", "ConsumerSelectable"
     };
 
     public static final String[] CONSTRAINT_COLUMNS = { "ApplianceCategoryID" };
@@ -49,7 +50,8 @@ public class ApplianceCategory extends DBPersistent {
     		setApplianceCategoryID( getNextCategoryID() );
     		
         Object[] addValues = {
-            getApplianceCategoryID(), getDescription(), getCategoryID(), getWebConfigurationID()
+            getApplianceCategoryID(), getDescription(), getCategoryID(),
+            getWebConfigurationID(), consumerSelectable ? "Y" : "N"
         };
 
         add( TABLE_NAME, addValues );
@@ -58,7 +60,8 @@ public class ApplianceCategory extends DBPersistent {
     @Override
     public void update() throws java.sql.SQLException {
         Object[] setValues = {
-            getDescription(), getCategoryID(), getWebConfigurationID()
+            getDescription(), getCategoryID(), getWebConfigurationID(),
+            consumerSelectable ? "Y" : "N"
         };
 
         Object[] constraintValues = { getApplianceCategoryID() };
@@ -76,6 +79,7 @@ public class ApplianceCategory extends DBPersistent {
             setDescription( (String) results[0] );
             setCategoryID( (Integer) results[1] );
             setWebConfigurationID( (Integer) results[2] );
+            consumerSelectable = "y".equalsIgnoreCase((String) results[3]);
         }
         else
             throw new Error(getClass() + " - Incorrect number of results retrieved");
@@ -171,4 +175,11 @@ public class ApplianceCategory extends DBPersistent {
 		this.webConfigurationID = webConfigurationID;
 	}
 
+    public boolean getConsumerSelectable() {
+        return consumerSelectable;
+    }
+
+    public void setConsumerSelectable(boolean consumerSelectable) {
+        this.consumerSelectable = consumerSelectable;
+    }
 }

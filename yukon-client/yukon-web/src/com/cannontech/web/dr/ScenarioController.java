@@ -33,6 +33,7 @@ import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.ListBackingBean;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.SHOW_SCENARIOS)
