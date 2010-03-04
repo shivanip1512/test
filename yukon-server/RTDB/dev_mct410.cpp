@@ -977,7 +977,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-void CtiDeviceMCT410::returnErrorMessage( int retval, const CtiOutMessage *om, list< CtiMessage* > &retList, const string &error ) const
+void CtiDeviceMCT410::returnErrorMessage( int retval, OUTMESS *&om, list< CtiMessage* > &retList, const string &error ) const
 {
     CtiReturnMsg *errRet;
 
@@ -997,6 +997,9 @@ void CtiDeviceMCT410::returnErrorMessage( int retval, const CtiOutMessage *om, l
     {
         retList.push_back(errRet);
     }
+
+    delete om;
+    om = NULL;
 }
 
 
@@ -1037,9 +1040,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         if( uadd > 0x3fffff || uadd < 0 )
         {
             found = false;
-            nRet  = NoMethod;
+            nRet  = ExecutionComplete;
 
-            returnErrorMessage(NoMethod, OutMessage, retList,
+            returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid address \"" + CtiNumStr(uadd) + "\" for device \"" + getName() + "\", not sending");
         }
         else
@@ -1075,7 +1078,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         else
         {
             found = false;
-            nRet  = BADPARAM;
+            nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid Centron display configuration \"" + display + "\"");
@@ -1089,7 +1092,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         else
         {
             found = false;
-            nRet  = BADPARAM;
+            nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid Centron test duration \"" + CtiNumStr(test) + "\"");
@@ -1113,7 +1116,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             else
             {
                 found = false;
-                nRet  = BADPARAM;
+                nRet  = ExecutionComplete;
 
                 returnErrorMessage(BADPARAM, OutMessage, retList,
                                    "Invalid Centron multiplier (" + CtiNumStr(centron_ratio) + ")");
@@ -1190,7 +1193,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             ||  connect_delay > 10 )
         {
             found = false;
-            nRet  = BADPARAM;
+            nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
@@ -1219,7 +1222,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                          disconnect_minutes > 60 || connect_minutes > 60) )
             {
                 found = false;
-                nRet  = BADPARAM;
+                nRet  = ExecutionComplete;
 
                 returnErrorMessage(BADPARAM, OutMessage, retList,
                                    "Invalid disconnect cycle parameters (" + CtiNumStr(disconnect_minutes) + ", " + CtiNumStr(connect_minutes) + ")");
@@ -1242,9 +1245,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                           threshold > 60) )
         {
             found = false;
-            nRet  = NoMethod;
+            nRet  = ExecutionComplete;
 
-            returnErrorMessage(NoMethod, OutMessage, retList,
+            returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid outage threshold (" + CtiNumStr(threshold) + ") for device \"" + getName() + "\", not sending");
         }
         else
@@ -1266,9 +1269,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         if( freeze_day > 255 || freeze_day < 0 )
         {
             found = false;
-            nRet  = NoMethod;
+            nRet  = ExecutionComplete;
 
-            returnErrorMessage(NoMethod, OutMessage, retList,
+            returnErrorMessage(BADPARAM, OutMessage, retList,
                                "Invalid day of scheduled freeze (" + CtiNumStr(freeze_day) + ") for device \"" + getName() + "\", not sending");
         }
         else
@@ -1312,9 +1315,9 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         else
         {
             found = false;
-            nRet  = NoMethod;
+            nRet  = ExecutionComplete;
 
-            returnErrorMessage(NoMethod, OutMessage, retList,
+            returnErrorMessage(MISPARAM, OutMessage, retList,
                                "Invalid request: Config Byte needs to be specified");
         }
 
@@ -1477,7 +1480,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
                 temp += printable_date(_daily_read_info.request.begin);
             }
 
-            nRet = ErrorCommandAlreadyInProgress;
+            nRet  = ExecutionComplete;
             returnErrorMessage(ErrorCommandAlreadyInProgress, OutMessage, retList, temp);
         }
         else
@@ -1509,19 +1512,19 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision)
                 && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
-                nRet = ErrorInvalidSSPEC;
+                nRet  = ExecutionComplete;
                 returnErrorMessage(ErrorInvalidSSPEC, OutMessage, retList,
                                    getName() + " / Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( channel < 1 || channel > 3 )
             {
-                nRet = BADPARAM;
+                nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
-                nRet = BADPARAM;
+                nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
             }
@@ -1535,6 +1538,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( date_begin < Today - 92 )  //  must be no more than 92 days ago
                 {
+                    nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Date out of range for daily read detail request; must be less than 3 months ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
@@ -1579,19 +1583,19 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
 
                 if( date_begin < Today - 92 )
                 {
-                    nRet = BADPARAM;
+                    nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Invalid begin date for multi-day daily read request, must be less than 92 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( date_end < date_begin )
                 {
-                    nRet = BADPARAM;
+                    nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else if( date_end > Yesterday )    //  must end on or before yesterday
                 {
-                    nRet = BADPARAM;
+                    nRet  = ExecutionComplete;
                     returnErrorMessage(BADPARAM, OutMessage, retList,
                                        getName() + " / Invalid end date for multi-day daily read request; must be before today (" + parse.getsValue("daily_read_date_end") + ")");
                 }
@@ -1621,11 +1625,13 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
             else if( channel != 1 )
             {
+                nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
+                nRet  = ExecutionComplete;
                 returnErrorMessage(BADPARAM, OutMessage, retList,
                                    getName() + " / Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
             }

@@ -586,9 +586,6 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
 
                             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
-                            found = false;
-                            nRet  = BADPARAM;
-
                             CtiString time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
 
                             if( parse.isKeyValid("lp_time_start") )
@@ -612,7 +609,12 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
 
                             ReturnMsg->setResultString(time_error_string);
 
-                            retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                            retMsgHandler( OutMessage->Request.CommandStr, BADPARAM, ReturnMsg, vgList, retList, false );
+
+                            delete OutMessage;
+                            OutMessage = 0;
+                            found = false;
+                            nRet  = ExecutionComplete;
 
                             InterlockedExchange(&_llpInterest.in_progress, false);
                         }
@@ -693,7 +695,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
                                 ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, NoError, ReturnMsg, vgList, retList, true );
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorDeviceNotReady, ReturnMsg, vgList, retList, false );
 
                                 _llpInterest.time     = 0;
                                 _llpInterest.time_end = 0;
@@ -702,7 +704,10 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
 
                                 InterlockedExchange(&_llpInterest.in_progress, false);
 
+                                nRet = ExecutionComplete;
                                 found = false;
+                                delete OutMessage;
+                                OutMessage = 0;
                             }
 
                             setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time,         _llpInterest.time);
@@ -740,7 +745,13 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
                                 ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList, false );
+
+                                delete OutMessage;
+                                OutMessage = 0;
+                                found = false;
+                                nRet  = ExecutionComplete;
+
                                 InterlockedExchange(&_llpPeakInterest.in_progress, false);
                             }
                         }

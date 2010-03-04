@@ -2838,7 +2838,14 @@ INT CtiDeviceMCT::executeControl(CtiRequestMsg                  *pReq,
                     ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
                     ReturnMsg->setResultString(getName() + " / Disconnect command cannot be sent to an empty (zero) address");
 
-                    retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                    // Error is handled here, put it on the ret list and get out of here!
+                    // Note this bypasses the later setting to error, ect...
+                    retMsgHandler( OutMessage->Request.CommandStr, ErrorNoDisconnect, ReturnMsg, vgList, retList, false );
+                    delete OutMessage;
+                    OutMessage = NULL;
+                    // *******    YIKES   *******  !!!!!!!!
+                    return NoError;
+                    // *******    YIKES   *******  !!!!!!!!
                 }
 
                 found = false;
