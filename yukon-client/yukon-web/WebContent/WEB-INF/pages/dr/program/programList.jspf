@@ -7,14 +7,23 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:url var="submitUrl" value="${baseUrl}"/>
-<tags:clearFilterUrl var="clearFilterUrl" value="${baseUrl}">
+<cti:url var="clearFilterUrl" value="${baseUrl}">
+    <c:if test="${!empty param.itemsPerPage}">
+        <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
+    </c:if>
+    <c:if test="${!empty param.sort}">
+        <cti:param name="sort" value="${param.sort}"/>
+    </c:if>
+    <c:if test="${!empty param.descending}">
+        <cti:param name="descending" value="${param.descending}"/>
+    </c:if>
     <c:if test="${!empty param.controlAreaId}">
         <cti:param name="controlAreaId" value="${param.controlAreaId}"/>
     </c:if>
     <c:if test="${!empty param.scenarioId}">
         <cti:param name="scenarioId" value="${param.scenarioId}"/>
     </c:if>
-</tags:clearFilterUrl>
+</cti:url>
 
 <script type="text/javascript">
 function clearFilter() {

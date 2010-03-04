@@ -264,7 +264,8 @@ Picker.prototype = {
 	 * renderTalbeResults to update the table itself and then updates the
 	 * previous and next buttons appropriately.
 	 */
-	updateSearchResults: function(transport, json) {
+	updateSearchResults: function(transport) {
+		var json = transport.responseText.evalJSON();
 		var newResultArea = this.renderTableResults(json);
 		this.updatePagingArea(json);
 		var oldResultArea = $(this.resultAreaId);
@@ -288,7 +289,7 @@ Picker.prototype = {
 		}
 	},
 
-	ajaxError: function(transport, json) {
+	ajaxError: function(transport) {
 		this.inSearch = false;
 		this.hideBusy();
 		this.resultsDiv.innerHTML = '';

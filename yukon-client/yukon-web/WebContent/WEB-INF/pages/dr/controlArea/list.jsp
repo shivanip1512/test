@@ -27,7 +27,17 @@
 
     <c:set var="baseUrl" value="/spring/dr/controlArea/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>
-    <tags:clearFilterUrl var="clearFilterUrl" value="${baseUrl}"/>
+    <cti:url var="clearFilterUrl" value="${baseUrl}">
+        <c:if test="${!empty param.itemsPerPage}">
+            <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
+        </c:if>
+        <c:if test="${!empty param.sort}">
+            <cti:param name="sort" value="${param.sort}"/>
+        </c:if>
+        <c:if test="${!empty param.descending}">
+            <cti:param name="descending" value="${param.descending}"/>
+        </c:if>
+    </cti:url>
 
     <script type="text/javascript">
     function clearFilter() {

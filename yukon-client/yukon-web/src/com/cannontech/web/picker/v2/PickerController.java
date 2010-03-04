@@ -1,8 +1,10 @@
 package com.cannontech.web.picker.v2;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
@@ -17,12 +19,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.v2.service.PickerFactory;
 import com.google.common.collect.Lists;
-
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 @Controller
 @RequestMapping("/v2/*")
@@ -44,7 +45,6 @@ public class PickerController {
                    makeLocal(picker.getOutputColumns(), userContext));
         object.put("idFieldName", picker.getIdFieldName());
         response.addHeader("X-JSON", object.toString());
-        response.setContentType("text/plain");
 
         return "pickerDialog";
     }
@@ -53,12 +53,14 @@ public class PickerController {
     public void search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
             Integer count, YukonUserContext userContext)
-            throws ServletException {
+            throws ServletException, IOException {
         int start = NumberUtils.toInt(startStr, 0);
         count = count == null ? 20 : count;
 
         Picker<?> picker = pickerService.getPicker(type);
         SearchResult<?> hits = picker.search(ss, start, count);
+
+        response.setContentType("application/json");
 
         JSONObject object = new JSONObject();
         object.put("hits", JSONObject.fromBean(hits));
@@ -71,8 +73,10 @@ public class PickerController {
                                              hits.getHitCount());
         String pages = messageSourceAccessor.getMessage(pagesResolvable);
         object.put("pages", pages);
-        response.addHeader("X-JSON", object.toString());
-        response.setContentType("text/plain");
+        ServletOutputStream out = response.getOutputStream();
+        out.print(object.toString());
+        System.out.println(object.toString());
+        out.close();
     }
 
     /**

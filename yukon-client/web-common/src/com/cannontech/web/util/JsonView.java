@@ -20,8 +20,5 @@ public class JsonView implements View {
         throws Exception {
         JSONObject object = new JSONObject(model);
         response.addHeader("X-JSON", object.toString());
-        // Setting the content type to plain text makes Firefox okay with the
-        // content being completely empty.
-        response.setContentType("text/plain");
     }
 }
