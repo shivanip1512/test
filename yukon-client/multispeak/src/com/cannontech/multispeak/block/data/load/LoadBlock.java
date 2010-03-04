@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.block.data.load;
 
 import java.io.IOException;
+
 import java.io.StringReader;
 import java.util.Date;
 
@@ -10,7 +11,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.BlockBase;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 import com.cannontech.tools.csv.CSVReader;
@@ -89,53 +90,53 @@ public class LoadBlock extends BlockBase{
         return "";
     }
     
-    //TODO - need to clean this up so that only the attribute that the pointValue is coming for is checked.
+    //TODO - need to clean this up so that only the attribute that the richPointData is coming for is checked.
     @Override
-    public void populate(Meter meter, PointValueHolder pointValue) {
+    public void populate(Meter meter, RichPointData richPointData) {
     	meterNumber = meter.getMeterNumber();
-        loadPointValue(meter, pointValue);
+        loadPointData(meter, richPointData);
     }
 
     /**
-     * Load the pointValue data into LoadBlock
+     * Load the richPointData data into LoadBlock
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-	private void loadPointValue(Meter meter, PointValueHolder pointValue) {
+	private void loadPointData(Meter meter, RichPointData richPointData) {
 		
-		if(!hasValidPointValue(pointValue)) {
+		if(!hasValidPointValue(richPointData)) {
 			//get out before doing any more work.
 			return;
 		}
 
-		populateByPointValue(meter, pointValue, BuiltInAttribute.LOAD_PROFILE);
-		populateByPointValue(meter, pointValue, BuiltInAttribute.KVAR);
-		populateByPointValue(meter, pointValue, BuiltInAttribute.VOLTAGE);
-		populateByPointValue(meter, pointValue, BuiltInAttribute.VOLTAGE_PROFILE);
+		populateByPointValue(meter, richPointData, BuiltInAttribute.LOAD_PROFILE);
+		populateByPointValue(meter, richPointData, BuiltInAttribute.KVAR);
+		populateByPointValue(meter, richPointData, BuiltInAttribute.VOLTAGE);
+		populateByPointValue(meter, richPointData, BuiltInAttribute.VOLTAGE_PROFILE);
 	}
 
 	/**
      * Helper method to load the fields based on the attribute.
      * This method assumes the pointValue matches the attribute provided.
 	 * @param meter
-	 * @param pointValue
+	 * @param richPointData
 	 * @param attribute
 	 */
 	@Override
-	public void populate(Meter meter, PointValueHolder pointValue, BuiltInAttribute attribute) {
+	public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
 		
-		if (!hasValidPointValue(pointValue)) {
+		if (!hasValidPointValue(richPointData)) {
 			return;
 		}
 		
 		if (attribute.equals(BuiltInAttribute.LOAD_PROFILE)) {
-			setLoadProfileDemand(meter, pointValue);
+			setLoadProfileDemand(meter, richPointData);
 		} else if (attribute.equals(BuiltInAttribute.KVAR)) {
-			setKVar(meter, pointValue);
+			setKVar(meter, richPointData);
 		} else if (attribute.equals(BuiltInAttribute.VOLTAGE)) {
-			setVoltage(meter, pointValue);
+			setVoltage(meter, richPointData);
 		} else if (attribute.equals(BuiltInAttribute.VOLTAGE_PROFILE)) {
-            setVoltageProfile(meter, pointValue);
+            setVoltageProfile(meter, richPointData);
         } else {
 			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported by LoadBlock.");
 		}
@@ -172,41 +173,41 @@ public class LoadBlock extends BlockBase{
 	/**
      * Helper method to set the loadProfileDemand fields
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-	private void setLoadProfileDemand(Meter meter, PointValueHolder pointValue) {
-        loadProfileDemand = pointValue.getValue();
-        loadProfileDemandDateTime = pointValue.getPointDataTimeStamp();
+	private void setLoadProfileDemand(Meter meter, RichPointData richPointData) {
+        loadProfileDemand = richPointData.getPointValue().getValue();
+        loadProfileDemandDateTime = richPointData.getPointValue().getPointDataTimeStamp();
 	}
 	
 	/**
      * Helper method to set the kVar fields
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-	private void setKVar(Meter meter, PointValueHolder pointValue) {
-        kVAr = pointValue.getValue();
-        kVArDateTime = pointValue.getPointDataTimeStamp();
+	private void setKVar(Meter meter, RichPointData richPointData) {
+        kVAr = richPointData.getPointValue().getValue();
+        kVArDateTime = richPointData.getPointValue().getPointDataTimeStamp();
 	}
 	
 	/**
      * Helper method to set the voltage fields
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-	private void setVoltage(Meter meter, PointValueHolder pointValue) {
-        voltage = pointValue.getValue();
-        voltageDateTime = pointValue.getPointDataTimeStamp();
+	private void setVoltage(Meter meter, RichPointData richPointData) {
+        voltage = richPointData.getPointValue().getValue();
+        voltageDateTime = richPointData.getPointValue().getPointDataTimeStamp();
 	}
 
 	   /**
      * Helper method to set the voltageProfile fields
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-    private void setVoltageProfile(Meter meter, PointValueHolder pointValue) {
-        voltageProfile = pointValue.getValue();
-        voltageProfileDateTime = pointValue.getPointDataTimeStamp();
+    private void setVoltageProfile(Meter meter, RichPointData richPointData) {
+        voltageProfile = richPointData.getPointValue().getValue();
+        voltageProfileDateTime = richPointData.getPointValue().getPointDataTimeStamp();
     }
 
     @Override

@@ -4,11 +4,9 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.spring.YukonSpringHook;
 
 public abstract class BlockBase implements Block{
@@ -20,36 +18,34 @@ public abstract class BlockBase implements Block{
     }
     
 	/**
-	 * Helper method to populate the block when the type of pointValue is unknown.
-	 * Looks for a matching pointValue pointId for the attribute provided before loading.
+	 * Helper method to populate the block when the type of richPointData is unknown.
+	 * Looks for a matching richPointData pointId for the attribute provided before loading.
 	 * @param meter
-	 * @param pointValue
+	 * @param richPointData
 	 * @param attribute
 	 */
-	protected void populateByPointValue(Meter meter, PointValueHolder pointValue, BuiltInAttribute attribute) {
+	protected void populateByPointValue(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
 		
 		AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
 		try {
-		    LitePoint litePoint = attributeService.getPointForAttribute(meter, attribute);
-		    
-		    if( pointValue.getId() == litePoint.getPointID()){
-		    	populate(meter, pointValue, attribute);
+		    boolean isPointForAttribute = attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), attribute);
+		    if(isPointForAttribute){
+		    	populate(meter, richPointData, attribute);
 		    	return;
 		    }
 		} catch (IllegalArgumentException e) {
 		    CTILogger.debug(e);
-		} catch (IllegalUseOfAttribute e){
+		} catch (NotFoundException e){
 		    CTILogger.error(e);
 		}
 	}
 
-    protected boolean hasValidPointValue(PointValueHolder pointValue) {
-		if (pointValue == null) {
+    protected boolean hasValidPointValue(RichPointData richPointData) {
+		if (richPointData == null) {
 			return false;
 		}
 
-		if (pointValue instanceof PointValueQualityHolder &&
-				((PointValueQualityHolder)pointValue).getPointQuality().getQuality() == PointQuality.Uninitialized.getQuality()) {
+		if (richPointData.getPointValue().getPointQuality().getQuality() == PointQuality.Uninitialized.getQuality()) {
 			return false;
 		}
 		

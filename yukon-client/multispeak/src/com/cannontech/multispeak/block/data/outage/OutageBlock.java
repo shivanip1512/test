@@ -10,7 +10,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Iso8601DateUtil;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.BlockBase;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 import com.cannontech.tools.csv.CSVReader;
@@ -56,42 +56,42 @@ public class OutageBlock extends BlockBase{
     }
 
     @Override
-    public void populate(Meter meter, PointValueHolder pointValue) {
+    public void populate(Meter meter, RichPointData richPointData) {
         
     	meterNumber = meter.getMeterNumber();
-        loadPointValue(meter, pointValue);
+        loadPointValue(meter, richPointData);
     }
 
     /**
-     * Load the pointVlaue data into OutageBlock
+     * Load the richPointData data into OutageBlock
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-	private void loadPointValue(Meter meter, PointValueHolder pointValue) {
+	private void loadPointValue(Meter meter, RichPointData richPointData) {
 
-		if (!hasValidPointValue(pointValue)) {
+		if (!hasValidPointValue(richPointData)) {
 			//get out before doing any more work.
 			return;
 		}
 
-		populateByPointValue(meter, pointValue, BuiltInAttribute.BLINK_COUNT);
+		populateByPointValue(meter, richPointData, BuiltInAttribute.BLINK_COUNT);
 
 	}
 
 	/**
      * Helper method to load the fields based on the attribute.
-     * This method assumes the pointValue matches the attribute provided.
+     * This method assumes the richPointData matches the attribute provided.
 	 * @param meter
-	 * @param pointValue
+	 * @param richPointData
 	 * @param attribute
 	 */
-	public void populate(Meter meter, PointValueHolder pointValue, BuiltInAttribute attribute) {
+	public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute) {
 		
-		if (!hasValidPointValue(pointValue)) {
+		if (!hasValidPointValue(richPointData)) {
 			return;
 		}
 		if (attribute.equals(BuiltInAttribute.BLINK_COUNT)) {
-			setBlinkCount(meter, pointValue);
+			setBlinkCount(meter, richPointData);
 		} else {
 			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported by OutageBlock.");
 		}
@@ -123,11 +123,11 @@ public class OutageBlock extends BlockBase{
 	/**
      * Helper method to set the blinkCount fields
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-	private void setBlinkCount(Meter meter, PointValueHolder pointValue) {
-        blinkCount = pointValue.getValue();
-        blinkCountDateTime = pointValue.getPointDataTimeStamp();
+	private void setBlinkCount(Meter meter, RichPointData richPointData) {
+        blinkCount = richPointData.getPointValue().getValue();
+        blinkCountDateTime = richPointData.getPointValue().getPointDataTimeStamp();
 	}
 
     @Override

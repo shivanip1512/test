@@ -1,8 +1,9 @@
 package com.cannontech.multispeak.block;
 
 import com.cannontech.amr.meter.model.Meter;
+
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 
 public interface Block {
@@ -15,11 +16,11 @@ public interface Block {
     public String getField(SyntaxItem syntaxItem);
     
     /**
-     * Populate the Block object with meter and pointValue data.
+     * Populate the Block object with meter and richPointData data.
      * @param meter
-     * @param pointValue
+     * @param richPointData
      */
-    public void populate(Meter meter, PointValueHolder pointValue);
+    public void populate(Meter meter, RichPointData richPointData);
     
     /** 
      * Helper method to (reverse) populate the block by parsing a string. 
@@ -42,10 +43,10 @@ public interface Block {
     
 	/**
      * Helper method to load the fields based on the attribute.
-     * This method assumes the pointValue matches the attribute provided.
+     * This method assumes the richPointData matches the attribute provided.
 	 * @param meter
-	 * @param pointValue
+	 * @param richPointData
 	 * @param attribute
 	 */
-    public void populate(Meter meter, PointValueHolder pointValue, BuiltInAttribute attribute);
+    public void populate(Meter meter, RichPointData richPointData, BuiltInAttribute attribute);
 }

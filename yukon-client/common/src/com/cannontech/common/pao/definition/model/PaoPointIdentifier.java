@@ -3,6 +3,10 @@ package com.cannontech.common.pao.definition.model;
 import java.io.Serializable;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.PointType;
 
 public class PaoPointIdentifier implements Serializable {
     private PaoIdentifier paoIdentifier;
@@ -63,5 +67,32 @@ public class PaoPointIdentifier implements Serializable {
     public String toString() {
         return paoIdentifier + ":" + pointIdentifier;
     }
+
+    /**
+     * Helper method to create a paoPointIdentifier from a litePoint and YukonPao.
+     * @param litePoint
+     * @param yukonPao
+     * @return
+     */
+    public static PaoPointIdentifier createPaoPointIdentifier(LitePoint litePoint, YukonPao yukonPao) {
+        PointType pointType = PointType.getForId(litePoint.getPointType());
+        PointIdentifier pointIdentifier = new PointIdentifier(pointType, litePoint.getPointOffset());
+        PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(yukonPao.getPaoIdentifier(), pointIdentifier);
+        return paoPointIdentifier;
+    }
     
+    /**
+     * Helper method to create a paoPointIdentifier from required pao and point identifier fields.
+     * @param paobjectId
+     * @param paoType
+     * @param pointType
+     * @param pointOffset
+     * @return
+     */
+    public static PaoPointIdentifier createPaoPointIdentifier(int paobjectId, PaoType paoType, PointType pointType, int pointOffset) {
+        PointIdentifier pointIdentifier = new PointIdentifier(pointType, pointOffset);
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paobjectId, paoType);
+        PaoPointIdentifier paoPointIdentifier = new PaoPointIdentifier(paoIdentifier, pointIdentifier);
+        return paoPointIdentifier;
+    }
 }

@@ -3,6 +3,7 @@ package com.cannontech.multispeak.dao.impl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,11 +13,16 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dynamic.impl.SimplePointValue;
+import com.cannontech.core.dynamic.PointValueBuilder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -267,8 +273,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         
         List<Block> blockList = new ArrayList<Block>();
         
-        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, " + 
-                     " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID, DMG.METERNUMBER " + 
+        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, P.POINTOFFSET, " + 
+                     " PAO.TYPE, PAO.PAOBJECTID, DMG.METERNUMBER, RPH.QUALITY " + 
                      " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
                      YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg " +
                      " WHERE RPH.POINTID = P.POINTID " +
@@ -315,20 +321,21 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     dateTime.setTime(ts.getTime());
                     double value = rset.getDouble(3);
                     String ptType = rset.getString(4);
-                    int pointType = PointTypes.getType(ptType);
-                    String type = rset.getString(5);
-                    String category = rset.getString(6);
-                    int paoType = PAOGroups.getPAOType(category, type);
+                    PointType pointType = PointType.getForString(ptType);
+                    int pointOffset = rset.getInt(5);
+                    String type = rset.getString(6);
+                    PaoType paoType = PaoType.getForDbString(type);
                     paobjectID = rset.getInt(7);
                     String meterNumber = rset.getString(8);
+
                     //This is only a partial Meter object load
                     Meter meter = new Meter();
                     meter.setMeterNumber(meterNumber);
-                    meter.setType(paoType);
+                    meter.setDeviceType(paoType);
                     meter.setTypeStr(type);
                     meter.setDeviceId(paobjectID);
                     
-                    SimplePointValue pointValue = new SimplePointValue(pointID, dateTime, pointType, value);
+                    RichPointData richPointData = buildRichPointData(rset, pointType, pointOffset, paobjectID, paoType);
                     
                     //Store any previous meter readings.
                     if (dateTime.after(prevDateTime) || lastPaoID != paobjectID) {
@@ -342,7 +349,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     if( b == null) 
                         b = block.getNewBlock();
 
-                    b.populate( meter, pointValue);
+                    b.populate( meter, richPointData);
                     prevDateTime.setTime(dateTime.getTime());
                     lastPaoID = paobjectID;
                 }
@@ -372,8 +379,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         
         List<Block> blockList = new ArrayList<Block>();
         
-        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, " + 
-                     " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID, DMG.METERNUMBER, QUality " + 
+        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, P.POINTOFFSET, " + 
+                     " PAO.TYPE, PAO.PAOBJECTID, DMG.METERNUMBER,  RPH.QUALITY " + 
                      " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
                      YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
                      " (SELECT distinct r.pointid, max(r.timestamp) AS rDate " + 
@@ -419,22 +426,22 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     dateTime.setTime(ts.getTime());
                     double value = rset.getDouble(3);
                     String ptType = rset.getString(4);
-                    int pointType = PointTypes.getType(ptType);
-                    String type = rset.getString(5);
-                    String category = rset.getString(6);
-                    int paoType = PAOGroups.getPAOType(category, type);
+                    PointType pointType = PointType.getForString(ptType);
+                    int pointOffset = rset.getInt(5);
+                    String type = rset.getString(6);
+                    PaoType paoType = PaoType.getForDbString(type);
                     paobjectID = rset.getInt(7);
                     String meterNumber = rset.getString(8);
                     Integer quality = rset.getInt(9);
                     //This is only a partial Meter object load
                     Meter meter = new Meter();
-                    meter.setMeterNumber(meterNumber + "(" + paobjectID + ")");
-                    meter.setType(paoType);
+                    meter.setMeterNumber(meterNumber);
+                    meter.setDeviceType(paoType);
                     meter.setTypeStr(type);
                     meter.setDeviceId(paobjectID);
                     
-                    SimplePointValue pointValue = new SimplePointValue(pointID, dateTime, pointType, value);
-                    
+                    RichPointData richPointData = buildRichPointData(rset, pointType, pointOffset, paobjectID, paoType);
+
                     //Store any previous meter readings.
                     if (lastPaoID != paobjectID) {
                         if( b.hasData()) {
@@ -450,8 +457,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                         b = block.getNewBlock();
                     }
 
-                    b.populate( meter, pointValue);
-                    System.out.println(pointID + "("+ quality +")");
+                    b.populate( meter, richPointData);
                     lastPaoID = paobjectID;
                 }
                 
@@ -481,8 +487,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         
         List<Block> blockList = new ArrayList<Block>();
         
-        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, " + 
-                     " PAO.TYPE, PAO.CATEGORY, PAO.PAOBJECTID " + 
+        String sql = "SELECT DISTINCT P.POINTID, TIMESTAMP, VALUE, P.POINTTYPE, P.POINTOFFSET, " + 
+                     " PAO.TYPE, PAO.PAOBJECTID, RPH.QUALITY " + 
                      " FROM " + RawPointHistory.TABLE_NAME + " rph, " + Point.TABLE_NAME + " p, " +
                      YukonPAObject.TABLE_NAME + " pao, " + DeviceMeterGroup.TABLE_NAME + " dmg " +
                      " WHERE RPH.POINTID = P.POINTID " +
@@ -526,20 +532,20 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     dateTime.setTime(ts.getTime());
                     double value = rset.getDouble(3);
                     String ptType = rset.getString(4);
-                    int pointType = PointTypes.getType(ptType);
-                    String type = rset.getString(5);
-                    String category = rset.getString(6);
-                    int paoType = PAOGroups.getPAOType(category, type);
+                    PointType pointType = PointType.getForString(ptType);
+                    int pointOffset = rset.getInt(5);
+                    String type = rset.getString(6);
+                    PaoType paoType = PaoType.getForDbString(type);
                     paobjectID = rset.getInt(7);
 
                     //This is only a partial Meter object load
                     Meter meter = new Meter();
                     meter.setMeterNumber(meterNumber);
-                    meter.setType(paoType);
+                    meter.setDeviceType(paoType);
                     meter.setTypeStr(type);
                     meter.setDeviceId(paobjectID);
                     
-                    SimplePointValue pointValue = new SimplePointValue(pointID, dateTime, pointType, value);
+                    RichPointData richPointData = buildRichPointData(rset, pointType, pointOffset, paobjectID, paoType);
                     
                     //Store any previous meter readings.
                     if (dateTime.after(prevDateTime)) {
@@ -551,7 +557,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                     if( b == null) 
                         b = block.getNewBlock();
 
-                    b.populate( meter, pointValue);
+                    b.populate( meter, richPointData);
                     prevDateTime.setTime(dateTime.getTime());
                 }
                 
@@ -575,4 +581,15 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         return block.createFormattedBlock(blockList);
     }
 
+    private RichPointData buildRichPointData(final ResultSet rset, PointType pointType, int pointOffset, int paobjectID, PaoType paoType) throws SQLException {
+        PointValueBuilder builder = PointValueBuilder.create();
+        builder.withResultSet(rset);
+        builder.withType(pointType);
+        PointValueQualityHolder pointData = builder.build();
+        
+        PaoPointIdentifier paoPointIdentifier = PaoPointIdentifier.createPaoPointIdentifier(paobjectID, paoType, pointType, pointOffset);
+        
+        RichPointData richPointData = new RichPointData(pointData, paoPointIdentifier);
+        return richPointData;
+    }
 }

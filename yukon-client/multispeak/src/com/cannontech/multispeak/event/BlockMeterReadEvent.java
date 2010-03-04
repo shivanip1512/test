@@ -12,6 +12,10 @@ import java.rmi.RemoteException;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dynamic.RichPointData;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.block.Block;
@@ -118,7 +122,11 @@ public class BlockMeterReadEvent extends MultispeakEvent {
                     //TODO SN - Hoping at this point that only one value comes back in the point data vector 
                     if (o instanceof PointData) {
                         PointData pointData = (PointData) o;
-                        block.populate(meter, pointData);
+                        
+                        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(pointData.getId());
+                        PaoPointIdentifier paoPointIdentifier = PaoPointIdentifier.createPaoPointIdentifier(litePoint, meter);
+                        RichPointData richPointData = new RichPointData(pointData, paoPointIdentifier);
+                        block.populate(meter, richPointData);
                     }
                 }
             }

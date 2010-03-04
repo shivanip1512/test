@@ -8,7 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.BlockBase;
 import com.cannontech.multispeak.block.FormattedBlockService;
@@ -52,8 +52,8 @@ public abstract class FormattedBlockServiceImpl <T extends Block> implements For
 	 */
 	protected void populateBlock(Meter meter, BlockBase block, BuiltInAttribute attribute) {
 		try {
-            PointValueHolder pointValue = attrDynamicDataSource.getPointValue(meter, attribute);
-            block.populate(meter, pointValue, attribute);
+            RichPointData richPointData = attrDynamicDataSource.getRichPointData(meter, attribute);
+            block.populate(meter, richPointData, attribute);
         } catch (IllegalArgumentException e) {
             CTILogger.debug("Ignoring Exception:" + e.getMessage());
         } catch (NotFoundException e) {
