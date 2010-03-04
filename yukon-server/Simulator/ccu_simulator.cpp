@@ -54,6 +54,11 @@ int main(int argc, char *argv[])
 {
     srand(time(NULL));
 
+    // Apparently the first random needs to be dumped or else
+    // the random number will be some linear function as 
+    // opposed to being truly (or rather pseudo-) random.
+    rand();
+
     int strategy = 0,
         port_min = 0,
         port_max = 0;

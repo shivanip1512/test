@@ -2,8 +2,7 @@
 #include "DelayBehavior.h"
 #include "logger.h"
 
-#include <ctime>
-#include <random>
+#include <stdlib.h>
 
 namespace Cti {
 namespace Simulator{

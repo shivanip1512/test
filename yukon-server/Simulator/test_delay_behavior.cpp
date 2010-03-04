@@ -6,6 +6,7 @@
 #include "DelayBehavior.h"
 #include "types.h"
 
+#include <time.h>
 #include <boost/test/unit_test.hpp>
 
 using boost::unit_test_framework::test_suite;
@@ -13,9 +14,15 @@ using namespace Cti::Simulator;
 
 BOOST_AUTO_TEST_CASE(test_delay_behavior)
 {
+    srand(time(NULL));
+    // Apparently the first random needs to be dumped or else
+    // the random number will be some linear function as 
+    // opposed to being truly (or rather pseudo-) random.
+    rand();
+
     BehaviorCollection<CommsBehavior> behaviorCollection;
     std::auto_ptr<CommsBehavior> d(new DelayBehavior());
-    d->setChance(100);
+    d->setChance(1000);
 
     behaviorCollection.push_back(d);
 
