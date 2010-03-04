@@ -70,13 +70,7 @@ public class MultispeakVendor
            POLE_NUMBER_PAONAME_STRING
        };
     
-    private static MultispeakMeterLookupFieldEnum[] meterLookupFields = new MultispeakMeterLookupFieldEnum[] {
-        MultispeakMeterLookupFieldEnum.AUTO_METER_NUMBER_FIRST,
-        MultispeakMeterLookupFieldEnum.AUTO_DEVICE_NAME_FIRST,
-        MultispeakMeterLookupFieldEnum.DEVICE_NAME,
-        MultispeakMeterLookupFieldEnum.METER_NUMBER,
-        MultispeakMeterLookupFieldEnum.ADDRESS
-    };
+    private static MultispeakMeterLookupFieldEnum[] meterLookupFields = MultispeakMeterLookupFieldEnum.values();
     
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
     
