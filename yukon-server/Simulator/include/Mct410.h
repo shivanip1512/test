@@ -126,7 +126,8 @@ public:
     bool read (const words_t &request_words, words_t &response_words);
     bool write(const words_t &request_words);
 
-    // Moved to public for unit testing.
+protected:
+    // Moved to protected for unit testing.
     static double getConsumptionMultiplier(const unsigned address);
 };
 
