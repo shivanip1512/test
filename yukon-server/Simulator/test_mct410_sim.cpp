@@ -13,7 +13,7 @@ using namespace Cti::Simulator;
 class testMct410Sim : public Mct410Sim
 {
 public:
-    static double something(unsigned address)
+    static double getConsumptionmMultiplier(unsigned address)
     {
         return Mct410Sim::getConsumptionMultiplier(address);
     }
@@ -24,26 +24,26 @@ BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )
     unsigned address = 0;
     for (; address < 400; address++)
     {
-        BOOST_CHECK_EQUAL(testMct410Sim::something(address), 1.0);
+        BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionmMultiplier(address), 1.0);
     }
     for (; address < 600; address++)
     {
-        BOOST_CHECK_EQUAL(testMct410Sim::something(address), 2.0);
+        BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionmMultiplier(address), 2.0);
     }
     for (; address < 800; address++)
     {
-        BOOST_CHECK_EQUAL(testMct410Sim::something(address), 3.0);
+        BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionmMultiplier(address), 3.0);
     }
     for (; address < 950; address++)
     {
-        BOOST_CHECK_EQUAL(testMct410Sim::something(address), 5.0);
+        BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionmMultiplier(address), 5.0);
     }
     for (; address < 995; address++)
     {
-        BOOST_CHECK_EQUAL(testMct410Sim::something(address), 10.0);
+        BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionmMultiplier(address), 10.0);
     }
     for (; address < 1000; address++)
     {
-        BOOST_CHECK_EQUAL(testMct410Sim::something(address), 20.0);
+        BOOST_CHECK_EQUAL(testMct410Sim::getConsumptionmMultiplier(address), 20.0);
     }
 }
