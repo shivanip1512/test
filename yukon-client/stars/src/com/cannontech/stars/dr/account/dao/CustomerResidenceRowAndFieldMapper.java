@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.database.RowAndFieldMapper;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.stars.dr.account.model.CustomerResidence;
 
 public class CustomerResidenceRowAndFieldMapper implements RowAndFieldMapper<CustomerResidence> {
@@ -30,7 +31,7 @@ public class CustomerResidenceRowAndFieldMapper implements RowAndFieldMapper<Cus
         p.addValue("NumberOfOccupantsId", customerResidence.getNumberOfOccupantsId());
         p.addValue("OwnershipTypeId", customerResidence.getOwnershipTypeId());
         p.addValue("MainFuelTypeId", customerResidence.getMainFuelTypeId());
-        p.addValue("Notes", customerResidence.getNotes());
+        p.addValue("Notes", SqlUtils.convertStringToDbValue(customerResidence.getNotes()));
     }
     
     public CustomerResidence mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -47,7 +48,7 @@ public class CustomerResidenceRowAndFieldMapper implements RowAndFieldMapper<Cus
     	customerResidence.setNumberOfOccupantsId(rs.getInt("NumberOfOccupantsId"));
     	customerResidence.setOwnershipTypeId(rs.getInt("OwnershipTypeId"));
     	customerResidence.setMainFuelTypeId(rs.getInt("MainFuelTypeId"));
-    	customerResidence.setNotes(rs.getString("Notes"));
+    	customerResidence.setNotes(SqlUtils.convertDbValueToString(rs, "Notes"));
         return customerResidence;
     }
 }

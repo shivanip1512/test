@@ -8,11 +8,11 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 public interface ContactNotificationDao {
 
 	/**
-	 * @deprecated Use {@link #getNotificationForContact(int, int)}
+	 * @deprecated Use {@link #getNotificationForContact(int)}
 	 */
     public LiteContactNotification getContactNotification(int contactNotifID);
     
-    public LiteContactNotification getNotificationForContact(int contactId, int notificationId);
+    public LiteContactNotification getNotificationForContact(int notificationId);
 
     /**
 	 * @deprecated Use {@link #getNotificationsForContact(int)}

@@ -28,7 +28,7 @@
     <input id="${uniqueId}" 
     	   type="button" 
     	   value="${label}" 
-    	   <c:if test="${not empty pageScope.width}">style="width:${pageScope.width};"</c:if>
+    	   <c:if test="${not empty pageScope.width}">style="min-width:${pageScope.width};"</c:if>
     	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}', ${disableOtherButtons});">
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 

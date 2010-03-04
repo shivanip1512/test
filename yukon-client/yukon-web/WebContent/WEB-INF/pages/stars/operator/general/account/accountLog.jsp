@@ -7,7 +7,7 @@
 <cti:standardPage module="operator" page="accountLog">
     <cti:standardMenu />
 
-    <i18n:boxContainer titleKey=".accountActionLog" styleClass="boxContainer50percent">
+    <tags:boxContainer2 keyBase="accountActionLog" styleClass="boxContainer50percent">
         <table class="compactResultsTable">
             <tr>
                 <th><i18n:inline key=".event" /></th>
@@ -22,6 +22,6 @@
                 </tr>
             </c:forEach>
         </table>
-    </i18n:boxContainer>
+    </tags:boxContainer2>
     
 </cti:standardPage>

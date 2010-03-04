@@ -6,16 +6,16 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
 
-public class AccountSearchResultHolder extends SearchResult<AccountSearchResult> {
+public class AccountSearchResultHolder {
 
-	int searchByDefinitionId;
-	String searchValue;
-	SearchResult<AccountSearchResult> accountSearchResults = SearchResult.emptyResult();
-	String error = null;
+	private OperatorAccountSearchBy searchBy;
+	private String searchValue;
+	private SearchResult<AccountSearchResult> accountSearchResults = SearchResult.emptyResult();
+	private String error = null;
 	
-	public AccountSearchResultHolder(int searchByDefinitionId, String searchValue, SearchResult<AccountSearchResult> accountSearchResults, String error) {
+	public AccountSearchResultHolder(OperatorAccountSearchBy searchBy, String searchValue, SearchResult<AccountSearchResult> accountSearchResults, String error) {
 		
-		this.searchByDefinitionId = searchByDefinitionId;
+		this.searchBy = searchBy;
 		this.searchValue = searchValue;
 		this.accountSearchResults = accountSearchResults;
 		this.error = error;
@@ -24,13 +24,13 @@ public class AccountSearchResultHolder extends SearchResult<AccountSearchResult>
 	public static AccountSearchResultHolder emptyAccountSearchResultHolder() {
 		
 		SearchResult<AccountSearchResult> emptyResult = SearchResult.emptyResult();
-		AccountSearchResultHolder accountSearchResultHolder = new AccountSearchResultHolder(OperatorAccountSearchBy.ACCOUNT_NUMBER.getDefinitionId(), "", emptyResult, null);
+		AccountSearchResultHolder accountSearchResultHolder = new AccountSearchResultHolder(OperatorAccountSearchBy.ACCOUNT_NUMBER, "", emptyResult, null);
 		
 		return accountSearchResultHolder;
 	}
 	
-	public int getSearchByDefinitionId() {
-		return searchByDefinitionId;
+	public OperatorAccountSearchBy getSearchBy() {
+		return searchBy;
 	}
 	
 	public String getSearchValue() {

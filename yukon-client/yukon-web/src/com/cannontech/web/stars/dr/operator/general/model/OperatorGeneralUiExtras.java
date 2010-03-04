@@ -5,17 +5,17 @@ package com.cannontech.web.stars.dr.operator.general.model;
 
 public class OperatorGeneralUiExtras {
 
-	private boolean hasOddForControlRole;;
+	private boolean hasOddsForControlRole;
     private boolean notifyOddsForControl;
     private String notes;
     private String accountSiteNotes;
     private boolean usePrimaryAddressForBilling;
     
-    public boolean isHasOddForControlRole() {
-		return hasOddForControlRole;
+    public boolean isHasOddsForControlRole() {
+		return hasOddsForControlRole;
 	}
-    public void setHasOddForControlRole(boolean hasOddForControlRole) {
-		this.hasOddForControlRole = hasOddForControlRole;
+    public void setHasOddsForControlRole(boolean hasOddsForControlRole) {
+		this.hasOddsForControlRole = hasOddsForControlRole;
 	}
     
 	public boolean isNotifyOddsForControl() {

@@ -10,5 +10,5 @@
 	<c:set var="width" value="80px"/>
 </c:if>
 
-<cti:msg var="resetButtonText" key="yukon.web.defaults.reset" />
+<cti:msg var="resetButtonText" key="yukon.web.defaults.button.reset.label" />
 <input type="reset" value="${resetButtonText}" style="width:${pageScope.width}">

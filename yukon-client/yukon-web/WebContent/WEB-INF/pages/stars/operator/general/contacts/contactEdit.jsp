@@ -17,7 +17,6 @@
 		
 	</script>
 	
-	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
     <tags:simpleDialog id="addNotificationDialog"/>
 
 	<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
@@ -43,7 +42,7 @@
 		<input type="hidden" name="contactId" value="${contact.contactId}"/>
 		<input type="hidden" id="removeNotificationId" name="removeNotificationId" value=""/>
 	</form>
-
+	
 	<form id="contactsUpdateForm" action="/spring/stars/operator/general/contacts/updateContact" method="post">
 	
 		<input type="hidden" name="accountId" value="${accountId}"/>
@@ -52,37 +51,37 @@
 			<input type="hidden" name="contactId" value="${contact.contactId}">
 		</c:if>
 		
-		<c:set var="contactInformationSectionTitleKey" value=".contactInformationSection"/>
+		<c:set var="contactInformationSectionTitleKey" value="contactInformationSection"/>
 		<c:if test="${contact.primary}">
-			<c:set var="contactInformationSectionTitleKey" value=".contactInformationSection_isPrimary"/>
+			<c:set var="contactInformationSectionTitleKey" value="contactInformationSection_isPrimary"/>
 		</c:if>
 		
-		<i:sectionContainer titleKey="${contactInformationSectionTitleKey}">
+		<tags:sectionContainer2 key="${contactInformationSectionTitleKey}">
 		
 			<tags:nameValueContainer>
 			
-				<i:nameValue nameKey=".firstNameLabel" nameColumnWidth="110px">
+				<tags:nameValue2 nameKey=".firstNameLabel" nameColumnWidth="110px">
 					<input type="text" name="firstName" value="${contact.firstName}">
-				</i:nameValue>
+				</tags:nameValue2>
 				
-				<i:nameValue nameKey=".lastNameLabel">
+				<tags:nameValue2 nameKey=".lastNameLabel">
 					<input type="text" name="lastName" value="${contact.lastName}">
-				</i:nameValue>
+				</tags:nameValue2>
 				
-				<i:nameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE">
+				<tags:nameValue2 nameKey="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE">
 					<cti:formatNotification var="firstHomePhoneNotificationValue" value="${contact.firstHomePhoneNotification.notification}"/>
 					<input type="text" name="homePhone" value="${firstHomePhoneNotificationValue}">
-				</i:nameValue>
+				</tags:nameValue2>
 				
-				<i:nameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE">
+				<tags:nameValue2 nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE">
 					<cti:formatNotification var="firstWorkPhoneNotificationValue" value="${contact.firstWorkPhoneNotification.notification}"/>
 					<input type="text" name="workPhone" value="${firstWorkPhoneNotificationValue}">
-				</i:nameValue>
+				</tags:nameValue2>
 
-				<i:nameValue nameKey="yukon.web.modules.operator.contactNotificationEnum.EMAIL">
+				<tags:nameValue2 nameKey="yukon.web.modules.operator.contactNotificationEnum.EMAIL">
 					<cti:formatNotification var="firstEmailNotificationValue" value="${contact.firstEmailNotification.notification}"/>
 					<input type="text" name="email" value="${firstEmailNotificationValue}">
-				</i:nameValue>
+				</tags:nameValue2>
 			
 			</tags:nameValueContainer>
 			
@@ -99,14 +98,14 @@
 				</tr>
 			
 				<%-- EXISTING NOTIFICATIONS --%>
-				<c:forEach var="otherContactNotification" items="${contact.otherContactNotifications}" varStatus="status">
+				<c:forEach var="otherContactNotification" items="${contact.otherContactNotifications}">
 				
 					<tr>
 					
 						<%--NOTIFICATION TYPE --%>
 						<td>
 							<select name="notificationType${otherContactNotification.notificationId}">
-								<option value="">(none)</option>
+								<option value=""><i:inline key=".notificationTable.none"/></option>
 								<c:forEach var="notificationType" items="${notificationTypes}">
 									<option value="${notificationType}" <c:if test="${otherContactNotification.operatorContactNotificationType == notificationType}">selected</c:if>>
 										<i:inline key="${notificationType.formatKey}"/>
@@ -140,7 +139,7 @@
 							<%--NOTIFICATION TYPE --%>
 							<td>
 								<select name="notificationType${newNotifCount}">
-									<option value="">(none)</option>
+									<option value=""><i:inline key=".notificationTable.none"/></option>
 									<c:forEach var="notificationType" items="${notificationTypes}">
 										<option value="${notificationType}">
 											<i:inline key="${notificationType.formatKey}"/>
@@ -180,12 +179,12 @@
 				
 			</table>
 			
-		</i:sectionContainer>
+		</tags:sectionContainer2>
 		
 		<%-- BUTTONS --%>
 		<br>
-		<i:slowInput myFormId="contactListForm" labelKey=".viewAll" width="80px"/>
-		<i:slowInput myFormId="contactsUpdateForm" labelKey="defaults.save" width="80px"/>
+		<tags:slowInput2 myFormId="contactListForm" key="button.viewAll" width="80px"/>
+		<tags:slowInput2 myFormId="contactsUpdateForm" key="save" width="80px"/>
 
 	</form>
 	

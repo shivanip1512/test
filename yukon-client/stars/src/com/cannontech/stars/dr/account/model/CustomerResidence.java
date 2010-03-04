@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.account.model;
 
 public class CustomerResidence {
 
-	private int accountSiteId = 0;
+	private int accountSiteId;
 	private int residenceTypeId = 0;
 	private int constructionMaterialId = 0;
 	private int decadeBuiltId = 0;

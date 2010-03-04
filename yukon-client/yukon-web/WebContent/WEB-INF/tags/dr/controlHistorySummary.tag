@@ -21,12 +21,12 @@
 			<cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 			<i18n:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
 			     <tags:nameValueContainer>
-				     <i18n:nameValue nameColumnWidth="20%" nameKey=".helpInfoText.programBasedControlHistory">
+				     <tags:nameValue2 nameColumnWidth="20%" nameKey=".helpInfoText.programBasedControlHistory">
 					     <i18n:inline key=".helpInfoText.programBasedControlHistoryText" /> <br>
-				     </i18n:nameValue>
-				     <i18n:nameValue nameColumnWidth="20%" nameKey=".helpInfoText.inventoryBasedControlHistory" >
+				     </tags:nameValue2>
+				     <tags:nameValue2 nameColumnWidth="20%" nameKey=".helpInfoText.inventoryBasedControlHistory" >
 				     	<i18n:inline key=".helpInfoText.inventoryBasedControlHistoryText" />
-				     </i18n:nameValue>
+				     </tags:nameValue2>
 			     </tags:nameValueContainer>
 			</i18n:simplePopup>
 

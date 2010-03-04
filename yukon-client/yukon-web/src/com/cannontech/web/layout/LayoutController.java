@@ -36,7 +36,6 @@ import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.PageInfo;
-import com.cannontech.web.menu.option.producer.LeftSideContextualMenuOptionsProducer;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.MenuRenderer;
 import com.cannontech.web.menu.renderer.SelectMenuConfiguration;
@@ -136,24 +135,6 @@ public class LayoutController {
         finalScriptList.addAll(tagInfo.getScriptFiles());
         map.addAttribute("javaScriptFiles", finalScriptList);
         
-        // action menu
-        final SelectMenuConfiguration selectMenuConfiguration = (SelectMenuConfiguration)request.getAttribute("selectMenuConfiguration");
-        if (selectMenuConfiguration != null) {
-        	map.addAttribute("standardPageActionsSelectMenu", new Writable() {
-                public void write(Writer out) throws IOException {
-                	
-                	SelectMenuOptionRenderer selectMenuOptionRenderer = new SelectMenuOptionRenderer();
-                	selectMenuOptionRenderer.renderSelect(selectMenuConfiguration, out, messageSourceAccessor, userContext);
-                }
-            });
-        }
-        
-        LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = (LeftSideContextualMenuOptionsProducer)request.getAttribute("leftSideContextualMenuOptionsProducer");
-        map.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
-        
-        
-        map.addAttribute("heading", pageDetail.getPageHeading());
-        
         LayoutSkinEnum skin = moduleBase.getSkin();
         
         // handle new and old methods for specifying menu (but not both)
@@ -203,8 +184,20 @@ public class LayoutController {
         map.addAttribute("currentTime", new Date());
         
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
-        response.addHeader("Cache-Control", "no-store");                                                                                                
-
+        response.addHeader("Cache-Control", "no-store");   
+        
+        // operatorTempMenu
+        final SelectMenuConfiguration selectMenuConfiguration = (SelectMenuConfiguration)request.getAttribute("operatorTempMenu");
+        if (selectMenuConfiguration != null) {
+        	map.addAttribute("operatorTempMenu", new Writable() {
+                public void write(Writer out) throws IOException {
+                	
+                	SelectMenuOptionRenderer selectMenuOptionRenderer = new SelectMenuOptionRenderer();
+                	selectMenuOptionRenderer.renderSelect(selectMenuConfiguration, out, messageSourceAccessor, userContext);
+                }
+            });
+        }
+        
         return skin.getViewName();
     }
     

@@ -4,9 +4,9 @@
 
     <entry key="yukon.web.modules.operator.moduleName">Operator</entry>
 
-    <entry key="yukon.web.modules.operator.accountAction.header">Account Actions...</entry>
-
-    <entry key="yukon.web.modules.operator.accountAction.general">General</entry>
+    <entry key="yukon.web.modules.operator.accountAction.operatorTempMenu">-- OPERATOR TEMP MENU --</entry>
+    
+    <entry key="yukon.web.modules.operator.accountAction.accountEdit">Account</entry>
     <entry key="yukon.web.modules.operator.accountAction.contacts">Contacts</entry>
     <entry key="yukon.web.modules.operator.accountAction.residence">Residence</entry>
     <entry key="yukon.web.modules.operator.accountAction.callTracking">Call Tracking</entry>
@@ -17,7 +17,6 @@
     <entry key="yukon.web.modules.operator.accountAction.appliances">Appliances</entry>
     <entry key="yukon.web.modules.operator.accountAction.hardware">Hardware</entry>
     <entry key="yukon.web.modules.operator.accountAction.serviceRequest">Service Request</entry>
-    <entry key="yukon.web.modules.operator.accountAction.serviceHistory">Service History</entry>
     <entry key="yukon.web.modules.operator.accountAction.changeLogin">Change Login</entry>
     <entry key="yukon.web.modules.operator.accountAction.accountLog">Account Log</entry>
     <entry key="yukon.web.modules.operator.accountAction.faq">FAQ</entry>

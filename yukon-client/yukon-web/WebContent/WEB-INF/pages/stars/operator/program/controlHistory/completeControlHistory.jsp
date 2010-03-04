@@ -1,7 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:url var="controlHistoryView" value="/spring/stars/operator/program/controlHistory"/>
 <cti:url var="innerViewUrl" value="${controlHistoryView}/innerCompleteHistoryView"/>
@@ -9,7 +9,7 @@
 <cti:standardPage module="operator" page="completeControlHistory">
     <cti:standardMenu />
     
-    <i18n:sectionContainer titleKey=".header" />
+    <tags:sectionContainer2 key="header">
     <table width="100%">
         <tr>
             <td align="right">
@@ -25,12 +25,13 @@
         <tr>
             <td>
                 <cti:msg key="${program.displayName}" var="controlEventsTitle" />
-                <i18n:boxContainer titleKey=".controlEventsTitle" hideEnabled="false">
+                <tags:boxContainer2 keyBase="controlEventsTitle" hideEnabled="false">
                     <div id="controlEventsDiv"></div>
-                </i18n:boxContainer>
+                </tags:boxContainer2>
             </td>
         </tr>
     </table>
+    </tags:sectionContainer2>
     
 <script type="text/javascript">
 Event.observe(window, 'load', function() {

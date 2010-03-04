@@ -3,6 +3,7 @@ package com.cannontech.web.widget;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
@@ -16,9 +17,9 @@ public class OperatorAccountSearchWidget extends WidgetControllerBase {
 
 		ModelAndView mav = new ModelAndView("operatorAccountSearchWidget/render.jsp");
 		
-		int searchByDefinitionId = WidgetParameterHelper.getIntParameter(request, "searchByDefinitionId", OperatorAccountSearchBy.ACCOUNT_NUMBER.getDefinitionId());
+		OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(ServletRequestUtils.getStringParameter(request, "searchBy", OperatorAccountSearchBy.ACCOUNT_NUMBER.name()));
 		String searchValue = WidgetParameterHelper.getStringParameter(request, "searchValue", "");
-		mav.addObject("searchByDefinitionId", searchByDefinitionId);
+		mav.addObject("searchBy", searchBy);
 		mav.addObject("searchValue", searchValue);
 		
 		OperatorAccountSearchBy[] operatorAccountSearchBys = OperatorAccountSearchBy.values();

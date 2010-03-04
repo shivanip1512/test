@@ -32,7 +32,7 @@
 	</c:when>
 	
 	<c:otherwise>
-		N/A
+		<cti:msg2 key="yukon.web.defaults.na"/>
 	</c:otherwise>
 
 </c:choose>

@@ -31,12 +31,14 @@ import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.menu.option.producer.LeftSideContextualMenuOptionsProducer;
+import com.cannontech.web.menu.renderer.SelectMenuConfiguration;
 import com.cannontech.web.stars.dr.operator.OperatorActionsFactory;
 import com.cannontech.web.stars.dr.operator.general.model.OperatorGeneralUiExtras;
 import com.cannontech.web.stars.dr.operator.general.service.OperatorGeneralService;
+import com.cannontech.web.stars.dr.operator.general.validator.AccountGeneralValidator;
 
 @Controller
+@RequestMapping(value = "/operator/general/account/*")
 public class OperatorGeneralAccountController {
 
 	private OperatorGeneralSearchService operatorGeneralSearchService;
@@ -45,18 +47,29 @@ public class OperatorGeneralAccountController {
 	private CustomerAccountDao customerAccountDao;
 	private AccountService accountService;
 	private SiteInformationDao siteInformationDao;
+	private AccountGeneralValidator accountGeneralValidator;
 	
 	// SEARCH
-	@RequestMapping(value = "/operator/general/account/search")
-    public String search(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+	@RequestMapping
+    public String search(HttpServletRequest request,
+    					Integer itemsPerPage, 
+    					Integer page,
+    					ModelMap modelMap, 
+    					YukonUserContext userContext) throws ServletRequestBindingException {
 		
-		int searchByDefinitionId = ServletRequestUtils.getIntParameter(request, "searchByDefinitionId", OperatorAccountSearchBy.ACCOUNT_NUMBER.getDefinitionId());
+		OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(ServletRequestUtils.getStringParameter(request, "searchBy", OperatorAccountSearchBy.ACCOUNT_NUMBER.name()));
 		String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", "");
-		int startIndex = ServletRequestUtils.getIntParameter(request, "startIndex", 0);
-		int count = ServletRequestUtils.getIntParameter(request, "count", 25);
+		
+		if(page == null){
+            page = 1;
+        }
+        if(itemsPerPage == null){
+            itemsPerPage = 25;
+        }
+        int startIndex = (page - 1) * itemsPerPage;
 		
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-		AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchByDefinitionId, searchValue, startIndex, count, energyCompany, userContext);
+		AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
 		
 		// account edit
 		if (accountSearchResultHolder.isSingleResult() && !accountSearchResultHolder.isHasError()) {
@@ -76,7 +89,7 @@ public class OperatorGeneralAccountController {
 	}
 	
 	// ACCOUNT LIST
-	@RequestMapping(value = "/operator/general/account/accountList")
+	@RequestMapping
     public String accountList(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		AccountSearchResultHolder accountSearchResultHolder = AccountSearchResultHolder.emptyAccountSearchResultHolder();
@@ -85,8 +98,10 @@ public class OperatorGeneralAccountController {
 	}
 	
 	// ACCOUNT EDIT
-	@RequestMapping(value = "/operator/general/account/accountEdit")
-    public String accountEdit(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+	@RequestMapping
+    public String accountEdit(HttpServletRequest request, 
+    						  ModelMap modelMap, 
+    						  YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		// account
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -100,25 +115,14 @@ public class OperatorGeneralAccountController {
 		accountGeneral.setOperatorGeneralUiExtras(operatorGeneralUiExtras);
 		modelMap.addAttribute("accountGeneral", accountGeneral);
 		
-		// substations
-		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-		StarsSubstations substations = energyCompany.getStarsSubstations();
-		modelMap.addAttribute("substations", substations);
-		
-		// basics
-		modelMap.addAttribute("accountId", accountId);
-		modelMap.addAttribute("energyCompanyId", energyCompanyId);
-		modelMap.addAttribute("accountNumber", accountDto.getAccountNumber());
-		
-		// leftSideContxtualMenuLinks
-		LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = OperatorActionsFactory.getLeftSideContxtualMenuLinks(accountId, energyCompanyId, "general", userContext);
-		modelMap.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+		// setupAccountEditModelMap
+		setupAccountEditModelMap(accountId, accountDto.getAccountNumber(), energyCompanyId, modelMap, userContext);
 		
 		return "operator/general/account/accountEdit.jsp";
 	}
 	
 	// ACCOUNT UPDATE
-	@RequestMapping(value = "/operator/general/account/accountUpdate")
+	@RequestMapping
     public String accountUpdate(@ModelAttribute("accountGeneral") AccountGeneral accountGeneral, 
 								BindingResult bindingResult,
 					    		int accountId,
@@ -130,8 +134,16 @@ public class OperatorGeneralAccountController {
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
 		String currentAccountNumber = customerAccount.getAccountNumber();
-		modelMap.addAttribute("accountId", accountId);
-		modelMap.addAttribute("energyCompanyId", energyCompanyId);
+		
+		// setupAccountEditModelMap
+		setupAccountEditModelMap(accountId, currentAccountNumber, energyCompanyId, modelMap, userContext);
+		
+		// validate
+		accountGeneralValidator.validate(accountGeneral, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "operator/general/account/accountEdit.jsp";
+		}
+		
 		
 		// update accountDto
 		UpdatableAccount updatableAccount = new UpdatableAccount();
@@ -145,8 +157,26 @@ public class OperatorGeneralAccountController {
 		return "redirect:accountEdit";
 	}
 	
+	// MISC MODEL ITEMS FOR ACCOUNT EDIT
+	public void setupAccountEditModelMap(int accountId, String accountNumber, int energyCompanyId, ModelMap modelMap, YukonUserContext userContext) {
+		
+		// basics
+		modelMap.addAttribute("accountId", accountId);
+		modelMap.addAttribute("energyCompanyId", energyCompanyId);
+		modelMap.addAttribute("accountNumber", accountNumber);
+		
+		// substations
+		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+		StarsSubstations substations = energyCompany.getStarsSubstations();
+		modelMap.addAttribute("substations", substations);
+		
+		// operatorTempMenu
+		SelectMenuConfiguration operatorTempMenu = OperatorActionsFactory.getAccountActionsSelectMenuConfiguration(accountId, energyCompanyId, userContext);
+		modelMap.addAttribute("operatorTempMenu", operatorTempMenu);
+	}
+	
 	// ACCOUNT DELETE
-	@RequestMapping(value = "/operator/general/account/accountDelete")
+	@RequestMapping
     public String accountDelete(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -157,7 +187,7 @@ public class OperatorGeneralAccountController {
 	}
 	
 	// ACCOUNT LOG
-    @RequestMapping(value = "/operator/general/account/accountLog")
+	@RequestMapping
     public String accountLog(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
         
         int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -171,9 +201,9 @@ public class OperatorGeneralAccountController {
         modelMap.addAttribute("accountId", accountId);
         modelMap.addAttribute("energyCompanyId", energyCompanyId);
         
-        // leftSideContxtualMenuLinks
-        LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = OperatorActionsFactory.getLeftSideContxtualMenuLinks(accountId, energyCompanyId, "general", userContext);
-        modelMap.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+        // operatorTempMenu
+		SelectMenuConfiguration operatorTempMenu = OperatorActionsFactory.getAccountActionsSelectMenuConfiguration(accountId, energyCompanyId, userContext);
+		modelMap.addAttribute("operatorTempMenu", operatorTempMenu);
         
         return "operator/general/account/accountLog.jsp";
     }
@@ -250,5 +280,10 @@ public class OperatorGeneralAccountController {
 	@Autowired
 	public void setSiteInformationDao(SiteInformationDao siteInformationDao) {
 		this.siteInformationDao = siteInformationDao;
+	}
+	
+	@Autowired
+	public void setAccountGeneralValidator(AccountGeneralValidator accountGeneralValidator) {
+		this.accountGeneralValidator = accountGeneralValidator;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -29,6 +30,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
 import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
 import com.cannontech.stars.util.ServletUtils;
@@ -48,7 +50,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public AccountSearchResultHolder customerAccountSearch(int searchByDefinitionId, 
+	public AccountSearchResultHolder customerAccountSearch(OperatorAccountSearchBy searchBy, 
 														   String searchValue,
 														   int startIndex,
 														   int count,
@@ -60,10 +62,10 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 		String error = null;
 
 		// basic validation
-        if (!(searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) && searchValue.trim().length() < 2) {
+        if (!(searchBy == OperatorAccountSearchBy.ACCOUNT_NUMBER) && searchValue.trim().length() < 2) {
         	error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.needTwoCharacters");
         }
-        if (searchValue.trim().length() == 0) {
+        if (StringUtils.isBlank(searchValue)) {
         	error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.emptySearchValue");
         }
         
@@ -77,12 +79,12 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 			boolean searchMembers = adminManageMembers && energyCompany.hasChildEnergyCompanies();
 	        
 	        // by acct number
-	        if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) {
+	        if (searchBy == OperatorAccountSearchBy.ACCOUNT_NUMBER) {
 				accountList = energyCompany.searchAccountByAccountNumber(searchValue, searchMembers, true);
 	        }
 	        
 	        // by phone
-	        else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_PHONE_NO) {
+	        else if (searchBy == OperatorAccountSearchBy.PHONE_NUMBER) {
 	        	
 	        	try {
 		    		String phoneNo = ServletUtils.formatPhoneNumberForSearch(searchValue);
@@ -93,32 +95,32 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	        }
 	        
 	        // by last name
-	        else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
+	        else if (searchBy == OperatorAccountSearchBy.LAST_NAME) {
 				accountList = energyCompany.searchAccountByLastName(searchValue, searchMembers, true);
 	        }
 	        
 	        // by hardware serial number
-	        else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_SERIAL_NO) {
+	        else if (searchBy == OperatorAccountSearchBy.SERIAL_NUMBER) {
 				accountList = energyCompany.searchAccountBySerialNo(searchValue, searchMembers);
 	        }
 	        
 	        // by map number
-	        else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_MAP_NO) {
+	        else if (searchBy == OperatorAccountSearchBy.MAP_NUMBER) {
 	        	accountList = energyCompany.searchAccountByMapNo(searchValue, searchMembers);
 	        }
 	        
 	        // by address
-	        else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ADDRESS) {
+	        else if (searchBy == OperatorAccountSearchBy.ADDRESS) {
 	        	accountList = energyCompany.searchAccountByAddress(searchValue, searchMembers, true);
 	        }
 	        
 	        // by alternate tracking number
-	        else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ALT_TRACK_NO) {
+	        else if (searchBy == OperatorAccountSearchBy.ALT_TRACING_NUMBER) {
 	        	accountList = energyCompany.searchAccountByAltTrackNo(searchValue, searchMembers);
 	        }
 	        
 	        // by company name
-			else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_COMPANY_NAME) {
+			else if (searchBy == OperatorAccountSearchBy.COMPANY) {
 				accountList = energyCompany.searchAccountByCompanyName(searchValue, searchMembers);
 			}            
 			            
@@ -154,7 +156,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	        	}
 	            
 	            // by last name
-	            else if (searchByDefinitionId == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_LAST_NAME) {
+	            else if (searchBy == OperatorAccountSearchBy.LAST_NAME) {
 	                
 	            	// Don't sort, the sort by has already been handled in the CustomerAccount.searchByPrimaryContactLastName query.
 	                for (int i = 0; i < accountList.size(); i++) {
@@ -253,7 +255,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         	error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.noResultsFound");
         }
         
-        AccountSearchResultHolder accountSearchResultHolder = new AccountSearchResultHolder(searchByDefinitionId, searchValue, searchResult, error);
+        AccountSearchResultHolder accountSearchResultHolder = new AccountSearchResultHolder(searchBy, searchValue, searchResult, error);
         return accountSearchResultHolder;
 	}
 	

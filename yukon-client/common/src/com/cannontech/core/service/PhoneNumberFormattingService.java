@@ -12,5 +12,7 @@ import com.cannontech.user.YukonUserContext;
 public interface PhoneNumberFormattingService {
 
     public String formatPhoneNumber(String phoneNumber, YukonUserContext yukonUserContext);
+    
+    public boolean isHasInvalidCharacters(String phoneNumber);
 
 }

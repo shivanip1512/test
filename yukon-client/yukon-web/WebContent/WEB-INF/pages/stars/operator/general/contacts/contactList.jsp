@@ -65,9 +65,9 @@
 					<tags:nameValueContainer tableClass="noStyle">
 					
 						<c:forEach var="otherContactNotification" items="${contact.otherContactNotifications}">
-							<i:nameValue nameKey="${otherContactNotification.operatorContactNotificationType.formatKey}" nameColumnWidth="150px">
+							<tags:nameValue2 nameKey="${otherContactNotification.operatorContactNotificationType.formatKey}" nameColumnWidth="150px">
 								${otherContactNotification.notification}
-							</i:nameValue>
+							</tags:nameValue2>
 						</c:forEach>
 					
 					</tags:nameValueContainer>

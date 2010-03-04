@@ -7,9 +7,9 @@
 		
 	<div style="padding-top:8px;padding-bottom:8px;">
 		
-		<select name="searchByDefinitionId" onchange="$('searchForm').value = ''">
+		<select name="searchBy" onchange="$('searchForm').value = ''">
 			<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
-				<option value="${operatorAccountSearchBy.definitionId}" <c:if test="${operatorAccountSearchBy.definitionId == searchByDefinitionId}">selected</c:if>>
+				<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
 					<i:inline key="${operatorAccountSearchBy.formatKey}"/>
 				</option>
 			</c:forEach>
@@ -17,32 +17,9 @@
 		
 		<input type="text" name="searchValue" value="${searchValue}">
 		
-		<i:slowInput myFormId="searchForm" labelKey="defaults.search"/>
+		<tags:slowInput2 myFormId="searchForm" key="search"/>
 	
 	</div>
 	
-	<!-- 
-	<tags:nameValueContainer>
-	
-		<i:nameValue nameKey=".searchTypeLabel" nameColumnWidth="60px">
-			<select name="searchByDefinitionId" onchange="$('searchForm').value = ''">
-				<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
-					<option value="${operatorAccountSearchBy.definitionId}" <c:if test="${operatorAccountSearchBy.definitionId == searchByDefinitionId}">selected</c:if>>
-						<i:inline key="${operatorAccountSearchBy.formatKey}"/>
-					</option>
-				</c:forEach>
-			</select>
-		</i:nameValue>
-		
-		<i:nameValue nameKey=".searchValueLabel">
-			<input type="text" name="searchValue" value="${searchValue}">
-		</i:nameValue>
-	
-	</tags:nameValueContainer>
-	 
-	 <div style="text-align:right;padding-top:5px;">
-		<i:slowInput myFormId="searchForm" labelKey="defaults.search"/>
-	</div>
-	 -->
 </form>
 

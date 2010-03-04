@@ -17,18 +17,19 @@ import com.cannontech.stars.dr.account.dao.CustomerResidenceDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerResidence;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.menu.option.producer.LeftSideContextualMenuOptionsProducer;
+import com.cannontech.web.menu.renderer.SelectMenuConfiguration;
 import com.cannontech.web.stars.dr.operator.OperatorActionsFactory;
 
 @Controller
 @SessionAttributes("customerResidence")
+@RequestMapping(value = "/operator/general/residence/*")
 public class OperatorGeneralResidenceController {
 
 	private CustomerAccountDao customerAccountDao;
 	private CustomerResidenceDao customerResidenceDao;
 	
 	// RESIDENCE
-	@RequestMapping(value = "/operator/general/residence/residenceEdit")
+	@RequestMapping
     public String residenceEdit(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		// account
@@ -39,19 +40,22 @@ public class OperatorGeneralResidenceController {
 		modelMap.addAttribute("accountId", accountId);
 		modelMap.addAttribute("energyCompanyId", energyCompanyId);
 		
-		// leftSideContextualMenuOptionsProducer
-		LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = OperatorActionsFactory.getLeftSideContxtualMenuLinks(accountId, energyCompanyId, "residence", userContext);
-		modelMap.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+		// operatorTempMenu
+		SelectMenuConfiguration operatorTempMenu = OperatorActionsFactory.getAccountActionsSelectMenuConfiguration(accountId, energyCompanyId, userContext);
+		modelMap.addAttribute("operatorTempMenu", operatorTempMenu);
         
         // current residence
         CustomerResidence customerResidence = customerResidenceDao.findByAccountSiteId(customerAccount.getAccountId());
+        if (customerResidence == null) {
+        	customerResidence = new CustomerResidence();
+        }
         modelMap.addAttribute("customerResidence", customerResidence);
         
 		return "operator/general/residence/residenceEdit.jsp";
 	}
 	
 	// RESIDENCE UPDATE
-	@RequestMapping(value = "/operator/general/residence/residenceUpdate")
+	@RequestMapping
     public String residenceUpdate(@ModelAttribute("customerResidence") CustomerResidence customerResidence, 
     								BindingResult bindingResult,
 						    		int accountId,
@@ -63,7 +67,16 @@ public class OperatorGeneralResidenceController {
 		modelMap.addAttribute("accountId", accountId);
 		modelMap.addAttribute("energyCompanyId", energyCompanyId);
 		
-		customerResidenceDao.update(customerResidence);
+		// insert
+		if (customerResidence.getAccountSiteId() <= 0) {
+			CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+			customerResidence.setAccountSiteId(customerAccount.getAccountSiteId());
+			customerResidenceDao.insert(customerResidence);
+		
+		// update
+		} else {
+			customerResidenceDao.update(customerResidence);
+		}
 		
 		return "redirect:residenceEdit";
 	}

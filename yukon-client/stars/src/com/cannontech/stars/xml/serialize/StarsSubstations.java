@@ -1,6 +1,7 @@
 package com.cannontech.stars.xml.serialize;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 public class StarsSubstations {
@@ -10,7 +11,7 @@ public class StarsSubstations {
     public StarsSubstations() {
     }
     
-    public Vector<StarsSubstation> getStarsSubstationList() {
+    public List<StarsSubstation> getStarsSubstationList() {
 		return starsSubstationList;
 	}
 

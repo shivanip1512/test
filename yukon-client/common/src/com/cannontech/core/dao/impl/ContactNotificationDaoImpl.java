@@ -173,13 +173,12 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
-    public LiteContactNotification getNotificationForContact(int contactId, int notificationId) {
+    public LiteContactNotification getNotificationForContact(int notificationId) {
 
     	SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT cn.*");
     	sql.append("FROM ContactNotification cn");
-    	sql.append("WHERE ContactId").eq(contactId);
-    	sql.append("AND ContactNotifId").eq(notificationId);
+    	sql.append("WHERE cn.ContactNotifId").eq(notificationId);
 
         LiteContactNotification notification = yukonJdbcOperations.queryForObject(sql, new LiteContactNotificationRowMapper());
 

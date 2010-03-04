@@ -10,9 +10,8 @@
 	
 		<input type="hidden" name="accountId" value="${accountId}"/>
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
-		<form:hidden path="accountSiteId"/>
 	
-		<i:sectionContainer titleKey=".customerResidenceSection">
+		<tags:sectionContainer2 key="customerResidenceSection">
 	
 			<cti:dataGrid cols="2" tableStyle="width:95%;" rowStyle="vertical-align:top;" cellStyle="width:50%;padding-right:20px;">
 	
@@ -50,12 +49,12 @@
 			
 			</cti:dataGrid>
 		
-		</i:sectionContainer>
+		</tags:sectionContainer2>
 		
 		<%-- BUTTONS --%>
 		<br>
 		<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-			<i:slowInput myFormId="residenceUpdateForm" labelKey="defaults.save" width="80px"/>
+			<tags:slowInput2 myFormId="residenceUpdateForm" key="save" width="80px"/>
 		</cti:checkRolesAndProperties>
 		<tags:reset/>
 

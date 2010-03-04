@@ -910,7 +910,7 @@
            	<pages>
            		<page name="contactList" type="DETAIL_CHILD">
 		    		<menu>general</menu>
-		           	<link>/spring/stars/operator/general/contacts/"contactList"?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/general/contacts/contactList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
            		<page name="contactEdit" type="DETAIL_CHILD">

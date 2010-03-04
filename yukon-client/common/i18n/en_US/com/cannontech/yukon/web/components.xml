@@ -20,4 +20,14 @@
 	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.programBasedControlHistoryText">Program based control history is based off of all the control during the service of this account. This summary will no include inventory targeted opt outs or old inventory that was enrolled in this account that no longer are apart of the account.</entry>
 	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.inventoryBasedControlHistory">Inventory Based</entry>
 	<entry key="yukon.web.components.controlHistorySummary.helpInfoText.inventoryBasedControlHistoryText">Inventory based control history is only based off of history that has happened during the time the inventory has been enrolled.</entry>
+
+	<entry key="yukon.web.components.slowInput.save.label">Save</entry>
+	<entry key="yukon.web.components.slowInput.save.labelBusy">Saving</entry>
+	<entry key="yukon.web.components.slowInput.delete.label">Delete</entry>
+	<entry key="yukon.web.components.slowInput.search.label">Search</entry>
+	<entry key="yukon.web.components.slowInput.search.labelBusy">Searching</entry>
+	<entry key="yukon.web.components.slowInput.add.label">Add</entry>
+	
+
+
 </properties>

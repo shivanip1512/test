@@ -1,9 +1,9 @@
-package com.cannontech.stars.dr.general.model;
+package com.cannontech.common.model;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum OperatorContactNotificationType implements DisplayableEnum {
+public enum ContactNotificationType implements DisplayableEnum {
 	
 	CALL_BACK_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE), 
     CELL_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE), 
@@ -19,7 +19,7 @@ public enum OperatorContactNotificationType implements DisplayableEnum {
 
     private int definitionId;
 
-    private OperatorContactNotificationType(int definitionId) {
+    private ContactNotificationType(int definitionId) {
         this.definitionId = definitionId;
     }
     
@@ -27,6 +27,23 @@ public enum OperatorContactNotificationType implements DisplayableEnum {
         return definitionId;
     }
 
+    public static ContactNotificationType getTypeForNotificationCategoryId(int notificationCategoryId) {
+    	
+    	ContactNotificationType contactNotificationType = null;
+    	
+    	ContactNotificationType[] types = ContactNotificationType.values();
+    	for (ContactNotificationType type : types) {
+    		if (type.getDefinitionId() == notificationCategoryId) {
+    			contactNotificationType =  type;
+    		}
+    	}
+    	
+    	if (contactNotificationType == null) {
+    		throw new IllegalArgumentException("Invalid notificationCategoryId. No matching ContactNotificationType for notificationCategoryId (" + notificationCategoryId + ").");
+    	}
+    	
+    	return contactNotificationType;
+    }
     
     @Override
     public String getFormatKey() {

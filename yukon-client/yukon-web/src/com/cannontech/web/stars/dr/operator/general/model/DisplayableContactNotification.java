@@ -1,15 +1,13 @@
 package com.cannontech.web.stars.dr.operator.general.model;
 
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.stars.dr.general.model.OperatorContactNotificationType;
 
 public class DisplayableContactNotification {
 
-	private OperatorContactNotificationType operatorContactNotificationType;
 	private LiteContactNotification notification;
 	
-	public DisplayableContactNotification(OperatorContactNotificationType operatorContactNotificationType, LiteContactNotification notification) {
-		this.operatorContactNotificationType = operatorContactNotificationType;
+	public DisplayableContactNotification(LiteContactNotification notification) {
 		this.notification = notification;
 	}
 	
@@ -17,8 +15,8 @@ public class DisplayableContactNotification {
 		return notification.getContactNotifID();
 	}
 	
-	public OperatorContactNotificationType getOperatorContactNotificationType() {
-		return operatorContactNotificationType;
+	public ContactNotificationType getOperatorContactNotificationType() {
+		return notification.getContactNotificationType();
 	}
 	
 	public LiteContactNotification getNotification() {

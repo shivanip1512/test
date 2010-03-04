@@ -802,6 +802,10 @@ tr.lightRedBackground {
     color:#CC0000;
 }
 
+input.lightRedBackground {
+	background: #FFDDDD;
+}
+
 ul.errorMessage {
 	margin-bottom:  15px;
 }

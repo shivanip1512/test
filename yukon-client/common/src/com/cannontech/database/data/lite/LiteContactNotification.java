@@ -1,5 +1,6 @@
 package com.cannontech.database.data.lite;
 
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.db.contact.ContactNotification;
 
 /*
@@ -170,4 +171,8 @@ public class LiteContactNotification extends LiteBase
         this.order = order;
     }
 	
+	
+	public ContactNotificationType getContactNotificationType() {
+		return ContactNotificationType.getTypeForNotificationCategoryId(this.getNotificationCategoryID());
+	}
 }

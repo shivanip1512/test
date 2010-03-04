@@ -8,11 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -22,13 +24,11 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.general.model.OperatorContactNotificationType;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
-import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.menu.option.producer.LeftSideContextualMenuOptionsProducer;
+import com.cannontech.web.menu.renderer.SelectMenuConfiguration;
 import com.cannontech.web.stars.dr.operator.OperatorActionsFactory;
 import com.cannontech.web.stars.dr.operator.general.model.DisplayableContact;
 import com.cannontech.web.stars.dr.operator.general.model.DisplayableContactNotification;
@@ -36,6 +36,7 @@ import com.cannontech.web.stars.dr.operator.general.service.OperatorGeneralServi
 import com.google.common.collect.Lists;
 
 @Controller
+@RequestMapping(value = "/operator/general/contacts/*")
 public class OperatorGeneralContactsController {
 
 	private OperatorGeneralService operatorGeneralService;
@@ -48,7 +49,7 @@ public class OperatorGeneralContactsController {
 	private ContactNotificationFormattingService contactNotificationFormattingService;
 	
 	// CONTACTS LIST
-	@RequestMapping(value = "/operator/general/contacts/contactList")
+	@RequestMapping
     public String contactList(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		// account
@@ -59,9 +60,9 @@ public class OperatorGeneralContactsController {
 		modelMap.addAttribute("accountId", accountId);
 		modelMap.addAttribute("energyCompanyId", energyCompanyId);
 		
-		// leftSideContextualMenuOptionsProducer
-		LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = OperatorActionsFactory.getLeftSideContxtualMenuLinks(accountId, energyCompanyId, "contacts", userContext);
-		modelMap.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+		// operatorTempMenu
+		SelectMenuConfiguration operatorTempMenu = OperatorActionsFactory.getAccountActionsSelectMenuConfiguration(accountId, energyCompanyId, userContext);
+		modelMap.addAttribute("operatorTempMenu", operatorTempMenu);
 		
 		// contacts
 		List<DisplayableContact> contacts = Lists.newArrayList();
@@ -86,7 +87,7 @@ public class OperatorGeneralContactsController {
 	
 	
 	// CONTACT EDIT
-	@RequestMapping(value = "/operator/general/contacts/contactEdit")
+	@RequestMapping
     public String contactEdit(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		// account
@@ -100,12 +101,12 @@ public class OperatorGeneralContactsController {
 		// contactId
 		int contactId = ServletRequestUtils.getIntParameter(request, "contactId", 0);
 		
-		// leftSideContextualMenuOptionsProducer
-		LeftSideContextualMenuOptionsProducer leftSideContextualMenuOptionsProducer = OperatorActionsFactory.getLeftSideContxtualMenuLinks(accountId, energyCompanyId, "contacts", userContext);
-		modelMap.addAttribute("leftSideContextualMenuOptionsProducer", leftSideContextualMenuOptionsProducer);
+		// operatorTempMenu
+		SelectMenuConfiguration operatorTempMenu = OperatorActionsFactory.getAccountActionsSelectMenuConfiguration(accountId, energyCompanyId, userContext);
+		modelMap.addAttribute("operatorTempMenu", operatorTempMenu);
 		
 		// notification types
-		OperatorContactNotificationType[] notificationTypes = OperatorContactNotificationType.values();
+		ContactNotificationType[] notificationTypes = ContactNotificationType.values();
 		modelMap.addAttribute("notificationTypes", notificationTypes);
 		
 		// contact
@@ -125,7 +126,8 @@ public class OperatorGeneralContactsController {
 	}
 	
 	// UPDATE CONTACT
-	@RequestMapping(value = "/operator/general/contacts/updateContact")
+	@RequestMapping
+	@Transactional
     public String updateContact(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -142,7 +144,7 @@ public class OperatorGeneralContactsController {
 		LiteContact contact = null;
 		if (contactId == 0) {
 			
-			contact = contactService.createContact(firstName, lastName, UserUtils.USER_DEFAULT_ID);
+			contact = contactService.createContact(firstName, lastName, null);
 			
 			// add additional contact to customer
 			CustomerAccount customerAccount = customerAccountDao.getById(accountId);
@@ -164,7 +166,7 @@ public class OperatorGeneralContactsController {
 			String notificationValue = newNotificationValuesMap.get(notificationNumber);
 			if (StringUtils.isNotBlank(notificationTypeStr) && StringUtils.isNotBlank(notificationValue)) {
 				
-				OperatorContactNotificationType notificationType = OperatorContactNotificationType.valueOf(notificationTypeStr);
+				ContactNotificationType notificationType = ContactNotificationType.valueOf(notificationTypeStr);
 
 				// new notification
 				if (contactId == 0) {
@@ -199,9 +201,9 @@ public class OperatorGeneralContactsController {
 			
 			int homePhoneId = firstHomePhoneNotification.getNotification().getContactNotifID();
 			if (StringUtils.isNotBlank(homePhone)) {
-				contactNotificationService.updateFormattedNotification(contactId, homePhoneId, OperatorContactNotificationType.HOME_PHONE, homePhone, userContext);
+				contactNotificationService.updateFormattedNotification(contactId, homePhoneId, ContactNotificationType.HOME_PHONE, homePhone, userContext);
 			} else {
-				contactNotificationService.createFormattedNotification(contact, OperatorContactNotificationType.HOME_PHONE, homePhone, userContext);
+				contactNotificationService.createFormattedNotification(contact, ContactNotificationType.HOME_PHONE, homePhone, userContext);
 			}
 		}
 		
@@ -211,7 +213,7 @@ public class OperatorGeneralContactsController {
 	}
 	
 	// ADD NOTIFICATION DIALOG
-	@RequestMapping(value = "/operator/general/contacts/addNotificationDialog")
+	@RequestMapping
     public String addNotificationDialog(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -221,14 +223,14 @@ public class OperatorGeneralContactsController {
 		modelMap.addAttribute("energyCompanyId", energyCompanyId);
 		modelMap.addAttribute("contactId", contactId);
 		
-		OperatorContactNotificationType[] notificationTypes = OperatorContactNotificationType.values();
+		ContactNotificationType[] notificationTypes = ContactNotificationType.values();
 		modelMap.addAttribute("notificationTypes", notificationTypes);
 
 		return "operator/general/contacts/addNotificationDialog.jsp";
 	}
 	
 	// ADD NOTIFICATION
-	@RequestMapping(value = "/operator/general/contacts/addNotification")
+	@RequestMapping
     public String addNotification(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -240,7 +242,7 @@ public class OperatorGeneralContactsController {
 		
 		LiteContact contact = contactDao.getContact(contactId);
 		String notificationTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "notificationType");
-		OperatorContactNotificationType notificationType = OperatorContactNotificationType.valueOf(notificationTypeStr);
+		ContactNotificationType notificationType = ContactNotificationType.valueOf(notificationTypeStr);
 		String notificationValue = ServletRequestUtils.getRequiredStringParameter(request, "notificationValue");
 		
 		LiteContactNotification notification = contactNotificationService.createNotification(contact, notificationType, notificationValue);
@@ -250,7 +252,7 @@ public class OperatorGeneralContactsController {
 	}
 	
 	// REMOVE NOTIFICATION
-	@RequestMapping(value = "/operator/general/contacts/contactsRemoveNotification")
+	@RequestMapping
     public String contactsRemoveNotification(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
@@ -267,7 +269,7 @@ public class OperatorGeneralContactsController {
 	}
 	
 	// DELETE ADDITIONAL CONTACT
-	@RequestMapping(value = "/operator/general/contacts/deleteAdditionalContact")
+	@RequestMapping
     public String deleteAdditionalContact(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");

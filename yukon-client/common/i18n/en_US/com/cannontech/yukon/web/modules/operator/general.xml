@@ -2,6 +2,11 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
+	<!-- AccountGeneral Validation -->
+    <entry key="yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberRequired">Account Number Required</entry>
+    <entry key="yukon.web.modules.operator.accountGeneral.accountDto.homePhone.invalid">Invalid Home Phone Number</entry>
+    <entry key="yukon.web.modules.operator.accountGeneral.accountDto.workPhone.invalid">Invalid Work Phone Number</entry>
+
 	<!-- GENERAL -->
 	
 	<!-- OperatorGeneralSearchServiceImpl -->
@@ -12,6 +17,7 @@
 	
 	<!-- accountList -->
     <entry key="yukon.web.modules.operator.accountList.pageName">Accounts</entry>
+    <entry key="yukon.web.modules.operator.accountList.resultBoxtitle">Search Results for {0} &quot;{1}&quot;</entry>
     <entry key="yukon.web.modules.operator.accountList.accountNumberHeader">Account Number</entry>
     <entry key="yukon.web.modules.operator.accountList.nameHeader">Name</entry>
     <entry key="yukon.web.modules.operator.accountList.phoneNumberHeader">Phone Number</entry>
@@ -20,10 +26,10 @@
 	<!-- accountEdit -->
     <entry key="yukon.web.modules.operator.accountEdit.pageName">Account Edit</entry>
     <entry key="yukon.web.modules.operator.accountEdit.pageDescription">Control History</entry>
-    <entry key="yukon.web.modules.operator.accountEdit.customerContactSection">Customer Contact</entry>
-    <entry key="yukon.web.modules.operator.accountEdit.serviceAddressSection">Service Address</entry>
-    <entry key="yukon.web.modules.operator.accountEdit.serviceInformationSection">Service Information</entry>
-    <entry key="yukon.web.modules.operator.accountEdit.billingAddressSection">Billing Address</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.customerContactSection.title">Customer Contact</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.serviceAddressSection.title">Service Address</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.serviceInformationSection.title">Service Information</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingAddressSection.title">Billing Address</entry>
     
     <entry key="yukon.web.modules.operator.accountEdit.accountNumberLabel">Account Number</entry>
     <entry key="yukon.web.modules.operator.accountEdit.commercialLabel">Commercial</entry>
@@ -80,22 +86,23 @@
 	<!-- contactEdit -->
     <entry key="yukon.web.modules.operator.contactEdit.pageName">Contacts</entry>
     <entry key="yukon.web.modules.operator.contactEdit.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection">Contact Information</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection_isPrimary">Contact Information (Primary)</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection.title">Contact Information</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection_isPrimary.title">Contact Information (Primary)</entry>
     <entry key="yukon.web.modules.operator.contactEdit.isPrimary">(Primary)</entry>
     <entry key="yukon.web.modules.operator.contactEdit.firstNameLabel">First Name</entry>
 	<entry key="yukon.web.modules.operator.contactEdit.lastNameLabel">Last Name</entry>
 	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.notificationMethodHeader">Notification Method</entry>
 	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.valueHeader">Value</entry>
 	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.removeHeader">Remove</entry>
+	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.none">Choose Notification Method</entry>
 	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.addNotification">Add Notification</entry>
     <entry key="yukon.web.modules.operator.contactEdit.newContact">New</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.viewAll">View All</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.button.viewAll.label">View All</entry>
     
     <!-- residence -->
     <entry key="yukon.web.modules.operator.residence.pageName">Customer Residence</entry>
     <entry key="yukon.web.modules.operator.residence.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.residence.customerResidenceSection">Residence Information</entry>
+    <entry key="yukon.web.modules.operator.residence.customerResidenceSection.title">Residence Information</entry>
     <entry key="yukon.web.modules.operator.residence.residenceType">Residence Type</entry>
     <entry key="yukon.web.modules.operator.residence.constructionMaterial">Construction Material</entry>
     <entry key="yukon.web.modules.operator.residence.decadeBuilt">Decade Built</entry>
@@ -114,9 +121,6 @@
 	<entry key="yukon.web.widgets.operatorAccountSearchWidget.searchTypeLabel">Type</entry>
 	<entry key="yukon.web.widgets.operatorAccountSearchWidget.searchValueLabel">Value</entry>
 	
-	<!-- operator account information widget -->
-    <entry key="yukon.web.widgets.operatorAccountInformationWidget.accountNumberPrefix">Acct #</entry>
-	
 	<!-- OperatorAccountSearchBy enum -->
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.ACCOUNT_NUMBER">Account Number</entry>
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.PHONE_NUMBER">Phone Number</entry>
@@ -127,7 +131,7 @@
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.ALT_TRACING_NUMBER">Alt Tracking Number</entry>
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.COMPANY">Company</entry>
 	
-	<!-- OperatorContactNotificationType enum -->
+	<!-- ContactNotificationType enum -->
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.CALL_BACK_PHONE">Call Back Phone</entry>
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.CELL_PHONE">Cell Phone</entry>
 	<entry key="yukon.web.modules.operator.contactNotificationEnum.EMAIL">Email</entry>

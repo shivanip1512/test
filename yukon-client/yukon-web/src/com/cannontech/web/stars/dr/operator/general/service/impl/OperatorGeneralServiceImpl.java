@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
@@ -24,7 +25,6 @@ import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.general.model.OperatorContactNotificationType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.general.model.DisplayableContact;
 import com.cannontech.web.stars.dr.operator.general.model.DisplayableContactNotification;
@@ -120,7 +120,7 @@ public class OperatorGeneralServiceImpl implements OperatorGeneralService {
         LiteAddress billingAddress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         
         boolean hasOddForControlRole = rolePropertyDao.checkRole(YukonRole.ODDS_FOR_CONTROL, userContext.getYukonUser());
-        operatorGeneralUiExtras.setHasOddForControlRole(hasOddForControlRole);
+        operatorGeneralUiExtras.setHasOddsForControlRole(hasOddForControlRole);
         
         // notifyOddsOfControl
         if(emailNotif != null) {
@@ -173,51 +173,26 @@ public class OperatorGeneralServiceImpl implements OperatorGeneralService {
     		return null;
     	}
     	
-    	List<Integer> firstNotificationIds = Lists.newArrayList();
-    	
-    	// first notifications
     	DisplayableContactNotification firstHomePhoneNotification = null;
-    	LiteContactNotification firstHomePhoneLiteContactNotification = contactNotificationDao.getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-    	if (firstHomePhoneLiteContactNotification != null) {
-    		firstHomePhoneNotification = new DisplayableContactNotification(OperatorContactNotificationType.HOME_PHONE, firstHomePhoneLiteContactNotification);
-    		firstNotificationIds.add(firstHomePhoneLiteContactNotification.getContactNotifID());
-    	}
-    	
     	DisplayableContactNotification firstWorkPhoneNotification = null;
-		LiteContactNotification firstWorkPhoneLiteContactNotification = contactNotificationDao.getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-		if (firstWorkPhoneLiteContactNotification != null) {
-			firstWorkPhoneNotification = new DisplayableContactNotification(OperatorContactNotificationType.WORK_PHONE, firstWorkPhoneLiteContactNotification);
-			firstNotificationIds.add(firstWorkPhoneLiteContactNotification.getContactNotifID());
+    	DisplayableContactNotification firstEmailNotification = null;
+    	List<DisplayableContactNotification> otherDisplayableContactNotifications = Lists.newArrayList();
+    	
+    	List<LiteContactNotification> notificationsForContact = contactNotificationDao.getNotificationsForContact(contactId);
+    	for (LiteContactNotification notification : notificationsForContact) {
+    		
+    		if (firstHomePhoneNotification == null && notification.getContactNotificationType() == ContactNotificationType.HOME_PHONE) {
+    			firstHomePhoneNotification = new DisplayableContactNotification(notification);
+    		} else if (firstWorkPhoneNotification == null && notification.getContactNotificationType() == ContactNotificationType.WORK_PHONE) {
+    			firstWorkPhoneNotification = new DisplayableContactNotification(notification);
+    		} else if (firstHomePhoneNotification == null && notification.getContactNotificationType() == ContactNotificationType.EMAIL) {
+    			firstEmailNotification = new DisplayableContactNotification(notification);
+    		} else {
+    			
+    			DisplayableContactNotification displayableContactNotification = new DisplayableContactNotification(notification);
+    			otherDisplayableContactNotifications.add(displayableContactNotification);
+    		}
     	}
-		
-		DisplayableContactNotification firstEmailNotification = null;
-		LiteContactNotification firstEmailLiteContactNotification = contactNotificationDao.getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
-		if (firstEmailLiteContactNotification != null) {
-			firstEmailNotification = new DisplayableContactNotification(OperatorContactNotificationType.EMAIL, firstEmailLiteContactNotification);
-			firstNotificationIds.add(firstEmailLiteContactNotification.getContactNotifID());
-    	}
-		
-		// make list of other notifications
-        List<LiteContactNotification> contactNotifs = contactNotificationDao.getNotificationsForContact(contact.getContactID());
-        
-        List<DisplayableContactNotification> otherDisplayableContactNotifications = Lists.newArrayList();
-        OperatorContactNotificationType[] operatorContactNotificationTypes = OperatorContactNotificationType.values();
-        for (LiteContactNotification notification : contactNotifs) {
-        	
-        	// exclude first notifications from others
-        	if (firstNotificationIds.contains(notification.getContactNotifID())) {
-        		continue;
-        	}
-        	
-        	for (OperatorContactNotificationType operatorContactNotificationType : operatorContactNotificationTypes) {
-        		
-        		if (operatorContactNotificationType.getDefinitionId() == notification.getNotificationCategoryID()) {
-        			
-        			DisplayableContactNotification displayableContactNotification = new DisplayableContactNotification(operatorContactNotificationType, notification);
-        			otherDisplayableContactNotifications.add(displayableContactNotification);
-        		}
-        	}
-        }
     	
     	DisplayableContact displayableContact = new DisplayableContact(contact, firstHomePhoneNotification, firstWorkPhoneNotification, firstEmailNotification, otherDisplayableContactNotifications, isPrimary);
     	return displayableContact;

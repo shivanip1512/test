@@ -6,79 +6,66 @@
 
 <cti:standardPage module="operator" page="accountList">
 
-	<cti:url var="accountEditUrl" value="/spring/stars/operator/general/account/accountEdit"/>
-    				
-	<script language="JavaScript">
-	
-		function forwardToAccountEdit(energyCompanyId, accountId) {
-			$('accountTable').removeClassName('activeResultsTable');
-			window.location = '${accountEditUrl}?energyCompanyId=' + energyCompanyId + '&accountId=' + accountId;
-		}
-		
-	</script>
-	
 	<c:if test="${accountSearchResultHolder.hasError}">
 		<div class="errorRed">${accountSearchResultHolder.error}</div>
 		<br>
 	</c:if>
 
 	<%-- SEACRH WIDGET --%>
-	<div style="width:95%;">
-		<tags:widget bean="operatorAccountSearchWidget" searchValue="${accountSearchResultHolder.searchValue}" searchByDefinitionId="${accountSearchResultHolder.searchByDefinitionId}"/>
+	<div style="width:100%;">
+		<tags:widget bean="operatorAccountSearchWidget" searchValue="${accountSearchResultHolder.searchValue}" searchBy="${accountSearchResultHolder.searchBy}" hideEnabled="false"/>
 	</div>
 	<br>
 
 	<%-- RESULTS --%>
 	<c:if test="${accountSearchResultHolder.accountSearchResults.hitCount > 0}">
 	
-		<%-- SEARCH NAVIGATION --%>
-		<op:searchNavigation results="${accountSearchResultHolder.accountSearchResults}"
-							searchByDefinitionId="${accountSearchResultHolder.searchByDefinitionId}"
-							searchValue="${accountSearchResultHolder.searchValue}"/>
+		<cti:msg var="searchByText" key="${accountSearchResultHolder.searchBy.formatKey}"/>
+		<cti:msg2 var="resultBoxtitleText" key=".resultBoxtitle" arguments="${searchByText},${accountSearchResultHolder.searchValue}"/>
+		<tags:pagedBox searchResult="${accountSearchResultHolder.accountSearchResults}" baseUrl="/spring/stars/operator/general/account/search" title="${resultBoxtitleText}">
 		
-		<%-- RESULTS TABLE --%>
-	    <table id="accountTable" class="resultsTable activeResultsTable">
-	    
-	    	<tr>
-	    		<th><i:inline key=".accountNumberHeader"/></th>
-	    		<th><i:inline key=".nameHeader"/></th>
-	    		<th><i:inline key=".phoneNumberHeader"/></th>
-	    		<th><i:inline key=".addressHeader"/></th>
-	    	</tr>
+			<table class="compactResultsTable rowHighlighting" style="width:100%;">
+	            
+	            <tr>
+		    		<th><i:inline key=".accountNumberHeader"/></th>
+		    		<th><i:inline key=".nameHeader"/></th>
+		    		<th><i:inline key=".phoneNumberHeader"/></th>
+		    		<th><i:inline key=".addressHeader"/></th>
+		    	</tr>
+		    	
+		    	<c:forEach var="accountSearchResult" items="${accountSearchResultHolder.accountSearchResults.resultList}">
 	    	
-	    	<c:forEach var="accountSearchResult" items="${accountSearchResultHolder.accountSearchResults.resultList}">
+	    			<tr style="vertical-align:top;" class="<tags:alternateRow odd="" even="altRow"/>">
+		    		
+		    			<td>
+		    				<cti:url var="accountEditUrl" value="/spring/stars/operator/general/account/accountEdit">
+		    					<cti:param name="energyCompanyId" value="${accountSearchResult.energyCompanyId}"/>
+		    					<cti:param name="accountId" value="${accountSearchResult.accountId}"/>
+		    				</cti:url>
+		    				<a href="${accountEditUrl}">
+		   						${accountSearchResult.accountNumber}
+		   					</a>
+		    			</td>
+		    			
+		    			<td>
+		    				${accountSearchResult.name}
+		    			</td>
+		    			
+		    			<td>
+		    				<tags:homeAndWorkPhone homePhoneNotif="${accountSearchResult.homePhoneNotif}" workPhoneNotif="${accountSearchResult.workPhoneNotif}"/>
+		    			</td>
+		    			
+		    			<td>
+		    				<tags:address address="${accountSearchResult.address}"/>
+		    			</td>
+		    		
+		    		</tr>
+		    	
+		    	</c:forEach>
 	    	
-	    		<tr style="vertical-align:top;" 
-	    			onclick="javascript:forwardToAccountEdit(${accountSearchResult.energyCompanyId}, ${accountSearchResult.accountId})" 
-	    			onmouseover="activeResultsTable_highLightRow(this)" 
-	                onmouseout="activeResultsTable_unHighLightRow(this)">
-	    		
-	    			<td>
-	   					${accountSearchResult.accountNumber}
-	    			</td>
-	    			
-	    			<td>
-	    				${accountSearchResult.name}
-	    			</td>
-	    			
-	    			<td>
-	    				<tags:homeAndWorkPhone homePhoneNotif="${accountSearchResult.homePhoneNotif}" workPhoneNotif="${accountSearchResult.workPhoneNotif}"/>
-	    			</td>
-	    			
-	    			<td>
-	    				<tags:address address="${accountSearchResult.address}"/>
-	    			</td>
-	    		
-	    		</tr>
-	    	
-	    	</c:forEach>
-	    
-	    </table>
-	    
-	    <%-- SEARCH NAVIGATION --%>
-	    <op:searchNavigation results="${accountSearchResultHolder.accountSearchResults}"
-							searchByDefinitionId="${accountSearchResultHolder.searchByDefinitionId}"
-							searchValue="${accountSearchResultHolder.searchValue}"/>
+	        </table>
+        
+		</tags:pagedBox>
 	    
 	</c:if>
     

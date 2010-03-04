@@ -206,5 +206,8 @@
         <table name="DeviceGroupComposed" identitycolumn="DeviceGroupComposedId"/>
         <table name="DeviceGroupComposedGroup" identitycolumn="DeviceGroupComposedGroupId"/>
       </sequence>
+      <sequence name="CustomerResidence">
+        <table name="CustomerResidence" identitycolumn="AccountSiteId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

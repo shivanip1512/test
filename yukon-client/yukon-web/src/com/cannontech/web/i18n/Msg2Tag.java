@@ -26,7 +26,7 @@ public class Msg2Tag extends YukonTagSupport {
     private ObjectFormattingService objectFormattingService;
 
     private Object arguments;
-    private String argumentSeparator;
+    private String argumentSeparator = ",";
     private String var;
     private String scope = TagUtils.SCOPE_PAGE;
     private Object key;
@@ -40,8 +40,6 @@ public class Msg2Tag extends YukonTagSupport {
     public void doTag() throws JspException, IOException {
         Object[] resolvedArguments = resolveArguments(arguments);
 
-        key = key == null ? "" : key;
-        
         MessageSourceResolvable resolvable;
         if (key instanceof String) {
             String baseCode = (String) key;

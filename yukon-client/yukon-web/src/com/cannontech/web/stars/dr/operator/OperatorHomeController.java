@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.user.YukonUserContext;
 
 @Controller
+@RequestMapping(value = "/operator/*")
 public class OperatorHomeController {
 
 	// HOME
-	@RequestMapping(value = "/operator/home")
+	@RequestMapping
     public String home(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 		
 		return "operator/home.jsp";

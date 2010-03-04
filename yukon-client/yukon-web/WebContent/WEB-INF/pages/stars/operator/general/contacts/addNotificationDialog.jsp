@@ -21,7 +21,7 @@
 	<input type="text" name="notificationValue">
 		
 	<br><br>
-	<cti:msg var="addButtonText" key="yukon.web.defaults.add"/>
+	<cti:msg var="addButtonText" key="yukon.web.components.slowInput.add.label"/>
 	<tags:slowInput myFormId="addNotificationForm" label="${addButtonText}"/>
 	
 </form>

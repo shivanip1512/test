@@ -7,11 +7,13 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -63,7 +65,6 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
-import com.cannontech.stars.dr.general.model.OperatorContactNotificationType;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -213,23 +214,23 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Create the contact
          */
-        LiteContact liteContact = contactService.createContact(accountDto.getFirstName(), accountDto.getLastName(), user == null ? UserUtils.USER_DEFAULT_ID : user.getUserID());
-            
+        LiteContact liteContact = contactService.createContact(accountDto.getFirstName(), accountDto.getLastName(), user);
+        
         /*
          * Create the notifications
          */
         if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
-        	LiteContactNotification homePhoneLiteContactNotification = contactNotificationService.createNotification(liteContact, OperatorContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
+        	LiteContactNotification homePhoneLiteContactNotification = contactNotificationService.createNotification(liteContact, ContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
             contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
         }
         
         if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
-        	LiteContactNotification workPhoneLiteContactNotification = contactNotificationService.createNotification(liteContact, OperatorContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
+        	LiteContactNotification workPhoneLiteContactNotification = contactNotificationService.createNotification(liteContact, ContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
             contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
         }
         
         if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
-        	LiteContactNotification emailLiteContactNotification = contactNotificationService.createNotification(liteContact, OperatorContactNotificationType.EMAIL, accountDto.getEmailAddress());
+        	LiteContactNotification emailLiteContactNotification = contactNotificationService.createNotification(liteContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
             contactNotificationDao.saveNotification(emailLiteContactNotification);
         }
             
@@ -578,6 +579,7 @@ public class AccountServiceImpl implements AccountService {
                     throw new AccountNumberUnavailableException("The provided new account number already exists (" + updatedAccountNumber + ").");
                 }
             } catch (NotFoundException e ) {
+            	// if an account is not found, then there is no risk of it already existing
             }
 
             accountNumberUpdate = true;
@@ -743,7 +745,7 @@ public class AccountServiceImpl implements AccountService {
         
         if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
             if(homePhoneNotif == null) {
-            	LiteContactNotification homePhoneLiteContactNotification = contactNotificationService.createNotification(primaryContact, OperatorContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
+            	LiteContactNotification homePhoneLiteContactNotification = contactNotificationService.createNotification(primaryContact, ContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
                 contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
             }else {
                 homePhoneNotif.setNotification(accountDto.getHomePhone());
@@ -757,7 +759,7 @@ public class AccountServiceImpl implements AccountService {
         
         if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
             if(workPhoneNotif == null) {
-            	LiteContactNotification workPhoneLiteContactNotification = contactNotificationService.createNotification(primaryContact, OperatorContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
+            	LiteContactNotification workPhoneLiteContactNotification = contactNotificationService.createNotification(primaryContact, ContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
                 contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
             }else {
                 workPhoneNotif.setNotification(accountDto.getWorkPhone());
@@ -771,7 +773,7 @@ public class AccountServiceImpl implements AccountService {
         
         if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
             if(emailNotif == null) {
-            	LiteContactNotification emailLiteContactNotification = contactNotificationService.createNotification(primaryContact, OperatorContactNotificationType.EMAIL, accountDto.getEmailAddress());
+            	LiteContactNotification emailLiteContactNotification = contactNotificationService.createNotification(primaryContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
                 contactNotificationDao.saveNotification(emailLiteContactNotification);
             }else {
                 emailNotif.setNotification(accountDto.getEmailAddress());
@@ -1029,7 +1031,7 @@ public class AccountServiceImpl implements AccountService {
     	CustomerAccount customerAccount = null;
         try {
             customerAccount = customerAccountDao.getById(accountId);
-        } catch (NotFoundException e) {
+        } catch (EmptyResultDataAccessException e) {
             log.error("Unable to find account for accountId: " + accountId);
             throw new InvalidAccountNumberException("Unable to find account for accountId: " + accountId, e);
         }

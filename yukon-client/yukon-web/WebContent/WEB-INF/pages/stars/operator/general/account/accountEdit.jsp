@@ -10,9 +10,8 @@
 
     	Event.observe(window, 'load', function() {
 
-    		<c:if test="${!accountGeneral.accountDto.isCommercial}">
-    		toggleCommercialInputs(false)
-    		</c:if>
+    		var isCommercial = ${cti:jsonString(accountGeneral.accountDto.isCommercial)};
+    	    toggleCommercialInputs(isCommercial);
     	});
 
     	function toggleCommercialInputs(isCommercial) {
@@ -50,7 +49,7 @@
     		<%-- CUSTOMER CONTACT --%>
     		<cti:dataGridCell>
     		
-    			<i:sectionContainer titleKey=".customerContactSection">
+    			<tags:sectionContainer2 key="customerContactSection">
 	    			
 	    				<tags:nameValueContainer>
 	    				
@@ -66,22 +65,22 @@
 	    					<tags:inputNameValue nameKey=".emailLabel" path="accountDto.emailAddress"/>
 	    					<tags:inputNameValue nameKey=".altTrackingNumberLabel" path="accountDto.altTrackingNumber"/>
 	    					<cti:checkRolesAndProperties value="ODDS_FOR_CONTROL">
-	    						<i:nameValue nameKey=".notifyOddsForControlLabel">
+	    						<tags:nameValue2 nameKey=".notifyOddsForControlLabel">
 		    						<input type="checkbox" name="notifyOddsForControl" <c:if test="${operatorGeneralUiExtras.notifyOddsForControl}">checked</c:if>>
-		    					</i:nameValue>
+		    					</tags:nameValue2>
 	    					</cti:checkRolesAndProperties>
 	    					<tags:textareaNameValue nameKey=".notesLabel" path="operatorGeneralUiExtras.notes" rows="3" cols="28"/>
 	    				
 	    				</tags:nameValueContainer>
 	    			
-	    			</i:sectionContainer>
+	    			</tags:sectionContainer2>
     		
     		</cti:dataGridCell>
     		
     		<%--SERVICE ADDRESS --%>
     		<cti:dataGridCell>
     		
-    			<i:sectionContainer titleKey=".serviceAddressSection">
+    			<tags:sectionContainer2 key="serviceAddressSection">
 	    			
 	    				<tags:nameValueContainer>
 	    				
@@ -96,25 +95,25 @@
 	    				
 	    				</tags:nameValueContainer>
 	    			
-	    			</i:sectionContainer>
+	    			</tags:sectionContainer2>
     		
     		</cti:dataGridCell>
     		
     		<%-- SERVICE INFORMATION --%>
     		<cti:dataGridCell>
     		
-    			<i:sectionContainer titleKey=".serviceInformationSection">
+    			<tags:sectionContainer2 key="serviceInformationSection">
 	    			
 	    				<tags:nameValueContainer>
 	    				
 	    					<tags:yukonListEntrySelectNameValue nameKey=".rateScheduleLabel" path="accountDto.rateScheduleEntryId" accountId="${accountId}" listName="RATE_SCHEDULE" defaultItemValue="0" defaultItemLabel="(none)"/>
 	    					
-	    					<i:nameValue nameKey=".presenceRequiredLabel">
+	    					<tags:nameValue2 nameKey=".presenceRequiredLabel">
 	    						<form:select path="accountDto.isCustAtHome">
 	    							<form:option value="false"><i:inline key="defaults.no"/></form:option>
 	    							<form:option value="true"><i:inline key="defaults.yes"/></form:option>
 	    						</form:select>
-	    					</i:nameValue>
+	    					</tags:nameValue2>
 	    					
 	    					<tags:inputNameValue nameKey=".customerStatusLabel" path="accountDto.customerStatus" size="1" maxlength="1"/>
 	    					<tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations.starsSubstationList}" itemValue="substationID" itemLabel="substationName"/>
@@ -125,21 +124,21 @@
 	    					
 	    				</tags:nameValueContainer>
 	    			
-	    			</i:sectionContainer>
+	    			</tags:sectionContainer2>
     		
     		</cti:dataGridCell>
     	
     		<%-- BILLING ADDRESS --%>
     		<cti:dataGridCell>
     		
-    			<i:sectionContainer titleKey=".billingAddressSection">
+    			<tags:sectionContainer2 key="billingAddressSection">
 	    			
 	    				<tags:nameValueContainer>
 	    				
-	    					<i:nameValue nameKey="">
+	    					<tags:nameValue2 nameKey="">
 		    					<tags:checkbox path="operatorGeneralUiExtras.usePrimaryAddressForBilling"/>
 								<i:inline key=".usePrimaryAddressForBillingLabel"/>
-							</i:nameValue>
+							</tags:nameValue2>
 	    					<tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1"/>
 	    					<tags:inputNameValue nameKey=".billingAddress2Label" path="accountDto.billingAddress.locationAddress2"/>
 	    					<tags:inputNameValue nameKey=".billingCityLabel" path="accountDto.billingAddress.cityName"/>
@@ -149,16 +148,16 @@
 	    					
 	    				</tags:nameValueContainer>
 	    			
-	    			</i:sectionContainer>
+	    			</tags:sectionContainer2>
     		
     		</cti:dataGridCell>
     	
     	</cti:dataGrid>
     	
     	<br>
-	    <i:slowInput myFormId="updateForm" labelKey="defaults.save" width="80px"/>
+	    <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
 	    <tags:reset/>
-	    <i:slowInput myFormId="deleteForm" labelKey="defaults.delete" width="80px"/>
+	    <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
 	    
 	</form:form>
     
