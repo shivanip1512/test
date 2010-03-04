@@ -695,7 +695,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 ReturnMsg->setConnectionHandle(OutMessage->Request.Connection);
                                 ReturnMsg->setResultString(getName() + " / Long load profile read setup error");
 
-                                retMsgHandler( OutMessage->Request.CommandStr, ErrorDeviceNotReady, ReturnMsg, vgList, retList, false );
+                                retMsgHandler( OutMessage->Request.CommandStr, ErrorDeviceNotPrepared, ReturnMsg, vgList, retList, false );
 
                                 _llpInterest.time     = 0;
                                 _llpInterest.time_end = 0;
