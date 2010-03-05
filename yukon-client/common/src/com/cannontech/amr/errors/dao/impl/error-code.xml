@@ -711,7 +711,7 @@
 </error>
 <error code="267">
 	<category>Data Validation</category> 
-<porter>Invalid day/month returned by daily read. OR Peak timestamp (mm/dd/yyyy hh:mm:ss) outside of requested range - retry report.</porter>
+<porter>Invalid time returned OR time outside of requested range - retry.</porter>
     <description>The setup validation data returned by the meter did not match the expected value.  The device did not hear the setup command.</description>
     <troubleshooting>
       The meter did not receive the setup command for the read.  Attempt the read again. 
@@ -776,6 +776,16 @@
   <porter>Device is not connected</porter>
   <description>Yukon is unable to establish a connection with the device.</description>
   <troubleshooting>Verify that the device's connection parameters.
+  	<ul>
+      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+    </ul>
+  </troubleshooting>
+</error>
+<error code="276">
+  <category>Yukon System</category>
+  <porter>No disconnect configured on this device</porter>
+  <description>The device does not have a disconnect to be operated on.</description>
+  <troubleshooting>Verify there is a disconnect configured in the Device Setup.
   	<ul>
       <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
     </ul>
