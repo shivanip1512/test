@@ -1084,48 +1084,54 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                                "Invalid Centron display configuration \"" + display + "\"");
         }
 
-        int test = parse.getiValue("centron_test_duration");
-
-        if(      test == 0 )  centron_config |= 0x00;
-        else if( test == 1 )  centron_config |= 0x04;
-        else if( test == 7 )  centron_config |= 0x0c;
-        else
+        if( nRet != ExecutionComplete )
         {
-            found = false;
-            nRet  = ExecutionComplete;
-
-            returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Invalid Centron test duration \"" + CtiNumStr(test) + "\"");
-        }
-
-        if( parse.isKeyValid("centron_error_display") )
-        {
-            centron_config |= 0x10;
-        }
-
-        OutMessage->Buffer.BSt.Message[1] = centron_config;
-
-        if( parse.isKeyValid("centron_ratio") )
-        {
-            int centron_ratio = parse.getiValue("centron_ratio");
-
-            if( centron_ratio > 0 && centron_ratio <= 255 )
-            {
-                OutMessage->Buffer.BSt.Message[2] = (unsigned char)parse.getiValue("centron_ratio");
-            }
+            int test = parse.getiValue("centron_test_duration");
+    
+            if(      test == 0 )  centron_config |= 0x00;
+            else if( test == 1 )  centron_config |= 0x04;
+            else if( test == 7 )  centron_config |= 0x0c;
             else
             {
                 found = false;
                 nRet  = ExecutionComplete;
-
+    
                 returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   "Invalid Centron multiplier (" + CtiNumStr(centron_ratio) + ")");
+                                   "Invalid Centron test duration \"" + CtiNumStr(test) + "\"");
             }
-        }
-        else
-        {
-            //  omit the multiplier ratio
-            OutMessage->Buffer.BSt.Length--;
+
+            if( nRet != ExecutionComplete )
+            {
+                if( parse.isKeyValid("centron_error_display") )
+                {
+                    centron_config |= 0x10;
+                }
+        
+                OutMessage->Buffer.BSt.Message[1] = centron_config;
+        
+                if( parse.isKeyValid("centron_ratio") )
+                {
+                    int centron_ratio = parse.getiValue("centron_ratio");
+        
+                    if( centron_ratio > 0 && centron_ratio <= 255 )
+                    {
+                        OutMessage->Buffer.BSt.Message[2] = (unsigned char)parse.getiValue("centron_ratio");
+                    }
+                    else
+                    {
+                        found = false;
+                        nRet  = ExecutionComplete;
+        
+                        returnErrorMessage(BADPARAM, OutMessage, retList,
+                                           "Invalid Centron multiplier (" + CtiNumStr(centron_ratio) + ")");
+                    }
+                }
+                else
+                {
+                    //  omit the multiplier ratio
+                    OutMessage->Buffer.BSt.Length--;
+                }
+            }
         }
     }
     else if( parse.isKeyValid("centron_reading_forward") )

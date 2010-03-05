@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_di
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( BADPARAM , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -332,7 +332,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_displ
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( BADPARAM , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_te
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( BADPARAM , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( BADPARAM , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -410,7 +410,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( BADPARAM , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
