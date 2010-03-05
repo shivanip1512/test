@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ tag body-content="empty" %>
 
 <%@ attribute name="key" required="true" type="java.lang.String"%>
 <%@ attribute name="arguments" required="false" type="java.lang.String"%>

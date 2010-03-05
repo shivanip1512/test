@@ -1,10 +1,10 @@
 package com.cannontech.web.picker.v2;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
@@ -73,9 +73,8 @@ public class PickerController {
                                              hits.getHitCount());
         String pages = messageSourceAccessor.getMessage(pagesResolvable);
         object.put("pages", pages);
-        ServletOutputStream out = response.getOutputStream();
+        PrintWriter out = response.getWriter();
         out.print(object.toString());
-        System.out.println(object.toString());
         out.close();
     }
 
