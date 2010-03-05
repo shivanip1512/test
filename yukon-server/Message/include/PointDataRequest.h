@@ -18,9 +18,10 @@ typedef std::map<long,PointValue> PointValueMap;
 class IM_EX_MSG PointDataRequest
 {
     public:
-        virtual bool watchPoints(std::list<long> points)=0;
+        virtual bool watchPoints(const std::set<long>& points, const std::set<long>& requestPoints)=0;
         virtual bool isComplete()=0;
         virtual PointValueMap getPointValues()=0;
+        virtual void reportStatusToLog()=0;
 };
 
 typedef boost::shared_ptr<PointDataRequest> PointDataRequestPtr;

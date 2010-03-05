@@ -8247,7 +8247,7 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
                                               std::vector<CtiRequestMsg*> &requests)
 {
     int offset = -1;
-    string commandName = " LTC Keep Alive";
+    string commandName = " LTC Tap Position";
 
 
     int paoId = _command->getId();

@@ -114,3 +114,13 @@ void IVVCState::setFirstPass(bool firstPass)
 {
     _firstPass = firstPass;
 }
+
+CtiTime IVVCState::getNextHeartbeatTime()
+{
+    return _nextHeartbeat;
+}
+
+void IVVCState::setNextHeartbeatTime(const CtiTime& time)
+{
+    _nextHeartbeat = time;
+}

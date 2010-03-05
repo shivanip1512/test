@@ -5959,36 +5959,36 @@ BOOL CtiCCFeeder::scanAllMonitorPoints()
     return retVal;
 }
 
-CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::list<long>& pointAddMsg)
+CtiCCFeeder& CtiCCFeeder::addAllFeederPointsToMsg(std::set<long>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )
     {
-        pointAddMsg.push_back(getCurrentVarLoadPointId());
+        pointAddMsg.insert(getCurrentVarLoadPointId());
     }
     if( getCurrentWattLoadPointId() > 0 )
     {
-        pointAddMsg.push_back(getCurrentWattLoadPointId());
+        pointAddMsg.insert(getCurrentWattLoadPointId());
     }
     if (getCurrentVoltLoadPointId() > 0)
     {
-        pointAddMsg.push_back(getCurrentVoltLoadPointId());
+        pointAddMsg.insert(getCurrentVoltLoadPointId());
     }
     if (getEstimatedVarLoadPointId() > 0)
     {
-        pointAddMsg.push_back(getEstimatedVarLoadPointId());
+        pointAddMsg.insert(getEstimatedVarLoadPointId());
     }
     if (getDailyOperationsAnalogPointId() > 0)
     {
-        pointAddMsg.push_back(getDailyOperationsAnalogPointId());
+        pointAddMsg.insert(getDailyOperationsAnalogPointId());
     }
     if (getPowerFactorPointId() > 0)
     {
-        pointAddMsg.push_back(getPowerFactorPointId());
+        pointAddMsg.insert(getPowerFactorPointId());
     }
     if (getEstimatedPowerFactorPointId() > 0)
     {
-        pointAddMsg.push_back(getEstimatedPowerFactorPointId());
+        pointAddMsg.insert(getEstimatedPowerFactorPointId());
     }
 
     return *this;

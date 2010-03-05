@@ -187,10 +187,6 @@ void CtiCapController::start()
     RWThreadFunction threadfunc4 = rwMakeThreadFunction( *this, &CtiCapController::messageSender );
     _messageSenderThread = threadfunc4;
     threadfunc4.start();
-
-    RWThreadFunction threadfunc5 = rwMakeThreadFunction( *this, &CtiCapController::ivvcKeepAlive );
-    _ivvcKeepAliveThread = threadfunc5;
-    threadfunc5.start();
 }
 
 /*---------------------------------------------------------------------------
@@ -246,21 +242,6 @@ void CtiCapController::stop()
             _messageSenderThread.requestCancellation();
             _messageSenderThread.join();
         }
-
-        if ( _ivvcKeepAliveThread.isValid() && _ivvcKeepAliveThread.requestCancellation() == RW_THR_ABORTED )
-        {
-            _ivvcKeepAliveThread.terminate();
-
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - messageSender Thread forced to terminate." << endl;
-            }
-        }
-        else
-        {
-            _ivvcKeepAliveThread.requestCancellation();
-            _ivvcKeepAliveThread.join();
-        }
     }
     catch(...)
     {
@@ -296,116 +277,6 @@ void CtiCapController::stop()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-}
-
-void CtiCapController::ivvcKeepAlive()
-{
-    try
-    {
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
-
-        if (_IVVC_KEEPALIVE == 0)
-        {
-            if (_CC_DEBUG & CC_DEBUG_STANDARD)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC KeepAlive thread closing. Value of 0. " << endl;
-            }
-            return;
-        }
-
-        while (true)
-        {
-            {
-                CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
-                LtcMap* ltcMap = store->getLtcMap();
-                for each (const LtcMap::value_type& ltc in *ltcMap)
-                {
-                    long ltcId = ltc.second->getPaoId();
-                    CtiCCSubstationBusPtr subBus = store->findSubBusByLtcId(ltcId);
-
-                    if (subBus->getDisableFlag() == false)
-                    {
-                        LitePoint remotePoint = ltc.second->getAutoRemotePoint();
-                        double value = -1.0;
-                        ltc.second->getPointValue(remotePoint.getPointId(),value);
-
-                        if (value == 0.0)//Remote Mode
-                        {
-                            if( _CC_DEBUG & CC_DEBUG_IVVC )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
-                            }
-                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, ltcId))->execute();
-                        }
-                        else
-                        {
-                            if( _CC_DEBUG & CC_DEBUG_IVVC )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - LTC Keep Alive NOT sent. LTC is in Local Mode." << endl;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if( _CC_DEBUG & CC_DEBUG_IVVC )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - LTC Keep Alive NOT sent. Bus is disabled." << endl;
-                        }
-                    }
-                }
-            }
-
-
-
-            rwnow = rwnow.now();
-            if (rwnow.seconds() > tickleTime.seconds())
-            {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow.seconds() > announceTime.seconds() )
-                {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CapControl ivvcKeepAlive. TID: " << rwThreadId() << endl;
-                }
-
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl ivvcKeepAlive", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            }
-
-            int interations = _IVVC_KEEPALIVE*1000 / 500;
-            for (int i = 0; i <= interations; ++i)
-            {//Broken up to allow a cancellation through.
-                try
-                {
-                    rwRunnable().serviceCancellation();
-                    rwRunnable().sleep(500);
-                }
-                catch(RWCancellation& e)
-                {
-                    throw;
-                }
-            }
-        }
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl ivvcKeepAlive", CtiThreadRegData::LogOut ) );
-    }
-    catch(RWCancellation& )
-    {
-        throw;
-    }
-    catch (...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        dout << CtiTime() << " - Ivvc Keep Alive thread terminated unexpectedly." << endl;
     }
 }
 
@@ -1873,7 +1744,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
     {
         CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
-        std::list<long> registrationIds;
+        std::set<long> registrationIds;
         //This is left here as there is no other documentation of this cparm ever existing!
         /*string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
         if(simple_registration == "true" || simple_registration == "TRUE")
@@ -1900,27 +1771,27 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                 if( currentArea->getVoltReductionControlPointId() > 0 )
                 {
-                    registrationIds.push_back(currentArea->getVoltReductionControlPointId());
+                    registrationIds.insert(currentArea->getVoltReductionControlPointId());
                     regMsg->insert(currentArea->getVoltReductionControlPointId());
                 }
                 if (currentArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
+                    registrationIds.insert(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
                     regMsg->insert(currentArea->getOperationStats().getUserDefOpSuccessPercentId());
                 }
                 if (currentArea->getOperationStats().getDailyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentArea->getOperationStats().getDailyOpSuccessPercentId());
+                    registrationIds.insert(currentArea->getOperationStats().getDailyOpSuccessPercentId());
                     regMsg->insert(currentArea->getOperationStats().getDailyOpSuccessPercentId());
                 }
                 if (currentArea->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentArea->getOperationStats().getWeeklyOpSuccessPercentId());
+                    registrationIds.insert(currentArea->getOperationStats().getWeeklyOpSuccessPercentId());
                     regMsg->insert(currentArea->getOperationStats().getWeeklyOpSuccessPercentId());
                 }
                 if (currentArea->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
+                    registrationIds.insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
                     regMsg->insert(currentArea->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
             }
@@ -1930,27 +1801,27 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 CtiCCSpecialPtr currentSpArea = spAreaIter->second;
                 if( currentSpArea->getVoltReductionControlPointId() > 0 )
                 {
-                    registrationIds.push_back(currentSpArea->getVoltReductionControlPointId());
+                    registrationIds.insert(currentSpArea->getVoltReductionControlPointId());
                     regMsg->insert(currentSpArea->getVoltReductionControlPointId());
                 }
                 if (currentSpArea->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSpArea->getOperationStats().getUserDefOpSuccessPercentId());
+                    registrationIds.insert(currentSpArea->getOperationStats().getUserDefOpSuccessPercentId());
                     regMsg->insert(currentSpArea->getOperationStats().getUserDefOpSuccessPercentId());
                 }
                 if (currentSpArea->getOperationStats().getDailyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSpArea->getOperationStats().getDailyOpSuccessPercentId());
+                    registrationIds.insert(currentSpArea->getOperationStats().getDailyOpSuccessPercentId());
                     regMsg->insert(currentSpArea->getOperationStats().getDailyOpSuccessPercentId());
                 }
                 if (currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId());
+                    registrationIds.insert(currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId());
                     regMsg->insert(currentSpArea->getOperationStats().getWeeklyOpSuccessPercentId());
                 }
                 if (currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId());
+                    registrationIds.insert(currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId());
                     regMsg->insert(currentSpArea->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
 
@@ -1962,27 +1833,27 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                 if( currentStation->getVoltReductionControlId() > 0 )
                 {
-                    registrationIds.push_back(currentStation->getVoltReductionControlId());
+                    registrationIds.insert(currentStation->getVoltReductionControlId());
                     regMsg->insert(currentStation->getVoltReductionControlId());
                 }
                 if ( currentStation->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentStation->getOperationStats().getUserDefOpSuccessPercentId());
+                    registrationIds.insert(currentStation->getOperationStats().getUserDefOpSuccessPercentId());
                     regMsg->insert( currentStation->getOperationStats().getUserDefOpSuccessPercentId());
                 }
                 if ( currentStation->getOperationStats().getDailyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentStation->getOperationStats().getDailyOpSuccessPercentId());
+                    registrationIds.insert(currentStation->getOperationStats().getDailyOpSuccessPercentId());
                     regMsg->insert( currentStation->getOperationStats().getDailyOpSuccessPercentId());
                 }
                 if ( currentStation->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentStation->getOperationStats().getWeeklyOpSuccessPercentId());
+                    registrationIds.insert(currentStation->getOperationStats().getWeeklyOpSuccessPercentId());
                     regMsg->insert( currentStation->getOperationStats().getWeeklyOpSuccessPercentId());
                 }
                 if ( currentStation->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentStation->getOperationStats().getMonthlyOpSuccessPercentId());
+                    registrationIds.insert(currentStation->getOperationStats().getMonthlyOpSuccessPercentId());
                     regMsg->insert( currentStation->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
 
@@ -1994,82 +1865,82 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                 if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                 {
-                    registrationIds.push_back(currentSubstationBus->getCurrentVarLoadPointId());
+                    registrationIds.insert(currentSubstationBus->getCurrentVarLoadPointId());
                     regMsg->insert(currentSubstationBus->getCurrentVarLoadPointId());
                 }
                 if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                 {
-                    registrationIds.push_back(currentSubstationBus->getCurrentWattLoadPointId());
+                    registrationIds.insert(currentSubstationBus->getCurrentWattLoadPointId());
                     regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
                 }
                 if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getCurrentVoltLoadPointId());
+                    registrationIds.insert(currentSubstationBus->getCurrentVoltLoadPointId());
                     regMsg->insert(currentSubstationBus->getCurrentVoltLoadPointId());
                 }
                 if (currentSubstationBus->getEstimatedVarLoadPointId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getEstimatedVarLoadPointId());
+                    registrationIds.insert(currentSubstationBus->getEstimatedVarLoadPointId());
                     regMsg->insert(currentSubstationBus->getEstimatedVarLoadPointId());
                 }
                 if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getDailyOperationsAnalogPointId());
+                    registrationIds.insert(currentSubstationBus->getDailyOperationsAnalogPointId());
                     regMsg->insert(currentSubstationBus->getDailyOperationsAnalogPointId());
                 }
                 if (currentSubstationBus->getPowerFactorPointId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getPowerFactorPointId());
+                    registrationIds.insert(currentSubstationBus->getPowerFactorPointId());
                     regMsg->insert(currentSubstationBus->getPowerFactorPointId());
                 }
                 if (currentSubstationBus->getEstimatedPowerFactorPointId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getEstimatedPowerFactorPointId());
+                    registrationIds.insert(currentSubstationBus->getEstimatedPowerFactorPointId());
                     regMsg->insert(currentSubstationBus->getEstimatedPowerFactorPointId());
                 }
                 if (currentSubstationBus->getSwitchOverPointId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getSwitchOverPointId());
+                    registrationIds.insert(currentSubstationBus->getSwitchOverPointId());
                     regMsg->insert(currentSubstationBus->getSwitchOverPointId());
                 }
                 if (currentSubstationBus->getPhaseBId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getPhaseBId());
+                    registrationIds.insert(currentSubstationBus->getPhaseBId());
                     regMsg->insert(currentSubstationBus->getPhaseBId());
                 }
                 if (currentSubstationBus->getPhaseCId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getPhaseCId());
+                    registrationIds.insert(currentSubstationBus->getPhaseCId());
                     regMsg->insert(currentSubstationBus->getPhaseCId());
                 }
                 if (currentSubstationBus->getVoltReductionControlId() > 0 )
                 {
-                    registrationIds.push_back(currentSubstationBus->getVoltReductionControlId());
+                    registrationIds.insert(currentSubstationBus->getVoltReductionControlId());
                     regMsg->insert(currentSubstationBus->getVoltReductionControlId());
                 }
                 if (currentSubstationBus->getDisableBusPointId() > 0 )
                 {
-                    registrationIds.push_back(currentSubstationBus->getDisableBusPointId());
+                    registrationIds.insert(currentSubstationBus->getDisableBusPointId());
                     regMsg->insert(currentSubstationBus->getDisableBusPointId());
                 }
                 if ( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
+                    registrationIds.insert(currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
                     regMsg->insert( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
                 }
                 if ( currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId());
+                    registrationIds.insert(currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId());
                     regMsg->insert( currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId());
                 }
                 if ( currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId());
+                    registrationIds.insert(currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId());
                     regMsg->insert( currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId());
                 }
                 if ( currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                 {
-                    registrationIds.push_back(currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
+                    registrationIds.insert(currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
                     regMsg->insert( currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
                 }
 
@@ -2082,68 +1953,68 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                     if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                     {
-                        registrationIds.push_back(currentFeeder->getCurrentVarLoadPointId());
+                        registrationIds.insert(currentFeeder->getCurrentVarLoadPointId());
                         regMsg->insert(currentFeeder->getCurrentVarLoadPointId());
                     }
                     if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                     {
-                        registrationIds.push_back(currentFeeder->getCurrentWattLoadPointId());
+                        registrationIds.insert(currentFeeder->getCurrentWattLoadPointId());
                         regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
                     }
                     if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getCurrentVoltLoadPointId());
+                        registrationIds.insert(currentFeeder->getCurrentVoltLoadPointId());
                         regMsg->insert(currentFeeder->getCurrentVoltLoadPointId());
                     }
                     if (currentFeeder->getEstimatedVarLoadPointId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getEstimatedVarLoadPointId());
+                        registrationIds.insert(currentFeeder->getEstimatedVarLoadPointId());
                         regMsg->insert(currentFeeder->getEstimatedVarLoadPointId());
                     }
                     if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getDailyOperationsAnalogPointId());
+                        registrationIds.insert(currentFeeder->getDailyOperationsAnalogPointId());
                         regMsg->insert(currentFeeder->getDailyOperationsAnalogPointId());
                     }
                     if (currentFeeder->getPowerFactorPointId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getPowerFactorPointId());
+                        registrationIds.insert(currentFeeder->getPowerFactorPointId());
                         regMsg->insert(currentFeeder->getPowerFactorPointId());
                     }
                     if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getEstimatedPowerFactorPointId());
+                        registrationIds.insert(currentFeeder->getEstimatedPowerFactorPointId());
                         regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
                     }
 
                     if (currentFeeder->getPhaseBId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getPhaseBId());
+                        registrationIds.insert(currentFeeder->getPhaseBId());
                         regMsg->insert(currentFeeder->getPhaseBId());
                     }
                     if (currentFeeder->getPhaseCId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getPhaseCId());
+                        registrationIds.insert(currentFeeder->getPhaseCId());
                         regMsg->insert(currentFeeder->getPhaseCId());
                     }
                     if ( currentFeeder->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
+                        registrationIds.insert(currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
                         regMsg->insert( currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
                     }
                     if ( currentFeeder->getOperationStats().getDailyOpSuccessPercentId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getOperationStats().getDailyOpSuccessPercentId());
+                        registrationIds.insert(currentFeeder->getOperationStats().getDailyOpSuccessPercentId());
                         regMsg->insert( currentFeeder->getOperationStats().getDailyOpSuccessPercentId());
                     }
                     if ( currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId());
+                        registrationIds.insert(currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId());
                         regMsg->insert( currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId());
                     }
                     if ( currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                     {
-                        registrationIds.push_back(currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId());
+                        registrationIds.insert(currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId());
                         regMsg->insert( currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId());
                     }
 
@@ -2155,32 +2026,32 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
                         if( currentCapBank->getStatusPointId() > 0 )
                         {
-                            registrationIds.push_back(currentCapBank->getStatusPointId());
+                            registrationIds.insert(currentCapBank->getStatusPointId());
                             regMsg->insert(currentCapBank->getStatusPointId());
                         }
                         if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
-                            registrationIds.push_back(currentCapBank->getOperationAnalogPointId());
+                            registrationIds.insert(currentCapBank->getOperationAnalogPointId());
                             regMsg->insert(currentCapBank->getOperationAnalogPointId());
                         }
                         if ( currentCapBank->getOperationStats().getUserDefOpSuccessPercentId() > 0)
                         {
-                            registrationIds.push_back(currentCapBank->getOperationStats().getUserDefOpSuccessPercentId());
+                            registrationIds.insert(currentCapBank->getOperationStats().getUserDefOpSuccessPercentId());
                             regMsg->insert( currentCapBank->getOperationStats().getUserDefOpSuccessPercentId());
                         }
                         if ( currentCapBank->getOperationStats().getDailyOpSuccessPercentId() > 0)
                         {
-                            registrationIds.push_back(currentCapBank->getOperationStats().getDailyOpSuccessPercentId());
+                            registrationIds.insert(currentCapBank->getOperationStats().getDailyOpSuccessPercentId());
                             regMsg->insert( currentCapBank->getOperationStats().getDailyOpSuccessPercentId());
                         }
                         if ( currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
                         {
-                            registrationIds.push_back(currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId());
+                            registrationIds.insert(currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId());
                             regMsg->insert(currentCapBank->getOperationStats().getWeeklyOpSuccessPercentId());
                         }
                         if ( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
                         {
-                            registrationIds.push_back(currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
+                            registrationIds.insert(currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
                             regMsg->insert( currentCapBank->getOperationStats().getMonthlyOpSuccessPercentId());
                         }
                         if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") )
@@ -2197,13 +2068,13 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
             if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0)
             {
-                registrationIds.push_back(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
+                registrationIds.insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
                 regMsg->insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
             }
 
             if (_VOLT_REDUCTION_SYSTEM_POINTID > 0)
             {
-                registrationIds.push_back(_VOLT_REDUCTION_SYSTEM_POINTID);
+                registrationIds.insert(_VOLT_REDUCTION_SYSTEM_POINTID);
                 regMsg->insert(_VOLT_REDUCTION_SYSTEM_POINTID);
             }
 
@@ -2544,7 +2415,7 @@ void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstatio
         {
             CtiCCSubstationBusPtr altSub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
             if (altSub != NULL)
-            {    
+            {
                 currentBus->setAltSubControlValue(altSub->getCurrentVoltLoadPointValue());
                 currentBus->setAllAltSubValues(altSub->getCurrentVoltLoadPointValue(),
                                        altSub->getRawCurrentVarLoadPointValue(),
@@ -2822,68 +2693,65 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     try
     {
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
-        bool handled = pointHandler.processIncomingPointData(message);
+        pointHandler.processIncomingPointData(message);
 
-        if (!handled)
+        pointDataMsgBySubBus(pointID, value, quality, timestamp);
+
+        pointDataMsgByFeeder(pointID, value, quality, timestamp);
+
+        pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
+
+        pointDataMsgBySubstation(pointID, value, quality, timestamp);
+
+        pointDataMsgByArea(pointID, value, quality, timestamp);
+
+        pointDataMsgBySpecialArea(pointID, value, quality, timestamp);
+
+        if (store->getLinkStatusPointId() > 0)
         {
-            pointDataMsgBySubBus(pointID, value, quality, timestamp);
-
-            pointDataMsgByFeeder(pointID, value, quality, timestamp);
-
-            pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
-
-            pointDataMsgBySubstation(pointID, value, quality, timestamp);
-
-            pointDataMsgByArea(pointID, value, quality, timestamp);
-
-            pointDataMsgBySpecialArea(pointID, value, quality, timestamp);
-
-            if (store->getLinkStatusPointId() > 0)
+            if (store->getLinkStatusPointId() == pointID)
             {
-                if (store->getLinkStatusPointId() == pointID)
+                if (store->getLinkStatusFlag() != value)
                 {
-                    if (store->getLinkStatusFlag() != value)
+                    store->setLinkStatusFlag(value);
+                    if (value == CLOSED)
                     {
-                        store->setLinkStatusFlag(value);
-                        if (value == CLOSED)
-                        {
-                            store->setLinkDropOutTime(timestamp);
-                        }
-                        if (value == OPENED)
-                        {
-                            store->setReregisterForPoints(TRUE);
-                        }
+                        store->setLinkDropOutTime(timestamp);
+                    }
+                    if (value == OPENED)
+                    {
+                        store->setReregisterForPoints(TRUE);
                     }
                 }
             }
-            if (pointID == _VOLT_REDUCTION_SYSTEM_POINTID)
+        }
+        if (pointID == _VOLT_REDUCTION_SYSTEM_POINTID)
+        {
+            if (value != store->getVoltReductionSystemDisabled())
             {
-                if (value != store->getVoltReductionSystemDisabled())
+                if (value > 0)
                 {
-                    if (value > 0)
+                    store->setVoltReductionSystemDisabled(TRUE);
+                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+                    for(LONG i=0;i<ccAreas.size();i++)
                     {
-                        store->setVoltReductionSystemDisabled(TRUE);
-                        CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
-                        for(LONG i=0;i<ccAreas.size();i++)
+                        CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
+                        if (currentArea != NULL)
                         {
-                            CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
-                            if (currentArea != NULL)
-                            {
-                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
-                            }
+                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPaoId()))->execute();
                         }
                     }
-                    else
+                }
+                else
+                {
+                    store->setVoltReductionSystemDisabled(FALSE);
+                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+                    for(LONG i=0;i<ccAreas.size();i++)
                     {
-                        store->setVoltReductionSystemDisabled(FALSE);
-                        CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
-                        for(LONG i=0;i<ccAreas.size();i++)
+                        CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
+                        if (currentArea != NULL)
                         {
-                            CtiCCAreaPtr currentArea = (CtiCCAreaPtr)ccAreas.at(i);
-                            if (currentArea != NULL)
-                            {
-                                CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
-                            }
+                            CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPaoId()))->execute();
                         }
                     }
                 }

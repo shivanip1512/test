@@ -264,8 +264,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLastWattPointTime(const CtiTime& lastpointupdate);
     CtiCCSubstationBus& setLastVoltPointTime(const CtiTime& lastpointupdate);
 
-    int getLtcId();
-    void setLtcId(int ltcId);
+    long getLtcId();
+    void setLtcId(long ltcId);
 
     void reOrderFeederDisplayOrders();
     void figureAndSetTargetVarValue();
@@ -341,7 +341,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus& checkAndUpdateRecentlyControlledFlag();
 
-    CtiCCSubstationBus& addAllSubPointsToMsg(std::list<long>& pointAddMsg);
+    CtiCCSubstationBus& addAllSubPointsToMsg(std::set<long>& pointAddMsg);
     CtiCCSubstationBus& verifyControlledStatusFlags();
     LONG getNextTODStartTime();
 
@@ -520,7 +520,7 @@ private:
     CtiRegression regressionB;
     CtiRegression regressionC;
 
-    int _ltcId;
+    long _ltcId;
 
 };
 

@@ -29,7 +29,7 @@ void DispatchConnection::registerForPoint(MessageListener* listener, long pointI
     return;
 }
 
-void DispatchConnection::registerForPoints(MessageListener* listener, const std::list<long>& pointIds)
+void DispatchConnection::registerForPoints(MessageListener* listener, const std::set<long>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -52,7 +52,7 @@ void DispatchConnection::unRegisterForPoint(MessageListener* listener, long poin
     _removeList.insert(pointId);
 }
 
-void DispatchConnection::unRegisterForPoints(MessageListener* listener, const std::list<long>& pointIds)
+void DispatchConnection::unRegisterForPoints(MessageListener* listener, const std::set<long>& pointIds)
 {
     CtiLockGuard< CtiMutex > guard(_regListMux);
 
@@ -63,6 +63,21 @@ void DispatchConnection::unRegisterForPoints(MessageListener* listener, const st
     }
 
     return;
+}
+
+void DispatchConnection::requestPointValues(const std::set<long>& pointIds)
+{
+    CtiCommandMsg* cmdMsg = new CtiCommandMsg();
+    cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
+
+    CtiCommandMsg::CtiOpArgList_t points;
+    for each (int pointId in pointIds)
+    {
+        points.push_back(pointId);
+    }
+
+    cmdMsg->setOpArgList(points);
+    WriteConnQue(cmdMsg);
 }
 
 /**
@@ -106,17 +121,7 @@ void DispatchConnection::preWork()
         //If REG_ADD_POINTS follow up with point request message
         if (flag == REG_ADD_POINTS)
         {
-            CtiCommandMsg* cmdMsg = new CtiCommandMsg();
-            cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
-
-            CtiCommandMsg::CtiOpArgList_t points;
-            for each (int pointId in _addList)
-            {
-                points.push_back(pointId);
-            }
-
-            cmdMsg->setOpArgList(points);
-            WriteConnQue(cmdMsg);
+            requestPointValues(_addList);
         }
     }
 

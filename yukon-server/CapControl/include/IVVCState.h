@@ -56,6 +56,9 @@ class IVVCState
         bool isFirstPass();
         void setFirstPass(bool firstPass);
 
+        CtiTime getNextHeartbeatTime();
+        void setNextHeartbeatTime(const CtiTime& time);
+
         struct EstimatedData
         {
             bool            operated;
@@ -76,6 +79,7 @@ class IVVCState
         CtiTime _timeStamp;
         CtiTime _nextControlTime;
         CtiTime _lastTapOpTime;
+        CtiTime _nextHeartbeat;
 
         PointDataRequestPtr _groupRequest;
 

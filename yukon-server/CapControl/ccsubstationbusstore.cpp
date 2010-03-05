@@ -10037,7 +10037,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(CtiMultiMsg_set &modif
    try
    {
        CtiMultiMsg_set::iterator it;
-       std::list<long> pointList;
+       std::set<long> pointList;
 
        for(it = modifiedSubsSet.begin(); it != modifiedSubsSet.end();it++)
        {

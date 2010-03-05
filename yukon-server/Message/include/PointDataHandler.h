@@ -26,7 +26,7 @@ class IM_EX_MSG PointDataHandler : public MessageListener
         bool processIncomingPointData(CtiPointDataMsg* message);
         void processNewMessage(CtiMessage* message);
 
-        void getAllPointIds(std::list<long>& pointIds);
+        void getAllPointIds(std::set<long>& pointIds);
 
         void setPointDataListener(PointDataListener* pointDataListener);
 

@@ -243,7 +243,7 @@ public:
     string getControlStatusQualityString();
     string getIgnoreReasonText() const;
     CtiCCCapBank& initVerificationControlStatus();
-    CtiCCCapBank& addAllCapBankPointsToMsg(std::list<long>& pointAddMsg);
+    CtiCCCapBank& addAllCapBankPointsToMsg(std::set<long>& pointAddMsg);
     string getControlStatusText() const;
     BOOL isPendingStatus();
     BOOL isFailedStatus();

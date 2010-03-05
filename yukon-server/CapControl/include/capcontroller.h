@@ -98,7 +98,6 @@ class CtiCapController : public MessageListener
         void messageSender();
         void outClientMsgs();
         void processCCEventMsgs();
-        void ivvcKeepAlive();
 
         void checkDispatch();
         void checkPIL();
@@ -123,7 +122,6 @@ class CtiCapController : public MessageListener
         RWThread _substationBusThread;
         RWThread _outClientMsgThread;
         RWThread _messageSenderThread;
-        RWThread _ivvcKeepAliveThread;
 
         CtiConnectionPtr _pilConnection;
         DispatchConnectionPtr _dispatchConnection;

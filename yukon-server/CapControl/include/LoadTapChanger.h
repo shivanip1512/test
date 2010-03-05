@@ -48,7 +48,7 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
         void setTapPosition(const LitePoint& point);
         const LitePoint& getTapPosition();
 
-        void getRegistrationPoints(std::list<int>& regPoints);
+        void getRegistrationPoints(std::set<long>& regPoints);
 };
 
 typedef LoadTapChanger* LoadTapChangerPtr;

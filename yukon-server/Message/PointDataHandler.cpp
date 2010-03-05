@@ -176,11 +176,11 @@ void PointDataHandler::processNewMessage(CtiMessage* message)
  *
  * @return std::list<int>
  */
-void PointDataHandler::getAllPointIds(std::list<long>& pointIds)
+void PointDataHandler::getAllPointIds(std::set<long>& pointIds)
 {
     for (PointIdMapItr itr = _pointIdMap.begin(); itr != _pointIdMap.end(); itr++)
     {
-        pointIds.push_back(itr->first);
+        pointIds.insert(itr->first);
     }
 }
 

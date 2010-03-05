@@ -80,30 +80,30 @@ bool LoadTapChanger::getPointValue(int pointId, double& value)
     return false;
 }
 
-void LoadTapChanger::getRegistrationPoints(std::list<int>& regPoints)
+void LoadTapChanger::getRegistrationPoints(std::set<long>& regPoints)
 {
     if (_ltcVoltagePoint.getPointType() != InvalidPointType)
     {
-        regPoints.push_back(_ltcVoltagePoint.getPointId());
+        regPoints.insert(_ltcVoltagePoint.getPointId());
     }
 
     if (_lowerTapPoint.getPointType() != InvalidPointType)
     {
-        regPoints.push_back(_lowerTapPoint.getPointId());
+        regPoints.insert(_lowerTapPoint.getPointId());
     }
 
     if (_raiseTapPoint.getPointType() != InvalidPointType)
     {
-        regPoints.push_back(_raiseTapPoint.getPointId());
+        regPoints.insert(_raiseTapPoint.getPointId());
     }
 
     if (_autoRemotePoint.getPointType() != InvalidPointType)
     {
-        regPoints.push_back(_autoRemotePoint.getPointId());
+        regPoints.insert(_autoRemotePoint.getPointId());
     }
 
     if (_tapPositionPoint.getPointType() != InvalidPointType)
     {
-        regPoints.push_back(_tapPositionPoint.getPointId());
+        regPoints.insert(_tapPositionPoint.getPointId());
     }
 }

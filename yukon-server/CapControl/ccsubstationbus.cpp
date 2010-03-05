@@ -31,6 +31,7 @@
 #include "mgr_paosched.h"
 #include "utility.h"
 #include "tbl_pt_alarm.h"
+#include "IVVCStrategy.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -1529,12 +1530,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
     return *this;
 }
 
-int CtiCCSubstationBus::getLtcId()
+long CtiCCSubstationBus::getLtcId()
 {
     return _ltcId;
 }
 
-void CtiCCSubstationBus::setLtcId(int ltcId)
+void CtiCCSubstationBus::setLtcId(long ltcId)
 {
     _ltcId = ltcId;
 }
@@ -9341,72 +9342,72 @@ CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
     return *this;
 }
 
-CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::list<long>& pointAddMsg)
+CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(std::set<long>& pointAddMsg)
 {
 
     if( getCurrentVarLoadPointId() > 0 )
     {
-        pointAddMsg.push_back(getCurrentVarLoadPointId());
+        pointAddMsg.insert(getCurrentVarLoadPointId());
     }
     if( getCurrentWattLoadPointId() > 0 )
     {
-        pointAddMsg.push_back(getCurrentWattLoadPointId());
+        pointAddMsg.insert(getCurrentWattLoadPointId());
     }
     if (getCurrentVoltLoadPointId() > 0)
     {
-        pointAddMsg.push_back(getCurrentVoltLoadPointId());
+        pointAddMsg.insert(getCurrentVoltLoadPointId());
     }
     if (getEstimatedVarLoadPointId() > 0)
     {
-        pointAddMsg.push_back(getEstimatedVarLoadPointId());
+        pointAddMsg.insert(getEstimatedVarLoadPointId());
     }
     if (getDailyOperationsAnalogPointId() > 0)
     {
-        pointAddMsg.push_back(getDailyOperationsAnalogPointId());
+        pointAddMsg.insert(getDailyOperationsAnalogPointId());
     }
     if (getPowerFactorPointId() > 0)
     {
-        pointAddMsg.push_back(getPowerFactorPointId());
+        pointAddMsg.insert(getPowerFactorPointId());
     }
     if (getEstimatedPowerFactorPointId() > 0)
     {
-        pointAddMsg.push_back(getEstimatedPowerFactorPointId());
+        pointAddMsg.insert(getEstimatedPowerFactorPointId());
     }
     if (getSwitchOverPointId() > 0)
     {
-        pointAddMsg.push_back(getSwitchOverPointId());
+        pointAddMsg.insert(getSwitchOverPointId());
     }
     if (getPhaseBId() > 0)
     {
-        pointAddMsg.push_back(getPhaseBId());
+        pointAddMsg.insert(getPhaseBId());
     }
     if (getPhaseCId() > 0)
     {
-        pointAddMsg.push_back(getPhaseCId());
+        pointAddMsg.insert(getPhaseCId());
     }
     if (getVoltReductionControlId() > 0)
     {
-        pointAddMsg.push_back(getVoltReductionControlId());
+        pointAddMsg.insert(getVoltReductionControlId());
     }
     if (getDisableBusPointId() > 0)
     {
-        pointAddMsg.push_back(getDisableBusPointId());
+        pointAddMsg.insert(getDisableBusPointId());
     }
     if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getUserDefOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getUserDefOpSuccessPercentId());
     }
     if (getOperationStats().getDailyOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getDailyOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getDailyOpSuccessPercentId());
     }
     if (getOperationStats().getWeeklyOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getWeeklyOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getWeeklyOpSuccessPercentId());
     }
     if (getOperationStats().getMonthlyOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getMonthlyOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getMonthlyOpSuccessPercentId());
     }
 
     return *this;
@@ -10098,4 +10099,3 @@ bool CtiCCSubstationBus::checkForRateOfChange(const CtiRegression& reg, const Ct
     }
     return false;
 }
-

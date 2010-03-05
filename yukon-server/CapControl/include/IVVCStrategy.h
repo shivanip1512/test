@@ -19,7 +19,7 @@ class IVVCStrategy : public ControlStrategy
 
 public:
 
-    IVVCStrategy();
+    IVVCStrategy(const PointDataRequestFactoryPtr& factory);
 
     virtual ~IVVCStrategy();
 
@@ -60,7 +60,7 @@ public:
     virtual void restoreStates(const ControlStrategy * backup);
 
     //Allows unit test to change this out
-    void setPointDataRequestFactory(PointDataRequestFactoryPtr& factory);
+    void setPointDataRequestFactory(const PointDataRequestFactoryPtr& factory);
 
 private:
 

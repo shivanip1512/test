@@ -85,8 +85,7 @@ private:
         {
             case 100:
             {
-                IVVCStrategy* strat = new IVVCStrategy();
-                strat->setPointDataRequestFactory(requestFactory);
+                IVVCStrategy* strat = new IVVCStrategy(requestFactory);
                 strat->setStrategyName("Test IVVC Strategy");
                 newStrategy.reset(strat);
                 break;
@@ -193,29 +192,29 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
 
-    std::list<long>  emptyWatchlist, watchlist;
+    std::set<long>  emptyWatchlist, watchlist;
 
     // Add 5 point IDs to the watchlist
 
     for (long pointID = 1100; pointID < 1105; ++pointID)
     {
-        watchlist.push_back(pointID);
+        watchlist.insert(pointID);
     }
 
-    BOOST_CHECK_EQUAL( true , request->watchPoints( watchlist ) );
+    BOOST_CHECK_EQUAL( true , request->watchPoints( watchlist,emptyWatchlist ) );
 
     // We can send it more watchlists but it will not modify/replace the first valid one we load
 
-    BOOST_CHECK_EQUAL( false , request->watchPoints( emptyWatchlist ) );
+    BOOST_CHECK_EQUAL( false , request->watchPoints( emptyWatchlist,emptyWatchlist ) );
 
     // Add 5 more point IDs to the watchlist
 
     for (long pointID = 1110; pointID < 1115; ++pointID)
     {
-        watchlist.push_back(pointID);
+        watchlist.insert(pointID);
     }
 
-    BOOST_CHECK_EQUAL( false , request->watchPoints( watchlist ) );
+    BOOST_CHECK_EQUAL( false , request->watchPoints( watchlist,emptyWatchlist ) );
 
     // Receive a bunch of point data - complete should be false until we receive point data for all of the watched point IDs.
     //  If we get multiple data points for the same ID - we only keep the last one received.

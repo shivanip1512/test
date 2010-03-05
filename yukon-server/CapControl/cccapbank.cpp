@@ -1987,32 +1987,32 @@ CtiCCCapBank& CtiCCCapBank::setTagsControlStatus(LONG tags)
 }
 
 
-CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::list<long>& pointAddMsg)
+CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(std::set<long>& pointAddMsg)
 {
 
     if( getStatusPointId() > 0 )
     {
-        pointAddMsg.push_back(getStatusPointId());
+        pointAddMsg.insert(getStatusPointId());
     }
     if( getOperationAnalogPointId() > 0 )
     {
-        pointAddMsg.push_back(getOperationAnalogPointId());
+        pointAddMsg.insert(getOperationAnalogPointId());
     }
     if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getUserDefOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getUserDefOpSuccessPercentId());
     }
     if (getOperationStats().getDailyOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getDailyOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getDailyOpSuccessPercentId());
     }
     if (getOperationStats().getWeeklyOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getWeeklyOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getWeeklyOpSuccessPercentId());
     }
     if (getOperationStats().getMonthlyOpSuccessPercentId() > 0)
     {
-        pointAddMsg.push_back(getOperationStats().getMonthlyOpSuccessPercentId());
+        pointAddMsg.insert(getOperationStats().getMonthlyOpSuccessPercentId());
     }
     return *this;
 }

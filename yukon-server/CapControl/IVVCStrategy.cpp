@@ -8,7 +8,7 @@
 #include "ccutil.h"
 #include "ccsubstationbusstore.h"
 
-IVVCStrategy::IVVCStrategy()
+IVVCStrategy::IVVCStrategy(const PointDataRequestFactoryPtr& factory)
     : ControlStrategy(),
     _peakUpperVoltLimit(130.0),
     _offpeakUpperVoltLimit(130.0),
@@ -27,10 +27,9 @@ IVVCStrategy::IVVCStrategy()
     _peakDecisionWeight(1.0),
     _offpeakDecisionWeight(1.0),
     _peakVoltageRegulationMargin(1.0),
-    _offpeakVoltageRegulationMargin(1.0)
+    _offpeakVoltageRegulationMargin(1.0),
+    _ivvcAlgorithm(factory)
 {
-    PointDataRequestFactoryPtr factory(new PointDataRequestFactory());
-    _ivvcAlgorithm.setPointDataRequestFactory(factory);
 }
 
 
@@ -39,7 +38,7 @@ IVVCStrategy::~IVVCStrategy()
     // empty!
 }
 
-void IVVCStrategy::setPointDataRequestFactory(PointDataRequestFactoryPtr& factory)
+void IVVCStrategy::setPointDataRequestFactory(const PointDataRequestFactoryPtr& factory)
 {
     _ivvcAlgorithm.setPointDataRequestFactory(factory);
 }
@@ -326,6 +325,7 @@ void IVVCStrategy::restoreStates(const ControlStrategy * backup)
 
             if ( target != p->_paoStateMap.end() )
             {
+                target->second.second->setFirstPass(true);
                 b->second.second = target->second.second;
             }
         }
@@ -375,4 +375,3 @@ void IVVCStrategy::execute()
     }
 
 }
-

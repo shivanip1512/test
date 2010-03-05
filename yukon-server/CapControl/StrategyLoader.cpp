@@ -70,7 +70,7 @@ void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &str
 
         selector.from(capControlStrategy);
         if (ID >= 0)
-        {    
+        {
             selector.where( capControlStrategy["strategyid"] == ID );
         }
 
@@ -128,7 +128,7 @@ void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &str
                 }
                 else if ( controlUnits == ControlStrategy::IntegratedVoltVarControlUnit )
                 {
-                    strategy.reset( new IVVCStrategy );
+                    strategy.reset( new IVVCStrategy(PointDataRequestFactoryPtr(new PointDataRequestFactory())) );
                 }
                 else
                 {
@@ -230,7 +230,7 @@ void StrategyDBLoader::loadParameters(const long ID, StrategyManager::StrategyMa
 
         selector.from(ccStrategyParams);
         if (ID >= 0)
-        {    
+        {
             selector.where(ccStrategyParams["strategyid"] == ID);
         }
 

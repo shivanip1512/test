@@ -20,12 +20,13 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
         DispatchPointDataRequest();
         ~DispatchPointDataRequest();
 
-        virtual bool watchPoints(std::list<long> points);
+        virtual bool watchPoints(const std::set<long>& points, const std::set<long>& requestPoints);
         virtual bool isComplete();
         virtual PointValueMap getPointValues();
 
         //MessageListener
         virtual void processNewMessage(CtiMessage* message);
+        virtual void reportStatusToLog();
 
         void setDispatchConnection(DispatchConnectionPtr connection);
 
@@ -34,6 +35,7 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
 
         std::set<long> _points;
         PointValueMap _values;
+        PointValueMap _rejectedValues;
 
         bool _complete;
         bool _pointsSet;
