@@ -414,7 +414,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 {
                                     CtiCCPointResponsePtr currentResponse = *prb;
 
-                                    deltas[ currentResponse->getBankId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                                    deltas[ currentResponse->getPointId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
                                 }
 
                                 state->_estimated[currentBank->getPaoId()].capbank = currentBank;
@@ -432,7 +432,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                     {
                                         CtiCCPointResponsePtr currentResponse = *prb;
 
-                                        dout << currentResponse->getBankId() << " : " << deltas[ currentResponse->getBankId() ].value << endl;
+                                        dout << currentResponse->getPointId() << " : " << deltas[ currentResponse->getPointId() ].value << endl;
                                     }
                                 }
 
@@ -497,7 +497,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         {
                             CtiCCPointResponsePtr currentResponse = *prb;
 
-                            currentResponse->setPreOpValue( pointValues[ currentResponse->getBankId() ].value );
+                            currentResponse->setPreOpValue( pointValues[ currentResponse->getPointId() ].value );
                         }
 
                         state->_estimated[operatePaoId].operated = true;

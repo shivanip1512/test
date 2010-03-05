@@ -2753,7 +2753,8 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
         returnKVARSolution = targetKVAR - varValue;
 
     }
-    else if( !stringCompareIgnoreCase(controlUnits,ControlStrategy::VoltsControlUnit) )
+    else if( !stringCompareIgnoreCase(controlUnits,ControlStrategy::VoltsControlUnit) ||
+             !stringCompareIgnoreCase(controlUnits,ControlStrategy::IntegratedVoltVarControlUnit) )
     {
         returnKVARSolution = 0;
     }
