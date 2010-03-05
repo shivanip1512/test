@@ -238,7 +238,6 @@ ERRSTRUCT CTIErrors[] = {
     { ErrorDeviceNotConnected,      "Device is not connected",                      ERRTYPESYSTEM   },
 
     { ErrorNoDisconnect,            "No disconnect configured on this device",      ERRTYPESYSTEM   },
-    { ErrorDeviceNotPrepared,       "Device is not ready or not set up properly",   ERRTYPEPROTOCOL   },
 
     { UnknownError,                 "Unknown Error",                                ERRTYPESYSTEM   },
 

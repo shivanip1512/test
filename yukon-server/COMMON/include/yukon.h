@@ -315,7 +315,6 @@ enum YukonError_t
     ErrorDeviceNotConnected,
 
     ErrorNoDisconnect,
-    ErrorDeviceNotPrepared,
 
     FinalError
 };
