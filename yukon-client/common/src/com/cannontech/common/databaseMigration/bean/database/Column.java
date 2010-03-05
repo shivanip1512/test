@@ -8,6 +8,7 @@ public class Column{
     ReferenceTypeEnum refType;
     String nullId;
     String filterValue;
+    boolean escapingNeeded = false;
     boolean addToDisplayLabels = false;
     
     // Name
@@ -64,6 +65,14 @@ public class Column{
     }
     public void setFilterValue(String filterValue) {
         this.filterValue = filterValue;
+    }
+    
+    // Escaping Needed
+    public boolean isEscapingNeeded() {
+        return escapingNeeded;
+    }
+    public void setEscapingNeeded(boolean escapingNeeded) {
+        this.escapingNeeded = escapingNeeded;
     }
     
     // Add to Display Labels

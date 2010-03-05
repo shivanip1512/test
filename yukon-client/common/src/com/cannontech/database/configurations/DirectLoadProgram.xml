@@ -2,7 +2,22 @@
     <configuration name="DIRECT_PROGRAM"><!-- Direct Load Program -->
 		<table name="LMProgram" >
 			<references>
-				<table name="Point" />
+				<table name="Point">
+					<references>
+						<table name="CalcBase">
+							<references>
+								<table name="CalcComponent" />
+								<table name="CalcPointBaseline" />
+							</references>
+						</table>
+						<table name="PointAccumulator" />
+						<table name="PointAlarming" />
+        				<table name="PointAnalog" />
+        				<table name="PointLimits" />
+        				<table name="PointStatus" />
+        				<table name="PointUnit" />
+        			</references>
+				</table>
 				<table name="LMProgramControlWindow" />
 				<table name="LMProgramDirect" >
 					<references>
@@ -17,7 +32,22 @@
 								<table name="LMGroup" >
 									<references>
 										<table name="LMGroupExpressCom" />
-										<table name="Point" />
+										<table name="Point">
+											<references>
+												<table name="CalcBase">
+													<references>
+														<table name="CalcComponent" />
+														<table name="CalcPointBaseline" />
+													</references>
+												</table>
+												<table name="PointAccumulator" />
+												<table name="PointAlarming" />
+       							 				<table name="PointAnalog" />
+        										<table name="PointLimits" />
+        										<table name="PointStatus" />
+        										<table name="PointUnit" />
+						        			</references>
+        								</table>
 									</references>
 								</table>
 							</include>

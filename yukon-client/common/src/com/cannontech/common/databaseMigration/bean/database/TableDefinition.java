@@ -43,6 +43,13 @@ public class TableDefinition {
             }
             column.setNullId(columnElement.getAttributeValue("nullId"));
             column.setFilterValue(columnElement.getAttributeValue("filterValue"));
+
+            String escapeNeededStr = columnElement.getAttributeValue("escapingNeeded");
+            if (escapeNeededStr != null &&
+                escapeNeededStr.equalsIgnoreCase("true")) {
+                column.setEscapingNeeded(true);
+            }
+
             String addToDisplayLabelsStr = columnElement.getAttributeValue("addToDisplayLabels");
             if (addToDisplayLabelsStr != null &&
                 addToDisplayLabelsStr.equalsIgnoreCase("true")){
@@ -56,7 +63,8 @@ public class TableDefinition {
         ColumnTypeEnum[] columnTypes = ColumnTypeEnum.values();
         for (ColumnTypeEnum columnType : columnTypes)
             for (Column column : this.columns.get(columnType.toString()))
-                if(column.getName().equalsIgnoreCase(columnName));
+                if(column.getName().equalsIgnoreCase(columnName))
+                    return column;
 
         return null;
     }

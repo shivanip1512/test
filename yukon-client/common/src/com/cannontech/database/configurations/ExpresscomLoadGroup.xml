@@ -2,7 +2,22 @@
     <configuration name="EXPRESSCOM_LOAD_GROUP"><!-- Expresscom Load Group -->
         <table name="LMGroupExpressCom" >
         	<references>
-        		<table name="Point" />
+        		<table name="Point">
+        			<references>
+        				<table name="CalcBase">
+							<references>
+								<table name="CalcComponent" />
+								<table name="CalcPointBaseline" />
+        					</references>
+        				</table>
+        				<table name="PointAccumulator" />
+        				<table name="PointAlarming" />
+        				<table name="PointAnalog" />
+        				<table name="PointStatus" />
+        				<table name="PointLimits" />
+        				<table name="PointUnit" />
+        			</references>
+        		</table>
         	</references>
         </table>
     </configuration>

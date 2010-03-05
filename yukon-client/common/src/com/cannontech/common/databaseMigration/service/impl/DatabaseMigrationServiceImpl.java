@@ -19,6 +19,7 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -76,6 +77,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -449,6 +451,13 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     if (childElementType.equals("value")) {
                         String content = childElement.getText();
                         if (content != null) {
+                            
+                            // Check to see if the column needs to be escaped and escape the value
+                            if (column.isEscapingNeeded()) {
+                                content = StringEscapeUtils.unescapeJava(content);
+                            }
+
+                            content = SqlUtils.convertStringToDbValue(content);
                             columnValueMap.put(column.getName(), content);
                         }
                     } else if (childElementType.equals("item")) {

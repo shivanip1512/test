@@ -1,28 +1,68 @@
 <database>
+    <table name="Address">
+        <primaryKey name="AddressId" />
+        <data name="LocationAddress1"/>
+        <data name="LocationAddress2"/>
+        <data name="CityName"/>
+        <data name="StateCode"/>
+        <data name="ZipCode"/>
+        <data name="County"/>
+    </table>
+
     <table name="ApplianceCategory">
         <primaryKey name="ApplianceCategoryId" />
         <identifier name="Description"/>
         <data name="CategoryId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" nullId="0" />
     </table>
-    
-    <table name="ECToGenericMapping">
-        <primaryKey name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
-        <primaryKey name="ItemId" />
-        <primaryKey name="MappingCategory" />
+
+    <table name="BaseLine">
+        <primaryKey name="BaselineId"/>
+        <data name="BaselineName" />
+        <data name="DaysUsed" />
+        <data name="PercentWindow" />
+        <data name="CalcDays" />
+        <data name="ExcludedWeekDays"/>
+        <data name="HolidayScheduleId" tableRef="HolidaySchedule" refType="ONE_TO_ONE"/>
     </table>
     
-    <table name="ECToApplianceCategoryMapping" table="ECToGenericMapping">
-    	<primaryKey name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
-        <primaryKey name="ItemId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
-        <primaryKey name="MappingCategory" filterValue="ApplianceCategory"/>
+    <table name="CalcBase">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="UpdateType" />
+        <data name="Periodicrate"/>
+        <data name="QualityFlag"/>
     </table>
-	
-    <table name="EnergyCompany">
-        <primaryKey name="EnergyCompanyID" />
-        <identifier name="Name" />
-        <data name="PrimaryContactID" />
-        <data name="UserID" />
+    
+    <table name="CalcComponent">
+        <primaryKey name="PointId" tableRef="CalcBase"/>
+        <primaryKey name="ComponentOrder"/>
+        <data name="ComponentType"/>
+        <data name="ComponentPointId" tableRef="Point" refType="MANY_TO_ONE"/>
+        <data name="Operation"/>
+        <data name="Constant"/>
+        <data name="FunctionName"/>
+    </table>
+
+    <table name="CalcPointBaseline">
+        <primaryKey name="PointId" tableRef="CalcBase"/>
+        <primaryKey name="BaseLineId" tableRef="BaseLine" refType="MANY_TO_ONE"/>
+    </table>
+    
+    <table name="Contact">
+        <primaryKey name="ContactId" nullId="0"/> <!-- Special Case - holds a oneToMany only on 0 the rest of the entries are ONE_TO_ONE -->
+        <data name="ContFirstName" />
+        <data name="ContLastName"/>
+        <identifier name="LoginId" tableRef="YukonUser" refType="ONE_TO_ONE"/>
+        <data name="AddressId" tableRef="Address" refType="MANY_TO_ONE"/>
+    </table>
+    
+    <table name="ContactNotification">
+        <primaryKey name="ContactNotifId" />
+        <identifier name="ContactId" tableRef="Contact" refType="MANY_TO_ONE"/>
+        <identifier name="NotificationCategoryId"/>
+        <data name="DisableFlag" />
+        <data name="Notification" />
+        <data name="Ordering" />
     </table>
 	
 	<table name="Device">
@@ -54,6 +94,25 @@
         <data name="AdditionalInfo"/>
         <data name="CurrentLogId"/>
     </table>
+    
+    <table name="ECToGenericMapping">
+        <primaryKey name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
+        <primaryKey name="ItemId" />
+        <primaryKey name="MappingCategory" />
+    </table>
+    
+    <table name="ECToApplianceCategoryMapping" table="ECToGenericMapping">
+    	<primaryKey name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
+        <primaryKey name="ItemId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
+        <primaryKey name="MappingCategory" filterValue="ApplianceCategory"/>
+    </table>
+	
+    <table name="EnergyCompany">
+        <primaryKey name="EnergyCompanyID" />
+        <identifier name="Name" />
+        <data name="PrimaryContactID" />
+        <data name="UserID" />
+    </table>
 
     <table name="GroupPAOPermission">
         <primaryKey name="GroupPaoPermissionId" />
@@ -62,7 +121,12 @@
         <identifier name="Permission"/>
         <data name="Allow"/>
     </table>
-   
+
+    <table name="HolidaySchedule">
+        <primaryKey name="HolidayScheduleId"/>
+        <identifier name="HolidayScheduleName"/>
+    </table>
+    
     <table name="LMDirectNotifGrpList">
         <primaryKey name="ProgramId" tableRef="LMProgramDirect"/>
         <data name="NotificationGrpId" tableRef="NotificationGroup"  refType="MANY_TO_ONE" />
@@ -221,6 +285,59 @@
         <data name="ArchiveType"/>
         <data name="ArchiveInterval"/>
     </table>
+
+	<table name="PointAccumulator">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="Multiplier" /> 
+        <data name="DataOffset"/>
+    </table>
+
+	<table name="PointAnalog">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="DeadBand" /> 
+        <data name="TransducerType"/>
+        <data name="Multiplier"/>
+        <data name="DataOffset"/>
+    </table>
+
+    <table name="PointAlarming">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="AlarmStates" escapingNeeded="true"/>
+        <data name="ExcludeNotifyStates"/>
+        <data name="NotifyOnAcknowledge"/>
+        <data name="NotificationGroupId" tableRef="NotificationGroup"  refType="MANY_TO_ONE"/>
+        <data name="RecipientId" tableRef="ContactNotification" refType="MANY_TO_ONE" />
+    </table>
+    
+    <table name="PointLimits">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <primaryKey name="LimitNumber" /> 
+        <data name="HighLimit"/>
+        <data name="LowLimit"/>
+        <data name="LimitDuration"/>
+    </table>
+
+	<table name="PointStatus">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="InitialState" /> 
+        <data name="ControlType" /> 
+        <data name="ControlInhibit" /> 
+        <data name="ControlOffset" /> 
+        <data name="CloseTime1" /> 
+        <data name="CloseTime2" /> 
+        <data name="StateZeroControl" /> 
+        <data name="StateOneControl" /> 
+        <data name="CommandTimeOut" /> 
+    </table>    
+
+    <table name="PointUnit">
+        <primaryKey name="PointId" tableRef="Point"/>
+        <data name="UOMId" /> 
+        <data name="DecimalPlaces"/>
+        <data name="HighReasonabilityLimit"/>
+        <data name="LowReasonabilityLimit"/>
+        <data name="DecimalDigits"/>
+    </table>
     
     <table name="Route">
         <primaryKey name="RouteID" tableRef="YukonPAObject"/>
@@ -232,6 +349,14 @@
         <primaryKey name="StateGroupId" />
         <identifier name="Name" />
         <data name="GroupType" />
+    </table>
+
+    <table name="UnitMeasure">
+        <primaryKey name="UOMId" />
+        <identifier name="UOMName" />
+        <data name="CalcType" />
+        <data name="LongName" />
+        <data name="Formula" />
     </table>
 
     <table name="YukonGroup">
@@ -289,6 +414,14 @@
         <data name="SelectionLabel"/>
         <data name="WhereIsList"/>
         <data name="UserUpdateAvailable"/>
+    </table>
+    
+    <table name="YukonUser">
+        <primaryKey name="UserId" nullId="-9999"/> <!-- Special Case - holds a oneToMany only on 0 the rest of the entries are ONE_TO_ONE -->
+        <identifier name="UserName"/>
+        <data name="Password"/>
+        <data name="Status"/>
+        <data name="AuthType"/>
     </table>
     
     <table name="YukonWebConfiguration">

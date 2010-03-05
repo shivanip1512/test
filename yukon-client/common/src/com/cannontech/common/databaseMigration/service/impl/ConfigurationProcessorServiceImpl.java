@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -29,6 +30,7 @@ import com.cannontech.common.databaseMigration.service.ConfigurationParserServic
 import com.cannontech.common.databaseMigration.service.ConfigurationProcessorService;
 import com.cannontech.common.databaseMigration.service.DatabaseMigrationService;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.user.SystemUserContext;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -284,15 +286,21 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     
                 }
             } else if (entry.getValue() instanceof DataValueTemplate) {
+                String valueStr = null;
+                if (value != null) {
+                    valueStr = value.toString();
+                }
+                
                 // Processing nullId case
                 TableDefinition table = database.getTable(template.getName());
-                List<Column> columns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
+                List<Column> primaryKeyColumns = table.getColumns(ColumnTypeEnum.PRIMARY_KEY);
                 boolean nullIdFound = false;
-                for (Column column : columns) {
-                    if(column.getName().equals(entry.getKey()) &&
-                       column.getNullId() != null &&
-                       column.getNullId().equals(value.toString())){
-                        nullIdFound = true;
+                for (Column primaryKeyColumn : primaryKeyColumns) {
+                    if (primaryKeyColumn.getName().equals(entry.getKey())) {
+                        if (primaryKeyColumn.getNullId() != null &&
+                            primaryKeyColumn.getNullId().equals(value.toString())){
+                            nullIdFound = true;
+                        }
                         break;
                     }
                 }
@@ -300,10 +308,17 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     break;
                 }
                 
+                // Check to see if the string needs to be escaped.
+                Column columnDef = table.getColumn(entry.getKey());
+                if (columnDef.isEscapingNeeded()) {
+                    valueStr = StringEscapeUtils.escapeJava(valueStr);
+                }
+                
                 // Adds a value of a column to the DataTable object
                 DataTableValue dataTableValue = new DataTableValue();
-                if (value != null) {
-                    dataTableValue.setValue(value.toString());
+                if (valueStr != null) {
+                    valueStr = SqlUtils.convertDbValueToString(valueStr);
+                    dataTableValue.setValue(valueStr);
                 }
                 dataTableEntity = dataTableValue;
             }
