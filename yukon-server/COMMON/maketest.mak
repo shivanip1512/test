@@ -27,6 +27,7 @@ test_ctidate.obj \
 test_CtiPCPtrQueue.obj \
 test_ctistring.obj \
 test_ctitime.obj \
+test_desolvers.obj \
 test_fifo_multiset.obj \
 test_hash.obj \
 test_logger.obj \
