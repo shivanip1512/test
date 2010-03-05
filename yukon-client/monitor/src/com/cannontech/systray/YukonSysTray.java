@@ -4,7 +4,6 @@ import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 
 import snoozesoft.systray4j.CheckableMenuItem;
 import snoozesoft.systray4j.SubMenu;
@@ -18,13 +17,9 @@ import com.cannontech.clientutils.AlarmFileWatchDog;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.roles.application.CommanderRole;
-import com.cannontech.roles.application.DBEditorRole;
-import com.cannontech.roles.application.TDCRole;
-import com.cannontech.roles.application.TrendingRole;
 
 /**
  * The main application that brings up the sys tray icon for Yukon. All components and icons
@@ -154,19 +149,12 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	{
 		try
 		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+	        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+	        clientStartupHelper.setAppName("Yukon Systray");
 
-			System.setProperty("cti.app.name", "Yukon Systray");
-	
-	
-			ClientSession session = ClientSession.getInstance(); 
-			if( session.establishSession() )
-			{
-				//System.exit(-1);
-				new YukonSysTray();
-			}
-			else
-				System.exit(-1);
+	        clientStartupHelper.doStartup();
+	        
+	        new YukonSysTray();
 		}
 		catch (Exception e)
 		{
@@ -184,11 +172,6 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 		return alarmHandler;
 	}
 	
-	private void exitApp()
-	{
-	}
-
-
 	public void menuItemSelected(SysTrayMenuEvent e)
 	{
 		if( e.getSource() == getMenuItemExit() )

@@ -17,10 +17,10 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class ClientStartupHelper {
     private String appName;
-    private JFrame parentFrame = null; // can be null initially
-    private int requiredRole;
+    private JFrame parentFrame; // can be null
+    private Integer requiredRole; // can be null
     private SplashWindow splash;
-    private URL splashUrl;
+    private URL splashUrl; // can be null
 
     public void doStartup() throws Exception {
         CTILogger.debug("starting doStartup");
@@ -49,7 +49,7 @@ public class ClientStartupHelper {
                 System.exit(-1);          
             }
             CTILogger.debug("successfully established session");
-            if(!session.checkRole(requiredRole)) {
+            if(requiredRole != null && !session.checkRole(requiredRole)) {
                 JOptionPane.showMessageDialog(parentFrame, 
                                               "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", 
                                               "Access Denied", 

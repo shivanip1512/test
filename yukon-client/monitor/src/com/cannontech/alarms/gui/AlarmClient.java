@@ -22,6 +22,11 @@ public class AlarmClient extends com.cannontech.clientutils.ClientBase
 	public AlarmClient( java.util.Observer observingObject ) 
 	{
 		super( observingObject );
+		registerForAlarms();
+	}
+	
+	private void registerForAlarms() {
+	    getConnection().write(buildRegistrationMessage());
 	}
 	
 	/**
