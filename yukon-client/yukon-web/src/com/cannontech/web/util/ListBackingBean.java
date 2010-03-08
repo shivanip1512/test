@@ -48,4 +48,8 @@ public class ListBackingBean {
     public void setItemsPerPage(Integer itemsPerPage) {
         this.itemsPerPage = itemsPerPage != null ? itemsPerPage : 25;
     }
+
+    public int getStartIndex() {
+        return (page - 1) * itemsPerPage;
+    }
 }

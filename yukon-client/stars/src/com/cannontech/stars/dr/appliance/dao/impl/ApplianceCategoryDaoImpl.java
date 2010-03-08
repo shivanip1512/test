@@ -6,40 +6,82 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
+import com.cannontech.stars.webconfiguration.model.WebConfiguration;
+import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private AuthDao authDao;
+    private RolePropertyDao rolePropertyDao;
     private ECMappingDao ecMappingDao;
-    
-    private final String applianceCategorySQLHeader = 
-        "SELECT AC.applianceCategoryId, AC.description, YWC.alternateDisplayName, "+
-        "       YLE.entryText as applianceType, YWC.logoLocation "+
-        "FROM ApplianceCategory AC "+
-        "INNER JOIN YukonWebConfiguration YWC ON AC.webConfigurationId = YWC.configurationId "+
-        "INNER JOIN YukonListEntry YLE ON AC.categoryId = YLE.entryId ";
+    private WebConfigurationDao webConfigurationDao;
+
+    private static class RowMapper extends
+            AbstractRowMapperWithBaseQuery<ApplianceCategory> {
+        private Map<Integer, WebConfiguration> webConfigurations;
+        private RowMapper() {
+            webConfigurations = Maps.newHashMap();
+        }
+        private RowMapper(Map<Integer, WebConfiguration> webConfigurations) {
+            this.webConfigurations = webConfigurations;
+        }
+
+        @Override
+        public SqlFragmentSource getBaseQuery() {
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("SELECT ac.applianceCategoryId,");
+            retVal.append("ac.description, ac.webConfigurationId,");
+            retVal.append("ac.consumerSelectable, yle.yukonDefinitionId");
+            retVal.append("FROM applianceCategory ac");
+            retVal.append("INNER JOIN yukonListEntry yle ");
+            retVal.append("ON ac.categoryId = yle.entryId");
+            return retVal;
+        }
+
+        @Override
+        public ApplianceCategory mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+            int applianceCategoryId = rs.getInt("applianceCategoryId");
+            String name = rs.getString("description");
+            int applianceTypeDefinitionId = rs.getInt("yukonDefinitionId");
+            ApplianceTypeEnum applianceType =
+                ApplianceTypeEnum.getByDefinitionId(applianceTypeDefinitionId);
+            boolean consumerSelectable =
+                rs.getString("consumerSelectable").equalsIgnoreCase("y");
+            Integer webConfigurationId = rs.getInt("webConfigurationId");
+            WebConfiguration webConfiguration =
+                webConfigurations.get(webConfigurationId);
+
+            ApplianceCategory applianceCategory =
+                new ApplianceCategory(applianceCategoryId, name, applianceType,
+                                      consumerSelectable, webConfiguration);
+
+            return applianceCategory;
+        }
+    };
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -47,7 +89,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
         List<Integer> idList;
-        if (authDao.checkRoleProperty(energyCompany.getUser(), EnergyCompanyRole.INHERIT_PARENT_APP_CATS)){
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
             idList = ECUtils.toIdList(allAscendants);
         } else {
@@ -90,42 +132,42 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public ApplianceCategory getById(int applianceCategoryId) {
-        
-        final SqlStatementBuilder applCateQuery = new SqlStatementBuilder();
-        applCateQuery.append(applianceCategorySQLHeader);
-        applCateQuery.append("WHERE AC.applianceCategoryId = ?");
-                     
-        try {
-            ApplianceCategory applianceCategory = 
-                simpleJdbcTemplate.queryForObject(applCateQuery.toString(),
-                                                  new ApplianceCategoryRowMapper(),
-                                                  applianceCategoryId);
-        
-            return applianceCategory;
-        } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("The appliance category id supplied does not exist.");
-        }
+        RowMapper rowMapper = new RowMapper();
+        final SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(rowMapper.getBaseQuery());
+        sql.append("WHERE ac.applianceCategoryId").eq(applianceCategoryId);
+
+        ApplianceCategory applianceCategory =
+            simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
+                                              sql.getArguments());
+        WebConfiguration webConfiguration =
+            webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
+        applianceCategory.setWebConfiguration(webConfiguration);
+
+        return applianceCategory;
     }
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName, 
-                                                              List<Integer> energyCompanyIds){
+    public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName,
+                                                              List<Integer> energyCompanyIds) {
+        RowMapper rowMapper = new RowMapper();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(rowMapper.getBaseQuery());
+        sql.append("INNER JOIN YukonWebConfiguration ywc ON ac.webConfigurationId = ywc.configurationId");
+        sql.append("INNER JOIN ECToGenericMapping ectgm ON (ectgm.itemId = ac.applianceCategoryId");
+        sql.append("                                        AND ectgm.mappingCategory = 'ApplianceCategory')");
+        sql.append("WHERE (AC.description").eq(applianceCategoryName);
+        sql.append("       OR ywc.alternateDisplayName").eq(applianceCategoryName).append(")");
+        sql.append("AND ectgm.energyCompanyId IN (", energyCompanyIds,")");
 
-        final SqlStatementBuilder applCateQuery = new SqlStatementBuilder();
-        applCateQuery.append(applianceCategorySQLHeader);
-        applCateQuery.append("INNER JOIN ECToGenericMapping ECTGM ON (ECTGM.itemId = AC.applianceCategoryId");
-        applCateQuery.append("                                        AND ECTGM.mappingCategory = 'ApplianceCategory')");
-        applCateQuery.append("WHERE (AC.description = ?");
-        applCateQuery.append("       OR YWC.alternateDisplayName = ?)");
-        applCateQuery.append("AND ECTGM.energyCompanyId in (", energyCompanyIds,")");
-
-        
         List<ApplianceCategory> applianceCategories = 
-            simpleJdbcTemplate.query(applCateQuery.toString(),
-                                     new ApplianceCategoryRowMapper(),
-                                     applianceCategoryName,
-                                     applianceCategoryName);
+            simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
+        for (ApplianceCategory applianceCategory : applianceCategories) {
+            WebConfiguration webConfiguration =
+                webConfigurationDao.getForApplianceCateogry(applianceCategory.getApplianceCategoryId());
+            applianceCategory.setWebConfiguration(webConfiguration);
+        }
 
         if (applianceCategories.size() > 0) {
             return applianceCategories;
@@ -155,54 +197,24 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             throw new NotFoundException("The supplied appliance category is not attached to any energy companies.");
         }
     }
-    
+
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-    
+
     @Autowired
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
-    
+
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
     }
-}
 
-class ApplianceCategoryRowMapper implements ParameterizedRowMapper<ApplianceCategory> {
-
-    @Override
-    public ApplianceCategory mapRow(ResultSet rs, int rowNum)
-            throws SQLException {
-        ApplianceCategory applianceCategory = null;
-        
-        int applianceCategoryId = rs.getInt("applianceCategoryId"); 
-        String displayName = rs.getString("alternateDisplayName");
-        String defaultDisplayName = rs.getString("description");
-        String applianceType = rs.getString("applianceType");
-        ApplianceTypeEnum applianceTypeEnum = getApplianceTypeEnumFromTextValue(applianceType);
-        String logoLocation = rs.getString("logoLocation");
-        
-        if (displayName == null){
-            displayName = defaultDisplayName; 
-        }
-
-        applianceCategory = new ApplianceCategory(applianceCategoryId, 
-                                                  displayName, 
-                                                  applianceTypeEnum, 
-                                                  logoLocation);
-        
-        return applianceCategory;
-    }
-    
-    private ApplianceTypeEnum getApplianceTypeEnumFromTextValue(final String textValue) {
-        String result = textValue;
-        result = result.replaceAll("[(|)]", "");
-        result = result.replaceAll("\\s+", "_");
-        result = result.toUpperCase();
-        return ApplianceTypeEnum.valueOf(result);
+    @Autowired
+    public void setWebConfigurationDao(WebConfigurationDao webConfigurationDao) {
+        this.webConfigurationDao = webConfigurationDao;
     }
 }

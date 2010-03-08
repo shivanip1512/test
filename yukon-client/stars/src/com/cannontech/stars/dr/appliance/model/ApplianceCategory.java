@@ -1,73 +1,128 @@
 package com.cannontech.stars.dr.appliance.model;
 
-public class ApplianceCategory {
-    private final int applianceCategoryId;
-    private final String categoryLabel;
-    private final ApplianceTypeEnum applianceTypeEnum;
-    private final String logoPath;
+import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
-    public ApplianceCategory(int applianceCategoryId,
-                             String categoryLabel,
-                             ApplianceTypeEnum applianceType, 
-                             String logoPath) {
-        this.applianceCategoryId = applianceCategoryId;
-        this.categoryLabel = categoryLabel;
-        this.applianceTypeEnum = applianceType;
-        this.logoPath = logoPath;
+
+public class ApplianceCategory {
+    private int applianceCategoryId;
+    private String name;
+    private ApplianceTypeEnum applianceType;
+    private boolean consumerSelectable = true;
+
+    private WebConfiguration webConfiguration;
+
+    public ApplianceCategory() {
+        webConfiguration = new WebConfiguration();
     }
+
+    public ApplianceCategory(int applianceCategoryId, String name,
+            ApplianceTypeEnum applianceType, boolean consumerSelectable,
+            WebConfiguration webConfiguration) {
+        this.applianceCategoryId = applianceCategoryId;
+        this.name = name;
+        this.applianceType = applianceType;
+        this.consumerSelectable = consumerSelectable;
+        this.webConfiguration = webConfiguration;
+    }
+
 
     public int getApplianceCategoryId() {
         return applianceCategoryId;
     }
 
+    public void setApplianceCategoryId(int applianceCategoryId) {
+        this.applianceCategoryId = applianceCategoryId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setApplianceType(ApplianceTypeEnum applianceType) {
+        this.applianceType = applianceType;
+    }
+
+    public ApplianceTypeEnum getApplianceType() {
+        return applianceType;
+    }
+
+    public boolean isConsumerSelectable() {
+        return consumerSelectable;
+    }
+
+    public void setConsumerSelectable(boolean consumerSelectable) {
+        this.consumerSelectable = consumerSelectable;
+    }
+
+    public WebConfiguration getWebConfiguration() {
+        return webConfiguration;
+    }
+
+    public void setWebConfiguration(WebConfiguration webConfiguration) {
+        this.webConfiguration = webConfiguration;
+    }
+
+    public int getWebConfigurationId() {
+        return webConfiguration.getConfigurationId();
+    }
+
+    public void setWebConfigurationId(int webConfigurationId) {
+        webConfiguration.setConfigurationId(webConfigurationId);
+    }
+
+    public String getIcon() {
+        return webConfiguration.getLogoLocation();
+    }
+
+    public void setIcon(String icon) {
+        webConfiguration.setLogoLocation(icon);
+    }
+
+    public ApplianceCategoryIcon getIconEnum() {
+        return ApplianceCategoryIcon.getByFilename(getIcon());
+    }
+
+    public String getDescription() {
+        return webConfiguration.getDescription();
+    }
+
+    public void setDescription(String description) {
+        webConfiguration.setDescription(description);
+    }
+
+    public String getDisplayName() {
+        return webConfiguration.getAlternateDisplayName();
+    }
+
+    public void setDisplayName(String displayName) {
+        webConfiguration.setAlternateDisplayName(displayName);
+    }
+
+
     public String getCategoryLabel() {
-        return categoryLabel;
-    }
-
-    public ApplianceTypeEnum getApplianceTypeEnum() {
-        return applianceTypeEnum;
-    }
-
-    public String getLogoPath() {
-        return logoPath;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + applianceCategoryId;
-        result = prime * result + ((applianceTypeEnum == null) ? 0
-                : applianceTypeEnum.hashCode());
-        result = prime * result + ((logoPath == null) ? 0 : logoPath.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final ApplianceCategory other = (ApplianceCategory) obj;
-        if (applianceCategoryId != other.applianceCategoryId)
-            return false;
-        if (!categoryLabel.equalsIgnoreCase(other.categoryLabel)){
-            return false;
+        String retVal = webConfiguration.getAlternateDisplayName();
+        if (retVal != null) {
+            retVal = name;
         }
-        if (applianceTypeEnum == null) {
-            if (other.applianceTypeEnum != null)
-                return false;
-        } else if (!applianceTypeEnum.equals(other.applianceTypeEnum))
-            return false;
-        if (logoPath == null) {
-            if (other.logoPath != null)
-                return false;
-        } else if (!logoPath.equals(other.logoPath))
-            return false;
-        return true;
+        return retVal;
     }
-    
+
+    /**
+     * Get the web configuration "logoLocation" variable"
+     * @deprecated use getLogoLocation().
+     */
+    public String getLogoPath() {
+        return webConfiguration.getLogoLocation();
+    }
+
+    /**
+     * @deprecated use getApplianceType 
+     */
+    public ApplianceTypeEnum getApplianceTypeEnum() {
+        return applianceType;
+    }
 }

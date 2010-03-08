@@ -163,6 +163,10 @@
     <bean id="applianceDao" class="com.cannontech.stars.dr.appliance.dao.impl.ApplianceDaoImpl"/>
 
     <bean id="applianceCategoryDao" class="com.cannontech.stars.dr.appliance.dao.impl.ApplianceCategoryDaoImpl"/>
+    <bean id="applianceCategoryService" class="com.cannontech.stars.dr.appliance.service.impl.ApplianceCategoryServiceImpl"/>
+
+    <bean id="assignedProgramDao" class="com.cannontech.stars.dr.appliance.dao.impl.AssignedProgramDaoImpl"/>
+    <bean id="assignedProgramService" class="com.cannontech.stars.dr.appliance.service.impl.AssignedProgramServiceImpl"/>
 
     <bean id="starsProgramDao" class="com.cannontech.stars.dr.program.dao.impl.ProgramDaoImpl"/>
     
@@ -249,7 +253,9 @@
     <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistoryServiceImpl"/>
     
     <bean id="controlHistorySummaryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistorySummaryServiceImpl"/>
-    
+
+    <bean id="webConfigurationDao" class="com.cannontech.stars.webconfiguration.dao.impl.WebConfigurationDaoImpl"/>
+
     <!-- Device Reconfig -->
     <bean id="deviceReconfigDao" class="com.cannontech.stars.dr.deviceReconfig.dao.impl.DeviceReconfigDaoImpl"/>
     

@@ -1608,7 +1608,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return starsEnergyCompany;
     }
     
-    private StarsCustSelectionList getStarsCustSelectionList(String listName) {
+    public StarsCustSelectionList getStarsCustSelectionList(String listName) {
         StarsCustSelectionList starsList = null;
         YukonSelectionList yukonList = getYukonSelectionList( listName );
         if (yukonList != null) {

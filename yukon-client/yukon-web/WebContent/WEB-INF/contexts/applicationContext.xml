@@ -1352,6 +1352,8 @@
         <property name="searcher" ref="loginGroupSearcherLucene"/>
     </bean>
 
+    <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker"/>
+
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"
             value="com.cannontech.web.picker.v2.service.PickerFactory" />

@@ -33,11 +33,13 @@ public class PickerController {
 
     @RequestMapping
     public String build(HttpServletResponse response, Model model, String type,
-            String id, Boolean immediateSelectMode, YukonUserContext userContext) {
+            String id, Boolean multiSelectMode, Boolean immediateSelectMode,
+            YukonUserContext userContext) {
         Picker<?> picker = pickerService.getPicker(type);
 
         model.addAttribute("title", picker.getDialogTitle());
         model.addAttribute("id", id);
+        model.addAttribute("multiSelectMode", multiSelectMode);
         model.addAttribute("immediateSelectMode", immediateSelectMode);
 
         JSONObject object = new JSONObject();

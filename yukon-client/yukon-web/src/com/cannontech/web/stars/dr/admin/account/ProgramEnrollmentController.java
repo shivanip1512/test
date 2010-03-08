@@ -112,11 +112,11 @@ public class ProgramEnrollmentController {
         programEnrollments.setBounds(0, 10, 2);
         model.addAttribute("programEnrollments", programEnrollments);
 
-        return "stars/dr/admin/account/programEnrollment/edit.jsp";
+        return "account/programEnrollment/edit.jsp";
     }
 
     @RequestMapping
     public String editEnrollment(ModelMap model) {
-        return "stars/dr/admin/account/programEnrollment/editEnrollment.jsp";
+        return "account/programEnrollment/editEnrollment.jsp";
     }
 }

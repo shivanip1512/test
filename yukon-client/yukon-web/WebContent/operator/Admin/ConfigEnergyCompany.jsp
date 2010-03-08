@@ -384,7 +384,7 @@ function deleteWarehouse(form, warehouseId) {
 		} else {
 %>
                                     <td width="10%" class="TableCell"> 
-                                      <input type="button" name="Edit" value="Edit" onclick="location.href='ApplianceCategory.jsp?Category=<%= i %>'">
+                                      <input type="button" name="Edit" value="Edit" onclick="location.href='/spring/stars/dr/admin/applianceCategory/edit?applianceCategoryId=<%= category.getApplianceCategoryID() %>'">
                                     </td>
                                     <td width="15%" class="TableCell"> 
                                       <input type="submit" name="Delete" value="Delete" onclick="this.form.AppCatID.value=<%= category.getApplianceCategoryID() %>; return confirmDeleteAppCat();">

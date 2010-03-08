@@ -4,125 +4,174 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+
+<cti:msgScope paths="modules.energyCompanyAdmin.editAssignedProgram">
+
+<script type="text/javascript">
+<c:if test="${!backingBean.multiple}">
+lastDisplayName = false;
+sameAsProgramNameClicked = function() {
+    if ($('sameAsProgramName').checked) {
+        lastDisplayName = $('displayNameInput').value;
+        $('displayNameInput').value = $('programNameInput').value;
+        $('displayNameInput').disable();
+    } else {
+        if (lastDisplayName) {
+            $('displayNameInput').value = lastDisplayName;
+        }
+        $('displayNameInput').enable(); 
+    }
+    sameAsDisplayNameClicked();
+    updateDisplayNameKey();
+}
+
+lastShortName = false;
+sameAsDisplayNameClicked = function() {
+    if ($('sameAsDisplayName').checked) {
+        lastShortName = $('shortNameInput').value;
+        $('shortNameInput').value = $('displayNameInput').value;
+        $('shortNameInput').disable();
+    } else {
+        if (lastShortName) {
+            $('shortNameInput').value = lastShortName;
+        }
+        $('shortNameInput').enable(); 
+    }
+}
+
+displayNameChanged = function() {
+    if ($('sameAsDisplayName').checked) {
+        $('shortNameInput').value = $('displayNameInput').value;
+    }
+    updateDisplayNameKey();
+}
+
+updateDisplayNameKey = function() {
+    // This prefix and pattern must match MessageCodeGenerator.java
+    var prefix = 'yukon.dr.program.displayname.'; 
+    var pattern = /[\.|\"|\s+|&|<]/g;
+    var displayNameKey = prefix + $('displayNameInput').value.replace(pattern, '');
+
+    $('displayNameKeyArea').innerHTML = displayNameKey;
+}
+</c:if>
 
 
-<%-- give "dialogQuestion" style a more generic name --%>
-<h1 class="dialogQuestion"><cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.title"
-    argument="WH LITE-S"/></h1>
+submitForm = function() {
+    <c:if test="${!backingBean.multiple}">
+        $('displayNameInput').enable();
+        displayNameChanged();
+        $('shortNameInput').enable();
+    </c:if>
+    return submitFormViaAjax('acDialog', 'inputForm')
+}
+</script>
 
-<form:form>
+<c:if test="${backingBean.multiple}">
+<i:inline key=".editingMultiple"/>
+</c:if>
+
+<cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/saveAssignedProgram"/>
+<form:form id="inputForm" commandName="backingBean" action="${submitUrl}"
+    onsubmit="return submitForm()">
+    <form:hidden path="virtual"/>
+    <c:if test="${backingBean.multiple}">
+        <c:forEach var="programId" items="${backingBean.programIds}">
+            <input type="hidden" name="programIds" value="${programId}">
+        </c:forEach>
+    </c:if>
+    <form:hidden path="assignedProgram.applianceCategoryId"/>
+    <form:hidden path="assignedProgram.assignedProgramId"/>
+    <form:hidden path="assignedProgram.programId"/>
+    <form:hidden id="programNameInput" path="assignedProgram.programName"/>
+    <form:hidden path="assignedProgram.programOrder"/>
     <tags:nameValueContainer>
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.displayName"/>
-        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-            <input type="text" size="30"/>
-            <input id="sameAsProgramName" type="checkbox"/>
-            <label for="sameAsProgramName"><cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.sameAsProgramName"/></label>
-        </tags:nameValue>
+        <tags:nameValue2 nameKey=".applianceCategory" nameColumnWidth="170px">
+            <spring:escapeBody>${applianceCategory.name}</spring:escapeBody>
+        </tags:nameValue2>
+        <c:if test="${!backingBean.virtual && !backingBean.multiple}">
+            <tags:nameValue2 nameKey=".programName">
+                <spring:escapeBody>${backingBean.assignedProgram.programName}</spring:escapeBody>
+            </tags:nameValue2>
+        </c:if>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.shortName"/>
-        <tags:nameValue name="${fieldName}">
-            <input type="text" size="30"/>
-            <input id="sameAsDisplayName" type="checkbox"/>
-            <label for="sameAsDisplayName"><cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.sameAsDisplayName"/></label>
-        </tags:nameValue>
+        <c:if test="${!backingBean.multiple}">
+            <tags:nameValue2 nameKey=".displayName">
+                <form:input id="displayNameInput"
+                    path="assignedProgram.displayName" size="30"
+                    onkeyup="displayNameChanged()" onblur="displayNameChanged()"/>
+                <c:if test="${!backingBean.virtual}">
+                    <c:if test="${backingBean.assignedProgram.displayName == backingBean.assignedProgram.programName}">
+                        <c:set var="checked" value=" checked=\"true\""/>
+                    </c:if>
+                    <input id="sameAsProgramName" type="checkbox"${checked}
+                        onclick="sameAsProgramNameClicked()"/>
+                    <label for="sameAsProgramName"><i:inline key=".sameAsProgramName"/></label>
+                </c:if>
+            </tags:nameValue2>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.description"/>
-        <tags:nameValue name="${fieldName}">
-            <textarea cols="40" rows="5"></textarea>
-        </tags:nameValue>
+            <tags:nameValue2 nameKey=".shortName">
+                <form:input id="shortNameInput" path="assignedProgram.shortName" size="30"/>
+                <c:if test="${backingBean.assignedProgram.shortName == backingBean.assignedProgram.displayName}">
+                    <c:set var="checked" value=" checked=\"true\""/>
+                </c:if>
+                <input id="sameAsDisplayName" type="checkbox"${checked}
+                    onclick="sameAsDisplayNameClicked()"/>
+                <label for="sameAsDisplayName"><i:inline key=".sameAsDisplayName"/></label>
+            </tags:nameValue2>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.chanceOfControl"/>
-        <tags:nameValue name="${fieldName}">
-            <select>
-                <option value="0">Not Specified</option>
-                <option value="1">Unlikely</option>
-                <option value="2">Likely</option>
-            </select>
-        </tags:nameValue>
+            <tags:nameValue2 nameKey=".displayNameKey">
+                <span id="displayNameKeyArea"></span>
+            </tags:nameValue2>
+        </c:if>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.programDescriptionIcons"/>
-        <tags:nameValue name="${fieldName}" isSection="true">
-            <cti:msg var="nestedFieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.savings"/>
-            <tags:nameValue name="${nestedFieldName}">
-                <table cellpadding="0" cellspacing="0">
-                    <tr>
-                       <td>
-                           <select>
-                               <option>No Image</option>
-                               <option>$</option>
-                               <option>$$</option>
-                               <option>$$$</option>
-                               <option>Other Image</option>
-                           </select>
-                       </td>
-                       <td align="right">
-                           <img src="<cti:url value="/WebConfig/yukon/Icons/$$Sm.gif"/>"/>
-                       </td>
-                    </tr>
-                    <tr>
-                       <td colspan="2">
-                           <input type="text" size="50"/>
-                       </td>
-                    </tr>
-                </table>
-            </tags:nameValue>
-            <cti:msg var="nestedFieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.controlPercent"/>
-            <tags:nameValue name="${nestedFieldName}">
-                <table cellpadding="0" cellspacing="0">
-                    <tr>
-                       <td>
-                           <select>
-                               <option>No Image</option>
-                               <option>Sixth</option>
-                               <option>Quarter</option>
-                               <option>Third</option>
-                               <option>Half</option>
-                               <option>Other Image</option>
-                           </select>
-                       </td>
-                       <td align="right">
-                           <img src="<cti:url value="/WebConfig/yukon/Icons/QuarterSm.gif"/>"/>
-                       </td>
-                    </tr>
-                    <tr>
-                       <td colspan="2">
-                           <input type="text" size="50"/>
-                       </td>
-                    </tr>
-                </table>
-            </tags:nameValue>
-            <cti:msg var="nestedFieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.environment"/>
-            <tags:nameValue name="${nestedFieldName}">
-                <table cellpadding="0" cellspacing="0">
-                    <tr>
-                       <td>
-                           <select>
-                               <option>No Image</option>
-                               <option>1 Tree</option>
-                               <option>2 Trees</option>
-                               <option>3 Trees</option>
-                               <option>Other Image</option>
-                           </select>
-                       </td>
-                       <td align="right">
-                           <img src="<cti:url value="/WebConfig/yukon/Icons/Tree2Sm.gif"/>"/>
-                       </td>
-                    </tr>
-                    <tr>
-                       <td colspan="2">
-                           <input type="text" size="50"/>
-                       </td>
-                    </tr>
-                </table>
-            </tags:nameValue>
-        </tags:nameValue>
+        <tags:nameValue2 nameKey=".description">
+            <form:textarea path="assignedProgram.description" cols="40" rows="5"/>
+        </tags:nameValue2>
 
+        <tags:nameValue2 nameKey=".chanceOfControl">
+            <form:select path="assignedProgram.chanceOfControlId" items="${chanceOfControls}"
+                itemValue="chanceOfControlId" itemLabel="name">
+            </form:select>
+        </tags:nameValue2>
+
+        <tags:nameValue2 nameKey=".programDescriptionIcons" isSection="true">
+            <tags:nameValue2 nameKey=".savings">
+                <dr:iconChooser id="savings" path="assignedProgram.savingsIcon"
+                    icons="${savingsIcons}"
+                    selectedIcon="${backingBean.assignedProgram.savingsIconEnum}"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".controlPercent">
+                <dr:iconChooser id="controlPercent" path="assignedProgram.controlPercentIcon"
+                    icons="${controlPercentIcons}"
+                    selectedIcon="${backingBean.assignedProgram.controlPercentIconEnum}"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".environment">
+                <dr:iconChooser id="environment" path="assignedProgram.environmentIcon"
+                    icons="${environmentIcons}"
+                    selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
+            </tags:nameValue2>
+        </tags:nameValue2>
     </tags:nameValueContainer>
+    <c:if test="${!backingBean.multiple}">
+        <script type="text/javascript">
+            <c:if test="${!backingBean.virtual}">
+            sameAsProgramNameClicked();
+            </c:if>
+            <c:if test="${backingBean.virtual}">
+            sameAsDisplayNameClicked();
+            </c:if>
+        </script>
+    </c:if>
 
     <div class="actionArea">
-        <input type="button" value="<cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.ok"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.editAssignedPrograms.cancel"/>"
+        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        <input type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('acDialog').hide()"/>
     </div>
 
 </form:form>
+
+</cti:msgScope>

@@ -1,86 +1,102 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<form:form>
+
+<cti:msgScope paths="modules.energyCompanyAdmin.editApplianceCategory">
+
+<script type="text/javascript">
+lastDisplayName = false;
+sameAsNameClicked = function() {
+    if ($('sameAsName').checked) {
+        lastDisplayName = $('displayNameInput').value;
+        $('displayNameInput').value = $('nameInput').value;
+        $('displayNameInput').disable();
+    } else {
+        if (lastDisplayName) {
+            $('displayNameInput').value = lastDisplayName;
+        }
+        $('displayNameInput').enable(); 
+    }
+}
+
+nameChanged = function() {
+    if ($('sameAsName').checked) {
+        $('displayNameInput').value = $('nameInput').value;
+    }
+}
+
+submitForm = function() {
+	nameChanged();
+	$('displayNameInput').enable();
+	return submitFormViaAjax('acDialog', 'inputForm')
+}
+</script>
+
+<cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/saveDetails"/>
+<form:form id="inputForm" commandName="applianceCategory" action="${submitUrl}"
+    onsubmit="return submitForm()">
+    <form:hidden path="applianceCategoryId"/>
+    <form:hidden path="webConfiguration.configurationId"/>
     <tags:nameValueContainer>
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.categoryName"/>
-        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-            <input type="text" size="30"/>
-        </tags:nameValue>
+        <tags:nameValue2 nameKey=".name" nameColumnWidth="150px">
+            <form:input id="nameInput" path="name" size="30"
+                onkeyup="nameChanged()" onblur="nameChanged()"/>
+        </tags:nameValue2>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.displayName"/>
-        <tags:nameValue name="${fieldName}">
-            <input type="text" size="30"/>
-            <input id="sameAsCategoryName" type="checkbox"/>
-            <label for="sameAsCategoryName"><cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.sameAsCategoryName"/></label>
-        </tags:nameValue>
+        <tags:nameValue2 nameKey=".displayName">
+            <form:input id="displayNameInput" path="displayName" size="30"/>
+            <c:set var="selcted" value=""/>
+            <c:if test="${applianceCategory.name == applianceCategory.displayName}">
+                <c:set var="checked" value=" checked=\"true\""/>
+            </c:if>
+            <input id="sameAsName" type="checkbox"${checked}
+                onclick="sameAsNameClicked()"/>
+            <label for="sameAsName"><i:inline key=".sameAsName"/></label>
+        </tags:nameValue2>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.type"/>
-        <tags:nameValue name="${fieldName}">
-            <select>
-                <option value="0">Default</option>
-                <option value="1">Air Conditioner</option>
-                <option value="2">Chiller</option>
-                <option value="3">Dual Fuel</option>
-                <option value="4">Dual Storage</option>
-                <option value="5">Generator</option>
-                <option value="6">Grain Dryer</option>
-                <option value="7">Heat Pump</option>
-                <option value="8">Irrigation</option>
-                <option value="9">Storage Heat</option>
-                <option value="10">Water Heater</option>
-            </select>
-        </tags:nameValue>
-
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon"/>
-        <tags:nameValue name="${fieldName}">
-            <table cellpadding="0" cellspacing="0">
-                <tr>
-                   <td>
-            <select>
-                <c:forEach var="iconOption" items="${iconOptions}">
-                    <option value="${iconOption}">
-                        <cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.icon.${iconOption}"/>
-                    </option>
+        <tags:nameValue2 nameKey=".type">
+            <form:select path="applianceType">
+                <c:forEach var="applianceType" items="${applianceTypes}">
+                    <cti:msg var="optionLabel" key="${applianceType}"/>
+                    <form:option value="${applianceType}" label="${optionLabel}"/>
                 </c:forEach>
-            </select>
-                   </td>
-                   <td rowspan="2">
-                   <img src="<cti:url value="/WebConfig/yukon/Icons/Load.gif"/>"/>
-                   </td>
-                </tr>
-                <tr>
-                   <td>
-            <input type="text" size="30"/>
-                   </td>
-                </tr>
-            </table>
-        </tags:nameValue>
+            </form:select>
+        </tags:nameValue2>
 
-        <cti:msg var="fieldName" key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.description"/>
-        <tags:nameValue name="${fieldName}">
-            <textarea cols="40" rows="5"></textarea>
-        </tags:nameValue>
+        <tags:nameValue2 nameKey=".icon">
+            <dr:iconChooser id="iconChooser" path="icon" icons="${icons}"
+                selectedIcon="${applianceCategory.iconEnum}" applianceCategoryIconMode="true"/>
+        </tags:nameValue2>
+
+        <tags:nameValue2 nameKey=".description">
+            <form:textarea path="description" cols="40" rows="5"/>
+        </tags:nameValue2>
 
         <c:set var="fieldName">
-            <label for="customerSelectableCheckbox"><cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.customerSelectable"/></label>
+            <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectable"/></label>
         </c:set>
         <tags:nameValue name="${fieldName}">
-            <input id="customerSelectableCheckbox" type="checkbox"/>
-            <label for="customerSelectableCheckbox"><cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.customerSelectableDescription"/></label>
+            <form:checkbox id="consumerSelectableCheckbox" path="consumerSelectable"/>
+            <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectableDescription"/></label>
         </tags:nameValue>
 
     </tags:nameValueContainer>
+    <script type="text/javascript">
+        sameAsNameClicked();
+    </script>
 
     <div class="actionArea">
-        <input type="button" value="<cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.ok"/>"/>
-        <input type="button" value="<cti:msg key="yukon.web.modules.stars.dr.admin.applianceCategory.edit.cancel"/>"
+        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        <input type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('acDialog').hide()"/>
     </div>
 
 </form:form>
+
+</cti:msgScope>

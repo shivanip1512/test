@@ -856,16 +856,29 @@ h3.indentedElementHeading + * {
     margin: 0 0 0 12px;
 }
 
-div.actionArea {
+.actionArea {
 	margin-top: 15px;
 	text-align: right;
 }
 
-div.actionArea input {
+.actionArea input {
     width: 100px;
 }
 
-a.simpleLink {
+.actionArea input.notButton {
+	width: auto;
+}
+
+table.actionArea {
+	width: 100%;
+    font-size: 12px;
+}
+
+table.actionArea td.leftActions {
+	text-align: left;
+}
+
+a.simpleLink, span.simpleLink a {
     text-decoration: none;
     color: black;
 }

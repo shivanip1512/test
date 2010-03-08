@@ -1434,6 +1434,90 @@
     </tag>
 
     <tag>
+        <name>img</name>
+        <tag-class>com.cannontech.web.i18n.ImageTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs localized image optionally wrapped in an anchor tag.
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Base i18n key, specifies the main image, used with ".hover"
+                for an optional hover image, with ".alt" for optinal alt text 
+            </description>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>id for generated HTML img tag</description>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                href for anchor tag; if not specified, no anchor tag generated
+            </description>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                link class, defaults to 'simpleLink', applied to anchor tag if
+                href specified, unused if no href specified
+            </description>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>labeledImg</name>
+        <tag-class>com.cannontech.web.i18n.LabeledImageTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs localized image and label optionally wrapped in an anchor tag.
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Base i18n key, specifies the main image, used with ".label" for
+                required label key, used with ".hover" for an optional hover
+                image, with ".alt" for optinal alt text 
+            </description>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                id for generated span tag wrapping image and label
+            </description>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                href for anchor tag; if not specified, no anchor tag generated
+            </description>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                link class, defaults to 'simpleLink', applied to wrapping span
+            </description>
+        </attribute>
+    </tag>
+
+    <tag>
         <name>css</name>
         <tag-class>com.cannontech.web.i18n.CssTag</tag-class>
         <body-content>empty</body-content>

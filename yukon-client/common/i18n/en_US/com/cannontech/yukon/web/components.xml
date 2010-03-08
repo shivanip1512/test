@@ -27,7 +27,15 @@
 	<entry key="yukon.web.components.slowInput.search.label">Search</entry>
 	<entry key="yukon.web.components.slowInput.search.labelBusy">Searching</entry>
 	<entry key="yukon.web.components.slowInput.add.label">Add</entry>
-	
 
+    <entry key="yukon.web.components.image.edit.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+    <entry key="yukon.web.components.image.edit.hoverUrl">/WebConfig/yukon/Icons/pencil_over.gif</entry>
+    <entry key="yukon.web.components.image.edit.hoverText">Edit</entry>
+    <entry key="yukon.web.components.image.edit.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.components.image.edit.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.components.image.edit.add.hoverText">Add</entry>
+    <entry key="yukon.web.components.image.edit.remove.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.components.image.edit.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.components.image.edit.remove.hoverText">Remove</entry>
 
 </properties>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    
+
     <entry key="yukon.dr.appliance.displayname.DEFAULT">Default</entry>
     <entry key="yukon.dr.appliance.displayname.AIR_CONDITIONER">Air Conditioner</entry>
     <entry key="yukon.dr.appliance.displayname.STORAGE_HEAT">Storage Heat</entry>
@@ -13,5 +13,40 @@
     <entry key="yukon.dr.appliance.displayname.DUAL_STAGE">Dual Stage Air Conditioner</entry>
     <entry key="yukon.dr.appliance.displayname.DUAL_FUEL">Dual Fuel</entry>
     <entry key="yukon.dr.appliance.displayname.WATER_HEATER">Water Heater</entry>
-    
-</properties>    
+
+    <entry key="yukon.dr.appliance.category.iconName.NONE">No Image</entry>
+    <entry key="yukon.dr.appliance.category.iconName.AC">Air Conditioner</entry>
+    <entry key="yukon.dr.appliance.category.iconName.DUAL_FUEL">Dual Fuel</entry>
+    <entry key="yukon.dr.appliance.category.iconName.ELECTRIC">Electric</entry>
+    <entry key="yukon.dr.appliance.category.iconName.GENERATION">Generation</entry>
+    <entry key="yukon.dr.appliance.category.iconName.GRAIN_DRYER">Grain Dryer</entry>
+    <entry key="yukon.dr.appliance.category.iconName.HEAT_PUMP">Heat Pump</entry>
+    <entry key="yukon.dr.appliance.category.iconName.HOT_TUB">Hot Tub</entry>
+    <entry key="yukon.dr.appliance.category.iconName.IRRIGATION">Irrigation</entry>
+    <entry key="yukon.dr.appliance.category.iconName.LOAD">Load</entry>
+    <entry key="yukon.dr.appliance.category.iconName.POOL">Pool</entry>
+    <entry key="yukon.dr.appliance.category.iconName.SETBACK">Setback</entry>
+    <entry key="yukon.dr.appliance.category.iconName.STORAGE_HEAT">Storage Heat</entry>
+    <entry key="yukon.dr.appliance.category.iconName.WATER_HEATER">Water Heater</entry>
+    <entry key="yukon.dr.appliance.category.iconName.OTHER">Other Image</entry>
+
+    <entry key="yukon.dr.appliance.savings.iconName.NONE">No Image</entry>
+    <entry key="yukon.dr.appliance.savings.iconName.LOW">$</entry>
+    <entry key="yukon.dr.appliance.savings.iconName.MEDIUM">$$</entry>
+    <entry key="yukon.dr.appliance.savings.iconName.HIGH">$$$</entry>
+    <entry key="yukon.dr.appliance.savings.iconName.OTHER">Other Image</entry>
+
+    <entry key="yukon.dr.appliance.controlPercent.iconName.NONE">No Image</entry>
+    <entry key="yukon.dr.appliance.controlPercent.iconName.SIXTH">Sixth</entry>
+    <entry key="yukon.dr.appliance.controlPercent.iconName.QUARTER">Quarter</entry>
+    <entry key="yukon.dr.appliance.controlPercent.iconName.THIRD">Third</entry>
+    <entry key="yukon.dr.appliance.controlPercent.iconName.HALF">Half</entry>
+    <entry key="yukon.dr.appliance.controlPercent.iconName.OTHER">Other Image</entry>
+
+    <entry key="yukon.dr.appliance.environment.iconName.NONE">No Image</entry>
+    <entry key="yukon.dr.appliance.environment.iconName.ONE_TREE">1 Tree</entry>
+    <entry key="yukon.dr.appliance.environment.iconName.TWO_TREES">2 Trees</entry>
+    <entry key="yukon.dr.appliance.environment.iconName.THREE_TREES">3 Trees</entry>
+    <entry key="yukon.dr.appliance.environment.iconName.OTHER">Other Image</entry>
+
+</properties>

@@ -355,6 +355,20 @@
         </option>
       </options>
     </menu>
+
+    <pages>
+      <page name="configEnergyCompany">
+        <menu>configEnergyCompany</menu>
+        <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
+        <pages>
+          <page name="editApplianceCategory" type="DETAIL">
+            <menu>configEnergyCompany</menu>
+            <link>/spring/stars/dr/admin/applianceCategory/edit?applianceCategoryId=${applianceCategory.applianceCategoryId}</link>
+            <labelArgument>${applianceCategory.categoryLabel}</labelArgument>
+          </page>
+        </pages>
+      </page>
+    </pages>
   </module>
 
   <module name="accountAdmin">

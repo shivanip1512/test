@@ -6,7 +6,7 @@ import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class Program {
-    private static final String PROGAM_PREFIX = "yukon.dr.program.displayname";
+    public static final String PROGAM_PREFIX = "yukon.dr.program.displayname";
     private int programId;
     private String programName;
     private String programPaoName;

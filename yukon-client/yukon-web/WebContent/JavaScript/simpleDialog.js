@@ -65,14 +65,18 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, width, heig
 
     new Ajax.Updater(dialogId + '_body', innerHtmlUrl, {
             'evalScripts': true,
+            'method': 'post',
             'parameters': parameters,
             'onSuccess': successCallback,
             'onFailure' : errorCallback
         });
 }
 
-function submitFormViaAjax(dialogId, formId, url) {
-	if (arguments.length < 3) {
+function submitFormViaAjax(dialogId, formId, url, title) {
+    if (arguments.length > 3) {
+        $(dialogId + '_title').innerHTML = title;
+    }
+	if (arguments.length < 3 || url == null) {
 		url = $(formId).action;
 	}
     new Ajax.Updater(dialogId + '_body', url, {

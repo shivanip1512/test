@@ -33,7 +33,7 @@ Picker.prototype = {
 		this.multiSelectMode = false;
 		this.immediateSelectMode = false;
 		this.memoryGroup = false;
-		this.reset(false);
+		this.reset(false, true);
 
 		this.extraDestinationFields = new Array();
 		if (extraDestinationFields) {
@@ -62,7 +62,7 @@ Picker.prototype = {
 	 * - clearRecent is true for showAll but false for just showing the
 	 *   picker (where we want to re-use the previous search).
 	 */
-	reset: function(clearRecent) {
+	reset: function(clearRecent, clearSelectedItems) {
 		if (clearRecent && this.memoryGroup) {
 			Picker.rememberedSearches[this.memoryGroup] = '';
 		}
@@ -73,7 +73,9 @@ Picker.prototype = {
 		if (this.ssInput) {
 			this.ssInput.value = '';
 		}
-		this.selectedItems = new Array();
+		if (clearSelectedItems) {
+			this.selectedItems = new Array();
+		}
 	},
 
 	/**
@@ -83,7 +85,7 @@ Picker.prototype = {
 		this.nothingSelectedDiv.hide();
 		var pickerThis = this;
 		var timerFunction = function() {
-			var ss = escape(pickerThis.ssInput.value);
+			var ss = pickerThis.ssInput.value;
 			// Don't do the search if it hasn't changed.  This could be
 			// because they type a character and deleted it.
 			if (!pickerThis.inSearch && pickerThis.currentSearch != ss) {
@@ -95,7 +97,7 @@ Picker.prototype = {
 		var quietDelay = 300;
 		// Don't do the search if it hasn't changed.  This can happen if
 		// the use the cursor key or alt-tab to another window and back.
-		var ss = escape(pickerThis.ssInput.value);
+		var ss = pickerThis.ssInput.value;
 		if (pickerThis.currentSearch != ss) {
 			setTimeout(timerFunction, quietDelay);
 			this.showBusy();
@@ -111,7 +113,7 @@ Picker.prototype = {
 	doSearch: function(start) {
 		this.inSearch = true;
 		this.showBusy();
-		var ss = escape(this.ssInput.value);
+		var ss = this.ssInput.value;
 		if (ss) {
 			this.showAllLink.show();
 		} else {
@@ -148,7 +150,7 @@ Picker.prototype = {
 				'turning multiSelectMode off');
 			this.multiSelectMode = false;
 		}
-		this.reset(false);
+		this.reset(false, true);
 		var pickerThis = this;
 		var doShow = function(transport, json) {
 			if (json) {
@@ -158,12 +160,13 @@ Picker.prototype = {
 				pickerThis.resultsDiv = $('picker_' + pickerThis.pickerId + '_results');
 				pickerThis.noResultsDiv = $('picker_' + pickerThis.pickerId + '_noResults');
 				pickerThis.nothingSelectedDiv = $('picker_' + pickerThis.pickerId + '_nothingSelected');
+				pickerThis.selectAllCheckBox = $('picker_' + pickerThis.pickerId + '_selectAll');
 				pickerThis.outputColumns = json.outputColumns;
 				pickerThis.idFieldName = json.idFieldName;
 			}
 			if (pickerThis.memoryGroup && Picker.rememberedSearches[pickerThis.memoryGroup]) {
 				pickerThis.ssInput.value =
-					unescape(Picker.rememberedSearches[pickerThis.memoryGroup]);
+					Picker.rememberedSearches[pickerThis.memoryGroup];
 			}
 			$(pickerThis.pickerId).show();
 			pickerThis.ssInput.focus();
@@ -180,6 +183,7 @@ Picker.prototype = {
 				'parameters': {
 					'type' : this.pickerType,
 					'id' : this.pickerId,
+					'multiSelectMode' : this.multiSelectMode,
 					'immediateSelectMode' : this.immediateSelectMode
 				},
 				'evalScripts': true,
@@ -254,7 +258,7 @@ Picker.prototype = {
 	},
 
 	showAll: function() {
-		this.reset(true);
+		this.reset(true, false);
 		this.ssInput.focus();
 		this.doSearch();
 	},
@@ -278,8 +282,9 @@ Picker.prototype = {
 			resultHolder.removeChild(oldError);
 		}
 		resultHolder.appendChild(newResultArea);
+		this.updateSelectAllCheckbox();
 
-		var ss = escape(this.ssInput.value);
+		var ss = this.ssInput.value;
 		if (this.currentSearch != ss) {
 			// do another search
 			this.doSearch();
@@ -311,6 +316,7 @@ Picker.prototype = {
 		resultAreaFixed.id = this.resultAreaFixedId;
 		resultArea.appendChild(resultAreaFixed);
 
+		this.allLinks = [];
 		if (hitList && hitList.length && hitList.length > 0) {
 			this.noResultsDiv.hide();
 			this.resultsDiv.show();
@@ -319,6 +325,7 @@ Picker.prototype = {
 				if (pickerThis.excludeIds.indexOf(hit[pickerThis.idFieldName]) != -1) {
 					return null;
 				} else {
+					pickerThis.allLinks.push({'hit' : hit, 'link' : link});
 					return function() {
 						pickerThis.selectThisItem(hit, link);
 					};
@@ -397,6 +404,30 @@ Picker.prototype = {
 		pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = json.pages;
 	},
 
+	selectAll: function() {
+		var pickerThis = this;
+		this.allLinks.each(function(hitRow) {
+			var parentRow = $($(hitRow.link).parentNode.parentNode);
+			if (pickerThis.selectAllCheckBox.checked) {
+				parentRow.addClassName('highlighted');
+				pickerThis.selectedItems.push(hitRow.hit);
+			} else {
+				parentRow.removeClassName('highlighted');
+				pickerThis.selectedItems = pickerThis.selectedItems.without(hitRow.hit);
+			}
+		});
+	},
+
+	updateSelectAllCheckbox: function() {
+		var allSelected = true;
+		this.allLinks.each(function(hitRow) {
+			if (!$($(hitRow.link).parentNode.parentNode).hasClassName('highlighted')) {
+				allSelected = false;
+			}
+		});
+		this.selectAllCheckBox.checked = allSelected;
+	},
+
 	/**
 	 * This method called when the user clicks on a row for selection. 
 	 */
@@ -410,12 +441,14 @@ Picker.prototype = {
 		}
 
 		var parentRow = $($(link).parentNode.parentNode);
-		if (parentRow.hasClassName('highlighted')){
+		if (parentRow.hasClassName('highlighted')) {
 			// unselect
 			parentRow.removeClassName('highlighted');
 			this.selectedItems = this.selectedItems.without(hit);
+			this.selectAllCheckBox.checked = false;
 		} else {
 			// select
+			parentRow.addClassName('highlighted');
 			if (!this.multiSelectMode) {
 				// not multi-select mode; unselect all others
 				var rows = parentRow.parentNode.childNodes;
@@ -425,8 +458,8 @@ Picker.prototype = {
 				this.selectedItems = [hit];
 			} else {
 				this.selectedItems.push(hit);
+				this.updateSelectAllCheckbox();
 			}
-			parentRow.addClassName('highlighted');
 		}
 	}
 }
