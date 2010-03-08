@@ -125,7 +125,7 @@ INT CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &
          */
         if(parse.getActionItems().size())
         {
-            for(std::list< string >::iterator itr = parse.getActionItems().begin();
+            for(std::list< string >::const_iterator itr = parse.getActionItems().begin();
                  itr != parse.getActionItems().end();
                  ++itr )
             {

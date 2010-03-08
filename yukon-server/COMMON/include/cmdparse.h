@@ -40,7 +40,6 @@ struct simple_hash
 class IM_EX_CTIBASE CtiCommandParser
 {
 protected:
-
    string                  _cmdString;
    std::list< string >   _actionItems;
 
@@ -48,6 +47,7 @@ protected:
 
    UINT     _flags,
             _command;
+   bool     _wasExternallyModified; // Set if someone other than parse() sets cmd flags.
 
 private:
 
@@ -88,10 +88,13 @@ private:
     void    setFlags(UINT flags);
     void    setCommand(UINT command);
 
-public:
+    typedef std::map< string, CtiParseValue > map_type;
+    typedef std::map< string, CtiParseValue >::const_iterator  map_itr_type;
 
-   typedef std::map< string, CtiParseValue > map_type;
-   typedef std::map< string, CtiParseValue >::const_iterator  map_itr_type;
+    map_type    getMap() const    { return _cmd; }
+
+
+public:
 
    CtiCommandParser(const string str);
 
@@ -101,19 +104,16 @@ public:
 
    CtiCommandParser& operator=(const CtiCommandParser& aRef);
 
-   map_type    getMap() const    { return _cmd; }
-   map_type&   Map()             { return _cmd; }
-
-
    void Dump();
 
    const string& getCommandStr() const;
+
+   bool isEqual(const string &cmdStr) const;
 
    int      getControlled() const;
    bool     isControlled()  const;
    bool     isDisconnect()  const;
    bool     isTwoWay()      const;
-
 
    UINT   getCommand() const;
 
@@ -123,12 +123,14 @@ public:
    INT    getiValue (const string &key, INT valifnotfound = INT_MIN) const;
    double getdValue (const string &key, double valifnotfound = 0.0) const;
    string getsValue (const string &key) const;
+   // Should only be called externally, sets externally changed flag
    CtiCommandParser& setValue(const string &key, INT val);
+   // Should only be called externally, sets externally changed flag
    CtiCommandParser& setValue(const string &key, double val);
+   // Should only be called externally, sets externally changed flag
    CtiCommandParser& setValue(const string &key, string val);
 
-
-   std::list< string >& getActionItems();
+   const std::list< string >& getActionItems() const;
 
    void parse();
 

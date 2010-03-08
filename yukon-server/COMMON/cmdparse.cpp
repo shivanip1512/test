@@ -47,7 +47,8 @@ static const boost::regex   re_daterange(str_daterange);
 static const boost::regex   re_target   ("target.+assign");
 static const boost::regex   re_assign   ("assign.+");
 
-CtiCommandParser::CtiCommandParser(const string str)
+CtiCommandParser::CtiCommandParser(const string str) :
+_wasExternallyModified(false)
 {
     CtiString cmdStr(str);
 
@@ -117,6 +118,7 @@ CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
         _cmd = aRef.getMap();
         _flags = aRef.getFlags();
         _command = aRef.getCommand();
+        _wasExternallyModified = aRef._wasExternallyModified;
     }
     return *this;
 }
@@ -1954,12 +1956,12 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
                 {
                     if(CmdStr.contains(" filter"))
                     {
-                        setValue("epresetfilter", TRUE);
+                        _cmd["epresetfilter"] = CtiParseValue(TRUE);
                     }
 
                     if(CmdStr.contains(" runtime"))
                     {
-                        setValue("epresetruntimes", TRUE);
+                        _cmd["epresetruntimes"] = CtiParseValue(TRUE);
                     }
                 }
 
@@ -3893,7 +3895,7 @@ void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
     }
 }
 
-std::list< string >& CtiCommandParser::getActionItems()
+const std::list< string >& CtiCommandParser::getActionItems() const
 {
     return _actionItems;
 }
@@ -4164,6 +4166,16 @@ const string& CtiCommandParser::getCommandStr() const
     return(_cmdString);
 }
 
+bool CtiCommandParser::isEqual(const string &cmdStr) const
+{
+    if(!_wasExternallyModified && cmdStr == _cmdString)
+    {
+        return true;
+    }
+
+    return false;
+}
+
 INT CtiCommandParser::convertTimeInputToSeconds(const string& _inStr) const
 {
     CtiString inStr(_inStr);
@@ -4324,16 +4336,19 @@ bool CtiCommandParser::isDisconnect() const
 
 CtiCommandParser& CtiCommandParser::setValue(const string &key, INT val)
 {
+    _wasExternallyModified = true;
     _cmd[key.c_str()] = CtiParseValue(val);
     return *this;
 }
 CtiCommandParser& CtiCommandParser::setValue(const string &key, DOUBLE val)
 {
+    _wasExternallyModified = true;
     _cmd[key.c_str()] = CtiParseValue(val);
     return *this;
 }
 CtiCommandParser& CtiCommandParser::setValue(const string &key, string val)
 {
+    _wasExternallyModified = true;
     _cmd[key.c_str()] = CtiParseValue(val.c_str());
     return *this;
 }

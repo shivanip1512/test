@@ -1009,7 +1009,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     CtiMessage     *pVg  = NULL;
 
     if( pReq->UserMessageId() != _currentUserMessageId ||
-        stringCompareIgnoreCase(pReq->CommandString(), _currentParse.getCommandStr()) != 0 )
+        !_currentParse.isEqual(pReq->CommandString()))
     {
         _currentParse = CtiCommandParser(pReq->CommandString());
         _currentUserMessageId = pReq->UserMessageId();
@@ -1096,7 +1096,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             if(Dev)
             {
-                if( stringCompareIgnoreCase(_currentParse.getCommandStr(),pExecReq->CommandString()) )
+                if( !_currentParse.isEqual(pExecReq->CommandString()) )
                 {
                     // They did not match!  We MUST re-parse!
                     _currentParse = CtiCommandParser(pExecReq->CommandString());
