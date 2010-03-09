@@ -77,7 +77,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         while (devices.hasNext()) {
             YukonDevice device = devices.next();
             if (!isDeviceValid(device)) {
-                log.info("skipping illegal device, group=" + group + ", deviceId=" + device);
+                log.info("skipping invalid device, group=" + group + ", deviceId=" + device);
                 continue;
             }
             try {
