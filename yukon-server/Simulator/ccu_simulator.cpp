@@ -34,6 +34,7 @@ using namespace std;
 using namespace boost;
 
 DLLIMPORT extern CtiLogger dout;
+
 namespace Cti {
 namespace Simulator {
 
@@ -67,9 +68,17 @@ int SimulatorMainFunction(int argc, char **argv)
 
         default:
         {
-            cout << "Usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
+            port_min = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MIN");
+            port_max = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MAX");
 
-            exit(-1);
+            if ( !(port_min && port_max) )
+            {
+                cout << "Unable to retrieve port values.\n";
+                cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
+                cout << "Master config file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << endl;
+                cout << "                          SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
+                exit(-1);
+            }
         }
     }
 
@@ -278,4 +287,5 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
 
 }
 }
+
 
