@@ -101,6 +101,8 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupUiService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
@@ -420,6 +422,31 @@ public class ReportFuncs
         	return strategyList;
         }
         else {
+            return new ArrayList<Object>(0);    //and empty list of nothing objects. 
+        }
+    }
+    
+    public static List<? extends Object> getValidCapControlObjectsByModelType(ReportFilter filter, int userId) {
+        LiteYukonUser user = null;
+        
+        YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+        if(userId > UserUtils.USER_DEFAULT_ID) {
+            user = yukonUserDao.getLiteYukonUser(userId);
+        }
+        FilterCacheFactory filterCacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
+        CapControlCache filteredCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
+        
+        if( filter.equals(ReportFilter.CAPCONTROLSUBBUS)) {
+            return filteredCapControlCache.getAllSubBuses();
+        } else if( filter.equals(ReportFilter.CAPCONTROLSUBSTATION)) {
+            return filteredCapControlCache.getAllSubstations();
+        } else if( filter.equals(ReportFilter.CAPCONTROLFEEDER)) {
+            return filteredCapControlCache.getAllFeeders();
+        } else if( filter.equals(ReportFilter.CAPBANK)) {
+            return filteredCapControlCache.getAllFeeders();
+        } else if (filter.equals(ReportFilter.AREA)) {
+            return filteredCapControlCache.getCbcAreas();
+        }else {
             return new ArrayList<Object>(0);    //and empty list of nothing objects. 
         }
     }
