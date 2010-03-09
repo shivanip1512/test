@@ -26,6 +26,14 @@
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
+PROJECT_ID("CCU Simulator");
+
+bool gQuit = false;
+
+using namespace std;
+using namespace boost;
+
+DLLIMPORT extern CtiLogger dout;
 namespace Cti {
 namespace Simulator {
 
@@ -37,19 +45,6 @@ void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
 template<class CcuType>
 void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger);
-
-}
-}
-
-PROJECT_ID("CCU Simulator");
-
-bool gQuit = false;
-
-using namespace std;
-using namespace boost;
-
-DLLIMPORT extern CtiLogger dout;
-
 
 int SimulatorMainFunction(int argc, char **argv)
 {
@@ -72,11 +67,9 @@ int SimulatorMainFunction(int argc, char **argv)
 
         default:
         {
-            if ( !((port_min = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MIN")) && (port_max = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MAX"))) )
-            {
-                cout << "Usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
-                exit(-1);
-            }
+            cout << "Usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
+
+            exit(-1);
         }
     }
 
@@ -134,9 +127,6 @@ int SimulatorMainFunction(int argc, char **argv)
 
     return 0;
 }
-
-namespace Cti {
-namespace Simulator {
 
 void CcuPortMaintainer(int portNumber, int strategy)
 {

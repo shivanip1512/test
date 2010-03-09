@@ -11,7 +11,14 @@ using namespace std;
 #include "ctibase.h"
 #include "utility.h"
 
+namespace Cti {
+namespace Simulator {
+
 extern int SimulatorMainFunction(int argc, char** argv);
+
+}
+}
+
 extern bool gQuit;
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
@@ -79,7 +86,7 @@ void CtiSimulatorService::Run()
    SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
    // Start simulator
-   RWThreadFunction _simulatorThread = rwMakeThreadFunction( SimulatorMainFunction, _myargc, _myargv );
+   RWThreadFunction _simulatorThread = rwMakeThreadFunction( Cti::Simulator::SimulatorMainFunction, _myargc, _myargv );
    _simulatorThread.start();
 
    SetThreadName(-1, "SimulatorSvc ");   

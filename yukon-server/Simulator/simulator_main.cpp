@@ -17,8 +17,6 @@ using namespace std;
 int install(DWORD dwStart = SERVICE_DEMAND_START);
 int remove();
 
-extern int SimulatorMainFunction (int argc, char **argv);
-
 int RunningInConsole = FALSE;
 LPTSTR szServiceName = "CCUSIMULATOR";
 LPTSTR szDisplayName = "Yukon CCU Simulator Service";
