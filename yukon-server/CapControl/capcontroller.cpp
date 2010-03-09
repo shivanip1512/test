@@ -282,168 +282,156 @@ void CtiCapController::stop()
 
 void CtiCapController::messageSender()
 {
-    try
-    {
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
+    
+    CtiTime rwnow;
+    CtiTime announceTime((unsigned long) 0);
+    CtiTime tickleTime((unsigned long) 0);
 
-        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+        registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
+    }
+    while(TRUE)
+    {
+        CtiTime currentDateTime;
+        BOOL waitToBroadCastEverything = FALSE;
+
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-            registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
-        }
-        while(TRUE)
-        {
-            CtiTime currentDateTime;
-            BOOL waitToBroadCastEverything = FALSE;
-
+            if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-                if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - ~~~~~~~~~ Message Sender Start ~~~~~~~~~~~~ " << endl;
-                }
-
-                try
-                {
-
-                    if( store->getReregisterForPoints() )
-                    {
-                        registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
-                        store->setReregisterForPoints(FALSE);
-                        waitToBroadCastEverything = TRUE;
-                    }
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-
-                try
-                {
-                    checkPIL();
-
-                    store->checkUnsolicitedList();
-                    store->checkRejectedList();
-                    store->checkUnexpectedUnsolicitedList();
-                }
-                catch(...)
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                }
-
-                if (store->getLinkStatusPointId() > 0 &&
-                     (store->getLinkStatusFlag() == CLOSED) &&
-                     store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds())
-                {
-                     updateAllPointQualities(NonUpdatedQuality);
-                     store->setLinkDropOutTime(currentDateTime);
-                     {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " - store->getLinkDropOutTime() " << store->getLinkDropOutTime().asString()<< endl;
-                     }
-                }
-
-                readClientMsgQueue();
-                CtiCCSubstationBus_vec subStationBusChanges;
-                CtiCCSubstation_set stationChanges;
-                CtiCCArea_set areaChanges;
-
-                SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
-                for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
-                {
-                    CtiCCSubstationBusPtr currentSubstationBus = busIter->second;CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
-                    CtiCCAreaPtr currentArea = NULL;
-                    if (currentStation != NULL )//&& !currentStation->getDisableFlag())
-                    {
-                        currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
-                    }
-
-                    if (currentArea != NULL )//&& !currentArea->getDisableFlag())
-                    {
-                        if( currentSubstationBus->getBusUpdatedFlag())
-                        {
-                            if (currentStation->getStationUpdatedFlag())
-                            {
-                                store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
-                                currentStation->setStationUpdatedFlag(FALSE);
-                            }
-                            if (currentArea->getAreaUpdatedFlag())
-                            {
-                                store->updateAreaObjectSet(currentArea->getPaoId(),(CtiMultiMsg_set&)areaChanges);
-                                currentArea->setAreaUpdatedFlag(FALSE);
-                            }
-                            subStationBusChanges.push_back(currentSubstationBus);
-                            currentSubstationBus->setBusUpdatedFlag(FALSE);
-                        }
-                    }
-                }
-
-                if (subStationBusChanges.size() > 0)
-                {
-                    getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified));
-                }
-                if (areaChanges.size() > 0)
-                {
-                    getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_set&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
-                }
-                if (stationChanges.size() > 0)
-                {
-                    getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_set&)stationChanges,CtiCCSubstationsMsg::SubModified));
-                }
-                if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - ~~~~~~~~~ Message Sender End ~~~~~~~~~~~~ " << endl;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - ~~~~~~~~~ Message Sender Start ~~~~~~~~~~~~ " << endl;
             }
 
             try
             {
-                rwRunnable().serviceCancellation();
-                rwRunnable().sleep( 500 );
-            }
-            catch(RWCancellation& )
-            {
-                throw;
+
+                if( store->getReregisterForPoints() )
+                {
+                    registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
+                    store->setReregisterForPoints(FALSE);
+                    waitToBroadCastEverything = TRUE;
+                }
             }
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-            rwnow = rwnow.now();
-            if(rwnow.seconds() > tickleTime.seconds())
+
+            try
             {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow.seconds() > announceTime.seconds() )
+                checkPIL();
+
+                store->checkUnsolicitedList();
+                store->checkRejectedList();
+                store->checkUnexpectedUnsolicitedList();
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
+            if (store->getLinkStatusPointId() > 0 &&
+                 (store->getLinkStatusFlag() == CLOSED) &&
+                 store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds())
+            {
+                 updateAllPointQualities(NonUpdatedQuality);
+                 store->setLinkDropOutTime(currentDateTime);
+                 {
+                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                     dout << CtiTime() << " - store->getLinkDropOutTime() " << store->getLinkDropOutTime().asString()<< endl;
+                 }
+            }
+
+            readClientMsgQueue();
+            CtiCCSubstationBus_vec subStationBusChanges;
+            CtiCCSubstation_set stationChanges;
+            CtiCCArea_set areaChanges;
+
+            SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
+            for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
+            {
+                CtiCCSubstationBusPtr currentSubstationBus = busIter->second;CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                CtiCCAreaPtr currentArea = NULL;
+                if (currentStation != NULL )//&& !currentStation->getDisableFlag())
                 {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CapControl messageSender. TID: " << rwThreadId() << endl;
+                    currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
                 }
 
-               ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+                if (currentArea != NULL )//&& !currentArea->getDisableFlag())
+                {
+                    if( currentSubstationBus->getBusUpdatedFlag())
+                    {
+                        if (currentStation->getStationUpdatedFlag())
+                        {
+                            store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
+                            currentStation->setStationUpdatedFlag(FALSE);
+                        }
+                        if (currentArea->getAreaUpdatedFlag())
+                        {
+                            store->updateAreaObjectSet(currentArea->getPaoId(),(CtiMultiMsg_set&)areaChanges);
+                            currentArea->setAreaUpdatedFlag(FALSE);
+                        }
+                        subStationBusChanges.push_back(currentSubstationBus);
+                        currentSubstationBus->setBusUpdatedFlag(FALSE);
+                    }
+                }
             }
-        };
 
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::LogOut ) );
+            if (subStationBusChanges.size() > 0)
+            {
+                getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified));
+            }
+            if (areaChanges.size() > 0)
+            {
+                getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg((CtiCCArea_set&)areaChanges, CtiCCGeoAreasMsg::AreaModified));
+            }
+            if (stationChanges.size() > 0)
+            {
+                getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg((CtiCCSubstation_set&)stationChanges,CtiCCSubstationsMsg::SubModified));
+            }
+            if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - ~~~~~~~~~ Message Sender End ~~~~~~~~~~~~ " << endl;
+            }
+        }
 
-    }
-    catch(RWCancellation& )
-    {
-        throw;
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        dout << CtiTime() << " - Message Sender thread terminated unexpectedly." << endl;
-    }
+        try
+        {
+            rwRunnable().serviceCancellation();
+            rwRunnable().sleep( 500 );
+        }
+        catch(RWCancellation& )
+        {
+            throw;
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+        rwnow = rwnow.now();
+        if(rwnow.seconds() > tickleTime.seconds())
+        {
+            tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
+            if( rwnow.seconds() > announceTime.seconds() )
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CapControl messageSender. TID: " << rwThreadId() << endl;
+            }
+
+           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+        }
+    };
+
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::LogOut ) );
+    
 }
 
 void CtiCapController::processNewMessage(CtiMessage* message)

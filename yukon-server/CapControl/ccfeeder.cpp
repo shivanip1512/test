@@ -2692,7 +2692,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPaoName() << endl;
                 }
 
-                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(feederControlUnits,ControlStrategy::VoltsControlUnit));
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::KVarControlUnit));
                 if( capBank != NULL )
                 {
                     if( capBank->getRecloseDelay() > 0 &&
@@ -2741,7 +2741,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPaoName() << endl;
                 }
 
-                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(feederControlUnits,ControlStrategy::VoltsControlUnit));
+                CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::KVarControlUnit));
                 if( capBank != NULL )
                 {
                     DOUBLE adjustedBankKVARIncrease = -(leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
