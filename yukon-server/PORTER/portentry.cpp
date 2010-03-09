@@ -331,7 +331,8 @@ VOID ConnectionThread (VOID *Arg)
         }
     } /* and do it all again */
 
-    if(MyNexus && MyNexus != &PorterToPil) delete MyNexus;
+    //  memory leak, but the alternative is screaming death
+    //if(MyNexus && MyNexus != &PorterToPil) delete MyNexus;
 
     if(OutMessage != NULL)
     {
