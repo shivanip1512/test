@@ -8,6 +8,7 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(PROT)\include \
 -I$(DATABASE)\include \
+-I$(SERVICE)\include \
 -I$(DEVICECONFIGURATION)\include \
 -I$(MSG)\include \
 -I$(BOOST) \
@@ -47,8 +48,11 @@ Ccu710.obj \
 Ccu711.obj \
 Mct410.obj \
 DelayBehavior.obj \
+simulator_main.obj \
+ccusimsvc.obj \
 
 CCU_SIMULATOR_LIBS=\
+advapi32.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiprtdb.lib \
@@ -56,7 +60,8 @@ $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib
+$(COMPILEBASE)\lib\ctidbsrc.lib \
+$(COMPILEBASE)\lib\service.lib \
 
 
 CTIPROGS=\
@@ -132,6 +137,11 @@ ccu711.obj:	yukon.h precompiled.h ctidbgmem.h ccu711.h ccu710.h \
 		simulator.h PlcInfrastructure.h Mct410.h smartmap.h dllbase.h \
 		dsm2.h dsm2err.h words.h readers_writer_lock.h \
 		critical_section.h
+ccusimsvc.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
+		ccusimsvc.h cservice.h ctibase.h ctinexus.h netports.h \
+		cticonnect.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h numstr.h clrdump.h dsm2err.h words.h \
+		utility.h queues.h sorted_vector.h
 ccu_simulator.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PlcInfrastructure.h Mct410.h EmetconWords.h types.h ctitime.h \
 		dlldefs.h smartmap.h boostutil.h utility.h queues.h \
@@ -186,6 +196,12 @@ portlogger.obj:	yukon.h precompiled.h ctidbgmem.h portlogger.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
+simulator_main.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
+		dlldefs.h ccusimsvc.h cservice.h CServiceConfig.h ctibase.h \
+		ctinexus.h netports.h cticonnect.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		dsm2err.h words.h logger.h thread.h CtiPCPtrQueue.h utility.h \
+		queues.h sorted_vector.h
 test_behavior_collection.obj:	yukon.h precompiled.h ctidbgmem.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h \
@@ -207,3 +223,4 @@ test_mct410_sim.obj:	yukon.h precompiled.h ctidbgmem.h boostutil.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h sorted_vector.h Mct410.h EmetconWords.h
 #ENDUPDATE#
+

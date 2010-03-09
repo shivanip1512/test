@@ -31,6 +31,7 @@ namespace Simulator {
 
 PlcInfrastructure Grid;
 
+int SimulatorMainFunction(int argc, char **argv);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
@@ -50,7 +51,7 @@ using namespace boost;
 DLLIMPORT extern CtiLogger dout;
 
 
-int main(int argc, char *argv[])
+int SimulatorMainFunction(int argc, char **argv)
 {
     srand(time(NULL));
 
@@ -131,30 +132,6 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-/* CtrlHandler handles is used to catch ctrl-c when run in a console */
-BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
-{
-    switch( fdwCtrlType )
-    {
-    case CTRL_C_EVENT:
-    case CTRL_SHUTDOWN_EVENT:
-    case CTRL_CLOSE_EVENT:
-    case CTRL_BREAK_EVENT:
-    case CTRL_LOGOFF_EVENT:
-        {
-            gQuit = true;
-            Sleep(50000);
-            return TRUE;
-        }
-
-    default:
-        {
-            return FALSE;
-        }
-    }
-}
-
 
 namespace Cti {
 namespace Simulator {
