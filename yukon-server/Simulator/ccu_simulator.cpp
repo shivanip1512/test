@@ -72,9 +72,11 @@ int SimulatorMainFunction(int argc, char **argv)
 
         default:
         {
-            cout << "Usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
-
-            exit(-1);
+            if ( !((port_min = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MIN")) && (port_max = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MAX"))) )
+            {
+                cout << "Usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
+                exit(-1);
+            }
         }
     }
 
