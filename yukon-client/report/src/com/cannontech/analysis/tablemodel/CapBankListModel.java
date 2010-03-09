@@ -11,7 +11,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.model.CBCOrderByTreeModel;
 
-public class CapBankListModel extends ReportModelBase
+public class CapBankListModel extends FilterObjectsReportModelBase<Object>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 8;

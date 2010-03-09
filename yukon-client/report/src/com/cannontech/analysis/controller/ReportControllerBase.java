@@ -18,7 +18,7 @@ import com.cannontech.util.ServletUtil;
 
 public abstract class ReportControllerBase implements ReportController {
     protected BareReportModel model = null;
-    protected YukonReportBase report = null;;
+    protected YukonReportBase report = null;
     
     public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap(int userId) {
         LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
@@ -30,6 +30,21 @@ public abstract class ReportControllerBase implements ReportController {
             }
             return result;
         }
+    }
+    
+    public boolean reportHasFilter(int userId) {
+        LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
+        if (getFilterModelTypes() == null) {
+            return false;
+        } else {
+            for (ReportFilter filter : getFilterModelTypes()) {
+                result.put(filter, ReportFuncs.getObjectsByModelType(filter, userId));
+                if ( result.size() > 0 ) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public ReportFilter[] getFilterModelTypes() {

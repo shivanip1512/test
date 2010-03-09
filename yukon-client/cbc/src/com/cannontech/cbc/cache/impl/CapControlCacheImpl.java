@@ -5,8 +5,6 @@ package com.cannontech.cbc.cache.impl;
  */
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -417,16 +415,51 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
-     * Create an array of SubBuses. Best usage is to store the results of this call
+     * Create a List of SubBuses. Best usage is to store the results of this call
      * instead of repeatingly calling this method. Never returns null.
-     * @return SubBus[]
+     * @return List<SubBus>
      * @param
      */
-    public synchronized SubBus[] getAllSubBuses() {
-        Collection<SubBus> values = subBusMap.values();
-        SubBus[] subs = values.toArray(new SubBus[values.size()]);
-        Arrays.sort(subs, CBCUtils.SUB_AREA_COMPARATOR );
-        return subs;
+    public synchronized List<SubBus> getAllSubBuses() {
+        List<SubBus> list = new ArrayList<SubBus>(subBusMap.values());
+        Collections.sort(list, CBCUtils.CCNAME_COMPARATOR);
+        return list;
+    }
+    
+    /**
+     * Create a List of Feeders. Best usage is to store the results of this call
+     * instead of repeatingly calling this method. Never returns null.
+     * @return List<Feeder>
+     * @param
+     */
+    public synchronized List<Feeder> getAllFeeders() {
+        List<Feeder> list = new ArrayList<Feeder>(feederMap.values());
+        Collections.sort(list, CBCUtils.CCNAME_COMPARATOR);
+        return list;
+    }
+    
+    /**
+     * Create a List of Cap Banks. Best usage is to store the results of this call
+     * instead of repeatingly calling this method. Never returns null.
+     * @return List<CapBankDevice>
+     * @param
+     */
+    public synchronized List<CapBankDevice> getAllCapBanks() {
+        List<CapBankDevice> list = new ArrayList<CapBankDevice>(capBankMap.values());
+        Collections.sort(list, CBCUtils.CCNAME_COMPARATOR);
+        return list;
+    }
+    
+    /**
+     * Create a List of SubStations. Best usage is to store the results of this call
+     * instead of repeatingly calling this method. Never returns null.
+     * @return List<SubStation>
+     * @param
+     */
+    public synchronized List<SubStation> getAllSubstations() {
+        List<SubStation> list = new ArrayList<SubStation>(subStationMap.values());
+        Collections.sort(list, CBCUtils.CCNAME_COMPARATOR);
+        return list;
     }
     
     /**
@@ -976,6 +1009,11 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
 
     public void setRefreshTimer(ScheduledExecutor refreshTimer) {
         this.refreshTimer = refreshTimer;
+    }
+
+    @Override
+    public boolean isValid(StreamableCapObject capObject) {
+        return true;
     }
 
 }

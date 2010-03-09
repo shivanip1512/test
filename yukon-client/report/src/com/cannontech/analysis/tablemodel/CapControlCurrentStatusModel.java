@@ -10,7 +10,6 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
-import com.cannontech.analysis.report.SimpleYukonReportBase;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.CtiUtilities;
@@ -28,7 +27,7 @@ import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
  * Created on Nov 11, 2005
  * @author snebben
  */
-public class CapControlCurrentStatusModel extends ReportModelBase
+public class CapControlCurrentStatusModel extends FilterObjectsReportModelBase<Object>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 11;

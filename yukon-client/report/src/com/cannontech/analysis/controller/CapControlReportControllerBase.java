@@ -1,16 +1,27 @@
 package com.cannontech.analysis.controller;
 
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
+import com.cannontech.analysis.tablemodel.FilterObjectsReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public abstract class CapControlReportControllerBase extends ReportControllerBase {
+    
+    @Override
+    public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap(int userId) {
+        LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
+        ReportFilter[] filterModelTypes = getFilterModelTypes();
+        return FilterObjectsReportModelBase.getFilteredCapControlObjectsMap(userId, result, filterModelTypes);
+    }
+    
     @Override
     public void setRequestParameters(HttpServletRequest request) {
         CapControlFilterable filterableModel = (CapControlFilterable) model;

@@ -43,20 +43,98 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         this.cache = cache;
     }
     
-	public SubBus[] getAllSubBuses() {
-		SubBus[] aList = cache.getAllSubBuses();
-		SubBus[] retList = new SubBus[ aList.length ];
-		
-		int j = 0;
-		for( int i = 0; i < aList.length ; i++ ){
-			SubBus a = aList[i];
-			int id = cache.getParentAreaID(a.getCcId());
-			StreamableCapObject area = cache.getArea(id);
-			if ( filter.valid(area) )
-				retList[j] = a;
-		}
-		return retList;
-	}
+    public List<Feeder> getAllFeeders() {
+        List<Feeder> aList = cache.getAllFeeders();
+        List<Feeder> retList = new ArrayList<Feeder>();
+        
+        for( Feeder a : aList ){
+            try {
+                int id = cache.getParentAreaID(a.getCcId());
+                StreamableCapObject area = cache.getArea(id);
+                if ( filter.valid(area) )
+                    retList.add(a);
+            } catch(NotFoundException ignore) {
+                retList.add(a); //not cached items (orphans) are visible by default
+            }
+        }
+        return retList;
+    }
+    
+    public List<CapBankDevice> getAllCapBanks() {
+        List<CapBankDevice> aList = cache.getAllCapBanks();
+        List<CapBankDevice> retList = new ArrayList<CapBankDevice>();
+        
+        for( CapBankDevice a : aList ){
+            try {
+                int id = cache.getParentAreaID(a.getCcId());
+                StreamableCapObject area = cache.getArea(id);
+                if ( filter.valid(area) )
+                    retList.add(a);
+            } catch(NotFoundException ignore) {
+                retList.add(a); //not cached items (orphans) are visible by default
+            }
+        }
+        return retList;
+    }
+    
+    public List<SubBus> getAllSubBuses() {
+        List<SubBus> aList = cache.getAllSubBuses();
+        List<SubBus> retList = new ArrayList<SubBus>();
+        
+        for( SubBus a : aList ){
+            try {
+                int id = cache.getParentAreaID(a.getCcId());
+                StreamableCapObject area = cache.getArea(id);
+                if ( filter.valid(area) )
+                    retList.add(a);
+            } catch(NotFoundException ignore) {
+                retList.add(a); //not cached items (orphans) are visible by default
+            }
+        }
+        return retList;
+    }
+    
+    public List<SubStation> getAllSubstations() {
+        List<SubStation> aList = cache.getAllSubstations();
+        List<SubStation> retList = new ArrayList<SubStation>();
+        
+        for( SubStation a : aList ){
+            try {
+                int id = cache.getParentAreaID(a.getCcId());
+                StreamableCapObject area = cache.getArea(id);
+                if ( filter.valid(area) )
+                    retList.add(a);
+            } catch(NotFoundException ignore) {
+                retList.add(a); //not cached items (orphans) are visible by default
+            }
+        }
+        return retList;
+    }
+	
+	public List<CCArea> getCbcAreas() {
+        List<CCArea> aList = cache.getCbcAreas();
+        List<CCArea> retList = new ArrayList<CCArea>();
+
+        synchronized (aList) {
+            for( CCArea a : aList ){
+                if ( filter.valid(a) ) {
+                    retList.add(a);
+                }
+            }
+        }
+        return retList;
+    }
+	
+	public List<CCSpecialArea> getSpecialCbcAreas() {
+        List<CCSpecialArea> aList = cache.getSpecialCbcAreas();
+        List<CCSpecialArea> retList = new ArrayList<CCSpecialArea>(aList.size());
+        
+        for( CCSpecialArea a : aList ){
+            if ( filter.valid(a) )
+                retList.add(a);
+        }
+        return retList;
+    }
 
 	@Override
 	public StreamableCapObject getArea(int paoId) throws NotFoundException {
@@ -137,20 +215,6 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return cache.getCapControlPAO(paoID);
 	}
 
-	public List<CCArea> getCbcAreas() {
-		List<CCArea> aList = cache.getCbcAreas();
-		List<CCArea> retList = new ArrayList<CCArea>(aList.size());
-
-		synchronized (aList) {
-    		for( CCArea a : aList ){
-    			if ( filter.valid(a) ) {
-    				retList.add(a);
-    			}
-    		}
-		}
-		return retList;
-	}
-
 	public Feeder getFeeder(int feederID) {
 		int id = cache.getParentAreaID(feederID);
 		StreamableCapObject area = cache.getArea(id);
@@ -188,17 +252,6 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		StreamableCapObject area = cache.getArea(id);
 		if (filter.valid(area)) return cache.getParentSubBusID(childID);
 		return CtiUtilities.NONE_ZERO_ID;
-	}
-
-	public List<CCSpecialArea> getSpecialCbcAreas() {
-		List<CCSpecialArea> aList = cache.getSpecialCbcAreas();
-		List<CCSpecialArea> retList = new ArrayList<CCSpecialArea>(aList.size());
-		
-		for( CCSpecialArea a : aList ){
-			if ( filter.valid(a) )
-				retList.add(a);
-		}
-		return retList;
 	}
 
 	public SubBus getSubBus(int subID) {
@@ -292,8 +345,31 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     	return null;
     }
     
-    public StreamableCapObject getStreamableCapObjectById(int objectId) throws NotFoundException {
-        throw new UnsupportedOperationException("This operation is not supported by filtered cache.");
+    public StreamableCapObject getStreamableCapObjectById(CapControlType type, int objectId) {
+        StreamableCapObject capObject = null;
+        
+        switch(type) {
+            case AREA:
+                capObject = getArea(objectId);
+                break;
+            case SUBSTATION:
+                capObject = getSubstation(objectId);
+                break;
+            case SUBBUS:
+                capObject = getSubBus(objectId);
+                break;
+            case FEEDER:
+                capObject = getFeeder(objectId);
+                break;
+            case CAPBANK:
+                capObject = getCapBankDevice(objectId);
+                break;
+            case SPECIAL_AREA:
+                capObject = getCBCSpecialArea(objectId);
+                break;
+        }
+        
+        return capObject;
     }
     
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
@@ -302,5 +378,14 @@ public class FilterCapControlCacheImpl implements CapControlCache {
             return cache.getSubstationsByArea(areaId);
         
         return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isValid(StreamableCapObject capObject) {
+        return filter.valid(capObject);
+    }
+
+    public StreamableCapObject getParentArea(StreamableCapObject capObject) {
+        return getCBCArea(getParentAreaID(capObject.getCcId()));
     }
 }

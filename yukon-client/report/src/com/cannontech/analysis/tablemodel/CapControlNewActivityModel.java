@@ -15,13 +15,12 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.pao.PAOGroups;
 
 /**
  * Created on Dec 15, 2003
  * @author snebben
  */
-public class CapControlNewActivityModel extends ReportModelBase {
+public class CapControlNewActivityModel extends FilterObjectsReportModelBase<Object> {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 8;
 	

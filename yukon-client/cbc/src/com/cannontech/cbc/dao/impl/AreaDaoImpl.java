@@ -2,20 +2,24 @@ package com.cannontech.cbc.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.pao.YukonPAObject;
@@ -32,7 +36,7 @@ public class AreaDaoImpl implements AreaDao {
     
     private static final ParameterizedRowMapper<Area> rowMapper;
     
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private SeasonScheduleDao seasonScheduleDao;
     private HolidayScheduleDao holidayScheduleDao;
     private NextValueHelper nextValueHelper;
@@ -69,6 +73,18 @@ public class AreaDaoImpl implements AreaDao {
         };
         return rowMapper;
     }
+    
+    @Override
+    public List<PaoIdentifier> getAllAreas() {
+        SqlStatementBuilder sql = new SqlStatementBuilder("select paobjectid");
+        sql.append("from YukonPAObject");
+        sql.append("where type =").appendArgument(PaoType.CAP_CONTROL_AREA);
+        return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<PaoIdentifier>() {
+            @Override
+            public PaoIdentifier mapRow(ResultSet rs, int arg1) throws SQLException {
+                return new PaoIdentifier(rs.getInt("paobjectId"), PaoType.CAP_CONTROL_AREA);
+            }});
+    }
 
 	@Override
 	public void add(Area area) {
@@ -90,7 +106,7 @@ public class AreaDaoImpl implements AreaDao {
 		
 		//Added to YukonPAObject table, now add to CAPCONTROLAREA
 		area.setId(pao.getPaObjectID());
-		simpleJdbcTemplate.update(insertSql, area.getId(), area.getVoltReductionPointId());
+		yukonJdbcTemplate.update(insertSql, area.getId(), area.getVoltReductionPointId());
 	}
 	
 	@Override
@@ -113,7 +129,7 @@ public class AreaDaoImpl implements AreaDao {
         
         //Added to YukonPAObject table, now add to CAPCONTROLAREA
         specialArea.setId(pao.getPaObjectID());
-        int rowsAffected = simpleJdbcTemplate.update(specialAreaInsertSql, specialArea.getId(), specialArea.getVoltReductionPointId());
+        int rowsAffected = yukonJdbcTemplate.update(specialAreaInsertSql, specialArea.getId(), specialArea.getVoltReductionPointId());
 
         boolean result = (rowsAffected == 1);
         
@@ -143,7 +159,7 @@ public class AreaDaoImpl implements AreaDao {
 		}
 
 		//Added to YukonPAObject table, now add to CAPCONTROLAREA
-		rowsAffected = simpleJdbcTemplate.update(updateSql, area.getVoltReductionPointId(), area.getId());
+		rowsAffected = yukonJdbcTemplate.update(updateSql, area.getVoltReductionPointId(), area.getId());
 		
 		boolean result = (rowsAffected == 1);
 		
@@ -162,7 +178,7 @@ public class AreaDaoImpl implements AreaDao {
 	@Override
 	public boolean remove(Area area) {
 		
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,area.getId() );
+        int rowsAffected = yukonJdbcTemplate.update(removeSql,area.getId() );
         boolean result = (rowsAffected == 1);
         
         if (result) {
@@ -180,8 +196,8 @@ public class AreaDaoImpl implements AreaDao {
 	}
     
     @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 	
 	@Autowired
@@ -198,5 +214,4 @@ public class AreaDaoImpl implements AreaDao {
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
 		this.nextValueHelper = nextValueHelper;
 	}
-
 }

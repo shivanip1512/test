@@ -149,14 +149,39 @@ public interface CapControlCache {
 	public abstract List<Feeder> getFeedersByArea(int areaID);
 
 	/**
-	 * Create an array of SubBuses. Best usage is to store the results of this call
+	 * Create a List of SubBuses. Best usage is to store the results of this call
 	 * instead of repeatingly calling this method. Never returns null.
 	 * 
-	 * @return SubBus[]
+	 * @return List<SubBus>
 	 * @param
 	 */
-	public abstract SubBus[] getAllSubBuses();
+	public abstract List<SubBus> getAllSubBuses();
 
+	/**
+     * Create a List of Feeders. Best usage is to store the results of this call
+     * instead of repeatingly calling this method. Never returns null.
+     * @return List<Feeder>
+     * @param
+     */
+    public abstract List<Feeder> getAllFeeders();
+	
+	/**
+     * Create a List of Cap Banks. Best usage is to store the results of this call
+     * instead of repeatingly calling this method. Never returns null.
+     * @return List<CapBankDevice>
+     * @param
+     */
+    public abstract List<CapBankDevice> getAllCapBanks();
+	
+	/**
+     * Create a List of SubStations. Best usage is to store the results of this call
+     * instead of repeatingly calling this method. Never returns null.
+     * 
+     * @return List<SubStation>
+     * @param
+     */
+	public abstract List<SubStation> getAllSubstations();
+	
 	/**
 	 * Distinct area Strings that are used by substations
 	 * 
@@ -182,5 +207,13 @@ public interface CapControlCache {
 	 * Returns the Parent SubBus ID for the given child id
 	 */
 	public abstract int getParentSubBusID(int childID);
+
+	/**
+	 * Returns true if the user has permission to view this
+	 * capcontrol object.
+	 * @param capObject
+	 * @return
+	 */
+    boolean isValid(StreamableCapObject capObject);
 
 }

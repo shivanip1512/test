@@ -1,5 +1,8 @@
 package com.cannontech.analysis.controller;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -15,7 +18,16 @@ public class ReportControllerAdapter extends ReportControllerBase  {
         super();
         this.reportModelbase = reportModelbase;
     }
-
+    
+    @Override
+    public LinkedHashMap<ReportFilter, List<? extends Object>> getFilterObjectsMap(int userId) {
+        if (reportModelbase instanceof FilterObjectsMapSource) {
+            FilterObjectsMapSource filterSource = (FilterObjectsMapSource) reportModelbase;
+            return filterSource.getFilterObjectsMap(userId);
+        }
+        return super.getFilterObjectsMap(userId);
+    }
+    
     public String getHTMLOptionsTable() {
         return reportModelbase.getHTMLOptionsTable();
     }

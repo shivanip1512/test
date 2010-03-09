@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.analysis.report.SimpleYukonReportBase;
-import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -26,7 +25,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
  * Created on Nov 11, 2005
  * @author snebben
  */
-public class CapControlEventLogModel extends ReportModelBase
+public class CapControlEventLogModel extends FilterObjectsReportModelBase<Object>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 5;

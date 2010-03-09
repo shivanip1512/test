@@ -15,6 +15,7 @@ public interface ReportController {
     public YukonReportBase getReport();
     
     public LinkedHashMap<ReportFilter, List<? extends Object>> getFilterObjectsMap(int userId);
+    public boolean reportHasFilter(int userId);
     public void setRequestParameters(HttpServletRequest request);
     public boolean useStartStopTimes();
     

@@ -205,11 +205,10 @@ public class ReportBean
 	}
     
     public boolean hasFilter() {
-        //getModel();
         if(reportController == null) {
             return false;
         }else {
-            return !getFilterObjectsMap().isEmpty();
+            return reportController.reportHasFilter(userID);
         }
     }
     

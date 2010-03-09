@@ -1,7 +1,10 @@
 package com.cannontech.cbc.dao;
 
+import java.util.List;
+
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.SpecialArea;
+import com.cannontech.common.pao.PaoIdentifier;
 
 public interface AreaDao {
     
@@ -39,4 +42,6 @@ public interface AreaDao {
      * @return
      */
     public void addSpecialArea(SpecialArea specialArea);
+    
+    public List<PaoIdentifier> getAllAreas();
 }
