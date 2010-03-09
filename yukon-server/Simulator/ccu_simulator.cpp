@@ -1,6 +1,8 @@
 #include "yukon.h"
 
 #include <iostream>
+#include <algorithm>
+#include <vector>
 
 #include <boost/thread/thread.hpp>
 #include <boost/bind.hpp>
@@ -16,6 +18,10 @@
 #include "BehaviorCollection.h"
 #include "DelayBehavior.h"
 #include "cparms.h"
+#include "guard.h"
+#include "rwutil.h"
+#include "sema.h"
+#include "dbaccess.h"
 
 #include "boostutil.h"
 
@@ -41,6 +47,7 @@ namespace Simulator {
 PlcInfrastructure Grid;
 
 int SimulatorMainFunction(int argc, char **argv);
+bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
@@ -60,6 +67,8 @@ int SimulatorMainFunction(int argc, char **argv)
         port_min = 0,
         port_max = 0;
 
+    vector<int> portList;
+
     switch( argc )
     {
         case 4:  strategy = atoi(argv[3]);
@@ -71,7 +80,7 @@ int SimulatorMainFunction(int argc, char **argv)
             port_min = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MIN");
             port_max = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MAX");
 
-            if ( !(port_min && port_max) )
+            if ( !(port_min && port_max) && !(getPorts(portList)) )
             {
                 cout << "Unable to retrieve port values.\n";
                 cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
@@ -80,6 +89,11 @@ int SimulatorMainFunction(int argc, char **argv)
                 exit(-1);
             }
         }
+    }
+
+    if( !portList.empty() )
+    {
+        sort(portList.begin(), portList.end());
     }
 
     if( port_max && port_min > port_max )
@@ -119,9 +133,19 @@ int SimulatorMainFunction(int argc, char **argv)
 
     thread_group threadGroup;
 
-    for( ; port_min <= port_max; ++port_min )
+    if( portList.empty() )
     {
-        threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port_min, strategy)));
+        for( ; port_min <= port_max; ++port_min )
+        {
+            threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port_min, strategy)));
+        }
+    }
+    else {
+        vector<int>::iterator itr = portList.begin();
+        for(; itr != portList.end(); itr++ )
+        {
+            threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, *itr, strategy)));
+        }
     }
 
     threadGroup.join_all();
@@ -135,6 +159,34 @@ int SimulatorMainFunction(int argc, char **argv)
     dout.join();
 
     return 0;
+}
+
+bool getPorts(vector<int> &ports)
+{
+    static string sql = "SELECT Distinct P.SOCKETPORTNUMBER "; 
+    sql += "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C ";
+    sql += "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND ";
+    sql += "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') ";
+    sql += "AND Y.Type like 'CCU%' AND Y.DisableFlag = 'N'";
+    unsigned port;
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery(conn, sql);
+
+    while( rdr() )
+    {
+        rdr["SOCKETPORTNUMBER"] >> port;
+        ports.push_back(port);
+    }
+
+    if( ports.empty() )
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void CcuPortMaintainer(int portNumber, int strategy)
