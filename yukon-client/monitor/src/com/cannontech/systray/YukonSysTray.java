@@ -153,6 +153,7 @@ public class YukonSysTray implements SysTrayMenuListener, ActionListener, ISystr
 	        clientStartupHelper.setAppName("Yukon Systray");
 
 	        clientStartupHelper.doStartup();
+	        clientStartupHelper.hideSplash();
 	        
 	        new YukonSysTray();
 		}
