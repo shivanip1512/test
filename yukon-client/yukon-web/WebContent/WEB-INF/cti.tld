@@ -1445,8 +1445,9 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Base i18n key, specifies the main image, used with ".hover"
-                for an optional hover image, with ".alt" for optinal alt text 
+                Base i18n key, with ".imageUrl", specifies the main image,
+                with ".hoverUrl" for optional hover image and with ".hoverText"
+                for optional hover text 
             </description>
         </attribute>
         <attribute>
@@ -1486,9 +1487,10 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>
-                Base i18n key, specifies the main image, used with ".label" for
-                required label key, used with ".hover" for an optional hover
-                image, with ".alt" for optinal alt text 
+                Base i18n key, with ".imageUrl", specifies the main image,
+                with ".label" for required label key, with ".hoverUrl" for
+                optional hover image and with ".hoverText" for optional hover
+                text 
             </description>
         </attribute>
         <attribute>
