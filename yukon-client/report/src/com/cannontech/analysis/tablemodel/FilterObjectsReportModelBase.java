@@ -12,9 +12,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.UserUtils;
 
 public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E> implements FilterObjectsMapSource {
     
@@ -36,7 +37,11 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
         if (filterModelTypes == null) {
             return result;
         } else {
-            LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userId);
+            LiteYukonUser liteUser = null;
+            YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+            if(userId > UserUtils.USER_DEFAULT_ID) {
+                liteUser = yukonUserDao.getLiteYukonUser(userId);
+            }
             PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
             
             List<YukonPao> areasToHide = new ArrayList<YukonPao>();

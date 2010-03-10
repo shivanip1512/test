@@ -33,18 +33,11 @@ public abstract class ReportControllerBase implements ReportController {
     }
     
     public boolean reportHasFilter(int userId) {
-        LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
-        if (getFilterModelTypes() == null) {
+        if (getFilterModelTypes() == null || getFilterModelTypes().length == 0) {
             return false;
         } else {
-            for (ReportFilter filter : getFilterModelTypes()) {
-                result.put(filter, ReportFuncs.getObjectsByModelType(filter, userId));
-                if ( result.size() > 0 ) {
-                    return true;
-                }
-            }
+            return true;
         }
-        return false;
     }
 
     public ReportFilter[] getFilterModelTypes() {
