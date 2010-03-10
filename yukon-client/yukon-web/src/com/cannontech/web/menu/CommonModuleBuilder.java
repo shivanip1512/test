@@ -176,7 +176,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
             result.addAll(childPages);
             
         }
-        parent.setChildPages(directChildren);
+        if (parent != null) {
+        	parent.setChildPages(directChildren);
+        }
         return result;
     }
 
