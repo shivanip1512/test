@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -53,6 +54,14 @@ public interface YukonUserDao {
     public void update(LiteYukonUser user) throws DataAccessException;
     
     /**
+     * Updates the YukonUser's Status('Enabled' or 'Disabled') of a given user
+     * 
+     * @param user - The user we are updating
+     * @param status - This value should be 'Enabled' or 'Disabled'
+     */
+    public void setUserStatus(LiteYukonUser user, LoginStatusEnum loginStatusEnum);
+    
+    /**
      * Generates a unique username based on the given firstName and lastName.
      * 
      * @param firstName
@@ -69,4 +78,21 @@ public interface YukonUserDao {
             LiteYukonGroup liteGroup,
             SimpleCallback<LiteYukonUser> simpleCallback);
 
+    
+    /**
+     * This method removes a user from the supplied groups and sends out the necessary db change messages
+     * 
+     * @param user
+     * @param yukonGroups
+     */
+    public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);    
+
+    /**
+     * This method adds a user to the supplied groups and sends out the necessary db change messages
+     * 
+     * @param user
+     * @param yukonGroups
+     */
+    public void addUserToGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);
+    
 }

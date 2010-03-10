@@ -89,4 +89,9 @@ public interface AuthenticationService {
      * @param username
      */
     public void removeAuthenticationThrottle(String username);
+    
+    /**
+     * Generate a random password of length numberOfCharacters consisting of letters and digits
+     */
+    public String generatePassword(int numberOfCharacters);
 }
