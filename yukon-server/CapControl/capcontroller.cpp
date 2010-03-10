@@ -91,6 +91,7 @@ extern ULONG _POST_CONTROL_WAIT;
 extern BOOL _ENABLE_IVVC;
 extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 extern bool _IVVC_ANALYZE_BYPASS;
+extern ULONG _IVVC_COMMS_RETRY_COUNT;
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 
@@ -4829,6 +4830,13 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES: " << _IVVC_MIN_TAP_PERIOD_MINUTES << endl;
+        }
+
+        _IVVC_COMMS_RETRY_COUNT = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_COMMS_RETRY_COUNT", 3);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_IVVC_COMMS_RETRY_COUNT: " << _IVVC_COMMS_RETRY_COUNT << endl;
         }
 
     }

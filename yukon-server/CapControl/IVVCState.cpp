@@ -5,7 +5,8 @@ IVVCState::IVVCState() :
     _state(IVVC_WAIT),
     _scannedRequest(false),
     _controlledId(-1),
-    _paoId(0)
+    _paoId(0),
+    _commsRetryCount(0)
 {
 }
 
@@ -124,3 +125,16 @@ void IVVCState::setNextHeartbeatTime(const CtiTime& time)
 {
     _nextHeartbeat = time;
 }
+
+
+void IVVCState::setCommsRetryCount(const unsigned long retryCount)
+{
+    _commsRetryCount = retryCount;
+}
+
+
+unsigned long IVVCState::getCommsRetryCount() const
+{
+    return _commsRetryCount;
+}
+

@@ -8090,7 +8090,7 @@ void CtiCCCommandExecutor::sendLtcCommands(const LONG command)
         default:
         {
              CtiLockGuard<CtiLogger> logger_guard(dout);
-             dout << CtiTime() << " LTC Command not implemented: " << command << endl;
+             dout << CtiTime() << " - LTC Command not implemented: " << command << endl;
         }
         break;
     }
@@ -8120,13 +8120,13 @@ void CtiCCCommandExecutor::scanLtcIntegrity (const LONG                     comm
                                              std::vector<CtiCCEventLogMsg*> &events,
                                              std::vector<CtiRequestMsg*>    &requests)
 {
-    string commandName = " LTC Integrity Scan";
+    string commandName = "LTC Integrity Scan";
 
     int paoId = _command->getId();
     if (paoId == 0)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, id of 0 received. " << endl;
+        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
         return;
     }
 
@@ -8139,7 +8139,7 @@ void CtiCCCommandExecutor::scanLtcIntegrity (const LONG                     comm
         if (ltcPtr == NULL)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << commandName << " command failed, LTC not found with id: " << paoId << endl;
+            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
 
             return;
         }
@@ -8150,7 +8150,7 @@ void CtiCCCommandExecutor::scanLtcIntegrity (const LONG                     comm
     if (point.getPointType() == InvalidPointType)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command failed, Voltage Point not found on LTC: " << paoId << endl;
+        dout << CtiTime() << " - " << commandName << " command failed, Voltage Point not found on LTC: " << paoId << endl;
         return;
     }
 
@@ -8168,8 +8168,6 @@ void CtiCCCommandExecutor::scanLtcIntegrity (const LONG                     comm
     reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     commandType,
@@ -8177,15 +8175,13 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
                                                 std::vector<CtiCCEventLogMsg*> &events,
                                                 std::vector<CtiRequestMsg*>    &requests)
 {
-    int enable = (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE) ? 1 : 0;
-    string commandName = " LTC Remote Control";
-    int offset = 23;
+    string commandName = "LTC Remote Control";
 
     int paoId = _command->getId();
     if (paoId == 0)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, id of 0 received. " << endl;
+        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
         return;
     }
 
@@ -8198,7 +8194,7 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
         if (ltcPtr == NULL)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << commandName << " command failed, LTC not found with id: " << paoId << endl;
+            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
 
             return;
         }
@@ -8209,7 +8205,7 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
     if (point.getPointType() == InvalidPointType)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command failed, Remote Control Point not found on LTC: " << paoId << endl;
+        dout << CtiTime() << " - " << commandName << " command failed, Remote Control Point not found on LTC: " << paoId << endl;
         return;
     }
 
@@ -8233,28 +8229,25 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
     toDispatch.push_back(msg);
 
     //Command Action
-    CtiRequestMsg* reqMsg = NULL;
-    string commandString = "putvalue analog" + CtiNumStr(offset).toString() + " " + CtiNumStr(enable).toString();
-    reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
+    string enableString = (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE) ? string(" 1") : string(" 0");
+    string commandString = "putvalue analog " + CtiNumStr(point.getPointOffset()).toString() + enableString;
+
+    CtiRequestMsg* reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  commandType,
                                               std::vector<CtiMessage*>    &toDispatch,
                                               std::vector<CtiRequestMsg*> &requests)
 {
-    int offset = -1;
-    string commandName = " LTC Tap Position";
-
+    string commandName = "LTC Tap Position";
 
     int paoId = _command->getId();
     if (paoId == 0)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, id of 0 received. " << endl;
+        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
         return;
     }
 
@@ -8267,7 +8260,7 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
         if (ltcPtr == NULL)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << commandName << " command failed, LTC not found with id: " << paoId << endl;
+            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
 
             return;
         }
@@ -8287,14 +8280,12 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
         {
             point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapUp);
             text = string("Raise Tap Position");
-            offset = 34;
             break;
         }
         case CtiCCCommand::LTC_TAP_POSITION_LOWER:
         {
             point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapDown);
             text = string("Lower Tap Position");
-            offset = 45;
             break;
         }
         default:
@@ -8308,7 +8299,7 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
     if (point.getPointType() == InvalidPointType)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command failed, " << text << " Point not found on LTC: " << paoId << endl;
+        dout << CtiTime() << " - " << commandName << " command failed, " << text << " Point not found on LTC: " << paoId << endl;
         return;
     }
 
@@ -8317,12 +8308,10 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
 
     //Command Action
     CtiRequestMsg* reqMsg = NULL;
-    string commandString = "control close offset " + CtiNumStr(offset).toString();
+    string commandString = "control close offset " + CtiNumStr(point.getPointOffset()).toString();
     reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
-
-    return;
 }
 
 /**
@@ -8337,13 +8326,13 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
 void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
                                             std::vector<CtiMessage*> &toDispatch)
 {
-    string commandName = " LTC Keep Alive";
+    string commandName = "LTC Keep Alive";
 
     int paoId = _command->getId();
     if (paoId == 0)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, id of 0 received. " << endl;
+        dout << CtiTime() << " - " << commandName << " command rejected, id of 0 received. " << endl;
         return;
     }
 
@@ -8356,7 +8345,7 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
         if (ltcPtr == NULL)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << commandName << " command failed, LTC not found with id: " << paoId << endl;
+            dout << CtiTime() << " - " << commandName << " command failed, LTC not found with id: " << paoId << endl;
 
             return;
         }
@@ -8365,8 +8354,6 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
 
     double time = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
     ltcKeepAliveHelper(paoId,time,paoName,toDispatch);
-
-    return;
 }
 
 void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
@@ -8396,7 +8383,5 @@ void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
 
     msg = new CtiSignalMsg(pointId,0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
     toDispatch.push_back(msg);
-
-    return;
 }
 

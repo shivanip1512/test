@@ -59,6 +59,9 @@ class IVVCState
         CtiTime getNextHeartbeatTime();
         void setNextHeartbeatTime(const CtiTime& time);
 
+        void setCommsRetryCount(const unsigned long retryCount);
+        unsigned long getCommsRetryCount() const;
+
         struct EstimatedData
         {
             bool            operated;
@@ -91,6 +94,8 @@ class IVVCState
 
         bool _remoteMode;
         bool _firstPass;
+
+        unsigned long _commsRetryCount;
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;

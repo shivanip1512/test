@@ -21,6 +21,8 @@ extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 extern ULONG _CC_DEBUG;
 extern bool _IVVC_ANALYZE_BYPASS;
 extern ULONG _IVVC_KEEPALIVE;
+extern ULONG _IVVC_COMMS_RETRY_COUNT;
+
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
     : _requestFactory(factory)
@@ -167,7 +169,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " IVVC Algorithm: On New Data: Stale data, resetting for scan" << endl;
                             }
-                                                        request->reportStatusToLog();
+                            request->reportStatusToLog();
                             state->setScannedRequest(true);
                             state->setState(IVVCState::IVVC_WAIT);
                             break;
@@ -199,13 +201,19 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                             }
                             else
                             {
-                                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                                if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " IVVC Algorithm: On New Data: Setting Comms Lost. " << endl;
+                                    state->setCommsRetryCount(0);
+                                    state->setState(IVVCState::IVVC_COMMS_LOST);
+                                    request->reportStatusToLog();
+
+                                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " IVVC Algorithm: On New Data: Setting Comms Lost. " << endl;
+                                    }
                                 }
-                                request->reportStatusToLog();
-                                state->setState(IVVCState::IVVC_COMMS_LOST);
                                 break;
                             }
                         }
@@ -245,14 +253,21 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                             if (stale == true)
                             {
-                                if (_CC_DEBUG & CC_DEBUG_IVVC)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Stale Data Setting Comms lost." << endl;
-                                }
-                                request->reportStatusToLog();
                                 //To be considered. Initiate scan if stale? like in 'on new data'
-                                state->setState(IVVCState::IVVC_COMMS_LOST);
+
+                                state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                                if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                                {
+                                    state->setCommsRetryCount(0);
+                                    state->setState(IVVCState::IVVC_COMMS_LOST);
+                                    request->reportStatusToLog();
+
+                                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Stale Data Setting Comms lost." << endl;
+                                    }
+                                }
                                 break;
                             }
                             else
@@ -521,6 +536,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         state->_estimated[operatePaoId].operated = true;
                         state->setControlledBankId(operatePaoId);
 
+                        state->_estimated.clear();     // done with this data
+
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -536,6 +553,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                     else
                     {
+                        state->_estimated.clear();     // done with this data
+
                         // TAP operation - use precalculated value from above
 
                         CtiTime now;
