@@ -289,6 +289,9 @@
 <entry key="yukon.web.menu.config.monitors.validation.review">Review</entry>
 <entry key="yukon.web.menu.config.monitors.validation.helper">Advanced</entry>
 
+<!-- FAQ -->
+<entry key="yukon.web.menu.config.operator.faq">FAQ</entry>
+
 <!-- Operator -->
 <entry key="yukon.web.menu.config.operator.general">Operator</entry>
 <entry key="yukon.web.menu.config.operator.general.accounts">Accounts</entry>
