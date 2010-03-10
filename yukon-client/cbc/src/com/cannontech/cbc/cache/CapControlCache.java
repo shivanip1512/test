@@ -208,12 +208,4 @@ public interface CapControlCache {
 	 */
 	public abstract int getParentSubBusID(int childID);
 
-	/**
-	 * Returns true if the user has permission to view this
-	 * capcontrol object.
-	 * @param capObject
-	 * @return
-	 */
-    boolean isValid(StreamableCapObject capObject);
-
 }

@@ -1010,10 +1010,4 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public void setRefreshTimer(ScheduledExecutor refreshTimer) {
         this.refreshTimer = refreshTimer;
     }
-
-    @Override
-    public boolean isValid(StreamableCapObject capObject) {
-        return true;
-    }
-
 }

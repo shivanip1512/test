@@ -2,7 +2,6 @@ package com.cannontech.cbc.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,9 +11,6 @@ import com.cannontech.cbc.dao.AreaDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.SpecialArea;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.Transaction;
@@ -74,18 +70,6 @@ public class AreaDaoImpl implements AreaDao {
         return rowMapper;
     }
     
-    @Override
-    public List<PaoIdentifier> getAllAreas() {
-        SqlStatementBuilder sql = new SqlStatementBuilder("select paobjectid");
-        sql.append("from YukonPAObject");
-        sql.append("where type =").appendArgument(PaoType.CAP_CONTROL_AREA);
-        return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<PaoIdentifier>() {
-            @Override
-            public PaoIdentifier mapRow(ResultSet rs, int arg1) throws SQLException {
-                return new PaoIdentifier(rs.getInt("paobjectId"), PaoType.CAP_CONTROL_AREA);
-            }});
-    }
-
 	@Override
 	public void add(Area area) {
 		int newPaoId = nextValueHelper.getNextValue("YukonPaObject");

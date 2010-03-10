@@ -7,15 +7,17 @@ import java.util.List;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.controller.FilterObjectsMapSource;
-import com.cannontech.cbc.dao.AreaDao;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.authorization.service.PaoAuthorizationService;
-import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.cache.filters.impl.UserAccessCacheFilter;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E> implements FilterObjectsMapSource {
     
@@ -42,18 +44,20 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
             if(userId > UserUtils.USER_DEFAULT_ID) {
                 liteUser = yukonUserDao.getLiteYukonUser(userId);
             }
-            PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
             
-            List<YukonPao> areasToHide = new ArrayList<YukonPao>();
-            AreaDao areaDao = YukonSpringHook.getBean("areaDao", AreaDao.class);
+            CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+            UserAccessCacheFilter cacheFilter = new UserAccessCacheFilter(liteUser);
             
-            for ( PaoIdentifier area :  areaDao.getAllAreas()) {
-                if ( !paoAuthService.isAuthorized(liteUser, Permission.PAO_VISIBLE, area) ) {
-                    areasToHide.add(area);
+            List<CCArea> areaList = capControlCache.getCbcAreas();
+            List<Integer> areasToHide = new ArrayList<Integer>();
+            
+            for ( StreamableCapObject area : areaList ) {
+                if ( !cacheFilter.valid(area) ) {
+                    areasToHide.add(area.getCcId());
                 }
             }
             
-            //if the user can see all the areas then just throw everything in result now.. skipping the filter logic below
+            //if areasToHide is empty then no validation is required
             if ( areasToHide.isEmpty() ) {
                 for (ReportFilter filter : filterModelTypes) {
                     List<? extends Object> objectsByModelType = ReportFuncs.getObjectsByModelType(filter, userId);
@@ -62,9 +66,28 @@ public abstract class FilterObjectsReportModelBase<E> extends ReportModelBase<E>
                 return result;
             }
             
-            //filter out the CC objects the user shouldn't see
+            //areasToHide is not empty and we need to hide objects from the user
             for (ReportFilter filter : filterModelTypes) {
-                List<? extends Object> objectsByModelType = ReportFuncs.getValidCapControlObjectsByModelType(filter, userId);
+                List<? extends Object> objectsByModelType = ReportFuncs.getObjectsByModelType(filter, userId);
+                List<LiteYukonPAObject> objectsToRemove = new ArrayList<LiteYukonPAObject>();
+                
+                for ( Object obj : objectsByModelType ) {
+                    int objId = 0;
+                    if ( filter.equals(ReportFilter.STRATEGY) ) {
+                        objId = ((LiteCapControlStrategy)obj).getStrategyId();
+                    } else {
+                        objId = ((LiteYukonPAObject)obj).getPaoIdentifier().getPaoId();
+                    }
+                    
+                    try {
+                        objId = capControlCache.getParentAreaID( objId );
+                        if ( areasToHide.contains( objId ) ) {
+                            objectsToRemove.add((LiteYukonPAObject)obj);
+                        }
+                    } catch (NotFoundException ignore) {} //orphan objects are shown by default
+                }
+                
+                objectsByModelType.removeAll(objectsToRemove);
                 result.put(filter, objectsByModelType);
             }
             

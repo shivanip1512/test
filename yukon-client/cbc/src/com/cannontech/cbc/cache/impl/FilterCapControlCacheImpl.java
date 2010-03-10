@@ -12,9 +12,9 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
@@ -345,47 +345,11 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     	return null;
     }
     
-    public StreamableCapObject getStreamableCapObjectById(CapControlType type, int objectId) {
-        StreamableCapObject capObject = null;
-        
-        switch(type) {
-            case AREA:
-                capObject = getArea(objectId);
-                break;
-            case SUBSTATION:
-                capObject = getSubstation(objectId);
-                break;
-            case SUBBUS:
-                capObject = getSubBus(objectId);
-                break;
-            case FEEDER:
-                capObject = getFeeder(objectId);
-                break;
-            case CAPBANK:
-                capObject = getCapBankDevice(objectId);
-                break;
-            case SPECIAL_AREA:
-                capObject = getCBCSpecialArea(objectId);
-                break;
-        }
-        
-        return capObject;
-    }
-    
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
         CCSpecialArea area = cache.getCBCSpecialArea(areaId);
         if ( filter.valid(area) )
             return cache.getSubstationsByArea(areaId);
         
         return Collections.emptyList();
-    }
-
-    @Override
-    public boolean isValid(StreamableCapObject capObject) {
-        return filter.valid(capObject);
-    }
-
-    public StreamableCapObject getParentArea(StreamableCapObject capObject) {
-        return getCBCArea(getParentAreaID(capObject.getCcId()));
     }
 }
