@@ -1358,4 +1358,6 @@
         <property name="serviceLocatorInterface"
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
+    
+    <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
 </beans>

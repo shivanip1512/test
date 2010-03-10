@@ -165,10 +165,15 @@ public class CommonModuleBuilder implements ModuleBuilder {
             }
             result.add(pageInfo);
             
+            String infoInclude = pageElement.getChildTextTrim("infoInclude");
+            pageInfo.setDetailInfoIncludePath(infoInclude);
+            
             // now add the children of the element
             Element subPagesElement = pageElement.getChild("pages");
-            List<PageInfo> childCrumbs = processPages(subPagesElement, moduleName, pageInfo);
-            result.addAll(childCrumbs);
+            List<PageInfo> childPages = processPages(subPagesElement, moduleName, pageInfo);
+            result.addAll(childPages);
+            
+            pageInfo.setChildPages(childPages);
         }
         return result;
     }

@@ -15,7 +15,7 @@
 * limitations under the License.
 */
 
-package com.cannontech.web.layout;
+package com.cannontech.web.layout.impl;
 
 import java.beans.FeatureDescriptor;
 import java.util.ArrayList;

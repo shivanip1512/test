@@ -6,7 +6,7 @@
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
-        <title><c:out value="${title}"/></title>           
+        <title>${pageDetail.pageTitle}</title>           
         <!-- Layout CSS files -->
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="stylesheet" type="text/css" href="<cti:url value="/JavaScript/extjs/resources/css/reset.css"/>" >
@@ -41,13 +41,45 @@
 </div>
 <cti:outputContent writable="${menuRenderer}"/>
 
+<div id="MainContainer" class="${showContextualNavigation ? "StandardWithNavLayout" : "StandardLayout"}">
+
+<div id="ContentWrapper">
 <div id="Content">
-<c:if test="${not empty heading}">
-    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${heading}</h2>
+<c:if test="${not showContextualNavigation and not empty pageDetail.pageHeading}">
+    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${pageDetail.pageHeading}</h2>
 </c:if>
-    
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
+</div> <!-- ContentWrapper -->
+
+<!-- Start Left -->
+<c:if test="${showContextualNavigation}">
+<div id="LeftColumn">
+<div class="innertube">
+<div id="detailAdditionalInfo">
+<c:if test="${not empty pageDetail.pageHeading}">
+    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${pageDetail.pageHeading}</h2>
+</c:if>
+<div id="detailAdditionalInfoBlock">
+<jsp:include page="${pageDetail.detailInfoIncludePath}"/>
+</div>
+</div>
+<div class="contextualMenu">
+<cti:outputContent writable="${contextualNavigationMenu}"/>
+</div>
+</div>
+
+</div>
+</c:if>
+<!-- End Left -->
+
+<div id="CopyRight">
+<cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">module=${info.moduleName}, page=${info.pageName} |</cti:checkGlobalRolesAndProperties>
+<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/> | 
+<cti:msg key="yukon.web.layout.standard.copyright"/> | 
+Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
+</div>
+</div>
 
 <cti:msg key="yukon.web.alerts.heading" var="alertTitle"/>
 <ct:simplePopup title="${alertTitle}" id="alertContent" onClose="javascript:alert_closeAlertWindow();">
@@ -64,19 +96,6 @@
 </ct:simplePopup>
 <ct:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
-
-<div id="CopyRight">
-<cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">module=${info.moduleName}, page=${info.pageName} |</cti:checkGlobalRolesAndProperties>
-<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/> | 
-<cti:msg key="yukon.web.layout.standard.copyright"/> | 
-Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
-</div>
-
-<c:if test="${not empty operatorTempMenu}">
-	<div style="margin-top:40px;text-align:center;background-color:#FCDFFF">
-	<cti:outputContent writable="${operatorTempMenu}"/>
-	</div>
-</c:if>
 
 </body>
 </html>

@@ -15,6 +15,8 @@ public class PageInfo implements Comparable<PageInfo> {
     private PageTypeEnum pageType;
     private boolean renderMenu;
     private String menuSelection;
+    private List<PageInfo> childPages;
+    private String detailInfoIncludePath;
     
     
     public String getName() {
@@ -89,4 +91,75 @@ public class PageInfo implements Comparable<PageInfo> {
         builder.append(getFullName(), o.getFullName());
         return builder.toComparison();
     }
+    
+    public boolean isShowContextualNavigation() {
+        return pageType.isNavigationRoot() || (parent != null && parent.isShowContextualNavigation());
+    }
+    
+    public PageInfo findContextualNavigationRoot() {
+        if (pageType.isNavigationRoot()) {
+            return this;
+        }
+        if (parent != null) {
+            return parent.findContextualNavigationRoot();
+        }
+        return null;
+    }
+    
+    public void setChildPages(List<PageInfo> childPages) {
+        this.childPages = childPages;
+    }
+    
+    public List<PageInfo> getChildPages() {
+        return childPages;
+    }
+
+
+    public void setDetailInfoIncludePath(String detailInfoIncludePath) {
+        this.detailInfoIncludePath = detailInfoIncludePath;
+    }
+
+    public String getDetailInfoIncludePath() {
+        return detailInfoIncludePath;
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((moduleName == null) ? 0
+                : moduleName.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((parent == null) ? 0 : parent.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        PageInfo other = (PageInfo) obj;
+        if (moduleName == null) {
+            if (other.moduleName != null)
+                return false;
+        } else if (!moduleName.equals(other.moduleName))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (parent == null) {
+            if (other.parent != null)
+                return false;
+        } else if (!parent.equals(other.parent))
+            return false;
+        return true;
+    }
+
+    
 }

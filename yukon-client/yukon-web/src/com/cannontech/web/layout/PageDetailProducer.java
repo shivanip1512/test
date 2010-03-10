@@ -1,24 +1,11 @@
 package com.cannontech.web.layout;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
-import javax.el.ArrayELResolver;
-import javax.el.BeanELResolver;
-import javax.el.CompositeELResolver;
-import javax.el.FunctionMapper;
-import javax.el.ListELResolver;
-import javax.el.MapELResolver;
-import javax.el.ValueExpression;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.el.ExpressionFactoryImpl;
-import org.apache.jasper.el.ELContextImpl;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -27,11 +14,8 @@ import org.springframework.context.NoSuchMessageException;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.PageInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -39,22 +23,14 @@ import com.google.common.collect.ImmutableMap.Builder;
 
 public class PageDetailProducer {
     private static final Logger log = YukonLogManager.getLogger(PageDetailProducer.class);
-    private ObjectFormattingService objectFormattingService;
     private static final String CRUMB_SEPERATOR = " &gt; ";
-    private static final CompositeELResolver compositeElResolver = new CompositeELResolver();
-    private static final ExpressionFactoryImpl factory = new ExpressionFactoryImpl();
-    static {
-        compositeElResolver.add(new HttpRequestElResolver()); // our custom resolver
-        compositeElResolver.add(new MapELResolver()); // this and the following are standard
-        compositeElResolver.add(new ListELResolver());
-        compositeElResolver.add(new ArrayELResolver());  
-        compositeElResolver.add(new BeanELResolver());
-    }
+    
+    private HttpExpressionLanguageResolver expressionLanguageResolver;
 
     public PageDetail render(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         PageDetail pageDetail = new PageDetail();
 
-        PageContext pageContext = createPageContext(pageInfo, request, messageSourceAccessor);
+        PageContext pageContext = createPageContext(pageInfo, request, messageSourceAccessor, null);
         
         String pageTitle = getPagePart("pageTitle", pageContext, messageSourceAccessor);
         pageDetail.setPageTitle(pageTitle);
@@ -72,9 +48,53 @@ public class PageDetailProducer {
         buf.append("\n");
         
         pageDetail.setBreadCrumbText(buf.toString());
+        
+        pageDetail.setContextualNavigationText(renderContextualNavigation(pageContext, request, messageSourceAccessor));
+        
+        PageInfo contextualNavigationRoot = pageInfo.findContextualNavigationRoot();
+        if (contextualNavigationRoot != null) {
+            String infoInclude = contextualNavigationRoot.getDetailInfoIncludePath();
+            pageDetail.setDetailInfoIncludePath(infoInclude);
+        }
+        
         return pageDetail;
     }
     
+    private String renderContextualNavigation(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
+        if (!pageContext.pageInfo.isShowContextualNavigation()) return null;
+        
+        PageInfo root = pageContext.pageInfo.findContextualNavigationRoot();
+        
+        List<PageInfo> pageInfosForMenu = Lists.newArrayListWithExpectedSize(15);
+        pageInfosForMenu.add(root);
+        pageInfosForMenu.addAll(root.getChildPages());
+        
+        List<PageContext> pageContextsForMenu = Lists.newArrayListWithCapacity(pageInfosForMenu.size());
+        for (PageInfo pageInfo : pageInfosForMenu) {
+            pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor, null));
+        }
+        StringBuilder result = new StringBuilder();
+        result.append("<ul>\n");
+        for (PageContext page : pageContextsForMenu) {
+            String label = getPagePart("navigationTitle", page, messageSourceAccessor);
+
+            String link = expressionLanguageResolver.resolveElExpression(page.pageInfo.getLinkExpression(), request);
+
+            String linkText = createLink(label, link);
+            if (page.pageInfo.equals(pageContext.pageInfo)) {
+                result.append("<li class=\"selected\">");
+            } else {
+                result.append("<li>");
+            }
+            result.append("<span>");
+            result.append(linkText);
+            result.append("</span></li>\n");
+        }
+        result.append("</ul>\n");
+        
+        return result.toString();
+    }
+
     public String renderCrumbsFinal(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
         String previousCrumbs = renderCrumbs(pageContext.parent, request, messageSourceAccessor);
         previousCrumbs += CRUMB_SEPERATOR;
@@ -94,7 +114,7 @@ public class PageDetailProducer {
         
         String label = getPagePart("crumbTitle", pageContext, messageSourceAccessor);
         
-        String link = resolveElExpression(pageContext.pageInfo.getLinkExpression(), request);
+        String link = expressionLanguageResolver.resolveElExpression(pageContext.pageInfo.getLinkExpression(), request);
         
         String thisCrumb;
         thisCrumb = createLink(label, link);
@@ -121,16 +141,6 @@ public class PageDetailProducer {
         return result;
     }
     
-    private List<String> resolveElExpressions(List<String> labelArgumentExpressions,
-            HttpServletRequest request) {
-        List<String> result = Lists.newArrayListWithExpectedSize(labelArgumentExpressions.size());
-        for (String expression : labelArgumentExpressions) {
-            String text = resolveElExpression(expression, request);
-            result.add(text);
-        }
-        return result;
-    }
-
     private String renderHomeCrumb(MessageSourceAccessor messageSourceAccessor) {
         String message = messageSourceAccessor.getMessage("yukon.web.menu.home");
         
@@ -146,52 +156,18 @@ public class PageDetailProducer {
         return "<a href=\"" + link + "\">" + safeLabel + "</a>";
     }
     
-    private String resolveElExpression(String expression, HttpServletRequest request) {
-        if (StringUtils.isBlank(expression)) return null;
-        ELContextImpl context = new ELContextImpl(compositeElResolver);
-        context.putContext(ServletRequest.class, request);
-        context.setFunctionMapper(new FunctionMapper() {
-            public Method resolveFunction(String prefix, String localName) {
-                if (!StringUtils.equals(prefix, "local")) return null;
-
-                // look for a method on this class
-                Method[] methods = PageDetailProducer.class.getMethods();
-                for (Method method : methods) {
-                    if (!Modifier.isStatic(method.getModifiers())) continue;
-                    
-                    if (StringUtils.equals(localName, method.getName())) {
-                        return method;
-                    }
-                }
-                
-                return null;
-            }
-            
-        });
-        
-        ValueExpression valueExpression = factory.createValueExpression(context, expression, Object.class);
-        Object value = valueExpression.getValue(context);
-        String result = objectFormattingService.formatObjectAsString(value, YukonUserContextUtils.getYukonUserContext(request));
-        return result;
-    }
-    
-    public static String convertMapToQueryString(Map<String, String> map) {
-        return ServletUtil.buildQueryStringFromMap(map, true);
-    }
-    
-    @Autowired
-    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
-        this.objectFormattingService = objectFormattingService;
-    }
-    
-    private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
+    private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor, PageContext parent) {
         if (pageInfo == null) return null;
         
         PageContext result = new PageContext();
         result.pageInfo = pageInfo;
-        result.parent = createPageContext(pageInfo.getParent(), request, messageSourceAccessor);
+        if (parent != null) {
+            result.parent = parent;
+        } else {
+            result.parent = createPageContext(pageInfo.getParent(), request, messageSourceAccessor, null);
+        }
         
-        result.labelArguments = resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
+        result.labelArguments = expressionLanguageResolver.resolveElExpressions(pageInfo.getLabelArgumentExpressions(), request);
         fillInPageLabels(result, messageSourceAccessor);
         
         return result;
@@ -233,6 +209,12 @@ public class PageDetailProducer {
     private String findParentLabel(PageContext pageContext, String labelName) {
         if (pageContext == null) return null;
         return pageContext.pageLabels.get(labelName);
+    }
+    
+    @Autowired
+    public void setExpressionLanguageResolver(
+            HttpExpressionLanguageResolver expressionLanguageResolver) {
+        this.expressionLanguageResolver = expressionLanguageResolver;
     }
 
     private static class PageContext {

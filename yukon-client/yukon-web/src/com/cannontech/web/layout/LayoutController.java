@@ -38,8 +38,6 @@ import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
 import com.cannontech.web.menu.renderer.MenuRenderer;
-import com.cannontech.web.menu.renderer.SelectMenuConfiguration;
-import com.cannontech.web.menu.renderer.SelectMenuOptionRenderer;
 import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
@@ -87,28 +85,29 @@ public class LayoutController {
         
         PageInfo pageInfo = moduleBase.getPageInfo(tagInfo.getPageName());
 
-        PageDetail pageDetail;
+        PageDetail pageDetailTemp;
         if (pageInfo != null) {
-            pageDetail = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
+            pageDetailTemp = pageDetailProducer.render(pageInfo, request, messageSourceAccessor);
         } else {
             // create dummy page detail for pre-2010 pages
-            pageDetail = new PageDetail();
-            pageDetail.setBreadCrumbText("");
+            pageDetailTemp = new PageDetail();
+            pageDetailTemp.setBreadCrumbText("");
             if (StringUtils.isNotBlank(tagInfo.getTitle())) {
-                pageDetail.setPageTitle(tagInfo.getTitle());
+                pageDetailTemp.setPageTitle(tagInfo.getTitle());
             } else if (StringUtils.isNotBlank(tagInfo.getPageName())){
                 try {
                     String pageTitleKey = "yukon.web.modules." + tagInfo.getModuleName() + "." + tagInfo.getPageName() + ".pageTitle";
-                    pageDetail.setPageTitle(messageSourceAccessor.getMessage(pageTitleKey));
+                    pageDetailTemp.setPageTitle(messageSourceAccessor.getMessage(pageTitleKey));
                 } catch (NoSuchMessageException e) {
-                    pageDetail.setPageTitle(messageSourceAccessor.getMessageWithDefault("yukon.web.defaults.pageTitle", ""));
+                    pageDetailTemp.setPageTitle(messageSourceAccessor.getMessageWithDefault("yukon.web.defaults.pageTitle", ""));
                 }
                 
             }
         }
         
-        map.addAttribute("title", pageDetail.getPageTitle());
-        map.addAttribute("heading", pageDetail.getPageHeading());
+        final PageDetail pageDetail = pageDetailTemp;
+        
+        map.addAttribute("pageDetail", pageDetail);
         
         List<String> moduleConfigCssList = new ArrayList<String>(moduleBase.getCssFiles());
         removeDuplicates(moduleConfigCssList);
@@ -160,7 +159,7 @@ public class LayoutController {
         if (showMenu) {
             // setup menu
             final MenuRenderer menuRenderer;
-            if(skin.isLeftSideMenu()) {
+            if (skin.isLeftSideMenu()) {
                 menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
             } else {
                 menuRenderer = new StandardMenuRenderer(request, moduleBase, messageSourceResolver);
@@ -179,24 +178,23 @@ public class LayoutController {
                     menuRenderer.renderMenu(out);
                 }
             });
-        }   
+        }
+        
+        boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
+        map.addAttribute("showContextualNavigation", showContextualNavigation);
+        if (showContextualNavigation) {
+            map.addAttribute("contextualNavigationMenu", new Writable() {
+                @Override
+                public void write(Writer out) throws IOException {
+                    out.append(pageDetail.getRenderContextualNavigation());
+                }
+            });
+        }
         
         map.addAttribute("currentTime", new Date());
         
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");   
-        
-        // operatorTempMenu
-        final SelectMenuConfiguration selectMenuConfiguration = (SelectMenuConfiguration)request.getAttribute("operatorTempMenu");
-        if (selectMenuConfiguration != null) {
-        	map.addAttribute("operatorTempMenu", new Writable() {
-                public void write(Writer out) throws IOException {
-                	
-                	SelectMenuOptionRenderer selectMenuOptionRenderer = new SelectMenuOptionRenderer();
-                	selectMenuOptionRenderer.renderSelect(selectMenuConfiguration, out, messageSourceAccessor, userContext);
-                }
-            });
-        }
         
         return skin.getViewName();
     }
