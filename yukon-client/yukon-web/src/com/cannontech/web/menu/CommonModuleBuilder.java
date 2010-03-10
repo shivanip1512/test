@@ -132,6 +132,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         if (parentOfPages == null) return Collections.emptyList();
         List<?> children = parentOfPages.getChildren("page");
         List<PageInfo> result = Lists.newArrayList();
+        List<PageInfo> directChildren = Lists.newArrayList();
         for (Iterator<?> iterator = children.iterator(); iterator.hasNext();) {
             Element pageElement = (Element) iterator.next();
             PageInfo pageInfo = new PageInfo();
@@ -164,6 +165,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
                 pageInfo.addLabelArgumentExpression(argumentText);
             }
             result.add(pageInfo);
+            directChildren.add(pageInfo);
             
             String infoInclude = pageElement.getChildTextTrim("infoInclude");
             pageInfo.setDetailInfoIncludePath(infoInclude);
@@ -173,8 +175,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
             List<PageInfo> childPages = processPages(subPagesElement, moduleName, pageInfo);
             result.addAll(childPages);
             
-            pageInfo.setChildPages(childPages);
         }
+        parent.setChildPages(directChildren);
         return result;
     }
 
