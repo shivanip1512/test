@@ -57,16 +57,22 @@ public class OperatorActionsFactory {
 
 		// control history
 		SimpleMenuOptionLink controlHistoryActionLink = new SimpleMenuOptionLink("controlHistory", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.controlHistory"));
-		controlHistoryActionLink.setLinkUrl("/spring/stars/operator/general/contacts/controlHistory?" + queryString);
-		MenuOptionProducer controlHistoryAction = new StaticMenuOptionProducer(controlHistoryActionLink, singleUserChecker);
-		menuOptionsProducers.add(controlHistoryAction);
+		controlHistoryActionLink.setLinkUrl("/spring/stars/operator/program/controlHistory?" + queryString);
+        MenuOptionProducer controlHistoryAction = new StaticMenuOptionProducer(controlHistoryActionLink, singleUserChecker);
+        menuOptionsProducers.add(controlHistoryAction);
 		
 		// enrollment
-		SimpleMenuOptionLink enrollmentActionLink = new SimpleMenuOptionLink("enrollment", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.enrollment"));
-		enrollmentActionLink.setLinkUrl("/spring/stars/operator/general/contacts/enrollment?" + queryString);
-		MenuOptionProducer enrollmentAction = new StaticMenuOptionProducer(enrollmentActionLink, singleUserChecker);
-		menuOptionsProducers.add(enrollmentAction);
+        SimpleMenuOptionLink enrollmentActionLink = new SimpleMenuOptionLink("enrollment", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.enrollment"));
+        enrollmentActionLink.setLinkUrl("/spring/stars/operator/general/contacts/enrollment?" + queryString);
+        MenuOptionProducer enrollmentAction = new StaticMenuOptionProducer(enrollmentActionLink, singleUserChecker);
+        menuOptionsProducers.add(enrollmentAction);
 
+        // opt out
+        SimpleMenuOptionLink optOutActionLink = new SimpleMenuOptionLink("optOut", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.optOut"));
+        optOutActionLink.setLinkUrl("/spring/stars/operator/program/optOut?" + queryString);
+        MenuOptionProducer optOutAction = new StaticMenuOptionProducer(optOutActionLink, singleUserChecker);
+        menuOptionsProducers.add(optOutAction);
+		
 		// appliances
 		SimpleMenuOptionLink appliancesActionLink = new SimpleMenuOptionLink("enrollment", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.appliances"));
 		appliancesActionLink.setLinkUrl("/spring/stars/operator/general/appliances?" + queryString);
@@ -97,13 +103,6 @@ public class OperatorActionsFactory {
 		MenuOptionProducer accountLogAction = new StaticMenuOptionProducer(accountLogActionLink, singleUserChecker);
 		menuOptionsProducers.add(accountLogAction);
 
-		// faq
-		SimpleMenuOptionLink faqActionLink = new SimpleMenuOptionLink("faq", new YukonMessageSourceResolvable("yukon.web.modules.operator.accountAction.faq"));
-		faqActionLink.setLinkUrl("/spring/stars/operator/general/account/accountLog?" + queryString);
-		MenuOptionProducer faqAction = new StaticMenuOptionProducer(faqActionLink, singleUserChecker);
-		menuOptionsProducers.add(faqAction);
-		
-		
 		SelectMenuConfiguration selectMenuConfiguration = new SelectMenuConfiguration();
 		selectMenuConfiguration.setMenuBase(menuBase);
 		selectMenuConfiguration.setHeaderKey("yukon.web.modules.operator.accountAction.operatorTempMenu");

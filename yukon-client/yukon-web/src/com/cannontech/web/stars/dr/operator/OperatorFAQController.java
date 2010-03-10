@@ -25,7 +25,7 @@ public class OperatorFAQController {
     
 	// FAQ
 	@RequestMapping(value = "/operator/faq")
-    public String faq(int accountId, int energyCompanyId, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
+    public String faq(ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
 	
 	    String webLinkFAQ = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_WEB_LINK_FAQ,
 	                                                               userContext.getYukonUser());

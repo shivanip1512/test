@@ -905,6 +905,9 @@
 		          </option>
 	          </options>	
 	   		</option>
+	   		<option name="faq">
+		   		<link>/spring/stars/operator/faq</link>
+		    </option>
 	  	</options>  
     </menu>
     
