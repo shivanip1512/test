@@ -309,4 +309,6 @@
     <!-- OPERATOR GENERAL -->
     <bean id="operatorGeneralSearchService" class="com.cannontech.stars.dr.general.service.impl.OperatorGeneralSearchServiceImpl"/>
     
+    <bean id="faqDao" class="com.cannontech.stars.dr.general.dao.impl.FAQDaoImpl"/>
+    
 </beans>
