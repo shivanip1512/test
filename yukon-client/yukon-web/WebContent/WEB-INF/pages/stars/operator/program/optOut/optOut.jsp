@@ -225,7 +225,7 @@
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 	
 	<c:if test="${fn:length(previousOptOutList) > 0}">
-        <a href="optOut/optOutHistory?accountId=${customerAccount.accountId}" ><cti:msg key="yukon.dr.operator.optout.viewAll" /></a>
+        <a href="optOut/optOutHistory?accountId=${customerAccount.accountId}&energyCompanyId=${energyCompanyId}" ><cti:msg key="yukon.dr.operator.optout.viewAll" /></a>
         <br><br>
     </c:if>
 </tags:boxContainer2>
