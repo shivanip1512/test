@@ -147,40 +147,6 @@ public interface CapControlCache {
 	 * 
 	 */
 	public abstract List<Feeder> getFeedersByArea(int areaID);
-
-	/**
-	 * Create a List of SubBuses. Best usage is to store the results of this call
-	 * instead of repeatingly calling this method. Never returns null.
-	 * 
-	 * @return List<SubBus>
-	 * @param
-	 */
-	public abstract List<SubBus> getAllSubBuses();
-
-	/**
-     * Create a List of Feeders. Best usage is to store the results of this call
-     * instead of repeatingly calling this method. Never returns null.
-     * @return List<Feeder>
-     * @param
-     */
-    public abstract List<Feeder> getAllFeeders();
-	
-	/**
-     * Create a List of Cap Banks. Best usage is to store the results of this call
-     * instead of repeatingly calling this method. Never returns null.
-     * @return List<CapBankDevice>
-     * @param
-     */
-    public abstract List<CapBankDevice> getAllCapBanks();
-	
-	/**
-     * Create a List of SubStations. Best usage is to store the results of this call
-     * instead of repeatingly calling this method. Never returns null.
-     * 
-     * @return List<SubStation>
-     * @param
-     */
-	public abstract List<SubStation> getAllSubstations();
 	
 	/**
 	 * Distinct area Strings that are used by substations
