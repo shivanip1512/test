@@ -18,6 +18,7 @@ public interface DurationFormattingService {
     public enum DurationFormat implements DisplayableEnum {
         DHMS,
         DH,
+        DH_ABBR,
         HMS,
         HM,
         H,

@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.displayable.model;
 
 import java.util.List;
 
+import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.program.model.Program;
 
 public class DisplayableInventory {
@@ -10,6 +11,7 @@ public class DisplayableInventory {
     private String serialNumber;
     private List<Program> programs;
     private boolean currentlyOptedOut = false;
+    private OptOutEvent currentlyScheduledOptOut;
 
     public int getInventoryId() {
         return inventoryId;
@@ -51,6 +53,14 @@ public class DisplayableInventory {
         this.currentlyOptedOut = currentlyOptedOut;
     }
 
+    public OptOutEvent getCurrentlyScheduledOptOut() {
+        return currentlyScheduledOptOut;
+    }
+    
+    public void setCurrentlyScheduledOptOut(OptOutEvent currentlyScheduledOptOut) {
+        this.currentlyScheduledOptOut = currentlyScheduledOptOut;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

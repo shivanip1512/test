@@ -994,3 +994,7 @@ div.padded {
 .disabledAction {
 	color: gray;
 }
+
+.boxContainer50percent {
+	width: 50%;
+}

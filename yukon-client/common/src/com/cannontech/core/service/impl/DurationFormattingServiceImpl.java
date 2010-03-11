@@ -42,7 +42,8 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
         // Get the hours, mins, secs using simple math - ignores time zones and daylight savings
      	switch (type) {
             case DHMS : 
-            case DH : 
+            case DH :
+            case DH_ABBR :
             	days = (int) (tempDuration / MILLIS_IN_DAY);
             	tempDuration = tempDuration - (MILLIS_IN_DAY * days);
 
@@ -106,10 +107,12 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
      	switch (type) {
             case DHMS : 
             case DH : 
+            case DH_ABBR :
             	period = new Period(startInstant, endInstant, PeriodType.dayTime(), chronology);
             	break;
             case HMS :
             case HM : 
+            case HM_ABBR :
             	period = new Period(startInstant, endInstant, PeriodType.time(), chronology);
             	break;
             case H : 
@@ -147,11 +150,11 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
             if (period.get(DurationFieldType.millis()) >= 500) {
                 seconds++;
             }
-        } else if (type == DurationFormat.HM || type == DurationFormat.M) {
+        } else if (type == DurationFormat.HM || type == DurationFormat.HM_ABBR || type == DurationFormat.M) {
             if (seconds >= 30) {
                 minutes++;
             }
-        } else if (type == DurationFormat.DH || type == DurationFormat.H) {
+        } else if (type == DurationFormat.DH || type == DurationFormat.DH_ABBR || type == DurationFormat.H) {
             if (minutes >= 30) {
                 hours++;
             }
@@ -165,7 +168,8 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
                 		minutes, 
                 		seconds};
             }
-            case DH : {
+            case DH : 
+            case DH_ABBR : {
             	return new Object[] { 
             			days, 
             			hours};

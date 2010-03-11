@@ -14,6 +14,7 @@
     <entry key="yukon.web.modules.operator.accountAction.programs">Programs</entry>
     <entry key="yukon.web.modules.operator.accountAction.controlHistory">Control History</entry>
     <entry key="yukon.web.modules.operator.accountAction.enrollment">Enrollment</entry>
+    <entry key="yukon.web.modules.operator.accountAction.optOut">Opt Out</entry>
     <entry key="yukon.web.modules.operator.accountAction.appliances">Appliances</entry>
     <entry key="yukon.web.modules.operator.accountAction.hardware">Hardware</entry>
     <entry key="yukon.web.modules.operator.accountAction.serviceRequest">Service Request</entry>

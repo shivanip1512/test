@@ -3,6 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <%@ attribute name="path" required="true" type="java.lang.String"%>
+<%@ attribute name="disabled" required="false" type="java.lang.String"%>
 <%@ attribute name="size" required="false" type="java.lang.String"%>
 <%@ attribute name="maxlength" required="false" type="java.lang.String"%>
 
@@ -13,7 +14,7 @@
 	<c:set var="inputClass" value="lightRedBackground"/>
 </c:if>
 
-<form:input path="${path}" id="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" cssClass="${inputClass}"/>
+<form:input path="${path}" id="${path}" disabled="${disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" cssClass="${inputClass}"/>
 
 <c:if test="${status.error}">
 	<br>

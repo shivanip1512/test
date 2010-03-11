@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <h3><cti:msg key="yukon.dr.operator.optout.header"/></h3>
@@ -30,7 +31,7 @@
                     <c:choose>
                         <c:when test="${optOutTodayOnly}">
                             <input type="hidden" name="startDate" value="${formattedDate}" />
-                            ${formattedDate}
+                            <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
                         </c:when>
                         <c:otherwise>
                             <ct:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
@@ -51,7 +52,7 @@
 	                    
 	                       <c:set var="key" value="${(optOutPeriod == 1) ? 'yukon.dr.operator.optout.day' : 'yukon.dr.operator.optout.days' }"/>
 	                    
-	                       <option value="${optOutPeriod}">${optOutPeriod} <cti:msg key="${key}"/></option>
+	                       <option value="${optOutPeriod}"><spring:escapeBody htmlEscape="true">${optOutPeriod}</spring:escapeBody><cti:msg key="${key}"/></option>
 	                    
 	                    </c:forEach>
 	                    
@@ -87,10 +88,10 @@
             
             <c:forEach var="optOut" items="${currentOptOutList}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td>${optOut.inventory.displayName}</td>
+                    <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
                     <td>
                         <c:forEach var="program" items="${optOut.programList}">
-                            ${program.programName} 
+                            <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
                         </c:forEach>
                     </td>
                     <td><cti:msg key="${optOut.state.formatKey}"/></td>
@@ -137,7 +138,7 @@
     
     <c:forEach var="inventory" items="${displayableInventories}">
         <tr class="<ct:alternateRow odd="" even="altRow"/>">
-            <td>${inventory.displayName}</td>
+            <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
             <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
             <c:if test="${!noOptOutLimits}">
 	            <td>
@@ -192,10 +193,10 @@
             
             <c:forEach var="optOut" items="${previousOptOutList}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td>${optOut.inventory.displayName}</td>
+                    <td><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
                     <td>
                         <c:forEach var="program" items="${optOut.programList}">
-                            ${program.programName} 
+                            <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody> 
                         </c:forEach>
                     </td>
                     <td>

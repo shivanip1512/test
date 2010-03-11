@@ -52,6 +52,8 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
 
             displayableInventory.setCurrentlyOptedOut(optOutEventDao.isOptedOut(inventoryId,
                                                                                 customerAccountId));
+            displayableInventory.setCurrentlyScheduledOptOut(optOutEventDao.getScheduledOptOutEvent(inventoryId, 
+                                                                                                    customerAccountId));
 
             displayableInventoryList.add(displayableInventory);
         }
