@@ -1,0 +1,182 @@
+//constants
+#define PORTER_NAME		"Yukon Port Control Service"
+#define SCANNER_NAME	"Yukon Real-Time Scan Service"
+#define MACS_NAME		"Yukon MAC Scheduler Service"
+#define LM_NAME			"Yukon Load Management Service"
+#define FDR_NAME		"Yukon Foreign Data Service"
+#define DISPATCH_NAME	"Yukon Dispatch Service"
+#define CC_NAME			"Yukon Cap Control Service"
+#define CALC_NAME		"Yukon Calc-Logic Service"
+#define WEB_NAME		"YukonWebApplicationService"
+#define NOTIF_NAME		"YukonNotificationServer"
+#define SM_NAME			"YukonServiceMgr"
+#define SYS32			"C:\\WINDOWS\\System32\\"
+
+//-------------------------------------------------------
+// Helper function to clean up the version string for the
+// currently installed version.  This number is pulled
+// from the registry in an odd format.  Version 5.1.2
+// initially looks like 5.01.002.  Thus, we need to parse
+// it.
+//-------------------------------------------------------
+export prototype string CleanupInstalledVersionNum();
+function string CleanupInstalledVersionNum()
+string sOldVersion, sV1, sV2, sV3;
+number nTemp;
+begin
+	sOldVersion = IFX_INSTALLED_VERSION;
+	//the first segment is fine
+	StrSub(sV1, sOldVersion, 0, 1);
+	//convert to number and back to remove leading 0s
+	StrSub(sV2, sOldVersion, 2, 2);
+	StrToNum(nTemp, sV2);
+	NumToStr(sV2, nTemp);
+	//rinse and repeat
+	StrSub(sV3, sOldVersion, 5, 3);
+	StrToNum(nTemp, sV3);
+	NumToStr(sV3, nTemp);
+	//put it all back together
+	sOldVersion = sV1 + "." + sV2 + "." + sV3;
+	return sOldVersion;
+end;
+
+//-------------------------------------------------------
+// Helper function to check for any running Yukon 
+// services
+//-------------------------------------------------------
+export prototype BOOL AreYukonServicesRunning();
+function BOOL AreYukonServicesRunning()
+string sServiceNameArray(11);
+number i, nServiceState;
+begin
+	sServiceNameArray(0) = SCANNER_NAME;
+	sServiceNameArray(1) = MACS_NAME;
+	sServiceNameArray(2) = LM_NAME;
+	sServiceNameArray(3) = FDR_NAME;
+	sServiceNameArray(4) = DISPATCH_NAME;
+	sServiceNameArray(5) = CC_NAME;
+	sServiceNameArray(6) = CALC_NAME;
+	sServiceNameArray(7) = PORTER_NAME;
+	sServiceNameArray(8) = WEB_NAME;
+	sServiceNameArray(9) = NOTIF_NAME;
+	sServiceNameArray(10) = SM_NAME;
+	for i = 0 to 10
+		ServiceGetServiceState(sServiceNameArray(i), nServiceState);
+		if (nServiceState != SERVICE_STOPPED) then
+			//at least one service was not stopped
+			return TRUE;
+		endif;
+	endfor;
+	//all services were stopped
+	return FALSE;
+end;
+
+//---------------------------------------------------
+// Helper function to start or stop the Yukon services.
+// TRUE to start services, FALSE to stop them
+//---------------------------------------------------
+export prototype StartYukonServices(BOOL);
+function StartYukonServices(bStart)
+string sServiceNameArray(11);
+string sCMD;
+number i;
+begin
+	sServiceNameArray(0) = SCANNER_NAME;
+	sServiceNameArray(1) = MACS_NAME;
+	sServiceNameArray(2) = LM_NAME;
+	sServiceNameArray(3) = FDR_NAME;
+	sServiceNameArray(4) = DISPATCH_NAME;
+	sServiceNameArray(5) = CC_NAME;
+	sServiceNameArray(6) = CALC_NAME;
+	sServiceNameArray(7) = PORTER_NAME;
+	sServiceNameArray(8) = WEB_NAME;
+	sServiceNameArray(9) = NOTIF_NAME;
+	sServiceNameArray(10) = SM_NAME;
+	sCMD = SYS32 + "net.exe";
+	
+	if(bStart) then
+		//start services
+		//this may take a moment, so give the user some feedback
+		SdShowMsg("Starting Yukon Services. This may take a moment.", TRUE);
+    	for i = 0 to 10
+			LaunchApplication(sCMD, "start \"" + sServiceNameArray(i) +"\"", "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+		endfor;
+		//get out of "hidden" app-launch mode
+		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+    	//hide the popup
+    	SdShowMsg("", FALSE); 
+    	return 0;	
+	else
+	    //stop services
+	    SdShowMsg("Stopping Yukon Services.", TRUE);
+	    for i = 0 to 10
+			LaunchApplication(sCMD, "stop \"" + sServiceNameArray(i) +"\"", "", SW_HIDE, 0, LAAW_OPTION_WAIT);
+		endfor;
+		//get out of "hidden" app-launch mode
+		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+	    //hide the popup
+	    SdShowMsg("", FALSE);
+	    return 0;
+	endif;
+end;
+
+//------------------------------------------------------------
+// Helper function that searches the specified file for the
+// "search" string and replaces all instances with the 
+// "replace" string.
+//------------------------------------------------------------
+export prototype ReplaceStringInFile(string, string, string);
+function ReplaceStringInFile(sFile, sSearch, sReplace)
+number nGrepResult, nGrepLineNumber;
+string sGrepReturnLine;
+begin
+	nGrepResult = 1;
+	while(nGrepResult >= 0)
+		nGrepResult = FileGrep(sFile, sSearch, sGrepReturnLine, nGrepLineNumber, RESTART);
+		if(nGrepResult >= 0) then
+			StrReplace(sGrepReturnLine, sSearch, sReplace, 0);
+			FileInsertLine(sFile, sGrepReturnLine, nGrepLineNumber, REPLACE);
+		endif;
+	endwhile;
+end;
+
+//------------------------------------------------------------
+// Helper function that creates a backup of the current
+// TARGETDIR in a location chosen by the user.
+//------------------------------------------------------------
+export prototype BackupTargetDir();
+function BackupTargetDir()
+string sDir, sDateString, sTimeString;
+number nResult;
+begin
+	nResult = SdAskDestPath("Select backup location.",
+							"Select a location to store the backup file."
+							+ " Note that log files will not be copied.",
+							sDir, 0);
+	if(nResult = NEXT) then
+		//disable cancel, because documentation says bad things can happen 
+		//if you cancel in the middle of copying
+		Disable(CANCELBUTTON);
+		//disable logging so the backup isn't touched by uninstall
+		Disable(LOGGING);
+		SRCDIR = TARGETDIR;
+		GetSystemInfo(DATE, nResult, sDateString);
+		GetSystemInfo(TIME, nResult, sTimeString);
+		StrReplace(sTimeString, ":", "", 0); 
+		sDir = sDir + "\\YukonBackup" + sDateString + "_" + sTimeString;
+		SdShowMsg("Backing up Yukon files. This may take a while.", TRUE);
+		CreateDir(sDir);
+		XCopyFile("*.*", sDir, INCLUDE_SUBDIR);
+		//delete backup log folders, these tend to take up too much space
+		DeleteDir(sDir ^ "Client\\Log", ALLCONTENTS);
+		DeleteDir(sDir ^ "Server\\Log", ALLCONTENTS);
+		DeleteDir(sDir ^ "Server\\web\\logs", ALLCONTENTS);
+		//this could be improved by zipping the backup
+		SdShowMsg("", FALSE);
+		Enable(LOGGING);
+		Enable(CANCELBUTTON);
+		return NEXT;
+	else
+	    return BACK;
+	endif;
+end;

@@ -1,0 +1,51 @@
+prototype NUMBER YesNoDialog(STRING);
+function NUMBER YesNoDialog(sText)
+#define BUTTON_BACK		12
+#define BUTTON_YES		1
+#define BUTTON_NO		0
+#define CANCEL_BUTTON	9
+#define TEXT_FIELD		1303
+
+number nReturn, nCtrl;
+BOOL bDone;
+HWND hwndDlg;
+
+begin
+	//set up the dialog
+	EzDefineDialog("YesNoDialog", ISUSER, "YesNoDialog", 0);
+	//set the title of the dialog
+	hwndDlg = CmdGetHwndDlg("YesNoDialog");
+	SetWindowText(hwndDlg, "Yukon Application Suite - Installation Wizard");
+	
+	//main loop
+	while (!bDone)
+		//wait for the user to interact with a control
+		nCtrl = WaitOnDialog("YesNoDialog");
+		
+		//handle controls
+		switch(nCtrl)
+			case DLG_INIT:
+				//initialize the text
+				CtrlSetText("YesNoDialog", TEXT_FIELD, sText);
+			case DLG_CLOSE: 
+                // The user clicked the window's Close button. 
+                Do(EXIT);
+			case BUTTON_BACK:
+				bDone = TRUE;
+				nReturn = BACK;
+			case CANCEL_BUTTON:
+				Do(EXIT);
+			case BUTTON_YES:
+				bDone = TRUE;
+				nReturn = YES;
+			case BUTTON_NO:
+				bDone = TRUE;
+				nReturn = NO;
+		endswitch;
+	endwhile;
+	
+	//remove dialog from screen and memory
+	EndDialog("YesNoDialog");
+	ReleaseDialog("YesNoDialog");
+	return nReturn;
+end;

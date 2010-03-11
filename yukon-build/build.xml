@@ -191,6 +191,7 @@
         <mkdir dir="${log.dir}" />
 		
         <property name="client.bag" value="${basedir}/yukon-client/lib" />
+        <property name="webcontent.bag" value="${basedir}/yukon-client/WebContent" />
         <property name="install.bag" value="${basedir}/yukon-install/build" />
         <property name="server.bag" value="${basedir}/yukon-server/bin" />
         
@@ -269,11 +270,11 @@
         </copy>
 
         <!-- Yukon Web Deployment Component -->
-        <copy todir="${install.bag}/Yukon Web Deployment/bin" preservelastmodified="true">
+        <copy todir="${install.bag}/Yukon Web Deployment/ROOT" preservelastmodified="true">
             <fileset dir="${basedir}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />
-            <fileset file="${client.bag}/yukon.war" />
+            <fileset dir="${webcontent.bag}" />
         </copy>
-        <copy todir="${install.bag}/Yukon Web Deployment/bin/client" file="${basedir}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/ROOT/client" file="${basedir}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
         <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${basedir}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
         <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
 
@@ -284,12 +285,14 @@
         
         <!-- This will be pointing to the install engine in yukon-install module -->
         <!--  <property name="isshield" location="C:\Program Files\Macrovision\IS12\System\IsCmdBld.exe" /> -->
-        <property name="isshield" value="IsSABld.exe" />
+        <property name="isshield" location="C:\Program Files\InstallShield\2010\System\IsCmdBld.exe" />
         <!-- <property name="isfile" location="yukon-build/Yukon Installer/Yukon Installer.ism" /> -->
         <property name="isfile" location='${basedir}\yukon-install\YukonSetupX\Yukon Installer.ism' />
 
         <exec failonerror="false" executable="${isshield}" resultproperty="errorcode">
             <arg line="-p '${isfile}'" />
+            <!-- Populate the YukonBuildVersion environment variable so installer version matches yukon version -->
+            <env key="YukonBuildVersion" value="${internal}" />
         </exec>
 
         <!-- NOT YET <delete dir="${install.lib}"/> NOT YET -->
@@ -315,7 +318,7 @@
     <target name="build-dist" depends="updatedbscripts">
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/installer">
-            <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
+            <fileset dir="${basedir}/yukon-install/YukonSetupX/Media/Release 1/Package" />
         </copy>
         <copy todir="${temp.dir}/YukonImages">
             <fileset dir="${basedir}/yukon-client/esub/images" />

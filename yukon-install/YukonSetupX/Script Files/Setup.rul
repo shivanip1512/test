@@ -1,758 +1,670 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-//  File Name:  Setup.rul
-//
-//  Description:    InstallShield script
-//
-//  Comments:   This script was generated based on the selections you made in
-//              the Project Wizard.  Refer to the help topic entitled "Modify
-//              the script that the Project Wizard generates" for information
-//              on possible next steps.
-//
-////////////////////////////////////////////////////////////////////////////////
-
-// Include header files
-
+// Included header files
 #include "ifx.h"
-#include "ComponentEvents.rul"
+#include "ISRTWindows.h"
 #include "featureevents.rul"
+#include "util.rul"
 
-////////////////////// string defines ////////////////////////////
+//constants
+#define SCANNER_DESC	"Collects real-time and interval data from a list of devices."
+#define PORTER_DESC		"Controls communication channel and field hardware communications."
+#define MACS_DESC		"Runs scheduled meter data collection and basic control operation."
+#define LM_DESC			"Runs Demand Response operations based on data gathered by the Yukon system."
+#define	FDR_DESC		"Transmits and receives data to and from other systems outside of Yukon.\""
+#define	DISPATCH_DESC	"Transmits and receives real-time data to and from the Yukon server and client application"
+#define	CC_DESC			"Runs Distribution Automation operations based on data gathered by the system."
+#define	CALC_DESC		"Processes real-time and historical calculations on data gathered by the system."
+#define PORTER_NAME		"Yukon Port Control Service"
+#define SCANNER_NAME	"Yukon Real-Time Scan Service"
+#define MACS_NAME		"Yukon MAC Scheduler Service"
+#define LM_NAME			"Yukon Load Management Service"
+#define FDR_NAME		"Yukon Foreign Data Service"
+#define DISPATCH_NAME	"Yukon Dispatch Service"
+#define CC_NAME			"Yukon Cap Control Service"
+#define CALC_NAME		"Yukon Calc-Logic Service"
+#define SYS32			"C:\\WINDOWS\\System32\\"   
 
-//////////////////// installation declarations ///////////////////
-
-// ----- DLL function prototypes -----
-
-
-    // your DLL function prototypes
-
-
-// ---- script function prototypes -----
-prototype Shell32.SHChangeNotify(LONG, LONG, POINTER, POINTER);
-
-    // your script function prototypes
-    // your global variables
-
-STRING uninstallName;
-STRING svSetupType;
-
-//////////////////////////////////////////////////////////////////////////////
-//
-//  FUNCTION:   OnFirstUIBefore
-//
-//  EVENT:      FirstUIBefore event is sent when installation is run for the first
-//              time on given machine. In the handler installation usually displays
-//              UI allowing end user to specify installation parameters. After this
-//              function returns, ComponentTransferData is called to perform file
-//              transfer.
-//
-///////////////////////////////////////////////////////////////////////////////
+//---------------------------------------------------------------------------
+// FirstUIBefore event is sent when installation is run for the first
+// time on given machine. After this function returns, FeatureTransferData 
+// is called to perform file transfer.
+//---------------------------------------------------------------------------
 function OnFirstUIBefore()
-    number  nResult, nSetupType;
-    string  szDir;
-    string  szfolder;
-    string  szComponents, szTargetdir;
-    number  nLevel;
-    LIST    listStartCopy;
-    string  szTargetPath;
-    number  nvSize;
-   	
-number nvSize2, nvType, nvResult, backupVer, stSize, verCon, dirCreate;
-string szName, keyValue, minVersion, szDeleteDir;
-STRING szTitle2, szFormat, szString, java_home;
-
-string szKey2, szName2, szEnv; 
-pointer pEnv;
-
-string szCmdLine, szPath, szKey, szTitle, szMsg, szMsg2, szTextCont, szTextIg, szMsgWait;
-number dirSearch, foundVal, moveNext;
-BOOL bvCheckCont, bvCheckIg; 
-
-string szGrepFileName, szGrepSearchStr, svGrepReturnLine, szReplaceStr;
-number nvGrepLineNumber, nGrepResult;
- 
+number nResult, nSize;
+string sDir;
 begin
-    
-	// TO DO: if you want to enable background, window title, and caption bar title
-    //SetTitle( @TITLE_MAIN, 24, WHITE );
-    //SetTitle( @TITLE_CAPTIONBAR, 0, BACKGROUNDCAPTION );
-    //Enable( FULLWINDOWMODE );
-    //Enable( BACKGROUND );
-    //SetColor(BACKGROUND,RGB (0, 128, 128));
-
-    TARGETDIR = "C:\\Yukon";
-    szDir = TARGETDIR;
-    SHELL_OBJECT_FOLDER = @FOLDER_NAME;
-
-Dlg_Start:
-
-	//removeLegacyShortcuts();
-
-Dlg_SdWelcome:
-    nResult = SdWelcome("", "");
-    if (nResult = BACK) goto Dlg_Start;
-
-Dlg_SdAskDestPath:
-    szTitle = "";
-    szMsg   = "";
-    nResult = SdAskDestPath( szTitle, szMsg, szDir, 0 );
-    TARGETDIR = szDir;
-    if (nResult = BACK) goto Dlg_SdWelcome;
-    
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-
-Dlg_SetupType:
-    
-	szTargetPath = TARGETDIR;
-	nvSize = 0;
-	FeatureCompareSizeRequired(MEDIA,szTargetPath,nvSize);
-	if (nvSize != 0) then
-  		MessageBox( szSdStr_NotEnoughSpace, WARNING );
-    	goto Dlg_SetupType;
+	//set the string shown on the installer windows' title bars
+	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
+	
+	Dialog_Welcome:
+	Disable(BACKBUTTON);
+	TARGETDIR = "C:\\Yukon";
+	SdWelcome("Yukon Application Suite", 
+			  "Welcome to the installer for the Yukon Application suite."
+			  + "\nThis program will install Yukon " + IFX_PRODUCT_VERSION
+			  + " on your computer.\nTo continue, click Next.");
+	
+	Dialog_AskDestinationPath:
+	Enable(BACKBUTTON);
+	sDir = TARGETDIR;
+	nSize = 0;
+	nResult = SdSetupType2("", "", sDir, 0);
+	if (nResult = BACK) goto Dialog_Welcome;
+	//if (nResult = COMPLETE) - just keep going, all features selected by default
+	if (nResult = CUSTOM) then
+		nResult = SdFeatureTree("", "", TARGETDIR, "", 2);
+		if(nResult = BACK) goto Dialog_AskDestinationPath;
 	endif;
-
-	//we don't bother with install types anymore, always go custom
-	nSetupType = CUSTOM;
-	svSetupType = "Custom Install";
-	//FeatureSetupTypeSet ( szFeatureSource, szSetupType ); 
-
-    //set the system environment variable YUKON_BASE for the good of all
-	szName2 = "YUKON_BASE";         
-	szKey2 = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
-	foundVal = RegDBSetKeyValueEx ( szKey2 , szName2 , REGDB_STRING , TARGETDIR, -1 );
-	//SprintfBox (SEVERE, "Did I find the key?", "%d", foundVal);
-
-	//make sure that the system will be aware of the presence of the new Java path
-	szEnv = "Environment";
-	pEnv = &szEnv;
-	SendMessage ( HWND_BROADCAST , WM_SETTINGCHANGE , 0 , pEnv ); 
- 
-	RegDBSetDefaultRoot ( HKEY_CLASSES_ROOT );
-
-Dlg_SdComponentTree:
-    if ((nResult = BACK) && (nSetupType != CUSTOM)) goto Dlg_SdAskDestPath;
-    szTitle    = "";
-    szMsg      = "";
-    szTargetdir = TARGETDIR;
-    szComponents = "";
-    FeatureSelectItem(MEDIA, "Yukon Client\\ESubstation Editor", FALSE);
-    FeatureSelectItem(MEDIA, "Yukon Server\\Client Service Manager", FALSE);  
-   
-   	nLevel = 2;
-    if (svSetupType = "Custom Install") then
-            nResult = SdFeatureTree(szTitle, szMsg, szTargetdir, szComponents, nLevel);
-            if (nResult = BACK) goto Dlg_SdAskDestPath;
-    endif; 
- 
- //replaces old DB connection cparms (pre-5.0) if they exist in the master.cfg
- ReplaceOldDBCparms:
- 	szGrepFileName = TARGETDIR + "\\Server\\Config\\master.cfg";
- 	//replace DB_RWDBDLL with DB_TYPE
- 	szGrepSearchStr = "DB_RWDBDLL";
- 	szReplaceStr = "DB_TYPE";
- 	nGrepResult = 1;
- 	while(nGrepResult >= 0)
-	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
-	    if(nGrepResult >= 0) then
-	    	//non-negative return means we found a match
-	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
-	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
-	    endif;
-    endwhile;
-    //replace msq15d.dll with mssql
-    szGrepSearchStr = "msq15d.dll";
-    szReplaceStr = "mssql";
-    nGrepResult = 1;
-    while(nGrepResult >= 0)
-	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
-	    if(nGrepResult >= 0) then
-	    	//non-negative return means we found a match
-	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
-	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
-	    endif;
-    endwhile;
-    //replace ora15d.dll with oracle
-    szGrepSearchStr = "ora15d.dll";
-    szReplaceStr = "oracle";
-    nGrepResult = 1;
-    while(nGrepResult >= 0)
-	 	nGrepResult = FileGrep (szGrepFileName, szGrepSearchStr, svGrepReturnLine, nvGrepLineNumber, RESTART);
-	    if(nGrepResult >= 0) then
-	    	//non-negative return means we found a match
-	    	StrReplace (svGrepReturnLine, szGrepSearchStr, szReplaceStr, 0);
-	    	FileInsertLine (szGrepFileName, svGrepReturnLine, nvGrepLineNumber, REPLACE);
-	    endif;
-    endwhile;
- 
-	// setup default status
+	
+	//make sure we have enough space for the selected features
+	TARGETDIR = sDir;
+	FeatureCompareSizeRequired(MEDIA, TARGETDIR, nSize);
+	if (nSize != 0) then
+		MessageBox(szSdStr_NotEnoughSpace, WARNING);
+		goto Dialog_AskDestinationPath;
+	endif;
+    
+    Dialog_StartCopy:
+    nResult = SdStartCopy2("Ready to Install Yukon", "");
+    if(nResult = BACK) then
+    	goto Dialog_AskDestinationPath:
+    endif;
+    
+	//Activate status window and set completion bar to 0% before
+	//file moving starts
     SetStatusWindow(0, "");
     Enable(STATUSEX);
-    StatusUpdate(ON, 100);
-    
-    return 0;
+    StatusUpdate(ON, 100);   
+	return 0;
 end;
 
-///////////////////////////////////////////////////////////////////////////////
-//
-//  FUNCTION:   OnMoving
-//
-//  EVENT:      Moving event is sent when file transfer is started as a result of
-//              ComponentTransferData call, before any file transfer operations
-//              are performed.
-//
-///////////////////////////////////////////////////////////////////////////////
-function OnMoving()
-    string szAppPath;
-
+//---------------------------------------------------------------------------
+// The OnFirstUIAfter event called by OnShowUI after the file transfer
+// of the setup when the setup is running in first install mode.
+//---------------------------------------------------------------------------
+function OnFirstUIAfter()
+string sProg, sCMD;
+number nResult;
+BOOL opt, bOptYes, bOptNo;
 begin
-    // Set LOGO Compliance Application Path
-    // TO DO : if your application .exe is in a subfolder of TARGETDIR then add subfolder
-    szAppPath = TARGETDIR;
-
-    // MessageBox(szAppPath, INFORMATION);
+	//check to see if any yukon services were installed
+	if (FeatureIsItemSelected(MEDIA, "Yukon Server")) then	
+		//let the user know we're working, as this might take a little while
+		SdShowMsg("Configuring Yukon Services. Please wait...", TRUE);
+	    sProg = SYS32 + "sc.exe";
+	    //attempt to set the description field on each service now that they are 
+		//installed. NT Service object can't do this. (Wrapper takes care of the
+		//java services for us though)
+	    //IMPORTANT NOTE: using LaunchApplication with the SW_HIDDEN flag will
+	    //cause ALL APPLICATIONS LAUNCHED HENCEFORTH to be hidden! Even if they
+	    //are launched through LaunchApp or LaunchAppAndWait.  You must call
+	    //LaunchApplication with the SW_NORMAL flag to un-hide launched apps.
+	    LaunchApplication(sProg, "description \"" + SCANNER_NAME + "\" \"" + SCANNER_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	    LaunchApplication(sProg, "description \"" + PORTER_NAME + "\" \"" + PORTER_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "description \"" + MACS_NAME + "\" \"" + MACS_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "description \"" + LM_NAME + "\" \"" + LM_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "description \"" + FDR_NAME + "\" \"" + FDR_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "description \"" + DISPATCH_NAME + "\" \"" + DISPATCH_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "description \"" + CC_NAME + "\" \"" + CC_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		LaunchApplication(sProg, "description \"" + CALC_NAME + "\" \"" + CALC_DESC + "\"", "", SW_HIDE, 0,LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+		//get out of "hidden" app-launch mode
+		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+		//hide the "Configuring Yukon Services" popup
+	    SdShowMsg("", FALSE);
+    endif;
     
-    RegDBSetItem(REGDB_APPPATH, szAppPath);
-
-end;
-
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  FUNCTION:   OnMaintUIBefore
-//
-//  EVENT:      MaintUIBefore event is sent when end user runs installation that
-//              has already been installed on the machine. Usually this happens
-//              through Add/Remove Programs applet. In the handler installation
-//              usually displays UI allowing end user to modify existing installation
-//              or uninstall application. After this function returns,
-//              ComponentTransferData is called to perform file transfer.
-//
-///////////////////////////////////////////////////////////////////////////////
-function OnMaintUIBefore()
-    NUMBER nResult, nType, regSearch, dirSearch2;
-    STRING svDir, svResult, szCaption, szPath2;
-    string szSrcFile , szTargetFile;
-    
-    string szPathFile, szName, java_home, szEnv; 
-	number fileCounter, nvType, nvSize;
-	pointer pEnv;
-	
-	string szCmdLine, szPath, szKey, szTitle, szMsg, szMsg2, szTextCont, szTextIg, szMsgWait;
-	number dirSearch, foundVal, moveNext;
-	BOOL bvCheckCont, bvCheckIg; 
-	
-begin
-    // TO DO: if you want to enable background, window title, and caption bar title
-    // SetTitle( @TITLE_MAIN, 24, WHITE );
-    // SetTitle( @TITLE_CAPTIONBAR, 0, BACKGROUNDCAPTION );
-    // SetColor(BACKGROUND,RGB (0, 128, 128));
-    // Enable( FULLWINDOWMODE );
-    // Enable( BACKGROUND );
-
-Dlg_Start:
-    //removeLegacyShortcuts();
-    
+    Dialog_MasterConfig:
     Disable(BACKBUTTON);
-    nType = SdWelcomeMaint(szTitle, szMsg, REPAIR);
+    bOptYes = TRUE;
+    AskOptions(EXCLUSIVE,
+    			"Would you like to edit the master.cfg at this time?",
+    			"Yes", bOptYes,
+    			"No", bOptNo);
+    if(bOptYes) then
+    	sProg = "C:\\Windows\\notepad.exe";
+        sCMD = TARGETDIR ^ "\\Server\\Config\\master.cfg";
+        LaunchAppAndWait(sProg, sCMD, LAAW_OPTION_WAIT);
+    endif;
     Enable(BACKBUTTON);
 
-    if (nType = REMOVEALL) then
-        svResult = SdLoadString(IFX_MAINTUI_MSG);
-        szCaption = SdLoadString(IFX_ONMAINTUI_CAPTION);
-        nResult = SprintfBox(MB_OKCANCEL,szCaption,"%s",svResult);
-        if (nResult = IDCANCEL) goto Dlg_Start;
+    Dialog_DBToolsFrame:
+    bOptYes = TRUE;
+    nResult = AskOptions(EXCLUSIVE,
+				"This software requires a Yukon database of version "
+    			+ IFX_PRODUCT_VERSION + ".  " 
+    			+ "Would you like to open the DB Tools Frame to "
+    			+ "update an existing database?",
+    			"Yes", bOptYes,
+    			"No", bOptNo);
+    if(nResult = BACK) then
+    	goto Dialog_MasterConfig;
     endif;
-
-    nResult = NEXT;
-
-Dlg_SdComponentTree:
-    if (nType = MODIFY) then
-        szTitle = "";
-        szMsg = "Select any new components you want to install, and clear any existing components that you want to remove.";
-        nResult = SdFeatureTree(szTitle, szMsg, TARGETDIR, "", 2);
-        if (nResult = BACK) goto Dlg_Start;
+    if(bOptYes) then
+    	sProg = TARGETDIR ^ "\\client\\bin\\DBToolsFrame.bat";
+		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
     endif;
     
-Dlg_ObjDialogs:
-    nResult = ShowObjWizardPages(nResult);
-    if ((nResult = BACK) && (nType != MODIFY)) goto Dlg_Start;
-    if ((nResult = BACK) && (nType = MODIFY)) goto Dlg_SdComponentTree;
-
-    switch(nType)
-        case REMOVEALL: FeatureRemoveAll();
-        case REPAIR:    FeatureReinstall();
-    endswitch;
-
-    // setup default status
-    SetStatusWindow(0, "");
-    Enable(STATUSEX);
-    StatusUpdate(ON, 100);
+    Dialog_StartServices:
+	//only give the option to start services if services were installed
+	//and only if a restart is not necessary
+	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
+		bOptYes = TRUE;
+		nResult = AskOptions(EXCLUSIVE,
+					"Would you like to start the Yukon Services?",
+					"Yes", bOptYes,
+					"No", bOptNo);
+		if(nResult = BACK) then
+			goto Dialog_DBToolsFrame;
+		endif;
+		if(bOptYes) then
+			StartYukonServices(TRUE);
+		endif;
+	endif;
+    
+    Dialog_InstallComplete:
+    Disable(BACKBUTTON);
+    SdFinish("Installation Complete",
+    		 "The installer has successfully installed the Yukon Application Suite.",
+    		 "Click Finish to exit setup.",
+    		 "","",opt,opt);
 end;
 
-
-//---------------------------------------------------------------------------
-// OnFileLocked
+//--------------------------------------------------------------------------
+// The OnFileLocked event is called when a file that is in use needs to be 
+// installed or uninstalled (unless the files are in a file group which is 
+// marked as as potentially locked or shared in this case the file will be 
+// installed or uninstalled after reboot.
 //
-// The OnFileLocked event is called when a file that is in use by another
-// application needs to be installed or uninstalled (unless the files are
-// in a file group which is marked as as potentially locked or shared in
-// this case the file will be installed or uninstalled after reboot.
-//
-// szFile will contain the full path of the file that is locked when the
+// sFile will contain the full path of the file that is locked when the
 // event is called.
-//
-// The event should return one of the following values:
-//
-// ERR_IGNORE - The setup should skip installing or uninstalling the file
-//				that is locked and continue the file transfer.
-//
-// ERR_RETRY  - The setup should try to install or uninstall the file again.
-//
-// ERR_ABORT  - The setup should be aborted.
-//
-// ERR_PERFORM_AFTER_REBOOT - The file should be installed or uninstalled
-//							  after the system is rebooted.
 //---------------------------------------------------------------------------
-function OnFileLocked(szFile)
+function OnFileLocked(sFile)
 begin
-	// TODO: Enable this code if you want to show a confirmation dialog box.	
-	return SdExceptions(LOCKED, szFile);
-	
-	// Return ERR_PERFORM_AFTER_REBOOT so that the file will be updated
-	// w/o confirmation.
-	//return ERR_PERFORM_AFTER_REBOOT;
+	//Let the user decide what to do (cancel, retry, modify after reboot)	
+	return SdExceptions(LOCKED, sFile);
 end;
+
 //---------------------------------------------------------------------------
-// OnFirstUIAfter
+// OnSetUpdateMode is called directly by the framework to set the UPDATEMODE
+// InstallShield system variable appropriately to control which UI events
+// are called by OnShowUI.
+// Note: This event is called for all setups.
+//---------------------------------------------------------------------------
+function OnSetUpdateMode()
+number	nIgnore, nMediaFlags, nInstalledVersion, nUpdateVersion, nResult;
+string	szVersion, szIgnore, szMsg;
+begin
+	UPDATEMODE = FALSE; // Non-update mode by default.
+	//Don't set UPDATEMODE when running from Add/Remove
+	//or if REMOVEONLY is specified
+	if (ADDREMOVE) then
+		return ISERR_SUCCESS;
+	endif;
+	if (REMOVEONLY) then
+		return ISERR_SUCCESS;
+	endif;
+	// Get the media flags.
+	MediaGetData( MEDIA, MEDIA_FIELD_MEDIA_FLAGS, nMediaFlags, szIgnore );
+	if (!(nMediaFlags & MEDIA_FLAG_UPDATEMODE_SUPPORTED)) then
+		return ISERR_SUCCESS; // Update mode not supported by the setup.
+	endif;
+	// Verify that the installed version is valid.
+	if (!StrLengthChars(IFX_INSTALLED_VERSION) && MAINTENANCE) then
+		// If this error occurs, IFX_INSTALLED_VERSION needs to be set manually.
+		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_NO_INSTALLED_VERSION );
+		MessageBox(szMsg, SEVERE);
+		abort;
+	endif;
+	// Verify that the product version is valid.
+	if(!StrLengthChars(IFX_PRODUCT_VERSION)) then
+		// If this error occures, IFX_PRODUCT_VERSION was not initialized correctly.
+		szMsg = SdLoadString(IDS_IFX_ERROR_UPDATE_NO_PRODUCT_VERSION);
+		MessageBox(szMsg, SEVERE);
+		abort;
+	endif;
+	// Do the version comparison.
+	nResult = VerProductCompareVersions();
+	// Make sure that valid data was returned by VerProductCompareVersions
+	if(nResult < ISERR_SUCCESS) then
+		szMsg = SdLoadString(IDS_IFX_ERROR_UPDATE_VERSION_COMPARE_FAILURE);
+		MessageBox(szMsg, SEVERE);
+		abort;
+	endif;
+	// Set update mode if this is a differential media or the product is already installed and the versions do not match.
+	UPDATEMODE = (nMediaFlags & MEDIA_FLAG_FORMAT_DIFFERENTIAL || (MAINTENANCE && (nResult = VERSION_COMPARE_RESULT_NEWER)));
+end;
+
+//-----------------------------------------------------------------------------
+// OnUpdateUIBefore event is sent when end user runs a newer verison of the
+// installation that has already been installed on the machine.
+//-----------------------------------------------------------------------------
+function OnUpdateUIBefore()
+number nResult;
+BOOL bOptYes, bOptNo;
+string sMasterConfig, sOldVersion;
+begin
+	//set the string shown on the installer windows' title bars
+	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
+	
+	Dialog_Welcome:
+	Disable(BACKBUTTON);
+	//prettyfy the version number before displaying it
+	sOldVersion = CleanupInstalledVersionNum();
+	nResult = SdWelcome("Yukon Application Suite",
+					    "Version " + sOldVersion + " of the Yukon Application Suite is"
+					    +"\ncurrently installed. This setup will update the"
+					    +"\npreviously installed features to version " + IFX_PRODUCT_VERSION 
+					    +".\nClick Next to continue.");
+	Enable(BACKBUTTON);
+	
+	Dialog_Services:
+	if (AreYukonServicesRunning()) then
+		MessageBox("Setup detected a Yukon service still running."
+				+ "\nPlease stop all Yukon services to continue.", WARNING);
+		goto Dialog_Services;	
+	endif;
+	
+	Dialog_Backup:
+	bOptYes = TRUE;
+	nResult = AskOptions(EXCLUSIVE,
+			   "Would you like to make a backup of the Yukon directory first?",
+			   "Yes", bOptYes,
+			   "No", bOptNo);
+	if(nResult = BACK) then
+		goto Dialog_Welcome;
+	endif;
+	if(bOptYes) then
+		nResult = BackupTargetDir();
+		if(nResult = BACK) then
+			goto Dialog_Backup;
+		endif;
+	endif;
+	
+	Dialog_ReadyToCopy:
+    nResult = SdStartCopy2("Ready to Update Yukon", "Click Install to begin.");
+	if(nResult = BACK) then
+		goto Dialog_Backup;
+	endif;
+	
+	//replace the pre-5.0 DB cparms if they exist in master.cfg
+	sMasterConfig = TARGETDIR + "\\Server\\Config\\master.cfg";
+	ReplaceStringInFile(sMasterConfig, "DB_RWDBDLL", "DB_TYPE");
+	ReplaceStringInFile(sMasterConfig, "msq15d.dll", "mssql");
+	ReplaceStringInFile(sMasterConfig, "ora15d.dll", "oracle");
+	
+	//set installer to update all features that are currently installed
+	FeatureUpdate("");
+	
+	//prepare for file transfer
+	SetStatusWindow(0, "");
+    Enable(STATUSEX);
+    StatusUpdate(ON, 100);    
+	return 0;
+end;
+
+//-----------------------------------------------------------------------------
+// The OnUpdateUIAfter event handler function is called by the OnShowUI 
+// event handler to display the post-file-transfer user interface for an 
+// update setup.
+//-----------------------------------------------------------------------------
+function OnUpdateUIAfter()
+number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
+string sCMD, sProg, sVTemp;
+BOOL bOpt, bOptYes, bOptNo;
+begin
+	//get the DWORD representing the new version number
+	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
+	//get the version parts: major.minor.build
+	VerProductVerPartsFromVer (nNewVersion, nVMajor, nVMinor, nVBuild ); 
+	
+	//Update the registry info to the newly installed version.
+	//This affects updating working correctly, as well as the
+	//version # displayed in add/remove programs
+	RegDBSetItem(REGDB_UNINSTALL_DISPLAY_VERSION, IFX_PRODUCT_VERSION);
+	NumToStr(sVTemp, nVMajor);
+	RegDBSetItem(REGDB_UNINSTALL_MAJOR_VERSION, sVTemp);
+	NumToStr(sVTemp, nVMinor);
+	RegDBSetItem(REGDB_UNINSTALL_MINOR_VERSION, sVTemp);
+	NumToStr(sVTemp, nNewVersion);
+	RegDBSetItem(REGDB_UNINSTALL_VERSION, sVTemp); 
+	
+	Dialog_DBToolsFrame:
+	Disable(BACKBUTTON);
+	bOptYes = TRUE;
+	AskOptions(EXCLUSIVE,
+				"The Yukon files have been updated.  "
+				+ "This Yukon software requires a Yukon database"
+    			+ " of version " + IFX_PRODUCT_VERSION + ".  " 
+    			+ "Would you like to open the DB Tools Frame to "
+    			+ "update an existing database?",
+    			"Yes", bOptYes,
+    			"No", bOptNo);
+    if(bOptYes) then
+    	//make sure CMD window is not hidden, so we can see logs
+   		LaunchApplication("", "", "", SW_NORMAL, 0, LAAW_OPTION_WAIT);
+   		//launch DBTF
+    	sProg = TARGETDIR ^ "\\client\\bin\\DBToolsFrame.bat";
+		LaunchAppAndWait(sProg, "", LAAW_OPTION_WAIT);
+    endif;
+    Enable(BACKBUTTON);
+    
+	Dialog_StartServices:
+	//only give the option to start services if services were installed
+	//and only if a restart is not necessary
+	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
+		bOptYes = TRUE;
+		nResult = AskOptions(EXCLUSIVE,
+					"Would you like to start the Yukon Services?",
+					"Yes", bOptYes,
+					"No", bOptNo);
+		if(nResult = BACK) then
+			goto Dialog_DBToolsFrame;
+		endif;
+		if(bOptYes) then
+			StartYukonServices(TRUE);
+		endif;
+	endif;			
+	
+	//if files were locked, a reboot is required
+	if (BATCH_INSTALL) then
+    	SdFinishReboot("Yukon Application Suite", 
+    				   "The Yukon Application Suite has been updated successfully."
+    				   +"\nBefore you can use the program, you must restart your"
+    				   +"\ncomputer.", 
+    				   SYS_BOOTMACHINE, "", 0);
+    else    
+		SdFinish("Yukon Application Suite", 
+				 "The Yukon Application Suite has been updated successfully.",
+				 "Click Finish to exit setup.",
+				 "", "", bOpt, bOpt);
+	endif;  
+end;
+
+//---------------------------------------------------------------------------
+// OnCanceling
 //
-// First Install UI Sequence - After Move Data
+// The OnCanceling event is sent when the installation is cancelled, 
+// usually as result of end user clicking Cancel button of a dialog or
+// pressing Esc key. Calling Do(EXIT) will also trigger this event.
+//---------------------------------------------------------------------------
+function OnCanceling()
+    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2;
+    NUMBER bvOpt1, bvOpt2;
+begin
+    if (IDYES = SprintfBox(MB_YESNO|MB_ICONEXCLAMATION|MB_DEFBUTTON2, SdLoadString(SD_STR_ONCANCELING_TITLE), SdLoadString(SD_STR_ONCANCELING_CONFIRM_MSG))) then
+        //Close the current dialog.
+        EndCurrentDialog();
+        //Display Finish dialog.
+        szTitle = "Yukon Installation Canceled";    
+        szMsg1 = SdLoadString( SD_STR_ONCANCELING_FINISH_MSG1 );
+        szMsg2 = SdLoadString( SD_STR_ONCANCELING_FINISH_MSG2 );    
+        szOpt1 = "";
+        szOpt2 = "";
+        bvOpt1   = FALSE;
+        bvOpt2   = FALSE;
+        SdFinish ( szTitle, szMsg1, szMsg2 , szOpt1, szOpt2, bvOpt1, bvOpt2 );                       
+        
+        abort;
+    endif;
+end;
+
+//---------------------------------------------------------------------------
+// OnSetTARGETDIR is called directly by the framework to initialize
+// TARGETDIR to it's default value.
+// Note: This event is called for all setups.
+//---------------------------------------------------------------------------
+function OnSetTARGETDIR()
+number nIgnore, nResult;
+string sTARGETDIR;
+begin
+    // In maintenance mode the value of TARGETDIR is read from the log file.
+    if (MAINTENANCE) then
+        return ISERR_SUCCESS;
+    endif;
+    // Set TARGETDIR to script default.
+    TARGETDIR = "<FOLDER_APPLICATIONS>\\<IFX_COMPANY_NAME>\\<IFX_PRODUCT_NAME>";
+    // Read TARGETDIR from the media.
+    nResult = MediaGetData( MEDIA, MEDIA_FIELD_TARGETDIR, nIgnore, sTARGETDIR );
+    // Use the TARGETDIR from the media if anything was read.
+    if (nResult >= ISERR_SUCCESS && StrLengthChars(sTARGETDIR)) then
+        TARGETDIR = sTARGETDIR;
+    endif;
+end;
+
+//---------------------------------------------------------------------------
+// OnUninstall
 //
-// The OnFirstUIAfter event called by OnShowUI after the file transfer
-// of the setup when the setup is running in first install mode. By default
-// this event displays UI that informs the end user that the setup has been
-// completed successfully.
+// The OnUninstall event is called when the setup is run with the -uninst
+// switch, in this case this is the only event that will be called.
+//---------------------------------------------------------------------------
+function OnUninstall()
+string szIgnore, szMsg;
+number nResult;
+BOOL bOpt1, bOpt2, bOptNo, bOptYes;
+begin
+    //set the string shown on the installer windows' title bars
+	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
+    
+    // Hide the initial progress dialog.
+    Disable( DIALOGCACHE );
+
+    // Added in InstallShield 15 - Show an appropriate error message if
+    // -uninst is specified and the product is not installed.
+    if( !MAINTENANCE ) then
+		szMsg = SdLoadString( IDS_IFX_ERROR_PRODUCT_NOT_INSTALLED_UNINST );
+   		SdSubstituteProductInfo( szMsg );
+		MessageBox( szMsg, SEVERE );
+		abort;
+    endif;
+
+    Dialog_Welcome:
+	Disable(BACKBUTTON);
+	nResult = SdWelcome("Yukon Application Suite", 
+					"This program will completely uninstall the Yukon Application"
+					+ "\nSuite.  Click Next to continue.  Click Cancel to abort.");
+    
+    Dialog_Services:
+	if (AreYukonServicesRunning()) then
+		MessageBox("Setup detected a Yukon service still running."
+				+ "\nPlease stop all Yukon services to continue.", WARNING);
+		goto Dialog_Services;	
+	endif;
+    
+    Dialog_Backup:
+    bOptNo = TRUE;
+	AskOptions(EXCLUSIVE,
+			   "Would you like to make a backup of the Yukon data first?",
+			   "Yes", bOptYes,
+			   "No", bOptNo);
+	if(bOptYes) then
+		nResult = BackupTargetDir();
+		if(nResult = BACK) then
+			goto Dialog_Welcome;
+		endif;
+	endif;
+	Enable(BACKBUTTON);
+    
+    // Remove all features.
+	FeatureRemoveAllInMediaAndLog();
+    // Added in 11.0, disable the cancel button during uninstall.
+    if( REMOVEALLMODE ) then
+        Disable( CANCELBUTTON );
+    endif;
+	// Added in 11.0 - Set appropriate StatusEx static text.
+	// Moved in 12.1 - Set before calling Enable( STATUSEX ) to ensure proper product name updating.
+    SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REMOVEALL ) );
+    // Show Status
+	SetStatusWindow( 0, "" );
+	Enable( STATUSEX );
+	StatusUpdate( ON, 100 );
+    // Uninstall
+	nResult = FeatureTransferData( MEDIA );
+    // Handle move data error and abort if error occured.
+	if( nResult < ISERR_SUCCESS ) then
+		OnComponentError();
+		abort;
+	endif;
+    // Disable Status
+	Disable( STATUSEX );
+    // Show final dialog.
+    if ( BATCH_INSTALL ) then
+        SdFinishReboot( SdLoadString(IFX_SDFINISH_REMOVE_TITLE), SdLoadString(IFX_SDFINISH_REMOVE_MSG2), SYS_BOOTMACHINE, "", 0 );
+    else    
+        SdFinish( SdLoadString(IFX_SDFINISH_REMOVE_TITLE), SdLoadString(IFX_SDFINISH_REMOVE_MSG1), "", "" , "", bOpt1 , bOpt2 );
+    endif;
+end;
+
+//---------------------------------------------------------------------------
+// OnMaintUIBefore
+//
+// Maintenance UI Sequence - Before Move Data
+//
+// The OnMaintUIBefore event is called by OnShowUI when the setup is
+// running in maintenance mode. By default this event displays UI that
+// allows the end user to add or remove features, repair currently
+// installed features or uninstall the application.
 //
 // Note: This event will not be called automatically in a
 // program...endprogram style setup.
 //---------------------------------------------------------------------------
-function OnFirstUIAfter()
-    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2, szMsg,
-    szServiceMsg1, szServiceMsg2, macsText, notifText, scanText,
-	smText, fdrText, ccText, lmText, calcText, StartServicesMsg,
-	porterText, dispatchText, webText, wdbuTitle, wdbuMsg;
-    
-    NUMBER bvOpt1, bvOpt2, bShowUpdateServiceDlg, nResult;
-	
-	BOOL nValue, macsCheck, notifCheck, scanCheck, smCheck, fdrCheck,
-	ccCheck, lmCheck, calcCheck, porterCheck, dispatchCheck, webCheck;
-
-	
+function OnMaintUIBefore()
+    number	nResult, nType;
+    string	szTitle, szMsg;
+    BOOL bOptNo, bOptYes;
 begin
-    nValue = NONEXCLUSIVE;
-	szServiceMsg1 = "Select Yukon services to set automatic startup and restart on fail.\n(More on next page.)";
-	szServiceMsg2 = "Select Yukon services to set automatic startup and restart on fail.";
-	porterText = "Port Control";
-	porterCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Porter");;
-	dispatchText = "Dispatch";
-	dispatchCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Message Dispatcher");;
-	webText = "Web Applications";
-	webCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Web Server");;
-	macsText = "Metering and Control Scheduler (MACS)";
-	macsCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\MACS");;
-	notifText = "Notification";
-	notifCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Notification Server");;
-	scanText = "Real-Time Scanner";
-	scanCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Scanner");;
-	smText = "Service Manager";
-	smCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Client Service Manager");;
-	fdrText = "Foreign Data Router (FDR)";
-	fdrCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Foreign Data Router");;
-	ccText = "Capacitor Control";
-	ccCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Cap Control");;
-	lmText = "Load Management";
-	lmCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Load Management");;
-	calcText = "Calc Logic";
-	calcCheck = FeatureIsItemSelected(MEDIA, "Yukon Server\\Calculation Server");;
-    
-    //attempt to set the description field on each service
-    LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Real-Time Scan Service\" \"Collects real-time and interval data from a list of devices.\"", LAAW_OPTION_WAIT);
-    LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Port Control Service\" \"Controls communication channel and field hardware communications.\"", LAAW_OPTION_WAIT);
-	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon MAC Scheduler Service\" \"Runs scheduled meter data collection and basic control operation.\"", LAAW_OPTION_WAIT);
-	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Load Management Service\" \"Runs Demand Response operations based on data gathered by the Yukon system.\"", LAAW_OPTION_WAIT);
-	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Foreign Data Service\" \"Transmits and receives data to and from other systems outside of Yukon.\"", LAAW_OPTION_WAIT);
-	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Dispatch Service\" \"Transmits and receives real-time data to and from the Yukon server and client applications.\"", LAAW_OPTION_WAIT);
-	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Cap Control Service\" \"Runs Distribution Automation operations based on data gathered by the system.\"", LAAW_OPTION_WAIT);
-	LaunchAppAndWait("", "cmd.exe /c sc description \"Yukon Calc-Logic Service\" \"Processes real-time and historical calculations on data gathered by the system.\"", LAAW_OPTION_WAIT);
+	//set the string shown on the installer windows' title bars
+	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
+	// nType defaults to MODIFY.
+	nType = MODIFY;
+    //Initialize SQL
+    OnSQLServerInitializeMaint();
 
-    
-    Dlg_SetServices1:
-		//There's no going back now!
-		Disable(BACKBUTTON);
-		Disable(CANCELBUTTON);
-		//get user input
-		AskOptions(nValue, szServiceMsg1, porterText, porterCheck, dispatchText,
-				dispatchCheck, webText, webCheck);
-	
-	Dlg_SetServices2:	
-		Enable(BACKBUTTON);
-		//get more user input
-		nResult = AskOptions(nValue, szServiceMsg2, macsText, macsCheck, notifText, notifCheck,
-				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
-	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck);
-    	if(nResult = BACK) goto Dlg_SetServices1;
-    	
-    	//set up yukon services according to what the user checked
-    	//dispatch
-    	if(dispatchCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Dispatch Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Dispatch Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //porter
-    	if(porterCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Port Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Port Control Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //web
-        //the wrapper services start as automatic, we want them 
-    	//to start manually unless the user specifies otherwise
-    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= demand", LAAW_OPTION_WAIT);
-    	if(webCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonWebApplicationService\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonWebApplicationService\" start= auto", LAAW_OPTION_WAIT); 
-    	endif;
-    	//macs
-    	if(macsCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon MAC Scheduler Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon MAC Scheduler Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //notification
-        //the wrapper services start as automatic, we want them 
-    	//to start manually unless the user specifies otherwise
-    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonNotificationServer\" start= demand", LAAW_OPTION_WAIT);
-    	if(notifCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonNotificationServer\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonNotificationServer\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //scanner
-    	if(scanCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Real-Time Scan Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Real-Time Scan Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //service manager
-        //the wrapper services start as automatic, we want them 
-    	//to start manually unless the user specifies otherwise
-    	LaunchAppAndWait("", "cmd.exe /c sc config \"YukonServiceMgr\" start= demand", LAAW_OPTION_WAIT);
-    	if(smCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"YukonServiceMgr\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"YukonServiceMgr\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //fdr
-    	if(fdrCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Foreign Data Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Foreign Data Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //cap control
-    	if(ccCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Cap Control Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Cap Control Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //load management
-    	if(lmCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Load Management Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Load Management Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-        //calc
-    	if(calcCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc failure \"Yukon Calc-Logic Service\" reset= 0 actions= restart/60000/restart/60000/none/60000", LAAW_OPTION_WAIT);
-    		LaunchAppAndWait("", "cmd.exe /c sc config \"Yukon Calc-Logic Service\" start= auto", LAAW_OPTION_WAIT); 
-        endif;
-    
-    Dlg_WarnDBUpdate:
-    	//Warn them - run updates before starting services to avoid Yukon Armageddon
-    	wdbuTitle = "Run database updates";
-    	wdbuMsg = "If you are upgrading the Yukon installation, please run DBToolsFrame at this time.\nDB updates must be complete before starting services.";
-    	nResult = SdDisplayTopics (wdbuTitle, wdbuMsg, ListCreate(STRINGLIST), ListCreate(STRINGLIST), 0);
-    	if (nResult = BACK) goto Dlg_SetServices1;
-            
-    Dlg_StartPortDispWeb:
-    	porterCheck = FALSE;
-		dispatchCheck = FALSE;
-		webCheck = FALSE;
-		macsCheck = FALSE;
-		notifCheck = FALSE;
-		scanCheck = FALSE;
-		smCheck = FALSE;
-		fdrCheck = FALSE;
-		ccCheck = FALSE;
-		lmCheck = FALSE;
-		calcCheck = FALSE;
-    	StartServicesMsg = "Select Yukon services to start at this time.\n(More options on next page)";
-    	//get user input
-    	nResult = AskOptions(nValue, StartServicesMsg, porterText, porterCheck, dispatchText,
-    			dispatchCheck, webText, webCheck);  
-        if (nResult = BACK) goto Dlg_SetServices1;
-        
-    Dlg_StartServices:
-    	StartServicesMsg = "Select Yukon services to start at this time.";
-    	//get more input
-    	nResult = AskOptions(nValue, StartServicesMsg, macsText, macsCheck, notifText, notifCheck,
-				scanText, scanCheck, smText, smCheck, fdrText, fdrCheck,
-	            ccText, ccCheck, lmText, lmCheck, calcText, calcCheck); 
-    	if (nResult = BACK) goto Dlg_StartPortDispWeb;
-    	
-    	//start  services according to what the user checked
-    	if(dispatchCheck) then
-    		LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Dispatch Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(porterCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Port Control Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(webCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"YukonWebApplicationService\"", LAAW_OPTION_WAIT);
-        endif;
-        if(macsCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon MAC Scheduler Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(notifCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"YukonNotificationServer\"", LAAW_OPTION_WAIT);
-        endif;
-        if(scanCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Real-Time Scan Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(smCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"YukonServiceMgr\"", LAAW_OPTION_WAIT);
-        endif;
-        if(fdrCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Foreign Data Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(ccCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Cap Control Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(lmCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Load Management Service\"", LAAW_OPTION_WAIT);
-        endif;
-        if(calcCheck) then
-        	LaunchAppAndWait("", "cmd.exe /c sc start \"Yukon Calc-Logic Service\"", LAAW_OPTION_WAIT);
-        endif;
-        
-    ShowObjWizardPages(NEXT);
-    
-    szTitle = "";
-    szMsg1 = ""; 
-    szMsg2 = "";
-    szOpt1 = "";
-    szOpt2 = "";
-	bvOpt1   = FALSE;
-    bvOpt2   = FALSE;    
-
-	// Set this to true if you have the update service enabled, and if you want to check for updates.
-	// Note: the ISUS Starter Edition does not support checking for updates programatically.  So, 
-	// only set this to true if you have at least the ISUS Professional Edition.
-	bShowUpdateServiceDlg = FALSE;
-    
-    //{{IS_SCRIPT_TAG(Dlg_SdDinishEx)	
-    
-    //we don't take kindly to lawdogs around here
-    BATCH_INSTALL = FALSE;
-    if ( BATCH_INSTALL ) then
-    	SdFinishReboot ( szTitle , szMsg1 , SYS_BOOTMACHINE , szMsg2 , 0 );
+// Beginning of UI Sequence
+Dlg_Start:
+    if( !REMOVEONLY ) then
+    	// In standard mode show maintenance dialog
+	    Disable( BACKBUTTON );
+	    nType = SdWelcomeMaint( szTitle, szMsg, nType );
+	    Enable( BACKBUTTON );
+        nResult = NEXT;
     else
-		
-		// If the update service is enabled, show finish dialog that includes
-		// update check option.
-		if( bShowUpdateServiceDlg && ( ENABLED_ISERVICES & SERVICE_ISUPDATE ) ) then
+        // Hide the initial progress dialog as otherwise the user can
+        // click on it, and hide the MessageBox.
+        Disable( DIALOGCACHE );
+        // In RemoveOnly mode, set to remove.
+        nType = REMOVEALL;
+    endif;
 
-			if( SdFinishUpdateEx( szTitle, szMsg1, szMsg2, szOpt1, szOpt2, TRUE ) ) then
+Dlg_SdFeatureTree:
+	if ( nType = MODIFY ) then
+		szTitle = "";
+		szMsg = SdLoadString( SD_STR_COMPONENT_MAINT_MSG );
+		nResult = SdFeatureTree( szTitle, szMsg, TARGETDIR, "", -1 );
+		if ( nResult = BACK ) goto Dlg_Start;
+    endif;
 
-				// Don't check for updates in silent mode.
-				if( MODE != SILENTMODE ) then
-					UpdateServiceCheckForUpdates( "", FALSE );
-				endif;
-
+Dlg_ObjDialogs:
+    nResult = ShowObjWizardPages( nResult );
+    if ( ( nResult = BACK ) && ( nType != MODIFY ) ) goto Dlg_Start;
+    if ( ( nResult = BACK ) && ( nType = MODIFY ) ) goto Dlg_SdFeatureTree;
+	switch(nType)
+        case REMOVEALL:
+			Dialog_UninstWelcome:
+			Disable(BACKBUTTON);
+			nResult = SdWelcome("Uninstall Yukon?", 
+							"This program will completely uninstall the Yukon Application "
+							+ "Suite.  Click Next to continue.  Click Cancel to abort.");
+			Enable(BACKBUTTON);
+			Dialog_UninstServices:
+			if (AreYukonServicesRunning()) then
+				MessageBox("Setup detected a Yukon service running."
+						+ " Please stop all Yukon services to continue.", WARNING);
+				goto Dialog_UninstServices;	
 			endif;
-
-		else
-			SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bvOpt1 , bvOpt2 );
-		endif;
-
-    endif;
-    //}}IS_SCRIPT_TAG(Dlg_SdDinishEx)
+			Dialog_UninstBackup:
+			bOptYes = TRUE;
+			nResult = AskOptions(EXCLUSIVE,
+					   "Would you like to make a backup of the Yukon directory first?",
+					   "Yes", bOptYes,
+					   "No", bOptNo);
+			if(nResult = BACK) then
+				goto Dialog_UninstWelcome;
+			endif;
+			if(bOptYes) then
+				nResult = BackupTargetDir();
+				if(nResult = BACK) then
+					goto Dialog_UninstWelcome;
+				endif;
+			endif;
+			Dialog_UninstReady:
+			nResult = SdWelcome("Ready to Uninstall Yukon", 
+								"The Yukon Application Suite is ready to be uninstalled."
+								+ "\nClick Next to begin uninstallation or Cancel to abort.");
+			if(nResult = BACK) then
+				goto Dialog_UninstBackup;
+			endif;
+			// Ensure that all previously installed features are removed.
+			FeatureRemoveAllInMediaAndLog();
+            // Added in 11.0 - Set appropriate StatusEx static text.
+            SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REMOVEALL ) );
+        case REPAIR:	
+			// Changed for DevStudio 9, Disk1 files are now always updated when installed
+			// so when running from ADDREMOVE we need to prevent these files from being
+			// updated since this will result in files being updated that are locked by the setup.
+			// Updating these files when running from ADDREMOVE should not be needed since updates
+			// are not run directly from Add/Remove.
+            if( ADDREMOVE ) then
+                // Reinstall all previously installed features, except
+                // disk1 features.
+                FeatureUpdate( "" );
+            else
+                // Reinstall all previously installed features.
+                FeatureReinstall();
+            endif;
+            // Added in 11.0 - Set appropriate StatusEx static text.
+            SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REPAIR ) );
+        case MODIFY:
+            // Added in 11.0 - Set appropriate StatusEx static text.
+            SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_MODIFY ) );
+    endswitch;
 end;
+
 //---------------------------------------------------------------------------
-// OnSetTARGETDIR
+// OnMaintUIAfter
 //
-// OnSetTARGETDIR is called directly by the framework to initialize
-// TARGETDIR to it's default value.
-//
-// Note: This event is called for all setups.
-//---------------------------------------------------------------------------
-function OnSetTARGETDIR()
-number nId, nIgnore, nResult;
-string szId, szTARGETDIR;
-begin
-
-    // In maintenance mode the value of TARGETDIR is read from the log file.
-    if( MAINTENANCE ) then
-        return ISERR_SUCCESS;
-    endif;
-
-    // Set TARGETDIR to script default.
-    TARGETDIR = "<FOLDER_APPLICATIONS>\\<IFX_COMPANY_NAME>\\<IFX_PRODUCT_NAME>";
-
-    // Read TARGETDIR from the media.
-    nResult = MediaGetData( MEDIA, MEDIA_FIELD_TARGETDIR, nIgnore, szTARGETDIR );
-
-    // Use the TARGETDIR from the media if anything was read.
-    if( nResult >= ISERR_SUCCESS && StrLengthChars( szTARGETDIR ) ) then
-        TARGETDIR = szTARGETDIR;
-    endif;
-        
-	// Customize the default TARGETDIR for multi-instance application.
-	// TODO: If you want something different customize the code below.	
-	if( MAINT_OPTION = MAINT_OPTION_MULTI_INSTANCE  && MULTI_INSTANCE_COUNT > 0) then
-
-		// Start with the current multi-instance count plus one.
-		nId = MULTI_INSTANCE_COUNT + 1;
-
-		// Find a unique TARGETDIR.
-		while( ExistsDir( TARGETDIR ) = EXISTS )
-			
-			// Convert to string.
-			NumToStr( szId, nId );
-			
-			// Update IFX_MULTI_INSTANCE_SUFFIX
-			IFX_MULTI_INSTANCE_SUFFIX = "_" + szId;
-		
-			// Update TARGETDIR
-			TARGETDIR = TARGETDIR + IFX_MULTI_INSTANCE_SUFFIX;
-			
-			// Update nId
-			nId = nId + 1;
-
-		endwhile;
-
-	endif;
-
-end;
-//---------------------------------------------------------------------------
-// OnUpdateUIAfter
-//
-// Update Mode UI Sequence - After Move Data
-//
-// The OnUpdateUIAfter event called by OnShowUI after the file transfer
-// of the setup when the setup is running in update mode. By default
+// The OnMaintUIAfter event called by OnShowUI after the file transfer
+// of the setup when the setup is running in maintenance mode. By default
 // this event displays UI that informs the end user that the maintenance setup
 // has been completed successfully.
 //
 // Note: This event will not be called automatically in a
 // program...endprogram style setup.
 //---------------------------------------------------------------------------
-function OnUpdateUIAfter()
-    string	szTitle, szMsg1, szMsg2, szOpt1, szOpt2;
-    BOOL	bOpt1, bOpt2;
+function OnMaintUIAfter()
+    STRING szTitle, szMsg1, szMsg2, szOpt1, szOpt2;
+    NUMBER bvOpt1, bvOpt2;
 begin
-
     ShowObjWizardPages(NEXT);
-    
-	szTitle = SdLoadString(IDS_IFX_SDFINISH_UPDATE_TITLE);    
-    szMsg1  = SdLoadString(IDS_IFX_SDFINISH_UPDATE_MSG1);
+    // Added - Version 9.5 - Use appropriate strings for complete
+    // uninstall.
+    if( REMOVEALLMODE ) then
+        szTitle = "Uninstall Complete";
+        szMsg1 = "The Yukon Application Suite has been successfully uninstalled.";
+    else
+        szTitle = SdLoadString(IFX_SDFINISH_MAINT_TITLE);    
+        szMsg1  = SdLoadString(IFX_SDFINISH_MAINT_MSG1);
+    endif;
+
 	szMsg2 = "";    
     szOpt1 = "";
     szOpt2 = "";
-	bOpt1   = FALSE;
-    bOpt2   = FALSE;    
-    
+	bvOpt1   = FALSE;
+    bvOpt2   = FALSE;    
+
     if ( BATCH_INSTALL ) then
     	SdFinishReboot ( szTitle , szMsg1 , SYS_BOOTMACHINE , szMsg2 , 0 );
     else    
-       	SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bOpt1 , bOpt2 );
+       	SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bvOpt1 , bvOpt2 );
     endif;
 end;
-//---------------------------------------------------------------------------
-// OnEnd
-//
-// The OnEnd event is called at the end of the setup. This event is not
-// called if the setup is aborted.
-//---------------------------------------------------------------------------
-function OnEnd()
-begin
 
-SHChangeNotify(134217728, 0, NULL, NULL);
 
-end;
-//---------------------------------------------------------------------------
-// OnSetUpdateMode
-//
-// OnSetUpdateMode is called directly by the framework to set the UPDATEMODE
-// InstallShield system variable appropriately to control which UI events
-// are called by OnShowUI.
-//
-// Note: This event is called for all setups.
-//---------------------------------------------------------------------------
-function OnSetUpdateMode()
-	number	nIgnore, nMediaFlags, nInstalledVersion, nUpdateVersion, nResult;
-	string	szVersion, szIgnore, szMsg;
-begin
-	
-	UPDATEMODE = FALSE; // Non-update mode by default.
-
-	// Added 11.5 - Don't set UPDATEMODE when running from Add/Remove
-	if( ADDREMOVE ) then
-		return ISERR_SUCCESS;
-	endif;
-
-	// Added 11.5 - Don't set UPDATEMODE when REMOVEONLY is specified
-	if( REMOVEONLY ) then
-		return ISERR_SUCCESS;
-	endif;
-
-	// Get the media flags.
-	MediaGetData( MEDIA, MEDIA_FIELD_MEDIA_FLAGS, nMediaFlags, szIgnore );
-
-	if( ! ( nMediaFlags & MEDIA_FLAG_UPDATEMODE_SUPPORTED ) ) then
-		return ISERR_SUCCESS; // Update mode not supported by the setup.
-	endif;
-
-	// TODO: If you are updating an application that was installed by a previous
-	// version of InstallShield, IFX_INSTALLED_VERSION will be empty, and
-	// VERSION_COMPARE_RESULT_NOT_INSTALLED will be returned by
-	// VerProductCompareVersions. Change the value of IFX_INSTALLED_VERSION (and
-	// IFX_INSTALLED_DISPLAY_VERSION) here based on application specific version
-	// information determined by the setup. Only do this if IFX_INSTALLED_VERSION
-	// is empty.
-	//if ( !StrLengthChars( IFX_INSTALLED_VERSION ) && MAINTENANCE ) then
-	//	IFX_INSTALLED_VERSION = "X.XX.XXX";
-	//	IFX_INSTALLED_DISPLAY_VERSION = IFX_INSTALLED_VERSION;
-	//endif;
-
-	// Verify that the installed version is valid.
-	if( !StrLengthChars( IFX_INSTALLED_VERSION ) && MAINTENANCE ) then
-		// If this error occurs, IFX_INSTALLED_VERSION needs to be set manually.
-		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_NO_INSTALLED_VERSION );
-		MessageBox( szMsg, SEVERE );
-		abort;
-	endif;
-
-	// Verify that the product version is valid.
-	if( !StrLengthChars( IFX_PRODUCT_VERSION ) ) then
-		// If this error occures, IFX_PRODUCT_VERSION was not initialized correctly.
-		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_NO_PRODUCT_VERSION );
-		MessageBox( szMsg, SEVERE );
-		abort;
-	endif;
-
-	// Do the version comparison.
-	nResult = VerProductCompareVersions();
-
-	// Make sure that valid data was returned by VerProductCompareVersions
-	if( nResult < ISERR_SUCCESS ) then
-		szMsg = SdLoadString( IDS_IFX_ERROR_UPDATE_VERSION_COMPARE_FAILURE );
-		MessageBox( szMsg, SEVERE );
-		abort;
-	endif;
-
-	// Set update mode if this is a differential media or the product is already installed and the versions do not match.
-	UPDATEMODE = ( nMediaFlags & MEDIA_FLAG_FORMAT_DIFFERENTIAL || ( MAINTENANCE && ( nResult != VERSION_COMPARE_RESULT_SAME ) ) );
-
-end;
- 

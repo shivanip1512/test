@@ -1,283 +1,131 @@
+//////////////////////////////////////////////////////////////
+//These are constants required for Windows API broadcast calls
+#define WM_SETTINGCHANGE 0x001A 
+//////////////////////////////////////////////////////////////
 
 //---------------------------------------------------------------------------
-// The Installing event is sent just before the feature 
-// Yukon Server\Yukon Service Manager is installed.
-//---------------------------------------------------------------------------
- 
-export prototype YukonServiceManager_Installing();
-function YukonServiceManager_Installing()
-
-string szCmdLine, szPathAndFile;
-
-begin
-
-//stop the Yukon Service Manager
-szCmdLine = 'stop "Yukon Service Manager"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
-
-Delay(3);
-
-//remove the Yukon Service Manager
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-r appserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
-
-end;
-//---------------------------------------------------------------------------
-// The Installed event is sent after the feature Yukon Server\Yukon Service Manager
+// The Installed event is sent after the feature Notification Server
 // is installed.
-//---------------------------------------------------------------------------
- 
-export prototype YukonServiceManager_Installed();
-function YukonServiceManager_Installed()
-string szCmdLine, szPathAndFile, szKey, szName, szValue;
-number nSize;
-
-begin
-
-
-//The following sets up the Yukon Service Manager
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-i appserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT ); 
-//SprintfBox ( INFORMATION , 'Test' , '%s' , szPathAndFile + szCmdLine);
-
-//Add this service to the YUKON GROUP so it shows up in TDC
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonServiceMgr";
-szName = "Group";
-szValue = "YUKON GROUP";
-nSize = -1; 
-RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );
-
-end;
-
-//---------------------------------------------------------------------------
-// The UnInstalling event is sent just before the feature 
-// Yukon Server\Yukon Service Manager is uninstalled.
-//---------------------------------------------------------------------------
- 
-export prototype YukonServiceManager_UnInstalling();
-function YukonServiceManager_UnInstalling()
-string szCmdLine, szPathAndFile;
-
-begin
-
-//stop the Yukon Service Manager
-szCmdLine = 'stop "Yukon Service Manager"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
-
-Delay(4);   
-
-//remove the Yukon Service Manager
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-r appserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
-
-end;
-
-//-----------------------------------------------------------
-//This is to remove shortcuts that were placed on the system
-//by previous versions of the installer that are no longer
-//used or recognized.
-//-----------------------------------------------------------
-export prototype removeLegacyShortcuts();
-function removeLegacyShortcuts()
-
-string szShortPath, szShortPath2, szShortPath3, szShortPath4;
-
-begin
-	//XP
-	szShortPath = 'C:\\Documents and Settings\\All Users\\Start Menu\\Programs\\Yukon Clients\\*Reports.lnk';
-	szShortPath2 = 'C:\\Documents and Settings\\All Users\\Desktop\\Yukon Setup.url';
-	//Win2000
-	szShortPath3 = 'C:\\Documents and Settings\\All Users.WINNT\\Start Menu\\Programs\\Yukon Clients\\*Reports.lnk';
-	szShortPath4 = 'C:\\Documents and Settings\\All Users.WINNT\\Desktop\\Yukon Setup.url';
-	
-	/*LongPathToQuote(szShortPath, TRUE);
-	LongPathToQuote(szShortPath2, TRUE);
-	LongPathToQuote(szShortPath3, TRUE);
-	LongPathToQuote(szShortPath4, TRUE); */
-	
-	DeleteFile(szShortPath);
-    DeleteFile(szShortPath2);
-    DeleteFile(szShortPath3);
-    DeleteFile(szShortPath4);
-   
-end;
-//---------------------------------------------------------------------------
-// The Installing event is sent just before the feature 
-// Yukon Server\Notification Server is installed.
-//---------------------------------------------------------------------------
- 
-export prototype NotificationServer_Installing();
-function NotificationServer_Installing()
-string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName;
-number nvResult, check, fileLooper;
-
-begin
-
-//stop the Yukon Notification Server
-szCmdLine = 'stop "Yukon Notification Server"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );
-
-Delay(3);
-
-//remove the Yukon Notification Server
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-r notifserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
-
-//need to disable LOGGING so that these directories are not marked for uninstallation
-Disable(LOGGING);
-
-szSrcFile = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates";
-szTargetPath = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates\\backup";
-
-//make sure dir exists or this is pointless
-if(ExistsDir ( szSrcFile ) == 0) then
- 	//get date and time for unique backup dir naming
- 	GetSystemInfo ( DATE , nvResult , date );
-    GetSystemInfo ( TIME, nvResult, time);
-    //get rid of : so it is a legal file name
-    StrSub ( timeHour , time , 0, 2 );
-    StrSub ( timeMin , time , 3, 2 );
-    szTargetPath = szTargetPath ^ "\\" ^ date + "-" + timeHour + "-" + timeMin; 
-	//create backup dir
-	CreateDir ( szTargetPath); 
-
-    //copy existing .xsl files in notif_templates folder into backup
-    XCopyFile ( szSrcFile + "\\*.xsl", szTargetPath, COMP_NORMAL );
-endif;
-                
-//make sure we reactivate uninstall logging                
-Enable(LOGGING);
-
-end;
-//---------------------------------------------------------------------------
-// The Installed event is sent after the feature Yukon Server\Notification Server
-// is installed.
-//---------------------------------------------------------------------------
- 
+//---------------------------------------------------------------------------  
 export prototype NotificationServer_Installed();
 function NotificationServer_Installed()
-string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName, szKey, szName, szValue;
-number nvResult, check, fileLooper, nSize;
-
+string sPathAndFile, sCMD, sKey;
 begin
-
-/*szSrcFile = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates";
-szTargetPath = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates\\backup";
-
-//make sure dir exists or this is pointless
-if(ExistsDir ( szSrcFile ) == 0) then
- 	//get date and time for unique backup dir naming
- 	GetSystemInfo ( DATE , nvResult , date );
-    GetSystemInfo ( TIME, nvResult, time);
-    //get rid of : so it is a legal file name
-    StrSub ( timeHour , time , 0, 2 );
-    StrSub ( timeMin , time , 3, 2 );
-    szTargetPath = szTargetPath ^ "\\" ^ date + "-" + timeHour + "-" + timeMin; 
-	//create backup dir
-	CreateDir ( szTargetPath); 
-	
-    check = -1;
-    //copy existing .xsl files in notif_templates folder into backup
-    check = XCopyFile ( szSrcFile + "\\*.xsl", szTargetPath, COMP_NORMAL );
-	//if(check == 0) then 
-		szFileName = "*.sample.xsl";
-		//find first occurrence of newly placed .sample files
-		fileLooper = FindAllFiles ( szSrcFile , szFileName , fileFound , RESET );
-		//get rid of the .sample part, change to just .xsl
-		ParsePath ( fileNameOnly , fileFound , FILENAME_ONLY );
-		ParsePath ( fileNameOnly , fileNameOnly , FILENAME_ONLY );
-		RenameFile ( fileFound , szSrcFile + "\\" + fileNameOnly + ".xsl" );  
-		//MessageBox(szSrcFile + "\\" + fileNameOnly + ".sample.xsl", SEVERE);
-	  	//find and rename the rest
-		while(fileLooper == 0)
-			fileLooper = FindAllFiles ( szSrcFile , szFileName , fileFound , CONTINUE );
-			ParsePath ( fileNameOnly , fileFound , FILENAME_ONLY );
-			ParsePath ( fileNameOnly , fileNameOnly , FILENAME_ONLY );
-			RenameFile ( fileFound , szSrcFile + "\\" + fileNameOnly + ".xsl" );  
-			//MessageBox(szSrcFile + "\\" + fileNameOnly + ".sample.xsl", SEVERE);
-	  	endwhile;	    
-		//windows NT requires a cancel
-		FindAllFiles ( szSrcFile, szFileName , fileFound , CANCEL );	    
-	//endif;
-endif;
-   */
-//The following sets up the Yukon Notification Server
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-i notifserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );
-
-//Add this service to the YUKON GROUP so it shows up in TDC
-RegDBSetDefaultRoot ( HKEY_LOCAL_MACHINE );
-szKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonNotificationServer";
-szName = "Group";
-szValue = "YUKON GROUP";
-nSize = -1; 
-RegDBSetKeyValueEx ( szKey , szName , REGDB_STRING , szValue , nSize );
-
+	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
+	sCMD = "-i notifserver.conf";
+	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+	//Add this service to the YUKON GROUP so it shows up in TDC
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonNotificationServer"; 
+	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
 end;
+
 //---------------------------------------------------------------------------
-// The UnInstalling event is sent just before the feature 
-// Yukon Server\Notification Server is uninstalled.
-//---------------------------------------------------------------------------
- 
+// The UnInstalling event is sent just before the feature Notification Server 
+// is uninstalled.
+//--------------------------------------------------------------------------- 
 export prototype NotificationServer_UnInstalling();
 function NotificationServer_UnInstalling()
-string szCmdLine, szPathAndFile, szSrcFile, szTargetPath, time, timeHour, timeMin, date, fileFound, fileNameOnly, szFileName;
-number nvResult, check, fileLooper;
-
-begin
-
-//stop the Yukon Notification Server
-szCmdLine = 'stop "Yukon Notification Server"';
-LaunchAppAndWait ("net.exe" , szCmdLine, WAIT );     
-
-Delay(4);   
-
-//remove the Yukon Notification Server
-szPathAndFile = TARGETDIR ^ "\\client\\bin\\wrapper.exe";
-szCmdLine = "-r notifserver.conf";
-LaunchAppAndWait ( szPathAndFile, szCmdLine, WAIT );  
-
-//need to disable LOGGING so that these directories are not marked for uninstallation
-Disable(LOGGING);
-
-szSrcFile = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates";
-szTargetPath = TARGETDIR ^ "\\Server\\web\\webapps\\yukon\\WebConfig\\custom\\notif_templates\\backup";
-
-//make sure dir exists or this is pointless
-if(ExistsDir ( szSrcFile ) == 0) then
- 	//get date and time for unique backup dir naming
- 	GetSystemInfo ( DATE , nvResult , date );
-    GetSystemInfo ( TIME, nvResult, time);
-    //get rid of : so it is a legal file name
-    StrSub ( timeHour , time , 0, 2 );
-    StrSub ( timeMin , time , 3, 2 );
-    szTargetPath = szTargetPath ^ "\\" ^ date + "-" + timeHour + "-" + timeMin; 
-	//create backup dir
-	CreateDir ( szTargetPath); 
-
-    //copy existing .xsl files in notif_templates folder into backup
-    XCopyFile ( szSrcFile + "\\*.xsl", szTargetPath, COMP_NORMAL );
-endif;
-
-Enable(LOGGING);
-
-end;
-//---------------------------------------------------------------------------
-// The Installing event is sent just before the feature 
-// Yukon Client is installed.
-//---------------------------------------------------------------------------
- 
-export prototype YukonClient_Installing();
-function YukonClient_Installing()
-string szFile;
-begin
-	szFile = TARGETDIR ^ "\\client\\bin\\*.jar";
-	DeleteFile ( szFile );	
+string sPathAndFile, sCMD;
+begin   
+	//remove the Yukon Notification Server
+	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
+	sCMD = "-r notifserver.conf";
+	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
+//----------------------------------------------------------------------------
+// The Installing event is sent just before files for the feature Web Server
+// are transferred. 
+//---------------------------------------------------------------------------- 
+export prototype Tomcat_Installing();
+function Tomcat_Installing()
+string sName, sKey;
+begin
+	//set the system environment variable JRE_HOME for use by the Tomcat service
+	sName = "JRE_HOME";         
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	sKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	RegDBSetKeyValueEx(sKey, sName, REGDB_STRING, TARGETDIR + "\\Runtime", -1);
+end;
+
+//----------------------------------------------------------------------------
+// Installed event is sent just after files for the feature Web Server 
+// are transferred. 
+//---------------------------------------------------------------------------- 
+export prototype Tomcat_Installed();
+function Tomcat_Installed()
+string sName, sKey, sTomcatPath, sJavaPath, sCmdLine, sDate, sServPath, sTargetDir, sEnv;
+number nFoundVal;
+pointer pEnv;
+begin
+	//set the system environment variables JRE_HOME...
+	sName = "JRE_HOME";
+	sJavaPath = TARGETDIR + "\\Runtime";         
+	sKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	RegDBSetKeyValueEx(sKey, sName, REGDB_STRING, sJavaPath, -1);
+	//...and CATALINA_HOME
+	sTomcatPath = TARGETDIR + "\\Server\\web";
+	sName = "CATALINA_HOME";         
+	RegDBSetKeyValueEx(sKey, sName, REGDB_STRING, sTomcatPath, -1);
+	//make sure that Tomcat will be aware of new environment variables
+	sEnv = "Environment";
+	pEnv = &sEnv;
+	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
+	//cleanup
+	DeleteDir (sTomcatPath + "\\webapps\\lib", ALLCONTENTS );
+	//install tomcat as a service
+	sServPath = sTomcatPath + "\\bin\\";
+	TextSubGetValue("<TARGETDIR>", sTargetDir, FALSE, FALSE);
+	sCmdLine = "install \"" + sTargetDir + "\\Runtime\""; 
+	LaunchAppAndWait(sServPath + "yukonservice.bat", sCmdLine, WAIT);
+	//Add this service to the YUKON GROUP so it shows up in TDC
+	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonWebApplicationService"; 
+	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
+end;
+
+//----------------------------------------------------------------------------
+// Uninstalling event is sent just before files for the feature Web Server 
+// are removed during uninstallation. 
+//---------------------------------------------------------------------------- 
+export prototype Tomcat_UnInstalling();
+function Tomcat_UnInstalling()
+string sServPath;
+begin
+   	//remove the Tomcat service
+	sServPath = TARGETDIR + "\\Server\\web\\bin\\";
+	LaunchAppAndWait(sServPath + "service.bat", "remove", WAIT);
+end;
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Service Manager
+// is installed.
+//--------------------------------------------------------------------------- 
+export prototype YukonServiceManager_Installed();
+function YukonServiceManager_Installed()
+string sPathAndFile, sCMD, sKey;
+begin
+	//Install as a service
+	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
+	sCMD = "-i appserver.conf";
+	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT); 
+	//Add this service to the YUKON GROUP so it shows up in TDC
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonServiceMgr";
+	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature Yukon Service Manager 
+// is uninstalled.
+//--------------------------------------------------------------------------- 
+export prototype YukonServiceManager_UnInstalling();
+function YukonServiceManager_UnInstalling()
+string sPathAndFile, sCMD;
+begin
+	//remove the Yukon Service Manager
+	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
+	sCMD = "-r appserver.conf";
+	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);	
+end;
