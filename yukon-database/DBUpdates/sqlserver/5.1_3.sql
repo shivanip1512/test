@@ -75,6 +75,12 @@ INSERT INTO YukonGroupRole values(-274,-1,-7,-1604,'(none)');
 /* @error ignore-end */
 /* End YUK-8431 */
 
+/* Start YUK-8420 */
+UPDATE YukonRoleProperty 
+SET Description = 'Controls if to perform inventory checking while creating or updating hardware information' 
+WHERE RolePropertyId = -20153; 
+/* End YUK-8420 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

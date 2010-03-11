@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/1/2010 12:01:10 AM                         */
+/* Created on:     3/11/2010 5:14:38 PM                         */
 /*==============================================================*/
 
 
@@ -12417,7 +12417,7 @@ INSERT INTO YukonRoleProperty VALUES(-20119,-201,'Admin Change Login Password','
 /* Operator Consumer Info Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20151,-201,'New Account Wizard','true','Controls whether to enable the new account wizard');
 INSERT INTO YukonRoleProperty VALUES(-20152,-201,'Import Customer Account','(none)','Controls whether to enable the customer account importing feature');
-INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Controls when to perform inventory checking while creating or updating hardware information');
+INSERT INTO YukonRoleProperty VALUES(-20153,-201,'Inventory Checking','true','Controls if to perform inventory checking while creating or updating hardware information');
 INSERT INTO YukonRoleProperty VALUES(-20154,-201,'Automatic Configuration','false','Controls whether to automatically send out config command when creating hardware or changing program enrollment');
 INSERT INTO YukonRoleProperty VALUES(-20155,-201,'Order Number Auto Generation','false','Controls whether the order number is automatically generated or entered by user');
 INSERT INTO YukonRoleProperty VALUES(-20156,-201,'Call Number Auto Generation','false','Controls whether the call number is automatically generated or entered by user');
