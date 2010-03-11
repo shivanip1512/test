@@ -26,7 +26,7 @@
 </i:simplePopup>
 
 <!-- Create an opt out -->
-<tags:boxContainer2 key=".header">
+<tags:boxContainer2 key="optOuts">
 <c:if test="${!empty currentOptOutList && allOptedOut}">
     <i:inline key=".allOptedOut"/>
 </c:if>
@@ -82,7 +82,7 @@
 <br><br>
 
 <!-- Current Opt Outs -->
-<tags:boxContainer2 key=".currentOptOuts">
+<tags:boxContainer2 key="currentOptOuts">
 <c:choose>
     <c:when test="${fn:length(currentOptOutList) > 0}">
         <table id="deviceTable" class="compactResultsTable">
@@ -154,7 +154,7 @@
 <br><br>
 
 <!-- Opt Out Limits -->
-<tags:boxContainer2 styleClass="boxContainer50percent" key=".optOutLimits">
+<tags:boxContainer2 styleClass="boxContainer50percent" key="optOutLimits">
 <table id="deviceTable" class="compactResultsTable">
     <tr class="<tags:alternateRow odd="" even="altRow"/>">
         <th><i:inline key=".device"/></th>
@@ -221,7 +221,7 @@
 <br><br>
 
 <!-- Opt Out History -->
-<tags:boxContainer2 key=".optOutHistory">
+<tags:boxContainer2 key="optOutHistory">
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 	
 	<c:if test="${fn:length(previousOptOutList) > 0}">

@@ -48,7 +48,7 @@ function createJSON() {
 			<span class="errorMessage"><cti:msg key="${error}"/></span><br>
 		</c:if>
 
-        <tags:boxContainer2 key=".header">
+        <tags:boxContainer2 key="optOuts">
 
         <i:inline key=".description"/>
         <c:if test="${!empty alreadyOptedOutItems}">

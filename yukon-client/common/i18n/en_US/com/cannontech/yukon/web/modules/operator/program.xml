@@ -25,7 +25,8 @@
 	
 	<!-- optOut -->
 	<!-- Program Opt Out Section -->
-	<entry key="yukon.web.modules.operator.optOut.title">OptOut</entry>
+	<entry key="yukon.web.modules.operator.optOut.title">Opt Out</entry>
+	<entry key="yukon.web.modules.operator.optOut.optOuts.title">Opt Outs</entry>
 	<entry key="yukon.web.modules.operator.optOut.allOptedOut">All devices have already been opted out.</entry>
 	<entry key="yukon.web.modules.operator.optOut.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
 	<entry key="yukon.web.modules.operator.optOut.header">Programs - Opt Out</entry>
@@ -49,7 +50,7 @@
 	<entry key="yukon.web.modules.operator.optOut.cancel">Cancel</entry>
 
 	<!-- Current Opt Outs -->
-	<entry key="yukon.web.modules.operator.optOut.currentOptOuts">Current Opt Outs</entry>
+	<entry key="yukon.web.modules.operator.optOut.currentOptOuts.title">Current Opt Outs</entry>
 	<entry key="yukon.web.modules.operator.optOut.device">Device</entry>
 	<entry key="yukon.web.modules.operator.optOut.program">Program(s)</entry>
 	<entry key="yukon.web.modules.operator.optOut.status">Status</entry>
@@ -79,7 +80,7 @@
 	<entry key="yukon.web.modules.operator.optOut.noCurrentOptOuts">There are no Active or Scheduled Opt Outs.</entry>
 	
     <!-- Opt Out Limits -->
-    <entry key="yukon.web.modules.operator.optOut.optOutLimits">Opt Out Limits</entry>
+    <entry key="yukon.web.modules.operator.optOut.optOutLimits.title">Opt Out Limits</entry>
 	<entry key="yukon.web.modules.operator.optOut.used">Used</entry>
 	<entry key="yukon.web.modules.operator.optOut.allowAdditional">Allow Another Opt Out</entry>
 	<entry key="yukon.web.modules.operator.optOut.remaining">Consumer Opt Outs Remaining</entry>
@@ -90,7 +91,7 @@
 	<entry key="yukon.web.modules.operator.optOut.clear">Clear</entry>
     
     <!-- Opt Out History -->
-	<entry key="yukon.web.modules.operator.optOut.optOutHistory">Opt Out History</entry>
+	<entry key="yukon.web.modules.operator.optOut.optOutHistory.title">Opt Out History</entry>
 	<entry key="yukon.web.modules.operator.optOut.dateScheduled">Scheduled Date</entry>
 	<entry key="yukon.web.modules.operator.optOut.durationHeader">Duration</entry>
     <entry key="yukon.web.modules.operator.optOut.canceled">Cancel</entry>

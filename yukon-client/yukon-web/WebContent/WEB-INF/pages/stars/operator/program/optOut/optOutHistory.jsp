@@ -7,7 +7,7 @@
 <cti:standardPage module="operator" page="optOut">
     <cti:standardMenu />
 
-    <tags:boxContainer2 key=".optOutHistory">
+    <tags:boxContainer2 key="optOutHistory">
         <dr:optOutHistory previousOptOutList="${previousOptOutList}" />
     </tags:boxContainer2>
 
