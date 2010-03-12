@@ -2226,6 +2226,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_ION8300:
                     case TYPE_SNPP:
                     case TYPECBC6510:
+                    case TYPECBC7020:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
