@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/11/2010 5:14:38 PM                         */
+/* Created on:     3/11/2010 10:51:15 PM                        */
 /*==============================================================*/
 
 
@@ -3734,7 +3734,7 @@ create table ApplianceCategory (
 )
 go
 
-insert into ApplianceCategory values (0,'(none)',0,0);
+insert into ApplianceCategory values (0,'(none)',0,0,'Y');
 
 /*==============================================================*/
 /* Table: ApplianceChiller                                      */
