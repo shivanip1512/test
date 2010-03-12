@@ -33,7 +33,7 @@ static const CtiString str_anynum  ( CtiString("(") + str_hexnum + CtiString("|"
 static const CtiString str_date("([0-9]+[/-][0-9]+[/-][0-9]+)");
 static const CtiString str_time("([0-9]+:[0-9]+(:[0-9]+)?)");
 
-static const CtiString str_daterange(str_date + CtiString(" (") + str_date + CtiString(")?") );
+static const CtiString str_daterange(str_date + CtiString(" *(") + str_date + CtiString(")?") );
 
 static const boost::regex   re_signed_num      (str_signed_num);
 static const boost::regex   re_num      (str_num);
@@ -446,7 +446,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue daily read channel n 12/12/2007 12/27/2007
     //  getvalue daily read detail 12/12/2007
     //  getvalue daily read detail channel n 12/12/2007
-    static const boost::regex  re_dailyread(CtiString("daily read (detail )?(channel ") + str_num + CtiString(" )?") + CtiString("(") + str_daterange + CtiString(")?"));
+    static const boost::regex  re_dailyread(CtiString("daily read (detail )?(channel ") + str_num + CtiString(" *)?") + CtiString("(") + str_daterange + CtiString(")?"));
 
     static const boost::regex  re_outage(CtiString("outage ") + str_num);
 

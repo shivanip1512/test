@@ -162,6 +162,8 @@ std::string inputString[TEST_SIZE] = {
 "putconfig emetcon alarm_mask power_fail under_voltage over_voltage pf_carryover rtc_adjusted holiday dst_change disconnect read_corrupted",
 "putconfig emetcon alarm_mask tamper alarm_mask_meter1=0x11",
 "putconfig emetcon alarm_mask configbyte=0x07 tamper alarm_mask_meter1=0x11",
+"getvalue daily read detail channel 2 02/02/2000",
+"getvalue daily read detail channel 3",
 };
 
 

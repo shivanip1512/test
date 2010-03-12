@@ -159,8 +159,8 @@ std::string parse_asString[TEST_SIZE] = {
 "command=6:flags=0::alarm_mask=(none),1663,1663.000:disconnect=(none),1,1.000:type=emetcon,7,7.000",
 "command=6:flags=0::alarm_mask=(none),2432,2432.000:alarm_mask_meter=(none),17,17.000:type=emetcon,7,7.000",
 "command=6:flags=0::alarm_mask=(none),2432,2432.000:alarm_mask_meter=(none),17,17.000:config_byte=(none),7,7.000:type=emetcon,7,7.000",
-"command=0:flags=0::type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),2,2.000:daily_read=(none),1,1.000:daily_read_date_begin=02/02/2000,-2147483648,0.000:daily_read_detail=(none),1,1.000:type=versacom,0,0.000",
+"command=1:flags=0::channel=(none),3,3.000:daily_read=(none),1,1.000:daily_read_detail=(none),1,1.000:type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000",
 "command=0:flags=0::type=versacom,0,0.000"
