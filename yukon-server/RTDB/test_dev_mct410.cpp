@@ -512,83 +512,95 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor)
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("control disconnect");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon address uniq 2455535535553555");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon centron ratio 10 display 4x5 test 5 errors disable");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon centron ratio 290 display 5x1 test 7 errors disable");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon centron ratio 25 display 5x1 test 10 errors disable");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon disconnect load limit 100 100");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon disconnect cycle 1 1");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon outage threshold 200");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("putconfig emetcon freeze day 266");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("getvalue daily read detail channel 2 02/02/2000");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 
     parse = CtiCommandParser("getvalue daily read detail channel 8");
     basePtr->ExecuteRequest(&request, parse,  vgList , retList, outList);
     BOOST_CHECK(outList.empty());
     BOOST_CHECK_EQUAL(retList.size(), 1);
-    retList.clear(); // memory leak
+    delete_container(retList);
+    retList.clear();
     outList.clear();
 }
