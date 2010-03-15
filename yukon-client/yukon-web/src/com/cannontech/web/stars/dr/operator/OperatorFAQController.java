@@ -30,7 +30,7 @@ public class OperatorFAQController {
 	    String webLinkFAQ = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_WEB_LINK_FAQ,
 	                                                               userContext.getYukonUser());
 	    
-	    if (!StringUtils.isBlank(webLinkFAQ) && !webLinkFAQ.equalsIgnoreCase("(none)")) {
+	    if (!StringUtils.isBlank(webLinkFAQ)) {
 	        return "redirect:"+webLinkFAQ;
 	    }
 

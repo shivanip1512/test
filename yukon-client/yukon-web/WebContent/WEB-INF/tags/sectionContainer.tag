@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 
 <%@ attribute name="title" required="false" type="java.lang.String"%>
@@ -7,6 +8,7 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
+<%@ attribute name="escapeTitle" required="false" type="java.lang.String" %>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -20,7 +22,15 @@
             <c:if test="${not empty pageScope.titleIcon}">
               <img src="${pageScope.titleIcon}" style="height: 32px; width: 32px;" />
             </c:if>
-            ${pageScope.title} 
+            
+            <c:choose>
+              <c:when test="${escapeTitle eq true}">
+                <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
+              </c:when>
+              <c:otherwise>
+                ${pageScope.title} 
+              </c:otherwise>
+            </c:choose>
             
             <c:if test="${not empty pageScope.helpText}">
             	<a href="javascript:void(0);" onclick="$('sectionContainerInfoPopup_${thisId}').toggle();">

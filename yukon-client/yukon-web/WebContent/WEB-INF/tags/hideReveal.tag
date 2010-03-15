@@ -2,6 +2,9 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="escapeTitle" required="false" type="java.lang.String" %>
+
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -15,7 +18,17 @@
 <span id="${thisId}_control" class="controls">
 <img id="${thisId}_plusImg" src="/WebConfig/yukon/Icons/triangle-right.gif">
 <img id="${thisId}_minusImg" src="/WebConfig/yukon/Icons/triangle-down.gif">
-<span class="title triangleContainer_title">${title}</span>
+
+<span class="title triangleContainer_title">
+<c:choose>
+    <c:when test="${escapeTitle eq true}">
+        <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
+    </c:when>
+    <c:otherwise>
+        ${pageScope.title} 
+    </c:otherwise>
+</c:choose>
+</span>
 </span>
 </div>
 <div id="${thisId}_content" class="content triangleContainer_content">
