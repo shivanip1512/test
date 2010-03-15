@@ -6,7 +6,9 @@ IVVCState::IVVCState() :
     _scannedRequest(false),
     _controlledId(-1),
     _paoId(0),
-    _commsRetryCount(0)
+    _commsRetryCount(0),
+    _showVarCheckFailMsg(true),
+    _showSubbusDisableMsg(true)
 {
 }
 
@@ -136,5 +138,29 @@ void IVVCState::setCommsRetryCount(const unsigned long retryCount)
 unsigned long IVVCState::getCommsRetryCount() const
 {
     return _commsRetryCount;
+}
+
+
+void IVVCState::setShowVarCheckMsg(const bool flag)
+{
+    _showVarCheckFailMsg = flag;
+}
+
+
+bool IVVCState::getShowVarCheckMsg() const
+{
+    return _showVarCheckFailMsg;
+}
+
+
+void IVVCState::setShowBusDisableMsg(const bool flag)
+{
+    _showSubbusDisableMsg = flag;
+}
+
+
+bool IVVCState::getShowBusDisableMsg() const
+{
+    return _showSubbusDisableMsg;
 }
 

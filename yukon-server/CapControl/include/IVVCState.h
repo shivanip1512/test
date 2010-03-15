@@ -62,6 +62,12 @@ class IVVCState
         void setCommsRetryCount(const unsigned long retryCount);
         unsigned long getCommsRetryCount() const;
 
+        void setShowVarCheckMsg(const bool flag);
+        bool getShowVarCheckMsg() const;
+
+        void setShowBusDisableMsg(const bool flag);
+        bool getShowBusDisableMsg() const;
+
         struct EstimatedData
         {
             bool            operated;
@@ -94,6 +100,9 @@ class IVVCState
 
         bool _remoteMode;
         bool _firstPass;
+
+        bool _showVarCheckFailMsg;
+        bool _showSubbusDisableMsg;
 
         unsigned long _commsRetryCount;
 };
