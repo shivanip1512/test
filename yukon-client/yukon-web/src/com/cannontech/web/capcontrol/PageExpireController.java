@@ -18,9 +18,8 @@ public class PageExpireController implements Controller {
     private WebUpdatedDAO<Integer> webUpdatedDAO;
     
     @Override
-    public ModelAndView handleRequest(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-        
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        response.setContentType("text/plain");
         final String paoIds = ServletRequestUtils.getRequiredStringParameter(request, "paoIds");
         final JSONArray array = new JSONArray(paoIds);
         

@@ -39,6 +39,7 @@ public class CapControlCommandController extends MultiActionController {
 	
     //4-Tier Version of the command executor
 	public void executeCommandTier(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	    response.setContentType("text/plain");
 	    final LiteYukonUser user = ServletUtil.getYukonUser(request);
 	    final CapControlCommandExecutor executor = createCapControlCommandExec(user);
 	    

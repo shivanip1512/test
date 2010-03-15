@@ -44,7 +44,6 @@
 </cti:breadCrumbs>
 
 <script type="text/javascript">
-   	Event.observe(window, 'load', function () {highlightLast();});
     Event.observe(window, 'load', checkPageExpire);
     
     // These two functions are neccessary since IE does not support css :hover
@@ -57,20 +56,6 @@
         row = $(row);
         row.removeClassName('hover');
     }   
-    
-	function highlightLast()
-	{
-		var id = $("lastAccessedID").value;
-		if( id != -1 )
-		{
-			var elem = $('tr_cap_'+id);
-			//verify the id is a capbank. if not no highlight.
-			
-			if( elem != null ){//find a way to test is teh element is present!
-				hiLiteTRow ('tr_cap_'+id , 'lightgrey');
-			}
-		}
-	}
     
     // gathers ids of selected subbuses and feeders, appends to url as target param
     // triggers call to greybox containing point chart(s)

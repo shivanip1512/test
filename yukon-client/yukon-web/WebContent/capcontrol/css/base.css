@@ -248,6 +248,10 @@ a.tierIconLink{
 	text-decoration: none;
 }
 
+a[href] {
+    vertical-align: top;
+}
+
 .tierImg {
 	border: 0;
     vertical-align: middle;

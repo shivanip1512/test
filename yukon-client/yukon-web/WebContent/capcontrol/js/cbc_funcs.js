@@ -337,16 +337,6 @@ function updateVerificationImage(spanId) {
     }
 }
 
-function hiLiteTRow (id, color) {
-    $(id).style.backgroundColor = color;
-}
-
-//returned when a cap bank menu is triggered to disappear
-function hidePopupHiLite (rowID, color) {
-    nd();
-    hiLiteTRow (rowID, color);
-}
-
 // -------------------------------------------
 //post events with a form rather than using the URL line.
 // Accepts a form name and any number of [ParamName,ParamValue] pairs.

@@ -198,17 +198,11 @@ public class TierController {
 	    fullURL = ServletUtil.urlEncode(fullURL);
 	    mav.addAttribute("fullURL", fullURL);
 	    
-		String lastStr = (String) session.getAttribute("lastAccessed");
-		int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
-	    mav.addAttribute("lastAccessed", lastAccessed);
-	    
 	    String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
 	    CBCNavigationUtil.setNavigation(requestURI , request.getSession());
 	    
 		return "tier/feederTier.jsp";
     }
-	
-	
 	
 	@RequestMapping(method=RequestMethod.POST)
 	public void updateSession(HttpServletRequest request, CCSessionInfo info) throws ServletException, Exception {
