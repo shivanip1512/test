@@ -132,7 +132,9 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 			if (cronExpression == null) {
 				cronExpression = existingJob.getCronString();
 			}
-			if (queuedRetryCount == null && existingTask.getTurnOffQueuingAfterRetryCount() > 0) {
+			if (queuedRetryCount == null 
+					&& existingTask.getTurnOffQueuingAfterRetryCount() != null
+					&& existingTask.getTurnOffQueuingAfterRetryCount() > 0) {
 				queuedRetryCount = String.valueOf(existingTask.getTurnOffQueuingAfterRetryCount());
 			}
 			if (nonQueuedRetryCount == null 
