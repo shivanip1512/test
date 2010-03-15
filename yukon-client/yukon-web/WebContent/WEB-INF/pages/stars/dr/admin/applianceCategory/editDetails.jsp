@@ -43,13 +43,15 @@ submitForm = function() {
     onsubmit="return submitForm()">
     <form:hidden path="applianceCategoryId"/>
     <form:hidden path="webConfiguration.configurationId"/>
-    <tags:nameValueContainer2 nameColumnWidth="150px">
-        <tags:nameValue2 nameKey=".name">
+    <tags:nameValueContainer>
+        <cti:msg2 var="fieldName" key=".name"/>
+        <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
             <form:input id="nameInput" path="name" size="30"
                 onkeyup="nameChanged()" onblur="nameChanged()"/>
-        </tags:nameValue2>
+        </tags:nameValue>
 
-        <tags:nameValue2 nameKey=".displayName">
+        <cti:msg2 var="fieldName" key=".displayName"/>
+        <tags:nameValue name="${fieldName}">
             <form:input id="displayNameInput" path="displayName" size="30"/>
             <c:set var="selcted" value=""/>
             <c:if test="${applianceCategory.name == applianceCategory.displayName}">
@@ -58,25 +60,28 @@ submitForm = function() {
             <input id="sameAsName" type="checkbox"${checked}
                 onclick="sameAsNameClicked()"/>
             <label for="sameAsName"><i:inline key=".sameAsName"/></label>
-        </tags:nameValue2>
+        </tags:nameValue>
 
-        <tags:nameValue2 nameKey=".type">
+        <cti:msg2 var="fieldName" key=".type"/>
+        <tags:nameValue name="${fieldName}">
             <form:select path="applianceType">
                 <c:forEach var="applianceType" items="${applianceTypes}">
                     <cti:msg var="optionLabel" key="${applianceType}"/>
                     <form:option value="${applianceType}" label="${optionLabel}"/>
                 </c:forEach>
             </form:select>
-        </tags:nameValue2>
+        </tags:nameValue>
 
-        <tags:nameValue2 nameKey=".icon">
+        <cti:msg2 var="fieldName" key=".icon"/>
+        <tags:nameValue name="${fieldName}">
             <dr:iconChooser id="iconChooser" path="icon" icons="${icons}"
                 selectedIcon="${applianceCategory.iconEnum}" applianceCategoryIconMode="true"/>
-        </tags:nameValue2>
+        </tags:nameValue>
 
-        <tags:nameValue2 nameKey=".description">
+        <cti:msg2 var="fieldName" key=".description"/>
+        <tags:nameValue name="${fieldName}">
             <form:textarea path="description" cols="40" rows="5"/>
-        </tags:nameValue2>
+        </tags:nameValue>
 
         <c:set var="fieldName">
             <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectable"/></label>
@@ -86,7 +91,7 @@ submitForm = function() {
             <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectableDescription"/></label>
         </tags:nameValue>
 
-    </tags:nameValueContainer2>
+    </tags:nameValueContainer>
     <script type="text/javascript">
         sameAsNameClicked();
     </script>

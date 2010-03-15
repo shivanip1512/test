@@ -87,18 +87,21 @@ submitForm = function() {
     <form:hidden path="assignedProgram.programId"/>
     <form:hidden id="programNameInput" path="assignedProgram.programName"/>
     <form:hidden path="assignedProgram.programOrder"/>
-    <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".applianceCategory" nameColumnWidth="170px">
+    <tags:nameValueContainer>
+        <cti:msg2 var="fieldName" key=".applianceCategory"/>
+        <tags:nameValue name="${fieldName}" nameColumnWidth="170px">
             <spring:escapeBody>${applianceCategory.name}</spring:escapeBody>
-        </tags:nameValue2>
+        </tags:nameValue>
         <c:if test="${!backingBean.virtual && !backingBean.multiple}">
-            <tags:nameValue2 nameKey=".programName">
+            <cti:msg2 var="fieldName" key=".programName"/>
+            <tags:nameValue name="${fieldName}">
                 <spring:escapeBody>${backingBean.assignedProgram.programName}</spring:escapeBody>
-            </tags:nameValue2>
+            </tags:nameValue>
         </c:if>
 
         <c:if test="${!backingBean.multiple}">
-            <tags:nameValue2 nameKey=".displayName">
+            <cti:msg2 var="fieldName" key=".displayName"/>
+            <tags:nameValue name="${fieldName}">
                 <form:input id="displayNameInput"
                     path="assignedProgram.displayName" size="30"
                     onkeyup="displayNameChanged()" onblur="displayNameChanged()"/>
@@ -110,9 +113,10 @@ submitForm = function() {
                         onclick="sameAsProgramNameClicked()"/>
                     <label for="sameAsProgramName"><i:inline key=".sameAsProgramName"/></label>
                 </c:if>
-            </tags:nameValue2>
+            </tags:nameValue>
 
-            <tags:nameValue2 nameKey=".shortName">
+            <cti:msg2 var="fieldName" key=".shortName"/>
+            <tags:nameValue name="${fieldName}">
                 <form:input id="shortNameInput" path="assignedProgram.shortName" size="30"/>
                 <c:if test="${backingBean.assignedProgram.shortName == backingBean.assignedProgram.displayName}">
                     <c:set var="checked" value=" checked=\"true\""/>
@@ -120,41 +124,48 @@ submitForm = function() {
                 <input id="sameAsDisplayName" type="checkbox"${checked}
                     onclick="sameAsDisplayNameClicked()"/>
                 <label for="sameAsDisplayName"><i:inline key=".sameAsDisplayName"/></label>
-            </tags:nameValue2>
+            </tags:nameValue>
 
-            <tags:nameValue2 nameKey=".displayNameKey">
+            <cti:msg2 var="fieldName" key=".displayNameKey"/>
+            <tags:nameValue name="${fieldName}">
                 <span id="displayNameKeyArea"></span>
-            </tags:nameValue2>
+            </tags:nameValue>
         </c:if>
 
-        <tags:nameValue2 nameKey=".description">
+        <cti:msg2 var="fieldName" key=".description"/>
+        <tags:nameValue name="${fieldName}">
             <form:textarea path="assignedProgram.description" cols="40" rows="5"/>
-        </tags:nameValue2>
+        </tags:nameValue>
 
-        <tags:nameValue2 nameKey=".chanceOfControl">
+        <cti:msg2 var="fieldName" key=".chanceOfControl"/>
+        <tags:nameValue name="${fieldName}">
             <form:select path="assignedProgram.chanceOfControlId" items="${chanceOfControls}"
                 itemValue="chanceOfControlId" itemLabel="name">
             </form:select>
-        </tags:nameValue2>
+        </tags:nameValue>
 
-        <tags:nameValue2 nameKey=".programDescriptionIcons" isSection="true">
-            <tags:nameValue2 nameKey=".savings">
+        <cti:msg2 var="fieldName" key=".programDescriptionIcons"/>
+        <tags:nameValue name="${fieldName}" isSection="true">
+            <cti:msg2 var="nestedFieldName" key=".savings"/>
+            <tags:nameValue name="${nestedFieldName}">
                 <dr:iconChooser id="savings" path="assignedProgram.savingsIcon"
                     icons="${savingsIcons}"
                     selectedIcon="${backingBean.assignedProgram.savingsIconEnum}"/>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".controlPercent">
+            </tags:nameValue>
+            <cti:msg2 var="nestedFieldName" key=".controlPercent"/>
+            <tags:nameValue name="${nestedFieldName}">
                 <dr:iconChooser id="controlPercent" path="assignedProgram.controlPercentIcon"
                     icons="${controlPercentIcons}"
                     selectedIcon="${backingBean.assignedProgram.controlPercentIconEnum}"/>
-            </tags:nameValue2>
-            <tags:nameValue2 nameKey=".environment">
+            </tags:nameValue>
+            <cti:msg2 var="nestedFieldName" key=".environment"/>
+            <tags:nameValue name="${nestedFieldName}">
                 <dr:iconChooser id="environment" path="assignedProgram.environmentIcon"
                     icons="${environmentIcons}"
                     selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
-            </tags:nameValue2>
-        </tags:nameValue2>
-    </tags:nameValueContainer2>
+            </tags:nameValue>
+        </tags:nameValue>
+    </tags:nameValueContainer>
     <c:if test="${!backingBean.multiple}">
         <script type="text/javascript">
             <c:if test="${!backingBean.virtual}">
