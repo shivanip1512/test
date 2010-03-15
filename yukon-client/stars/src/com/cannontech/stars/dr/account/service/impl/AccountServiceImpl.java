@@ -28,6 +28,7 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -43,6 +44,7 @@ import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
+import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.core.dao.CallReportDao;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -72,6 +74,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class AccountServiceImpl implements AccountService {
     
@@ -105,6 +108,8 @@ public class AccountServiceImpl implements AccountService {
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ContactNotificationService contactNotificationService;
     private ContactService contactService;
+    private PhoneNumberFormattingService phoneNumberFormattingService;
+    private YukonUserContextService yukonUserContextService;
     
     // ADD ACCOUNT
     @Override
@@ -220,18 +225,15 @@ public class AccountServiceImpl implements AccountService {
          * Create the notifications
          */
         if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
-        	LiteContactNotification homePhoneLiteContactNotification = contactNotificationService.createNotification(liteContact, ContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
-            contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
+        	contactNotificationService.createNotification(liteContact, ContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
         }
         
         if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
-        	LiteContactNotification workPhoneLiteContactNotification = contactNotificationService.createNotification(liteContact, ContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
-            contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
+        	contactNotificationService.createNotification(liteContact, ContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
         }
         
         if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
-        	LiteContactNotification emailLiteContactNotification = contactNotificationService.createNotification(liteContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
-            contactNotificationDao.saveNotification(emailLiteContactNotification);
+        	contactNotificationService.createNotification(liteContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
         }
             
         /*
@@ -744,11 +746,11 @@ public class AccountServiceImpl implements AccountService {
         LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
         
         if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
+        	String homePhone = accountDto.getHomePhone();
             if(homePhoneNotif == null) {
-            	LiteContactNotification homePhoneLiteContactNotification = contactNotificationService.createNotification(primaryContact, ContactNotificationType.HOME_PHONE, accountDto.getHomePhone());
-                contactNotificationDao.saveNotification(homePhoneLiteContactNotification);
+            	contactNotificationService.createNotification(primaryContact, ContactNotificationType.HOME_PHONE, homePhone);
             }else {
-                homePhoneNotif.setNotification(accountDto.getHomePhone());
+                homePhoneNotif.setNotification(homePhone);
                 contactNotificationDao.saveNotification(homePhoneNotif);
             }
         }else {
@@ -758,11 +760,11 @@ public class AccountServiceImpl implements AccountService {
         }
         
         if(StringUtils.isNotBlank(accountDto.getWorkPhone())) {
+        	String workPhone = accountDto.getWorkPhone();
             if(workPhoneNotif == null) {
-            	LiteContactNotification workPhoneLiteContactNotification = contactNotificationService.createNotification(primaryContact, ContactNotificationType.WORK_PHONE, accountDto.getWorkPhone());
-                contactNotificationDao.saveNotification(workPhoneLiteContactNotification);
+            	contactNotificationService.createNotification(primaryContact, ContactNotificationType.WORK_PHONE, workPhone);
             }else {
-                workPhoneNotif.setNotification(accountDto.getWorkPhone());
+                workPhoneNotif.setNotification(workPhone);
                 contactNotificationDao.saveNotification(workPhoneNotif);
             }
         }else {
@@ -772,11 +774,11 @@ public class AccountServiceImpl implements AccountService {
         }
         
         if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
+        	String email = accountDto.getEmailAddress();
             if(emailNotif == null) {
-            	LiteContactNotification emailLiteContactNotification = contactNotificationService.createNotification(primaryContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
-                contactNotificationDao.saveNotification(emailLiteContactNotification);
+            	contactNotificationService.createNotification(primaryContact, ContactNotificationType.EMAIL, email);
             }else {
-                emailNotif.setNotification(accountDto.getEmailAddress());
+                emailNotif.setNotification(email);
                 contactNotificationDao.saveNotification(emailNotif);
             }
         }else {
@@ -896,26 +898,30 @@ public class AccountServiceImpl implements AccountService {
     	LiteStarsEnergyCompany ec = starsDatabaseCache.getEnergyCompanyByUser(yukonUser);
     	CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
         
-    	return getAccountDto(customerAccount, ec);
+    	YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
+    	
+    	return getAccountDto(customerAccount, ec, userContext);
     }
     
     @Override
     public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) {
     
+    	YukonUserContext userContext = yukonUserContextService.getEnergyCompanyDefaultUserContext(ec.getUser());
+    	
     	CustomerAccount customerAccount = getCustomerAccountForAccountNumberAndEnergyCompany(accountNumber, ec);
-    	return getAccountDto(customerAccount, ec);
+    	return getAccountDto(customerAccount, ec, userContext);
     }
     
     @Override
-    public AccountDto getAccountDto(int accountId, int energyCompanyId) {
+    public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext) {
     	
     	CustomerAccount customerAccount = getCustomerAccountForAccountId(accountId);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
     	
-        return getAccountDto(customerAccount, energyCompany);
+        return getAccountDto(customerAccount, energyCompany, userContext);
     }
     
-    private AccountDto getAccountDto(CustomerAccount customerAccount, LiteStarsEnergyCompany ec) {
+    private AccountDto getAccountDto(CustomerAccount customerAccount, LiteStarsEnergyCompany ec, YukonUserContext userContext) {
         AccountDto retrievedDto = new AccountDto();
         
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
@@ -930,8 +936,8 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Customer
          */
-        retrievedDto.setAltTrackingNumber(customer.getAltTrackingNumber());
-        retrievedDto.setCustomerNumber(customer.getCustomerNumber());
+        retrievedDto.setAltTrackingNumber(stripNone(customer.getAltTrackingNumber()));
+        retrievedDto.setCustomerNumber(stripNone(customer.getCustomerNumber()));
         retrievedDto.setRateScheduleEntryId(customer.getRateScheduleID());
         if(customer instanceof LiteCICustomer) {
             retrievedDto.setCompanyName(((LiteCICustomer) customer).getCompanyName());
@@ -950,12 +956,16 @@ public class AccountServiceImpl implements AccountService {
         LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
         LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
         if(homePhoneNotif != null) {
-            retrievedDto.setHomePhone(homePhoneNotif.getNotification());
+        	String homePhone = homePhoneNotif.getNotification();
+        	homePhone = phoneNumberFormattingService.formatPhoneNumber(homePhone, userContext);
+            retrievedDto.setHomePhone(homePhone);
         }else {
             retrievedDto.setHomePhone("");
         }
         if(workPhoneNotif != null) {
-            retrievedDto.setWorkPhone(workPhoneNotif.getNotification());
+        	String workPhone = workPhoneNotif.getNotification();
+        	workPhone = phoneNumberFormattingService.formatPhoneNumber(workPhone, userContext);
+            retrievedDto.setWorkPhone(workPhone);
         }else {
             retrievedDto.setWorkPhone("");
         }
@@ -1051,6 +1061,7 @@ public class AccountServiceImpl implements AccountService {
         }
     }
     
+    // we store "(none)" in the database for some reason
     private void setAddressDefaults(LiteAddress liteAddress) {
         liteAddress.setLocationAddress1(CtiUtilities.STRING_NONE);
         liteAddress.setLocationAddress2(CtiUtilities.STRING_NONE);
@@ -1073,13 +1084,18 @@ public class AccountServiceImpl implements AccountService {
         lite.setCounty(address.getCounty());
     }
     
+    // when extracting lets turn "(none)"s into blank strings even though they may turn back into "(none)"s if they are re-saved without being set
     private void giveAddressFieldsToDTO(LiteAddress lite, Address address) {
-        address.setLocationAddress1(lite.getLocationAddress1());
-        address.setLocationAddress2(lite.getLocationAddress2());
-        address.setCityName(lite.getCityName());
-        address.setStateCode(lite.getStateCode());
-        address.setZipCode(lite.getZipCode());
-        address.setCounty(lite.getCounty());
+        address.setLocationAddress1(stripNone(lite.getLocationAddress1()));
+        address.setLocationAddress2(stripNone(lite.getLocationAddress2()));
+        address.setCityName(stripNone(lite.getCityName()));
+        address.setStateCode(stripNone(lite.getStateCode()));
+        address.setZipCode(stripNone(lite.getZipCode()));
+        address.setCounty(stripNone(lite.getCounty()));
+    }
+    
+    private String stripNone (String value) {
+    	return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
     }
     
     //==============================================================================================
@@ -1224,5 +1240,10 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     public void setContactService(ContactService contactService) {
 		this.contactService = contactService;
+	}
+    
+    @Autowired
+    public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
+		this.phoneNumberFormattingService = phoneNumberFormattingService;
 	}
 }

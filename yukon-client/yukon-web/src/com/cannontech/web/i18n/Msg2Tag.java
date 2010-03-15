@@ -26,7 +26,7 @@ public class Msg2Tag extends YukonTagSupport {
     private ObjectFormattingService objectFormattingService;
 
     private Object arguments;
-    private String argumentSeparator = ",";
+    private String argumentSeparator;
     private String var;
     private String scope = TagUtils.SCOPE_PAGE;
     private Object key;

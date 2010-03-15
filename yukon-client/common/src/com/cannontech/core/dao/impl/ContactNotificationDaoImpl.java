@@ -11,10 +11,12 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcOperations;
@@ -34,6 +36,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     private YukonJdbcOperations yukonJdbcOperations;
     private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private PhoneNumberFormattingService phoneNumberFormattingService;
     
 	public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
@@ -146,8 +149,15 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         }
 
         int notificationCategoryId = notification.getNotificationCategoryID();
+        
+        String notificationText = notification.getNotification();
+        ContactNotificationType contactNotificationType = ContactNotificationType.getTypeForNotificationCategoryId(notificationCategoryId);
+        if (contactNotificationType.isPhoneType()) {
+        	notificationText = phoneNumberFormattingService.strip(notificationText);
+        }
+        
         String disableFlag = notification.getDisableFlag();
-        String notificationText = SqlUtils.convertStringToDbValue(notification.getNotification());
+        notificationText = SqlUtils.convertStringToDbValue(notificationText);
         simpleJdbcTemplate.update(sql.toString(),
                                   contactId,
                                   notificationCategoryId,
@@ -191,9 +201,11 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         return getNotificationsForContact(liteContact.getContactID());
     }
     
-    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID) {
-        List<LiteContactNotification> result = new ArrayList<LiteContactNotification>();
-        List<LiteContactNotification> notificationsForContact = getNotificationsForContact(liteContact.getContactID());
+    @Override
+    public List<LiteContactNotification> getNotificationsForContactByType(int contactId, int notifCatID) {
+    	
+    	List<LiteContactNotification> result = new ArrayList<LiteContactNotification>();
+        List<LiteContactNotification> notificationsForContact = getNotificationsForContact(contactId);
         for (LiteContactNotification liteNotif : notificationsForContact) {
             if (liteNotif.getNotificationCategoryID() == notifCatID) {
                 result.add(liteNotif);
@@ -201,6 +213,11 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         }
         
         return result;
+    }
+    
+    @Override
+    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID) {
+        return getNotificationsForContactByType(liteContact.getContactID(), notifCatID);
     }
     
     @Override
@@ -227,6 +244,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
 
     @Override
+    @Transactional
     public void removeNotification(int notificationID) {
         
         StringBuilder sql = new StringBuilder("DELETE ");
@@ -238,6 +256,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
+    @Transactional
     public void removeNotificationsForContactIds(List<Integer> contactIds) {
         StringBuilder sql = new StringBuilder("DELETE ");
         sql.append(" FROM ContactNotification");
@@ -365,5 +384,10 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     @Autowired
     public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
 		this.yukonJdbcOperations = yukonJdbcOperations;
+	}
+    
+    @Autowired
+    public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
+		this.phoneNumberFormattingService = phoneNumberFormattingService;
 	}
 }

@@ -1265,7 +1265,7 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <description>The separator character to be used for splitting the
-            arguments string value; defaults to a 'comma' (',').</description>
+            arguments string value. Defaults to null so string values will not be split unless an argumentSeparator is supplied.</description>
         </attribute>
         <attribute>
             <name>var</name>

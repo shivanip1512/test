@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+   <!-- residence -->
+    <entry key="yukon.web.modules.operator.residence.pageName">Customer Residence</entry>
+    <entry key="yukon.web.modules.operator.residence.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.residence.customerResidenceSection.title">Residence Information</entry>
+    <entry key="yukon.web.modules.operator.residence.residenceType">Residence Type</entry>
+    <entry key="yukon.web.modules.operator.residence.constructionMaterial">Construction Material</entry>
+    <entry key="yukon.web.modules.operator.residence.decadeBuilt">Decade Built</entry>
+    <entry key="yukon.web.modules.operator.residence.squareFeet">Square Feet</entry>
+    <entry key="yukon.web.modules.operator.residence.insulationDepth">Insulation Depth</entry>
+    <entry key="yukon.web.modules.operator.residence.generalCondition">General Condition</entry>
+    <entry key="yukon.web.modules.operator.residence.mainCoolingSystem">Main Cooling System</entry>
+    <entry key="yukon.web.modules.operator.residence.mainHeatingSystem">Main Heating System</entry>
+    <entry key="yukon.web.modules.operator.residence.numberOfOccupants">Number of Occupants</entry>
+    <entry key="yukon.web.modules.operator.residence.ownershipType">Ownership Type</entry>
+    <entry key="yukon.web.modules.operator.residence.mainFuelType">Main Fuel Type</entry>
+    <entry key="yukon.web.modules.operator.residence.notes">Notes</entry>
+    
+    <entry key="yukon.web.modules.operator.residence.residenceCreated">Residence Created</entry>
+    <entry key="yukon.web.modules.operator.residence.residenceUpdated">Residence Updated</entry>
+    
+</properties>

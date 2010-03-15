@@ -87,7 +87,7 @@ submitForm = function() {
     <form:hidden path="assignedProgram.programId"/>
     <form:hidden id="programNameInput" path="assignedProgram.programName"/>
     <form:hidden path="assignedProgram.programOrder"/>
-    <tags:nameValueContainer>
+    <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".applianceCategory" nameColumnWidth="170px">
             <spring:escapeBody>${applianceCategory.name}</spring:escapeBody>
         </tags:nameValue2>
@@ -154,7 +154,7 @@ submitForm = function() {
                     selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
             </tags:nameValue2>
         </tags:nameValue2>
-    </tags:nameValueContainer>
+    </tags:nameValueContainer2>
     <c:if test="${!backingBean.multiple}">
         <script type="text/javascript">
             <c:if test="${!backingBean.virtual}">

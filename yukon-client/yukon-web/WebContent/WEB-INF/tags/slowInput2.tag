@@ -7,6 +7,7 @@
 <%@ attribute name="width" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean"%>
+<%@ tag body-content="empty" %>
 
 <cti:msgScope paths=".${key},components.slowInput.${key}">
 	<cti:msg2 var="label" key=".label"/>

@@ -20,14 +20,14 @@
 			<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
 			<cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 			<i18n:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
-			     <tags:nameValueContainer>
-				     <tags:nameValue2 nameColumnWidth="20%" nameKey=".helpInfoText.programBasedControlHistory">
+			     <tags:nameValueContainer2 nameColumnWidth="20%">
+				     <tags:nameValue2 nameKey=".helpInfoText.programBasedControlHistory">
 					     <i18n:inline key=".helpInfoText.programBasedControlHistoryText" /> <br>
 				     </tags:nameValue2>
-				     <tags:nameValue2 nameColumnWidth="20%" nameKey=".helpInfoText.inventoryBasedControlHistory" >
+				     <tags:nameValue2 nameKey=".helpInfoText.inventoryBasedControlHistory" >
 				     	<i18n:inline key=".helpInfoText.inventoryBasedControlHistoryText" />
 				     </tags:nameValue2>
-			     </tags:nameValueContainer>
+			     </tags:nameValueContainer2>
 			</i18n:simplePopup>
 
 			<table style="width: 900px" cellspacing="0" class="miniResultsTable">

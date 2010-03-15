@@ -8,6 +8,7 @@ import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.user.YukonUserContext;
 
 public class AccountServiceAdapter implements AccountService {
 
@@ -66,7 +67,7 @@ public class AccountServiceAdapter implements AccountService {
 	}
 
 	@Override
-	public AccountDto getAccountDto(int accountId, int energyCompanyId) {
+	public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 }

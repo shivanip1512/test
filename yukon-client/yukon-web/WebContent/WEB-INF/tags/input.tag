@@ -11,7 +11,7 @@
 
 <c:set var="inputClass" value=""/>
 <c:if test="${status.error}">
-	<c:set var="inputClass" value="lightRedBackground"/>
+	<c:set var="inputClass" value="error"/>
 </c:if>
 
 <form:input path="${path}" id="${path}" disabled="${disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" cssClass="${inputClass}"/>

@@ -1,7 +1,8 @@
 <%@ page errorPage="/internalError.jsp" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
@@ -48,6 +49,25 @@
 <c:if test="${not showContextualNavigation and not empty pageDetail.pageHeading}">
     <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${pageDetail.pageHeading}</h2>
 </c:if>
+
+<%-- FLASH SCOPE MESSAGES --%>
+<c:forEach var="flashScopeMessage" items="${flashScopeMessages}">
+	<div class="flashScopeMessage ${flashScopeMessage.type}">
+		<c:choose>
+			<c:when test="${fn:length(flashScopeMessage.messages) == 1}">
+				<cti:msg key="${flashScopeMessage.messages[0]}"/> 
+			</c:when>
+			<c:otherwise>
+				<ul>
+				<c:forEach var="message" items="${flashScopeMessage.messages}">
+					<li>&bull; <cti:msg key="${message}"/> </li>
+				</c:forEach>
+				</ul>
+			</c:otherwise>
+		</c:choose>
+	</div>
+</c:forEach>
+
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
 </div> <!-- ContentWrapper -->
@@ -82,19 +102,19 @@ Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
 </div>
 
 <cti:msg key="yukon.web.alerts.heading" var="alertTitle"/>
-<ct:simplePopup title="${alertTitle}" id="alertContent" onClose="javascript:alert_closeAlertWindow();">
+<tags:simplePopup title="${alertTitle}" id="alertContent" onClose="javascript:alert_closeAlertWindow();">
     <div id="alertBody"></div>
     <div style="padding-top: 5px">
     <table cellspacing="0" width="100%" >
         <tr>
-            <td align="left"><ct:stickyCheckbox id="alert_autoPopup" defaultValue="false"><cti:msg key="yukon.web.alerts.autopopup"/></ct:stickyCheckbox></td>
+            <td align="left"><tags:stickyCheckbox id="alert_autoPopup" defaultValue="false"><cti:msg key="yukon.web.alerts.autopopup"/></tags:stickyCheckbox></td>
             <td align="right"><input type="button" value="<cti:msg key="yukon.web.alerts.clearall"/>" onclick="javascript:alert_clearAlert();"></td>
         </tr>
     </table>
     </div>
 
-</ct:simplePopup>
-<ct:dataUpdateEnabler/>
+</tags:simplePopup>
+<tags:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
 </body>

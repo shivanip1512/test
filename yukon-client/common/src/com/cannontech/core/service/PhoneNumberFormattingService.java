@@ -14,5 +14,6 @@ public interface PhoneNumberFormattingService {
     public String formatPhoneNumber(String phoneNumber, YukonUserContext yukonUserContext);
     
     public boolean isHasInvalidCharacters(String phoneNumber);
-
+    
+    public String strip(String phoneNumber);
 }

@@ -7,7 +7,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
 <cti:standardPage module="operator" page="optOut">
-    <cti:standardMenu />
 
 <!-- Helper Popup -->
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
@@ -41,7 +40,7 @@
 		<input type="hidden" name="accountId" value="${customerAccount.accountId}" />
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
 
-		<tags:nameValueContainer style="width: 25%;">
+		<tags:nameValueContainer2 style="width: 25%;">
 		
 			<tags:nameValue2 nameKey=".startDate">
 				<cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
@@ -73,7 +72,7 @@
                     </c:forEach>
                 </select>
 			</tags:nameValue2>
-		</tags:nameValueContainer>
+		</tags:nameValueContainer2>
         <br>
         <input type="submit" value="<i:inline key=".optOut" />" />
 	</form>
@@ -154,7 +153,7 @@
 <br><br>
 
 <!-- Opt Out Limits -->
-<tags:boxContainer2 styleClass="boxContainer50percent" key="optOutLimits">
+<tags:boxContainer2 key="optOutLimits">
 <table id="deviceTable" class="compactResultsTable">
     <tr class="<tags:alternateRow odd="" even="altRow"/>">
         <th><i:inline key=".device"/></th>

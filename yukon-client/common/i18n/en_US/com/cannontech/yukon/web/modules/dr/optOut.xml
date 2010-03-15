@@ -39,7 +39,7 @@
     <entry key="yukon.web.modules.dr.optOut.otherPrograms">Other Programs</entry>
     
     <!-- Operator OptOut.jsp -->
-    <entry key="yukon.dr.operator.optout.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.operator.optout.header">Opt Out</entry>
     <entry key="yukon.dr.operator.optout.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
     <entry key="yukon.dr.operator.optout.startDate">Start Date</entry>
     <entry key="yukon.dr.operator.optout.duration">Duration</entry>

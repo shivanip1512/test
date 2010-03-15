@@ -12,18 +12,18 @@
     <entry key="yukon.web.changelogin.save">Save</entry>
     <entry key="yukon.web.changelogin.cancel">Cancel</entry>
     
-    <entry key="yukon.web.changelogin.message.LOGIN_USERNAME_CHANGED">** User login name updated successfully </entry>
-    <entry key="yukon.web.changelogin.message.LOGIN_PASSWORD_CHANGED">** User login password updated successfully </entry>
+    <entry key="yukon.web.changelogin.message.LOGIN_USERNAME_CHANGED">User login name updated successfully </entry>
+    <entry key="yukon.web.changelogin.message.LOGIN_PASSWORD_CHANGED">User login password updated successfully </entry>
 
-    <entry key="yukon.web.changelogin.message.NO_CHANGE">** No changes made</entry>
-    <entry key="yukon.web.changelogin.message.NO_USERNAME_CHANGE">** No changes made to username</entry>
-    <entry key="yukon.web.changelogin.message.NO_PASSWORD_CHANGE">** No changes made to password</entry>
-    <entry key="yukon.web.changelogin.message.NO_PASSWORDMATCH">** Passwords did not match</entry>
-    <entry key="yukon.web.changelogin.message.REQUIRED_FIELDS_MISSING">** Required fields missing</entry>
-    <entry key="yukon.web.changelogin.message.INVALID_CREDENTIALS_USERNAME_CHANGE">** User does not have access/permission to change username. </entry>
-    <entry key="yukon.web.changelogin.message.INVALID_CREDENTIALS_PASSWORD_CHANGE">** User does not have access/permission to change password. </entry>
+    <entry key="yukon.web.changelogin.message.NO_CHANGE">No changes made</entry>
+    <entry key="yukon.web.changelogin.message.NO_USERNAME_CHANGE">No changes made to username</entry>
+    <entry key="yukon.web.changelogin.message.NO_PASSWORD_CHANGE">No changes made to password</entry>
+    <entry key="yukon.web.changelogin.message.NO_PASSWORDMATCH">Passwords did not match</entry>
+    <entry key="yukon.web.changelogin.message.REQUIRED_FIELDS_MISSING">Required fields missing</entry>
+    <entry key="yukon.web.changelogin.message.INVALID_CREDENTIALS_USERNAME_CHANGE">User does not have access/permission to change username. </entry>
+    <entry key="yukon.web.changelogin.message.INVALID_CREDENTIALS_PASSWORD_CHANGE">User does not have access/permission to change password. </entry>
     <entry key="yukon.web.changelogin.message.RETRY">Login disabled, please retry after {0} seconds</entry>
-    <entry key="yukon.web.changelogin.message.USER_EXISTS">** Username already exists</entry>
-    <entry key="yukon.web.changelogin.message.PASSWORD_CHANGE_NOT_SUPPORTED">** Password changes are not supported</entry>
+    <entry key="yukon.web.changelogin.message.USER_EXISTS">Username already exists</entry>
+    <entry key="yukon.web.changelogin.message.PASSWORD_CHANGE_NOT_SUPPORTED">Password changes are not supported</entry>
     
 </properties>    

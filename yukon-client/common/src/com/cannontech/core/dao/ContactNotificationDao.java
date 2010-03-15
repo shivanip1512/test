@@ -28,6 +28,8 @@ public interface ContactNotificationDao {
     
     public List<LiteContactNotification> getNotificationsForContact(LiteContact liteContact);
     
+    public List<LiteContactNotification> getNotificationsForContactByType(int contactId, int notifCatID);
+    
     public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID);
 
     /**

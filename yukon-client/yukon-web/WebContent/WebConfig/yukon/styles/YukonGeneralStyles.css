@@ -802,8 +802,12 @@ tr.lightRedBackground {
     color:#CC0000;
 }
 
-input.lightRedBackground {
-	background: #FFDDDD;
+input.error {
+	background: #FFDDDD; /*light red background*/
+}
+
+textarea.error {
+	background: #FFDDDD; /*light red background*/
 }
 
 ul.errorMessage {
@@ -995,6 +999,42 @@ div.padded {
 	color: gray;
 }
 
-.boxContainer50percent {
-	width: 50%;
+div.flashScopeMessage {
+
+	font-size: 11px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 30px;
+	width: 95%;	
+	margin-bottom: 12px;
+	background-position: 8px 5px;
+	background-repeat:no-repeat;
+}
+
+div.flashScopeMessage.CONFIRM {
+
+	outline: #006633 solid thin;
+	background-color: #C3FDB8;
+	background-image: url(../Icons/enable.gif);
+}
+
+div.flashScopeMessage.WARNING {
+
+	outline: #FBB117 solid thin;
+	background-color: #FFFFDA;
+	background-image: url(../Icons/warning.gif);
+	
+}
+
+div.flashScopeMessage.ERROR {
+
+	outline: #CC0000 solid thin;
+	background-color: #FFDDDD;
+	background-image: url(../Icons/error.gif);
+}
+
+div.accountInfoFragment {
+
+	margin-top:8px;
+	font-size:11px;
 }

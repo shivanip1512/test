@@ -8,6 +8,7 @@ import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.exception.UserNameUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
+import com.cannontech.user.YukonUserContext;
 
 public interface AccountService {
 
@@ -58,5 +59,5 @@ public interface AccountService {
 
     public AccountDto getAccountDto(String accountNumber, LiteStarsEnergyCompany ec);
     
-    public AccountDto getAccountDto(int accountId, int energyCompanyId);
+    public AccountDto getAccountDto(int accountId, int energyCompanyId, YukonUserContext userContext);
 }

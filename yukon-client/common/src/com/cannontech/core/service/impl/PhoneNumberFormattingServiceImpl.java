@@ -8,6 +8,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.PhoneNumber;
 
 public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingService {
     
@@ -40,6 +41,12 @@ public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingSe
     public boolean isHasInvalidCharacters(String phoneNumber) {
     	
     	return !StringUtils.containsOnly(phoneNumber, validChars);
+    }
+    
+    @Override
+    public String strip(String phoneNumber) {
+        
+        return PhoneNumber.strip(phoneNumber);
     }
     
     private String removeNonDigits(String phoneNumber) {

@@ -37,9 +37,6 @@ public class WidgetUtils {
         } else if (obj instanceof Collection) {
             return new JSONArray((Collection<?>)obj).toString();
         } else if (obj instanceof Boolean) {
-        	if (obj == null) {
-        		return null;
-        	}
         	Boolean boolObj = (Boolean)obj;
         	return boolObj.toString();
         } else {

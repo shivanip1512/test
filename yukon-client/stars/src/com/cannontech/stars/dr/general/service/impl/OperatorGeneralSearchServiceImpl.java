@@ -9,9 +9,9 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Pair;
@@ -28,7 +28,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
@@ -43,7 +43,6 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 
 	private RolePropertyDao rolePropertyDao;
 	private StarsCustAccountInformationDao starsCustAccountInformationDao;
-	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private ContactDao contactDao;
 	private AddressDao addressDao;
 	private ContactNotificationDao contactNotificationDao;
@@ -57,16 +56,14 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 														   LiteStarsEnergyCompany energyCompany, 
 														   YukonUserContext userContext) {
 		
-		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		
-		String error = null;
+		MessageSourceResolvable error = null;
 
 		// basic validation
         if (!(searchBy == OperatorAccountSearchBy.ACCOUNT_NUMBER) && searchValue.trim().length() < 2) {
-        	error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.needTwoCharacters");
+        	error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.needTwoCharacters");
         }
         if (StringUtils.isBlank(searchValue)) {
-        	error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.emptySearchValue");
+        	error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.emptySearchValue");
         }
         
         List<Object> accountList = Lists.newArrayList();
@@ -90,7 +87,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 		    		String phoneNo = ServletUtils.formatPhoneNumberForSearch(searchValue);
 					accountList = energyCompany.searchAccountByPhoneNo(phoneNo, searchMembers);
 	        	} catch (WebClientException e) {
-	        		error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.invalidPhoneNumber");
+	        		error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.invalidPhoneNumber");
 	        	}
 	        }
 	        
@@ -252,7 +249,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         searchResult.setResultList((List<AccountSearchResult>) keeperAccountSearchResultsList);
         
         if (error == null && keeperAccountSearchResultsList.size() == 0) {
-        	error = messageSourceAccessor.getMessage("yukon.web.modules.operator.operatorGeneralSearchService.error.noResultsFound");
+        	error = new YukonMessageSourceResolvable("yukon.web.modules.operator.operatorGeneralSearchService.error.noResultsFound");
         }
         
         AccountSearchResultHolder accountSearchResultHolder = new AccountSearchResultHolder(searchBy, searchValue, searchResult, error);
@@ -310,11 +307,6 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	@Autowired
 	public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
 		this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-	}
-	
-	@Autowired
-	public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-		this.messageSourceResolver = messageSourceResolver;
 	}
 	
 	@Autowired

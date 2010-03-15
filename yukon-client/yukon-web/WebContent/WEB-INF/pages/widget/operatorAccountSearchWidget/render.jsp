@@ -3,7 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<form id="searchForm" action="/spring/stars/operator/general/account/search" method="get">
+<form id="searchForm" action="/spring/stars/operator/account/search" method="get">
 		
 	<div style="padding-top:8px;padding-bottom:8px;">
 		

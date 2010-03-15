@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+	<!-- ACCOUNT -->
+	
+	<!-- operator account search widget -->
+    <entry key="yukon.web.widgets.operatorAccountSearchWidget.searchBoxTitle">Account Search</entry>
+	<entry key="yukon.web.widgets.operatorAccountSearchWidget.searchTypeLabel">Type</entry>
+	<entry key="yukon.web.widgets.operatorAccountSearchWidget.searchValueLabel">Value</entry>
+	
+	<!-- OperatorAccountSearchBy enum -->
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.ACCOUNT_NUMBER">Account Number</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.PHONE_NUMBER">Phone Number</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.LAST_NAME">Last Name</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.SERIAL_NUMBER">Serial Number</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.MAP_NUMBER">Map Number</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.ADDRESS">Address</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.ALT_TRACING_NUMBER">Alt Tracking Number</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.COMPANY">Company</entry>
+	
+	<!-- OperatorGeneralSearchServiceImpl -->
+    <entry key="yukon.web.modules.operator.operatorGeneralSearchService.error.needTwoCharacters">Please enter at least the first 2 characters to search.</entry>
+    <entry key="yukon.web.modules.operator.operatorGeneralSearchService.error.emptySearchValue">The search value cannot be empty.</entry>
+    <entry key="yukon.web.modules.operator.operatorGeneralSearchService.error.invalidPhoneNumber">Invalid phone number.</entry>
+    <entry key="yukon.web.modules.operator.operatorGeneralSearchService.error.noResultsFound">No results found.</entry>
+	
+	<!-- accountList -->
+    <entry key="yukon.web.modules.operator.accountList.pageName">Accounts</entry>
+    <entry key="yukon.web.modules.operator.accountList.resultBoxtitle">Search Results for {0} &quot;{1}&quot;</entry>
+    <entry key="yukon.web.modules.operator.accountList.accountNumberHeader">Account Number</entry>
+    <entry key="yukon.web.modules.operator.accountList.nameHeader">Name</entry>
+    <entry key="yukon.web.modules.operator.accountList.phoneNumberHeader">Phone Number</entry>
+    <entry key="yukon.web.modules.operator.accountList.addressHeader">Address</entry>
+	
+	<!-- accountEdit -->
+    <entry key="yukon.web.modules.operator.accountEdit.pageName">Account Edit</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.customerContactSection.title">Customer Contact</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.serviceAddressSection.title">Service Address</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.serviceInformationSection.title">Service Information</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingAddressSection.title">Billing Address</entry>
+    
+    <entry key="yukon.web.modules.operator.accountEdit.accountNumberLabel">Account Number</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.commercialLabel">Commercial</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.companyLabel">Company</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.commercialTypeLabel">Commercial Type</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.customerNumberLabel">Customer Number</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.firstNameLabel">First Name</entry>
+	<entry key="yukon.web.modules.operator.accountEdit.lastNameLabel">Last Name</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.homePhoneLabel">Home Phone</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.workPhoneLabel">Work Phone</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.emailLabel">Email</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.altTrackingNumberLabel">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.notifyOddsForControlLabel">Notify Odds For Control</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.notesLabel">Notes</entry>
+
+    <entry key="yukon.web.modules.operator.accountEdit.address1Label">Address 1</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.address2Label">Address 2</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.cityLabel">City</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.stateLabel">State</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.zipLabel">Zip</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.mapNumberLabel">Map Number</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.countyLabel">County</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.addressNotesLabel">Notes</entry>
+
+    <entry key="yukon.web.modules.operator.accountEdit.rateScheduleLabel">Rate Schedule</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.presenceRequiredLabel">Presence Required</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.customerStatusLabel">Customer Status</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.substationLabel">Substation</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.feederLabel">Feeder</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.poleLabel">Pole</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.transformerSizeLabel">Transformer Size</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.serviceVoltageLabel">Service Voltage</entry>
+    
+    <entry key="yukon.web.modules.operator.accountEdit.usePrimaryAddressForBillingLabel">Same As Above</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingAddress1Label">Address 1</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingAddress2Label">Address 2</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingCityLabel">City</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingStateLabel">State</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.billingZipLabel">Zip</entry>
+
+    <entry key="yukon.web.modules.operator.accountEdit.accountUpdated">Account Updated</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.accountDeleted">Account Deleted</entry>
+    
+    <!-- AccountGeneral Validation -->
+    <entry key="yukon.web.modules.operator.accountGeneral.invalidPhoneNumber">Invalid Phone Number</entry>
+    <entry key="yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberRequired">Account Number Required</entry>
+    <entry key="yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable">Account Number Already Exists</entry>
+    <entry key="yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable">Account Number Already Exists</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.firstNameRequired">First Name Required</entry>
+    
+	
+	
+</properties>

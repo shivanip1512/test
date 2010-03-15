@@ -5,7 +5,6 @@
 <cti:url var="completeHistoryUrl" value="/spring/stars/operator/program/controlHistory/completeHistoryView"/>
 
 <cti:standardPage module="operator" page="controlHistory">
-    <cti:standardMenu />
     
     <tags:sectionContainer2 key="header" >
 	    <div id="programs">

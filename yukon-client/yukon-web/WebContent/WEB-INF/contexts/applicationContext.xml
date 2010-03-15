@@ -16,6 +16,8 @@
             <list>
                 <ref bean="deviceCollectionFactory"/>
                 <ref bean="userContextArgumentResolver"/>
+                <ref bean="flashScopeArgumentResolver"/>
+                <ref bean="accountInfoFragmentArgumentResolver"/>
             </list>
         </property>
     </bean>
@@ -1254,8 +1256,10 @@
     <bean id="deviceReconfigProgramSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigProgramSelectionTypeHandler"/>
     
     <!-- OPERATOR -->
-    <bean id="operatorGeneralService" class="com.cannontech.web.stars.dr.operator.general.service.impl.OperatorGeneralServiceImpl"/>
-    <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.general.validator.AccountGeneralValidator"/>
+    <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
+    <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
+    <bean id="contactDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator"/>
+    <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 
@@ -1358,6 +1362,11 @@
         <property name="serviceLocatorInterface"
             value="com.cannontech.web.picker.v2.service.PickerFactory" />
     </bean>
-    
+
     <bean class="com.cannontech.web.layout.impl.HttpExpressionLanguageResolverImpl"/>
+    
+    <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
+    
+    <bean id="accountInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
+    
 </beans>

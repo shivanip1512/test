@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.general.service;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
@@ -11,14 +11,14 @@ public class AccountSearchResultHolder {
 	private OperatorAccountSearchBy searchBy;
 	private String searchValue;
 	private SearchResult<AccountSearchResult> accountSearchResults = SearchResult.emptyResult();
-	private String error = null;
+	private MessageSourceResolvable warning = null;
 	
-	public AccountSearchResultHolder(OperatorAccountSearchBy searchBy, String searchValue, SearchResult<AccountSearchResult> accountSearchResults, String error) {
+	public AccountSearchResultHolder(OperatorAccountSearchBy searchBy, String searchValue, SearchResult<AccountSearchResult> accountSearchResults, MessageSourceResolvable warning) {
 		
 		this.searchBy = searchBy;
 		this.searchValue = searchValue;
 		this.accountSearchResults = accountSearchResults;
-		this.error = error;
+		this.warning = warning;
 	}
 	
 	public static AccountSearchResultHolder emptyAccountSearchResultHolder() {
@@ -40,12 +40,12 @@ public class AccountSearchResultHolder {
 	public SearchResult<AccountSearchResult> getAccountSearchResults() {
 		return accountSearchResults;
 	}
-	public String getError() {
-		return error;
+	public MessageSourceResolvable getWarning() {
+		return warning;
 	}
 	
-	public boolean isHasError() {
-		return !StringUtils.isBlank(error);
+	public boolean isHasWarning() {
+		return warning != null;
 	}
 	public boolean isSingleResult() {
 		return accountSearchResults.getHitCount() == 1;

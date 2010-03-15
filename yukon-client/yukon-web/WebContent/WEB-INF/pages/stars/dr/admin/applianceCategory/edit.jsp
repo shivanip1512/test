@@ -95,7 +95,7 @@
             <td class="widgetColumnCell" valign="top">
                 <div class="widgetContainer">
                     <tags:boxContainer2 key="info">
-                        <tags:nameValueContainer>
+                        <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".type">
                                 <i:inline key="${applianceCategory.applianceType.formatKey}"/>
                             </tags:nameValue2>
@@ -107,7 +107,7 @@
                             <tags:nameValue2 nameKey=".description">
                                 <spring:escapeBody>${applianceCategory.description}</spring:escapeBody>
                             </tags:nameValue2>
-                        </tags:nameValueContainer>
+                        </tags:nameValueContainer2>
                         <br>
                         <c:if test="${applianceCategory.consumerSelectable}">
                             <i:inline key=".isConsumerSelectable"/>

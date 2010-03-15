@@ -43,8 +43,8 @@ submitForm = function() {
     onsubmit="return submitForm()">
     <form:hidden path="applianceCategoryId"/>
     <form:hidden path="webConfiguration.configurationId"/>
-    <tags:nameValueContainer>
-        <tags:nameValue2 nameKey=".name" nameColumnWidth="150px">
+    <tags:nameValueContainer2 nameColumnWidth="150px">
+        <tags:nameValue2 nameKey=".name">
             <form:input id="nameInput" path="name" size="30"
                 onkeyup="nameChanged()" onblur="nameChanged()"/>
         </tags:nameValue2>
@@ -86,7 +86,7 @@ submitForm = function() {
             <label for="consumerSelectableCheckbox"><i:inline key=".consumerSelectableDescription"/></label>
         </tags:nameValue>
 
-    </tags:nameValueContainer>
+    </tags:nameValueContainer2>
     <script type="text/javascript">
         sameAsNameClicked();
     </script>

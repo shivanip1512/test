@@ -5,7 +5,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"  %>
 
 <cti:standardPage module="operator" page="faq">
-    <cti:standardMenu />
 
     <c:forEach var="subject" items="${questions}">
         <tags:sectionContainer title="${subject.key}">
