@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 #include <iostream>
-#include <algorithm>
 #include <vector>
 
 #include <boost/thread/thread.hpp>
@@ -80,6 +79,25 @@ int SimulatorMainFunction(int argc, char **argv)
             port_min = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MIN");
             port_max = gConfigParms.getValueAsInt("SIMULATOR_INIT_PORT_MAX");
 
+            if( port_min && port_max )
+            {
+                cout << "Loading ports from master.cfg file: Port range [" << port_min << " - " << port_max << "]" << endl;
+                break;
+            }
+            else if (getPorts(portList))
+            {
+                cout << "Loaded " << portList.size() << " ports from the database." << endl;
+                break;
+            }
+            else
+            {
+                cout << "Unable to retrieve port values.\n";
+                cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
+                cout << "master.cfg file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << endl;
+                cout << "                       SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
+                exit(-1);
+            }
+/*
             if ( !(port_min && port_max) && !(getPorts(portList)) )
             {
                 cout << "Unable to retrieve port values.\n";
@@ -88,12 +106,8 @@ int SimulatorMainFunction(int argc, char **argv)
                 cout << "                          SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
                 exit(-1);
             }
+*/
         }
-    }
-
-    if( !portList.empty() )
-    {
-        sort(portList.begin(), portList.end());
     }
 
     if( port_max && port_min > port_max )
@@ -122,6 +136,7 @@ int SimulatorMainFunction(int argc, char **argv)
     identifyProject(CompileInfo);
     setConsoleTitle(CompileInfo);
 
+    if( port_min && port_max )
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " Port range [" << port_min << " - " << port_max << "], strategy " << strategy << endl;
@@ -140,11 +155,11 @@ int SimulatorMainFunction(int argc, char **argv)
             threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port_min, strategy)));
         }
     }
-    else {
-        vector<int>::iterator itr = portList.begin();
-        for(; itr != portList.end(); itr++ )
+    else 
+    {
+        for each (int port in portList )
         {
-            threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, *itr, strategy)));
+            threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port, strategy)));
         }
     }
 
@@ -163,11 +178,11 @@ int SimulatorMainFunction(int argc, char **argv)
 
 bool getPorts(vector<int> &ports)
 {
-    static string sql = "SELECT Distinct P.SOCKETPORTNUMBER "; 
-    sql += "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C ";
-    sql += "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND ";
-    sql += "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') ";
-    sql += "AND Y.Type like 'CCU%' AND Y.DisableFlag = 'N'";
+    static const string sql = "SELECT Distinct P.SOCKETPORTNUMBER " 
+                              "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C "
+                              "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND "
+                              "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') "
+                              "AND Y.Type like 'CCU%'";
     unsigned port;
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -181,12 +196,7 @@ bool getPorts(vector<int> &ports)
         ports.push_back(port);
     }
 
-    if( ports.empty() )
-    {
-        return false;
-    }
-
-    return true;
+    return !ports.empty();
 }
 
 void CcuPortMaintainer(int portNumber, int strategy)
