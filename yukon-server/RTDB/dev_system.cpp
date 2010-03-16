@@ -644,6 +644,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                         case RouteTypeExpresscom:
                         case RouteTypeTap:
                         case RouteTypeWCTP:
+                        case RouteTypeTNPP:
                         case RouteTypeSNPP:
                         case RouteTypeRTC:
                         case RouteTypeSeriesVLMI:

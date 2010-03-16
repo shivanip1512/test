@@ -80,6 +80,10 @@ INT resolveRouteType( const string& _rwsTemp)
     {
         Ret = RouteTypeWCTP;
     }
+    else if(rwsTemp == "tnpp terminal route")
+    {
+        Ret = RouteTypeTNPP;
+    }
     else if(rwsTemp == "rtc route")
     {
         Ret = RouteTypeRTC;

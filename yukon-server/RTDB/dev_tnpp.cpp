@@ -498,7 +498,7 @@ INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
                 // FIX FIX FIX 092999
                 retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                         string(OutMessage->Request.CommandStr).c_str(),
-                                                        string("SNPP Devices do not support this command (yet?)").c_str(),
+                                                        string("TNPP Devices do not support this command (yet?)").c_str(),
                                                         nRet,
                                                         OutMessage->Request.RouteID,
                                                         OutMessage->Request.MacroOffset,

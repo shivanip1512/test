@@ -378,6 +378,7 @@ string desolveRouteType( INT aType )
         case RouteTypeTap:          Ret = "tap paging"; break;
         case RouteTypeXML:          Ret = "integration route"; break;
         case RouteTypeWCTP:         Ret = "wctp terminal route";    break;
+        case RouteTypeTNPP:         Ret = "tnpp terminal route";    break;
         //paging?
         case RouteTypeSNPP:         Ret = "snpp terminal route";  break;
         case RouteTypeRTC:          Ret = "rtc route";    break;

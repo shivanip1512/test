@@ -47,6 +47,7 @@ BOOST_AUTO_TEST_CASE(test_resolveRouteType)
     BOOST_CHECK_EQUAL(resolveRouteType("tappaging"),      RouteTypeTap);
     BOOST_CHECK_EQUAL(resolveRouteType("snpp terminal route"),  RouteTypeSNPP);
     BOOST_CHECK_EQUAL(resolveRouteType("wctp terminal route"),  RouteTypeWCTP);
+    BOOST_CHECK_EQUAL(resolveRouteType("tnpp terminal route"),  RouteTypeTNPP);
     BOOST_CHECK_EQUAL(resolveRouteType("rtc route"),            RouteTypeRTC);
     BOOST_CHECK_EQUAL(resolveRouteType("series 5 lmi"),   RouteTypeSeriesVLMI);
     BOOST_CHECK_EQUAL(resolveRouteType("integration route"), RouteTypeXML);

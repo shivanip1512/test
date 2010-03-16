@@ -403,6 +403,7 @@ enum CtiRoute_t
     RouteTypeSeriesVLMI,
     RouteTypeSNPP,
     RouteTypeXML,
+    RouteTypeTNPP,
 
     RouteTypeMax
 };

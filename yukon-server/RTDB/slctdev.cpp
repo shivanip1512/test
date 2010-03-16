@@ -348,6 +348,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
             case RouteTypeTCU:
             case RouteTypeTap:
             case RouteTypeWCTP:
+            case RouteTypeTNPP:
             case RouteTypeSNPP:
             case RouteTypeRTC:
             case RouteTypeSeriesVLMI:
