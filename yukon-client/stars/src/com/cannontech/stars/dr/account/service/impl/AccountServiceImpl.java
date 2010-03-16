@@ -235,7 +235,15 @@ public class AccountServiceImpl implements AccountService {
         if(StringUtils.isNotBlank(accountDto.getEmailAddress())) {
         	contactNotificationService.createNotification(liteContact, ContactNotificationType.EMAIL, accountDto.getEmailAddress());
         }
-            
+
+        if(StringUtils.isNotBlank(accountDto.getIvrLogin())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.IVR_LOGIN, accountDto.getIvrLogin());
+        }
+
+        if(StringUtils.isNotBlank(accountDto.getVoicePIN())) {
+            contactNotificationService.createNotification(liteContact, ContactNotificationType.VOICE_PIN, accountDto.getVoicePIN());
+        }
+        
         /*
          * Create the customer
          */
