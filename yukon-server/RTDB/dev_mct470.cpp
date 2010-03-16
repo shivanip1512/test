@@ -4314,7 +4314,10 @@ unsigned long CtiDeviceMCT470::convertTimestamp(const unsigned long timestamp, c
 {
     CtiTime mct_year_end;
 
-    if( (timestamp & 0x800000) && (current_date.year() % 2) )
+    const bool our_year = current_date.year() % 2;
+    const bool mct_year = timestamp & 0x800000;
+
+    if( mct_year == our_year )
     {
         mct_year_end = CtiDate(1, 1, current_date.year() + 1);
     }
