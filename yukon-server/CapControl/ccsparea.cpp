@@ -119,11 +119,23 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
         ostrm << (LONG)*iter;
         iter++;
     }
-    ostrm << _ovUvDisabledFlag
-        << _pfactor
-        << _estPfactor
-        << _voltReductionControlValue;
+    double pfDisplayValue = _pfactor;
+    double estPfDisplayValue = _estPfactor;
 
+    // Modifying the display value of pFactor to represent +100% values as a negative value.
+    if (_pfactor > 1)
+    {
+        pfDisplayValue -= 2;
+    }
+    if (_estPfactor > 1)
+    {
+        estPfDisplayValue -= 2;
+    }
+
+    ostrm << _ovUvDisabledFlag
+        << pfDisplayValue
+        << estPfDisplayValue
+        << _voltReductionControlValue;
 
 }
 
