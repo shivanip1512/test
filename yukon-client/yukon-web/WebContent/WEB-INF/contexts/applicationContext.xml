@@ -1261,6 +1261,8 @@
     <bean id="contactDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
     
+  	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.ChangeLoginValidatorFactoryImpl" />
+    
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 
     <bean id="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker"
