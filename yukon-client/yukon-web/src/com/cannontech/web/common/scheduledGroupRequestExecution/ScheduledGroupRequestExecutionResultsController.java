@@ -186,16 +186,12 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/results/lastRun.jsp");
 		
 		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
-		Date lastRun = jobStatusDao.getJobLastSuccessfulRunDate(jobId);
-		
-		int lastCreId = 0;
+
+		Date lastRunDate = jobStatusDao.getJobLastSuccessfulRunDate(jobId);
 		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
-		if (lastCre != null) {
-			lastCreId = lastCre.getId();
-		}
 		
-        mav.addObject("lastRun", lastRun);
-        mav.addObject("lastCreId", lastCreId);
+        mav.addObject("lastCre", lastCre);
+        mav.addObject("lastRunDate", lastRunDate);
         
         return mav;
 		

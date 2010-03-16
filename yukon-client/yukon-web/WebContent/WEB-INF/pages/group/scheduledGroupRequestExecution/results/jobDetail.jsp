@@ -159,7 +159,9 @@
 			<%-- last run --%>
 			<tags:nameValue name="${lastRunText}">
 			
-				<div id="lastRunDiv" style="display:inline;"></div>
+				<div id="lastRunDiv" style="display:inline;">
+					<amr:scheduledGroupRequestExecutionJobLastRunDate lastCre="${lastCre}" lastRunDate="${jobWrapper.lastRun}" />
+				</div>
 				<tags:helpInfoPopup title="Last Run">
 					<cti:msg key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.lastRun" />
 				</tags:helpInfoPopup>
