@@ -87,8 +87,8 @@ _ignoreReason(0),
 _controlStatusQuality(false),
 _sendAllCommandFlag(false),
 _actionId(0),
-_insertDynamicDataFlag(false),
-_dirty(false)
+_insertDynamicDataFlag(true),
+_dirty(true)
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;

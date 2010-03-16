@@ -120,8 +120,8 @@ CtiCCFeeder::CtiCCFeeder()
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
       _retryIndex(0),
-      _insertDynamicDataFlag(false),
-      _dirty(false)
+      _insertDynamicDataFlag(true),
+      _dirty(true)
 {
     _porterRetFailFlag = false;
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -194,8 +194,8 @@ CtiCCFeeder::CtiCCFeeder(StrategyManager * strategyManager)
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
       _retryIndex(0),
-      _insertDynamicDataFlag(false),
-      _dirty(false)
+      _insertDynamicDataFlag(true),
+      _dirty(true)
 {
     _porterRetFailFlag = false;
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -6483,6 +6483,8 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _operationStats = right._operationStats;
         _confirmationStats = right._confirmationStats;
         _originalParent = right._originalParent;
+        _insertDynamicDataFlag = right._insertDynamicDataFlag;
+        _dirty = right._dirty;
     }
 
     return *this;
@@ -6575,6 +6577,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setSolution("IDLE");
 
     _insertDynamicDataFlag = TRUE;
+    _dirty = TRUE;
 
 
     if( _currentvarloadpointid <= 0 )

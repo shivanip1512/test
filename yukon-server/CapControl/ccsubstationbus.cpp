@@ -138,8 +138,8 @@ CtiCCSubstationBus::CtiCCSubstationBus()
       _phaseAvalueBeforeControl(0),
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
-      _insertDynamicDataFlag(false),
-      _dirty(false)
+      _insertDynamicDataFlag(true),
+      _dirty(true)
 {
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -231,8 +231,8 @@ CtiCCSubstationBus::CtiCCSubstationBus(StrategyManager * strategyManager)
       _phaseAvalueBeforeControl(0),
       _phaseBvalueBeforeControl(0),
       _phaseCvalueBeforeControl(0),
-      _insertDynamicDataFlag(false),
-      _dirty(false)
+      _insertDynamicDataFlag(true),
+      _dirty(true)
 {
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -9673,6 +9673,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         regressionC = right.regressionC;
 
         _ltcId = right._ltcId;
+
+        _insertDynamicDataFlag = right._insertDynamicDataFlag;
+        _dirty = right._dirty;
     }
     return *this;
 }

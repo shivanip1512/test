@@ -49,6 +49,8 @@ CtiCCOriginalParent& CtiCCOriginalParent::operator=(const CtiCCOriginalParent& r
        _originalSwitchingOrder  = right._originalSwitchingOrder; 
        _originalCloseOrder      = right._originalCloseOrder; 
        _originalTripOrder       = right._originalTripOrder; 
+       _dirty                   = right._dirty;
+       _insertDynamicDataFlag   = right._insertDynamicDataFlag;
     }
     return *this;
 }
