@@ -22,5 +22,39 @@ popd
 
 rem Build it.
 
-buildhere.cmd %*
+call buildhere.cmd %*
+set _ERRORLEVEL=%ERRORLEVEL%
 
+set exit=0
+
+:Process_Args
+
+if "%~1" == "" goto Done_Processing
+
+    if /i "%~1" == "--exit" (
+        set exit=1
+        shift
+        goto Process_Args
+    )
+    
+:Done_Processing
+
+
+if %_ERRORLEVEL% neq 0 goto cleanup
+
+rem Run Unit Tests on Success
+
+pushd %SOURCEBASE%
+call runalltests
+popd
+
+rem This follows the buildhere exit strategy, why exit /b is called despite --exit being set is unknown.
+
+:cleanup
+if %exit% equ 1 (
+    if %_ERRORLEVEL% neq 0 exit %_ERRORLEVEL%
+)
+
+rem -- Return a real exit code without closing the shell.
+
+exit /b %_ERRORLEVEL%
