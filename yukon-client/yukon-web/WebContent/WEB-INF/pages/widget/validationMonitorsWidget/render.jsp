@@ -100,11 +100,16 @@
 </c:otherwise>
 </c:choose>
 
-<div style="float:left;padding-top:5px;">
-    <cti:url var="reviewUrl" value="/spring/common/veeReview/home"/>
-    <a href="${reviewUrl}">${review}</a>
-</div>
-
-<div style="float:right;padding-top:5px;">
-    <tags:slowInput myFormId="createNewValidationMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+<div style="padding-top:5px;">
+<table class="noStyle" cellpadding="0" cellspacing="0" style="width:100%;">
+	<tr>
+		<td align="left">
+			<cti:url var="reviewUrl" value="/spring/common/veeReview/home"/>
+    		<a href="${reviewUrl}">${review}</a>
+		</td>
+		<td align="right">
+			<tags:slowInput myFormId="createNewValidationMonitorForm_${widgetParameters.widgetId}" labelBusy="${createNewText}" label="${createNewText}"/>
+		</td>
+	</tr>
+</table>
 </div>

@@ -57,6 +57,12 @@
 
     <script type="text/javascript">
 
+	    var refreshUrl = '/spring/group/scheduledGroupRequestExecutionResults/lastRunRefresher';
+	    var refreshParams = $H();
+	    refreshParams['jobId'] = ${jobWrapper.job.id};
+	    
+    	var lastRunRefresher = new Ajax.PeriodicalUpdater('lastRunDiv', refreshUrl, {method: 'post', frequency: 4, parameters: refreshParams, evalScripts: true});
+
     </script>
     
     <h2 title="ID: ${jobWrapper.job.id}">${pageTitle}</h2>
@@ -153,7 +159,10 @@
 			<%-- last run --%>
 			<tags:nameValue name="${lastRunText}">
 			
-				<amr:scheduledGroupRequestExecutionJobLastRunDate jobId="${jobWrapper.job.id}" linkedInitially="${not empty lastCre}" />
+				<div id="lastRunDiv" style="display:inline;"></div>
+				<tags:helpInfoPopup title="Last Run">
+					<cti:msg key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.lastRun" />
+				</tags:helpInfoPopup>
 			
 			</tags:nameValue>
 			
