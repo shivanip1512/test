@@ -125,21 +125,6 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         authenticationThrottleHelper.removeAuthenticationThrottle(username);
     }
 
-    public String generatePassword(int numberOfCharacters){
-        
-        char[] password = new char[numberOfCharacters];
-        for (int i = 0; i < numberOfCharacters; i++) {
-            int rand = (int)(Math.random() * 62);
-            if (rand < 10)
-                password[i] = (char)(48 + rand);        // 48 is ascii for '0'
-            else if (rand < 36)
-                password[i] = (char)(65 + rand - 10);   // 65 is ascii for 'A'
-            else
-                password[i] = (char)(97 + rand - 36);   // 36 is ascii for 'a'
-        }
-        return new String(password);
-    }
-    
     @Required
     public void setProviderMap(Map<AuthType, AuthenticationProvider> providerMap) {
         this.providerMap = providerMap;

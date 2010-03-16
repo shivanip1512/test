@@ -1,6 +1,8 @@
 package com.cannontech.core.dao.impl;
 
-public enum LoginStatusEnum {
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum LoginStatusEnum implements DatabaseRepresentationSource {
     ENABLED("Enabled"),
     DISABLED("Disabled");
 
@@ -10,7 +12,8 @@ public enum LoginStatusEnum {
         this.sqlValue = sqlValue;
     }
     
-    public String getSqlValue(){
+    @Override
+    public Object getDatabaseRepresentation() {
         return sqlValue;
     }
 

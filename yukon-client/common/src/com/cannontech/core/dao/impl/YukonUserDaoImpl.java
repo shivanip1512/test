@@ -109,10 +109,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE YukonUser ");
-        sql.append("SET Status = ? ");
-        sql.append("WHERE Username = ? ");
+        sql.append("SET Status").eq(loginStatusEnum);
+        sql.append("WHERE UserId").eq(user.getUserID());
         
-        yukonJdbcOperations.update(sql.getSql(), loginStatusEnum.getSqlValue(), user.getUsername());
+        yukonJdbcOperations.update(sql);
         
     }    
 	
@@ -209,7 +209,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
         yukonJdbcOperations.update(deleteYukonUser, userId);
 
         
-        sendUserDbChangeMsg(userId);        
+        sendUserDbChangeMsg(userId, DBChangeMsg.CHANGE_TYPE_DELETE);        
 	}
 
 	@Override
@@ -240,22 +240,18 @@ public class YukonUserDaoImpl implements YukonUserDao {
 
     
     public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups){
-        int userId = user.getUserID();
-        List<String> yukonGroupNames = Lists.newArrayList();
+        List<Integer> yukonGroupIds = Lists.newArrayList();
         for (LiteYukonGroup yukonGroup : yukonGroups) {
-            yukonGroupNames.add(yukonGroup.getGroupName());
+            yukonGroupIds.add(yukonGroup.getGroupID());
         }
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM YukonUserGroup");
-        sql.append("WHERE UserId").eq(userId);
-        sql.append("AND GroupId IN (SELECT YG.GroupId ");
-        sql.append("                FROM YukonGroup YG ");
-        sql.append("                WHERE YG.GroupName").in(yukonGroupNames);
-        sql.append(")");
+        sql.append("WHERE UserId").eq(user.getUserID());
+        sql.append("AND GroupId").in(yukonGroupIds);
         yukonJdbcOperations.update(sql);
 
-        sendUserDbChangeMsg(user.getUserID());
+        sendUserDbChangeMsg(user.getUserID(), DBChangeMsg.CHANGE_TYPE_DELETE);
     }
 	
     public void addUserToGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups){
@@ -269,18 +265,18 @@ public class YukonUserDaoImpl implements YukonUserDao {
             yukonJdbcOperations.update(sql.getSql(), user.getUserID(), yukonGroup.getGroupID());
         }
 
-        sendUserDbChangeMsg(user.getUserID());
+        sendUserDbChangeMsg(user.getUserID(), DBChangeMsg.CHANGE_TYPE_ADD);
     }
 
     /**
      * @param userId
      */
-    private void sendUserDbChangeMsg(Integer userId) {
+    private void sendUserDbChangeMsg(Integer userId, int dbChangeMsgType) {
         DBChangeMsg changeMsg = new DBChangeMsg(userId,
                                                 DBChangeMsg.CHANGE_YUKON_USER_DB,
                                                 DBChangeMsg.CAT_YUKON_USER,
                                                 DBChangeMsg.CAT_YUKON_USER,
-                                                DBChangeMsg.CHANGE_TYPE_DELETE);
+                                                dbChangeMsgType);
         dbPersistantDao.processDBChange(changeMsg);
     }
     

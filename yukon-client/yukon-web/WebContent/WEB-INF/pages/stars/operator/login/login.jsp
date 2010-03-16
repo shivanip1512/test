@@ -15,13 +15,13 @@
                 new Ajax.Request('/spring/stars/operator/login/generatePassword', 
                     {onSuccess: function(response) 
                         {
-                         var json = response.responseText.evalJSON();
+                         var generatedPassword = response.responseText;
 
                          var password1 = $('password1');
-                         password1.value = json.generatedPassword;
+                         password1.value = generatedPassword;
 
                          var password2 = $('password2');
-                         password2.value = json.generatedPassword;
+                         password2.value = generatedPassword;
                         }
                     });
                 
@@ -40,8 +40,17 @@
         
     </script>
     
-    <tags:boxContainer2 key=".changeLogin">
+    <tags:boxContainer2 key=".changeLogin" styleClass="boxContainer50percent">
 
+        <c:if test="${not empty usernameChangeMessage}">
+        	<i:inline key="${usernameChangeMessage.formatKey}" />
+        	<br>
+        </c:if>
+        <c:if test="${not empty passwordChangeMessage}">
+            <i:inline key="${passwordChangeMessage.formatKey}"/>
+        </c:if>
+        
+        
         <form id="deleteForm" action="/spring/stars/operator/login/deleteLogin" method="post">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
@@ -51,7 +60,7 @@
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             
-            <tags:nameValueContainer2 nameColumnWidth="200px">
+            <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".customerGroup">
                     <form:select path="customerLoginGroupName">
                         <form:options items="${ecResidentialGroupNames}" />
@@ -69,15 +78,14 @@
                 
                 <!-- Password Fields -->
                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
-                    <c:if test="${empty changeLoginBackingBean.username and supportsPasswordChange or
-                             not empty changeLoginBackingBean.username and supportsPasswordSet}">
+                    <c:if test="${supportsPasswordSet}">
                         <tags:nameValue2 nameKey=".newPassword">
                             <tags:password path="password1"/>
                             <input type="button" onclick="generatePassword();" value="Generate Password" />
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".confirmPassword">
                             <tags:password path="password2"/>
-                            <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()" /> Show Password
+                            <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()" /> <i:inline key=".showPassword"/>
                         </tags:nameValue2>
                     </c:if>
                 </cti:checkRolesAndProperties>

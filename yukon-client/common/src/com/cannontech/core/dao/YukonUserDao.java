@@ -85,7 +85,7 @@ public interface YukonUserDao {
      * @param user
      * @param yukonGroups
      */
-    public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);    
+    public void removeUserFromGroup(LiteYukonUser user, LiteYukonGroup... yukonGroups);
 
     /**
      * This method adds a user to the supplied groups and sends out the necessary db change messages

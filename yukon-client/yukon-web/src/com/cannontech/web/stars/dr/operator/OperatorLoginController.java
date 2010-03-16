@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.operator;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,14 +11,17 @@ import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.authentication.service.AuthType;
@@ -41,11 +43,13 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.login.ChangeLoginMessage;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.model.ChangeLoginBackingBean;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.cannontech.web.stars.dr.operator.validator.ChangeLoginValidator;
+import com.cannontech.web.stars.dr.operator.validator.ChangeLoginValidatorFactory;
+import com.cannontech.web.util.TextView;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -57,28 +61,27 @@ public class OperatorLoginController {
     public static final String LOGIN_CHANGE_SUCCESS_PARAM = "success";
 
     private AuthenticationService authenticationService;
+    private ChangeLoginValidatorFactory changeLoginValidatorFactory;
     private ContactDao contactDao;
     private RolePropertyDao rolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserDao yukonUserDao;
     private YukonGroupDao yukonGroupDao;
+
     
     // CHANGE LOGIN
     @RequestMapping
     public String changeLogin(int accountId, 
-    		                  int energyCompanyId, 
-    		                  HttpServletRequest request, 
-    		                  ModelMap modelMap,
-    		                  YukonUserContext userContext,
-    		                  AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        
-        // Build up residential login group list.
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-        List<String> ecResidentialGroupNames = getECResidentialGroupNames(ecResidentialGroups);
-        modelMap.addAttribute("ecResidentialGroupNames", ecResidentialGroupNames);
+                              int energyCompanyId, 
+                              HttpServletRequest request, 
+                              ModelMap modelMap,
+                              YukonUserContext userContext,
+                              AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
         LiteYukonUser residentialUser = getYukonUserByAccountId(accountId);
+        List<LiteYukonGroup> ecResidentialGroups = setupLoginModelMap(energyCompanyId,
+                                                                      residentialUser,
+                                                                      modelMap);
         
         // Build up backing bean
         ChangeLoginBackingBean changeLoginBackingBean = new ChangeLoginBackingBean();
@@ -88,166 +91,109 @@ public class OperatorLoginController {
         changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
         modelMap.addAttribute("changeLoginBackingBean", changeLoginBackingBean);
         
-        // Set supported variables
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
-        modelMap.addAttribute("supportsPasswordChange", authenticationService.supportsPasswordChange(residentialUser.getAuthType()));
-        
-// TODO not needed when using flashScope?
-//        // Setting help messages
-//        String usernameChangeMessageStr = ServletRequestUtils.getStringParameter(request, "usernameChangeMessage");
-//        if (usernameChangeMessageStr != null) {
-//            ChangeLoginMessage usernameChangeMessage = ChangeLoginMessage.valueOf(usernameChangeMessageStr);
-//            modelMap.addAttribute("usernameChangeMessage", usernameChangeMessage);
-//        }
-//        
-//        String passwordChangeMessageStr = ServletRequestUtils.getStringParameter(request, "passwordChangeMessage");
-//        if (passwordChangeMessageStr != null) {
-//            ChangeLoginMessage passwordChangeMessage = ChangeLoginMessage.valueOf(passwordChangeMessageStr);
-//            modelMap.addAttribute("passwordChangeMessage", passwordChangeMessage);
-//        }
-        
-        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/login/login.jsp";
+    }
+
+    /**
+     * @param energyCompanyId
+     * @param modelMap
+     * @return
+     */
+    private List<LiteYukonGroup> setupLoginModelMap(int energyCompanyId, LiteYukonUser residentialUser,
+                                                    ModelMap modelMap) {
+        // Set supported variables
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
+        
+        // Build up residential login group list.
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+        List<String> ecResidentialGroupNames = getECResidentialGroupNames(ecResidentialGroups);
+        modelMap.addAttribute("ecResidentialGroupNames", ecResidentialGroupNames);
+        return ecResidentialGroups;
     }
     
     // UPDATE LOGIN
     @RequestMapping
-    public String updateLogin(int accountId, 
-    		                  int energyCompanyId, 
-    		                  @ModelAttribute ChangeLoginBackingBean changeLoginBackingBean, 
-                              ModelMap modelMap, 
-                              YukonUserContext userContext, 
-                              HttpSession session,
-                              FlashScope flashScope,
-                              AccountInfoFragment accountInfoFragment) {
-    	
+    public String updateLogin(@ModelAttribute("changeLoginBackingBean") ChangeLoginBackingBean changeLoginBackingBean, 
+                               BindingResult bindingResult,
+                               ModelMap modelMap, 
+                               YukonUserContext userContext, 
+                               HttpSession session,
+                               FlashScope flashScope,
+                               AccountInfoFragment accountInfoFragment) {
+        
         // Check to see what the user can modify
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-        LiteYukonUser residentialUser = getYukonUserByAccountId(accountId);
         
-        if (residentialUser.getLiteID() == UserUtils.USER_DEFAULT_ID){
-            
-            // Build up the groups needed to create an account
-            List<LiteYukonGroup> groups = Lists.newArrayList();
-            LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-            groups.add(defaultYukonGroup);
-            LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(changeLoginBackingBean.getCustomerLoginGroupName());
-            groups.add(residentialLoginGroup);
+        // validate/update
+        LiteYukonUser residentialUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
+        ChangeLoginValidator changeLoginValidator = changeLoginValidatorFactory.getChangeLoginValidator(residentialUser, userContext);
+        
+        try {
 
-            ChangeLoginMessage validatePasswordChange = validatePasswordChange(changeLoginBackingBean,
-                                                                               userContext, 
-                                                                               residentialUser);
-            if (ChangeLoginMessage.LOGIN_PASSWORD_CHANGED.equals(validatePasswordChange)) {
+            changeLoginValidator.validate(changeLoginBackingBean, bindingResult);
 
-                // Build up the user for creation
-                LiteYukonUser newUser = new LiteYukonUser();
-                newUser.setUsername(changeLoginBackingBean.getUsername());
-                
-                if (changeLoginBackingBean.isLoginEnabled()) {
-                    newUser.setStatus(UserUtils.STATUS_ENABLED);
+            if (!bindingResult.hasErrors()) {
+
+                if (residentialUser.getLiteID() == UserUtils.USER_DEFAULT_ID){
+
+                    createResidentialLogin(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId(), changeLoginBackingBean, 
+                                           userContext, residentialUser);
+
+                    // Added Event Log Message
+                    EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
+
                 } else {
-                    newUser.setStatus(UserUtils.STATUS_DISABLED);
+
+                    updateResidentialLogin(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId(), changeLoginBackingBean, 
+                                           modelMap, userContext, residentialUser);
+
+                    // Added Event Log Message
+                    EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
                 }
 
-                // Get the default authType
-                AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, userContext.getYukonUser());
-                newUser.setAuthType(authType);
-                
-                String password = changeLoginBackingBean.getPassword1();
-                if (StringUtils.isBlank(password)) {
-                    newUser.setAuthType(AuthType.NONE);
-                }
-                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompanyId, groups);
-                
-                
-                // Update primaryContact to new loginId
-                LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
-                int newUserId = yukonUserDao.getLiteYukonUser(newUser.getUsername()).getUserID();
-                primaryContact.setLoginID(newUserId);
-                contactDao.saveContact(primaryContact);
-                
-                // Added Event Log Message
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountId, session);
-            
-                // flashScope message
-                MessageSourceResolvable validatePasswordChangeMessage = new YukonMessageSourceResolvable(validatePasswordChange.getFormatKey());
-                flashScope.setMessages(Collections.singletonList(validatePasswordChangeMessage), validatePasswordChange.getFlashScopeMessageType());
             }
+        } finally {
             
-        } else {
-
-            updateResidentialCustomerGroup(energyCompanyId, changeLoginBackingBean, residentialUser);
-            updateLoginStatus(changeLoginBackingBean, residentialUser);
-            
-            // Handle username change
-            ChangeLoginMessage usernameChangeMessage = validateUsernameChange(changeLoginBackingBean,
-                                                                              userContext,
-                                                                              residentialUser);
-            if (ChangeLoginMessage.LOGIN_USERNAME_CHANGED.equals(usernameChangeMessage)) {
-                yukonUserDao.changeUsername(residentialUser.getUserID(), changeLoginBackingBean.getUsername());
-
-                // Added Event Log Message
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountId, session);
-            }
-    
-            // Handle password change
-            ChangeLoginMessage passwordChangeMessage = validatePasswordChange(changeLoginBackingBean,
-                                                                              userContext,
-                                                                              residentialUser);
-            if (ChangeLoginMessage.LOGIN_PASSWORD_CHANGED.equals(passwordChangeMessage)) {
-                authenticationService.setPassword(residentialUser, changeLoginBackingBean.getPassword1());
-                
-                // Added Event Log Message
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountId, session);
-            }
-            
-            // flashScope messages
-            MessageSourceResolvable usernameMessage = new YukonMessageSourceResolvable(usernameChangeMessage.getFormatKey());
-            MessageSourceResolvable passwordMessage = new YukonMessageSourceResolvable(passwordChangeMessage.getFormatKey());
-            if (usernameChangeMessage.getFlashScopeMessageType() == passwordChangeMessage.getFlashScopeMessageType()) {
-            	List<MessageSourceResolvable> messages = Lists.newArrayListWithCapacity(2);
-            	messages.add(usernameMessage);
-            	messages.add(passwordMessage);
-            	flashScope.setMessages(messages, usernameChangeMessage.getFlashScopeMessageType());
-            } else {
-            	flashScope.setMessages(Collections.singletonList(usernameMessage), usernameChangeMessage.getFlashScopeMessageType());
-            	flashScope.setMessages(Collections.singletonList(passwordMessage), passwordChangeMessage.getFlashScopeMessageType());
-            }
+            AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+            if (bindingResult.hasErrors()) {
+                setupLoginModelMap(accountInfoFragment.getEnergyCompanyId(), residentialUser, modelMap);
+                flashScope.setBindingResult(bindingResult);
+                return "operator/login/login.jsp";
+            } 
         }
+        
+        flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.changeLogin.loginUpdated")));
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:changeLogin";
     }
 
-
     // GENERATE PASSWORD
     @RequestMapping
-    public String generatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView generatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
         response.setContentType("application/json");
         JSONObject object = new JSONObject();
         
         // Generate password
-        String generatedPassword = authenticationService.generatePassword(6);
+        String generatedPassword = RandomStringUtils.randomAlphanumeric(6);
         object.put("generatedPassword", generatedPassword);
         
-        // Write out javascript response
-        PrintWriter out = response.getWriter();
-        out.print(object.toString());
-        out.close();
-        return generatedPassword;
+        return new ModelAndView(new TextView(generatedPassword));
+        
     }
     
     // DELETE LOGIN
     @RequestMapping
     public String deleteLogin(int accountId, 
-    		                  int energyCompanyId,
-    		                  ModelMap modelMap, 
-    		                  YukonUserContext userContext,
-    		                  AccountInfoFragment accountInfoFragment) {
-        
-    	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+                              int energyCompanyId,
+                              ModelMap modelMap, 
+                              YukonUserContext userContext,
+                              AccountInfoFragment accountInfoFragment) {
+
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteYukonUser custYukonUser = getYukonUserByAccountId(accountId);
         yukonUserDao.deleteUser(custYukonUser.getUserID());
@@ -256,10 +202,75 @@ public class OperatorLoginController {
         return "redirect:changeLogin";
     }
     
+    /**
+     * 
+     * This method updates an existing residential login
+     *
+     */
+    @Transactional
+    private void updateResidentialLogin(int accountId, int energyCompanyId, ChangeLoginBackingBean changeLoginBackingBean,
+                                         ModelMap modelMap, YukonUserContext userContext, LiteYukonUser residentialUser) {
+
+        updateResidentialCustomerGroup(energyCompanyId, changeLoginBackingBean, residentialUser);
+        updateLoginStatus(changeLoginBackingBean, residentialUser);
+        
+        if (!changeLoginBackingBean.getUsername().equals(residentialUser.getUsername())) {
+            yukonUserDao.changeUsername(residentialUser.getUserID(), changeLoginBackingBean.getUsername());
+        }
+
+        if (!StringUtils.isBlank(changeLoginBackingBean.getPassword1()) &&
+            !StringUtils.isBlank(changeLoginBackingBean.getPassword2())) {
+            authenticationService.setPassword(residentialUser, changeLoginBackingBean.getPassword1());
+        }
+    }
+
+    /**
+     * 
+     * This method creates a brand new residential login
+     * 
+     */
+    @Transactional
+    private void createResidentialLogin(int accountId, int energyCompanyId, ChangeLoginBackingBean changeLoginBackingBean,
+                                        YukonUserContext userContext, LiteYukonUser residentialUser) {
+
+        // Build up the groups needed to create an account
+        List<LiteYukonGroup> groups = Lists.newArrayList();
+        LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
+        groups.add(defaultYukonGroup);
+        LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(changeLoginBackingBean.getCustomerLoginGroupName());
+        groups.add(residentialLoginGroup);
+
+        // Build up the user for creation
+        LiteYukonUser newUser = new LiteYukonUser();
+        newUser.setUsername(changeLoginBackingBean.getUsername());
+
+        if (changeLoginBackingBean.isLoginEnabled()) {
+            newUser.setStatus(UserUtils.STATUS_ENABLED);
+        } else {
+            newUser.setStatus(UserUtils.STATUS_DISABLED);
+        }
+
+        // Get the default authType
+        AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, userContext.getYukonUser());
+        newUser.setAuthType(authType);
+
+        String password = changeLoginBackingBean.getPassword1();
+        if (StringUtils.isBlank(password)) {
+            newUser.setAuthType(AuthType.NONE);
+        }
+        yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompanyId, groups);
+
+        // Update primaryContact to new loginId
+        LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
+        int newUserId = yukonUserDao.getLiteYukonUser(newUser.getUsername()).getUserID();
+        primaryContact.setLoginID(newUserId);
+        contactDao.saveContact(primaryContact);
+    }
+
     private void updateLoginStatus(ChangeLoginBackingBean changeLoginBackingBean,
                                      LiteYukonUser residentialUser) {
         
-    	LoginStatusEnum loginStatus = null;
+        LoginStatusEnum loginStatus = null;
         if (changeLoginBackingBean.isLoginEnabled()) {
             loginStatus = LoginStatusEnum.ENABLED;
         } else {
@@ -274,8 +285,8 @@ public class OperatorLoginController {
     private void updateResidentialCustomerGroup(int energyCompanyId,
                                                   ChangeLoginBackingBean changeLoginBackingBean,
                                                   LiteYukonUser residentialUser) {
-        
-    	// Get all the the residential groups
+
+        // Get all the the residential groups
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
         String previousUserResidentialGroupName = getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
@@ -303,61 +314,11 @@ public class OperatorLoginController {
     }
     
     /**
-     * This method handles all the validation for a password change.
-     *
-     * @return - ChangeLoginMessage.  It will return ChangeLoginMessage.LOGIN_PASSWORD_CHANGED if all validation requirements were meet.
-     */
-    private ChangeLoginMessage validatePasswordChange(ChangeLoginBackingBean changeLoginBackingBean,
-                                                      YukonUserContext userContext,
-                                                      LiteYukonUser residentialUser) {
-        
-    	boolean allowsPasswordChange = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
-        boolean passwordChangeSupported = authenticationService.supportsPasswordChange(residentialUser.getAuthType());
-        
-        ChangeLoginMessage passwordChangeMessage = null;
-        if (allowsPasswordChange) {
-            if (StringUtils.isBlank(changeLoginBackingBean.getPassword1()) &&
-                StringUtils.isBlank(changeLoginBackingBean.getPassword2())) {
-                passwordChangeMessage = ChangeLoginMessage.NO_PASSWORD_CHANGE;
-            } else if (!passwordChangeSupported) {
-                passwordChangeMessage = ChangeLoginMessage.PASSWORD_CHANGE_NOT_SUPPORTED;
-            } else if (!changeLoginBackingBean.getPassword1().equals(changeLoginBackingBean.getPassword2())) {
-                passwordChangeMessage = ChangeLoginMessage.NO_PASSWORDMATCH;
-            } else {
-                passwordChangeMessage = ChangeLoginMessage.LOGIN_PASSWORD_CHANGED;
-            }
-        }
-        return passwordChangeMessage;
-    }
-    
-    /**
-     * This method handles all the validation for a username change.
-     *
-     * @return - ChangeLoginMessage.  It will return ChangeLoginMessage.LOGIN_USERNAME_CHANGED if all validation requirements were meet.
-     */
-    private ChangeLoginMessage validateUsernameChange(ChangeLoginBackingBean changeLoginBackingBean,
-                                                      YukonUserContext userContext,
-                                                      LiteYukonUser residentialUser) {
-        
-    	// Handle username change
-        boolean allowsUsernameChange = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, userContext.getYukonUser());
-        
-        ChangeLoginMessage usernameChangeMessage = null;
-        if (allowsUsernameChange) {
-            if (changeLoginBackingBean.getUsername().equals(residentialUser.getUsername())) {
-                usernameChangeMessage = ChangeLoginMessage.NO_USERNAME_CHANGE;
-            } else {
-                usernameChangeMessage = ChangeLoginMessage.LOGIN_USERNAME_CHANGED;
-            }
-        }
-        return usernameChangeMessage;
-    }
-    
-    /**
      * Returns the first residential login group that the user is in.
      * 
      */
-    private String getResidentialGroupNameForUser(int userId, List<LiteYukonGroup> ecResidentialGroups) {
+    private String getResidentialGroupNameForUser(int userId,
+                                                   List<LiteYukonGroup> ecResidentialGroups) {
 
         List<LiteYukonGroup> groupsForUser = yukonGroupDao.getGroupsForUser(userId);
         for (LiteYukonGroup userLiteYukonGroup : groupsForUser) {
@@ -376,8 +337,8 @@ public class OperatorLoginController {
      * 
      */
     private List<String> getECResidentialGroupNames(List<LiteYukonGroup> ecResidentialGroups) {
-        
-    	ArrayList<String> results = Lists.newArrayList();
+
+        ArrayList<String> results = Lists.newArrayList();
 
         for (LiteYukonGroup yukonGroup : ecResidentialGroups) {
             results.add(yukonGroup.getGroupName());
@@ -398,6 +359,11 @@ public class OperatorLoginController {
     @Autowired
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
+    }
+
+    @Autowired
+    public void setChangeLoginValidatorFactory(ChangeLoginValidatorFactory changeLoginValidatorFactory) {
+        this.changeLoginValidatorFactory = changeLoginValidatorFactory;
     }
     
     @Autowired
