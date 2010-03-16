@@ -30,7 +30,7 @@ Group names may not be blank or contain slashes.
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup">Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.title">Click to delete this group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure">Are you sure you want to permanently remove this group and all of it's sub groups?  You will not be able to undo this removal.</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure">Are you sure you want to permanently remove this group and all of its subgroups?  You will not be able to undo this removal.</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup">Move Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup.title">Click to move this group</entry>
@@ -47,10 +47,10 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.cancelButtonText">Cancel</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.modifyGroupsLabel">Modify Group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText">Add Sub Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText">Add Subgroup</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesText">Add Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddDevicesText">Cannot add devices to this group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle">Click to add a sub group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle">Click to add a subgroup</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title">Select Group To Move To</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText">Move Group To Selected Group</entry>
@@ -64,7 +64,7 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroup.emptyGroupTitle">Create a new group with no devices in it.</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroup.composedGroupTitle">Create a new group with a combination of devices contained in other groups.</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddSubgroupText">Cannot add sub groups to this group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddSubgroupText">Cannot add subgroups to this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText">Cannot edit this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameSaveText">Create</entry>
 
@@ -85,7 +85,7 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupDescription">Remove devices in this group from a another Device Group.</entry>
 
 <entry key="yukon.web.deviceGroups.editor.membersContainer.membersLabel">Members:</entry>
-<entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No Sub Groups</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No subgroups</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.noDevices">No devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle">Cannot Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel">This group contains {0} devices.</entry>

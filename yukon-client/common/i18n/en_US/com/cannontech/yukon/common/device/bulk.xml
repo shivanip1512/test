@@ -68,7 +68,7 @@
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileName">Device Name (one per line)</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileMeterNumber">Meter Number (one per line)</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.dataFileBulk">Bulk Importer file</entry>
-    <entry key="yukon.common.device.bulk.deviceSelection.dataFileDeviceId">Device Id (one per line)</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileDeviceId">Device ID (one per line)</entry>
 
     <!-- COLLECTION ACTIONS collectionActions.jsp -->
     <entry key="yukon.common.device.bulk.collectionActions.pageTitle">Collection Actions</entry>
