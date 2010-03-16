@@ -28,7 +28,7 @@ void XmlGroupDevice::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
     CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
 
     //  "XML GROUP" is the only difference from CtiDeviceGroupExpresscom's getSQL()
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("XML GROUP") && selector.where() );
+    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("INTEGRATION GROUP") && selector.where() );
 }
 
 void XmlGroupDevice::getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const

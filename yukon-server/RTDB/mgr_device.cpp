@@ -1368,12 +1368,11 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
                 {
                     prevDev = deviceId;
                     device = getDeviceByID(deviceId);
-                    if (!device)
+                    if (device)
                     {
-                        continue;
+                        device->decodeParameters(rdr);
                     }
                 }
-                device->decodeParameters(rdr);
             }
         }
 
