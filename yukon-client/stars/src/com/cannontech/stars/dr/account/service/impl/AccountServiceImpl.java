@@ -744,6 +744,8 @@ public class AccountServiceImpl implements AccountService {
         LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
         LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
         LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        LiteContactNotification ivrLoginNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN);
+        LiteContactNotification voicePINNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_PIN);
         
         if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
         	String homePhone = accountDto.getHomePhone();
@@ -784,6 +786,34 @@ public class AccountServiceImpl implements AccountService {
         }else {
             if(emailNotif != null) {
                 contactNotificationDao.removeNotification(emailNotif.getContactNotifID());
+            }
+        }
+        
+        if(StringUtils.isNotBlank(accountDto.getIvrLogin())) {
+            String ivrLogin = accountDto.getIvrLogin();
+            if(ivrLoginNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.IVR_LOGIN, ivrLogin);
+            }else {
+                ivrLoginNotif.setNotification(ivrLogin);
+                contactNotificationDao.saveNotification(ivrLoginNotif);
+            }
+        }else {
+            if(ivrLoginNotif != null) {
+                contactNotificationDao.removeNotification(ivrLoginNotif.getContactNotifID());
+            }
+        }
+        
+        if(StringUtils.isNotBlank(accountDto.getVoicePIN())) {
+            String voicePin = accountDto.getVoicePIN();
+            if(voicePINNotif == null) {
+                contactNotificationService.createNotification(primaryContact, ContactNotificationType.VOICE_PIN, voicePin);
+            }else {
+                voicePINNotif.setNotification(voicePin);
+                contactNotificationDao.saveNotification(voicePINNotif);
+            }
+        }else {
+            if(voicePINNotif != null) {
+                contactNotificationDao.removeNotification(voicePINNotif.getContactNotifID());
             }
         }
         
@@ -1246,4 +1276,9 @@ public class AccountServiceImpl implements AccountService {
     public void setPhoneNumberFormattingService(PhoneNumberFormattingService phoneNumberFormattingService) {
 		this.phoneNumberFormattingService = phoneNumberFormattingService;
 	}
+    
+    @Autowired
+    public void setYukonUserContextService(YukonUserContextService yukonUserContextService) {
+        this.yukonUserContextService = yukonUserContextService;
+    }
 }

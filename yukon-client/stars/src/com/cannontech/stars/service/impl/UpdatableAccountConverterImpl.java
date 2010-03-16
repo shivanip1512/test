@@ -75,7 +75,15 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_WORK_PHONE])) {
             acctDto.setWorkPhone(custFields[ImportManagerUtil.IDX_WORK_PHONE]);
         }		
-		
+
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_IVR_USERNAME])) {
+            acctDto.setIvrLogin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
+        }
+
+        if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_IVR_PIN])) {
+            acctDto.setVoicePIN(custFields[ImportManagerUtil.IDX_IVR_PIN]);
+        }
+        
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_USERNAME])) {
             acctDto.setUserName(custFields[ImportManagerUtil.IDX_USERNAME]);
         }

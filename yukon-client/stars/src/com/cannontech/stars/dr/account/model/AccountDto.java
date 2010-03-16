@@ -12,6 +12,8 @@ public class AccountDto {
     private String homePhone;
     private String workPhone;
     private String emailAddress;
+    private String ivrLogin;
+    private String voicePIN;
     private Address streetAddress = new Address();
     private Address billingAddress = new Address();
     private String userName;
@@ -81,6 +83,22 @@ public class AccountDto {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    public String getIvrLogin() {
+        return ivrLogin;
+    }
+
+    public void setIvrLogin(String ivrLogin) {
+        this.ivrLogin = ivrLogin;
+    }
+
+    public String getVoicePIN() {
+        return voicePIN;
+    }
+
+    public void setVoicePIN(String voicePIN) {
+        this.voicePIN = voicePIN;
     }
 
     public String getUserName() {
