@@ -6,8 +6,11 @@
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
     <cti:crumbLink url="/spring/support/" title="Support" />
-    <cti:crumbLink>Log File Menu</cti:crumbLink>
+    <cti:crumbLink url="/spring/support/logging/menu" title="Log File Menu" />
+    <cti:crumbLink>${dirFile.name}</cti:crumbLink>
 </cti:breadCrumbs>
+
+<h3>Current Directory: ${dirFile.name}</h3> <br />
 
 <h4>Sort By: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 
