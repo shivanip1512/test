@@ -218,6 +218,10 @@ public Object getValue(Object val) {
 	{		
 		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.STRING_SNPP_TERMINAL_ROUTE );
 	}
+	else if( type == PAOGroups.TNPP_TERMINAL )
+	{
+	    val = com.cannontech.database.data.route.RouteFactory.createRoute(com.cannontech.database.data.pao.RouteTypes.STRING_TNPP_TERMINAL_ROUTE );
+	}
 	else if( type == PAOGroups.RTC )
 	{
 		val = com.cannontech.database.data.route.RouteFactory.createRoute( com.cannontech.database.data.pao.RouteTypes.ROUTE_RTC);
