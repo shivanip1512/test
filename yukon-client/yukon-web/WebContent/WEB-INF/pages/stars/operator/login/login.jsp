@@ -42,15 +42,6 @@
     
     <tags:boxContainer2 key=".changeLogin" styleClass="boxContainer50percent">
 
-        <c:if test="${not empty usernameChangeMessage}">
-        	<i:inline key="${usernameChangeMessage.formatKey}" />
-        	<br>
-        </c:if>
-        <c:if test="${not empty passwordChangeMessage}">
-            <i:inline key="${passwordChangeMessage.formatKey}"/>
-        </c:if>
-        
-        
         <form id="deleteForm" action="/spring/stars/operator/login/deleteLogin" method="post">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
