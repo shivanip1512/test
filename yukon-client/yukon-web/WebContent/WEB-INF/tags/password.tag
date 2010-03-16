@@ -15,7 +15,7 @@
 	<c:set var="inputClass" value="error"/>
 </c:if>
 
-<form:password path="${path}" id="${path}" disabled="${disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}"  cssClass="${inputClass}" />
+<form:password path="${path}" id="${path}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}"  cssClass="${inputClass}" />
 
 <c:if test="${status.error}">
 	<br>
