@@ -1375,10 +1375,6 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
                 {
                     device->decodeParameters(rdr);
                 }
-                else
-                {
-                    continue;
-                }
             }
         }
 
