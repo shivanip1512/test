@@ -1364,14 +1364,20 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
             {
                 int deviceId = -1;
                 rdr["lmgroupid"] >> deviceId;
+
                 if (prevDev != deviceId)
                 {
                     prevDev = deviceId;
                     device = getDeviceByID(deviceId);
-                    if (device)
-                    {
-                        device->decodeParameters(rdr);
-                    }
+                }
+
+                if (device)
+                {
+                    device->decodeParameters(rdr);
+                }
+                else
+                {
+                    continue;
                 }
             }
         }
