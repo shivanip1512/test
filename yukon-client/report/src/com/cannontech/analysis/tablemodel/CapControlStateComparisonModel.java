@@ -74,7 +74,13 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
                     row.capBankName = rs.getString("capBankName");
                     row.cbcName = rs.getString("cbcName");
                     row.capBankStatus = rs.getString("capBankStatus");
-                    row.capBankState = rs.getString("capBankState");
+                    
+                    String capBankState = rs.getString("capBankState");
+                    if ( capBankState == null || capBankState.length() < 1 ) {
+                        capBankState = "---";
+                    }
+                    row.capBankState = capBankState;
+                    
                     row.cbcStatus = rs.getString("cbcStatus");
                     row.capBankChangeTime = rs.getTimestamp("capBankChangeTime");
                     row.cbcChangeTime = rs.getTimestamp("cbcChangeTime");
@@ -90,7 +96,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         SqlStatementBuilder sql = new SqlStatementBuilder ("");
         if(!useMisMatch) {
             sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
-            sql.append("yp.paoName cbcName, s.text capBankStatus, isNull(elf.capbankstateinfo, '---') capBankState, s1.text cbcStatus,  ");
+            sql.append("yp.paoName cbcName, s.text capBankStatus, elf.capbankstateinfo capBankState, s1.text cbcStatus,  ");
             sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
             sql.append("from  (select * from yukonpaobject where type like 'CBC 702%') yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
@@ -114,7 +120,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type = ").appendArgument(CapControlType.AREA).append(") ca on ca.paobjectid = saa.areaid ");
         } else {
             sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
-            sql.append("yp.paoName cbcName, s.text capBankStatus, isNull(elf.capbankstateinfo, '---') capBankState, s1.text cbcStatus, ");
+            sql.append("yp.paoName cbcName, s.text capBankStatus, elf.capbankstateinfo capBankState, s1.text cbcStatus, ");
             sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
             sql.append("from (select * from yukonpaobject where type like 'CBC 702%') yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
