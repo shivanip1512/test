@@ -13,7 +13,7 @@
         <primaryKey name="ApplianceCategoryId" />
         <identifier name="Description"/>
         <data name="CategoryId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
-        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" nullId="0" />
+        <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" />
     </table>
 
     <table name="BaseLine">
@@ -45,7 +45,7 @@
 
     <table name="CalcPointBaseline">
         <primaryKey name="PointId" tableRef="CalcBase"/>
-        <primaryKey name="BaseLineId" tableRef="BaseLine" refType="MANY_TO_ONE"/>
+        <identifier name="BaseLineId" tableRef="BaseLine" refType="MANY_TO_ONE"/>
     </table>
     
     <table name="Contact">
@@ -242,7 +242,7 @@
         <primaryKey name="ProgramId" />
         <identifier name="ApplianceCategoryId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
         <identifier name="DeviceId" tableRef="YukonPAObject" refType="MANY_TO_ONE"/>
-        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" nullId="0" />
+        <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" /> 
         <data name="ChanceOfControlId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="ProgramOrder" />
     </table>
@@ -375,10 +375,10 @@
     
     <table name="YukonListEntry">
         <primaryKey name="EntryId"/>
-        <identifier name="ListId"/>
+        <identifier name="ListId" tableRef="YukonSelectionList" refType="MANY_TO_ONE" />
         <identifier name="EntryText"/>
         <data name="EntryOrder"/>
-        <data name="YukonDefinitionId"/>
+        <identifier name="YukonDefinitionId"/>
     </table>
 
     <table name="YukonPAObject">
@@ -425,7 +425,7 @@
     </table>
     
     <table name="YukonWebConfiguration">
-        <primaryKey name="ConfigurationId"/>
+        <primaryKey name="ConfigurationId" nullId="0"/> 
         <identifier name="Description"/>
         <identifier name="AlternateDisplayName"/>
         <data name="LogoLocation"/>

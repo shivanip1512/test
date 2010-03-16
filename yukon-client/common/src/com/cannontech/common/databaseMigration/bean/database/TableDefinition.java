@@ -61,11 +61,14 @@ public class TableDefinition {
     
     public Column getColumn(String columnName){
         ColumnTypeEnum[] columnTypes = ColumnTypeEnum.values();
-        for (ColumnTypeEnum columnType : columnTypes)
-            for (Column column : this.columns.get(columnType.toString()))
-                if(column.getName().equalsIgnoreCase(columnName))
+        for (ColumnTypeEnum columnType : columnTypes) {
+            for (Column column : this.columns.get(columnType.toString())) {
+                if(column.getName().equalsIgnoreCase(columnName)) {
                     return column;
-
+                }
+            }
+            
+        }
         return null;
     }
     
