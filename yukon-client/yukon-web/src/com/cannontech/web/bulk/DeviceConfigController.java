@@ -43,7 +43,9 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.GroupCommandCompletionAlert;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -60,6 +62,7 @@ public class DeviceConfigController extends BulkControllerBase {
     private RecentResultsCache<BackgroundProcessResultHolder> recentResultsCache;
     private DeviceConfigService deviceConfigService;
     private AlertService alertService;
+    private RolePropertyDao rolePropertyDao;
     
     /**
      * CONFIRM CONFIG ASSIGN
@@ -69,8 +72,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping
-    public String assignConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
-
+    public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         // pass along deviceCollection
         model.addAttribute("deviceCollection", deviceCollection);
         
@@ -92,8 +95,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping(method=RequestMethod.POST)
-    public ModelAndView doAssignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
+    public ModelAndView doAssignConfig(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         ModelAndView mav = null;
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         // CALLBACK
@@ -134,7 +137,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping
-    public String assignConfigResults(HttpServletRequest request, ModelMap model) throws ServletException {
+    public String assignConfigResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.ASSIGN_CONFIG, userContext.getYukonUser());
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         AssignConfigCallbackResult callbackResult = (AssignConfigCallbackResult)recentResultsCache.getResult(resultsId);
         model.addAttribute("deviceCollection", callbackResult.getDeviceCollection());
@@ -151,7 +155,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping
-    public String sendConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+    public String sendConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
@@ -183,7 +188,8 @@ public class DeviceConfigController extends BulkControllerBase {
      * @throws ServletException
      */
     @RequestMapping
-    public String readConfig(DeviceCollection deviceCollection, ModelMap model) throws ServletException {
+    public String readConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, userContext.getYukonUser());
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
@@ -237,7 +243,7 @@ public class DeviceConfigController extends BulkControllerBase {
      */
     @RequestMapping(method=RequestMethod.POST)
     public String doReadConfig(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) throws ServletException {
-        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
         // DO SEND
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
@@ -264,7 +270,7 @@ public class DeviceConfigController extends BulkControllerBase {
      */
     @RequestMapping(method=RequestMethod.POST)
     public String doSendConfig(DeviceCollection deviceCollection, String method, LiteYukonUser user, ModelMap model) throws ServletException {
-        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.SEND_READ_CONFIG, user);
         // DO SEND
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
@@ -318,6 +324,11 @@ public class DeviceConfigController extends BulkControllerBase {
     @Autowired
     public void setAlertService(AlertService alertService) {
         this.alertService = alertService;
+    }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
     
     @Resource(name="recentResultsCache")
