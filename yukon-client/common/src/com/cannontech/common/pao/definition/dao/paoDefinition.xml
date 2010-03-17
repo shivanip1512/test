@@ -608,26 +608,6 @@
         		<pointRef name="TOU Rate D (Channel 2)"/>
         		<pointRef name="TOU Rate D - Peak kW (Channel 2)"/>
         	</command>        	
-			<command id="READ_PROFILE_DATA_CHANNEL_1">
-				<name>Read Profile Data Channel 1</name>
-        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_2">
-				<name>Read Profile Data Channel 2</name>
-        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 2)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_3">
-				<name>Read Profile Data Channel 3</name>
-        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 3)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_4">
-				<name>Read Profile Data Channel 4</name>
-        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 4)"/>
-        	</command>
 			<command id="READ_BLINK_COUNT">
 				<name>Read Blink Count</name>
         		<cmd text="getvalue powerfail"/>
@@ -1002,26 +982,6 @@
             </point>
         </points>
         <commands>
-			<command id="READ_PROFILE_DATA_CHANNEL_1">
-				<name>Read Profile Data Channel 1</name>
-        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_2">
-				<name>Read Profile Data Channel 2</name>
-        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 2)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_3">
-				<name>Read Profile Data Channel 3</name>
-        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 3)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_4">
-				<name>Read Profile Data Channel 4</name>
-        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="Voltage Profile"/>
-        	</command>
 			<command id="READ_BLINK_COUNT">
 				<name>Read Blink Count</name>
         		<cmd text="getvalue powerfail"/>
@@ -1570,30 +1530,6 @@
         		<cmd text="getvalue kWh rate d frozen"/>
         		<pointRef name="Rate D kWh"/>
         		<pointRef name="Peak kW (Rate D kW)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_1">
-				<name>Read Profile Data Channel 1</name>
-        		<cmd text="getvalue lp channel 1 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_2">
-				<name>Read Profile Data Channel 2</name>
-        		<cmd text="getvalue lp channel 2 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 2)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_3">
-				<name>Read Profile Data Channel 3</name>
-        		<cmd text="getvalue lp channel 3 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="kW-LP (Channel 3)"/>
-        	</command>
-			<command id="READ_PROFILE_DATA_CHANNEL_4">
-				<name>Read Profile Data Channel 4</name>
-        		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
-        		<pointRef name="Voltage Profile"/>
-        	</command>
-			<command id="READ_PROFILE_PEAK_REPORT" enabled="false">
-				<name>Read Profile Peak Report</name>
-        		<cmd text="getvalue lp peak (day|hour|interval) channel N mm/dd/yyyy (days)"/>
         	</command>
 			<command id="READ_LP_REQUEST_STATUS">
 				<name>Read LP Request Status</name>

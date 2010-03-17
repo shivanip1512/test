@@ -10,7 +10,7 @@ public enum BuiltInAttribute implements Attribute {
     KEEP_ALIVE("Keep Alive"),
     KVAR("kVAr"),
     KVARH("kVArh"),
-    LOAD_PROFILE("Load Profile"),
+    LOAD_PROFILE("Load Profile", true),
     TAP_DOWN("Lower Tap Position"),
     MAXIMUM_VOLTAGE("Maximum Voltage"),
     MINIMUM_VOLTAGE("Minimum Voltage"),
@@ -32,21 +32,33 @@ public enum BuiltInAttribute implements Attribute {
     TOU_RATE_D_USAGE("Tou Rate D Usage"), 
     USAGE("Usage Reading"), 
     VOLTAGE("Voltage"), 
-    VOLTAGE_PROFILE("Voltage Profile"),
+    VOLTAGE_PROFILE("Voltage Profile", true),
     ZERO_USAGE_FLAG("Zero Usage Flag"),
     ;
     
-    private BuiltInAttribute(String description) {
-        this.description = description;
+
+	private BuiltInAttribute(String description) {
+        this(description, false);
+    }
+    
+    private BuiltInAttribute(String description, boolean profile) {
+    	this.description = description;
+		this.profile = profile;
     }
     
     private String description;
+    private final boolean profile;
     
     public String getDescription() {
         return description;
     }
     
+    public boolean isProfile() {
+		return profile;
+	}
+    
     public String getKey() {
         return this.name();
     }
+    
 }

@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <%@ attribute name="fieldName" required="true" type="java.lang.String"%>
-<%@ attribute name="attributes" required="true" type="java.util.List"%>
+<%@ attribute name="attributes" required="true" type="java.util.Collection"%>
 <%@ attribute name="selectedAttributes" required="false" type="java.util.Set"%>
 <%@ attribute name="includeDummyOption" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="multipleSize" required="false" type="java.lang.Integer"%>

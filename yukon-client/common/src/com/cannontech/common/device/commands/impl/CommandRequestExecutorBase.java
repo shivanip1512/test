@@ -341,12 +341,6 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
 
         log.debug("Executing " + commands.size() + " for " + callback);
 
-        if (commands.isEmpty()) {
-            log.debug("Skipping execution because there were no commands");
-            callback.complete();
-            return null;
-        }
-        
         // parameterDto
         final LiteYukonUser user = parameterDto.getUser();
         final boolean noqueue = parameterDto.isNoqueue();

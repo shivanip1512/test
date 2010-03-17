@@ -1,8 +1,6 @@
 package com.cannontech.web.common.scheduledGroupRequestExecution;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
@@ -27,8 +25,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.AttributeNameComparator;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
@@ -63,6 +60,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
 	private CronExpressionTagService cronExpressionTagService;
 	private AttributeSelectorHelperService attributeSelectorHelperService;
+	private AttributeService attributeService;
 	private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
 	
@@ -176,8 +174,7 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 		mav.addObject("deviceGroupName", deviceGroupName);
 		
 		// attributes
-		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
-		Collections.sort(allAttributes, new AttributeNameComparator());
+		Set<Attribute> allAttributes = attributeService.getReadableAttributes();
 		mav.addObject("allAttributes", allAttributes);
 		
 		// commands
@@ -565,5 +562,10 @@ public class ScheduledGroupRequestExecutionController extends MultiActionControl
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
 		this.scheduledGroupRequestExecutionDao = scheduledGroupRequestExecutionDao;
+	}
+	
+	@Autowired
+	public void setAttributeService(AttributeService attributeService) {
+		this.attributeService = attributeService;
 	}
 }

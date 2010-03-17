@@ -1,7 +1,6 @@
 package com.cannontech.web.group;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -31,8 +30,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.AttributeNameComparator;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.ResolvableTemplate;
@@ -51,6 +49,7 @@ public class GroupMeterReadController extends MultiActionController {
 	private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 	private DeviceCollectionFactory deviceCollectionFactory;
 	private AttributeSelectorHelperService attributeSelectorHelperService;
+	private AttributeService attributeService;
 	
 	// HOME (GROUP)
 	public ModelAndView homeGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -65,8 +64,7 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("groupName", groupName);
 		mav.addObject("selectedAttributes", selectedAttributes);
 		
-		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
-		Collections.sort(allAttributes, new AttributeNameComparator());
+		Set<Attribute> allAttributes = attributeService.getReadableAttributes();
 		mav.addObject("allAttributes", allAttributes);
 		
 		return mav;
@@ -86,8 +84,7 @@ public class GroupMeterReadController extends MultiActionController {
 		mav.addObject("errorMsg", errorMsg);
 		mav.addObject("selectedAttributes", selectedAttributes);
 		
-		List<BuiltInAttribute> allAttributes = Arrays.asList(BuiltInAttribute.values());
-		Collections.sort(allAttributes, new AttributeNameComparator());
+		Set<Attribute> allAttributes = attributeService.getReadableAttributes();
 		mav.addObject("allAttributes", allAttributes);
 		
 		return mav;
@@ -289,4 +286,9 @@ public class GroupMeterReadController extends MultiActionController {
 	public void setAttributeSelectorHelperService(AttributeSelectorHelperService attributeSelectorHelperService) {
         this.attributeSelectorHelperService = attributeSelectorHelperService;
     }
+	
+	@Autowired
+	public void setAttributeService(AttributeService attributeService) {
+		this.attributeService = attributeService;
+	}
 }

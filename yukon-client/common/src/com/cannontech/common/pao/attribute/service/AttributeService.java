@@ -82,4 +82,11 @@ public interface AttributeService {
     public void createPointForAttribute(YukonPao pao, Attribute attribute);
 
     public boolean isPointAttribute(PaoPointIdentifier paoPointIdentifier, Attribute usage);
+    
+    /**
+     * Returns a set of attributes for which "reading" makes sense. 
+     * 
+     * (Currently this is designed to exclude "profile" attributes.)
+     */
+    public Set<Attribute> getReadableAttributes();
 }

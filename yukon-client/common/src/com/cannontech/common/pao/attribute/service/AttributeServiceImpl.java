@@ -1,5 +1,6 @@
 package com.cannontech.common.pao.attribute.service;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -23,6 +24,7 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 public class AttributeServiceImpl implements AttributeService {
@@ -30,6 +32,16 @@ public class AttributeServiceImpl implements AttributeService {
     private DBPersistentDao dbPersistentDao = null;
     private PaoDefinitionDao paoDefinitionDao = null;
     private PointService pointService = null;
+    
+    private Set<Attribute> readableAttributes;
+    {
+    	EnumSet<BuiltInAttribute> nonProfiledAttributes = EnumSet.noneOf(BuiltInAttribute.class);
+    	for (BuiltInAttribute attribute : BuiltInAttribute.values()) {
+    		if (!attribute.isProfile()) nonProfiledAttributes.add(attribute);
+    	}
+    	// could consider other factors and handle user defined attributes in the future
+    	readableAttributes = ImmutableSet.<Attribute>copyOf(nonProfiledAttributes);
+    }
 
     @Required
     public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
@@ -170,6 +182,11 @@ public class AttributeServiceImpl implements AttributeService {
         }
         
         return result;
+    }
+    
+    @Override
+    public Set<Attribute> getReadableAttributes() {
+    	return readableAttributes;
     }
 
 }
