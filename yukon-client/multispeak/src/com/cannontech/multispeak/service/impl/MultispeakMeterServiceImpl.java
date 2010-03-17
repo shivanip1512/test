@@ -28,6 +28,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.search.dao.MeterSearchDao;
+import com.cannontech.amr.meter.search.model.FilterBy;
+import com.cannontech.amr.meter.search.model.MeterSearchField;
+import com.cannontech.amr.meter.search.model.OrderBy;
+import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -44,6 +49,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -115,6 +121,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private SubstationDao substationDao = null;
     private SubstationToRouteMappingDao substationToRouteMappingDao = null;
     private DeviceDao deviceDao = null;
+    private MeterSearchDao meterSearchDao = null;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -554,7 +561,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         ErrorObject errorObject = isValidMeter(mspMeter, mspVendor, METER_ADD_STRING);
                         if( errorObject == null) {
                             try {
-                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterToAdd(mspMeter, paoAlias, mspVendor);
+                                com.cannontech.amr.meter.model.Meter meterToAdd = getMeterByMspMeter(mspMeter, paoAlias, mspVendor);
                                 // have existing meter to "update"
                                 errorObject = addExistingMeter(mspMeter, meterToAdd, mspVendor, paoAlias);
                             } catch (NotFoundException e) { //and NEW meter
@@ -588,14 +595,14 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
     
     /**
-     * Helper method to return the Meter object to "add" to Yukon.
+     * Helper method to return the Yukon Meter object for mspMeter object.
      * Returns Meter when mspMeter is found in Yukon by the mspMeterLookup (roleProperty value field)
      * @param mspMeter
      * @param paoAlias
      * @return
      * @throws NotFoundException
      */
-    private com.cannontech.amr.meter.model.Meter getMeterToAdd (Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) throws NotFoundException {
+    private com.cannontech.amr.meter.model.Meter getMeterByMspMeter(Meter mspMeter, int paoAlias, MultispeakVendor mspVendor) throws NotFoundException {
         
     	com.cannontech.amr.meter.model.Meter meter = null;
     	MultispeakMeterLookupFieldEnum multispeakMeterLookupFieldEnum= multispeakFuncs.getMeterLookupField();
@@ -726,35 +733,65 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 transactionTemplate.execute(new TransactionCallbackWithoutResult(){
                     @Override
                     protected void doInTransactionWithoutResult(TransactionStatus status){
-    
-                        List<Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
-                        //Have meterNumbers to update
-                        if( !mspMeters.isEmpty()) {
-
-                        	for (Meter mspMeter : mspMeters) {
-                        		String meterNumber = mspMeter.getMeterNo();
-                        		try {
-                            		com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-                            		
-                            		changeMeter(mspMeter, meter, mspVendor, paoAlias, SERV_LOC_CHANGED_STRING);
-                            		
+                        
+                        if( paoAlias == MultispeakVendor.SERVICE_LOCATION_PAONAME ) {
+                            // With Service Location, all we need to do is update fields on the Service Location object itself that may be in Yukon.
+                            String paoName = mspServiceLocation.getObjectID();
+                            if (StringUtils.isNotBlank(paoName)) {
+                                com.cannontech.amr.meter.model.Meter meter = meterDao.getForPaoName(paoName);
+                                if ( !meter.isDisabled()) {
                                     //Update billing cycle information
                                     String billingCycle = mspServiceLocation.getBillingCycle();
-                                    updateBillingCyle(billingCycle, meterNumber, meter, SERV_LOC_CHANGED_STRING, mspVendor);
-                        		} catch ( NotFoundException e) {
-                                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
-                                    errorObjects.add(err);            
+                                    updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
                                 }
-                        	}
-                               
+                            }
+                        } else if ( paoAlias == MultispeakVendor.SERVICE_LOCATION_WITH_POSITION_NO_PAONAME) {
+                            //Use the Service Location value to find all meters that have this name.
+                            List<FilterBy> searchFilter = new ArrayList<FilterBy>(1);
+                            FilterBy filterBy = new StandardFilterBy("Device Name", MeterSearchField.PAONAME);
+                            filterBy.setFilterValue(mspServiceLocation.getObjectID());
+                            searchFilter.add(filterBy);
+                            OrderBy orderBy = new OrderBy(MeterSearchField.PAONAME.toString(), true);
+                            SearchResult<com.cannontech.amr.meter.model.Meter> result = meterSearchDao.search(searchFilter, orderBy, 0, 25);
+                            List<com.cannontech.amr.meter.model.Meter> meters = result.getResultList();
+                            
+                            for (com.cannontech.amr.meter.model.Meter meter: meters) {
+                                if ( !meter.isDisabled()) {
+                                    //Update billing cycle information
+                                    String billingCycle = mspServiceLocation.getBillingCycle();
+                                    updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                }
+                            }
                         } else {
-                            ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
-                            		paoAliasStr + "ServiceLocation(" + mspServiceLocation.getObjectID()+ ") - No meters returned from vendor for location.",
-                            		"ServiceLocation",
-                            		SERV_LOC_CHANGED_STRING,
-                            		mspVendor.getCompanyName());
-                            errorObjects.add(err);
-                        }
+                            // Must get meters from MSP CB call to process.
+                            List<Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
+                            
+                            if( !mspMeters.isEmpty()) {
+    
+                                for (Meter mspMeter : mspMeters) {
+                                    String meterNumber = mspMeter.getMeterNo();
+                                    try {
+                                        com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
+                                        changeMeter(mspMeter, meter, mspVendor, paoAlias, SERV_LOC_CHANGED_STRING);
+                                        
+                                        //Update billing cycle information
+                                        String billingCycle = mspServiceLocation.getBillingCycle();
+                                        updateBillingCyle(billingCycle, meterNumber, meter, SERV_LOC_CHANGED_STRING, mspVendor);
+                                    } catch ( NotFoundException e) {
+                                        ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                                        errorObjects.add(err);            
+                                    }
+                                }
+                                   
+                            } else {
+                                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
+                                        paoAliasStr + "ServiceLocation(" + mspServiceLocation.getObjectID()+ ") - No meters returned from vendor for location.",
+                                        "ServiceLocation",
+                                        SERV_LOC_CHANGED_STRING,
+                                        mspVendor.getCompanyName());
+                                errorObjects.add(err);
+                            }
+                        } 
                     };
                 });
             }catch (RuntimeException ex) {
@@ -1275,81 +1312,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 	}
 	
     /**
-     * Helper method to return the PaoName alias value for the MultiSpeak mspServiceLocation object.
-     * defaultValue is returned when the paoNameAlias is not found for the MultiSpeakVendor enums. 
-     * @param mspServiceLocation
-     * @param mspVendor
-     * @param paoNameAlias
-     * @param defaultValue
-     * @return
-     */
-   /* private String getPaoNameFromMspServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor, int paoNameAlias, String defaultValue) {
-        
-        switch (paoNameAlias) {
-            case MultispeakVendor.ACCOUNT_NUMBER_PAONAME:
-            {
-               if( StringUtils.isBlank(mspServiceLocation.getAccountNumber()))
-                   return null;
-               return mspServiceLocation.getAccountNumber();
-            }   
-            case MultispeakVendor.SERVICE_LOCATION_PAONAME:
-            {
-                if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
-                   return null;
-               return mspServiceLocation.getObjectID();
-            }   
-            case MultispeakVendor.CUSTOMER_PAONAME:
-            {
-                if( StringUtils.isBlank(mspServiceLocation.getCustID()))
-                   return null;
-               return mspServiceLocation.getCustID();
-            }
-            case MultispeakVendor.EA_LOCATION_PAONAME:
-            {
-                if( mspServiceLocation.getNetwork() == null || mspServiceLocation.getNetwork().getEaLoc() == null ||
-                        StringUtils.isBlank(mspServiceLocation.getNetwork().getEaLoc().getName()))
-                   return null;
-               return mspServiceLocation.getNetwork().getEaLoc().getName();
-            }
-            case MultispeakVendor.GRID_LOCATION_PAONAME:
-            {
-                if(StringUtils.isBlank(mspServiceLocation.getGridLocation()))
-                   return null;
-               return mspServiceLocation.getGridLocation();
-            }   
-            case MultispeakVendor.DEFAULT_PAONAME:
-            { // lookup by meter number
-                //lookup meter by servicelocation
-            	List<Meter> meters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
-            	//TODO - this is not quite correct.  If we have more than one meter, then we should throw an exception because we don't know how to process it.
-            	if (!meters.isEmpty() && meters.size() > 0) {
-            		return meters.get(0).getMeterNo();
-            	}
-                return null;
-            }
-            case MultispeakVendor.SERVICE_LOCATION_WITH_POSITION_NO_PAONAME:
-            {
-                if( StringUtils.isBlank(mspServiceLocation.getObjectID()))
-                   return null;
-                
-				String serviceLocation = mspServiceLocation.getObjectID();
-				String registerNo = getMeterRegister(mspServiceLocation.getExtensionsList());
-				return multispeakFuncs.buildServiceLocationWithRegister(serviceLocation, registerNo);
-            } 
-            case MultispeakVendor.POLE_NUMBER_PAONAME:
-            {
-                if( mspServiceLocation.getNetwork()== null || StringUtils.isBlank(mspServiceLocation.getNetwork().getPoleNo())){
-                    return null;
-                }
-                return mspServiceLocation.getNetwork().getPoleNo();
-            }   
-
-            default:
-                return defaultValue;
-        }
-    }*/
-	
-    /**
      * Helper method to add a new meter to Yukon.
      * An errorObject will be returned when the templateName is not a valid YukonPaobject Name.
      * An errorObject will be returned when the substation name is not a valid Substation To Route Mapping.
@@ -1824,4 +1786,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public void setDeviceDao(DeviceDao deviceDao) {
 		this.deviceDao = deviceDao;
 	}
+    @Autowired
+    public void setMeterSearchDao(MeterSearchDao meterSearchDao) {
+        this.meterSearchDao = meterSearchDao;
+    }
 }
