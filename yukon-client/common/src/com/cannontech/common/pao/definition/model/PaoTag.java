@@ -16,6 +16,7 @@ public enum PaoTag {
 	DISCONNECT_310("310 Disconnect"),
 	DISCONNECT_213("213 Disconnect"),
 	METER_DETAIL_DISPLAYABLE("Meter Detail Displayable"),
+	PHASE_DETECT("Phase Detect");
 	;
 
 	private String description;

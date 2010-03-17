@@ -40,6 +40,8 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.SubstationDao;
@@ -49,6 +51,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -70,6 +73,7 @@ public class PhaseDetectController {
     private DeviceGroupService deviceGroupService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private CommandRequestExecutionDao commandRequestExecutionDao;
+    private PaoDefinitionDao paoDefinitionDao;
 
     @RequestMapping
     public String home(ModelMap model, String errorMsg) throws ServletException {
@@ -278,7 +282,8 @@ public class PhaseDetectController {
         List<SimpleDevice> devicesOnSub = Lists.newArrayList();
         for(Route route : phaseDetectService.getPhaseDetectData().getReadRoutes()){
             List<SimpleDevice> devicesOnRoute = deviceDao.getDevicesForRouteId(route.getId());
-            devicesOnSub.addAll(devicesOnRoute);
+            Iterable<SimpleDevice> phaseDetectDevices = paoDefinitionDao.filterPaosForTag(devicesOnRoute, PaoTag.PHASE_DETECT);
+            Iterables.addAll(devicesOnSub, phaseDetectDevices);
         }
         
         Phase phaseValue = null;
@@ -568,7 +573,8 @@ public class PhaseDetectController {
         
         for(Integer routeId : routeIds){
             List<SimpleDevice> devices = deviceDao.getDevicesForRouteId(routeId);
-            devicesOnSub.addAll(devices);
+            Iterable<SimpleDevice> phaseDetectDevices = paoDefinitionDao.filterPaosForTag(devices, PaoTag.PHASE_DETECT);
+            Iterables.addAll(devicesOnSub, phaseDetectDevices);
         }
         
         return devicesOnSub;
@@ -639,4 +645,8 @@ public class PhaseDetectController {
         this.commandRequestExecutionDao = commandRequestExecutionDao;
     }
     
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
 }

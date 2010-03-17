@@ -12,6 +12,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 
 public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
@@ -116,5 +117,10 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 			PaoTag tag) {
 		throw new UnsupportedOperationException("not implemented");
 	}
+
+    @Override
+    public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
 }

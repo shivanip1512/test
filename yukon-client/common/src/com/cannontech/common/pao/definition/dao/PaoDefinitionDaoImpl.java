@@ -44,6 +44,7 @@ import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -78,7 +79,9 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 
 /**
  * Implementation class for PaoDefinitionDao
@@ -261,6 +264,18 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     		}
     	}
     	return definitions;
+    }
+    
+    @Override
+    public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, final PaoTag feature) {
+        Predicate<YukonPao> supportsTagPredicate = new Predicate<YukonPao>() {
+            @Override
+            public boolean apply(YukonPao input) {
+                return isTagSupported(input.getPaoIdentifier().getPaoType(), feature);
+            }
+        };
+        
+        return Iterables.filter(paos, supportsTagPredicate);    
     }
     
     public boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature) {

@@ -12,6 +12,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 
 /**
  * Data access object for pao definition information
@@ -125,4 +126,12 @@ public interface PaoDefinitionDao {
     //============================================
     public String getPointLegendHtml(String displayGroup);
 
+    /**
+     * Takes a collection of YukonPao's and filters out the ones that do not support
+     * the PaoTag provided.
+     * @param paos
+     * @param feature
+     * @return List<YukonPao>
+     */
+    public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature);
 }

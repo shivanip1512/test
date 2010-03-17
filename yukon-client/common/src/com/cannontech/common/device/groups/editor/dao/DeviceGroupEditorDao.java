@@ -3,6 +3,7 @@ package com.cannontech.common.device.groups.editor.dao;
 import java.util.List;
 
 import com.cannontech.common.device.groups.IllegalGroupNameException;
+import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -45,8 +46,26 @@ public interface DeviceGroupEditorDao {
      */
     public List<StoredDeviceGroup> getNonStaticGroups(StoredDeviceGroup group);
 
-    public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type,
-            String groupName) throws IllegalGroupNameException;
+    /**
+     * Creates a group with permission EDIT_MOD
+     * @param parentGroup
+     * @param type
+     * @param groupName
+     * @return StoredDeviceGroup
+     * @throws IllegalGroupNameException
+     */
+    public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName) throws IllegalGroupNameException;
+    
+    /**
+     * Creates a group.
+     * @param parentGroup
+     * @param type
+     * @param groupName
+     * @param permission
+     * @return StoredDeviceGroup
+     * @throws IllegalGroupNameException
+     */
+    public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName, DeviceGroupPermission permission) throws IllegalGroupNameException;
 
     /**
      * Method to remove a stored device group and all of its children and

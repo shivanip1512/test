@@ -221,6 +221,11 @@ public class GroupEditorController extends MultiActionController {
         StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
         group.setName(newGroupName.trim());
         
+        if(!group.isEditable()){
+            mav.addObject("errorMessage", "Non-editable groups cannot be updated.");
+            return mav;
+        }
+        
         try {
             deviceGroupEditorDao.updateGroup(group);
         } catch (DuplicateException e){
@@ -414,7 +419,7 @@ public class GroupEditorController extends MultiActionController {
         // Make sure we can move the group
         try {
             
-            if (deviceGroupDao.isGroupCanMoveUnderGroup(group, parentGroup)) {
+            if (deviceGroupDao.isGroupCanMoveUnderGroup(group, parentGroup) && group.isEditable()) {
                 
                 group.setParent(parentGroup);
                 deviceGroupEditorDao.updateGroup(group);

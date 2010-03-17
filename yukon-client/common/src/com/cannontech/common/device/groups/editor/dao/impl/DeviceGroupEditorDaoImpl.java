@@ -64,11 +64,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     @Transactional(propagation=Propagation.REQUIRED)
     public void addDevices(StoredDeviceGroup group, Iterator<? extends YukonDevice> devices) {
-        
-        if (!group.isModifiable()) {
-            throw new UnsupportedOperationException("Cannot add devices to a non-modifiable group.");
-        }
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("insert into DeviceGroupMember");
         sql.append("(DeviceGroupId, YukonPaoId)");
@@ -317,8 +312,13 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     @Transactional(propagation=Propagation.REQUIRED, noRollbackFor={DuplicateException.class})
-    public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) throws IllegalGroupNameException {
-        
+    public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName) throws IllegalGroupNameException {
+        DeviceGroupPermission permission = type.equals(DeviceGroupType.STATIC) ? DeviceGroupPermission.EDIT_MOD : DeviceGroupPermission.EDIT_NOMOD;
+        return addGroup(parentGroup, type, groupName, permission);
+    }
+    
+    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor={DuplicateException.class})
+    public StoredDeviceGroup addGroup(StoredDeviceGroup parentGroup, DeviceGroupType type, String groupName, DeviceGroupPermission permission) throws IllegalGroupNameException {
         CtiUtilities.validateGroupName(groupName);
         
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
@@ -330,10 +330,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
         
-        DeviceGroupPermission permission = type.equals(DeviceGroupType.STATIC) ? DeviceGroupPermission.EDIT_MOD : DeviceGroupPermission.EDIT_NOMOD;
-
         try {
-            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), permission.name(), type.name());
+            jdbcTemplate.update(sql.toString(), nextValue, rawName, parentGroup.getId(), permission.name(), type.name());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
         }
@@ -341,7 +339,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         StoredDeviceGroup result = new StoredDeviceGroup();
         result.setId(nextValue);
         result.setName(groupName);
-        result.setParent(group);
+        result.setParent(parentGroup);
         result.setPermission(permission);
         result.setType(type);
         return result;
@@ -349,7 +347,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
 
     @Transactional(propagation=Propagation.REQUIRED)
     public void updateGroup(StoredDeviceGroup group) throws IllegalGroupNameException {
-        Validate.isTrue(group.isEditable(), "Non-editable groups cannot be updated.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
         
         CtiUtilities.validateGroupName(group.getName());

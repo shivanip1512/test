@@ -29,6 +29,7 @@ import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -42,6 +43,7 @@ import com.cannontech.common.device.service.RouteBroadcastService.CompletionCall
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -81,6 +83,7 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
     private RecentResultsCache<PhaseDetectResult> phaseDetectResultsCache;
     private AttributeService attributeService;
     
+    private static final String SYSTEM_METERS_GROUP = "/System/Meters/";
     private static final String PHASE_DETECT_GROUP = "Phase Detect";
     private static final String LAST_RESULTS_GROUP = "Last Results";
     private static final int DEFAULT_TIMEOUT = 60; /* Seconds */
@@ -228,91 +231,16 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         }
     }
     
-    private void proccessReadResults(List<SimpleDevice> devices, final Map<Phase, StoredDeviceGroup> groups, LiteYukonUser user) {
-        phaseDetectResult.setInputDeviceList(devices);
-        for (SimpleDevice device : devices) {
-            if(phaseDetectResult.getFailureGroupMap().containsKey(device)){
-                continue; /* skip devices that failed: don't add them to the unknown group or generate point data */
-            }
-            Set<Phase> devicePhases = Sets.newHashSet();
-            for (Map.Entry<Phase, StoredDeviceGroup> phaseGroupEntry : groups.entrySet()) {
-                if (deviceGroupProviderDao.isDeviceInGroup(phaseGroupEntry.getValue(), device)) {
-                    devicePhases.add(phaseGroupEntry.getKey());
-                }
-            }
-            DetectedPhase detectedPhase = DetectedPhase.getPhase(devicePhases);
-            generatePhasePointData(device, detectedPhase);
-            addToDeviceGroup(device, detectedPhase);
-            phaseDetectResult.handleDetectResult(device, detectedPhase);
-        }
-    }
-    
-    public void clearPhaseDetectGroups(){
+    public void clearPhaseDetectGroups() {
         for(DetectedPhase detectedPhase : DetectedPhase.values()){
             try {
-                DeviceGroup group = deviceGroupService.resolveGroupName("/System/Meters/"+ PHASE_DETECT_GROUP +"/"+ LAST_RESULTS_GROUP +"/" + detectedPhase.name());
+                DeviceGroup group = deviceGroupService.resolveGroupName(SYSTEM_METERS_GROUP + PHASE_DETECT_GROUP +"/"+ LAST_RESULTS_GROUP +"/" + detectedPhase.name());
                 StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(group);
                 deviceGroupMemberEditorDao.removeAllChildDevices(storedGroup);
             } catch(NotFoundException e) {} /* ignore if it doesn't exist yet */
         }
     }
     
-    private void addToDeviceGroup(SimpleDevice device, DetectedPhase detectedPhase){
-        String detectedPhaseGroupName = detectedPhase.name();
-        
-        DeviceGroup systemMetersDeviceGroup = deviceGroupService.resolveGroupName("/System/Meters/");
-        StoredDeviceGroup metersGroup = deviceGroupEditorDao.getStoredGroup(systemMetersDeviceGroup);
-        StoredDeviceGroup phaseGroup = retrieveGroup(metersGroup, PHASE_DETECT_GROUP);
-        StoredDeviceGroup lastResultsGroup = retrieveGroup(phaseGroup, LAST_RESULTS_GROUP);
-        StoredDeviceGroup detectedPhaseGroup = retrieveGroup(lastResultsGroup, detectedPhaseGroupName);
-        
-        deviceGroupMemberEditorDao.addDevices(detectedPhaseGroup, device);
-    }
-    
-    /**
-     * If the group doesn't exist, it will be created with the permissions DeviceGroupPermission.NOEDIT_NOMOD.
-     * @param parent
-     * @param groupName
-     * @return
-     */
-    private StoredDeviceGroup retrieveGroup(StoredDeviceGroup parent, String groupName){
-        StoredDeviceGroup group = null;
-        try{
-            group = deviceGroupEditorDao.getGroupByName(parent, groupName, false);
-        } catch (NotFoundException e){
-            group = deviceGroupEditorDao.getGroupByName(parent, groupName, true);
-            group.setPermission(DeviceGroupPermission.NOEDIT_NOMOD);
-            deviceGroupEditorDao.updateGroup(group);
-        }
-        return group;
-    }
-    
-    private void generatePhasePointData(SimpleDevice device, DetectedPhase detectedPhase){
-        LitePoint phasePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.PHASE);
-        if(phasePoint == null){
-            log.warn("No Phase point found for device with id: " + device.getDeviceId());
-            return;
-        }
-        
-        LiteStateGroup phaseStateGroup = stateDao.getLiteStateGroup("PhaseStatus");
-        LiteState liteState = new LiteState(0);
-        for(LiteState state : phaseStateGroup.getStatesList()){
-            if(state.getStateText().equalsIgnoreCase(detectedPhase.name())){
-                liteState = state;
-                break;
-            }
-        }
-        PointData pointData = new PointData();
-        pointData.setId(phasePoint.getLiteID());
-        pointData.setType(phasePoint.getPointType());
-        pointData.setPointQuality(PointQuality.Normal);
-        pointData.setTime(new Date());
-        pointData.setValue(liteState.getStateRawState());
-        pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);
-        pointData.setMillis(0);
-        dynamicDataSource.putValue(pointData);
-    }
-
     public static Phase parsePhase(String porterResultString) {
         Phase phaseDetected;
         if(porterResultString.contains("Phase = A")){
@@ -387,6 +315,110 @@ public class PhaseDetectServiceImpl implements PhaseDetectService{
         }
     }
     
+    /* HELPERS */
+    private void setupPhaseDetectGroups() {
+        DeviceGroup systemMetersDeviceGroup = deviceGroupService.resolveGroupName(SYSTEM_METERS_GROUP);
+        StoredDeviceGroup metersGroup = deviceGroupEditorDao.getStoredGroup(systemMetersDeviceGroup);
+        
+        /* Setup the 'Phase Detect' group if it doesn't exist. */
+        StoredDeviceGroup phaseGroup = null;
+        try{
+            phaseGroup = deviceGroupEditorDao.getGroupByName(metersGroup, PHASE_DETECT_GROUP, false);
+        } catch (NotFoundException nfe) {
+            phaseGroup = deviceGroupEditorDao.addGroup(metersGroup, DeviceGroupType.STATIC, PHASE_DETECT_GROUP, DeviceGroupPermission.NOEDIT_NOMOD);
+        }
+        
+        /* Setup the 'Last Results' group if it doesn't exist. */
+        StoredDeviceGroup lastResultsGroup = null;
+        try{
+            lastResultsGroup = deviceGroupEditorDao.getGroupByName(phaseGroup, LAST_RESULTS_GROUP, false);
+        } catch (NotFoundException nfe) {
+            lastResultsGroup = deviceGroupEditorDao.addGroup(phaseGroup, DeviceGroupType.STATIC, LAST_RESULTS_GROUP, DeviceGroupPermission.NOEDIT_NOMOD);
+        }
+        
+        /* Setup Detected Phase Groups */
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.A);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.B);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.C);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.AB);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.AC);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.BC);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.ABC);
+        setupDetectedPhaseGroup(lastResultsGroup, DetectedPhase.UNKNOWN);
+    }
+    
+    private void setupDetectedPhaseGroup(StoredDeviceGroup parent, DetectedPhase detectedPhase) {
+        try{
+            deviceGroupEditorDao.getGroupByName(parent, detectedPhase.name(), false);
+        } catch (NotFoundException nfe) {
+            deviceGroupEditorDao.addGroup(parent, DeviceGroupType.STATIC, detectedPhase.name(), DeviceGroupPermission.NOEDIT_NOMOD);
+        }
+    }
+    
+    private StoredDeviceGroup retrieveGroup(StoredDeviceGroup parent, String groupName) {
+        StoredDeviceGroup group = deviceGroupEditorDao.getGroupByName(parent, groupName, false);
+        return group;
+    }
+    
+    private void generatePhasePointData(SimpleDevice device, DetectedPhase detectedPhase) {
+        try {
+            LitePoint phasePoint = attributeService.getPointForAttribute(device, BuiltInAttribute.PHASE);
+            
+            LiteStateGroup phaseStateGroup = stateDao.getLiteStateGroup("PhaseStatus");
+            LiteState liteState = new LiteState(0);
+            for(LiteState state : phaseStateGroup.getStatesList()){
+                if(state.getStateText().equalsIgnoreCase(detectedPhase.name())){
+                    liteState = state;
+                    break;
+                }
+            }
+            PointData pointData = new PointData();
+            pointData.setId(phasePoint.getLiteID());
+            pointData.setType(phasePoint.getPointType());
+            pointData.setPointQuality(PointQuality.Normal);
+            pointData.setTime(new Date());
+            pointData.setValue(liteState.getStateRawState());
+            pointData.setTags(PointData.TAG_POINT_MUST_ARCHIVE);
+            pointData.setMillis(0);
+            dynamicDataSource.putValue(pointData);
+        } catch (IllegalUseOfAttribute e) {
+            log.warn("No Phase point found for device with id: " + device.getDeviceId());
+        }
+    }
+    
+    private void addToDeviceGroup(SimpleDevice device, DetectedPhase detectedPhase) {
+        String detectedPhaseGroupName = detectedPhase.name();
+        
+        DeviceGroup systemMetersDeviceGroup = deviceGroupService.resolveGroupName(SYSTEM_METERS_GROUP);
+        StoredDeviceGroup metersGroup = deviceGroupEditorDao.getStoredGroup(systemMetersDeviceGroup);
+        StoredDeviceGroup phaseGroup = retrieveGroup(metersGroup, PHASE_DETECT_GROUP);
+        StoredDeviceGroup lastResultsGroup = retrieveGroup(phaseGroup, LAST_RESULTS_GROUP);
+        StoredDeviceGroup detectedPhaseGroup = retrieveGroup(lastResultsGroup, detectedPhaseGroupName);
+        
+        deviceGroupMemberEditorDao.addDevices(detectedPhaseGroup, device);
+    }
+    
+    private void proccessReadResults(List<SimpleDevice> devices, final Map<Phase, StoredDeviceGroup> groups, LiteYukonUser user) {
+        setupPhaseDetectGroups();
+        phaseDetectResult.setInputDeviceList(devices);
+        for (SimpleDevice device : devices) {
+            if(phaseDetectResult.getFailureGroupMap().containsKey(device)){
+                continue; /* skip devices that failed: don't add them to the unknown group or generate point data */
+            }
+            Set<Phase> devicePhases = Sets.newHashSet();
+            for (Map.Entry<Phase, StoredDeviceGroup> phaseGroupEntry : groups.entrySet()) {
+                if (deviceGroupProviderDao.isDeviceInGroup(phaseGroupEntry.getValue(), device)) {
+                    devicePhases.add(phaseGroupEntry.getKey());
+                }
+            }
+            DetectedPhase detectedPhase = DetectedPhase.getPhase(devicePhases);
+            generatePhasePointData(device, detectedPhase);
+            addToDeviceGroup(device, detectedPhase);
+            phaseDetectResult.handleDetectResult(device, detectedPhase);
+        }
+    }
+    
+    /* DEPENDANCIES */
     @Autowired
     public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;

@@ -21,7 +21,9 @@ public class CopyDeviceGroupServiceImpl implements CopyDeviceGroupService {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
     
     public void copyGroupAndDevicesToGroup(DeviceGroup fromGroup, StoredDeviceGroup toParent) {
-     
+        if (!toParent.isModifiable()) {
+            throw new UnsupportedOperationException("Cannot add devices to a non-modifiable group.");
+        }
         // copy devices in fromGroup to the the new parent
         Set<SimpleDevice> deviceList = deviceGroupDao.getChildDevices(fromGroup);
         deviceGroupMemberEditorDao.addDevices(toParent, deviceList);
