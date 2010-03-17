@@ -1360,35 +1360,30 @@ void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 
 }
 
-static void applyRefreshRepeaterRoles(const long repeater_id, CtiDeviceSPtr repeater, void *dbchg)
+static void applyRefreshRepeaterRoles(const long device_id, CtiDeviceSPtr device, void *dbchg)
 {
     extern CtiPILServer PIL;
 
-    switch( repeater->getType() )
+    if( !isRepeater(device->getType()) )
     {
-        case TYPE_REPEATER800:
-        case TYPE_REPEATER900:
-            break;
-
-        default:
-            return;
+        return;
     }
 
-    if( repeater->isInhibited() )
+    if( device->isInhibited() )
     {
         return;
     }
 
     const CtiDBChangeMsg *pChg = static_cast<const CtiDBChangeMsg *>(dbchg);
 
-    if( !pChg || RouteManager.isRepeaterRelevantToRoute(repeater->getID(), pChg->getId()) )
+    if( !pChg || RouteManager.isRepeaterRelevantToRoute(device->getID(), pChg->getId()) )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Refreshing roles for repeater \"" << repeater->getName() << "\"" << endl;
+            dout << CtiTime() << " Refreshing roles for repeater \"" << device->getName() << "\"" << endl;
         }
 
-        PIL.putQueue( new CtiRequestMsg(repeater->getID(), "putconfig emetcon install") );
+        PIL.putQueue( new CtiRequestMsg(device->getID(), "putconfig emetcon install") );
     }
 }
 

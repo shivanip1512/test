@@ -184,6 +184,7 @@ IM_EX_CTIBASE bool  isLCU(INT type);
 IM_EX_CTIBASE bool  isION(INT type);
 IM_EX_CTIBASE bool  isMCT(INT type);
 IM_EX_CTIBASE bool  isExpresscomGroup(INT Type);
+IM_EX_CTIBASE bool  isRepeater(INT Type);
 
 IM_EX_CTIBASE int   generateTransmissionID();
 

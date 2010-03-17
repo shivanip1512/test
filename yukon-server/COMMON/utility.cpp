@@ -796,6 +796,20 @@ bool isExpresscomGroup(INT Type)
     return isit;
 }
 
+bool isRepeater(INT Type)
+{
+    switch(Type)
+    {
+        case TYPE_REPEATER800:
+        case TYPE_REPEATER900:
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int generateTransmissionID()
 {
     static int id = 0;
