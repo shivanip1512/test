@@ -28,7 +28,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.dao.impl.MeterDisplayFieldEnum;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -39,6 +38,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -947,18 +947,20 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     		
 	    	// get routes
 	        Substation substation = substationDao.getByName(substationName);
-	        List<Integer> routeIds = substationToRouteMappingDao.getRouteIdsBySubstationId(substation.getId());
+	        List<Route> routes = substationToRouteMappingDao.getRoutesBySubstationId(substation.getId());
 	        
 	        // set route
-	        if (routeIds.size() > 0) {
+	        if (routes.size() > 0) {
 
-	            List<String> routeNames = new ArrayList<String>(routeIds.size());
-                for (int routeId : routeIds) {
-                    routeNames.add(paoDao.getRouteNameForRouteId(routeId));
+	            List<String> routeNames = new ArrayList<String>(routes.size());
+	            List<Integer> routeIds = new ArrayList<Integer>(routes.size());
+                for (Route route : routes) {
+                    routeNames.add(route.getName());
+                    routeIds.add(route.getId());
                 }
 
 	            // initally set route to first sub mapping
-	            deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
+	            deviceUpdateService.changeRoute(meterDevice, routes.get(0).getId());
 	            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.", mspVendor.getCompanyName());
 	        
 	            // run route discovery

@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +16,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -25,6 +26,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.model.DisplayableDevice;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -37,7 +39,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.YukonJdbcOperations;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -256,17 +257,18 @@ public final class PaoDaoImpl implements PaoDao {
     }
 
     public LiteYukonPAObject[] getAllLiteRoutes() {
-        // Get an instance of the databaseCache.
-        List<LiteYukonPAObject> routeList;
-        synchronized (databaseCache) {
-            List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();
-            routeList = new ArrayList<LiteYukonPAObject>(routes);
-            Collections.sort(routeList, LiteComparators.liteStringComparator);
-        }
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT y.PAObjectID, y.Category, y.PAOName, y.Type, y.PAOClass, y.Description, y.DisableFlag,");
+    	sql.append(  "null as PortId, null as Address, null as RouteId"); // needed for the mapper, always null for routes
+    	sql.append("FROM  YukonPAObject y");
+    	sql.append("WHERE Category").eq(PaoCategory.ROUTE);
+    	sql.append("ORDER BY y.PAOName");
 
-        LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];
-        routeList.toArray(retVal);
-        return retVal;
+    	List<LiteYukonPAObject> routeList = yukonJdbcOperations.query(sql, new LitePaoRowMapper());
+
+    	LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];
+    	routeList.toArray(retVal);
+    	return retVal;
     }
     
     /*
@@ -579,27 +581,20 @@ public final class PaoDaoImpl implements PaoDao {
     
     public Integer getRouteIdForRouteName(String routeName) {
         
-        Integer routeId = null;
-        LiteYukonPAObject[] routes = getAllLiteRoutes();
-        for (LiteYukonPAObject route : routes) {
-            if (route.getPaoName().equals(routeName)) {
-                routeId = route.getLiteID();
-            }
-        }
-        
-        return routeId;
+    	Integer result = null;
+		try {
+			SqlStatementBuilder sql = new SqlStatementBuilder();
+			sql.append("SELECT y.PAObjectID");
+			sql.append("FROM  YukonPAObject y");
+			sql.append("WHERE Category").eq(PaoCategory.ROUTE);
+			sql.append(  "and upper(y.PAOName)").eq(routeName.toUpperCase());
+
+			result = yukonJdbcOperations.queryForInt(sql);
+		} catch (EmptyResultDataAccessException e) {
+			// return default
+		}
+
+    	return result;
     }
     
-    public String getRouteNameForRouteId(int routeId) {
-        
-        String routeName = "";
-        LiteYukonPAObject[] routes = getAllLiteRoutes();
-        for (LiteYukonPAObject route : routes) {
-            if (route.getLiteID() == routeId) {
-                routeName = route.getPaoName();
-            }
-        }
-        
-        return routeName;
-    }
 }

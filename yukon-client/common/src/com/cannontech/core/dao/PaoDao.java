@@ -127,8 +127,6 @@ public interface PaoDao {
      */
     public Integer getRouteIdForRouteName(String routeName);
     
-    public String getRouteNameForRouteId(int routeId);
-    
     public PaoLoader<DisplayablePao> getDisplayablePaoLoader();
     
     public List<PaoIdentifier> getPaoIdentifiersForPaoIds(List<Integer> paoIds);
