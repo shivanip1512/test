@@ -78,55 +78,53 @@
 	  </tr>
 
 		<c:forEach var="subStation" items="${subStations}">
+	        <tr class="<ct:alternateRow odd="" even="altRow"/>">
+				<td>
+					<input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}"></input>
+				    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
+                       <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true" style="text-decoration:none;">
+                           <img class="rAlign editImg" src="${editInfoImage}"/>
+                       </a>
+                       <c:if test="${hasEditingRole}">
+                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}" style="text-decoration:none;">
+                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+                        </a>
+                    </c:if>
 
-		            <input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}"></input>
-		            
-			        <tr class="<ct:alternateRow odd="" even="altRow"/>">
-						<td>
-						    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
-	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true" style="text-decoration:none;">
-	                            <img class="rAlign editImg" src="${editInfoImage}"/>
-	                        </a>
-	                        <c:if test="${hasEditingRole}">
-		                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}" style="text-decoration:none;">
-		                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
-		                        </a>
-		                    </c:if>
-
-						    <cti:url value="/spring/capcontrol/tier/feeders" var="myLink">
-						    	<cti:param name="areaId" value="${areaId}"/>
-						    	<cti:param name="subStationId" value="${subStation.ccId}"/>
-						    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-						    </cti:url>
-						    
-						    <a href="${myLink}" class="" id="anc_${subStation.ccId}"> ${subStation.ccName}</a>
-						    
-						    <span class="errorRed">
-		                        <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
-		                    </span>
-						</td>
-		                
-		                <td>
-		                    <capTags:warningImg paoId="${subStation.ccId}" type="SUBSTATION"/>
-		                </td>
-		                
-						<td>
-		                    <a id="substation_state_${subStation.ccId}" style=""
-			                    <c:if test="${hasSubstationControl}">
-								   href="javascript:void(0);" ${popupEvent}="getSubstationMenu('${subStation.ccId}', event);"
-			                    </c:if> 
-			                >
-		                        <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="STATE" />
-		                    </a>
-		                    <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${subStation.ccId}')" initialize="true" value="SUBSTATION/${subStation.ccId}/STATE"/>
-		            	</td>
-		                
-						<td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
-		                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
-		                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
-		                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
-		                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="PFACTOR" /></td>
-		            </tr>
+				    <cti:url value="/spring/capcontrol/tier/feeders" var="myLink">
+				    	<cti:param name="areaId" value="${areaId}"/>
+				    	<cti:param name="subStationId" value="${subStation.ccId}"/>
+				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+				    </cti:url>
+				    
+				    <a href="${myLink}" class="" id="anc_${subStation.ccId}"> ${subStation.ccName}</a>
+				    
+				    <span class="errorRed">
+                        <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
+                    </span>
+				</td>
+                
+                <td>
+                    <capTags:warningImg paoId="${subStation.ccId}" type="SUBSTATION"/>
+                </td>
+                
+				<td>
+                    <a id="substation_state_${subStation.ccId}" style=""
+	                    <c:if test="${hasSubstationControl}">
+						   href="javascript:void(0);" ${popupEvent}="getSubstationMenu('${subStation.ccId}', event);"
+	                    </c:if> 
+	                >
+                        <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="STATE" />
+                    </a>
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${subStation.ccId}')" initialize="true" value="SUBSTATION/${subStation.ccId}/STATE"/>
+            	</td>
+                
+				<td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
+                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
+                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
+                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
+                <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="PFACTOR" /></td>
+            </tr>
 		</c:forEach>
 		
 		</table>
