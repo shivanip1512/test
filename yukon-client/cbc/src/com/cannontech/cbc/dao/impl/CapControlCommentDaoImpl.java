@@ -77,13 +77,13 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
                                         "FROM ccsubareaassignment sa " +
                                         "WHERE substationbusid = ?";
             
-            selectLastTenForPaoAndActon = "SELECT DISTINCT CCC.CapComment AS Comment, MAX(CCC.CommentTime) AS CommentTime " +
+            selectLastTenForPaoAndActon = "SELECT CCC.CapComment \"Comment\", MAX(CCC.CommentTime) \"CommentTime\" " +
                                     "FROM CapControlComment CCC " +
                                     "JOIN YukonPAObject PAO ON PAO.PAObjectId = CCC.PaoId " +
                                     "WHERE CCC.Action = ? " +
                                     "AND PAO.Type = (SELECT Type FROM YukonPAObject WHERE PAObjectId = ?) " +
                                     "GROUP BY CCC.CapComment " +
-                                    "ORDER BY MAX(CCC.CommentTime) DESC";
+                                    "ORDER BY \"CommentTime\" DESC";
 
             rowMapper = createRowMapper();
             
