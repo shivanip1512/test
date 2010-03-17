@@ -11,7 +11,7 @@ public:
     typedef bytes target_type;
 
     virtual void apply(target_type &message)=0;
-    virtual void setChance(int chance)=0;
+    virtual void setChance(double chance)=0;
 
     enum BehaviorValues
     {

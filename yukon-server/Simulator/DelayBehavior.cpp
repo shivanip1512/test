@@ -16,7 +16,7 @@ void DelayBehavior::apply(bytes &message)
     if (_delayed.empty())
     {
         double dist = rand() / double(RAND_MAX+1);
-        int chance = int(dist * 1000);
+        double chance = dist * 100;
         if (chance < _chance)
         {
             {
@@ -43,7 +43,7 @@ void DelayBehavior::apply(bytes &message)
     }
 }
 
-void DelayBehavior::setChance(int chance)
+void DelayBehavior::setChance(double chance)
 {
     _chance = chance;
 }
