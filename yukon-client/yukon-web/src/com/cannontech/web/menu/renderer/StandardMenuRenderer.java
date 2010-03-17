@@ -136,6 +136,11 @@ public class StandardMenuRenderer implements MenuRenderer {
                 link = createLink(option, "yukon.web.menu.simpleMenuDefaultTitle");
                 SimpleMenuOption simpleOption = (SimpleMenuOption) option;
                 link.setHref(buildUrl(simpleOption.getUrl()));
+                
+                if(simpleOption.isNewWindow()) {
+                    link.setTarget("blank");
+                }
+                
             } else if (option instanceof SubMenuOption) {
                 SubMenuOption subOption = (SubMenuOption)option;
                 List<MenuOption> menuOptions = subOption.getMenuOptions(userContext);

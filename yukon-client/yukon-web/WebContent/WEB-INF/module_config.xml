@@ -905,9 +905,9 @@
 		          </option>
 	          </options>	
 	   		</option>
-	   		<option name="faq">
-		   		<link>/spring/stars/operator/faq</link>
-		    </option>
+            <dynamicOptions id="operatorFaq" bean="operatorFAQMenuOption">
+              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
+            </dynamicOptions>
 	  	</options>  
     </menu>
     
