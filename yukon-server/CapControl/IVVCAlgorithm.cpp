@@ -36,8 +36,26 @@ void IVVCAlgorithm::setPointDataRequestFactory(const PointDataRequestFactoryPtr&
 
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
-
     CtiTime timeNow;
+
+
+    if ( ! isLtcInRemoteMode( subbus->getLtcId() ) )    // If we are in 'Auto' mode we don't want to run the algorithm.
+    {
+        if ( state->getLtcAutoModeMsg() )           // show message?
+        {
+            state->setLtcAutoModeMsg(false);        // toggle flag to only show message once.
+            state->setState(IVVCState::IVVC_WAIT);  // reset algorithm
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - LTC ID: " << subbus->getLtcId() << " is in Auto mode." << endl;
+        }
+
+        return;
+    }
+
+    // show message once the next time we enter Auto mode.
+    state->setLtcAutoModeMsg(true);
+
 
     if ( ! subbus->getDisableFlag() )
     {
@@ -801,8 +819,6 @@ void IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " LTC Voltage point not found for LTC id: " << subbus->getLtcId() << endl;
-        dout << CtiTime() << " Disabling subbus: " << subbus->getPaoName() << endl;
-        subbus->setDisableFlag(true);
     }
     else
     {
@@ -1016,16 +1032,9 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
 
 void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 {
-    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    const long ltcId = subbus->getLtcId();
 
-    long ltcId = subbus->getLtcId();
-    LoadTapChangerPtr ltc = store->findLtcById(ltcId);
-
-    LitePoint remotePoint = ltc->getAutoRemotePoint();
-    double value = -1.0;
-    ltc->getPointValue(remotePoint.getPointId(),value);
-
-    if (value == 0.0)//Remote Mode
+    if ( isLtcInRemoteMode(ltcId) )
     {
         if( _CC_DEBUG & CC_DEBUG_IVVC )
         {
@@ -1055,3 +1064,19 @@ void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConn
     pointChangeMsg->setData(pointChanges);
     dispatchConnection->WriteConnQue(pointChangeMsg);
 }
+
+
+bool IVVCAlgorithm::isLtcInRemoteMode(const long ltcId)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    LoadTapChangerPtr ltc = store->findLtcById(ltcId);
+
+    LitePoint remotePoint = ltc->getAutoRemotePoint();
+
+    double value = -1.0;
+    ltc->getPointValue(remotePoint.getPointId(), value);
+
+    return (value == 0.0);  // Remote Mode
+}
+

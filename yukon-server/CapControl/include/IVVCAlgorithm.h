@@ -29,6 +29,9 @@ class IVVCAlgorithm
 
         static void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
+        static bool isLtcInRemoteMode(const long ltcId);
+
+
         PointDataRequestFactoryPtr _requestFactory;
 };
 

@@ -8,7 +8,8 @@ IVVCState::IVVCState() :
     _paoId(0),
     _commsRetryCount(0),
     _showVarCheckFailMsg(true),
-    _showSubbusDisableMsg(true)
+    _showSubbusDisableMsg(true),
+    _showLtcAutoModeMsg(true)
 {
 }
 
@@ -162,5 +163,17 @@ void IVVCState::setShowBusDisableMsg(const bool flag)
 bool IVVCState::getShowBusDisableMsg() const
 {
     return _showSubbusDisableMsg;
+}
+
+
+void IVVCState::setLtcAutoModeMsg(const bool flag)
+{
+    _showLtcAutoModeMsg = flag;
+}
+
+
+bool IVVCState::getLtcAutoModeMsg() const
+{
+    return _showLtcAutoModeMsg;
 }
 

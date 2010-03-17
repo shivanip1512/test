@@ -68,6 +68,9 @@ class IVVCState
         void setShowBusDisableMsg(const bool flag);
         bool getShowBusDisableMsg() const;
 
+        void setLtcAutoModeMsg(const bool flag);
+        bool getLtcAutoModeMsg() const;
+
         struct EstimatedData
         {
             bool            operated;
@@ -103,6 +106,7 @@ class IVVCState
 
         bool _showVarCheckFailMsg;
         bool _showSubbusDisableMsg;
+        bool _showLtcAutoModeMsg;
 
         unsigned long _commsRetryCount;
 };
