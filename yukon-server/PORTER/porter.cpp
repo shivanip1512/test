@@ -1360,35 +1360,94 @@ void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 
 }
 
-static void applyRepeaterAutoRole(const long unusedid, CtiDeviceSPtr autoRoleDevice, void *prtid)
+static void applyRefreshRepeaterRoles(const long repeater_id, CtiDeviceSPtr repeater, void *dbchg)
 {
-    extern CtiPILServer     PIL;
+    extern CtiPILServer PIL;
 
-    if( (autoRoleDevice->getType() == TYPE_REPEATER800 || autoRoleDevice->getType() == TYPE_REPEATER900) &&
-        !autoRoleDevice->isInhibited())
+    switch( repeater->getType() )
     {
-        // We should fire off a message to PIL asking for a role configuration!
-        PIL.putQueue( new CtiRequestMsg(autoRoleDevice->getID(), "putconfig emetcon install") );
+        case TYPE_REPEATER800:
+        case TYPE_REPEATER900:
+            break;
 
+        default:
+            return;
+    }
+
+    if( repeater->isInhibited() )
+    {
+        return;
+    }
+
+    const CtiDBChangeMsg *pChg = static_cast<const CtiDBChangeMsg *>(dbchg);
+
+    if( !pChg || RouteManager.isRepeaterRelevantToRoute(repeater->getID(), pChg->getId()) )
+    {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << autoRoleDevice->getName() << " role table being refreshed" << endl;
+            dout << CtiTime() << " Refreshing roles for repeater \"" << repeater->getName() << "\"" << endl;
+        }
+
+        PIL.putQueue( new CtiRequestMsg(repeater->getID(), "putconfig emetcon install") );
+    }
+}
+
+
+void refreshRepeaterRoutes(const CtiDBChangeMsg *pChg)
+{
+    static CtiTime lastRefresh(PASTDATE);
+    const unsigned long porterAutoRoleRate = gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0);
+    bool refreshNeeded = false;
+
+    if( porterAutoRoleRate && CtiTime::now() > (lastRefresh + porterAutoRoleRate) )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired." << endl;
+            dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
+        }
+
+        refreshNeeded = true;
+    }
+    else if(pChg != NULL)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Reloading repeater routes based upon db change" << endl;
+            dout << CtiTime() << " All relevant repeaters will have their role table refreshed." << endl;
+        }
+
+        refreshNeeded = true;
+    }
+
+    if(refreshNeeded)
+    {
+        try
+        {
+            lastRefresh = CtiTime::now();      // Update our static variable.
+
+            DeviceManager.apply(applyRefreshRepeaterRoles, (void *)pChg);
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Downloading routes to all CCU-711s on repeater route change" << endl;
+            }
+
+            PortManager.apply( applyLoadAllRoutes, NULL );
+        }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
 }
 
 INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 {
-    extern CtiPILServer  PIL;
-    bool autoRole     = false;              // Set to true if routes might have changed and or we need to download based on time!
-    static CtiTime lastAutoRole(PASTDATE);    // This time is used to trigger timed downloads of repeater roles.
-
-    bool autoCCURoute = false;
-
-    INT   i;
     INT   status = NORMAL;
-    DWORD dwWait;
-    LONG  id = 0;
 
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
@@ -1481,54 +1540,12 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
     if(pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_ROUTE) )
     {
-        if(pChg != NULL)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Reloading all routes based upon db change" << endl;
-                dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
-            }
-            autoRole = true;
-        }
-
-        if(gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE", 0) > 0 && CtiTime().seconds() > lastAutoRole.seconds() + gConfigParms.getValueAsULong("PORTER_AUTOROLE_RATE") )
-        {
-            autoRole = true;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired." << endl;
-                dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
-            }
-        }
-
         RouteManager.RefreshList();
 
         /* Make routes associate with devices */
         attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
-    }
 
-    if(autoRole)
-    {
-        try
-        {
-            lastAutoRole = lastAutoRole.now();      // Update our static variable.
-
-            DeviceManager.apply(applyRepeaterAutoRole,NULL);
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Downloading routes to all CCU-711s on repeater route change" << endl;
-            }
-
-            PortManager.apply( applyLoadAllRoutes, NULL );
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
+        refreshRepeaterRoutes(pChg);
     }
 
     if(pChg != NULL && (pChg->getDatabase() == ChangeConfigDb))

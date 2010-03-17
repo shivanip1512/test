@@ -974,19 +974,8 @@ void CtiRouteCCU::DecodeDatabaseReader(RWDBReader &rdr)
     Carrier.DecodeDatabaseReader(rdr);
 }
 
-void CtiRouteCCU::DecodeRepeaterDatabaseReader(RWDBReader &rdr)
+void CtiRouteCCU::addRepeater(const CtiTableRepeaterRoute &Rpt)
 {
-    CtiTableRepeaterRoute   Rpt;
-
-    if(getType() == RouteTypeCCU)   // Just make darn sure.  (used to be RouteTypeRepeater)
-    {
-        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-        Rpt.DecodeDatabaseReader(rdr);
-        RepeaterList.insert(Rpt);
-    }
+    RepeaterList.insert(Rpt);
 }
 

@@ -82,7 +82,7 @@ void ApplyRouteResetUpdated(const long key, CtiRouteSPtr pRoute, void* d)
 
 void ApplyRepeaterSort(const long key, CtiRouteSPtr pRoute, void* d)
 {
-    if(pRoute->getType() == RouteTypeCCU)  //  used to be RouteTypeRepeater
+    if(pRoute->getType() == RouteTypeCCU)
     {
         CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
         pCCU->getRepeaterList().sort();
@@ -117,10 +117,15 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
     try
     {
         {
-            // Reset everyone's Updated flag.
+            // Reset everyone's Updated flag and clear out all Macro and Repeater route entries.
             if(!_smartMap.empty())
             {
                 apply(ApplyRouteResetUpdated, NULL);
+
+                //  keep a copy of what our routes' repeaters used to be so we can
+                //    clear the relevant roles from any repeaters that have been removed from routes
+                _routeRepeaters.previous = _routeRepeaters.current;
+                _routeRepeaters.current.clear();
             }
 
             _smartMap.resetErrorCode();
@@ -334,26 +339,22 @@ void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBas
 
 void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    LONG lTemp = 0;
-    ptr_type pTempCtiRoute;
-
     while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
     {
         rowFound = true;
 
-        rdr["routeid"] >> lTemp;            // get the RouteID
+        const CtiTableRepeaterRoute Rpt(rdr);
 
-        if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
+        if( ptr_type pTempCtiRoute = _smartMap.find(Rpt.getRouteID()) )
         {
-            if(pTempCtiRoute->getType() == RouteTypeCCU)  //  used to be RouteTypeRepeater
+            if(pTempCtiRoute->getType() == RouteTypeCCU)
             {
-                /*
-                 *  The route just returned from the rdr already was in my list.  We need to
-                 *  add this repeater to the route entry... It had better be a repeater route.
-                 */
-
                 CtiRouteCCU *pCCU = (CtiRouteCCU*)pTempCtiRoute.get();
-                pCCU->DecodeRepeaterDatabaseReader(rdr);        // Fills himself in from the reader
+                pCCU->addRepeater(Rpt);
+
+                const route_repeater_relation relation(Rpt.getRouteID(), Rpt.getDeviceID());
+
+                _routeRepeaters.current.insert(relation);
             }
         }
     }
@@ -361,6 +362,17 @@ void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOO
     // Sort all the repeater listings based on repeater order
     apply(ApplyRepeaterSort, NULL);
 }
+
+
+bool CtiRouteManager::isRepeaterRelevantToRoute(long repeater_id, long route_id) const
+{
+    const route_repeater_relation relation(route_id, repeater_id);
+
+    //  was this repeater ever associated with this route?
+    return _routeRepeaters.current.count(relation) ||
+           _routeRepeaters.previous.count(relation);
+}
+
 
 void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {

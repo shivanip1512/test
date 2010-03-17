@@ -91,7 +91,7 @@ public:
 
    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeRepeaterDatabaseReader(RWDBReader &rdr);
+   virtual void addRepeater(const CtiTableRepeaterRoute &Rpt);
 };
 
 typedef boost::shared_ptr<CtiRouteCCU> CtiRouteCCUSPtr;

@@ -36,16 +36,20 @@ if "%~1" == "" goto Done_Processing
         shift
         goto Process_Args
     )
-    
+
 :Done_Processing
 
 
 if %_ERRORLEVEL% neq 0 goto cleanup
 
+rem Do not attempt to run the unit tests if we're just cleaning the directories
+
+if "%~1" == "clean" goto cleanup
+
 rem Run Unit Tests on Success
 
 pushd %SOURCEBASE%
-call runalltests
+call runalltests.cmd
 popd
 
 rem This follows the buildhere exit strategy, why exit /b is called despite --exit being set is unknown.

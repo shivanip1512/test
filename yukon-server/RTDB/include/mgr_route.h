@@ -1,26 +1,4 @@
-/*************************************************************************
- *
- * mgr_route.h      7/7/99
- *
- *****
- *
- * The class which owns and manages route real time database
- *
- * Originated by:
- *     Corey G. Plender    7/7/99
- *
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/07/17 20:26:39 $
-*
- * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
- * All Rights Reserved
- *
- ************************************************************************/
-#ifndef __ROUTE_MGR_H__
-#define __ROUTE_MGR_H__
+#pragma once
 
 #include <rw/db/connect.h>
 #include <rw/db/db.h>
@@ -37,10 +15,20 @@ class IM_EX_DEVDB CtiRouteManager
 {
 private:
 
+    typedef std::pair<long, long> route_repeater_relation;
+
+    typedef std::set<route_repeater_relation> route_repeater_associations;
+
+    struct
+    {
+        route_repeater_associations current;
+        route_repeater_associations previous;
+
+    } _routeRepeaters;
+
     CtiSmartMap< CtiRouteBase > _smartMap;
 
     void RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
     void RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
     void RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
     void RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
@@ -79,6 +67,6 @@ public:
     bool empty() const;
     bool buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMessage* > &retList, vector< CtiDeviceRepeaterRole > & roleVector );
 
+    bool isRepeaterRelevantToRoute( long repeater_id, long route_id ) const;
 };
 
-#endif                  // #ifndef __ROUTE_MGR_H__
