@@ -48,7 +48,7 @@ if "%~1" == "clean" goto cleanup
 
 rem Run Unit Tests on Success
 
-pushd %SOURCEBASE%
+pushd %YUKONBASE%\yukon-server
 call runalltests.cmd
 popd
 
