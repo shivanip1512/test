@@ -162,7 +162,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 params.put("quality", quality);
                 params.put("shortQuality", shortQuality);
                 String result = templateProcessor.process(format, params);
-                return result;
+                return result.trim();
             }
 
             public String getValueString(PointValueHolder value, Format format, YukonUserContext userContext) {

@@ -48,7 +48,7 @@ public class DataUpdaterController extends AbstractController {
         jsonUpdates.put("toDate", updates.asOfTime);
         JSONObject jsonValueHash = new JSONObject();
         for (UpdateValue value : updates.values) {
-            jsonValueHash.put(value.getFullIdentifier(), value.getValue());
+            jsonValueHash.put(value.getFullIdentifier(), value.getValue().trim());
         }
         jsonUpdates.put("data", jsonValueHash);
         
