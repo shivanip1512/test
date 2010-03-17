@@ -97,16 +97,6 @@ int SimulatorMainFunction(int argc, char **argv)
                 cout << "                       SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
                 exit(-1);
             }
-/*
-            if ( !(port_min && port_max) && !(getPorts(portList)) )
-            {
-                cout << "Unable to retrieve port values.\n";
-                cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
-                cout << "Master config file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << endl;
-                cout << "                          SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
-                exit(-1);
-            }
-*/
         }
     }
 

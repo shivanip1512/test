@@ -51,7 +51,8 @@ $(OBJ)\DelayBehavior.obj \
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
-$(COMPILEBASE)\lib\ctidbsrc.lib
+$(COMPILEBASE)\lib\ctidbsrc.lib \
+$(COMPILEBASE)\lib\cticparms.lib
 
 ALL:            ctibasetest
 
@@ -142,7 +143,7 @@ ccu_simulator.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PlcTransmitter.h CommInterface.h ctinexus.h \
 		BehaviorCollection.h CommsBehavior.h Ccu711.h fifo_multiset.h \
 		DelayBehavior.h cparms.h rwutil.h boost_time.h configkey.h \
-		configval.h
+		configval.h sema.h dbaccess.h
 comminterface.obj:	yukon.h precompiled.h ctidbgmem.h CommInterface.h \
 		types.h ctinexus.h dlldefs.h netports.h cticonnect.h \
 		BehaviorCollection.h CommsBehavior.h
@@ -155,7 +156,9 @@ emetconwords.obj:	yukon.h precompiled.h ctidbgmem.h EmetconWords.h \
 mct410.obj:	yukon.h precompiled.h ctidbgmem.h Mct410.h EmetconWords.h \
 		types.h ctitime.h dlldefs.h logger.h thread.h mutex.h guard.h \
 		numstr.h clrdump.h CtiPCPtrQueue.h utility.h queues.h \
-		cticalls.h os2_2w32.h sorted_vector.h
+		cticalls.h os2_2w32.h sorted_vector.h cparms.h rwutil.h \
+		boost_time.h boostutil.h configkey.h configval.h dllbase.h \
+		dsm2.h cticonnect.h netports.h dsm2err.h words.h
 plcinfrastructure.obj:	yukon.h precompiled.h ctidbgmem.h \
 		plcinfrastructure.h Mct410.h EmetconWords.h types.h ctitime.h \
 		dlldefs.h smartmap.h boostutil.h utility.h queues.h \

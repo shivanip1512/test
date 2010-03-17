@@ -152,7 +152,7 @@ ccu_simulator.obj:	yukon.h precompiled.h ctidbgmem.h \
 		PlcTransmitter.h CommInterface.h ctinexus.h \
 		BehaviorCollection.h CommsBehavior.h Ccu711.h fifo_multiset.h \
 		DelayBehavior.h cparms.h rwutil.h boost_time.h configkey.h \
-		configval.h
+		configval.h sema.h dbaccess.h
 comminterface.obj:	yukon.h precompiled.h ctidbgmem.h CommInterface.h \
 		types.h ctinexus.h dlldefs.h netports.h cticonnect.h \
 		BehaviorCollection.h CommsBehavior.h

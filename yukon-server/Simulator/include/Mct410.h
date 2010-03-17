@@ -46,9 +46,11 @@ private:
 
     static const double Pi;
     static const CtiTime DawnOfTime;
+    static const unsigned randomReadingChance;
 
     unsigned getHectoWattHours(const unsigned _address, const CtiTime c_time);
 
+    static double makeValue_random_consumption ();
     static double makeValue_consumption        (const unsigned address, const CtiTime &c_time, const unsigned duration);
     static double makeValue_instantaneousDemand(const unsigned address, const CtiTime &c_time);
     static double makeValue_averageDemand      (const unsigned address, const CtiTime &begin_time, const unsigned duration);
