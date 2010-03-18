@@ -12,7 +12,7 @@ namespace Cti {
 namespace Simulator {
 
 const CtiTime Mct410Sim::DawnOfTime = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005),0, 0, 0);
-const unsigned Mct410Sim::randomReadingChance = gConfigParms.getValueAsInt("SIMULATOR_RANDOM_READING_CHANCE_TENTHS_OF_A_PERCENT");
+const double Mct410Sim::randomReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_RANDOM_READING_CHANCE_PERCENT");
 
 //  Temporary class to access protected functions in CtiDeviceMct410 and CtiDeviceMct4xx.
 //  To be deleted when we move functions to a shared location.
@@ -329,23 +329,23 @@ bytes Mct410Sim::getAllCurrentMeterReadings()
     return data;
 }
 
-unsigned Mct410Sim::getHectoWattHours(const unsigned _address, const CtiTime now )
+unsigned Mct410Sim::getHectoWattHours(const unsigned address, const CtiTime now )
 {
     double dist = rand() / double(RAND_MAX + 1);
-    int chance = int(dist * 1000);
+    double chance = dist * 100;
 
     if(chance < randomReadingChance)
     {
-        return makeValue_random_consumption();
+        return makeValue_random_consumption(address);
     }
 
     const unsigned duration = now.seconds() - DawnOfTime.seconds();
-    const double   consumption_Ws  = makeValue_consumption(_address, DawnOfTime, duration);
+    const double   consumption_Ws  = makeValue_consumption(address, DawnOfTime, duration);
     const double   consumption_Wh  = consumption_Ws / SecondsPerHour;
     //  hecto-watt-hours - the 100 watt-hour units the MCT returns
 
-    // Mod the hWh by 1000000 to reduce the range from 0 to 999999,
-    // since the MCT Device reads hWh this corresponds to 99999.9 kWh
+    // Mod the hWh by 10000000 to reduce the range from 0 to 9999999,
+    // since the MCT Device reads hWh this corresponds to 999,999.9 kWh
     // which is the desired changeover point.
     return int(consumption_Wh / 100.0) % 10000000;
 }
@@ -403,11 +403,11 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
     }
 }
 
-double Mct410Sim::makeValue_random_consumption()
+double Mct410Sim::makeValue_random_consumption(const unsigned address)
 {
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << "******** Random consumption value generated ********" << endl;
+        dout << "******** Random consumption value generated for address " << address << " ********" << endl;
     }
     double dist = rand() / double(RAND_MAX+1);
     return int(dist * 10000000);
