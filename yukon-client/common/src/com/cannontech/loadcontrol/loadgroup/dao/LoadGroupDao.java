@@ -35,8 +35,6 @@ public interface LoadGroupDao {
      * This method returns a list of loadGroups that are attached to 
      * a stars program.
      * 
-     * @param programId
-     * @return
      */
     public List<LoadGroup> getByStarsProgramId(int programId);
 

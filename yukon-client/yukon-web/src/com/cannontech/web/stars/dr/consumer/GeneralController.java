@@ -20,7 +20,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.user.YukonUserContext;

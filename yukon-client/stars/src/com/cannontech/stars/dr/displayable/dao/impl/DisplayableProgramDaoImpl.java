@@ -2,15 +2,16 @@ package com.cannontech.stars.dr.displayable.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory;
@@ -18,6 +19,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.displayable.model.DisplayableControlHistory.DisplayableControlHistoryType;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ListMultimap;
 
 @Repository
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
@@ -76,9 +78,25 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
             displayableControlHistoryList.add(displayableControlHistory);
         }
         
+        Collections.sort(displayableControlHistoryList,DEVICE_LABLE_COMPARATOR);
         DisplayableProgram displayableProgram = new DisplayableProgram(program, displayableControlHistoryList);
         return displayableProgram;
     }
+    
+    private static Comparator<DisplayableControlHistory> DEVICE_LABLE_COMPARATOR = new Comparator<DisplayableControlHistory>() {
+        public int compare(DisplayableControlHistory o1, DisplayableControlHistory o2) {
+            try {
+                String strA = o1.getControlHistory().getInventory().getDeviceLabel();
+                String strB = o2.getControlHistory().getInventory().getDeviceLabel();
+
+                return strA.compareToIgnoreCase(strB);
+            } catch (Exception e) {
+                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
+                return 0;
+            }
+
+        }
+    };
     
     private List<DisplayableProgram> doAction(CustomerAccount customerAccount, 
                                               YukonUserContext yukonUserContext,
@@ -91,21 +109,13 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         return doAction(customerAccount, yukonUserContext, controlPeriod, applyFilters, applianceList, programList);
     }
 
-    /**
-     * @param customerAccount
-     * @param yukonUserContext
-     * @param applyFilters
-     * @param applianceList
-     * @param programList
-     * @return
-     */
     private List<DisplayableProgram> doAction(CustomerAccount customerAccount,
                                               YukonUserContext yukonUserContext,
                                               ControlPeriod controlPeriod,
                                               boolean applyFilters,
                                               List<Appliance> applianceList,
                                               List<Program> programList) {
-        Map<Integer,List<ControlHistory>> controlHistoryMap = 
+        ListMultimap<Integer,ControlHistory> controlHistoryMap = 
             controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext, controlPeriod);
 
         final List<DisplayableProgram> displayableProgramList = new ArrayList<DisplayableProgram>(programList.size());
@@ -113,7 +123,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         for (final Program program : programList) {
             Integer programId = program.getProgramId();
 
-            List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
+            List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(controlHistoryMap.get(programId));
             if (controlHistoryList == null) controlHistoryList = Collections.emptyList();
 
             DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, controlPeriod, applyFilters);

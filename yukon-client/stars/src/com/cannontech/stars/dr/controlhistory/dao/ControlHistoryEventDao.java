@@ -3,35 +3,30 @@ package com.cannontech.stars.dr.controlhistory.dao;
 import java.util.List;
 
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
-import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
 
 public interface ControlHistoryEventDao {
 
-    public enum ControlPeriod {
-        PAST_DAY("PastDay"),
-        PAST_WEEK("PastWeek"),
-        PAST_MONTH("PastMonth"),
-        PAST_YEAR("PastYear"),
-        ALL("All");
-        
-        private final String starsName;
-        ControlPeriod(final String starsName) {
-            this.starsName = starsName;
-        }
-        
-        public String starsName() {
-            return starsName;
-        }
-    }
-    
 
+    /**
+     * This method gets all the control history for the given customerAccount, lmGroup, inventory, and control period.
+     * It does however use a legacy stars control history object and will need an adapter of some sort to
+     * migrate the data over to the new displayable objects..
+     * 
+     */
     public StarsLMControlHistory getEventsByGroup(int customerAccountId, int lmGroupId, int inventoryId,
-                                                  ControlPeriod period, YukonUserContext yukonUserContext);
+                                                   ControlPeriod period, YukonUserContext yukonUserContext);
 
+    /**
+     * This method gets the latest control history event for the given inventory, program, and account.
+     * It also figures in enrollment times to filter out any entries that may exist that are not apart of the
+     * actual account.
+     * 
+     */
     public ControlHistoryEvent getLastControlHistoryEntry(int customerAccountId,
-                                                          Program program,
+                                                          int programId,
                                                           int inventoryId,
                                                           YukonUserContext yukonUserContext);
     

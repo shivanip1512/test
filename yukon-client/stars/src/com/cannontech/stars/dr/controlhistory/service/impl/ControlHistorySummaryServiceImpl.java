@@ -2,12 +2,13 @@ package com.cannontech.stars.dr.controlhistory.service.impl;
 
 import java.util.List;
 
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistorySummary;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistorySummaryService;
 import com.cannontech.user.YukonUserContext;
 
@@ -22,27 +23,30 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
     
         ControlHistorySummary controlHistorySummary = new ControlHistorySummary();
         
-        int dailySummary = 
-            getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, ControlPeriod.PAST_DAY, userContext);
+        // Past Day Summary
+        Duration dailySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, 
+                                                               ControlPeriod.PAST_DAY, userContext);
         controlHistorySummary.setDailySummary(dailySummary);
         
-        int monthlySummary = 
-            getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, ControlPeriod.PAST_MONTH, userContext);
+        // Past Month Summary
+        Duration monthlySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, 
+                                                                 ControlPeriod.PAST_MONTH, userContext);;
         controlHistorySummary.setMonthlySummary(monthlySummary);
         
-        int yearlySummary = 
-            getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, ControlPeriod.PAST_YEAR, userContext);
+        // Past Year Summary
+        Duration yearlySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, 
+                                                                ControlPeriod.PAST_YEAR, userContext);
         controlHistorySummary.setYearlySummary(yearlySummary);
         
         return controlHistorySummary;
      }
     
-    private int getControlHistoryTotalDuration(final int customerAccountId,
+    private Duration getControlHistoryTotalDuration(final int customerAccountId,
                                                final int inventoryId,
                                                final int groupId, 
                                                final ControlPeriod period,
                                                final YukonUserContext userContext) {
-        int results = 0;
+        Duration results = new Duration(0);
         
         
         List<ControlHistoryEvent> controlHistoryEventList = 
@@ -53,7 +57,7 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
                                                                                        userContext));
 
         for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
-            results += controlHistoryEvent.getDuration();
+            results = new Duration(controlHistoryEvent.getDuration() * 1000 + results.getMillis());
         }
         
         return results;

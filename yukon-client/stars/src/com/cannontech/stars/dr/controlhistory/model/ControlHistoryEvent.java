@@ -27,6 +27,9 @@ public class ControlHistoryEvent {
         this.endDate = endDate;
     }
 
+    /**
+     * @return - duration is held in seconds
+     */
     public int getDuration() {
         return duration;
     }

@@ -4,7 +4,6 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
@@ -49,6 +48,7 @@ import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
+import com.google.common.collect.ListMultimap;
 
 public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private static final Logger log = YukonLogManager.getLogger(ProgramEnrollmentServiceImpl.class);
@@ -240,7 +240,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
     @Override
     public void removeNonEnrolledPrograms(final List<Program> programs, 
-            final Map<Integer, List<ControlHistory>> controlHistoryMap) {
+            final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
         Validate.notNull(programs, "programs parameter cannot be null");
         Validate.notNull(controlHistoryMap, "controlHistoryMap parameter cannot be null");
 

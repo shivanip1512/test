@@ -1,46 +1,41 @@
 package com.cannontech.stars.dr.controlhistory.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.dao.impl.ControlHistoryEventDaoImpl.Holder;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryStatus;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistorySummary;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistorySummaryService;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
-import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.util.ControlGroupUtil;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class ControlHistoryDaoImpl implements ControlHistoryDao {
-    private ApplianceDao applianceDao;
     private ControlHistoryEventDao controlHistoryEventDao;
     private ControlHistorySummaryService controlHistorySummaryService;
     private InventoryBaseDao inventoryBaseDao;
@@ -48,24 +43,73 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     
     @Override
-    public Map<Integer, List<ControlHistory>> getControlHistory(final CustomerAccount customerAccount,
+    public ListMultimap<Integer, ControlHistory> getControlHistory(final CustomerAccount customerAccount,
             final List<Appliance> applianceList, final YukonUserContext yukonUserContext, final ControlPeriod controlPeriod) {
  
-        Map<Integer, List<ControlHistory>> results = Maps.newHashMap();
-        List<Program> programList = programDao.getByAppliances(applianceList);
+        int customerAccountId = customerAccount.getAccountId();
+        ListMultimap<Integer, ControlHistory> programControlHistoryMultimap = ArrayListMultimap.create();
         
-        ListMultimap<Program, ControlHistory> programControlHistoryMap = 
-            getControlHistoryByProgramList(customerAccount.getAccountId(), 
-                                           programList, 
-                                           yukonUserContext,
-                                           controlPeriod);
+        for (Appliance appliance : applianceList) {
+            
+            // Any appliance that has a groupId that does *not* belong in supportedGroupIdList will not used.
+            final List<Integer> supportedGroupIdList = programDao.getGroupIdsByProgramId(appliance.getProgramId());
+    
+            final List<Holder> holderList = Lists.newArrayList();
+            final Set<Integer> inventoryIds = Sets.newHashSet();
+            
+            generateHolderListAndBuildInventoryIds(appliance.getProgramId(),
+                                                   supportedGroupIdList,
+                                                   applianceList, holderList,
+                                                   inventoryIds);
+    
+            final Map<Integer, InventoryBase> inventoryMap = inventoryBaseDao.getByIds(new ArrayList<Integer>(inventoryIds));
+            for (final Holder holder : holderList) {
+                InventoryBase inventory = inventoryMap.get(holder.inventoryId);
+                
+                ControlHistory controlHistory = new ControlHistory();
 
-        for (Entry<Program, Collection<ControlHistory>> programControlHistoryEntry : programControlHistoryMap.asMap().entrySet()) {
-            List<ControlHistory> controlHistoryList = Lists.newArrayList(programControlHistoryEntry.getValue());
-            results.put(programControlHistoryEntry.getKey().getProgramId(), controlHistoryList);
+                StarsLMControlHistory starsLMControlHistory = 
+                    controlHistoryEventDao.getEventsByGroup(customerAccountId, holder.groupId, holder.inventoryId, controlPeriod, yukonUserContext);
+                List<ControlHistoryEvent> controlHistoryEventList = controlHistoryEventDao.toEventList(starsLMControlHistory);
+                controlHistory.setCurrentHistory(controlHistoryEventList);
+                
+                controlHistory.setInventory(inventory);
+
+                ControlHistoryRequest request = 
+                    new ControlHistoryRequest(appliance.getProgramId(),
+                                              holder.inventoryId,
+                                              customerAccountId,
+                                              controlPeriod);
+                ControlGroupHolder controlGroupHolder = 
+                    createControlGroupHolder(request, Collections.singletonList(holder.groupId), yukonUserContext);
+
+                String displayName = inventoryBaseDao.getDisplayName(inventory);
+                controlHistory.setDisplayName(displayName);
+
+                ControlHistorySummary programControlHistorySummary = new ControlHistorySummary();
+                Duration dailyTime = new Duration(starsLMControlHistory.getControlSummary().getDailyTime() * 1000);
+                programControlHistorySummary.setDailySummary(dailyTime);
+                Duration monthlyTime = new Duration(starsLMControlHistory.getControlSummary().getMonthlyTime() * 1000);
+                programControlHistorySummary.setMonthlySummary(monthlyTime);
+                Duration yearlyTime = new Duration(starsLMControlHistory.getControlSummary().getAnnualTime() * 1000);
+                programControlHistorySummary.setYearlySummary(yearlyTime);
+                controlHistory.setProgramControlHistorySummary(programControlHistorySummary);
+                
+                ControlHistorySummary controlHistorySummary = controlHistorySummaryService.getControlSummary(customerAccountId, holder.inventoryId, holder.groupId, yukonUserContext);
+                controlHistory.setControlHistorySummary(controlHistorySummary);
+
+                ControlHistoryEvent lastControlHistoryEvent = controlHistoryEventDao.getLastControlHistoryEntry(customerAccountId, appliance.getProgramId(), holder.inventoryId, yukonUserContext);
+                controlHistory.setLastControlHistoryEvent(lastControlHistoryEvent);
+
+                ControlHistoryStatus controlHistoryStatus = getCurrentControlStatus(controlGroupHolder, lastControlHistoryEvent);
+                controlHistory.setCurrentStatus(controlHistoryStatus);
+                
+                programControlHistoryMultimap.put(appliance.getProgramId(), controlHistory);
+            }
         }
 
-        return results;
+        return programControlHistoryMultimap;
+        
     }
 
     private ControlGroupHolder createControlGroupHolder(ControlHistoryRequest request, 
@@ -132,9 +176,11 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
         boolean isControlledToday = ControlGroupUtil.isControlledToday(holder.enrolledList, holder.currentControlHistoryMap);
         if (isControlledToday) return ControlHistoryStatus.CONTROLLED_TODAY;
 
+
         // Step 5 - CONTROLLED IN THE PAST
-        boolean hasEverBeenControlled = ControlGroupUtil.hasEverBeenControlled(lastControlHistoryEvent);
-        if (hasEverBeenControlled) return ControlHistoryStatus.CONTROLLED_PREVIOUSLY;
+        if (lastControlHistoryEvent != null){
+            return ControlHistoryStatus.CONTROLLED_PREVIOUSLY;
+        }
 
         // Step 6 - HAVE NOT BEEN CONTROLLED
         return ControlHistoryStatus.CONTROLLED_NONE;
@@ -168,81 +214,14 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
         }
     }
     
-    public ListMultimap<Program, ControlHistory> getControlHistoryByProgramList(int customerAccountId, 
-                                                                                List<Program> programList,
-                                                                                YukonUserContext yukonUserContext,
-                                                                                ControlPeriod controlPeriod) {
-
-        ListMultimap<Program, ControlHistory> programControlHistoryMultimap = ArrayListMultimap.create();
-        
-        for (Program program : programList) {
-            
-            // Any appliance that has a groupId that does *not* belong in supportedGroupIdList will not used.
-            final List<Integer> supportedGroupIdList = programDao.getGroupIdsByProgramId(program.getProgramId());
-            final List<Appliance> applianceList = applianceDao.getByAccountId(customerAccountId);
-    
-            final List<Holder> holderList = Lists.newArrayList();
-            final Set<Integer> inventoryIds = Sets.newHashSet();
-            
-            generateHolderListAndBuildInventoryIds(program,
-                                                   supportedGroupIdList,
-                                                   applianceList, holderList,
-                                                   inventoryIds);
-    
-            final Map<Integer, InventoryBase> inventoryMap = inventoryBaseDao.getByIds(new ArrayList<Integer>(inventoryIds));
-            for (final Holder holder : holderList) {
-                InventoryBase inventory = inventoryMap.get(holder.inventoryId);
-                
-                ControlHistory controlHistory = new ControlHistory();
-
-                StarsLMControlHistory starsLMControlHistory = 
-                    controlHistoryEventDao.getEventsByGroup(customerAccountId, holder.groupId, holder.inventoryId, controlPeriod, yukonUserContext);
-                List<ControlHistoryEvent> controlHistoryEventList = controlHistoryEventDao.toEventList(starsLMControlHistory);
-                controlHistory.setCurrentHistory(controlHistoryEventList);
-                
-                controlHistory.setInventory(inventory);
-
-                ControlHistoryRequest request = 
-                    new ControlHistoryRequest(program.getProgramId(),
-                                              holder.inventoryId,
-                                              customerAccountId,
-                                              controlPeriod);
-                ControlGroupHolder controlGroupHolder = 
-                    createControlGroupHolder(request, Collections.singletonList(holder.groupId), yukonUserContext);
-
-                String displayName = inventoryBaseDao.getDisplayName(inventory);
-                controlHistory.setDisplayName(displayName);
-
-                ControlHistorySummary programControlHistorySummary = new ControlHistorySummary();
-                programControlHistorySummary.setDailySummary(starsLMControlHistory.getControlSummary().getDailyTime());
-                programControlHistorySummary.setMonthlySummary(starsLMControlHistory.getControlSummary().getMonthlyTime());
-                programControlHistorySummary.setYearlySummary(starsLMControlHistory.getControlSummary().getAnnualTime());
-                controlHistory.setProgramControlHistorySummary(programControlHistorySummary);
-                
-                ControlHistorySummary controlHistorySummary = controlHistorySummaryService.getControlSummary(customerAccountId, holder.inventoryId, holder.groupId, yukonUserContext);
-                controlHistory.setControlHistorySummary(controlHistorySummary);
-
-                ControlHistoryEvent lastControlHistoryEvent = controlHistoryEventDao.getLastControlHistoryEntry(customerAccountId, program, holder.inventoryId, yukonUserContext);
-                controlHistory.setLastControlHistoryEvent(lastControlHistoryEvent);
-
-                ControlHistoryStatus controlHistoryStatus = getCurrentControlStatus(controlGroupHolder, lastControlHistoryEvent);
-                controlHistory.setCurrentStatus(controlHistoryStatus);
-                
-                programControlHistoryMultimap.put(program, controlHistory);
-            }
-        }
-
-        return programControlHistoryMultimap;
-    }
-
-    private void generateHolderListAndBuildInventoryIds(Program program,
-                                                        final List<Integer> supportedGroupIdList,
-                                                        final List<Appliance> applianceList,
-                                                        final List<Holder> holderList,
-                                                        final Set<Integer> inventoryIds) {
+    private void generateHolderListAndBuildInventoryIds(int programId,
+                                                          final List<Integer> supportedGroupIdList,
+                                                          final List<Appliance> applianceList,
+                                                          final List<Holder> holderList,
+                                                          final Set<Integer> inventoryIds) {
         for (Appliance appliance : applianceList) {
             int applianceProgramId = appliance.getProgramId();
-            if (applianceProgramId != program.getProgramId()) continue;
+            if (applianceProgramId != appliance.getProgramId()) continue;
    
             Integer applianceGroupId = appliance.getGroupdId();
             if (!supportedGroupIdList.contains(applianceGroupId)) continue;
@@ -285,11 +264,6 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
             this.customerAccountId = customerAccountId;
             this.controlPeriod = controlPeriod;
         }
-    }
-    
-    @Autowired
-    public void setApplianceDao(ApplianceDao applianceDao) {
-        this.applianceDao = applianceDao;
     }
     
     @Autowired

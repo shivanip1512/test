@@ -957,6 +957,13 @@
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/program/controlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
+		           	<pages>
+				   		<page name="completeControlHistory" type="DETAIL_CHILD_WITH_NAVIGATION">
+				    		<menu>account</menu>
+				           	<link>/spring/stars/operator/program/completeControlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	        <labelArgument>${accountNumber}</labelArgument>
+				    	</page>
+			    	</pages>
 		    	</page>
 		    	<page name="enrollment" type="DETAIL_CHILD_WITH_NAVIGATION">
 		    		<menu>account</menu>

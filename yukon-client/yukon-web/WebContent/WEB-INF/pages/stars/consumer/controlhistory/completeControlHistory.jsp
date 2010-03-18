@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:url var="controlHistoryView" value="/spring/stars/consumer/controlhistory"/>
@@ -9,17 +9,18 @@
 <cti:standardPage module="consumer" page="completeControlHistory">
     <cti:standardMenu />
     
-    <h3><i18n:inline key="yukon.dr.consumer.completecontrolhistory.header" /></h3>
+    <h3><i:inline key="yukon.dr.consumer.completecontrolhistory.header" /></h3>
     <table width="100%">
         <tr>
             <td align="right">
                 <br>
-                <i18n:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
+                <i:inline key="yukon.dr.consumer.completecontrolhistory.viewTitle"/>
                 <select onchange="javascript:updateControlEvents(this.options[this.options.selectedIndex].value)">
-                    <option value="PAST_DAY"><cti:msg key="yukon.dr.consumer.completecontrolhistory.view.pastDay"/></option>
-                    <option value="PAST_WEEK"><cti:msg key="yukon.dr.consumer.completecontrolhistory.view.pastWeek"/></option>
-                    <option value="PAST_YEAR"><cti:msg key="yukon.dr.consumer.completecontrolhistory.view.pastYear"/></option>
-                    <option value="ALL"><cti:msg key="yukon.dr.consumer.completecontrolhistory.view.all"/></option>
+                    <c:forEach var="controlPeriod" items="${controlPeriods}" >
+                        <option value="${controlPeriod}">
+                            <i:inline key="${controlPeriod.formatKey}"/>
+                        </option>
+                    </c:forEach>
                 </select>
             </td>
         </tr>

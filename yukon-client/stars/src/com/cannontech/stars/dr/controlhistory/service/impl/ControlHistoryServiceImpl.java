@@ -12,6 +12,7 @@ import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryStatus;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
+import com.google.common.collect.ListMultimap;
 
 public class ControlHistoryServiceImpl implements ControlHistoryService {
     private static final Comparator<ControlHistoryEvent> eventComparator;
@@ -38,7 +39,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         return true;
     }
     
-    public Map<Integer, Integer> calculateTotalDuration(final Map<Integer, List<ControlHistory>> controlHistoryMap) {
+    public Map<Integer, Integer> calculateTotalDuration(final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
         final Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>(controlHistoryMap.size());
         
         for (final Integer programId : controlHistoryMap.keySet()) {

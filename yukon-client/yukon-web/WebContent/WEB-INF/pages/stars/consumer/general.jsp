@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="consumer" page="general">
@@ -65,6 +65,10 @@
                                     <table>
                                         <c:forEach var="displayableControlHistory" items="${displayableProgram.displayableControlHistoryList}">
                                             <c:set var="controlHistory" value="${displayableControlHistory.controlHistory}" />
+                                            
+                                            <c:if test="${empty lastControlHistoryEntry or 
+                                                  not (lastControlHistoryEntry eq controlHistory.displayName)}">
+                                            
                                             <tr>
                                                 <td></td>
                                                 <c:choose>
@@ -76,10 +80,10 @@
 															<c:choose>
 																<c:when test="${not empty controlHistory.lastControlHistoryEvent.endDate}">
 																	<cti:formatDate type="DATEHM" var="lastControledEndDate" value="${controlHistory.lastControlHistoryEvent.endDate}"/>
-																	<i18n:inline key="${controlHistory.currentStatus.formatKey}" arguments="${lastControledEndDate}" /> 
+																	<i:inline key="${controlHistory.currentStatus.formatKey}" arguments="${lastControledEndDate}" /> 
 																</c:when>
 																<c:otherwise>
-																	<i18n:inline key="${controlHistory.currentStatus.formatKey}" /> 
+																	<i:inline key="${controlHistory.currentStatus.formatKey}" /> 
 																</c:otherwise>
 															</c:choose>
                                                         </td>
@@ -87,9 +91,10 @@
                                                     
                                                 </c:choose>
                                             </tr>
+                                            <c:set var="lastControlHistoryEntry" value="${controlHistory.displayName}" />
+                                            </c:if>
                                         </c:forEach>
                                     </table>
-                                        
                                 </td>
                             </tr>
                         </c:forEach>

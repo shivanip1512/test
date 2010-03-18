@@ -13,4 +13,10 @@
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_CURRENT">Currently controlling</entry>
     <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_NONE">You have not been controlled</entry>
     
+    <entry key="yukon.dr.program.displayname.controlPeriod.ALL">All</entry>
+    <entry key="yukon.dr.program.displayname.controlPeriod.PAST_DAY">Past Day</entry>
+    <entry key="yukon.dr.program.displayname.controlPeriod.PAST_WEEK">Past Week</entry>
+    <entry key="yukon.dr.program.displayname.controlPeriod.PAST_MONTH">Past Month</entry>
+    <entry key="yukon.dr.program.displayname.controlPeriod.PAST_YEAR">Past Year</entry>
+    
 </properties>    

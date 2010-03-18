@@ -14,13 +14,14 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.cannontech.stars.dr.displayable.model.DisplayableProgram;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.ListMultimap;
 
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
 @Controller
@@ -35,7 +36,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
         
-        Map<Integer, List<ControlHistory>> controlHistoryMap = 
+        ListMultimap<Integer, ControlHistory> controlHistoryMap = 
             controlHistoryDao.getControlHistory(customerAccount, applianceList, userContext, ControlPeriod.PAST_DAY);
 
         programEnrollmentService.removeNonEnrolledPrograms(programList, controlHistoryMap);
@@ -68,7 +69,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         Program program = programDao.getByProgramId(programId);
         map.addAttribute("program", program);
 
-        Map<Integer, List<ControlHistory>> controlHistoryMap = 
+        ListMultimap<Integer, ControlHistory> controlHistoryMap = 
             controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext, ControlPeriod.PAST_DAY);
         
         List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
@@ -76,6 +77,9 @@ public class ControlHistoryController extends AbstractConsumerController {
         int totalDuration = controlHistoryService.calculateTotalDuration(controlHistoryList);
         map.addAttribute("totalDuration", totalDuration);
 
+        ControlPeriod[] controlPeriods = ControlPeriod.values();
+        map.addAttribute("controlPeriods", controlPeriods);
+        
         return "consumer/controlhistory/completeControlHistory.jsp";
     }
     

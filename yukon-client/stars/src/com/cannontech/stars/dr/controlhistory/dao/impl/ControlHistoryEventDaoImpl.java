@@ -12,8 +12,8 @@ import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
+import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
@@ -30,10 +30,10 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     }
     
     public ControlHistoryEvent getLastControlHistoryEntry(int accountId,
-                                                          Program program,
+                                                          int programId,
                                                           int inventoryId,
                                                           YukonUserContext yukonUserContext){
-        List<LoadGroup> loadGroupList = loadGroupDao.getByStarsProgramId(program.getProgramId());
+        List<LoadGroup> loadGroupList = loadGroupDao.getByStarsProgramId(programId);
        
         ControlHistoryEvent lastControlHistoryEvent = null;
         for (LoadGroup loadGroup : loadGroupList) {

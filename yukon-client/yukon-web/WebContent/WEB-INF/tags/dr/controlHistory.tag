@@ -11,14 +11,20 @@
 	<c:set var="eventListSize" value="${fn:length(eventList)}" />
 	<c:set var="rowspan" value="${eventListSize > 0 ? eventListSize : 1}" />
 	
-	<tags:sectionContainer title="${controlHistory.displayName}">
-		<table width="100%">
-			<tr>
-				<td valign="top">
-					<dr:controlHistoryEvents controlHistoryEventList="${eventList}" showControlSummary="true" />
-				</td>
-			</tr>
-		</table>
-	</tags:sectionContainer>
-	<br />
+	<c:if test="${empty lastControlHistoryEntry or 
+			     not (lastControlHistoryEntry eq controlHistory.displayName)}">
+
+		<tags:sectionContainer title="${controlHistory.displayName}">
+			<table width="100%">
+				<tr>
+					<td valign="top">
+						<dr:controlHistoryEvents controlHistoryEventList="${eventList}" showControlSummary="true" />
+					</td>
+				</tr>
+			</table>
+		</tags:sectionContainer>
+		<br />
+		
+        <c:set var="lastControlHistoryEntry" value="${controlHistory.displayName}" />
+	</c:if>
 </c:forEach>
