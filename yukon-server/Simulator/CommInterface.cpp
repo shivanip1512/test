@@ -91,11 +91,7 @@ bool SocketComms::writeMessage(const bytes &buf)
     boost::scoped_array<unsigned char> temp(new unsigned char[buf.size()]);
 
     copy(buf.begin(), buf.end(), temp.get());
-
-    bytes temp_buf = buf;
-
-    _behaviorCollection.processMessage(temp_buf);
-
+    
     unsigned long bytes_written = 0;
 
     _nexus.CTINexusWrite(temp.get(), buf.size(), &bytes_written, SocketTimeout);
