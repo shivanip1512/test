@@ -2,7 +2,7 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="escapeTitle" required="false" type="java.lang.String" %>
+<%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
 
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -21,7 +21,7 @@
 
 <span class="title triangleContainer_title">
 <c:choose>
-    <c:when test="${escapeTitle eq true}">
+    <c:when test="${pageScope.escapeTitle}">
         <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
     </c:when>
     <c:otherwise>

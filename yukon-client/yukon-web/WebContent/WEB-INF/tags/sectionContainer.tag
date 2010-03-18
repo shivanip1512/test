@@ -8,7 +8,7 @@
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
-<%@ attribute name="escapeTitle" required="false" type="java.lang.String" %>
+<%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -24,7 +24,7 @@
             </c:if>
             
             <c:choose>
-              <c:when test="${escapeTitle eq true}">
+              <c:when test="${pageScope.escapeTitle}">
                 <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
               </c:when>
               <c:otherwise>
