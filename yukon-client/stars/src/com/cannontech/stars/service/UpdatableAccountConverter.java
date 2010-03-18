@@ -3,6 +3,7 @@ package com.cannontech.stars.service;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
+import com.cannontech.stars.util.WebClientException;
 
 public interface UpdatableAccountConverter {
 
@@ -11,8 +12,9 @@ public interface UpdatableAccountConverter {
 	 * @param custFields
 	 * @param ec
 	 * @return
+	 * @throws WebClientException 
 	 */
-	public UpdatableAccount createNewUpdatableAccount(String[] custFields, LiteStarsEnergyCompany ec);
+	public UpdatableAccount createNewUpdatableAccount(String[] custFields, LiteStarsEnergyCompany ec) throws WebClientException;
 	
 	/**
 	 * Creates a UpdatableAccount based on an existing LiteStarsCustAccountInformation account number, loads current data for customer
@@ -21,7 +23,8 @@ public interface UpdatableAccountConverter {
 	 * @param custFields
 	 * @param ec
 	 * @return
+	 * @throws WebClientException 
 	 */
-	public UpdatableAccount getUpdatedUpdatableAccount(LiteStarsCustAccountInformation starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec);
+	public UpdatableAccount getUpdatedUpdatableAccount(LiteStarsCustAccountInformation starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec) throws WebClientException;
 	
 }

@@ -13,6 +13,8 @@ import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.service.UpdatableAccountConverter;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.ImportManagerUtil;
 
 public class UpdatableAccountConverterImpl implements UpdatableAccountConverter {
@@ -21,7 +23,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 	private SiteInformationDao siteInformationDao;
 	
 	@Override
-	public UpdatableAccount createNewUpdatableAccount(String[] custFields, LiteStarsEnergyCompany ec) {
+	public UpdatableAccount createNewUpdatableAccount(String[] custFields, LiteStarsEnergyCompany ec) throws WebClientException {
 		
 		// create new UpdatableAccount with acct number from custFields
 		UpdatableAccount acct = new UpdatableAccount();
@@ -39,7 +41,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 	}
 	
 	@Override
-	public UpdatableAccount getUpdatedUpdatableAccount(LiteStarsCustAccountInformation starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec) {
+	public UpdatableAccount getUpdatedUpdatableAccount(LiteStarsCustAccountInformation starsCustAcctInfo, String[] custFields, LiteStarsEnergyCompany ec) throws WebClientException {
 		
 		String accountNumber = starsCustAcctInfo.getCustomerAccount().getAccountNumber();
 		
@@ -57,7 +59,7 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
 		return acct;
 	}
 	
-	private void setCustFieldsOnDto(AccountDto acctDto, String[] custFields) {
+	private void setCustFieldsOnDto(AccountDto acctDto, String[] custFields) throws WebClientException {
 		
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_FIRST_NAME])) {
             acctDto.setFirstName(custFields[ImportManagerUtil.IDX_FIRST_NAME]);
@@ -77,11 +79,13 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
         }		
 
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_IVR_USERNAME])) {
-            acctDto.setIvrLogin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
+            String formatUsername = ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
+            acctDto.setIvrLogin(formatUsername);
         }
 
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_IVR_PIN])) {
-            acctDto.setVoicePIN(custFields[ImportManagerUtil.IDX_IVR_PIN]);
+            String formatPin = ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_PIN]);
+            acctDto.setVoicePIN(formatPin);
         }
         
         if (!StringUtils.isEmpty(custFields[ImportManagerUtil.IDX_USERNAME])) {
