@@ -6,7 +6,7 @@ public class TwoWayLcrSetupInfoDto {
 	private int yukonDeviceTypeId;
 	private Integer deviceId = null;
 	private String deviceName = null;
-	private Integer demandRate = null;
+	private Integer demandRate = 300; // Default to 5 min
 	
 	public TwoWayLcrSetupInfoDto(boolean isNewDevice, int yukonDeviceTypeId, Integer deviceId, String deviceName, Integer demandRate) {
 		this.isNewDevice = isNewDevice;

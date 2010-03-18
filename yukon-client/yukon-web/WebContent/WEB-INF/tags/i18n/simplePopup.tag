@@ -2,10 +2,11 @@
 <%@ attribute name="titleKey" required="true" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="onClose" required="false" type="java.lang.String"%>
+<%@ attribute name="arguments" required="false" type="java.lang.Object"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
+<%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <c:if test="${empty pageScope.onClose}">
     <c:set var="onClose" value="$('${id}').hide();"/>
@@ -21,7 +22,7 @@
                 <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
               </div>
         <div id="${id}_title" class="title boxContainer_title">
-            <i18n:inline key="${titleKey}" />
+            <i:inline key="${titleKey}" arguments="${arguments}"/>
         </div>
     </div>
     

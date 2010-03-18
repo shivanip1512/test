@@ -21,6 +21,15 @@ public interface StarsSearchDao {
 			String serialNumber,
 			LiteStarsEnergyCompany energyCompany)
 			throws ObjectInOtherEnergyCompanyException;
+	
+	/**
+     * Method to get an LMHardware by serial number within a given energy company id
+     * @param serialNumber
+     * @param energyCompanyId
+     * @return Hardware if found or null if not found
+     * @throws ObjectInOtherEnergyCompanyException
+     */
+    public LiteInventoryBase searchLMHardwareBySerialNumber(String serialNumber, int energyCompanyId) throws ObjectInOtherEnergyCompanyException;
 
 	/**
 	 * Method to get an LMHardware by serial number within a given list of energy companies
@@ -121,6 +130,5 @@ public interface StarsSearchDao {
 			long endSerialNumber, 
 			int deviceTypeDefinitionId, 
 			List<LiteStarsEnergyCompany> energyCompanyList) throws PersistenceException;
-	
-	
+
 }

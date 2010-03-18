@@ -980,11 +980,18 @@
 		           	<link>/spring/stars/operator/appliances/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
-		    	<page name="hardware" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/hardware?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
+		    	<page name="hardwareList" type="DETAIL_CHILD_WITH_NAVIGATION">
+                    <menu>account</menu>
+                    <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+                    <labelArgument>${accountNumber}</labelArgument>
+                    <pages>
+                        <page name="hardwareEdit" type="DETAIL_CHILD">
+                            <menu>account</menu>
+                            <link>/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                            <labelArgument>${accountNumber}</labelArgument>
+                        </page>
+                    </pages>
+                </page>
 		    	<page name="serviceRequest" type="DETAIL_CHILD_WITH_NAVIGATION">
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/serviceRequest/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>

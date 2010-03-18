@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- hardwareList -->
+    <entry key="yukon.web.modules.operator.hardwareList.pageName">Hardware</entry>
+
+    <!-- hardwareEdit.jsp -->
+    <entry key="yukon.web.modules.operator.hardwareEdit.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareUpdated">Hardware Updated</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareDeleted">Hardware Deleted</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceInfoSection.title">Device Info</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceLabel">Label</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.altTrackingLabel">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.voltageLabel">Voltage</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.fieldInstallDateLabel">Field Install Date</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.fieldReceiveDateLabel">Field Receive Date</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.fieldRemoveDateLabel">Field Remove Date</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceNotesLabel">Notes</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.twoWayDeviceLabel">Two Way Device</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.routeLabel">Route</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.serviceAndStorageSection.title">Service And Storage</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serviceCompanyLabel">Service Company</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serviceCompanyInfoLabel">Service Company Info</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.warehouseLabel">Warehouse</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.installNotesLabel">Install Notes</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusSection.title">Device Status</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusLabel">Status</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.title">Device Status History</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.event">Event</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.userName">User Name</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.timeOfEvent">Time of Event</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.title">Hardware History</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.tableHeader.date">Date</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.tableHeader.action">Action</entry>
+    
+    <!-- Popup Titles -->
+    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay">Create Two-Way LCR</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete">Delete Device {0}</entry>
+    
+    <!-- Delete Hardware -->
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete.deleteMessageDeviceName">Device {0} will be removed from the account.  What would you like to do with it?</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete.deleteMessageSerialNumber">Device with serial number {0} will be removed from the account.  What would you like to do with it?</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete.option1">Move it to the warehouse.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete.option2">Delete it from inventory permanently.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete.cancelButton">Cancel</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.delete.deleteButton">Delete</entry>
+    
+    <!-- Errors -->
+    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.nameAlreadyExists">Yukon device with that name already exists.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.mustSupplyName">Yukon device name is required.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.unknown">Unable to create new yukon device.</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.serialNumberRequired">A serial number is required.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.serialNumberAlreadyInUse">This serial number is already in use.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.serialNumberInvalidChars">Serial numbers can only contain numeric characters.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.serialNumberTooLong">Serial numbers must be 30 characters or less.</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.deviceLabelTooLong">Label must be 60 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.altTrackingNumberTooLong">Alt Tracking # must be 40 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.deviceNotesTooLong">Notes must be 500 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.installNotesTooLong">Install Notes must be 500 characters or less.</entry>
+    
+    <entry key="typeMismatch.fieldInstallDate">Field Install Date must be a valid date.</entry>
+    <entry key="typeMismatch.fieldReceiveDate">Field Receive Date must be a valid date.</entry>
+    <entry key="typeMismatch.fieldRemoveDate">Field Remove Date must be a valid date.</entry>
+    
+</properties>

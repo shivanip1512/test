@@ -7,9 +7,16 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+
+<cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
+<cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
+<cti:msg key="yukon.common.calendarcontrol.clear" var="clear"/>
+<cti:msg key="yukon.common.calendarcontrol.close" var="close"/>
 
 <cti:uniqueIdentifier var="uniqueId" prefix="dateInputCalendarId_"/>
 <c:if test="${pageScope.springInput}">
@@ -27,22 +34,40 @@
 
 <span style="white-space:nowrap;">
 
-<c:if test="${pageScope.springInput}">
-    <form:input path="${fieldName}"
-        size="10" maxlength="10" cssStyle="width:70px;"/>&nbsp;
-</c:if>
-<c:if test="${!pageScope.springInput}">
-    <input id="${uniqueId}" name="${fieldName}"${disabledStr} type="text"
-        size="10" maxlength="10" value="${pageScope.fieldValue}" style="width:70px;">&nbsp;
-</c:if>
+<c:choose>
+    <c:when test="${pageScope.springInput}">
+        <!-- Spring Input Version -->
+        <spring:bind path="${fieldName}">
 
-<cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
-<cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
-<cti:msg key="yukon.common.calendarcontrol.clear" var="clear"/>
-<cti:msg key="yukon.common.calendarcontrol.close" var="close"/>
+            <c:set var="inputClass" value=""/>
+            <c:if test="${status.error}">
+                <c:set var="inputClass" value="error"/>
+            </c:if>
+            
+            <form:input  path="${fieldName}" id="${fieldName}" size="10" maxlength="10" cssClass="calendarInput ${inputClass}"/>
+            
+            <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
+            <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
+                <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
+            </span>
+            
+            <c:if test="${status.error}">
+                <br>
+                <form:errors path="${fieldName}" cssClass="errorRed"/>
+            </c:if>
+        
+        </spring:bind>
+        
+    </c:when>
+    <c:otherwise>
+        <!-- Normal Input Version -->
+        <input id="${uniqueId}" name="${fieldName}"${disabledStr} type="text" size="10" maxlength="10" value="${pageScope.fieldValue}" class="calendarInput">&nbsp;
+        
+        <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
+        <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
+            <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
+        </span>
+    </c:otherwise>
+</c:choose>
 
-<c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
-    <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
-        <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
-    </span>
 </span>

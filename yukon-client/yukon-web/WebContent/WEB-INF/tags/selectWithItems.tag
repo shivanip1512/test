@@ -8,8 +8,9 @@
 <%@ attribute name="itemLabel" required="true" type="java.lang.String"%>
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
+<%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
-<form:select path="${path}" id="${path}">
+<form:select path="${path}" id="${path}" onchange="${onchange}">
 	<c:if test="${not empty pageScope.defaultItemLabel}">
 		<form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
 	</c:if>

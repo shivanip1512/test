@@ -68,9 +68,6 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
             
         } catch (NumberFormatException e) {
             throw new DeviceCreationException("Could not create device by type: Non-numeric address value.", e);
-            
-        } catch (SQLException e) {
-            throw new DeviceCreationException("Could not create new device.", e);
         } catch (DeviceCreationException e) {
             throw new DeviceCreationException("Could not create new device: " + e.getMessage());
         }

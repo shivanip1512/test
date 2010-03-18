@@ -176,6 +176,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/root</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/general</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/account</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/hardware</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/contacts</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/residence</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/callTracking</value>

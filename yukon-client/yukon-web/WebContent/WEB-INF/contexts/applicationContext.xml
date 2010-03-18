@@ -1358,6 +1358,12 @@
     <bean name="loginGroupPicker" class="com.cannontech.web.picker.v2.LoginGroupPicker">
         <property name="searcher" ref="loginGroupSearcherLucene"/>
     </bean>
+    
+    <bean name="twoWayLcrPicker" parent="abstractPaoPicker" class="com.cannontech.web.picker.v2.PaoPicker">
+        <property name="criteria">
+            <bean class="com.cannontech.common.search.criteria.TwoWayLcrCriteria"/>
+        </property>
+    </bean>
 
     <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker"/>
 
@@ -1371,5 +1377,8 @@
     <bean id="flashScopeArgumentResolver" class="com.cannontech.web.common.flashScope.FlashScopeArgumentResolver"/>
     
     <bean id="accountInfoFragmentArgumentResolver" class="com.cannontech.web.stars.dr.operator.general.AccountInfoFragmentArgumentResolver"/>
+    
+    <bean id="hardwareService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl"/>
+    <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>
     
 </beans>

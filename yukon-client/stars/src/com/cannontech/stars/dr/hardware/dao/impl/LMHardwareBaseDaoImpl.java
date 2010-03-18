@@ -63,10 +63,13 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         return result;
     }
     
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMHardwareBase getById(final int inventoryId) {
-        LMHardwareBase hardwareBase = simpleJdbcTemplate.queryForObject(selectById, rowMapper, inventoryId);
-        return hardwareBase;
+        try {
+            LMHardwareBase hardwareBase = simpleJdbcTemplate.queryForObject(selectById, rowMapper, inventoryId);
+            return hardwareBase;
+        } catch (EmptyResultDataAccessException e) {
+            throw new NotFoundException("No LMHardware found for id:" + inventoryId);
+        }
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -219,7 +220,7 @@ public class DeleteLMHardwareAction implements ActionBase {
     			
     			enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, energyCompany.getUser());
     			
-			} catch (EmptyResultDataAccessException e) {
+			} catch (NotFoundException e) {
 			    // able to ignore because it is possible that we don't have an LMHardwareBase but that we have a reference to a yukonPaobject instead
 	        }
 			

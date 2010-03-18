@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.event.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -45,6 +46,16 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, Initi
         
         boolean result = ((rows == 1) && (rows2 == 1) && (rows3 == 1));
         return result;
+    }
+    
+    @Override
+    public void updateNotesForEvent(int eventId, Date date, String notes){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("update LMCustomerEventBase");
+        sql.append("set Notes = ").appendArgument(notes);
+        sql.append(", EventDateTime = ").appendArgument(date);
+        sql.append("where EventId = ").appendArgument(eventId);
+        simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
     }
     
     @Override

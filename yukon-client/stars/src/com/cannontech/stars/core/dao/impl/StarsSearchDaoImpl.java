@@ -41,12 +41,14 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 			StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
 	}
+	
+	@Override
+    public LiteInventoryBase searchLMHardwareBySerialNumber(String serialNumber, LiteStarsEnergyCompany energyCompany) throws ObjectInOtherEnergyCompanyException {
+	    return searchLMHardwareBySerialNumber(serialNumber, energyCompany.getEnergyCompanyID());
+	}
 
 	@Override
-	public LiteInventoryBase searchLMHardwareBySerialNumber(
-			String serialNumber,
-			LiteStarsEnergyCompany energyCompany)
-			throws ObjectInOtherEnergyCompanyException {
+	public LiteInventoryBase searchLMHardwareBySerialNumber(String serialNumber, int energyCompanyId) throws ObjectInOtherEnergyCompanyException {
 		
 		SqlStatementBuilder idSql = new SqlStatementBuilder();
 		idSql.append("SELECT inventoryId");
@@ -77,14 +79,13 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 		
 		LiteStarsLMHardware liteHardware = liteHardwareList.get(0);
-		if(!energyCompany.getEnergyCompanyID().equals(liteHardware.getEnergyCompanyId())) {
+		if(!new Integer(energyCompanyId).equals(liteHardware.getEnergyCompanyId())) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(liteHardware.getInventoryID());
 			throw new ObjectInOtherEnergyCompanyException( liteHardware, inventoryEC);
 		}
 		
 		return liteHardware;
 	}
-	
 
 	@Override
 	public List<LiteInventoryBase> searchLMHardwareBySerialNumber(String serialNumber,

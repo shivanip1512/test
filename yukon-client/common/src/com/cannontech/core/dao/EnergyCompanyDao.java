@@ -1,5 +1,8 @@
 package com.cannontech.core.dao;
 
+import java.util.List;
+
+import com.cannontech.core.dao.impl.EnergyCompanyDaoImpl.DisplayableServiceCompany;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -76,4 +79,8 @@ public interface EnergyCompanyDao {
      * @param ecId
      */
     void addEnergyCompanyCustomerListEntry(int customerId, int ecId);
+
+    public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energyCompanyId);
+
+    public List<Integer> getParentEnergyCompanyIds(int energyCompanyId);
 }

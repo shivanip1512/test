@@ -1,6 +1,5 @@
 package com.cannontech.common.device.creation.impl;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -26,7 +25,6 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -96,7 +94,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Transactional
-    public SimpleDevice createDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws SQLException {
+    public SimpleDevice createDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
 
         SimpleDevice yukonDevice = new SimpleDevice();
 

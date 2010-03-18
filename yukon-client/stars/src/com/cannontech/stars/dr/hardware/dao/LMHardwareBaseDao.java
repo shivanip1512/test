@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 public interface LMHardwareBaseDao {
@@ -16,7 +17,7 @@ public interface LMHardwareBaseDao {
      * @return
      * @throws DataAccessException
      */
-    public LMHardwareBase getById(int inventoryId) throws DataAccessException;
+    public LMHardwareBase getById(int inventoryId) throws NotFoundException;
     
     /**
      * Returns the LMHardwareBase for a given serial number.
