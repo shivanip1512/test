@@ -134,9 +134,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         map.addAttribute("schedule", schedule);
 
         // Get json string for the default schedule and add to model
-        JSONObject defaultScheduleJSON = this.getJSONForSchedule(defaultSchedule, isFahrenheit);
-        map.addAttribute("defaultScheduleJSONString",
-                         defaultScheduleJSON.toString());
+        JSONObject defaultFahrenheitScheduleJSON = this.getJSONForSchedule(defaultSchedule, true);
+        map.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
+
+        JSONObject defaultCelsiusScheduleJSON = this.getJSONForSchedule(defaultSchedule, false);
+        map.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
 
         Locale locale = yukonUserContext.getLocale();
         map.addAttribute("localeString", locale.toString());
