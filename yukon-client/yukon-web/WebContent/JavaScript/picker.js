@@ -419,6 +419,9 @@ Picker.prototype = {
 	},
 
 	updateSelectAllCheckbox: function() {
+		if (!this.multiSelectMode) {
+			return;
+		}
 		var allSelected = true;
 		this.allLinks.each(function(hitRow) {
 			if (!$($(hitRow.link).parentNode.parentNode).hasClassName('highlighted')) {

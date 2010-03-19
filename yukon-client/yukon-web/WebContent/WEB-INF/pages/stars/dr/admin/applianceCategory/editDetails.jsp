@@ -38,6 +38,8 @@ submitForm = function() {
 }
 </script>
 
+<tags:errorMessages/>
+
 <cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/saveDetails"/>
 <form:form id="inputForm" commandName="applianceCategory" action="${submitUrl}"
     onsubmit="return submitForm()">
@@ -46,13 +48,13 @@ submitForm = function() {
     <tags:nameValueContainer>
         <cti:msg2 var="fieldName" key=".name"/>
         <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-            <form:input id="nameInput" path="name" size="30"
+            <tags:input id="nameInput" path="name" size="30"
                 onkeyup="nameChanged()" onblur="nameChanged()"/>
         </tags:nameValue>
 
         <cti:msg2 var="fieldName" key=".displayName"/>
         <tags:nameValue name="${fieldName}">
-            <form:input id="displayNameInput" path="displayName" size="30"/>
+            <tags:input id="displayNameInput" path="displayName" size="30"/>
             <c:set var="selcted" value=""/>
             <c:if test="${applianceCategory.name == applianceCategory.displayName}">
                 <c:set var="checked" value=" checked=\"true\""/>
@@ -96,10 +98,15 @@ submitForm = function() {
         sameAsNameClicked();
     </script>
 
+    <c:set var="oncloseJavascript" value="parent.$('acDialog').hide()"/>
+    <c:if test="${applianceCategory.applianceCategoryId == 0}">
+        <c:set var="oncloseJavascript"
+            value="window.location='/operator/Admin/ConfigEnergyCompany.jsp'"/>
+    </c:if>
     <div class="actionArea">
         <input type="submit" value="<cti:msg2 key=".ok"/>"/>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('acDialog').hide()"/>
+            onclick="${oncloseJavascript}"/>
     </div>
 
 </form:form>

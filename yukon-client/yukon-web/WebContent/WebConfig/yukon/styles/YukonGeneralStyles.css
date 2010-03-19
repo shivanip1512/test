@@ -999,7 +999,7 @@ div.padded {
 	color: gray;
 }
 
-div.flashScopeMessage {
+div.userMessage {
 
 	font-size: 11px;
 	padding-top: 5px;
@@ -1011,14 +1011,14 @@ div.flashScopeMessage {
 	background-repeat:no-repeat;
 }
 
-div.flashScopeMessage.CONFIRM {
+div.userMessage.CONFIRM {
 
 	outline: #006633 solid thin;
 	background-color: #C3FDB8;
 	background-image: url(../Icons/enable.gif);
 }
 
-div.flashScopeMessage.WARNING {
+div.userMessage.WARNING {
 
 	outline: #FBB117 solid thin;
 	background-color: #FFFFDA;
@@ -1026,7 +1026,7 @@ div.flashScopeMessage.WARNING {
 	
 }
 
-div.flashScopeMessage.ERROR {
+div.userMessage.ERROR {
 
 	outline: #CC0000 solid thin;
 	background-color: #FFDDDD;

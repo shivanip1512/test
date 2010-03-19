@@ -7,9 +7,8 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 
-import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.web.common.validation.YukonValidationUtils;
 import com.google.common.collect.Lists;
 
 public class FlashScope {
@@ -33,32 +32,11 @@ public class FlashScope {
 		setMessage(FlashScopeMessageType.ERROR, messages);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void setBindingResult(BindingResult bindingResult) {
-		
-		List<MessageSourceResolvable> messages = Lists.newArrayList();
-		
-		// global
-		List<ObjectError> globalErrors = (List<ObjectError>)bindingResult.getGlobalErrors();
-		for (ObjectError objectError : globalErrors) {
-			
-			YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(objectError.getCodes(), objectError.getArguments(), objectError.getDefaultMessage());
-			messages.add(message);
-		}
-		
-		// fieldErrorCount
-		int fieldErrorCount = bindingResult.getFieldErrorCount();
-		if (fieldErrorCount == 1) {
-		
-			YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.error.fieldErrorExists");
-			messages.add(message);
-		
-		} else if (fieldErrorCount > 1) {
-			
-			YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.error.fieldErrorsExist");
-			messages.add(message);
-		}
-		
+
+		List<MessageSourceResolvable> messages =
+		    YukonValidationUtils.errorsForBindingResult(bindingResult);
+
 		setMessage(FlashScopeMessageType.ERROR, messages);
 	}
 	

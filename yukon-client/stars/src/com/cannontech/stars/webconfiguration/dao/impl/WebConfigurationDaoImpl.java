@@ -6,18 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 import com.google.common.collect.Maps;
 
 public class WebConfigurationDaoImpl implements WebConfigurationDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     private RowMapperWithBaseQuery<WebConfiguration> rowMapper =
         new AbstractRowMapperWithBaseQuery<WebConfiguration>() {
@@ -52,8 +52,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         sql.append("WHERE configurationId").eq(webConfigurationId);
 
         WebConfiguration webConfiguration = 
-            simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
-                                              sql.getArguments());
+            yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return webConfiguration;
     }
 
@@ -66,8 +65,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         sql.append("WHERE applianceCategoryId").eq(applianceCategoryId).append(")");
 
         WebConfiguration webConfiguration = 
-            simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
-                                              sql.getArguments());
+            yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return webConfiguration;
     }
 
@@ -80,8 +78,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         sql.append("WHERE programId").eq(assignedProgramId).append(")");
 
         WebConfiguration webConfiguration = 
-            simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
-                                              sql.getArguments());
+            yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return webConfiguration;
     }
 
@@ -96,8 +93,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         sql.append(")");
 
         List<WebConfiguration> webConfigurations = 
-            simpleJdbcTemplate.query(sql.getSql(), rowMapper,
-                                              sql.getArguments());
+            yukonJdbcTemplate.query(sql, rowMapper);
 
         Map<Integer, WebConfiguration> retVal = Maps.newHashMap();
         for (WebConfiguration webConfiguration : webConfigurations) {
@@ -107,7 +103,7 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }

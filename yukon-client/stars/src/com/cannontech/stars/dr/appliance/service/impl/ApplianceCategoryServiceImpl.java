@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -24,6 +25,7 @@ import com.cannontech.user.YukonUserContext;
 public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     private StarsDatabaseCache starsDatabaseCache;
     private AssignedProgramDao assignedProgramDao;
+    private DBPersistentDao dbPersistentDao;
 
     private static final String LINE_SEPARATOR =
         System.getProperty("line.separator");
@@ -32,7 +34,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     public void save(ApplianceCategory applianceCategory,
             YukonUserContext userContext) {
         int applianceCategoryId = applianceCategory.getApplianceCategoryId();
-        boolean isNew = (applianceCategoryId == -1);
+        boolean isNew = (applianceCategoryId <= 0);
 
         YukonWebConfiguration webConfiguration = new YukonWebConfiguration();
         webConfiguration.setLogoLocation(applianceCategory.getIcon());
@@ -61,17 +63,14 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
         if (isNew) {
             appCat.setEnergyCompanyID(energyCompany.getEnergyCompanyID());
 
-            try {
-                appCat = Transaction.createTransaction(Transaction.INSERT, appCat).execute();
-            } catch (TransactionException e) {
-                throw new RuntimeException("error inserting appliance category into db");
-            }
+            dbPersistentDao.performDBChange(appCat, Transaction.INSERT);
 
             liteApplianceCateogry = (LiteApplianceCategory) StarsLiteFactory.createLite(appCat.getApplianceCategory());
             energyCompany.addApplianceCategory(liteApplianceCateogry);
             LiteWebConfiguration liteConfig =
                 (LiteWebConfiguration) StarsLiteFactory.createLite(appCat.getWebConfiguration());
             starsDatabaseCache.addWebConfiguration(liteConfig);
+            applianceCategory.setApplianceCategoryId(liteApplianceCateogry.getApplianceCategoryID());
         } else {
             liteApplianceCateogry = energyCompany.getApplianceCategory(applianceCategoryId);
             if (energyCompany.isApplianceCategoryInherited(applianceCategoryId)) {
@@ -81,11 +80,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
             appCat.setApplianceCategoryID(applianceCategoryId);
             appCatDB.setWebConfigurationID(liteApplianceCateogry.getWebConfigurationID());
 
-            try {
-                appCat = Transaction.createTransaction(Transaction.UPDATE, appCat).execute();
-            } catch (TransactionException te) {
-                throw new RuntimeException("error updating appliance category in db", te);
-            }
+            dbPersistentDao.performDBChange(appCat, Transaction.UPDATE);
 
             StarsLiteFactory.setLiteApplianceCategory(liteApplianceCateogry,
                                                       appCat.getApplianceCategory());
@@ -247,11 +242,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
         if (liteProgram != null) {
             pubProg.setProgramID(liteProgram.getProgramID());
             pubProg.getLMProgramWebPublishing().setWebSettingsID(liteProgram.getWebSettingsID());
-            try {
-                pubProg = Transaction.createTransaction(Transaction.UPDATE, pubProg).execute();
-            } catch (TransactionException te) {
-                throw new RuntimeException("error inserting appliance category program into db", te);
-            }
+            dbPersistentDao.performDBChange(pubProg, Transaction.UPDATE);
 
             liteProgram.setChanceOfControlID(pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue());
             liteProgram.setProgramOrder(pubProg.getLMProgramWebPublishing().getProgramOrder().intValue());
@@ -260,11 +251,7 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
             StarsLiteFactory.setLiteWebConfiguration(liteCfg,
                                                      pubProg.getWebConfiguration());
         } else {
-            try {
-                pubProg = Transaction.createTransaction(Transaction.INSERT, pubProg).execute();
-            } catch (TransactionException te) {
-                throw new RuntimeException("error updating appliance category program in db", te);
-            }
+            dbPersistentDao.performDBChange(pubProg, Transaction.INSERT);
             liteProgram = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite(pubProg.getLMProgramWebPublishing());
             energyCompany.addProgram(liteProgram, liteApplianceCategory);
 
@@ -281,5 +268,10 @@ public class ApplianceCategoryServiceImpl implements ApplianceCategoryService {
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;
+    }
+
+    @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
 }

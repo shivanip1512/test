@@ -168,7 +168,7 @@
         baseUrl="${baseUrl}" filterDialog="filterDialog" isFiltered="${isFiltered}"
         showAllUrl="${clearFilterUrl}">
         <table id="programList" class="compactResultsTable rowHighlighting">
-            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+            <tr>
                 <th>
                     <tags:sortLink key=".programName" baseUrl="${baseUrl}"
                         fieldName="PROGRAM_NAME" isDefault="${!applianceCategory.consumerSelectable}"/>

@@ -7,11 +7,13 @@ public class ApplianceCategory {
     private int applianceCategoryId;
     private String name;
     private ApplianceTypeEnum applianceType;
-    private boolean consumerSelectable = true;
+    private boolean consumerSelectable;
 
     private WebConfiguration webConfiguration;
 
     public ApplianceCategory() {
+        applianceCategoryId = 0;
+        consumerSelectable = true;
         webConfiguration = new WebConfiguration();
     }
 

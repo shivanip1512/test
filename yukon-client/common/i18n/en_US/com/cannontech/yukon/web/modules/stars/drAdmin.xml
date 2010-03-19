@@ -8,6 +8,12 @@
 <entry key="yukon.web.modules.energyCompanyAdmin.configEnergyCompany.pageDescription">{0}</entry>
 
 
+<!-- Create Appliance Category -->
+<entry key="yukon.web.modules.energyCompanyAdmin.createApplianceCategory.pageName">Appliance Category</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.createApplianceCategory.pageDescription">Create</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.createApplianceCategory.detailsDialogTitle">Create Appliance Category</entry>
+
+
 <!-- Appliance Category Configuration -->
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.pageName">Appliance Category</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.pageDescription">{0}</entry>
@@ -84,6 +90,10 @@
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.down.hoverText">Move Program Down</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
 
+<!-- validation errors -->
+<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.empty.name">Name cannot be empty.</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.empty.displayName">Display name cannot be empty.</entry>
+
 <!-- Appliance Category Assigned Programs -->
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.title">{0}</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.editingMultiple">
@@ -92,6 +102,7 @@
 </entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.applianceCategory">Appliance Category</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.programName">Program Name</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.isVirtual">Virtual Program</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.displayName">Display Name</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.sameAsProgramName">Same as Program Name</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.shortName">Short Name</entry>
@@ -107,12 +118,18 @@
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram.confirmationQuestion">
     Are you sure you want to remove {0} from {1}?  Removing the program will unenroll customers currently enrolled.
 </entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram.virtualProgramConfirmationQuestion">
+    Are you sure you want to delete the virtual program {0} and remove it from {1}?  Deleting the program will unenroll customers currently enrolled.
+</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram.ok">OK</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram.cancel">Cancel</entry>
 
 
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.ok">OK</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.cancel">Cancel</entry>
+
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.empty">Required field.</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.empty.assignedProgram.displayName">Display name cannot be empty.</entry>
 
 <!-- Edit Program Enrollment -->
 <entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.pageTitle">Program Enrollment</entry>

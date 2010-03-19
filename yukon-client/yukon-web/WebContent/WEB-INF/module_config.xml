@@ -361,6 +361,10 @@
         <menu>configEnergyCompany</menu>
         <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
         <pages>
+          <page name="createApplianceCategory" type="BASIC">
+            <menu>configEnergyCompany</menu>
+            <link>/spring/stars/dr/admin/applianceCategory/create</link>
+          </page>
           <page name="editApplianceCategory" type="DETAIL">
             <menu>configEnergyCompany</menu>
             <link>/spring/stars/dr/admin/applianceCategory/edit?applianceCategoryId=${applianceCategory.applianceCategoryId}</link>

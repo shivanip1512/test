@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.appliance.model;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public enum ControlPercentIcon implements IconEnum {
     NONE(null),
@@ -19,15 +18,7 @@ public enum ControlPercentIcon implements IconEnum {
     private final static ImmutableMap<String, ControlPercentIcon> lookupByFilename;
 
     static {
-        Builder<String, ControlPercentIcon> byFilenameBuilder =
-            ImmutableMap.builder();
-
-        for (ControlPercentIcon icon : values()) {
-            if (icon != NONE && icon != OTHER) {
-                byFilenameBuilder.put(icon.getFilename(), icon);
-            }
-        }
-        lookupByFilename = byFilenameBuilder.build();
+        lookupByFilename = IconEnumUtil.buildByFilenameMap(values());
     }
 
     private ControlPercentIcon(String baseFilename) {

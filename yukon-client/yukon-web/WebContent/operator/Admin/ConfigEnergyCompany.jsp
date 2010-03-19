@@ -406,7 +406,7 @@ function deleteWarehouse(form, warehouseId) {
                                 <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.AppCatID.value=-1; return confirmDeleteAllAppCats();">
                               </td>
                               <td width="80%"> 
-                                <input type="button" name="New" value="New" onclick="location.href='ApplianceCategory.jsp?Category=<%= categories.getStarsApplianceCategoryCount() %>'">
+                                <input type="button" name="New" value="New" onclick="location.href='/spring/stars/dr/admin/applianceCategory/create'">
                               </td>
                             </tr>
                           </table>

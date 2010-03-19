@@ -14,6 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -43,12 +47,14 @@ import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.validation.YukonValidationUtils;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/applianceCategory/*")
 public class ApplianceCategoryController {
+    private final static String baseKey = "yukon.web.modules.energyCompanyAdmin";
     private AssignedProgramDao assignedProgramDao;
     private AssignedProgramService assignedProgramService;
     private ApplianceCategoryDao applianceCategoryDao;
@@ -57,11 +63,51 @@ public class ApplianceCategoryController {
     private StarsDatabaseCache starsDatabaseCache;
     private PaoDao paoDao;
 
+    private Validator detailsValidator = new Validator() {
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean supports(Class cls) {
+            return ApplianceCategory.class.isAssignableFrom(cls);
+        }
+
+        @Override
+        public void validate(Object target, Errors errors) {
+            String[] requiredFields = new String[] { "name", "displayName" };
+            for (String requiredField : requiredFields) {
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors, requiredField,
+                    baseKey + ",editApplianceCategory.empty");
+            }
+        }
+    };
+
+    private Validator assignedProgramValidator = new Validator() {
+        @SuppressWarnings("unchecked")
+        @Override
+        public boolean supports(Class cls) {
+            return AssignProgramBackingBean.class.isAssignableFrom(cls);
+        }
+
+        @Override
+        public void validate(Object target, Errors errors) {
+            AssignProgramBackingBean assignedProgram = (AssignProgramBackingBean) target;
+            if (assignedProgram.isVirtual()) {
+                // display name is required for virtual programs
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors,
+                    "assignedProgram.displayName",
+                    baseKey + ".editAssignedProgram.empty");
+            }
+        }
+    };
+
+    @RequestMapping
+    public String create(ModelMap model, YukonUserContext userContext) {
+        return "applianceCategory/create.jsp";
+    }
+
     @RequestMapping
     public String edit(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
-            int applianceCategoryId,
-            YukonUserContext userContext) {
+            int applianceCategoryId, YukonUserContext userContext) {
         ApplianceCategory applianceCategory =
             applianceCategoryDao.getById(applianceCategoryId);
         model.addAttribute("applianceCategory", applianceCategory);
@@ -95,10 +141,25 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping
+    public String createDetails(ModelMap model,
+            @ModelAttribute("backingBean") ListBackingBean backingBean,
+            YukonUserContext userContext) {
+        ApplianceCategory applianceCategory = new ApplianceCategory();
+
+        return editDetails(model, applianceCategory, userContext);
+    }
+
+    @RequestMapping
     public String editDetails(ModelMap model, int applianceCategoryId,
             YukonUserContext userContext) {
         ApplianceCategory applianceCategory =
             applianceCategoryDao.getById(applianceCategoryId);
+
+        return editDetails(model, applianceCategory, userContext);
+    }
+
+    private String editDetails(ModelMap model,
+            ApplianceCategory applianceCategory, YukonUserContext userContext) {
         model.addAttribute("applianceCategory", applianceCategory);
 
         ApplianceTypeEnum[] applianceTypes = ApplianceTypeEnum.values();
@@ -117,9 +178,26 @@ public class ApplianceCategoryController {
     @RequestMapping
     public String saveDetails(ModelMap model,
             @ModelAttribute ApplianceCategory applianceCategory,
-            YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext) {
+        detailsValidator.validate(applianceCategory, bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> errors =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            model.addAttribute("errors", errors);
+
+            return editDetails(model, applianceCategory, userContext);
+        }
+
+        String newLocation = null;
+        boolean wasNew = applianceCategory.getApplianceCategoryId() == 0;
         applianceCategoryService.save(applianceCategory, userContext);
-        return closeDialog(model);
+        if (wasNew) {
+            newLocation = "/spring/stars/dr/admin/applianceCategory/edit" +
+            		"?applianceCategoryId=" +
+            		applianceCategory.getApplianceCategoryId();
+        }
+
+        return closeDialog(model, newLocation);
     }
 
     @RequestMapping
@@ -141,8 +219,8 @@ public class ApplianceCategoryController {
             new AssignProgramBackingBean(false, multiple,
                                          programsToAssign,
                                          assignedProgram);
-        return prepareForEditAssignedProgram(model, applianceCategoryId,
-                                             backingBean, userContext);
+        return editAssignedProgram(model, applianceCategoryId, backingBean,
+                                   userContext);
     }
 
     @RequestMapping
@@ -150,8 +228,8 @@ public class ApplianceCategoryController {
             YukonUserContext userContext) {
         AssignProgramBackingBean backingBean =
             new AssignProgramBackingBean(true, false, null, new AssignedProgram());
-        return prepareForEditAssignedProgram(model, applianceCategoryId,
-                                             backingBean, userContext);
+        return editAssignedProgram(model, applianceCategoryId, backingBean,
+                                   userContext);
     }
     
     @RequestMapping
@@ -162,15 +240,59 @@ public class ApplianceCategoryController {
         AssignProgramBackingBean backingBean =
             new AssignProgramBackingBean(assignedProgram.getProgramId() == 0,
                                          false, null, assignedProgram);
-        return prepareForEditAssignedProgram(model, applianceCategoryId,
-                                             backingBean, userContext);
+        return editAssignedProgram(model, applianceCategoryId, backingBean,
+                                   userContext);
+    }
+
+    private String editAssignedProgram(ModelMap model,
+            int applianceCategoryId, AssignProgramBackingBean backingBean,
+            YukonUserContext userContext) {
+        ApplianceCategory applianceCategory =
+            applianceCategoryDao.getById(applianceCategoryId);
+        model.addAttribute("applianceCategory", applianceCategory);
+
+        backingBean.getAssignedProgram().setApplianceCategoryId(applianceCategoryId);
+        model.addAttribute("backingBean", backingBean);
+
+        LiteStarsEnergyCompany energyCompany =
+            starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        StarsCustSelectionList chanceOfControlList =
+            energyCompany.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
+        List<ChanceOfControl> chanceOfControls = Lists.newArrayList();
+
+        chanceOfControls.add(0, new ChanceOfControl(0, "Not Specified"));
+        for (StarsSelectionListEntry cocEntry : chanceOfControlList.getStarsSelectionListEntry()) {
+            chanceOfControls.add(new ChanceOfControl(cocEntry.getEntryID(), cocEntry.getContent()));
+        }
+        model.addAttribute("chanceOfControls", chanceOfControls);
+
+        SavingsIcon[] savingsIcons = SavingsIcon.values();
+        model.addAttribute("savingsIcons", savingsIcons);
+
+        ControlPercentIcon[] controlPercentIcons = ControlPercentIcon.values();
+        model.addAttribute("controlPercentIcons", controlPercentIcons);
+        
+        EnvironmentIcon[] environmentIcons = EnvironmentIcon.values();
+        model.addAttribute("environmentIcons", environmentIcons);
+        
+        return "applianceCategory/editAssignedProgram.jsp";
     }
 
     @RequestMapping
     public String saveAssignedProgram(ModelMap model,
-            @ModelAttribute AssignProgramBackingBean backingBean,
-            YukonUserContext userContext) {
+            @ModelAttribute("backingBean") AssignProgramBackingBean backingBean,
+            BindingResult bindingResult, YukonUserContext userContext) {
         AssignedProgram assignedProgram = backingBean.getAssignedProgram();
+        assignedProgramValidator.validate(backingBean, bindingResult);
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> errors =
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
+            model.addAttribute("errors", errors);
+
+            return editAssignedProgram(model, assignedProgram.getApplianceCategoryId(),
+                                       backingBean, userContext);
+        }
+
         if (backingBean.isVirtual()
                 || backingBean.getProgramIds() == null
                    && assignedProgram.getProgramId() != 0) {
@@ -202,10 +324,18 @@ public class ApplianceCategoryController {
         AssignedProgram assignedProgram =
             assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
-        MessageSourceResolvable confirmationQuestion =
-            new YukonMessageSourceResolvable("yukon.web.modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram.confirmationQuestion",
-                                             assignedProgram.getProgramName(),
-                                             applianceCategory.getName());
+        MessageSourceResolvable confirmationQuestion = null;
+        if (assignedProgram.getProgramId() == 0) {
+            confirmationQuestion =
+                new YukonMessageSourceResolvable(baseKey + ".editApplianceCategoryUnassignedProgram.virtualProgramConfirmationQuestion",
+                                                 assignedProgram.getProgramName(),
+                                                 applianceCategory.getName());
+        } else {
+            confirmationQuestion =
+                new YukonMessageSourceResolvable(baseKey + ".editApplianceCategoryUnassignedProgram.confirmationQuestion",
+                                                 assignedProgram.getProgramName(),
+                                                 applianceCategory.getName());
+        }
         model.addAttribute("confirmationQuestion", confirmationQuestion);
         return "applianceCategory/unassignProgram.jsp";
     }
@@ -243,7 +373,14 @@ public class ApplianceCategoryController {
     }
 
     private String closeDialog(ModelMap model) {
+        return closeDialog(model, null);
+    }
+    
+    private String closeDialog(ModelMap model, String newLocation) {
         model.addAttribute("popupId", "acDialog");
+        if (newLocation != null) {
+            model.addAttribute("newLocation", newLocation);
+        }
         return "closePopup.jsp";
     }
 
@@ -282,40 +419,6 @@ public class ApplianceCategoryController {
         public String getName() {
             return name;
         }
-    }
-
-    private String prepareForEditAssignedProgram(ModelMap model,
-            int applianceCategoryId, AssignProgramBackingBean backingBean,
-            YukonUserContext userContext) {
-        ApplianceCategory applianceCategory =
-            applianceCategoryDao.getById(applianceCategoryId);
-        model.addAttribute("applianceCategory", applianceCategory);
-
-        backingBean.getAssignedProgram().setApplianceCategoryId(applianceCategoryId);
-        model.addAttribute("backingBean", backingBean);
-
-        LiteStarsEnergyCompany energyCompany =
-            starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        StarsCustSelectionList chanceOfControlList =
-            energyCompany.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
-        List<ChanceOfControl> chanceOfControls = Lists.newArrayList();
-
-        chanceOfControls.add(0, new ChanceOfControl(0, "Not Specified"));
-        for (StarsSelectionListEntry cocEntry : chanceOfControlList.getStarsSelectionListEntry()) {
-            chanceOfControls.add(new ChanceOfControl(cocEntry.getEntryID(), cocEntry.getContent()));
-        }
-        model.addAttribute("chanceOfControls", chanceOfControls);
-
-        SavingsIcon[] savingsIcons = SavingsIcon.values();
-        model.addAttribute("savingsIcons", savingsIcons);
-
-        ControlPercentIcon[] controlPercentIcons = ControlPercentIcon.values();
-        model.addAttribute("controlPercentIcons", controlPercentIcons);
-        
-        EnvironmentIcon[] environmentIcons = EnvironmentIcon.values();
-        model.addAttribute("environmentIcons", environmentIcons);
-        
-        return "applianceCategory/editAssignedProgram.jsp";
     }
 
     @Autowired

@@ -1,9 +1,9 @@
 package com.cannontech.stars.dr.appliance.dao.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramRowMapper;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
@@ -11,7 +11,7 @@ import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
 public class AssignedProgramDaoImpl implements AssignedProgramDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private WebConfigurationDao webConfigurationDao;
 
     @Override
@@ -23,8 +23,7 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         sql.append("WHERE p.programId").eq(assignedProgramId);
 
         AssignedProgram assignedProgram =
-            simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
-                                              sql.getArguments());
+            yukonJdbcTemplate.queryForObject(sql, rowMapper);
         WebConfiguration webConfiguration =
             webConfigurationDao.getForAssignedProgram(assignedProgramId);
         assignedProgram.setWebConfiguration(webConfiguration);
@@ -38,12 +37,12 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT MAX(programOrder) FROM lmProgramWebPublishing");
         sql.append("WHERE applianceCategoryId").eq(applianceCategoryId);
-        return simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        return yukonJdbcTemplate.queryForInt(sql);
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Autowired

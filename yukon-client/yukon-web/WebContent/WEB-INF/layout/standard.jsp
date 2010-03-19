@@ -52,7 +52,7 @@
 
 <%-- FLASH SCOPE MESSAGES --%>
 <c:forEach var="flashScopeMessage" items="${flashScopeMessages}">
-	<div class="flashScopeMessage ${flashScopeMessage.type}">
+	<div class="userMessage ${flashScopeMessage.type}">
 		<c:choose>
 			<c:when test="${fn:length(flashScopeMessage.messages) == 1}">
 				<cti:msg key="${flashScopeMessage.messages[0]}"/> 

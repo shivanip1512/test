@@ -3,7 +3,6 @@ package com.cannontech.stars.dr.appliance.model;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 
 public enum ApplianceCategoryIcon implements IconEnum {
     NONE(null),
@@ -28,15 +27,7 @@ public enum ApplianceCategoryIcon implements IconEnum {
     private final static ImmutableMap<String, ApplianceCategoryIcon> lookupByFilename;
 
     static {
-        Builder<String, ApplianceCategoryIcon> byFilenameBuilder =
-            ImmutableMap.builder();
-
-        for (ApplianceCategoryIcon icon : values()) {
-            if (icon != NONE && icon != OTHER) {
-                byFilenameBuilder.put(icon.getFilename(), icon);
-            }
-        }
-        lookupByFilename = byFilenameBuilder.build();
+        lookupByFilename = IconEnumUtil.buildByFilenameMap(values());
     }
 
     private ApplianceCategoryIcon(String baseFilename) {

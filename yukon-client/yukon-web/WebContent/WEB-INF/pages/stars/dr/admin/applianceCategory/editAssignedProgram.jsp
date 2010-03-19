@@ -69,6 +69,8 @@ submitForm = function() {
 }
 </script>
 
+<tags:errorMessages/>
+
 <c:if test="${backingBean.multiple}">
 <i:inline key=".editingMultiple"/>
 </c:if>
@@ -92,17 +94,22 @@ submitForm = function() {
         <tags:nameValue name="${fieldName}" nameColumnWidth="170px">
             <spring:escapeBody>${applianceCategory.name}</spring:escapeBody>
         </tags:nameValue>
-        <c:if test="${!backingBean.virtual && !backingBean.multiple}">
+        <c:if test="${!backingBean.multiple}">
             <cti:msg2 var="fieldName" key=".programName"/>
             <tags:nameValue name="${fieldName}">
-                <spring:escapeBody>${backingBean.assignedProgram.programName}</spring:escapeBody>
+                <c:if test="${!backingBean.virtual}">
+                    <spring:escapeBody>${backingBean.assignedProgram.programName}</spring:escapeBody>
+                </c:if>
+                <c:if test="${backingBean.virtual}">
+                    <i:inline key=".isVirtual"/>
+                </c:if>
             </tags:nameValue>
         </c:if>
 
         <c:if test="${!backingBean.multiple}">
             <cti:msg2 var="fieldName" key=".displayName"/>
             <tags:nameValue name="${fieldName}">
-                <form:input id="displayNameInput"
+                <tags:input id="displayNameInput"
                     path="assignedProgram.displayName" size="30"
                     onkeyup="displayNameChanged()" onblur="displayNameChanged()"/>
                 <c:if test="${!backingBean.virtual}">
