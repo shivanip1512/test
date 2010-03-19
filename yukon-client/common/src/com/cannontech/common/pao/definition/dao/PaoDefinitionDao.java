@@ -127,11 +127,11 @@ public interface PaoDefinitionDao {
     public String getPointLegendHtml(String displayGroup);
 
     /**
-     * Takes a collection of YukonPao's and filters out the ones that do not support
-     * the PaoTag provided.
+     * Takes an iterable of type T and returns a new Iterable of items that support
+     * the provided PaoTag.
      * @param paos
      * @param feature
-     * @return List<YukonPao>
+     * @return <T extends YukonPao> Iterable<T>
      */
     public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature);
 }
