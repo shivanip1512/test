@@ -49,7 +49,7 @@
             } else if(selection == 'PAONAME') {
                 fileNote.update('Note: The file must contain 1 valid Device Name per line.');
             } else if(selection == 'DEVICEID') {
-                fileNote.update('Note: The file must contain 1 valid Device Id per line.');
+                fileNote.update('Note: The file must contain 1 valid Device ID per line.');
             } else if(selection == 'METERNUMBER') {
                 fileNote.update('Note: The file must contain 1 valid Meter number per line.');
             } else if(selection == 'BULK') {
