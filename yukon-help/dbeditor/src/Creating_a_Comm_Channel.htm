@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=590>
-<meta name=layout-width content=1123>
+<meta name=layout-height content=570>
+<meta name=layout-width content=502>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;Logins;TCP;UDP">
 
 
@@ -81,7 +81,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select <span style="font-weight: bold;">Local 
  Serial Port</span>, <span style="font-weight: bold;">TCP Terminal Server</span>, 
- or <span style="font-weight: bold;">UDP Terminal Server</span>.</p></li>
+ <span style="font-weight: bold;">UDP Terminal Server</span>, or <span 
+ style="font-weight: bold;">TCP Port</span>.</p></li>
 </ol>
 
 <ul>
@@ -123,8 +124,8 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li style="list-style: disc;"
 		type=disc
 		class=kadov-p><p style="margin-bottom: 9pt; margin-left: 40px;">The 
- UDP Terminal Server comm channel is for Cooper Power Systems' two-way 
- Capacitor Bank Controllers.</p></li>
+ UDP Terminal Server and TCP Port comm channels are only used for Distribution 
+ Automation applications.</p></li>
 </ul>
 
 <ol start=4
@@ -166,6 +167,20 @@ kadovFilePopupInit('a1');
 //--></script><!--}}end!kadov--></p></li>
 </ul>
 
+<p style="margin-left: 40px;">&nbsp;</p>
+
+<ul>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-left: 40px;"><a href="javascript:BSSCPopup('TCP_Port.htm');"
+														id=a2>TCP Port</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a2');
+//--></script><!--}}end!kadov--></p></li>
+</ul>
+
 <p>&nbsp; </p>
 
 <p style="margin-bottom: 9pt; margin-left: 0px;">
@@ -192,7 +207,7 @@ kadovFilePopupInit('a1');
 <param name="Items" value="Creating a Device;Creating_a_Device.htm$$**$$Editing a Comm Channel;Editing_a_Comm_Channel.htm$$**$$Editing a Device;Editing_a_Device.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\YukonHelpSVN\4.1\dbeditor\src\Creating_a_Comm_Channel.htm" >
+<param name="_CURRENTFILEPATH" value="C:\YukonHelp\trunk\dbeditor\src\Creating_a_Comm_Channel.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
