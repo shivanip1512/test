@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.sql.SQLException;
@@ -60,6 +61,7 @@ import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -1115,20 +1117,34 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			}
 			else {
                 CTILogger.error( e.getMessage(), e );
+                String[] value = new String[3];
                 
-				importLog.println("Error Occured");
-				String[] value;
+                if(importLog == null) {
+                    try {
+                        importLog = new PrintWriter(new FileWriter(logFile), true);
+                        importLog.println("Error Occured");
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                        status = STATUS_ERROR;
+                    }
+                }
 
-				if (custLines != null){
-                    value = custLines.get(lineNo);
-                    custLines.put(lineNo, value);
-                } else {
-                    value = hwLines.get(lineNo);
-                    hwLines.put(lineNo, value);
-                }                    
-                
-				value[1] = "[line: "+lineNo+" error: "+e.getMessage()+"]";
-                addToLog(lineNo, value, importLog);
+                // Could not open the file passing error writing.
+                if (status != STATUS_ERROR) {
+                    importLog.println("Error Occured");
+                    if (custLines != null){
+                        value = custLines.get(lineNo);
+                        custLines.put(lineNo, value);
+                    } else {
+                        if(hwLines != null) {
+                            value = hwLines.get(lineNo);
+                            hwLines.put(lineNo, value);
+                        }
+                    }
+                    
+                    value[1] = "[line: "+lineNo+" error: "+e.getMessage()+"]";
+                    addToLog(lineNo, value, importLog);
+                }
                 status = STATUS_ERROR;
 			}
 
@@ -1370,7 +1386,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			}
 			
 			if (liteAcctInfo == null) {
-				
+
+			    // Validates the IVR fields and throws a web client exception if they don't
+			    ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
+			    ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_PIN]);
+			    
 				// ADD ACCOUNT
 				UpdatableAccount updatableAccount = updatableAccountConverter.createNewUpdatableAccount(custFields, energyCompany);
 				accountService.addAccount(updatableAccount, energyCompany);
@@ -1379,7 +1399,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			    numAcctAdded++;
 			}
 			else if (!insertSpecified) {
-				
+
+			    // Validates the IVR fields and throws a web client exception if they don't
+	            ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
+	            ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_PIN]);
+			    
 				// UPDATE ACCOUNT
 				UpdatableAccount updatableAccount = updatableAccountConverter.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
 				accountService.updateAccount(updatableAccount, energyCompany);
