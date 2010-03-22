@@ -1186,8 +1186,8 @@
         <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>
     
-    <bean id="consumerFAQMenuOption" class="com.cannontech.web.menu.option.producer.ConsumerFAQMenuOptionProducer"/>
-    <bean id="operatorFAQMenuOption" class="com.cannontech.web.menu.option.producer.OperatorFAQMenuOptionProducer"/>
+    <bean id="consumerFaqMenuOption" class="com.cannontech.web.menu.option.producer.ConsumerFaqMenuOptionProducer"/>
+    <bean id="operatorFaqMenuOption" class="com.cannontech.web.menu.option.producer.OperatorFaqMenuOptionProducer"/>
     
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
         <property name="graphDao" ref="graphDao" />

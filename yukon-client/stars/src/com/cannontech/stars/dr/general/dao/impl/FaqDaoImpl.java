@@ -8,11 +8,11 @@ import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.stars.dr.general.dao.FAQDao;
+import com.cannontech.stars.dr.general.dao.FaqDao;
 import com.cannontech.user.YukonUserContext;
 
 
-public class FAQDaoImpl implements FAQDao {
+public class FaqDaoImpl implements FaqDao {
 
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
