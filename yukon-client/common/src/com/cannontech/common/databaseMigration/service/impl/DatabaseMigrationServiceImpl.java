@@ -248,7 +248,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 				transactionTemplate.execute(new TransactionCallback() {
 		            public Object doInTransaction(TransactionStatus status) {
 		                for (Element element : importItemList) {
-		                    importDatabaseMigrationStatus.incrementProcessed();
 		                    
 		                    String label;
 		                    try {
@@ -275,6 +274,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		                    if (importDatabaseMigrationStatus.getWarningCount() > 0) {
 		                        log.error("Validation Warning ("+label+") --> "+importDatabaseMigrationStatus.getWarningsMap().get(label));
 		                    }
+
+		                    importDatabaseMigrationStatus.incrementProcessed();
 		                }
 
 		                importDatabaseMigrationStatus.complete();
@@ -330,7 +331,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                     final java.util.logging.Logger logger) {
 
         for (final Element element : importItemList) {
-            importDatabaseMigrationStatus.incrementProcessed();
             
             final String label;
             try {
@@ -382,6 +382,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                     return null;
                 }
             });
+            importDatabaseMigrationStatus.incrementProcessed();
         }
 
         closeLogger(logger);

@@ -14,6 +14,7 @@
         <identifier name="Description"/>
         <data name="CategoryId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="WebConfigurationId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" />
+        <data name="ConsumerSelectable" />
     </table>
 
     <table name="BaseLine">
@@ -426,8 +427,8 @@
     
     <table name="YukonWebConfiguration">
         <primaryKey name="ConfigurationId" nullId="0"/> 
-        <identifier name="Description"/>
-        <identifier name="AlternateDisplayName"/>
+        <data name="Description"/>
+        <data name="AlternateDisplayName"/>
         <data name="LogoLocation"/>
         <data name="URL"/>
     </table>
