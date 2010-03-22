@@ -82,10 +82,19 @@ end;
 // of the setup when the setup is running in first install mode.
 //---------------------------------------------------------------------------
 function OnFirstUIAfter()
-string sProg, sCMD;
+string sProg, sCMD, sName, sKey;
 number nResult;
 BOOL opt, bOptYes, bOptNo;
 begin
+	//set the YUKON_BASE environment variable to the TARGETDIR
+	//where we just installed Yukon
+	sName = "YUKON_BASE";
+	sKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
+	nResult = RegDBSetKeyValueEx(sKey, sName, REGDB_STRING, TARGETDIR, -1);
+	if(nResult != 0) then
+		MessageBox("Unable to set YUKON_BASE environment variable.", WARNING);
+	endif;
+	
 	//check to see if any yukon services were installed
 	if (FeatureIsItemSelected(MEDIA, "Yukon Server")) then	
 		//let the user know we're working, as this might take a little while
