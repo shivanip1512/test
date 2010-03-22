@@ -9,19 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.authentication.service.AuthType;
@@ -65,6 +65,7 @@ public class OperatorLoginController {
     private ContactDao contactDao;
     private RolePropertyDao rolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private TransactionOperations transactionTemplate;
     private YukonUserDao yukonUserDao;
     private YukonGroupDao yukonGroupDao;
 
@@ -95,11 +96,6 @@ public class OperatorLoginController {
         return "operator/login/login.jsp";
     }
 
-    /**
-     * @param energyCompanyId
-     * @param modelMap
-     * @return
-     */
     private List<LiteYukonGroup> setupLoginModelMap(int energyCompanyId, LiteYukonUser residentialUser,
                                                     ModelMap modelMap) {
         // Set supported variables
@@ -172,16 +168,13 @@ public class OperatorLoginController {
 
     // GENERATE PASSWORD
     @RequestMapping
-    public ModelAndView generatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public TextView generatePassword(HttpServletRequest request, HttpServletResponse response) throws IOException {
         
         response.setContentType("application/json");
-        JSONObject object = new JSONObject();
         
         // Generate password
         String generatedPassword = RandomStringUtils.randomAlphanumeric(6);
-        object.put("generatedPassword", generatedPassword);
-        
-        return new ModelAndView(new TextView(generatedPassword));
+        return new TextView(generatedPassword);
         
     }
     
@@ -208,63 +201,106 @@ public class OperatorLoginController {
      *
      */
     @Transactional
-    private void updateResidentialLogin(int accountId, int energyCompanyId, ChangeLoginBackingBean changeLoginBackingBean,
-                                         ModelMap modelMap, YukonUserContext userContext, LiteYukonUser residentialUser) {
+    private void updateResidentialLogin(int accountId,final int energyCompanyId,final ChangeLoginBackingBean changeLoginBackingBean,
+                                         ModelMap modelMap, YukonUserContext userContext, final LiteYukonUser residentialUser) {
 
-        updateResidentialCustomerGroup(energyCompanyId, changeLoginBackingBean, residentialUser);
-        updateLoginStatus(changeLoginBackingBean, residentialUser);
+
+        transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+
+                checkSuppliedResidentialLoginGroup(energyCompanyId,changeLoginBackingBean);
+                updateResidentialCustomerGroup(energyCompanyId, changeLoginBackingBean, residentialUser);
+
+                updateLoginStatus(changeLoginBackingBean, residentialUser);
+                
+                if (!changeLoginBackingBean.getUsername().equals(residentialUser.getUsername())) {
+                    yukonUserDao.changeUsername(residentialUser.getUserID(), changeLoginBackingBean.getUsername());
+                }
         
-        if (!changeLoginBackingBean.getUsername().equals(residentialUser.getUsername())) {
-            yukonUserDao.changeUsername(residentialUser.getUserID(), changeLoginBackingBean.getUsername());
-        }
+                if (!StringUtils.isBlank(changeLoginBackingBean.getPassword1()) &&
+                    !StringUtils.isBlank(changeLoginBackingBean.getPassword2())) {
+                    authenticationService.setPassword(residentialUser, changeLoginBackingBean.getPassword1());
+                }
+                
+                return null;
+        
+            }
 
-        if (!StringUtils.isBlank(changeLoginBackingBean.getPassword1()) &&
-            !StringUtils.isBlank(changeLoginBackingBean.getPassword2())) {
-            authenticationService.setPassword(residentialUser, changeLoginBackingBean.getPassword1());
+        });
+    }
+
+
+    /**
+     * @param energyCompanyId
+     * @param changeLoginBackingBean
+     */
+    private void checkSuppliedResidentialLoginGroup(final int energyCompanyId,
+                                                     final ChangeLoginBackingBean changeLoginBackingBean) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+        LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(changeLoginBackingBean.getCustomerLoginGroupName());
+        if (!ecResidentialGroups.contains(residentialLoginGroup)) {
+            throw new IllegalArgumentException();
         }
     }
 
+    
     /**
-     * 
+     *
      * This method creates a brand new residential login
      * 
+     * @param accountId - the account we are modifying
+     * @param energyCompanyId - the energy company
+     * @param changeLoginBackingBean - the backing bean for the request
+     * @param userContext - the userContext we are logged in with
+     * @param residentialUser - the residential user we are modifying
      */
-    @Transactional
-    private void createResidentialLogin(int accountId, int energyCompanyId, ChangeLoginBackingBean changeLoginBackingBean,
-                                        YukonUserContext userContext, LiteYukonUser residentialUser) {
+    private void createResidentialLogin(final int accountId,final int energyCompanyId,final ChangeLoginBackingBean changeLoginBackingBean,
+                                          final YukonUserContext userContext, LiteYukonUser residentialUser) {
 
-        // Build up the groups needed to create an account
-        List<LiteYukonGroup> groups = Lists.newArrayList();
-        LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
-        groups.add(defaultYukonGroup);
-        LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(changeLoginBackingBean.getCustomerLoginGroupName());
-        groups.add(residentialLoginGroup);
 
-        // Build up the user for creation
-        LiteYukonUser newUser = new LiteYukonUser();
-        newUser.setUsername(changeLoginBackingBean.getUsername());
-
-        if (changeLoginBackingBean.isLoginEnabled()) {
-            newUser.setStatus(UserUtils.STATUS_ENABLED);
-        } else {
-            newUser.setStatus(UserUtils.STATUS_DISABLED);
-        }
-
-        // Get the default authType
-        AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, userContext.getYukonUser());
-        newUser.setAuthType(authType);
-
-        String password = changeLoginBackingBean.getPassword1();
-        if (StringUtils.isBlank(password)) {
-            newUser.setAuthType(AuthType.NONE);
-        }
-        yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompanyId, groups);
-
-        // Update primaryContact to new loginId
-        LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
-        int newUserId = yukonUserDao.getLiteYukonUser(newUser.getUsername()).getUserID();
-        primaryContact.setLoginID(newUserId);
-        contactDao.saveContact(primaryContact);
+        transactionTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+        
+                // Build up the groups needed to create an account
+                List<LiteYukonGroup> groups = Lists.newArrayList();
+                LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
+                groups.add(defaultYukonGroup);
+                
+                checkSuppliedResidentialLoginGroup(energyCompanyId,changeLoginBackingBean);
+                LiteYukonGroup residentialLoginGroup = yukonGroupDao.getLiteYukonGroupByName(changeLoginBackingBean.getCustomerLoginGroupName());
+                groups.add(residentialLoginGroup);
+        
+                // Build up the user for creation
+                LiteYukonUser newUser = new LiteYukonUser();
+                newUser.setUsername(changeLoginBackingBean.getUsername());
+        
+                if (changeLoginBackingBean.isLoginEnabled()) {
+                    newUser.setStatus(UserUtils.STATUS_ENABLED);
+                } else {
+                    newUser.setStatus(UserUtils.STATUS_DISABLED);
+                }
+        
+                // Get the default authType
+                AuthType authType = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.DEFAULT_AUTH_TYPE, AuthType.class, userContext.getYukonUser());
+                newUser.setAuthType(authType);
+        
+                String password = changeLoginBackingBean.getPassword1();
+                if (StringUtils.isBlank(password)) {
+                    newUser.setAuthType(AuthType.NONE);
+                }
+                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompanyId, groups);
+        
+                // Update primaryContact to new loginId
+                LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
+                int newUserId = yukonUserDao.getLiteYukonUser(newUser.getUsername()).getUserID();
+                primaryContact.setLoginID(newUserId);
+                contactDao.saveContact(primaryContact);
+                
+                return null;
+        
+            }
+        });
     }
 
     private void updateLoginStatus(ChangeLoginBackingBean changeLoginBackingBean,
@@ -376,6 +412,11 @@ public class OperatorLoginController {
         this.starsDatabaseCache = starsDatabaseCache;
     }
 
+    @Autowired
+    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
+        this.transactionTemplate = transactionTemplate;
+    }
+    
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;

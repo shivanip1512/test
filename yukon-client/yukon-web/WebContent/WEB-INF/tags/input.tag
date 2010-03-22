@@ -7,6 +7,7 @@
 <%@ attribute name="disabled" required="false" type="java.lang.String"%>
 <%@ attribute name="size" required="false" type="java.lang.String"%>
 <%@ attribute name="maxlength" required="false" type="java.lang.String"%>
+<%@ attribute name="autocomplete" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="id"%>
 <%@ attribute name="onkeyup"%>
 <%@ attribute name="onblur"%>
@@ -21,7 +22,7 @@
     <c:set var="id" value="${path}"/>
 </c:if>
 
-<form:input path="${pageScope.path}" id="${pageScope.id}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" onblur="${pageScope.onblur}"/>
+<form:input path="${pageScope.path}" id="${pageScope.id}" disabled="${pageScope.disabled}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" onblur="${pageScope.onblur}"/>
 
 <c:if test="${status.error}">
 	<br>
