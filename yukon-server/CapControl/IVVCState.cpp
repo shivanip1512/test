@@ -177,3 +177,12 @@ bool IVVCState::getLtcAutoModeMsg() const
     return _showLtcAutoModeMsg;
 }
 
+void IVVCState::setNoLtcAttachedMsg(const bool flag)
+{
+    _showNoLtcAttachedMsg = flag;
+}
+
+bool IVVCState::getNoLtcAttachedMsg() const
+{
+    return _showNoLtcAttachedMsg;
+}

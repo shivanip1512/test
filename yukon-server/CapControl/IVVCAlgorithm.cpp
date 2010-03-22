@@ -37,25 +37,23 @@ void IVVCAlgorithm::setPointDataRequestFactory(const PointDataRequestFactoryPtr&
 void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning)
 {
     CtiTime timeNow;
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-
-    if ( ! isLtcInRemoteMode( subbus->getLtcId() ) )    // If we are in 'Auto' mode we don't want to run the algorithm.
+    if ((subbus->getLtcId() == 0) || !store->findLtcById(subbus->getLtcId()))
     {
-        if ( state->getLtcAutoModeMsg() )           // show message?
+        if ( state->getNoLtcAttachedMsg() )           // show message?
         {
-            state->setLtcAutoModeMsg(false);        // toggle flag to only show message once.
+            state->setNoLtcAttachedMsg(false);        // toggle flag to only show message once.
             state->setState(IVVCState::IVVC_WAIT);  // reset algorithm
 
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - LTC ID: " << subbus->getLtcId() << " is in Auto mode." << endl;
+            dout << CtiTime() << " - Configuration Error. No Ltc attached to subbus: " << subbus->getPaoName() << endl;
         }
 
         return;
     }
-
-    // show message once the next time we enter Auto mode.
-    state->setLtcAutoModeMsg(true);
-
+    //Show this message again next time it happens
+    state->setNoLtcAttachedMsg(true);
 
     if ( ! subbus->getDisableFlag() )
     {
@@ -70,7 +68,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         if (state->isFirstPass())
         {
             state->setFirstPass(false);
-            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
             for each (CtiCCCapBankPtr bank in store->getCapBanksByPaoIdAndType(subbus->getPaoId(),SubBus))
             {
@@ -104,7 +101,21 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 return;
             }
 
+            if ( ! isLtcInRemoteMode( subbus->getLtcId() ) )// If we are in 'Auto' mode we don't want to run the algorithm.
+            {
+                if ( state->getLtcAutoModeMsg() )// show message?
+                {
+                    state->setLtcAutoModeMsg(false);// toggle flag to only show message once.
+
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - LTC ID: " << subbus->getLtcId() << " is in Auto mode." << endl;
+                }
+
+                return;
+            }
+
             // toggle these flags so the log message prints again....
+            state->setLtcAutoModeMsg(true);
             state->setShowVarCheckMsg(true);
             state->setShowBusDisableMsg(true);
 

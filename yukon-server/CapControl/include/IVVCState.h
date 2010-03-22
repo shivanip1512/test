@@ -71,6 +71,9 @@ class IVVCState
         void setLtcAutoModeMsg(const bool flag);
         bool getLtcAutoModeMsg() const;
 
+        void setNoLtcAttachedMsg(const bool flag);
+        bool getNoLtcAttachedMsg() const;
+
         struct EstimatedData
         {
             bool            operated;
@@ -107,6 +110,7 @@ class IVVCState
         bool _showVarCheckFailMsg;
         bool _showSubbusDisableMsg;
         bool _showLtcAutoModeMsg;
+        bool _showNoLtcAttachedMsg;
 
         unsigned long _commsRetryCount;
 };

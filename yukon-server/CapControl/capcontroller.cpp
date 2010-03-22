@@ -623,9 +623,6 @@ void CtiCapController::controlLoop()
                             {
                                 currentSubstationBus->performDataOldAndFallBackNecessaryCheck();
 
-
-
-
                                 if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
                                 {
                                     if( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
@@ -888,7 +885,7 @@ void CtiCapController::controlLoop()
             catch (...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Execute Strategies choked! " << endl;
+                dout << CtiTime() << " - Exception while execute strategies " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
             rwnow = rwnow.now();
