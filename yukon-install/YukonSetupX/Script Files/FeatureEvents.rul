@@ -14,10 +14,6 @@ begin
 	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
 	sCMD = "-i notifserver.conf";
 	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
-	//Add this service to the YUKON GROUP so it shows up in TDC
-	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
-	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonNotificationServer"; 
-	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
 end;
 
 //---------------------------------------------------------------------------
@@ -109,11 +105,7 @@ begin
 	//Install as a service
 	sPathAndFile = TARGETDIR + "\\client\\bin\\wrapper.exe";
 	sCMD = "-i appserver.conf";
-	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT); 
-	//Add this service to the YUKON GROUP so it shows up in TDC
-	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
-	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonServiceMgr";
-	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
+	LaunchApplication(sPathAndFile, sCMD, "", SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
 end;
 
 //---------------------------------------------------------------------------
