@@ -80,7 +80,7 @@
 		<c:forEach var="subStation" items="${subStations}">
 	        <tr class="<ct:alternateRow odd="" even="altRow"/>">
 				<td>
-					<input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}"></input>
+					<input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}" />
 				    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true" style="text-decoration:none;">
                            <img class="rAlign editImg" src="${editInfoImage}"/>
