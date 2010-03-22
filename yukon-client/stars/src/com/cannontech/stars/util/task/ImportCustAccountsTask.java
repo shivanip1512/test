@@ -1124,7 +1124,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                         importLog = new PrintWriter(new FileWriter(logFile), true);
                         importLog.println("Error Occured");
                     } catch (IOException e1) {
-                        e1.printStackTrace();
+                        CTILogger.error(e1);
                         status = STATUS_ERROR;
                     }
                 }
