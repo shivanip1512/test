@@ -372,9 +372,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         ENABLE_CRT_SHUTDOWN_CHECK;
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Scanner);
-    CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+    CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
-    UCHAR checkCount = 0;
 
     // Initialize the connection to VanGogh....
     VanGoghConnection.doConnect(VANGOGHNEXUS, VanGoghMachine);
@@ -383,19 +382,17 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     do
     {
-        if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+        if(pointID!=0)
         {
-            if(pointID!=0)
+            CtiThreadMonitor::State next;
+            if((next = ThreadMonitor.getState()) != previous || 
+               CtiTime::now() > NextThreadMonitorReportTime)
             {
-                CtiThreadMonitor::State next;
-                LastThreadMonitorTime = LastThreadMonitorTime.now();
-                if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
-                {
-                    previous = next;
-                    checkCount = 0;
+                // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
+                previous = next;
+                NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
-                }
+                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
             }
         }
 
@@ -468,19 +465,17 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
     {
-        if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+        if(pointID!=0)
         {
-            if(pointID!=0)
+            CtiThreadMonitor::State next;
+            if((next = ThreadMonitor.getState()) != previous || 
+               CtiTime::now() > NextThreadMonitorReportTime)
             {
-                CtiThreadMonitor::State next;
-                LastThreadMonitorTime = LastThreadMonitorTime.now();
-                if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
-                {
-                    previous = next;
-                    checkCount = 0;
+                // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
+                previous = next;
+                NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                    VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
-                }
+                VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
             }
         }
 

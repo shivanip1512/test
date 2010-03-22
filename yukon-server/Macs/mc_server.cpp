@@ -87,9 +87,9 @@ void CtiMCServer::run()
         if( init() )
         {
             const long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Macs);
-            CtiTime LastThreadMonitorTime((unsigned long) 0);
+            CtiTime LastThreadMonitorTime, LastThreadMonitorReportTime;
             CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
-            const UCHAR MonitorReportRate = 3;
+            const UCHAR MonitorReportRate = 120;
             UCHAR checkCount = MonitorReportRate;
 
             /* Main Loop */
@@ -99,16 +99,17 @@ void CtiMCServer::run()
                 ResetBreakAlloc();
 
                 // Do thread monitor stuff
-                if( (LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60 )
+                if( (LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 2 )
                 {
                     if( threadMonitorPointId != 0 )
                     {
                         CtiThreadMonitor::State next;
                         LastThreadMonitorTime = LastThreadMonitorTime.now();
-                        if( (next = ThreadMonitor.getState()) != previous || checkCount++ >= MonitorReportRate )
+                        if( (next = ThreadMonitor.getState()) != previous || LastThreadMonitorTime > LastThreadMonitorReportTime )
                         {
                             previous = next;
                             checkCount = 0;
+                            LastThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(LastThreadMonitorTime, MonitorReportRate);
         
                             VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                         }

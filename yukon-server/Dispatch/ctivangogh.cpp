@@ -5724,10 +5724,10 @@ void CtiVanGogh::VGAppMonitorThread()
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
 
-    //on startup wait for 15 minutes!
-    for(int i=0;i<180 && !bGCtrlC;i++)
+    //on startup wait for 10 minutes!
+    for(int i=0;i<120 && !bGCtrlC;i++)
     {
-        //5*180 = 900 seconds = 15 minutes
+        //5*160 = 900 seconds = 15 minutes
         rwSleep(5000);//5 second sleep
 
         if(!(i%60) && pointID !=0)
@@ -5751,7 +5751,7 @@ void CtiVanGogh::VGAppMonitorThread()
         while(!bGCtrlC)
         {
             compareTime = CtiTime::now();
-            compareTime -= 900;//take away 15 minutes
+            compareTime -= 600;//take away 10 minutes
 
             for(pointListWalker = pointIDList.begin();pointListWalker!=pointIDList.end();pointListWalker++)
             {
@@ -5786,7 +5786,7 @@ void CtiVanGogh::VGAppMonitorThread()
                     {
                         CtiThreadMonitor::State next;
                         LastThreadMonitorTime = LastThreadMonitorTime.now();
-                        if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                        if((next = ThreadMonitor.getState()) != previous || checkCount++ >=2)
                         {
                             previous = next;
                             checkCount = 0;

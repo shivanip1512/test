@@ -86,7 +86,9 @@ void DispatchMsgHandlerThread(VOID *Arg)
     CtiTime         LastThreadMonitorTime;
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
-    UCHAR          checkCount = 0;
+
+    const UCHAR     MonitorReportRate = 60;
+    UCHAR           checkCount = MonitorReportRate;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
 
     {
@@ -261,13 +263,13 @@ void DispatchMsgHandlerThread(VOID *Arg)
             }
 
             //  Check thread watcher status
-            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 2)
             {
                 if(pointID!=0)
                 {
                     CtiThreadMonitor::State next;
                     LastThreadMonitorTime = LastThreadMonitorTime.now();
-                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >= MonitorReportRate)
                     {
                         previous = next;
                         checkCount = 0;

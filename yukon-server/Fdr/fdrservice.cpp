@@ -280,7 +280,7 @@ void CtiFDRService::OnStop( )
 void CtiFDRService::Run( )
 {
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
-    CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+    CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     UCHAR checkCount = 0;
 
@@ -307,23 +307,19 @@ void CtiFDRService::Run( )
 
         do
         {
-            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+            if(pointID!=0)
             {
-                if(pointID!=0)
+                CtiThreadMonitor::State next;
+                if((next = ThreadMonitor.getState()) != previous || 
+                   CtiTime::now() > NextThreadMonitorReportTime)
                 {
-                    CtiThreadMonitor::State next;
-                    LastThreadMonitorTime = LastThreadMonitorTime.now();
-                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
-                    {
-                        previous = next;
-                        checkCount = 0;
+                    // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
+                    previous = next;
+                    NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
 
-                        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
-                    }
+                    FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                 }
             }
-
-
         }
         while ( WAIT_TIMEOUT == WaitForSingleObject( iShutdown, 10000 ) );   // 10 seconds
 

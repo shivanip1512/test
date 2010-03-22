@@ -142,7 +142,7 @@ void CtiCalcLogicService::Run( )
     long pointID;
 
     ThreadMonitor.start(); //ecs 1/4/2005
-    CtiTime LastThreadMonitorTime = LastThreadMonitorTime.now();
+    CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous;
     UCHAR checkCount = 0;
 
@@ -185,25 +185,6 @@ void CtiCalcLogicService::Run( )
 
         while( !UserQuit )
         {
-            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
-            {
-                if(pointID!=0)
-                {
-                    CtiThreadMonitor::State next;
-                    LastThreadMonitorTime = LastThreadMonitorTime.now();
-                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
-                    {
-                        previous = next;
-                        checkCount = 0;
-
-                        if(_conxion)
-                        {
-                            _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
-                        }
-                    }
-                }
-            }
-
             try
             {
                 if( _conxion == NULL || (_conxion != NULL && _conxion->verifyConnection()) )
@@ -452,21 +433,19 @@ void CtiCalcLogicService::Run( )
             {
                 try
                 {
-                    if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+                    if(pointID!=0)
                     {
-                        if(pointID!=0)
+                        CtiThreadMonitor::State next;
+                        if((next = ThreadMonitor.getState()) != previous || 
+                           CtiTime::now() > NextThreadMonitorReportTime)
                         {
-                            CtiThreadMonitor::State next;
-                            LastThreadMonitorTime = LastThreadMonitorTime.now();
-                            if((next = ThreadMonitor.getState()) != previous || checkCount++ >=3)
+                            // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
+                            previous = next;
+                            NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
+        
+                            if(_conxion)
                             {
-                                previous = next;
-                                checkCount = 0;
-
-                                if(_conxion)
-                                {
-                                    _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
-                                }
+                                _conxion->WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                             }
                         }
                     }
