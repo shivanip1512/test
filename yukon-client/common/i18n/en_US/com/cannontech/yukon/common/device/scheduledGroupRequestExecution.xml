@@ -119,7 +119,7 @@
     	 <br>
 	     View the results of the most recent execution of this job.
 	     <br><br>
-	     Note: The most recent execution may still be in progress. It's progress will be displayed and updated on the results page.
+	     Note: The most recent execution may still be in progress. Its progress will be displayed and updated on the results page.
 	     <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.editScheduleButton">Edit</entry>
