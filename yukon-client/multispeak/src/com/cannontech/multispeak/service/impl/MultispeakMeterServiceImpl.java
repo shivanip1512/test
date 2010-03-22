@@ -997,7 +997,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
 
 	            // initally set route to first sub mapping
-	            deviceUpdateService.changeRoute(meterDevice, routes.get(0).getId());
+	            deviceUpdateService.changeRoute(meterDevice, routeIds.get(0));
 	            mspObjectDao.logMSPActivity(METER_ADD_STRING, "MeterNumber(" + meterNumber + ") - Route initially set to " + routeNames.get(0) + ", will run route discovery.", mspVendor.getCompanyName());
 	        
 	            // run route discovery
