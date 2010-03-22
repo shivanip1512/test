@@ -41,6 +41,51 @@ begin
 end;
 
 //-------------------------------------------------------
+// Helper function to determine if the user is attempting
+// an upgrade on a version that does not support it. 
+// Upgrades are only supported when the installed version
+// is 5.1.3 or higher.
+//-------------------------------------------------------
+export prototype BOOL IsUpgradeSupported();
+function BOOL IsUpgradeSupported()
+string sOldVersion, sTemp;
+number nV1, nV2, nV3;
+begin
+	sOldVersion = IFX_INSTALLED_VERSION;
+    //split version into three version components
+    StrSub(sTemp, sOldVersion, 0, 1);
+    StrToNum(nV1, sTemp);
+    StrSub(sTemp, sOldVersion, 2, 2);
+    StrToNum(nV2, sTemp);
+    StrSub(sTemp, sOldVersion, 5, 3);
+    StrToNum(nV3, sTemp);
+    //if version is prior to 5.1.3, upgrade is not supported
+    if(nV1 < 5) then
+    	//4.x.x or earlier
+    	return FALSE;
+    elseif(nV1 > 5) then
+    	//6.x.x or later
+    	return TRUE;
+    endif;
+    //if we didn't return above, version is 5.x.x
+    if(nV2 < 1) then
+    	//5.0.x
+    	return FALSE;
+    elseif(nV2 > 1) then
+    	//5.2.x or later
+    	return TRUE;
+    endif;
+    //if we didn't return above, version is 5.1.x
+    if(nV3 < 3) then
+    	//5.1.2 or earlier
+    	return FALSE;
+    else
+    	//5.1.3 or later
+    	return TRUE;
+    endif;    
+end;
+
+//-------------------------------------------------------
 // Helper function to check for any running Yukon 
 // services
 //-------------------------------------------------------

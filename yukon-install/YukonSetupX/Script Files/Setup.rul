@@ -248,16 +248,32 @@ end;
 //-----------------------------------------------------------------------------
 function OnUpdateUIBefore()
 number nResult;
-BOOL bOptYes, bOptNo;
-string sMasterConfig, sOldVersion;
+BOOL bOptYes, bOptNo, bOpt;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
 	
-	Dialog_Welcome:
-	Disable(BACKBUTTON);
 	//prettyfy the version number before displaying it
 	sOldVersion = CleanupInstalledVersionNum();
+	
+    //Check to see if upgrade-type install is supported.  This
+    //requires the currently installed version to be 5.1.3 or later.
+    //For earlier versions, you must uninstall the old and then
+    //install the new.
+	Dialog_VersionCheck:
+	Disable(BACKBUTTON);
+	if(!IsUpgradeSupported()) then
+		sMsg1 = "Version " + sOldVersion + " of the Yukon Application Suite is currently installed. "
+				+ "This version does not support the Upgrade install type.";
+		sMsg2 = "To complete the upgrade, please uninstall Yukon " + sOldVersion 
+				+ " and run this installer again.";
+		SdFinish("Install Type Not Supported", sMsg1, sMsg2, "", "", bOpt, bOpt);
+		abort;
+	endif;
+	
+	Dialog_Welcome:
+	Disable(BACKBUTTON);
 	nResult = SdWelcome("Yukon Application Suite",
 					    "Version " + sOldVersion + " of the Yukon Application Suite is"
 					    +"\ncurrently installed. This setup will update the"
