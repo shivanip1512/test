@@ -264,9 +264,9 @@ begin
 	Dialog_VersionCheck:
 	Disable(BACKBUTTON);
 	if(!IsUpgradeSupported()) then
-		sMsg1 = "Version " + sOldVersion + " of the Yukon Application Suite is currently installed. "
+		sMsg1 = "An older version of the Yukon Application Suite is currently installed. "
 				+ "This version does not support the Upgrade install type.";
-		sMsg2 = "To complete the upgrade, please uninstall Yukon " + sOldVersion 
+		sMsg2 = "To complete the upgrade, please uninstall the old version" 
 				+ " and run this installer again.";
 		SdFinish("Install Type Not Supported", sMsg1, sMsg2, "", "", bOpt, bOpt);
 		abort;
@@ -275,7 +275,7 @@ begin
 	Dialog_Welcome:
 	Disable(BACKBUTTON);
 	nResult = SdWelcome("Yukon Application Suite",
-					    "Version " + sOldVersion + " of the Yukon Application Suite is"
+					    "An older version of the Yukon Application Suite is"
 					    +"\ncurrently installed. This setup will update the"
 					    +"\npreviously installed features to version " + IFX_PRODUCT_VERSION 
 					    +".\nClick Next to continue.");
