@@ -45,6 +45,8 @@ import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.Ltc;
+import com.cannontech.yukon.cbc.LtcMessage;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
@@ -57,6 +59,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private Hashtable<Integer, SubBus> subBusMap = new Hashtable<Integer, SubBus>();
     private Hashtable<Integer, Feeder>  feederMap = new Hashtable<Integer, Feeder>();
     private Hashtable<Integer, CapBankDevice> capBankMap = new Hashtable<Integer, CapBankDevice> ();
+    private Hashtable<Integer, Ltc> ltcMap = new Hashtable<Integer, Ltc> ();
+    
     private HashMap<Integer, int[]> subToBankMap = new HashMap<Integer, int[]>();
     private CBCWebUpdatedObjectMap updatedObjMap = null;
     private Map<Integer, CCArea> cbcAreaMap = Collections.synchronizedMap(new HashMap<Integer, CCArea>());
@@ -130,6 +134,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         if( retObj == null ) retObj = feederMap.get(paoId);
         if( retObj == null ) retObj = capBankMap.get(paoId);
         if( retObj == null ) retObj = cbcAreaMap.get(paoId);
+        if( retObj == null ) retObj = ltcMap.get(paoId);
         if( retObj == null ) retObj = cbcSpecialAreaMap.get(paoId);
         
         return retObj;
@@ -668,6 +673,21 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
+    private void handleLtc(LtcMessage ltcMessage) {
+        List<Ltc> ltcs = ltcMessage.getLtcs();
+        
+        for (Ltc ltc : ltcs) {
+            Validate.notNull(ltc, "ltc can't be null");
+    
+            //remove the old ltc
+            final Integer ltcId = ltc.getCcId();
+            removeFromCacheMap(ltcMap, ltcId);
+            ltcMap.put(ltcId, ltc);
+            
+            getUpdatedObjMap().handleCBCChangeEvent(ltc);
+        }
+    }
+    
     private synchronized void handleDeleteItem(int deviceID) {
         if( isSubBus(deviceID) ) {
             handleDeletedSub( deviceID );
@@ -828,7 +848,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         	handleAreas((CCSubAreas) in);
         } else if (in instanceof CapControlCommand) {
             handleCBCCommand((CapControlCommand) in);
-        } 
+        } else if (in instanceof LtcMessage) {
+            handleLtc((LtcMessage)in);
+        }
     }
     
     public synchronized CCArea getCBCArea(int id) throws NotFoundException {
