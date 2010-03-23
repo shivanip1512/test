@@ -28,7 +28,7 @@ void LitePoint::setPointId(int pointId)
     _pointId = pointId;
 }
 
-int LitePoint::getPointId()
+int LitePoint::getPointId() const
 {
     return _pointId;
 }
@@ -38,7 +38,7 @@ void LitePoint::setPointType(CtiPointType_t pointType)
     _pointType = pointType;
 }
 
-CtiPointType_t LitePoint::getPointType()
+CtiPointType_t LitePoint::getPointType() const
 {
     return _pointType;
 }
@@ -58,7 +58,7 @@ void LitePoint::setPaoId(int paoId)
     _paoId = paoId;
 }
 
-int LitePoint::getPaoId()
+int LitePoint::getPaoId() const
 {
     return _paoId;
 }
@@ -68,7 +68,7 @@ void LitePoint::setPointOffset(int pointOffset)
     _pointOffset = pointOffset;
 }
 
-int LitePoint::getPointOffset()
+int LitePoint::getPointOffset() const
 {
     return _pointOffset;
 }

@@ -14,19 +14,19 @@ class IM_EX_CTIBASE LitePoint
         ~LitePoint();
 
         void setPointId(int pointId);
-        int getPointId();
+        int getPointId() const;
 
         void setPointType(CtiPointType_t pointType);
-        CtiPointType_t getPointType();
+        CtiPointType_t getPointType() const;
 
         void setPointName(const std::string& pointName);
         std::string getPointName() const;
 
         void setPaoId(int paoId);
-        int getPaoId();
+        int getPaoId() const;
 
         void setPointOffset(int pointOffset);
-        int getPointOffset();
+        int getPointOffset() const;
 
         LitePoint& operator=(const LitePoint& right);
 

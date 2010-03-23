@@ -25,6 +25,7 @@
 #include "ccsparea.h"
 #include "ccstate.h"
 //#include "rwutil.h"
+#include "LoadTapChanger.h"
 
 typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
 typedef std::vector<CtiCCAreaPtr> CtiCCArea_vec;
@@ -441,6 +442,31 @@ private:
 
     ULONG _msgInfoBitMask;
     CtiCCSubstationBus_vec* _ccSubstationBuses;
+};
+
+
+
+class LtcMessage : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( LtcMessage )
+
+public:
+    LtcMessage();
+    LtcMessage(const LtcMessage& ltcMessage);
+    virtual ~LtcMessage();
+
+    virtual CtiMessage* replicateMessage() const;
+
+    void restoreGuts( RWvistream& );
+    void saveGuts( RWvostream&) const;
+
+    LtcMessage& operator=(const LtcMessage& right);
+
+    void insertLtc(LoadTapChangerPtr ltcPtr);
+
+private:
+
+    std::vector<LoadTapChangerPtr> _ltcList;
 };
 
 class CtiCCCapBankStatesMsg : public CtiCCMessage

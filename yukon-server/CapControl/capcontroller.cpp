@@ -283,7 +283,7 @@ void CtiCapController::stop()
 
 void CtiCapController::messageSender()
 {
-    
+
     CtiTime rwnow;
     CtiTime announceTime((unsigned long) 0);
     CtiTime tickleTime((unsigned long) 0);
@@ -432,7 +432,7 @@ void CtiCapController::messageSender()
     };
 
     ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl messageSender", CtiThreadRegData::LogOut ) );
-    
+
 }
 
 void CtiCapController::processNewMessage(CtiMessage* message)
@@ -601,7 +601,7 @@ void CtiCapController::controlLoop()
                     areaChanges.clear();
                     stationChanges.clear();
                     SubBusMap::iterator busIter = store->getPAOSubMap()->begin();
-                    for ( ;  !store->getStoreRecentlyReset() && busIter != store->getPAOSubMap()->end() ; busIter++)
+                    for ( ;busIter != store->getPAOSubMap()->end(); busIter++)
                     {
                         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
                         if (store->getStoreRecentlyReset())
@@ -625,25 +625,28 @@ void CtiCapController::controlLoop()
 
                                 if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
                                 {
-                                    if( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
+                                    if (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder)
+                                    {
                                         currentSubstationBus->analyzeMultiVoltBus1(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                    }
                                     else
+                                    {
                                         currentSubstationBus->analyzeMultiVoltBus(currentDateTime, pointChanges, ccEvents, pilMessages);
-
+                                    }
                                 }
                                 else if (currentSubstationBus->isBusAnalysisNeeded(currentDateTime))
                                 {
-                                    if( currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getWaitToFinishRegularControlFlag())
+                                    if (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getWaitToFinishRegularControlFlag())
                                     {
                                         try
                                         {
-                                            if( currentSubstationBus->isAlreadyControlled() ||
-                                                currentSubstationBus->isPastMaxConfirmTime(currentDateTime) )
+                                            if (currentSubstationBus->isAlreadyControlled() ||
+                                                currentSubstationBus->isPastMaxConfirmTime(currentDateTime))
                                             {
-                                                if( (currentSubstationBus->getStrategy()->getControlSendRetries() > 0 ||
+                                                if ((currentSubstationBus->getStrategy()->getControlSendRetries() > 0 ||
                                                      currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
                                                     !currentSubstationBus->isAlreadyControlled() &&
-                                                    currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages) )
+                                                     currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages))
                                                 {
                                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                                 }
@@ -653,7 +656,7 @@ void CtiCapController::controlLoop()
                                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                                 }
                                             }
-                                            else if( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
+                                            else if (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder)
                                             {
                                                 checkBusForNeededControl(currentArea,currentStation, currentSubstationBus, currentDateTime,pointChanges, ccEvents, pilMessages);
                                             }
@@ -668,7 +671,7 @@ void CtiCapController::controlLoop()
                                     {
                                         analyzeVerificationBus(currentSubstationBus, currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
                                     }
-                                    else if( currentSubstationBus->isVarCheckNeeded(currentDateTime) )
+                                    else if (currentSubstationBus->isVarCheckNeeded(currentDateTime))
                                     {//not recently controlled and var check needed
                                         checkBusForNeededControl(currentArea,currentStation, currentSubstationBus, currentDateTime,pointChanges, ccEvents, pilMessages);
                                     }
@@ -692,7 +695,7 @@ void CtiCapController::controlLoop()
                                 try
                                 {
                                     //accumulate all buses with any changes into msg for all clients
-                                    if( currentSubstationBus->getBusUpdatedFlag())
+                                    if (currentSubstationBus->getBusUpdatedFlag())
                                     {
                                         currentStation->checkAndUpdateRecentlyControlledFlag();
                                         if (currentStation->getStationUpdatedFlag())
@@ -888,6 +891,38 @@ void CtiCapController::controlLoop()
                 dout << CtiTime() << " - Exception while execute strategies " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
+            /////
+            // Send LTC's with changes.
+            try
+            {
+                LtcMap* ltcMap = store->getLtcMap();
+                LtcMessage* ltcMessage = NULL;
+
+                for each (const std::pair<long,LoadTapChangerPtr> ltcPair in *ltcMap)
+                {
+                    LoadTapChangerPtr ltc = ltcPair.second;
+                    if (ltc->isUpdated())
+                    {
+                        if (ltcMessage == NULL)
+                        {
+                            ltcMessage = new LtcMessage();
+                        }
+                        ltc->setUpdated(false);
+                        ltcMessage->insertLtc(ltc);
+                    }
+                }
+
+                if (ltcMessage != NULL)
+                {
+                    getOutClientMsgQueueHandle().write(ltcMessage);
+                }
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Exception while execute strategies " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
             rwnow = rwnow.now();
             if(rwnow.seconds() > tickleTime.seconds())
             {
@@ -902,11 +937,11 @@ void CtiCapController::controlLoop()
                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl controlLoop", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
             }
 
-            
+
             if(pointID!=0)
             {
                 CtiThreadMonitor::State next;
-                if((next = ThreadMonitor.getState()) != previous || 
+                if((next = ThreadMonitor.getState()) != previous ||
                    CtiTime::now() > NextThreadMonitorReportTime)
                 {
                     // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point

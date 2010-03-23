@@ -788,6 +788,73 @@ ULONG CtiCCSubstationBusMsg::SubBusAdded     = 0x00000004;
 ULONG CtiCCSubstationBusMsg::SubBusModified  = 0x00000008;
 
 
+
+/////////////////
+// LtcMessage
+RWDEFINE_COLLECTABLE( LtcMessage, CTILTC_MSG_ID )
+
+LtcMessage::LtcMessage() : CtiCCMessage("LtcMessage")
+{
+
+}
+
+LtcMessage::LtcMessage(const LtcMessage& ltcMessage) : CtiCCMessage("LtcMessage")
+{
+    operator=(ltcMessage);
+}
+
+LtcMessage::~LtcMessage()
+{
+    if (_ltcList.size() > 0)
+    {
+        //Do not delete. The store owns these ltc's
+        _ltcList.clear();
+    }
+}
+
+CtiMessage* LtcMessage::replicateMessage() const
+{
+    return new LtcMessage(*this);
+}
+
+void LtcMessage::restoreGuts(RWvistream& istrm)
+{
+    //Should never be called
+}
+
+void LtcMessage::saveGuts(RWvostream& ostrm) const
+{
+    CtiCCMessage::saveGuts(ostrm);
+
+    ostrm << _ltcList;
+}
+
+LtcMessage& LtcMessage::operator=(const LtcMessage& right)
+{
+    if( this != &right )
+    {
+        CtiCCMessage::operator=(right);
+
+        if (_ltcList.size() > 0)
+        {
+            delete_container(_ltcList);
+            _ltcList.clear();
+        }
+
+        for each(LoadTapChangerPtr ltcPtr in right._ltcList)
+        {
+            _ltcList.push_back(new LoadTapChanger(*ltcPtr));
+        }
+    }
+
+    return *this;
+}
+
+void LtcMessage::insertLtc(LoadTapChangerPtr ltcPtr)
+{
+    _ltcList.push_back(ltcPtr);
+}
+
 /*===========================================================================
     CtiCCCapBankStatesMsg
 ===========================================================================*/

@@ -4,13 +4,17 @@
 #include "yukon.h"
 #include <map>
 #include <string>
+#include <rw/collect.h>
 
 #include "LitePoint.h"
 #include "PointValueHolder.h"
 #include "CapControlPao.h"
 #include "UpdatablePao.h"
 
-class LoadTapChanger : public CapControlPao, public UpdatablePao
+class LoadTapChanger;
+typedef LoadTapChanger* LoadTapChangerPtr;
+
+class LoadTapChanger : public RWCollectable, public CapControlPao, public UpdatablePao
 {
     private:
         LitePoint _ltcVoltagePoint;
@@ -19,11 +23,17 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
         LitePoint _autoRemotePoint;
         LitePoint _tapPositionPoint;
 
+        bool _updated;
+
         PointValueHolder _pointValues;
 
     public:
+
+        RWDECLARE_COLLECTABLE( LoadTapChanger )
+
         LoadTapChanger();
         LoadTapChanger(RWDBReader& rdr);
+        LoadTapChanger(const LoadTapChanger& ltc);
 
         PointValueHolder& getPointValueHolder();
 
@@ -32,6 +42,9 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
 
         //From UpdatablePao Interface
         virtual void handlePointData(CtiPointDataMsg* message);
+
+        bool isUpdated();
+        void setUpdated(bool updated);
 
         void setLtcVoltagePoint(const LitePoint& point);
         const LitePoint& getLtcVoltagePoint();
@@ -49,6 +62,8 @@ class LoadTapChanger : public CapControlPao, public UpdatablePao
         const LitePoint& getTapPosition();
 
         void getRegistrationPoints(std::set<long>& regPoints);
-};
 
-typedef LoadTapChanger* LoadTapChangerPtr;
+        void saveGuts(RWvostream& ostrm) const;
+
+        LoadTapChanger& operator=(const LoadTapChanger& right);
+};
