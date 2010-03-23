@@ -12,12 +12,19 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 public interface InventoryDao {
 
     /**
-     * Method to get a list of thermostats based on an account id
+     * Method to get a list of thermostats based on an account
      * @param account - Account to get stats for
      * @return List of thermostats for account
      */
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account);
 
+    /**
+     * Method to get a list of thermostats based on an account id
+     * @param accountId - Account Id to get stats for
+     * @return List of thermostats for account
+     */
+    public List<Thermostat> getThermostatsByAccountId(int accountId);
+    
     public List<HardwareSummary> getAllHardwareSummaryForAccount(int accountId);
     
     public HardwareSummary findHardwareSummaryById(int inventoryId);

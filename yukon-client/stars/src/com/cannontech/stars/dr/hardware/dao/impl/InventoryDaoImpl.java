@@ -69,9 +69,15 @@ public class InventoryDaoImpl implements InventoryDao {
 
     @Override
     public List<Thermostat> getThermostatsByAccount(CustomerAccount account) {
-        int accountId = account.getAccountId();
+    	
+    	int accountId = account.getAccountId();
+    	return getThermostatsByAccountId(accountId);
+    }
+    
+    @Override
+    public List<Thermostat> getThermostatsByAccountId(int accountId) {
         String thermostatTypes = SqlStatementBuilder.convertToSqlLikeList(THERMOSTAT_TYPES);        
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(account);
+        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
         StringBuilder sql = new StringBuilder("SELECT ib.*, lmhb.* ");
         sql.append(" FROM InventoryBase ib, LMHardwareBase lmhb ");
         sql.append(" WHERE ib.accountid = ? ");

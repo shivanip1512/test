@@ -3,23 +3,5 @@
 <properties>
 
     <entry key="yukon.web.modules.operator.moduleName">Operator</entry>
-
-    <entry key="yukon.web.modules.operator.accountAction.operatorTempMenu">-- OPERATOR TEMP MENU --</entry>
     
-    <entry key="yukon.web.modules.operator.accountAction.accountEdit">Account</entry>
-    <entry key="yukon.web.modules.operator.accountAction.contacts">Contacts</entry>
-    <entry key="yukon.web.modules.operator.accountAction.residence">Residence</entry>
-    <entry key="yukon.web.modules.operator.accountAction.callTracking">Call Tracking</entry>
-    <entry key="yukon.web.modules.operator.accountAction.createCall">Create Call</entry>
-    <entry key="yukon.web.modules.operator.accountAction.programs">Programs</entry>
-    <entry key="yukon.web.modules.operator.accountAction.controlHistory">Control History</entry>
-    <entry key="yukon.web.modules.operator.accountAction.enrollment">Enrollment</entry>
-    <entry key="yukon.web.modules.operator.accountAction.optOut">Opt Out</entry>
-    <entry key="yukon.web.modules.operator.accountAction.appliances">Appliances</entry>
-    <entry key="yukon.web.modules.operator.accountAction.hardware">Hardware</entry>
-    <entry key="yukon.web.modules.operator.accountAction.serviceRequest">Service Request</entry>
-    <entry key="yukon.web.modules.operator.accountAction.changeLogin">Change Login</entry>
-    <entry key="yukon.web.modules.operator.accountAction.accountLog">Account Log</entry>
-    <entry key="yukon.web.modules.operator.accountAction.faq">FAQ</entry>
-
 </properties>

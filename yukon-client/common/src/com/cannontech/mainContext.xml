@@ -184,6 +184,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/program</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/appliances</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/serviceRequest</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/thermostat</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/lmMappings</value>
                <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                <value>classpath:com/cannontech/yukon/web/modules/trending</value>
