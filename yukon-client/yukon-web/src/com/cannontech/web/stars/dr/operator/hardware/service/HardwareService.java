@@ -6,9 +6,9 @@ import java.util.List;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
+import com.google.common.collect.ListMultimap;
 
 public interface HardwareService {
 
@@ -17,7 +17,7 @@ public interface HardwareService {
      * @param inventoryId
      * @return HardwareDto
      */
-    public HardwareDto getHardwareDto(int inventoryId, YukonUserContext userContext);
+    public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId);
 
     /**
      * Updates hardware and returns true if the state of the hardware changed
@@ -54,5 +54,13 @@ public interface HardwareService {
      * @return List<HardwareHistory>
      */
     public List<HardwareHistory> getHardwareHistory(int inventoryId);
+
+    /**
+     * Retrieves the hardware for account in a list map as either a meter, thermostat or switch.
+     * @param accountId
+     * @param energyCompanyId
+     * @return ListMultimap<String, HardwareDto>
+     */
+    public ListMultimap<String, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId);
 
 }

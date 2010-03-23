@@ -42,14 +42,17 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.type.DateType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.util.JsonView;
+import com.google.common.collect.ListMultimap;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class OperatorHardwareController {
     public StarsDatabaseCache starsDatabaseCache;
     private HardwareService hardwareService;
@@ -63,9 +66,18 @@ public class OperatorHardwareController {
     /* HARDWARE LIST */
     @RequestMapping(value = "/operator/hardware/hardwareList")
     public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment,
-                               int accountId) throws ServletRequestBindingException {
+                               int accountId, int energyCompanyId) throws ServletRequestBindingException {
         
-        setupHardwareInfoModelMap(accountInfoFragment, accountId, null, modelMap, userContext);
+        ListMultimap<String, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountId, energyCompanyId);
+        
+        modelMap.addAttribute("switches", hardwareMap.get("switches"));
+        modelMap.addAttribute("meters", hardwareMap.get("meters"));
+        modelMap.addAttribute("thermostats", hardwareMap.get("thermostats"));
+        
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        modelMap.addAttribute("accountId", accountId);
+        modelMap.addAttribute("energyCompanyId", energyCompanyId);
+        
         return "operator/hardware/hardwareList.jsp";
     }
     
@@ -74,8 +86,9 @@ public class OperatorHardwareController {
                                int energyCompanyId,
                                int accountId,
                                int inventoryId) {
-        HardwareDto hardwareDto = hardwareService.getHardwareDto(inventoryId, userContext);
+        HardwareDto hardwareDto = hardwareService.getHardwareDto(inventoryId, energyCompanyId);
         modelMap.addAttribute("hardwareDto", hardwareDto);
+        modelMap.addAttribute("deviceName", hardwareDto.getDeviceName());
         
         /* Setup HardwareInfo ModelMap */
         setupHardwareInfoModelMap(accountInfoFragment, accountId, inventoryId, modelMap, userContext);
@@ -93,6 +106,8 @@ public class OperatorHardwareController {
                                  int energyCompanyId,
                                  int accountId,
                                  int inventoryId) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         boolean statusChange = false;
         
@@ -133,6 +148,8 @@ public class OperatorHardwareController {
                                  int accountId, 
                                  int inventoryId, 
                                  String deleteOption) throws Exception {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");

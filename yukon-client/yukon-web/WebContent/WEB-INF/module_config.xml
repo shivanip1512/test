@@ -985,6 +985,7 @@
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
 		    	<page name="hardwareList" type="DETAIL_CHILD_WITH_NAVIGATION">
+                    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
                     <menu>account</menu>
                     <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
@@ -992,7 +993,7 @@
                         <page name="hardwareEdit" type="DETAIL_CHILD">
                             <menu>account</menu>
                             <link>/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                            <labelArgument>${accountNumber}</labelArgument>
+                            <labelArgument>${deviceName}</labelArgument>
                         </page>
                         <page name="thermostatSelect" type="DETAIL_CHILD">
 				    		<menu>account</menu>

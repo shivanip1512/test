@@ -28,15 +28,17 @@
 	<c:if test="${not empty pageScope.logoKey}">
     	<cti:logo key="${pageScope.logoKey}"/>
     </c:if>
-    <c:choose>
-	    <c:when test="${not empty pageScope.labelKey}">
-	        <cti:msg key="${pageScope.labelKey}" />
-	    </c:when>
-	    <c:when test="${not empty pageScope.labelText}">
-	    	${fn:escapeXml(pageScope.labelText)}
-	    </c:when>
-	    <c:otherwise>
-	    	<%-- no label --%>
-	    </c:otherwise>
-    </c:choose>
+    <span>
+        <c:choose>
+    	    <c:when test="${not empty pageScope.labelKey}">
+    	        <cti:msg key="${pageScope.labelKey}" />
+    	    </c:when>
+    	    <c:when test="${not empty pageScope.labelText}">
+    	    	${fn:escapeXml(pageScope.labelText)}
+    	    </c:when>
+    	    <c:otherwise>
+    	    	<%-- no label --%>
+    	    </c:otherwise>
+        </c:choose>
+    </span>
 </a>

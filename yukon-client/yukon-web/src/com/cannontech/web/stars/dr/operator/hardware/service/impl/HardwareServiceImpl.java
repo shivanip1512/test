@@ -52,9 +52,10 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class HardwareServiceImpl implements HardwareService {
@@ -71,44 +72,21 @@ public class HardwareServiceImpl implements HardwareService {
     private CustomerAccountDao customerAccountDao;
     private DeviceCreationService deviceCreationService;
     private DBPersistentDao dbPersistentDao;
-    private StarsDatabaseCache starsDatabaseCache;
     private StarsSearchDao starsSearchDao;
+    private StarsDatabaseCache starsDatabaseCache;
 
     @Override
-    public HardwareDto getHardwareDto(int inventoryId, YukonUserContext userContext) {
+    public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId) {
         HardwareDto hardwareDto = new HardwareDto();
+        hardwareDto.setInventoryId(inventoryId);
+        hardwareDto.setEnergyCompanyId(energyCompanyId);
         
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        hardwareDto.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         
+        /* Set Hardware Basics */
         InventoryBase inventoryBase = inventoryBaseDao.getById(inventoryId);
-        try {
-            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryBase.getInventoryId());
-            /* Must be a switch or thermostat. */
-            YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
-            hardwareDto.setDeviceType(deviceTypeEntry.getEntryText());
-            hardwareDto.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
-            hardwareDto.setDeviceName(lmHardwareBase.getManufacturerSerialNumber());
-            hardwareDto.setRouteId(lmHardwareBase.getRouteId());
-            
-            /* Two Way LCR's */
-            if (InventoryUtils.isTwoWayLcr(deviceTypeEntry.getEntryID())) {
-                hardwareDto.setIsTwoWayLcr(true);
-                if(inventoryBase.getDeviceId() > 0){
-                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(inventoryBase.getDeviceId());
-                    hardwareDto.setTwoWayDeviceName(pao.getPaoName());
-                } else {
-                    hardwareDto.setTwoWayDeviceName("(none chosen)");
-                }
-            }
-        } catch (NotFoundException e) {
-            /* Must be an MCT */
-            hardwareDto.setIsMct(true);
-            LiteYukonPAObject pao =  paoDao.getLiteYukonPAO(inventoryBase.getDeviceId());
-            PaoType deviceType = PaoType.getForId(pao.getType());
-            hardwareDto.setDeviceType(deviceType.getPaoTypeName());
-            hardwareDto.setDeviceName(pao.getPaoName());
-        }
+        int categoryId = inventoryBase.getCategoryId();
+        YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(categoryId);
         
         hardwareDto.setDeviceId(inventoryBase.getDeviceId());
         hardwareDto.setDeviceLabel(inventoryBase.getDeviceLabel());
@@ -156,7 +134,78 @@ public class HardwareServiceImpl implements HardwareService {
             }
         }
         hardwareDto.setInstallNotes(installNotes);
+        
+        /* Set Hardware Details based on type(Switch, Thermostat, or MCT */
+        try {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryBase.getInventoryId());
+            /* Must be a switch or thermostat. */
+            YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
+            hardwareDto.setDeviceType(deviceTypeEntry.getEntryText());
+            hardwareDto.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
+            hardwareDto.setDeviceName(lmHardwareBase.getManufacturerSerialNumber());
+            hardwareDto.setRouteId(lmHardwareBase.getRouteId());
+            
+            boolean isThermostat = isThermostat(categoryId, lmHardwareBase.getLMHarewareTypeId());
+            hardwareDto.setIsThermostat(isThermostat);
+            
+            /* Two Way LCR's */
+            if (!hardwareDto.getIsThermostat() && InventoryUtils.isTwoWayLcr(deviceTypeEntry.getEntryID())) {
+                hardwareDto.setIsTwoWayLcr(true);
+                if(inventoryBase.getDeviceId() > 0){
+                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(inventoryBase.getDeviceId());
+                    hardwareDto.setTwoWayDeviceName(pao.getPaoName());
+                } else {
+                    hardwareDto.setTwoWayDeviceName("(none chosen)");
+                }
+            }
+        } catch (NotFoundException e) {
+            /* Not a thermostat or switch */
+            if(categoryEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT) {
+                /* Hardware is an MCT */
+                hardwareDto.setIsMct(true);
+                
+                if(inventoryBase.getDeviceId() > 0) {
+                    /* The device id has been set to a real MCT. */
+                    LiteYukonPAObject pao =  paoDao.getLiteYukonPAO(inventoryBase.getDeviceId());
+                    PaoType deviceType = PaoType.getForId(pao.getType());
+                    hardwareDto.setDeviceType(deviceType.getPaoTypeName());
+                    hardwareDto.setDeviceName(pao.getPaoName());
+                } else {
+                    /* Not attached to a real MCT yet. Use label for name if you can */
+                    /* and use the MCT list enty of the energy company as the device type. */
+                    YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
+                    hardwareDto.setDeviceType(mctDeviceType.getEntryText());
+                    if(StringUtils.isNotBlank(inventoryBase.getDeviceLabel())){
+                        hardwareDto.setDeviceName(inventoryBase.getDeviceLabel());
+                    } else {
+                        hardwareDto.setDeviceName(CtiUtilities.STRING_NONE);
+                    }
+                }
+            } else {
+                /* This is not a device we know about, maybe we should throw something here. */
+            }
+        }
+        
         return hardwareDto;
+    }
+
+    @Override
+    public ListMultimap<String, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId) {
+        ListMultimap<String, HardwareDto> hardwareMap = ArrayListMultimap.create();
+        
+        List<Integer> inventoryIds = inventoryBaseDao.getInventoryIdsByAccountId(accountId);
+        for(int inventoryId : inventoryIds) {
+            HardwareDto hardwareDto = getHardwareDto(inventoryId, energyCompanyId);
+            if(hardwareDto.getIsMct()) {
+                hardwareMap.put("meters", hardwareDto);
+            } else if (hardwareDto.getIsThermostat()) {
+                hardwareMap.put("thermostats", hardwareDto);
+            } else {
+                hardwareMap.put("switches", hardwareDto);
+            }
+        }
+        
+        return hardwareMap;
     }
     
     @Override
@@ -287,6 +336,24 @@ public class HardwareServiceImpl implements HardwareService {
     }
     
     /* HELPERS */
+    private boolean isThermostat(int categoryId, int lmHarewareTypeId) {
+        /* There must be a better way to do this */
+        YukonListEntry invCatEntry = yukonListDao.getYukonListEntry(categoryId);
+        YukonListEntry devTypeEntry = yukonListDao.getYukonListEntry(lmHarewareTypeId);
+        
+        if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC &&
+            (devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
+            devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT ||
+            devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP ||
+            devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO)) {
+            return true;
+        } else if (invCatEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC &&
+            devTypeEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     
     /**
      * Populates InventoryBase with update fields of the HardwareDto object.
@@ -430,12 +497,12 @@ public class HardwareServiceImpl implements HardwareService {
     }
     
     @Autowired
-    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
-        this.starsDatabaseCache = starsDatabaseCache;
+    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
+        this.starsSearchDao = starsSearchDao;
     }
     
     @Autowired
-    public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
-        this.starsSearchDao = starsSearchDao;
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 }

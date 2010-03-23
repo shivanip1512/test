@@ -80,8 +80,11 @@ public class LabeledImageTag extends ImageTag {
                 out.write("\"");
             }
             out.write("> ");
+            
+            out.write("<span>");
             out.write(labelText);
-
+            out.write("</span>");
+            
             if (StringUtils.isNotBlank(href)) {
                 out.write("</a>");
             }

@@ -3,7 +3,7 @@
 <properties>
 
    <!-- residence -->
-    <entry key="yukon.web.modules.operator.residence.pageName">Customer Residence</entry>
+    <entry key="yukon.web.modules.operator.residence.pageName">Residence</entry>
     <entry key="yukon.web.modules.operator.residence.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.residence.customerResidenceSection.title">Residence Information</entry>
     <entry key="yukon.web.modules.operator.residence.residenceType">Residence Type</entry>

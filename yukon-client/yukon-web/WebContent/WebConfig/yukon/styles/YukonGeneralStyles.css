@@ -564,7 +564,8 @@ div.triangleContainer .triangleContainer_titleBar .controls {
 
 div.boxContainer .boxContainer_titleBar,
 table.boxContainer td.boxContainer_titleBar,
-div.pagedBox .title, div.pagedBox .footer {
+div.pagedBox .title, div.pagedBox .footer,
+div.boxContainerFooter .footer {
 	background-color: #F7F7F7;
 	border: 1px solid #BBBBBB;
 	padding: .25em .5em; 
@@ -574,7 +575,8 @@ div.pagedBox .title, div.pagedBox .footer {
 	text-align: left;
 }
 
-div.pagedBox .footer {
+div.pagedBox .footer,
+div.boxContainerFooter .footer{
 	border-top: none;
 }
 
@@ -887,6 +889,15 @@ a.simpleLink, span.simpleLink a {
     color: black;
 }
 
+span.footerLink span {
+    font-size:12px;
+}
+
+span.footerLink span,
+a.simpleLink span {
+	vertical-align: middle;
+}
+
 a.imgLink {
     text-decoration: none;
 }
@@ -1056,4 +1067,8 @@ div.historyContainer {
 
 input.calendarInput {
     width:70px;
+}
+
+table.fourColumnTable td {
+    width: 25%;
 }

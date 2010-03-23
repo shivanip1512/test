@@ -172,7 +172,7 @@ img.graycssicon,input.graycssicon {
 }
 
 #MainContainer.StandardWithNavLayout  #Content {
-    margin-left: 170px; /*width of left column*/
+    margin-left: 150px; /*width of left column*/
     border-left: 1px solid #ccc;
     padding: 8px 8px 8px 16px;
     min-height: 600px;
@@ -184,7 +184,7 @@ img.graycssicon,input.graycssicon {
 
 #MainContainer.StandardWithNavLayout #LeftColumn {
     float: left;
-    width: 170px; /* Width of left column minus its padding */
+    width: 150px; /* Width of left column minus its padding */
     margin-left: -100%;
 }
 
@@ -215,7 +215,7 @@ img.graycssicon,input.graycssicon {
     padding: 3px 1px 3px 8px;
     display: block;
     color: black;
-    font-size: 95%;
+    font-size: 80%;
     text-decoration: none;
 }
 

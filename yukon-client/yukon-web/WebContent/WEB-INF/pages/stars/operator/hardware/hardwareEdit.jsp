@@ -111,7 +111,9 @@
             <br>
             <input type="radio" name="deleteOption" value="delete"><span class="radioLabel"><cti:msg2 key=".delete.option2"/></span>
             <br><br>
-            <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
+            </cti:checkRolesAndProperties>
             <input type="button" style="width:80px;" onclick="hideDeletePopup()" value="<cti:msg2 key=".delete.cancelButton"/>"/>
         </form>
     </i:simplePopup>
@@ -303,9 +305,13 @@
         <br>
         
         <br>
-        <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+            <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+        </cti:checkRolesAndProperties>
         <tags:reset/>
-        <input type="button" style="width:80px;" onclick="showDeletePopup()" value="<cti:msg2 key=".delete.deleteButton"/>"/>
+        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+            <input type="button" style="width:80px;" onclick="showDeletePopup()" value="<cti:msg2 key=".delete.deleteButton"/>"/>
+        </cti:checkRolesAndProperties>
     </form:form>
     
 </cti:standardPage>

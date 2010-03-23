@@ -29,6 +29,7 @@ public class HardwareDto {
     private String deviceName;
     private boolean isMct;
     private int energyCompanyId;
+    private boolean isThermostat;
     
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -216,5 +217,13 @@ public class HardwareDto {
     
     public int getEnergyCompanyId() {
         return energyCompanyId;
+    }
+
+    public void setIsThermostat(boolean isThermostat) {
+        this.isThermostat = isThermostat;
+    }
+    
+    public boolean getIsThermostat() {
+        return isThermostat;
     }
 }

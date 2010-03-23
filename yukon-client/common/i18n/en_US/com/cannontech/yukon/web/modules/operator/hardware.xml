@@ -4,9 +4,73 @@
 
     <!-- hardwareList -->
     <entry key="yukon.web.modules.operator.hardwareList.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.pageDescription">{0}</entry>
+    
+    <!-- Action Images -->
+    <entry key="yukon.web.modules.operator.hardwareList.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.editConfig.hoverUrl">/WebConfig/yukon/Icons/cog_edit_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.editConfig.hoverText">Edit Configuration</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.editSchedule.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.editSchedule.hoverUrl">/WebConfig/yukon/Icons/calendar_edit_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.editSchedule.hoverText">Edit Schedule</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareList.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.manual.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.manual.hoverText">Manual Adjustment</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.commander.imageUrl">/WebConfig/yukon/Icons/commander.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.commander.hoverUrl">/WebConfig/yukon/Icons/commander_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.commander.hoverText">Commander</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverText">Change out this device for different for a different device.</entry>
+    
+    <!-- Swiches -->
+    <entry key="yukon.web.modules.operator.hardwareList.switches.title">Switches</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.add">Add Switch</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.none">No Switches</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.label">Label</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.actions">Actions</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.switches.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.add.hoverText">Add a switch to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.add.label">Add Switch</entry>
+    
+    <!-- Thermostats -->
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.title">Thermostats</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add">Add Thermostat</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.none">No Thermostats</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.label">Label</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.actions">Actions</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverText">Add a thermostat to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.label">Add Thermostat</entry>
+    
+    <!-- Meters -->
+    <entry key="yukon.web.modules.operator.hardwareList.meters.title">Meters</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.add">Add Meter</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.none">No Meters</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.label">Label</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.actions">Actions</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.meters.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+	<entry key="yukon.web.modules.operator.hardwareList.meters.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+	<entry key="yukon.web.modules.operator.hardwareList.meters.add.hoverText">Add a meter to this account.</entry>
+	<entry key="yukon.web.modules.operator.hardwareList.meters.add.label">Add Meter</entry>
 
     <!-- hardwareEdit.jsp -->
-    <entry key="yukon.web.modules.operator.hardwareEdit.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.pageName">{0}</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.pageDescription">{0}</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareUpdated">Hardware Updated</entry>
