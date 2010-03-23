@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
@@ -76,7 +77,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
                     row.capBankStatus = rs.getString("capBankStatus");
                     
                     String capBankState = rs.getString("capBankState");
-                    if ( capBankState == null || capBankState.length() < 1 ) {
+                    if ( StringUtils.isBlank(capBankState) ) {
                         capBankState = "---";
                     }
                     row.capBankState = capBankState;

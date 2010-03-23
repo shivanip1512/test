@@ -2,20 +2,19 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.service.SystemDateFormattingService;
 
 
 public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignmentModel.ModelRow> implements CapControlFilterable {
@@ -30,6 +29,8 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
     private List<ModelRow> data = new ArrayList<ModelRow>();
 
 	private List<Integer> strategyIds;
+
+    private SystemDateFormattingService systemDateFormattingService;
     
     public StrategyAssignmentModel() {
     }
@@ -71,33 +72,28 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
             public void processRow(ResultSet rs) throws SQLException {
                 
                 StrategyAssignmentModel.ModelRow row = new StrategyAssignmentModel.ModelRow();
-                Date currentTime = new Date();
 
                 row.strategyName = rs.getString("strategyName");
                 row.paoName = rs.getString("paoName");
                 row.type = rs.getString("type");
                 row.controlMethod = rs.getString("controlMethod");
                 row.seasonName = rs.getString("seasonName");
-                Date startDate = getDateString(rs.getString("seasonstartmonth"), rs.getString("seasonstartday"));
-                Date endDate = getDateString(rs.getString("seasonendmonth"), rs.getString("seasonendday"));
-                
-                if ( startDate.before(currentTime) && endDate.after(currentTime) ) {
+                LocalDate today = new LocalDate(DateTimeZone.forTimeZone(systemDateFormattingService.getSystemTimeZone()));
+                LocalDate startDate = getLocalDate(rs.getString("seasonstartmonth"), rs.getString("seasonstartday"), today);
+                LocalDate endDate = getLocalDate(rs.getString("seasonendmonth"), rs.getString("seasonendday"), today);
+
+                if ( startDate.isBefore(today) && endDate.isAfter(today) ) {
                     row.seasonStartDate = startDate.toString();
                     row.seasonEndDate = endDate.toString();
                     data.add(row);
                 }
             }
 
-            private Date getDateString(String month, String day) {
-                DateTime dt = new DateTime();
-                DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-                String resultDate = month + "/" + day + "/" + dt.getYear();
-                Date resultDateTime = new Date();
-                try {
-                    resultDateTime = df.parse(resultDate);
-                } catch (ParseException e) {}
-                
-                return resultDateTime;
+            private LocalDate getLocalDate(String month, String day, LocalDate today) {
+                LocalDate localDate = today;
+                localDate = localDate.withMonthOfYear(Integer.parseInt(month));
+                localDate = localDate.withDayOfMonth(Integer.parseInt(day));
+                return localDate;
             }
         });
             
@@ -147,6 +143,11 @@ public class StrategyAssignmentModel extends BareReportModelBase<StrategyAssignm
     @Required
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
+    }
+    
+    @Autowired
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
     }
 
 	public String getSelectedStrategy() {
