@@ -5718,8 +5718,7 @@ void CtiVanGogh::VGDBWriterThread()
 ******************************************************************************/
 void CtiVanGogh::VGAppMonitorThread()
 {
-    CtiTime LastThreadMonitorTime;
-    int checkCount = 0;
+    CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
     CtiPointDataMsg vgStatusPoint;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Dispatch);
@@ -5727,15 +5726,15 @@ void CtiVanGogh::VGAppMonitorThread()
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)
     {
-        //5*160 = 900 seconds = 15 minutes
         rwSleep(5000);//5 second sleep
 
-        if(!(i%60) && pointID !=0)
+        if(NextThreadMonitorReportTime.now() > NextThreadMonitorReportTime)
         {
             CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str());
             pData->setSource(DISPATCH_APPLICATION_NAME);
             MainQueue_.putQueue(pData);
-            LastThreadMonitorTime = LastThreadMonitorTime.now();
+
+            NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
         }
     }
 
@@ -5780,21 +5779,19 @@ void CtiVanGogh::VGAppMonitorThread()
                 rwSleep(5000);//5 second sleep
 
                 //Check thread watcher status
-                if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 60)
+                if(pointID!=0)
                 {
-                    if(pointID!=0)
-                    {
-                        CtiThreadMonitor::State next;
-                        LastThreadMonitorTime = LastThreadMonitorTime.now();
-                        if((next = ThreadMonitor.getState()) != previous || checkCount++ >=2)
-                        {
-                            previous = next;
-                            checkCount = 0;
+                    CtiThreadMonitor::State next;
 
-                            CtiMessage *pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString());
-                            pData->setSource(DISPATCH_APPLICATION_NAME);
-                            MainQueue_.putQueue(pData);
-                        }
+                    if( NextThreadMonitorReportTime.now() > NextThreadMonitorReportTime ||
+                       (next = ThreadMonitor.getState()) != previous)
+                    {
+                        NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
+                        previous = next;
+
+                        CtiMessage *pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString());
+                        pData->setSource(DISPATCH_APPLICATION_NAME);
+                        MainQueue_.putQueue(pData);
                     }
                 }
             }

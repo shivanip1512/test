@@ -87,10 +87,8 @@ void CtiMCServer::run()
         if( init() )
         {
             const long threadMonitorPointId = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Macs);
-            CtiTime LastThreadMonitorTime, LastThreadMonitorReportTime;
+            CtiTime LastThreadMonitorTime, NextThreadMonitorReportTime;
             CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
-            const UCHAR MonitorReportRate = 120;
-            UCHAR checkCount = MonitorReportRate;
 
             /* Main Loop */
             while(true)
@@ -99,17 +97,16 @@ void CtiMCServer::run()
                 ResetBreakAlloc();
 
                 // Do thread monitor stuff
-                if( (LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 2 )
+                if( threadMonitorPointId != 0 )
                 {
-                    if( threadMonitorPointId != 0 )
+                    if( (LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 2 )
                     {
                         CtiThreadMonitor::State next;
                         LastThreadMonitorTime = LastThreadMonitorTime.now();
-                        if( (next = ThreadMonitor.getState()) != previous || LastThreadMonitorTime > LastThreadMonitorReportTime )
+                        if( (next = ThreadMonitor.getState()) != previous || LastThreadMonitorTime > NextThreadMonitorReportTime )
                         {
                             previous = next;
-                            checkCount = 0;
-                            LastThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(LastThreadMonitorTime, MonitorReportRate);
+                            NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
         
                             VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(threadMonitorPointId, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                         }

@@ -282,7 +282,6 @@ void CtiFDRService::Run( )
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::FDR);
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous = CtiThreadMonitor::Normal;
-    UCHAR checkCount = 0;
 
     string FdrVanGoghMachine = gConfigParms.getValueAsString("DISPATCH_MACHINE", "127.0.0.1");
 

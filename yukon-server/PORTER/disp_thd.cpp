@@ -83,12 +83,10 @@ void DispatchMsgHandlerThread(VOID *Arg)
     BOOL           bServerClosing = FALSE;
 
     CtiTime         TimeNow;
-    CtiTime         LastThreadMonitorTime;
+    CtiTime         LastThreadMonitorTime, NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
-    const UCHAR     MonitorReportRate = 60;
-    UCHAR           checkCount = MonitorReportRate;
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
 
     {
@@ -263,17 +261,17 @@ void DispatchMsgHandlerThread(VOID *Arg)
             }
 
             //  Check thread watcher status
-            if((LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 2)
+            if( pointID != 0 )
             {
-                if(pointID!=0)
+                if( (LastThreadMonitorTime.now().seconds() - LastThreadMonitorTime.seconds()) >= 2 )
                 {
                     CtiThreadMonitor::State next;
                     LastThreadMonitorTime = LastThreadMonitorTime.now();
-                    if((next = ThreadMonitor.getState()) != previous || checkCount++ >= MonitorReportRate)
+                    if( (next = ThreadMonitor.getState()) != previous || LastThreadMonitorTime > NextThreadMonitorReportTime )
                     {
                         previous = next;
-                        checkCount = 0;
-
+                        NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( LastThreadMonitorTime, CtiThreadMonitor::StandardMonitorTime / 2 );
+    
                         VanGoghConnection.WriteConnQue(CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                     }
                 }

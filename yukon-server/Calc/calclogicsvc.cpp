@@ -144,7 +144,6 @@ void CtiCalcLogicService::Run( )
     ThreadMonitor.start(); //ecs 1/4/2005
     CtiTime NextThreadMonitorReportTime;
     CtiThreadMonitor::State previous;
-    UCHAR checkCount = 0;
 
     pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
 
