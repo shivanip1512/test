@@ -2,24 +2,20 @@ package com.cannontech.web.stars.dr.operator.hardware.validator;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 
-public class HardwareDtoValidator implements Validator {
+public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     
     private static final char[] validSerialNumberChars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
     
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean supports(Class clazz) {
-        return HardwareDto.class.isAssignableFrom(clazz); 
+    public HardwareDtoValidator() {
+    	super(HardwareDto.class);
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
-        
-        HardwareDto hardwareDto = (HardwareDto)target;
+    public void doValidation(HardwareDto hardwareDto, Errors errors) {
         
         /* Serial Number */
         if(!hardwareDto.getIsMct()){  /* Check serial numbers for switches and tstats */

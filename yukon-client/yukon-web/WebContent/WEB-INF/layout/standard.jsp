@@ -60,7 +60,7 @@
 			<c:otherwise>
 				<ul>
 				<c:forEach var="message" items="${flashScopeMessage.messages}">
-					<li>&bull; <cti:msg key="${message}"/> </li>
+					<li><cti:msg key="${message}"/> </li>
 				</c:forEach>
 				</ul>
 			</c:otherwise>

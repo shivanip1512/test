@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator.hardware;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -22,6 +22,7 @@ import org.springframework.web.servlet.View;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -41,6 +42,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreat
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -126,7 +128,9 @@ public class OperatorHardwareController {
             /* Setup HardwareInfo ModelMap */
             setupHardwareInfoModelMap(accountInfoFragment, accountId, inventoryId, modelMap, userContext);
             if (bindingResult.hasErrors()) {
-                flashScope.setBindingResult(bindingResult);
+            	
+            	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                 return "/operator/hardware/hardwareEdit.jsp";
             } 
         }
@@ -137,7 +141,7 @@ public class OperatorHardwareController {
         }
         
         /* Flash hardware updated */
-        flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareUpdated")));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareUpdated"));
         
         return "redirect:hardwareEdit";
     }
@@ -158,7 +162,7 @@ public class OperatorHardwareController {
         
         setupHardwareInfoModelMap(accountInfoFragment, accountId, null, modelMap, userContext);
         
-        flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareDeleted")));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareDeleted"));
         return "redirect:hardwareList";
     }
     

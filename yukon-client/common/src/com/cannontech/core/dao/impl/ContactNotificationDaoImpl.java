@@ -152,7 +152,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         
         String notificationText = notification.getNotification();
         ContactNotificationType contactNotificationType = ContactNotificationType.getTypeForNotificationCategoryId(notificationCategoryId);
-        if (contactNotificationType.isPhoneType()) {
+        if (contactNotificationType.isPhoneType() || contactNotificationType.isFaxType()) {
         	notificationText = phoneNumberFormattingService.strip(notificationText);
         }
         

@@ -3,8 +3,9 @@ package com.cannontech.web.stars.dr.operator.validator;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -12,10 +13,9 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.validation.YukonValidationUtils;
 import com.cannontech.web.stars.dr.operator.model.ChangeLoginBackingBean;
 
-public class ChangeLoginValidator implements Validator {
+public class ChangeLoginValidator extends SimpleValidator<ChangeLoginBackingBean> {
 
     private AuthenticationService authenticationService;
     private RolePropertyDao rolePropertyDao;
@@ -23,14 +23,9 @@ public class ChangeLoginValidator implements Validator {
     private LiteYukonUser residentialUser;
     private YukonUserContext userContext;
     
-    @Override
-    @SuppressWarnings("unchecked")
-    public boolean supports(Class clazz) {
-        return ChangeLoginBackingBean.class.isAssignableFrom(clazz); 
-    }
-    
     public ChangeLoginValidator(LiteYukonUser residentialUser, YukonUserContext userContext, AuthenticationService authenticationService, RolePropertyDao rolePropertyDao, YukonUserDao yukonUserDao){
-        this.residentialUser = residentialUser;
+    	super(ChangeLoginBackingBean.class);
+    	this.residentialUser = residentialUser;
         this.userContext = userContext;
         this.authenticationService  = authenticationService;
         this.rolePropertyDao = rolePropertyDao;
@@ -38,7 +33,7 @@ public class ChangeLoginValidator implements Validator {
     }
 
     @Override
-    public void validate(Object target, Errors errors) {
+    public void doValidation(ChangeLoginBackingBean target, Errors errors) {
 
         ChangeLoginBackingBean changeLoginBackingBean = (ChangeLoginBackingBean)target;
 

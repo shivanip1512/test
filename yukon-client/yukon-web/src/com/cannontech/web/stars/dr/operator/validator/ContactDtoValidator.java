@@ -5,30 +5,26 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.PhoneNumberFormattingService;
-import com.cannontech.web.common.validation.YukonValidationUtils;
 import com.cannontech.web.stars.dr.operator.model.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
 
-public class ContactDtoValidator implements Validator {
+public class ContactDtoValidator extends SimpleValidator<ContactDto> {
 
 	private PhoneNumberFormattingService phoneNumberFormattingService;
 	private static final int MAX_NOTIFICATION_LENGTH = 130;
 	
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class clazz) {
-		return ContactDto.class.isAssignableFrom(clazz); 
+	public ContactDtoValidator() {
+		super(ContactDto.class);
 	}
 
 	@Override
-	public void validate(Object target, Errors errors) {
+	public void doValidation(ContactDto contactDto, Errors errors) {
 
-		ContactDto contactDto = (ContactDto)target;
-		
 		// first name on create
 		if (contactDto.getContactId() <= 0 && StringUtils.isBlank(contactDto.getFirstName())) {
 			errors.rejectValue("firstName", "yukon.web.modules.operator.contactEdit.firstNameRequired");
@@ -63,7 +59,7 @@ public class ContactDtoValidator implements Validator {
 			String notificationValue = contactNotificationDto.getNotificationValue();
 			ContactNotificationType contactNotificationType = contactNotificationDto.getContactNotificationType();
 			
-			if (notificationValue != null && contactNotificationType != null && contactNotificationType.isPhoneType()) {
+			if (notificationValue != null && contactNotificationType != null && (contactNotificationType.isPhoneType() || contactNotificationType.isFaxType())) {
 				if (phoneNumberFormattingService.isHasInvalidCharacters(notificationValue)) {
 					errors.rejectValue(field, "yukon.web.modules.operator.accountGeneral.invalidPhoneNumber");
 				}

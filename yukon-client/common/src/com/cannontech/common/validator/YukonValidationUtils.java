@@ -1,4 +1,4 @@
-package com.cannontech.web.common.validation;
+package com.cannontech.common.validator;
 
 import java.util.List;
 

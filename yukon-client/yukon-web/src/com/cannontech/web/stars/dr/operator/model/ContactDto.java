@@ -1,13 +1,10 @@
 package com.cannontech.web.stars.dr.operator.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
+import com.cannontech.common.util.LazyList;
 
-import com.google.common.collect.Lists;
-
-@SuppressWarnings("unchecked")
 public class ContactDto {
 	
 	private int contactId = 0;
@@ -16,7 +13,7 @@ public class ContactDto {
 	private String homePhone;
 	private String workPhone;
 	private String email;
-	private List<ContactNotificationDto> otherNotifications = LazyList.decorate(Lists.newArrayList(), FactoryUtils.instantiateFactory(ContactNotificationDto.class));
+	private List<ContactNotificationDto> otherNotifications = new LazyList<ContactNotificationDto>(new ArrayList<ContactNotificationDto>(), new ContactNotificationDtoSupplier());
 	private boolean primary = false;
 	
 	public int getContactId() {

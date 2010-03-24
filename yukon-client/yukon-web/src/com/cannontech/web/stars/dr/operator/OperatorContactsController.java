@@ -1,9 +1,9 @@
 package com.cannontech.web.stars.dr.operator;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -24,6 +25,7 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.model.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.DisplayableContactNotificationType;
@@ -117,6 +119,8 @@ public class OperatorContactsController {
 		
 		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
 		if (bindingResult.hasErrors()) {
+			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 			return "operator/contacts/contactEdit.jsp";
 		}
 		
@@ -126,8 +130,8 @@ public class OperatorContactsController {
 		}
 		modelMap.addAttribute("additionalBlankNotifications", additionalBlankNotifications);
 		
-		if (hasPendingNewNotification) {
-			flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactUpdated")));
+		if (additionalBlankNotifications <= 0) {
+			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactUpdated"));
 		}
 		return "redirect:contactEdit";
 	}
@@ -143,7 +147,7 @@ public class OperatorContactsController {
 		contactNotificationDao.removeNotification(removeNotificationId);
 		
 		setupContactBasicModelMap(contactId, accountInfoFragment, modelMap);
-		flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.notificationDeleted")));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.notificationDeleted"));
 		return "redirect:contactEdit";
 	}
 	
@@ -157,7 +161,7 @@ public class OperatorContactsController {
 		contactDao.removeAdditionalContact(deleteAdditionalContactId);
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
-		flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactDeleted")));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactDeleted"));
 		return "redirect:contactList";
 	}
 	

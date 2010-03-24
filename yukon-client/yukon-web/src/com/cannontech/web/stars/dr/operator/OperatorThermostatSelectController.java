@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,14 +63,14 @@ public class OperatorThermostatSelectController {
 				selectedType = type;
 			} else {
 				if (type != selectedType) {
-					flashScope.setError(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSelect.twoTypes")));
+					flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSelect.twoTypes"));
 		            return "redirect:select";
 				}
 			}
 		}
 		
         if(thermostatIdsList.size() <= 0) {
-        	flashScope.setWarning(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSelect.mustSelect")));
+        	flashScope.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSelect.mustSelect"));
             return "redirect:select";
         }
         

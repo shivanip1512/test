@@ -16,6 +16,20 @@
 		
 	</script>
 	
+	<%-- for lining up notifications --%>
+	<style type="text/css">
+		table.contactNotificationListTable {
+			font-size:11px;
+			border-collapse:collapse;
+		}
+		table.contactNotificationListTable td {
+	        padding: 3px;
+	    }
+		table.contactNotificationListTable td.type {
+	        width: 100px;
+	    }
+	</style>
+	
 	<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
 	<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>
 	<cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
@@ -43,7 +57,7 @@
 	
 		<c:forEach var="contact" items="${contacts}">
 		
-			<tr style="vertical-align:top;" class="<tags:alternateRow odd="" even="altRow"/>">
+			<tr style="vertical-align:top;">
 			
 				<td style="width:20%;white-space:nowrap;">
 				
@@ -59,33 +73,33 @@
 				
 				<td>
 					
-					<tags:nameValueContainer2 tableClass="noStyle" style="font-size:11px;" nameColumnWidth="100px">
-					
+					<table class="noStyle contactNotificationListTable">
 						<c:if test="${not empty contact.homePhone}">
-							<tags:nameValue2 nameKey="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE" >
-								${contact.homePhone}
-							</tags:nameValue2>
+							<tr>
+								<td class="type"><cti:msg2 key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>
+								<td>${contact.homePhone}</td>
+							</tr>
 						</c:if>
-						
 						<c:if test="${not empty contact.workPhone}">
-							<tags:nameValue2 nameKey="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE">
-								${contact.workPhone}
-							</tags:nameValue2>
+							<tr>
+								<td class="type"><cti:msg2 key="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE"/>:</td>
+								<td>${contact.workPhone}</td>
+							</tr>
 						</c:if>
-						
 						<c:if test="${not empty contact.email}">
-							<tags:nameValue2 nameKey="yukon.web.modules.operator.contactNotificationEnum.EMAIL">
-								${contact.email}
-							</tags:nameValue2>
+							<tr>
+								<td class="type"><cti:msg2 key="yukon.web.modules.operator.contactNotificationEnum.EMAIL"/>:</td>
+								<td>${contact.email}</td>
+							</tr>
 						</c:if>
-					
 						<c:forEach var="otherNotification" items="${contact.otherNotifications}">
-							<tags:nameValue2 nameKey="${otherNotification.contactNotificationType.formatKey}">
-								${otherNotification.notificationValue}
-							</tags:nameValue2>
+							<tr>
+								<td class="type"><cti:msg2 key="${otherNotification.contactNotificationType.formatKey}"/>:</td>
+								<td>${otherNotification.notificationValue}</td>
+							</tr>
 						</c:forEach>
+					</table>
 					
-					</tags:nameValueContainer2>
 					
 				</td>
 				

@@ -1022,6 +1022,14 @@ div.userMessage {
 	background-repeat:no-repeat;
 }
 
+.userMessage ul {
+	padding-left: 15px;
+}
+
+.userMessage li {
+	list-style-type: disc;
+}
+
 div.userMessage.CONFIRM {
 
 	outline: #006633 solid thin;

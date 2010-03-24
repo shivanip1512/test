@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.operator;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.CustomerResidenceDao;
@@ -19,6 +21,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerResidence;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator;
@@ -80,7 +83,8 @@ public class OperatorResidenceController {
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		if (bindingResult.hasErrors()) {
-			flashScope.setBindingResult(bindingResult);
+			List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 			return "operator/residence/residenceEdit.jsp";
 		} 
 		

@@ -27,6 +27,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -47,7 +48,6 @@ import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.validation.YukonValidationUtils;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
 

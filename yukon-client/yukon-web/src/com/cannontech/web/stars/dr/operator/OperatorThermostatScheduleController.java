@@ -273,7 +273,7 @@ public class OperatorThermostatScheduleController {
         }
         
         if (scheduleName.length() > 60) {
-        	flashScope.setError(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSchedule.scheduleNameTooLong")));
+        	flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.operator.thermostatSchedule.scheduleNameTooLong"));
         	return "redirect:view";
         }
 
@@ -358,8 +358,8 @@ public class OperatorThermostatScheduleController {
         	thermostatLabels.add(thermostat.getLabel());
         }
         String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-        YukonMessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
-        flashScope.setMessages(Collections.singletonList(messageResolvable), message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
+        MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
+        flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
 
         return "redirect:view";
     }

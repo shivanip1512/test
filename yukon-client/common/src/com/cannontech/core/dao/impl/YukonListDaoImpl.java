@@ -16,6 +16,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonListEntryRowMapper;
@@ -186,12 +187,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
      */
 	public boolean isPhoneNumber( int listEntryID )
 	{
-	    return(
-	         listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PHONE
-	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE
-	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE
-	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE
-	         || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE );
+		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPhoneType();
 	}
 
     /* (non-Javadoc)
@@ -199,8 +195,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
      */
     public boolean isEmail( int listEntryID )
     {
-        return
-             listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL;
+    	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isEmailType();
     }
 
     /* (non-Javadoc)
@@ -208,9 +203,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
      */
     public boolean isShortEmail( int listEntryID )
     {
-        return
-             listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_CELL
-             || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL_PAGER;
+    	return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isShortEmailType();
     }
 
 	/* (non-Javadoc)
@@ -218,9 +211,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
      */
 	public boolean isPIN( int listEntryID )
 	{
-		return
-			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_PIN
-			 || listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN;
+		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isPinType();
 	}
 	
 	/* (non-Javadoc)
@@ -228,8 +219,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
      */
 	public boolean isFax( int listEntryID )
 	{
-		return
-			 listEntryID == YukonListEntryTypes.YUK_ENTRY_ID_FAX;
+		return ContactNotificationType.getTypeForNotificationCategoryId(listEntryID).isFaxType();
 	}
 	
 	/* (non-Javadoc)

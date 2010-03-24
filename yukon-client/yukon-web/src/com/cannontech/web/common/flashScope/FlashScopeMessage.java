@@ -6,8 +6,8 @@ import org.springframework.context.MessageSourceResolvable;
 
 public class FlashScopeMessage {
 
-	List<? extends MessageSourceResolvable> messages;
-	FlashScopeMessageType type;
+	private List<? extends MessageSourceResolvable> messages;
+	private FlashScopeMessageType type;
 	
 	public FlashScopeMessage(List<? extends MessageSourceResolvable> messages, FlashScopeMessageType type) {
 		this.messages = messages;

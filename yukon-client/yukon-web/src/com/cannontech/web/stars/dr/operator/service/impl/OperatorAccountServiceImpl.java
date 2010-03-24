@@ -204,31 +204,42 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	contactDto.setPrimary(isPrimary);
     	
     	List<LiteContactNotification> notificationsForContact = contactNotificationDao.getNotificationsForContact(contactId);
+    	
+    	contactDto.setHomePhone(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.HOME_PHONE, userContext));
+    	contactDto.setWorkPhone(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.WORK_PHONE, userContext));
+    	contactDto.setEmail(getAndFormatAndRemoveFirstOfType(notificationsForContact, ContactNotificationType.EMAIL, userContext));
+
     	for (LiteContactNotification notification : notificationsForContact) {
     		
     		String formattedNotification = contactNotificationFormattingService.formatNotification(notification, userContext);
-    		
-    		if (contactDto.getHomePhone() == null && notification.getContactNotificationType() == ContactNotificationType.HOME_PHONE) {
-    			contactDto.setHomePhone(formattedNotification);
-    		} else if (contactDto.getWorkPhone() == null && notification.getContactNotificationType() == ContactNotificationType.WORK_PHONE) {
-    			contactDto.setWorkPhone(formattedNotification);
-    		} else if (contactDto.getEmail() == null && notification.getContactNotificationType() == ContactNotificationType.EMAIL) {
-    			contactDto.setEmail(formattedNotification);
-    		} else {
     			
-    			ContactNotificationDto contactNotificationDto = new ContactNotificationDto();
-    			contactNotificationDto.setNotificationId(notification.getContactNotifID());
-    			contactNotificationDto.setContactNotificationType(notification.getContactNotificationType());
-    			contactNotificationDto.setNotificationValue(formattedNotification);
-    			
-    			contactDto.getOtherNotifications().add(contactNotificationDto);
-    		}
+			ContactNotificationDto contactNotificationDto = new ContactNotificationDto();
+			contactNotificationDto.setNotificationId(notification.getContactNotifID());
+			contactNotificationDto.setContactNotificationType(notification.getContactNotificationType());
+			contactNotificationDto.setNotificationValue(formattedNotification);
+			
+			contactDto.getOtherNotifications().add(contactNotificationDto);
     	}
     	
     	// addAdditionalBlankNotifications
     	addAdditionalBlankNotifications(contactDto, additionalBlankNotifications);
     	
     	return contactDto;
+    }
+    
+    private String getAndFormatAndRemoveFirstOfType(List<LiteContactNotification> notificationsForContact, ContactNotificationType contactNotificationType, YukonUserContext userContext) {
+    	
+    	for (int i = 0; i < notificationsForContact.size(); i++) {
+    		
+    		LiteContactNotification notification = notificationsForContact.get(i);
+    		if (notification.getContactNotificationType() == contactNotificationType) {
+
+    			notificationsForContact.remove(i);
+    			return contactNotificationFormattingService.formatNotification(notification, userContext);
+    		}
+    	}
+    	
+    	return null;
     }
     
     private void addAdditionalBlankNotifications(ContactDto contactDto, int additionalBlankNotifications) {

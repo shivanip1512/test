@@ -1,24 +1,20 @@
 package com.cannontech.web.stars.dr.operator.validator;
 
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.stars.dr.account.model.CustomerResidence;
-import com.cannontech.web.common.validation.YukonValidationUtils;
 
-public class CustomerResidenceValidator implements Validator {
+public class CustomerResidenceValidator extends SimpleValidator<CustomerResidence> {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class clazz) {
-		return CustomerResidence.class.isAssignableFrom(clazz); 
+	public CustomerResidenceValidator() {
+		super(CustomerResidence.class);
 	}
 	
 	@Override
-	public void validate(Object target, Errors errors) {
+	public void doValidation(CustomerResidence customerResidence, Errors errors) {
 
-		CustomerResidence customerResidence = (CustomerResidence)target;
-		
 		YukonValidationUtils.checkExceedsMaxLength(errors, "notes", customerResidence.getNotes(), 300);
 	}
 }

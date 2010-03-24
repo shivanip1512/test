@@ -2,7 +2,6 @@ package com.cannontech.web.stars.dr.operator;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +11,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.ContactDao;
@@ -43,6 +44,7 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.model.ChangeLoginBackingBean;
@@ -155,12 +157,14 @@ public class OperatorLoginController {
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
             if (bindingResult.hasErrors()) {
                 setupLoginModelMap(accountInfoFragment.getEnergyCompanyId(), residentialUser, modelMap);
-                flashScope.setBindingResult(bindingResult);
+                
+                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+				flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                 return "operator/login/login.jsp";
             } 
         }
         
-        flashScope.setConfirm(Collections.singletonList(new YukonMessageSourceResolvable("yukon.web.modules.operator.changeLogin.loginUpdated")));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.changeLogin.loginUpdated"));
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:changeLogin";

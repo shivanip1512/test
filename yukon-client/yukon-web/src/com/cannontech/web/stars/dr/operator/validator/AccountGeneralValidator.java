@@ -3,27 +3,25 @@ package com.cannontech.web.stars.dr.operator.validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
-import org.springframework.validation.Validator;
 
+import com.cannontech.common.validator.AddressValidator;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.stars.dr.account.model.AccountDto;
-import com.cannontech.web.common.validation.YukonValidationUtils;
 import com.cannontech.web.stars.dr.operator.OperatorAccountController.AccountGeneral;
 
-public class AccountGeneralValidator implements Validator {
+public class AccountGeneralValidator extends SimpleValidator<AccountGeneral> {
 
 	private PhoneNumberFormattingService phoneNumberFormattingService;
 	
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean supports(Class clazz) {
-		return AccountGeneral.class.isAssignableFrom(clazz); 
+	public AccountGeneralValidator() {
+		super(AccountGeneral.class);
 	}
 
 	@Override
-	public void validate(Object target, Errors errors) {
+	public void doValidation(AccountGeneral accountGeneral, Errors errors) {
 
-		AccountGeneral accountGeneral = (AccountGeneral)target;
 		AccountDto accountDto = accountGeneral.getAccountDto();
 		// so far nothing to validate in OperatorGeneralUiExtras part of AccountGeneral
 		
@@ -40,20 +38,16 @@ public class AccountGeneralValidator implements Validator {
 			errors.rejectValue("accountDto.workPhone", "yukon.web.modules.operator.accountGeneral.invalidPhoneNumber");
 		}
 		
-		// street address
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.streetAddress.locationAddress1", accountDto.getStreetAddress().getLocationAddress1(), 40);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.streetAddress.locationAddress2", accountDto.getStreetAddress().getLocationAddress2(), 40);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.streetAddress.cityName", accountDto.getStreetAddress().getCityName(), 32);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.streetAddress.stateCode", accountDto.getStreetAddress().getStateCode(), 2);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.streetAddress.zipCode", accountDto.getStreetAddress().getZipCode(), 12);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.streetAddress.county", accountDto.getStreetAddress().getCounty(), 30);
-
-		// billing address
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.billingAddress.locationAddress1", accountDto.getBillingAddress().getLocationAddress1(), 40);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.billingAddress.locationAddress2", accountDto.getBillingAddress().getLocationAddress2(), 40);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.billingAddress.cityName", accountDto.getBillingAddress().getCityName(), 32);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.billingAddress.stateCode", accountDto.getBillingAddress().getStateCode(), 2);
-		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.billingAddress.zipCode", accountDto.getBillingAddress().getZipCode(), 12);
+		// street/billing address
+		AddressValidator addressValidator = new AddressValidator();
+		
+		errors.pushNestedPath("accountDto.streetAddress");
+		addressValidator.validate(accountDto.getStreetAddress(), errors);
+		errors.popNestedPath();
+		
+		errors.pushNestedPath("accountDto.billingAddress");
+		addressValidator.validate(accountDto.getBillingAddress(), errors);
+		errors.popNestedPath();
 		
 		// other
 		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.customerStatus", accountDto.getCustomerStatus(), 1);

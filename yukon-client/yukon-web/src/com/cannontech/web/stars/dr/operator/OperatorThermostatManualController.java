@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.operator;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -164,9 +164,9 @@ public class OperatorThermostatManualController {
         	thermostatLabels.add(thermostat.getLabel());
         }
         String thermostatLabelString = StringUtils.join(thermostatLabels, ", ");
-        YukonMessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
+        MessageSourceResolvable messageResolvable = new YukonMessageSourceResolvable(message.getDisplayKey(), thermostatLabelString);
         
-    	flashScope.setMessages(Collections.singletonList(messageResolvable), message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
+    	flashScope.setMessage(messageResolvable, message.isFailed() ? FlashScopeMessageType.ERROR : FlashScopeMessageType.CONFIRM);
 
         return "redirect:view";
     }
