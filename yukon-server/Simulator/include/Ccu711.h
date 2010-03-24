@@ -148,11 +148,15 @@ private:
 
         struct result_info
         {
-            result_info() : completion_status(CompletionStatus_NoAttempt) {};
+            result_info() : 
+                completion_status(CompletionStatus_NoAttempt),
+                ts_values(0)
+            {};
 
             CtiTime completion_time;
 
             bytes data;
+            unsigned short ts_values;
 
             words_t as_words;
 
@@ -346,7 +350,9 @@ private:
 
     void processQueue(PortLogger &logger);
 
+    error_t extractInformation(const words_t &reply_words, queue_entry &entry);
     error_t extractData(const words_t &reply_words, byte_appender &output);
+    error_t extractTS_Values(const words_t &reply_words, queue_entry &entry);
 
     // This function returns seconds.
     static unsigned queue_request_dlc_time(const queue_entry::request_info &request);

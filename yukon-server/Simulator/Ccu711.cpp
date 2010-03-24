@@ -712,9 +712,9 @@ void Ccu711::processQueue(PortLogger &logger)
 
             error_t error;
 
-            if( error = extractData(reply_words, byte_appender(entry.result.data)) )
+            if( error = extractInformation(reply_words, entry))
             {
-                logger.log("Error extracting data from reply words / " + error);
+                logger.log("Error extracting information from reply words / " + error);
 
                 entry.result.completion_status = queue_entry::result_info::CompletionStatus_TransponderFailure;
             }
@@ -777,6 +777,48 @@ void extractWordData(const DataWord &dw, byte_appender &output)
     copy(dw.data, dw.data + DataWord::PayloadLength, output);
 }
 
+error_t Ccu711::extractInformation(const words_t &reply_words, queue_entry &entry)
+{
+    error_t error;
+
+    if( error = extractData(reply_words, byte_appender(entry.result.data)) )
+    {
+        return error_t::error;
+    }
+    if( error = extractTS_Values(reply_words, entry) )
+    {
+        return error_t::error;
+    }
+
+    return error_t::success;
+}
+
+error_t Ccu711::extractTS_Values(const words_t &reply_words, queue_entry &entry)
+{
+    if( reply_words.empty() )
+    {
+        return error_t::success;
+    }
+    if( !reply_words[0] )
+    {
+        return "reply_words[0] is null";
+    }
+    if( reply_words[0]->type != EmetconWord::WordType_D1 )
+    {
+        return error_t("reply_words[0] is not a D1 word").neq(reply_words[0]->type, EmetconWord::WordType_D1);
+    }
+
+    boost::shared_ptr<const EmetconWordD1> word = boost::static_pointer_cast<const EmetconWordD1>(reply_words[0]);
+    if( word->alarm == true )
+    {
+        // If the D-word's alarm bit is set to true, then our response data needs to 
+        // reflect this. Bit 0 of the TS values is the general alarm bit. Using a 
+        // bitwise OR with 1 correctly sets this bit.
+        entry.result.ts_values = entry.result.ts_values | 1;
+    }
+    
+    return error_t::success;
+}
 
 error_t Ccu711::extractData(const words_t &reply_words, byte_appender &output)
 {
@@ -1303,9 +1345,7 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                     //  b6 = E word occurred
                     //  b7 = last request timed out
 
-                    // Cart CCU shows TS value of 03 00, so set the 
-                    // TS values in the simulator to the same values
-                    completed_entry_buf.push_back(0x03);
+                    completed_entry_buf.push_back(completed_itr->result.ts_values);
                     completed_entry_buf.push_back(0x00);
 
                     //  D1

@@ -20,9 +20,11 @@ private:
 
     typedef boost::function1<bytes, Mct410Sim *>        function_read_t;
     typedef boost::function2<void,  Mct410Sim *, bytes> function_write_t;
+    typedef boost::function1<void,  Mct410Sim *>        command_t;
 
     typedef std::map<unsigned, function_read_t>  function_reads_t;
     typedef std::map<unsigned, function_write_t> function_writes_t;
+    typedef std::map<unsigned, command_t>        commands_t;
 
     static const function_reads_t  _function_reads;
     static       function_reads_t  initFunctionReads();
@@ -30,6 +32,9 @@ private:
 
     static const function_writes_t _function_writes;
     static       function_writes_t initFunctionWrites();
+
+    static const commands_t        _commands;
+    static       commands_t        initCommands();
 
     int _address;
 
@@ -70,6 +75,8 @@ private:
 
     void putPointOfInterest(const bytes &payload);
 
+    void clearEventFlags();
+
     enum Numerics
     {
         SecondsPerMinute =     60,
@@ -85,8 +92,9 @@ private:
         LoadProfile_IntervalsPerBlock = 6
     };
 
-    enum Writes
+    enum Commands
     {
+        C_ClearAllEventFlags = 0x8A
     };
 
     enum FunctionReads

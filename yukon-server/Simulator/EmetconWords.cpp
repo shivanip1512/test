@@ -124,9 +124,9 @@ bool EmetconWord::restoreWords(const bytes &buf, words_t &words)
             {
                 switch( d_words )
                 {
-                    case 0:  word = EmetconWordD1::restore(word_buf);  break;
-                    case 1:  word = EmetconWordD2::restore(word_buf);  break;
-                    case 2:  word = EmetconWordD3::restore(word_buf);  break;
+                    case 0:  word = EmetconWordD1::restore(word_buf);  d_words++; break;
+                    case 1:  word = EmetconWordD2::restore(word_buf);  d_words++; break;
+                    case 2:  word = EmetconWordD3::restore(word_buf);  d_words++; break;
                 }
 
                 len = EmetconWordD::Length;

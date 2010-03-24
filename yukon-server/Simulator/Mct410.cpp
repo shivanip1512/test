@@ -30,6 +30,7 @@ struct mct410_utility : private CtiDeviceMCT410
 
 const Mct410Sim::function_reads_t  Mct410Sim::_function_reads  = Mct410Sim::initFunctionReads();
 const Mct410Sim::function_writes_t Mct410Sim::_function_writes = Mct410Sim::initFunctionWrites();
+const Mct410Sim::commands_t        Mct410Sim::_commands        = Mct410Sim::initCommands();
 
 const double Mct410Sim::Pi = 4.0 * atan(1.0);
 
@@ -40,6 +41,12 @@ Mct410Sim::Mct410Sim(int address)
     // _llp_interest.time = CtiTime::now();
 
     _address = address;
+    _memory_map = bytes(20, 0x00);  // Initialize the memory map to have 20 bytes of 0s for data.
+                                    
+    // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order 
+    // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
+    // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
+    _memory_map[0x0A]=0x80;
 }
 
 
@@ -107,6 +114,16 @@ Mct410Sim::function_writes_t Mct410Sim::initFunctionWrites()
 }
 
 
+Mct410Sim::commands_t Mct410Sim::initCommands()
+{
+    commands_t commands;
+
+    commands[C_ClearAllEventFlags] = command_t(&Mct410Sim::clearEventFlags);
+
+    return commands;
+}
+
+
 //  TODO-P4: See PlcInfrastructure::oneWayCommand()
 bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
 {
@@ -129,6 +146,55 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
 
     const bytes response_bytes = processRead(b_word.function, b_word.function_code);
 
+    // Potentially set zero usage flag or reverse-power flag...
+    double chance = gConfigParms.getValueAsDouble("SIMULATOR_ALARM_FLAG_CHANCE_PERCENT");
+    double dist = (rand() / double(RAND_MAX + 1)) * 100;
+    if( dist < chance )
+    {
+        // 50/50 chance that the reverse-power flag is set or the zero usage flag is set.
+        double value = rand() / double(RAND_MAX + 1);
+
+        if( value < 0.50 )
+        {    
+            // Only set the zero usage flag to true if it isn't already set...
+            if ( _memory_map[0x07] != 0x01 )
+            {
+                _memory_map[0x07] = 0x01;
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << "******** Zero-Usage flag set! ********" << endl;
+                }
+            }
+        }
+        else // If value >= 0.50
+        {
+            // Only set the reverse-power flag to true if it isn't already set...
+            if( _memory_map[0x08] != 0x80 )
+            {
+                _memory_map[0x08] = 0x80;
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << "******** Reverse-power flag set! ********" << endl;
+                }
+            }
+        }
+    }
+
+    // Tamper flag (bit 7 of address 0x06) gets set if reverse-power or zero usage bits are set.
+    if( (_memory_map[0x07] == 0x01) || (_memory_map[0x08] == 0x80) )
+    {
+        // Only set tamper flag if it isn't already set.
+        if ( _memory_map[0x06] != 0x80 )
+        {
+            _memory_map[0x06] = 0x80;
+            {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << "******** Tamper flag set! ********" << endl;
+            }
+        }
+    }
+    
+
     if( response_bytes.size() < EmetconWordD1::PayloadLength +
                                 EmetconWordD2::PayloadLength +
                                 EmetconWordD3::PayloadLength )
@@ -141,13 +207,30 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         return true;
     }
 
+    // Check to see if the alarm bit needs to be set! If the tamper flag has 
+    // previously been set, then the general alarm bit needs to be as well.
+    bool alarm = false;
+    if( _memory_map.size() > 0x0A )
+    {
+        if( (_memory_map[0x06] & _memory_map[0x0A]) > 0 )
+        {
+            alarm = true;
+        }
+    }
+
+    if( alarm )
+    {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << "******** General Alarm set! ********" << endl;
+    }
+
     response_words.push_back(word_t(new EmetconWordD1(b_word.repeater_variable,
                                                       b_word.dlc_address & ((1 << 14) - 1),  //  lowest 13 bits set
                                                       response_bytes[0],
                                                       response_bytes[1],
                                                       response_bytes[2],
                                                       0,
-                                                      0)));
+                                                      alarm)));
 
     if( b_word.words_to_follow < 2 )
     {
@@ -274,11 +357,23 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
             fn_itr->second(this, data);
         }
     }
+    if( data.empty() )
+    {
+        commands_t::const_iterator cmd_itr = _commands.find(function);
+
+        if( cmd_itr != _commands.end() )
+        {
+            cmd_itr->second(this);
+        }
+    }
     else
     {
-        copy(data.begin(),
-             data.begin() + min(data.size(), _memory_map.size() - function),
-             _memory_map.begin() + function);
+        if( _memory_map.size() > function )
+        {
+            copy(data.begin(),
+                 data.begin() + min(data.size(), _memory_map.size() - function),
+                 _memory_map.begin() + function);
+        }
     }
 
     return true;
@@ -576,7 +671,6 @@ void Mct410Sim::fill_loadProfile(const unsigned address, const CtiTime &blockSta
 }
 
 
-
 void Mct410Sim::putPointOfInterest(const bytes &payload)
 {
     if( payload.size() < 6 )  return;
@@ -596,6 +690,12 @@ void Mct410Sim::putPointOfInterest(const bytes &payload)
     _llp_interest.time = tmp_time;
 }
 
+
+void Mct410Sim::clearEventFlags()
+{
+    _memory_map[0x06] = 0x00;
+    _memory_map[0x07] = 0x00;
+}
 
 }
 }
