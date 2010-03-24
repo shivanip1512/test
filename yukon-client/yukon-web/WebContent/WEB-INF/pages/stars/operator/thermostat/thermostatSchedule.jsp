@@ -40,9 +40,9 @@
     
     function setToDefault() {
         if(tempUnit == 'F') {
-            schedules = $H('${defaultFahrenheitScheduleJSON}'.evalJSON());
+            schedules = $H(${defaultFahrenheitScheduleJSON});
         } else {
-            schedules = $H('${defaultCelsiusScheduleJSON}'.evalJSON());
+            schedules = $H(${defaultCelsiusScheduleJSON});
         } 
         setCurrentSchedule(currentTimePeriod);
     }
