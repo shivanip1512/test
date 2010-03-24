@@ -44,6 +44,7 @@ import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 
 /**
  * Controller for Operator-side Thermostat schedule operations
@@ -51,7 +52,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 @CheckRole(YukonRole.CONSUMER_INFO)
 @Controller
 public class ThermostatOperatorScheduleController 
-	extends AbstractThermostatOperatorScheduleController {
+	extends AbstractThermostatOperatorController {
 
     private InventoryDao inventoryDao;
     private ThermostatScheduleDao thermostatScheduleDao;
@@ -60,6 +61,7 @@ public class ThermostatOperatorScheduleController
     
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private DateFormattingService dateFormattingService;
+	private OperatorThermostatHelper operatorThermostatHelper;
     
     @RequestMapping(value = "/operator/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
@@ -140,15 +142,15 @@ public class ThermostatOperatorScheduleController
 
         // Get json string for schedule and add schedule and string to model
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
-        JSONObject scheduleJSON = this.getJSONForSchedule(schedule, isFahrenheit);
+        JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
         map.addAttribute("scheduleJSONString", scheduleJSON.toString());
         map.addAttribute("schedule", schedule);
 
         // Get json string for the default schedule and add to model
-        JSONObject defaultFahrenheitScheduleJSON = this.getJSONForSchedule(defaultSchedule, true);
+        JSONObject defaultFahrenheitScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, true);
         map.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
 
-        JSONObject defaultCelsiusScheduleJSON = this.getJSONForSchedule(defaultSchedule, false);
+        JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
         map.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
 
 
@@ -200,7 +202,7 @@ public class ThermostatOperatorScheduleController
     	
     	// Create the confirm schedule text
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
-    	ThermostatSchedule schedule = this.getScheduleForJSON(scheduleString, isFahrenheit);
+    	ThermostatSchedule schedule = operatorThermostatHelper.getScheduleForJSON(scheduleString, isFahrenheit);
     	
     	MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
     	TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
@@ -240,7 +242,7 @@ public class ThermostatOperatorScheduleController
     	
         String scheduleConfirmKey = "yukon.dr.operator.thermostatScheduleConfirm.scheduleText";
     	if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
-    		this.setToTwoTimeTemps(schedule);
+    		operatorThermostatHelper.setToTwoTimeTemps(schedule);
     		scheduleConfirmKey = 
     			"yukon.dr.operator.thermostatScheduleConfirm.scheduleTextTwoTimeTemp";
     	}
@@ -307,7 +309,7 @@ public class ThermostatOperatorScheduleController
         }
 
         // Create schedule from submitted JSON string
-        ThermostatSchedule schedule = getScheduleForJSON(scheduleString,
+        ThermostatSchedule schedule = operatorThermostatHelper.getScheduleForJSON(scheduleString,
                                                          isFahrenheit);
         schedule.setName(scheduleName);
         schedule.setAccountId(account.getAccountId());
@@ -330,7 +332,7 @@ public class ThermostatOperatorScheduleController
             HardwareType type = thermostat.getType();
             schedule.setThermostatType(type);
             if (type.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
-                this.setToTwoTimeTemps(schedule);
+            	operatorThermostatHelper.setToTwoTimeTemps(schedule);
             }
 
 			if (sendAndSave) {
@@ -522,6 +524,11 @@ public class ThermostatOperatorScheduleController
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
 		this.dateFormattingService = dateFormattingService;
+	}
+    
+    @Autowired
+    public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
+		this.operatorThermostatHelper = operatorThermostatHelper;
 	}
     
 }

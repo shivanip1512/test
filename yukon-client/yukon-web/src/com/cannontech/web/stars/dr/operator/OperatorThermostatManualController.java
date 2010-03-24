@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -104,10 +103,12 @@ public class OperatorThermostatManualController {
         boolean failed = false;
 
         //Update the temperature unit for this customer
-        String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
-        if(StringUtils.isNotBlank(escapedTempUnit) && (escapedTempUnit.equalsIgnoreCase("C") || escapedTempUnit.equalsIgnoreCase("F")) ) {
-            customerDao.setTempForCustomer(customerAccount.getCustomerId(), escapedTempUnit);
+        if ("C".equalsIgnoreCase(temperatureUnit) || "F".equalsIgnoreCase(temperatureUnit) ) {
+            customerDao.setTempForCustomer(customerAccount.getCustomerId(), temperatureUnit);
+        } else {
+        	throw new IllegalArgumentException("Invalid temperature unit set.");
         }
+
         
         for (int thermostatId : thermostatIdsList) {
 

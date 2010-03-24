@@ -3,12 +3,9 @@ package com.cannontech.web.stars.dr.consumer.thermostat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import net.sf.json.JSONArray;
-import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -41,12 +38,12 @@ import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 
 /**
  * Controller for Consumer-side Thermostat schedule operations
@@ -60,6 +57,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
     private DateFormattingService dateFormattingService;
+    private OperatorThermostatHelper operatorThermostatHelper;
 
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
@@ -129,15 +127,15 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         // Get json string for schedule and add schedule and string to model
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
-        JSONObject scheduleJSON = this.getJSONForSchedule(schedule, isFahrenheit);
+        JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
         map.addAttribute("scheduleJSONString", scheduleJSON.toString());
         map.addAttribute("schedule", schedule);
 
         // Get json string for the default schedule and add to model
-        JSONObject defaultFahrenheitScheduleJSON = this.getJSONForSchedule(defaultSchedule, true);
+        JSONObject defaultFahrenheitScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, true);
         map.addAttribute("defaultFahrenheitScheduleJSON", defaultFahrenheitScheduleJSON.toString());
 
-        JSONObject defaultCelsiusScheduleJSON = this.getJSONForSchedule(defaultSchedule, false);
+        JSONObject defaultCelsiusScheduleJSON = operatorThermostatHelper.getJSONForSchedule(defaultSchedule, false);
         map.addAttribute("defaultCelsiusScheduleJSON", defaultCelsiusScheduleJSON.toString());
 
         Locale locale = yukonUserContext.getLocale();
@@ -165,7 +163,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	
     	// Create the confirm schedule text
     	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
-    	ThermostatSchedule schedule = this.getScheduleForJSON(scheduleString, isFahrenheit);
+    	ThermostatSchedule schedule = operatorThermostatHelper.getScheduleForJSON(scheduleString, isFahrenheit);
     	
     	MessageSource messageSource = messageSourceResolver.getMessageSource(yukonUserContext);
     	TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
@@ -191,7 +189,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	
         String scheduleConfirmKey = "yukon.dr.consumer.thermostatScheduleConfirm.scheduleText";
     	if (HardwareType.COMMERCIAL_EXPRESSSTAT.equals(thermostat.getType())) {
-    		this.setToTwoTimeTemps(schedule);
+    		operatorThermostatHelper.setToTwoTimeTemps(schedule);
     		scheduleConfirmKey = 
     			"yukon.dr.consumer.thermostatScheduleConfirm.scheduleTextTwoTimeTemp";
     	}
@@ -256,7 +254,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         }
 
         // Create schedule from submitted JSON string
-        ThermostatSchedule schedule = getScheduleForJSON(scheduleString,
+        ThermostatSchedule schedule = operatorThermostatHelper.getScheduleForJSON(scheduleString,
                                                          isFahrenheit);
         schedule.setName(scheduleName);
         schedule.setAccountId(account.getAccountId());
@@ -279,7 +277,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             HardwareType type = thermostat.getType();
             schedule.setThermostatType(type);
             if (type.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
-                this.setToTwoTimeTemps(schedule);
+            	operatorThermostatHelper.setToTwoTimeTemps(schedule);
             }
 
 			if (sendAndSave) {
@@ -415,186 +413,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	return "redirect:/spring/stars/consumer/thermostat/schedule/view";
     }
 
-    /**
-     * Helper method to default the 2nd and 3rd time/temp values for a two
-     * time/temp schedule
-     * @param schedule - Schedule to default
-     */
-    private void setToTwoTimeTemps(ThermostatSchedule schedule) {
-
-        ThermostatSeason season = schedule.getSeason();
-        if(season != null) {
-	        Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = season.getSeasonEntryMap();
-	        for (Map.Entry<TimeOfWeek, List<ThermostatSeasonEntry>> entry : seasonEntryMap.entrySet()) {
-	
-	            TimeOfWeek key = entry.getKey();
-	            List<ThermostatSeasonEntry> entryList = entry.getValue();
-	
-	            // There should always be 4 season entries per season
-	            if (entryList.size() != 4) {
-	                throw new IllegalArgumentException("There should be 4 season entries in the " + 
-	                		season.getThermostatMode() + ", " + key.toString() + " season entry list.");
-	            }
-	
-	            // Default the time to 0 seconds past midnight and the temp to
-	            // -1
-	            ThermostatSeasonEntry firstEntry = entryList.get(0);
-	            firstEntry.setStartTime(new LocalTime(0, 0));
-	            firstEntry.setCoolTemperature(-1);
-	            firstEntry.setHeatTemperature(-1);
-	            ThermostatSeasonEntry lastEntry = entryList.get(1);
-	            lastEntry.setStartTime(new LocalTime(0, 0));
-	            lastEntry.setCoolTemperature(-1);
-	            lastEntry.setHeatTemperature(-1);
-	        }
-        }
-    }
-
-    /**
-     * Helper method to get a JSON object representation of a thermostat
-     * schedule
-     * @param schedule - Schedule to get object for
-     * @param isFahrenheit - True if temp should be fahrenheit
-     * @return JSON object
-     */
-    private JSONObject getJSONForSchedule(ThermostatSchedule schedule, boolean isFahrenheit) {
-
-        ThermostatSeason season = schedule.getSeason();
-
-        JSONObject scheduleObject = new JSONObject();
-
-        JSONObject seasonObject = this.getJSONForSeason(season, isFahrenheit);
-
-        scheduleObject.put("season", seasonObject);
-
-
-        return scheduleObject;
-    }
-
-    /**
-     * Helper method to get a JSON object representation of a thermostat season
-     * @param season - Season to get object for
-     * @param isFahrenheit - True if temp should be fahrenheit
-     * @return JSON object
-     */
-    private JSONObject getJSONForSeason(ThermostatSeason season, boolean isFahrenheit) {
-
-        JSONObject object = new JSONObject();
-        Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = season.getSeasonEntryMap();
-        for (TimeOfWeek timeOfWeek : seasonEntryMap.keySet()) {
-
-            List<ThermostatSeasonEntry> entryList = seasonEntryMap.get(timeOfWeek);
-
-            for (ThermostatSeasonEntry entry : entryList) {
-                Integer time = entry.getStartTime().getMillisOfDay() / 1000 / 60;
-                Integer coolTemperature = entry.getCoolTemperature();
-                Integer heatTemperature = entry.getHeatTemperature();
-
-                JSONObject timeTemp = new JSONObject();
-                timeTemp.put("time", time);
-                
-                if(coolTemperature == null) {
-                	coolTemperature = 72;
-                }
-                if(heatTemperature == null) {
-                	heatTemperature = 72;
-                }
-                
-                String tempUnit = (isFahrenheit) ? CtiUtilities.FAHRENHEIT_CHARACTER : 
-                								   CtiUtilities.CELSIUS_CHARACTER;
-                
-                coolTemperature = (int) CtiUtilities.convertTemperature(
-                		coolTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-                heatTemperature = (int) CtiUtilities.convertTemperature(
-                		heatTemperature, CtiUtilities.FAHRENHEIT_CHARACTER, tempUnit);
-
-                timeTemp.put("coolTemp", coolTemperature);
-                timeTemp.put("heatTemp", heatTemperature);
-
-                object.accumulate(timeOfWeek.toString(), timeTemp);
-            }
-        }
-
-        return object;
-    }
-
-    /**
-     * Helper method to get a thermostat schedule from a JSON string
-     * @param jsonString - String which contains the schedule
-     * @return Schedule
-     */
-    private ThermostatSchedule getScheduleForJSON(String jsonString,
-            boolean isFahrenheit) {
-
-        ThermostatSchedule schedule = new ThermostatSchedule();
-        JSONObject object = new JSONObject(jsonString);
-
-        JSONObject seasonObject = object.getJSONObject("season");
-        ThermostatSeason season = this.getSeasonForJSON(seasonObject, isFahrenheit);
-        schedule.setSeason(season);
-
-        return schedule;
-    }
-
-    /**
-     * Helper method to get a thermostat season from a JSON string
-     * @param seasonObject - String which contains the season
-     * @return Season
-     */
-    private ThermostatSeason getSeasonForJSON(JSONObject seasonObject,
-            boolean isFahrenheit) {
-
-        ThermostatSeason season = new ThermostatSeason();
-
-        List<TimeOfWeek> timeOfWeekList = new ArrayList<TimeOfWeek>();
-        timeOfWeekList.add(TimeOfWeek.WEEKDAY);
-        timeOfWeekList.add(TimeOfWeek.SATURDAY);
-        timeOfWeekList.add(TimeOfWeek.SUNDAY);
-        timeOfWeekList.add(TimeOfWeek.WEEKEND);
-
-        // Add the season entries (time/value pairs) for each of the
-        // TimeOfWeeks
-        for (TimeOfWeek timeOfWeek : timeOfWeekList) {
-
-        	JSONArray timeOfWeekArray;
-        	try {
-				timeOfWeekArray = seasonObject.getJSONArray(timeOfWeek.toString());
-        	} catch (JSONException e) {
-        		// this time of week doesn't exist - continue to the next
-        		continue;
-        	}
-
-            for (Object object : timeOfWeekArray.toArray()) {
-                JSONObject jsonObject = (JSONObject) object;
-
-                Integer time = jsonObject.getInt("time");
-                Integer coolTemperature = jsonObject.getInt("coolTemp");
-                Integer heatTemperature = jsonObject.getInt("heatTemp");
-
-                // Convert celsius temp to fahrenheit if needed
-                if (!isFahrenheit) {
-                    coolTemperature = (int) CtiUtilities.convertTemperature(coolTemperature,
-                                                                        CtiUtilities.CELSIUS_CHARACTER,
-                                                                        CtiUtilities.FAHRENHEIT_CHARACTER);
-                    heatTemperature = (int) CtiUtilities.convertTemperature(heatTemperature,
-                    		CtiUtilities.CELSIUS_CHARACTER,
-                    		CtiUtilities.FAHRENHEIT_CHARACTER);
-                }
-
-                ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
-                entry.setStartTime(LocalTime.fromMillisOfDay(time * 60 * 1000));
-                entry.setCoolTemperature(coolTemperature);
-                entry.setHeatTemperature(heatTemperature);
-                entry.setTimeOfWeek(timeOfWeek);
-
-                season.addSeasonEntry(entry);
-            }
-        }
-
-        return season;
-
-    }
-
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;
@@ -619,5 +437,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
 		this.dateFormattingService = dateFormattingService;
+	}
+    
+    @Autowired
+    public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
+		this.operatorThermostatHelper = operatorThermostatHelper;
 	}
 }

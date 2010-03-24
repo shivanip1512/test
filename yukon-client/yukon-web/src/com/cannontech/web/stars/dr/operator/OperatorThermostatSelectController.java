@@ -46,7 +46,7 @@ public class OperatorThermostatSelectController {
 	// SELECT THERMOSTATS REDIRECT
 	@RequestMapping
     public String selectRedirect(String thermostatIds, 
-    							 boolean schedule,
+    							 String schedule,
 						         ModelMap modelMap,
 						         FlashScope flashScope,
 						         AccountInfoFragment accountInfoFragment) {
@@ -74,7 +74,7 @@ public class OperatorThermostatSelectController {
             return "redirect:select";
         }
         
-        if (schedule) {
+        if (schedule != null) {
         	return "redirect:/spring/stars/operator/thermostatSchedule/view";
         } else {
         	return "redirect:/spring/stars/operator/thermostatManual/view";

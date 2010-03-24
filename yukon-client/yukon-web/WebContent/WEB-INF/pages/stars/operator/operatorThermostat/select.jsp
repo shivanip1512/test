@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
@@ -49,13 +50,12 @@
 	
 	</script>
 
+   	<form id="themostatSelectForm" method="post" action="/spring/stars/operator/thermostatSelect/selectRedirect">
     <tags:boxContainer2 key="chooseThermostats" hideEnabled="false">
     	
-    	<form id="themostatSelectForm" method="post" action="/spring/stars/operator/thermostatSelect/selectRedirect">
     	
     		<input type="hidden" name="accountId" value="${accountId}">
     		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
-    		<input type="hidden" id="schedule" name="schedule" value="false">
     		<input type="hidden" id="thermostatIds" name="thermostatIds" value="${thermostatIds}">
     		
     		<table class="compactResultsTable">
@@ -63,9 +63,9 @@
     			<tr>
                     <th style="width:20px;">&nbsp;</th>
                     <th style="width:250px;">
-                    	<cti:msg key="yukon.web.modules.operator.thermostatSelect.name"/>
+                    	<i:inline key="yukon.web.modules.operator.thermostatSelect.name"/>
                     </th>
-                    <th><cti:msg key="yukon.web.modules.operator.thermostatSelect.type"/></th>
+                    <th><i:inline key="yukon.web.modules.operator.thermostatSelect.type"/></th>
                 </tr>
     		
     			<c:forEach var="thermostat" items="${thermostats}">
@@ -86,15 +86,18 @@
     		
     		</table>
     	
-    	</form>
     
     </tags:boxContainer2>
     
     <br>
     <cti:msg var="scheduleText" key="yukon.web.modules.operator.thermostatSelect.schedule"/>
-    <input type="button" value="${scheduleText}" onclick="$('schedule').value = true;$('themostatSelectForm').submit();" style="width:80px;"/>
+    <input type="submit" value="${scheduleText}" name="schedule" style="width:80px;"/>
     
     <cti:msg var="manualText" key="yukon.web.modules.operator.thermostatSelect.manual" />
-    <input type="button" value="${manualText}" onclick="$('themostatSelectForm').submit();" style="width:80px"/>
+    <input type="submit" value="${manualText}" name="manual" style="width:80px"/>
+    
+   	</form>
+    
+    
 
 </cti:standardPage>

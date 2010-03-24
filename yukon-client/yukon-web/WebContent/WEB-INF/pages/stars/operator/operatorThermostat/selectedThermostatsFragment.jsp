@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <%-- THERMOSTAT SELECT PAGE URL --%>
 <cti:url var="changeSelectedUrl" value="/spring/stars/operator/thermostatSelect/select">
@@ -33,7 +34,7 @@
 	<c:forEach var="thermostatName" items="${thermostatNames}">
 		<tr>
 			<td>
-   				${thermostatName}
+   				<spring:escapeBody htmlEscape="true">${thermostatName}</spring:escapeBody>
     		</td>
     	</tr>
     </c:forEach>

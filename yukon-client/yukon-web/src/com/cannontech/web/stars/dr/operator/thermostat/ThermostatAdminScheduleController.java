@@ -24,6 +24,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 
 /**
  * Controller for Operator-side Thermostat schedule operations
@@ -31,11 +32,12 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @CheckRole(YukonRole.CONSUMER_INFO)
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
-public class ThermostatAdminScheduleController extends AbstractThermostatOperatorScheduleController {
+public class ThermostatAdminScheduleController {
 
     private ThermostatScheduleDao thermostatScheduleDao;
     private StarsDatabaseCache starsDatabaseCache;
-    private RolePropertyDao rolePropertyDao;    
+    private RolePropertyDao rolePropertyDao;   
+    private OperatorThermostatHelper operatorThermostatHelper;
 
     @RequestMapping(value = "/admin/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(String type, YukonUserContext yukonUserContext, ModelMap map) {
@@ -53,7 +55,7 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
 
         // Get json string for schedule and add schedule and string to model
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
-        JSONObject scheduleJSON = this.getJSONForSchedule(schedule, isFahrenheit);
+        JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
         map.addAttribute("scheduleJSONString", scheduleJSON.toString());
         map.addAttribute("schedule", schedule);
 
@@ -78,7 +80,7 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
 
         // Create schedule from submitted JSON string
-        ThermostatSchedule newSchedule = getScheduleForJSON(scheduleString,
+        ThermostatSchedule newSchedule = operatorThermostatHelper.getScheduleForJSON(scheduleString,
                                                          isFahrenheit);
         newSchedule.setId(scheduleId);
         
@@ -86,7 +88,7 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
         newSchedule.setThermostatType(hardwareType);
         
         if (hardwareType.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
-            this.setToTwoTimeTemps(newSchedule);
+        	operatorThermostatHelper.setToTwoTimeTemps(newSchedule);
         }
 
         // Save changes to schedule
@@ -111,4 +113,9 @@ public class ThermostatAdminScheduleController extends AbstractThermostatOperato
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
+    
+    @Autowired
+    public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
+		this.operatorThermostatHelper = operatorThermostatHelper;
+	}
 }
