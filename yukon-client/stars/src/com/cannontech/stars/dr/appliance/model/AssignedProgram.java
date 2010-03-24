@@ -1,23 +1,20 @@
 package com.cannontech.stars.dr.appliance.model;
 
-import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
 public class AssignedProgram {
     private int applianceCategoryId;
     private int assignedProgramId;
     private int programId;
-    private String programName;
     private int chanceOfControlId;
     private int programOrder;
     private boolean isLast;
 
-    private String displayName;
-    private String shortName;
+    private AssignedProgramName name;
+
     private String description;
     private String savingsIcon;
     private String controlPercentIcon;
@@ -26,6 +23,7 @@ public class AssignedProgram {
     private WebConfiguration webConfiguration;
 
     public AssignedProgram() {
+        name = new AssignedProgramName();
     }
 
     public AssignedProgram(int applianceCategoryId, int assignedProgramId,
@@ -34,7 +32,7 @@ public class AssignedProgram {
         this.applianceCategoryId = applianceCategoryId;
         this.assignedProgramId = assignedProgramId;
         this.programId = programId;
-        this.programName = programName;
+        name = new AssignedProgramName(programName); 
         this.chanceOfControlId = chanceOfControlId;
         this.programOrder = programOrder;
         this.isLast = isLast;
@@ -49,6 +47,10 @@ public class AssignedProgram {
         this.applianceCategoryId = applianceCategoryId;
     }
 
+    /**
+     * Get the STARS program id.
+     * @return the STARS program id.
+     */
     public int getAssignedProgramId() {
         return assignedProgramId;
     }
@@ -57,6 +59,10 @@ public class AssignedProgram {
         this.assignedProgramId = assignedProgramId;
     }
 
+    /**
+     * Get the PAO program id
+     * @return the program id
+     */
     public int getProgramId() {
         return programId;
     }
@@ -66,33 +72,33 @@ public class AssignedProgram {
     }
 
     public String getProgramName() {
-        return programName;
+        return name.getProgramName();
     }
 
     public void setProgramName(String programName) {
-        this.programName = programName;
+        name.setProgramName(programName);
     }
 
     public String getDisplayName() {
-        return displayName;
+        return name.getDisplayName();
     }
 
     public void setDisplayName(String displayName) {
         webConfiguration = null;
-        this.displayName = displayName;
+        name.setDisplayName(displayName);
     }
 
     public String getDisplayNameKey() {
-        return MessageCodeGenerator.generateCode(com.cannontech.stars.dr.program.model.Program.PROGAM_PREFIX, displayName);
+        return MessageCodeGenerator.generateCode(com.cannontech.stars.dr.program.model.Program.PROGAM_PREFIX, name.getDisplayName());
     }
 
     public String getShortName() {
-        return shortName;
+        return name.getShortName();
     }
 
     public void setShortName(String shortName) {
         webConfiguration = null;
-        this.shortName = shortName;
+        name.setShortName(shortName);
     }
 
     public String getDescription() {
@@ -171,6 +177,10 @@ public class AssignedProgram {
         this.isLast = isLast;
     }
 
+    public AssignedProgramName getName() {
+        return name;
+    }
+
     public WebConfiguration getWebConfiguration() {
         if (webConfiguration == null) {
             updateWebConfig();
@@ -184,16 +194,7 @@ public class AssignedProgram {
             return;
         }
 
-        String[] names =
-            StarsUtils.splitString(webConfiguration.getAlternateDisplayName(), ",");
-        displayName = names[0];
-        shortName = names[1];
-        if (StringUtils.isEmpty(displayName)) {
-            displayName = programName;
-        }
-        if (StringUtils.isEmpty(shortName)) {
-            shortName = displayName;
-        }
+        name.setAlternateDisplayName(webConfiguration.getAlternateDisplayName());
 
         description = webConfiguration.getDescription();
 
@@ -206,23 +207,8 @@ public class AssignedProgram {
     private void updateWebConfig() {
         WebConfiguration newWebConfiguration = new WebConfiguration();
 
-        StringBuilder alternateDisplayName = new StringBuilder();
-        if (displayName.indexOf(',') !=  -1) {
-            alternateDisplayName.append('"');
-            alternateDisplayName.append(displayName);
-            alternateDisplayName.append('"');
-        } else {
-            alternateDisplayName.append(displayName);
-        }
-        alternateDisplayName.append(',');
-        if (shortName.indexOf(',') !=  -1) {
-            alternateDisplayName.append('"');
-            alternateDisplayName.append(shortName);
-            alternateDisplayName.append('"');
-        } else {
-            alternateDisplayName.append(shortName);
-        }
-        newWebConfiguration.setAlternateDisplayName(alternateDisplayName.toString());
+        String alternateDisplayName = name.getAlternateDisplayName();
+        newWebConfiguration.setAlternateDisplayName(alternateDisplayName);
         newWebConfiguration.setDescription(description);
         String logoLocation = savingsIcon + ',' + controlPercentIcon + ',' +
             environmentIcon;

@@ -13,8 +13,6 @@ public final class DisplayableEnrollment {
     public static final Comparator<DisplayableEnrollmentProgram> enrollmentProgramComparator;
     public static final Comparator<DisplayableEnrollment> enrollmentComparator;
     private ApplianceCategory applianceCategory;
-    private ApplianceTypeEnum applianceTypeEnum;
-    private String applianceLogo;
     private Set<DisplayableEnrollmentProgram> enrollmentPrograms;
     
     static {
@@ -27,7 +25,7 @@ public final class DisplayableEnrollment {
                 return order1.compareTo(order2);
             }
         };
-        
+
         enrollmentComparator = new Comparator<DisplayableEnrollment>() {
             @Override
             public int compare(DisplayableEnrollment o1, DisplayableEnrollment o2) {
@@ -37,7 +35,6 @@ public final class DisplayableEnrollment {
     }
     
     public DisplayableEnrollment() {
-        
     }
     
     public ApplianceCategory getApplianceCategory() {
@@ -51,19 +48,11 @@ public final class DisplayableEnrollment {
 
 
     public ApplianceTypeEnum getApplianceTypeEnum() {
-        return applianceTypeEnum;
-    }
-
-    public void setApplianceType(ApplianceTypeEnum applianceTypeEnum) {
-        this.applianceTypeEnum = applianceTypeEnum;
+        return applianceCategory.getApplianceType();
     }
 
     public String getApplianceLogo() {
-        return applianceLogo;
-    }
-
-    public void setApplianceLogo(String applianceLogo) {
-        this.applianceLogo = applianceLogo;
+        return applianceCategory.getWebConfiguration().getLogoLocation();
     }
 
     public Set<DisplayableEnrollmentProgram> getEnrollmentPrograms() {
@@ -135,16 +124,40 @@ public final class DisplayableEnrollment {
     }
     
     public static final class DisplayableEnrollmentProgram {
+        private final ApplianceCategory applianceCategory;
         private final Program program;
         private final List<DisplayableEnrollmentInventory> inventory;
-        
-        public DisplayableEnrollmentProgram(Program program, List<DisplayableEnrollmentInventory> inventory) {
+        private Boolean enrolled;
+
+        public DisplayableEnrollmentProgram(
+                ApplianceCategory applianceCategory, Program program,
+                List<DisplayableEnrollmentInventory> inventory) {
+            this.applianceCategory = applianceCategory;
             this.program = program;
             this.inventory = inventory;
+            this.enrolled = null;
         }
-        
+
+        public ApplianceCategory getApplianceCategory() {
+            return applianceCategory;
+        }
+
         public Program getProgram() {
             return program;
+        }
+
+        public int getLoadGroupId() {
+            if (inventory == null || inventory.size() == 0) {
+                return 0;
+            }
+            // all of the inventory has the same load group
+            for (DisplayableEnrollmentInventory inventoryItem : inventory) {
+                if (inventoryItem.enrolled) {
+                    return inventoryItem.getLoadGroupId();
+                }
+            }
+            // no enrolled hardware or virtual program
+            return 0;
         }
         
         public List<DisplayableEnrollmentInventory> getInventory() {
@@ -179,7 +192,7 @@ public final class DisplayableEnrollment {
         	
         	for(int i=0; i< inventoryList.size(); i++) {
         		DisplayableEnrollmentInventory inventory = inventoryList.get(i);
-        		if(inventory.isEnrolled) {
+        		if(inventory.enrolled) {
         			idList.add(String.valueOf(inventory.getInventoryId()));
         		}
         	}
@@ -201,15 +214,19 @@ public final class DisplayableEnrollment {
          * @return True if one or more inventory enrolled
          */
         public boolean isEnrolled() {
-        	
-        	for(DisplayableEnrollmentInventory inv : inventory) {
-        		if(inv.isEnrolled()) {
-        			return true;
-        		}
-        	}
-        	return false;
+            if (enrolled == null) {
+                boolean enrolled = false;
+                for (DisplayableEnrollmentInventory inv : inventory) {
+                    if (inv.isEnrolled()) {
+                        enrolled = true;
+                        break;
+                    }
+                }
+                this.enrolled = enrolled;
+            }
+            return enrolled;
         }
-        
+
         public String getDescriptionUrl() {
         	return program.getDescriptionUrl();
         }
@@ -218,12 +235,22 @@ public final class DisplayableEnrollment {
     public static final class DisplayableEnrollmentInventory {
         private final int inventoryId;
         private final String displayName;
-        private final boolean isEnrolled;
-        
-        public DisplayableEnrollmentInventory(int inventoryId, String displayName, boolean isEnrolled) {
+        private final boolean enrolled;
+        private final boolean inService;
+        private final int loadGroupId;
+        private final int relay;
+        private final int numRelays;
+
+        public DisplayableEnrollmentInventory(int inventoryId,
+                String displayName, boolean enrolled, boolean inService,
+                int loadGroupId, int relay, int numRelays) {
             this.inventoryId = inventoryId;
             this.displayName = displayName;
-            this.isEnrolled = isEnrolled;
+            this.enrolled = enrolled;
+            this.inService = inService;
+            this.loadGroupId = loadGroupId;
+            this.relay = relay;
+            this.numRelays = numRelays;
         }
 
         public int getInventoryId() {
@@ -235,8 +262,23 @@ public final class DisplayableEnrollment {
         }
 
         public boolean isEnrolled() {
-            return isEnrolled;
+            return enrolled;
+        }
+
+        public boolean isInService() {
+            return inService;
+        }
+
+        public int getLoadGroupId() {
+            return loadGroupId;
+        }
+
+        public int getRelay() {
+            return relay;
+        }
+
+        public int getNumRelays() {
+            return numRelays;
         }
     }
-    
 }

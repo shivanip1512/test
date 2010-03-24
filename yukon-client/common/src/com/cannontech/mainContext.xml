@@ -182,6 +182,8 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/callTracking</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/metering</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/program</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/enrollment</value>
+               <value>classpath:com/cannontech/yukon/web/modules/operator/hardwareConfig</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/appliances</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/serviceRequest</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/thermostat</value>
@@ -214,10 +216,10 @@
     <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">
         <property name="themeSource" ref="mainThemeSource"/>
     </bean>
-    
-    <bean class="com.cannontech.common.i18n.ObjectFormattingServiceImpl"/>
-    
-    
+
+    <bean id="objectFormattingService" class="com.cannontech.common.i18n.ObjectFormattingServiceImpl"/>
+
+
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
         <property name="assembler" ref="assembler"/>
         <property name="namingStrategy" ref="namingStrategy"/>

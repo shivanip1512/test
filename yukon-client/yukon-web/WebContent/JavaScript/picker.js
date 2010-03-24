@@ -131,6 +131,9 @@ Picker.prototype = {
 		if (start) {
 			parameters.start = start;
 		}
+		if (this.extraArgs) {
+			parameters.extraArgs = this.extraArgs;
+		}
 
 		new Ajax.Request('/picker/v2/search', {
 			'method': 'get',

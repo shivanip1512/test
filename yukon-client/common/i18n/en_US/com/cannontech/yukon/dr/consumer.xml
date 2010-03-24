@@ -321,6 +321,11 @@
 
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>
+    <entry key="yukon.dr.consumer.enrollment.enrolledProgramsMsg">
+        Program you are currently enrolled in are highlighted in green.
+    </entry>
+    <entry key="yukon.dr.consumer.enrollment.enroll">Enroll</entry>
+    <entry key="yukon.dr.consumer.enrollment.unenroll">Unenroll</entry>
     <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollment.enrollmentTitle">Program Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollment.category">Category</entry>

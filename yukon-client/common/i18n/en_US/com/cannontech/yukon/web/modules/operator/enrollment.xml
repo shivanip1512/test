@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- enrollmentList -->
+    <entry key="yukon.web.modules.operator.enrollmentList.pageName">Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.pageDescription">Enrollment</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.enrolledPrograms.title">Enrolled Programs</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.name">Name</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.applianceCategory">Appliance Category</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.group">Group</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.hardware">Hardware</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.relay">Relay</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.status">Status</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.inService.true">In Service</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.inService.false">Out of Service</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.actions">Actions</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.edit.hoverText">Edit enrollment details</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.edit.title">Enroll Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.remove.hoverText">Unenroll from this program</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.remove.title">Unenroll</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.add.hoverText">Enroll this customer in a new program</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.add.label">Add Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.addEnrollmentDialogTitle">Add Enrollment</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.history.title">History</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.date">Date</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.action">Action</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.program">Program</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.group">Group</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.hardware">Hardware</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.deviceRemoved">Device Removed</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.relay">Relay</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.noRelay">None</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.showAllHistory">Show More</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentEdit.headerMessage">
+        Select group and hardware for program {0}.
+    </entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.group">Group</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.groupNotApplicable">Not Applicable</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.hardwareAssigned.title">Hardware Assigned</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.serialNumber">Serial #</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.relay">Relay</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentEdit.ok">OK</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.cancel">Cancel</entry>
+
+</properties>

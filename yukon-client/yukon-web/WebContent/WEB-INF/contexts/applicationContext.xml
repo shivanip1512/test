@@ -900,6 +900,7 @@
     </bean>
     
     <bean id="msg2TagPrototype" class="com.cannontech.web.i18n.Msg2Tag">
+        <property name="objectFormattingService" ref="objectFormattingService"/>
     </bean>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
@@ -1366,7 +1367,17 @@
         </property>
     </bean>
 
-    <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker"/>
+    <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
+        <property name="filters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
+                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
+                </bean>
+                <bean class="com.cannontech.common.search.pao.db.ApplianceCategoryUsableFilter"/>
+            </list>
+        </property>
+    </bean>
+    <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
 
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"

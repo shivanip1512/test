@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.Searcher;
 import com.cannontech.common.search.YukonObjectCriteria;
+import com.cannontech.user.YukonUserContext;
 
 public abstract class LucenePicker<T> extends BasePicker<T> {
     protected YukonObjectCriteria criteria = null;
@@ -16,8 +17,8 @@ public abstract class LucenePicker<T> extends BasePicker<T> {
 
 
     @Override
-    public SearchResult<T> search(String ss, int start,
-            int count) {
+    public SearchResult<T> search(String ss, int start, int count,
+            String extraArgs, YukonUserContext userContext) {
         SearchResult<T> hits;
         if (StringUtils.isBlank(ss)) {
             hits = searcher.all(criteria, start, count);

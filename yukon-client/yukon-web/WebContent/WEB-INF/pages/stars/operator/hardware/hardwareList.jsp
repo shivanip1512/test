@@ -21,7 +21,7 @@
 </style>
 
 <cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
-<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="commanderUrl" value="/spring/stars/operator/hardware/commander?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>

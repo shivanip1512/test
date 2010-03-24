@@ -7,12 +7,14 @@ public class HardwareSummary {
     private Integer inventoryId;
     private String deviceLabel;
     private String serialNumber;
+    private int deviceTypeId;
 
     public HardwareSummary(Integer inventoryId, String deviceLabel,
-            String serialNumber) {
+            String serialNumber, int deviceTypeId) {
         this.inventoryId = inventoryId;
         this.deviceLabel = deviceLabel;
         this.serialNumber = serialNumber;
+        this.deviceTypeId = deviceTypeId;
     }
 
     public Integer getInventoryId() {
@@ -33,5 +35,9 @@ public class HardwareSummary {
         }
 
         return deviceLabel;
+    }
+
+    public int getDeviceTypeId() {
+        return deviceTypeId;
     }
 }

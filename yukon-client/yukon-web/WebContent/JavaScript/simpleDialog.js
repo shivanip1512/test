@@ -1,31 +1,11 @@
-function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, width, height) {
+function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters) {
     var dialogDiv = $(dialogId);
 
     if (arguments.length > 2) {
         $(dialogId + '_title').innerHTML = title;
     }
 
-    var dlgWidth = 800;
-    var dlgHeight = 0;
-    if (arguments.length > 4) {
-        dlgWidth = width;
-    }
-    if (arguments.length > 5) {
-        dlgHeight = height;
-    }
-
     var successCallback = function(transport) {
-        if (dlgWidth) {
-            dialogDiv.setStyle({
-                'width': dlgWidth + "px"
-            });
-        }
-        if (dlgHeight) {
-            dialogDiv.setStyle({
-                'height': dlgHeight + "px"
-            });
-        }
-
         var windowWidth = 790, windowHeight = 580;
         if (Prototype.Browser.IE) {
             windowWidth = document.body.offsetWidth;

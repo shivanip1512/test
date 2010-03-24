@@ -27,6 +27,7 @@
 <entry key="yukon.web.picker.twoWayLcrPicker.dialogTitle">Select Load Tap Changer</entry>
 
 <entry key="yukon.web.picker.applianceProgramPicker.dialogTitle">Select Program</entry>
+<entry key="yukon.web.picker.programForEnrollmentPicker.dialogTitle">Select Program</entry>
 
 <!-- Point Pickers -->
 <entry key="yukon.web.picker.point.pointName">Point</entry>
@@ -50,5 +51,12 @@
 <entry key="yukon.web.picker.loginGroup.groupName">Login Group</entry>
 <entry key="yukon.web.picker.loginGroup.groupId">User Id</entry>
 <entry key="yukon.web.picker.loginGroupPicker.dialogTitle">Select Login Group</entry>
+
+<!-- Assigned Program Picker -->
+
+<entry key="yukon.web.picker.assignedProgram.name">Name</entry>
+<entry key="yukon.web.picker.assignedProgram.applianceCategory">Appliance Category</entry>
+
+<entry key="yukon.web.picker.assignedProgramPicker.dialogTitle">Select Program</entry>
 
 </properties>

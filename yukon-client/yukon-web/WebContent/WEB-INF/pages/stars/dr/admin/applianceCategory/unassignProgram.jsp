@@ -19,7 +19,7 @@
         value="${assignedProgram.assignedProgramId}"/>
 
     <p>
-        <cti:msg key="${confirmationQuestion}"/>
+        <cti:msg2 key="${confirmationQuestion}"/>
     </p>
 
     <div class="actionArea">

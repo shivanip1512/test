@@ -52,6 +52,8 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
+import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
@@ -103,6 +105,7 @@ public class OptOutServiceImpl implements OptOutService {
 	private ProgramService programService;
 	private EnrollmentDao enrollmentDao;
 	private StarsSearchDao starsSearchDao;
+	private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
 	private SystemDateFormattingService systemDateFormattingService;
 	private YukonUserDao yukonUserDao;
 	private Executor executor;
@@ -139,11 +142,11 @@ public class OptOutServiceImpl implements OptOutService {
     	for(Integer inventoryId : inventoryIdList) { 
 
 			LiteStarsLMHardware inventory = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-			List<Program> programs = enrollmentDao.getCurrentlyEnrolledProgramsByInventoryId(inventoryId);
+			List<DisplayableInventoryEnrollment> programs = displayableInventoryEnrollmentDao.find(customerAccount.getAccountId(), inventoryId);
 			
 			List<OptOutCountsDto> optOutCountSettingsForPrograms = Lists.newArrayList();
-			for (Program program : programs) {
-				int programId = program.getProgramId();
+			for (DisplayableInventoryEnrollment program : programs) {
+				int programId = program.getAssignedProgramId();
 				OptOutCountsDto oocs = optOutCountsSettingsByProgramIdMap.get(programId);
 				if (oocs != null) {
 					optOutCountSettingsForPrograms.add(oocs);
@@ -1159,8 +1162,14 @@ public class OptOutServiceImpl implements OptOutService {
 	public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
 		this.starsSearchDao = starsSearchDao;
 	}
-	
+
 	@Autowired
+	public void setDisplayableInventoryEnrollmentDao(
+            DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
+        this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
+    }
+
+    @Autowired
 	public void setSystemDateFormattingService(
 			SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;

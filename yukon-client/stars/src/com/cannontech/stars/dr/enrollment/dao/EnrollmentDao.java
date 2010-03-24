@@ -13,12 +13,16 @@ public interface EnrollmentDao {
     public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId);
 
     /**
-     * Method to get a list of all the programs a device is currently enrolled in
-     * @param inventoryId - Inventory in question
-     * @return List of enrolled programs
+     * Get an active enrollment if one exists for the given account number and
+     * STARS program id.
+     * @param accountId The account id.
+     * @param assignedProgramId The STARS program id (the primary key in
+     *            lmProgramWebPublishing--programId).
+     * @return
      */
-    public List<Program> getCurrentlyEnrolledProgramsByInventoryId(int inventoryId);
-    
+    public List<ProgramEnrollment> findActiveEnrollments(int accountId,
+            int assignedProgramId);
+
     /**
      * Method to get a list of inventory ids for inventory that was opted out for a given
      * program during a given time period
@@ -81,5 +85,11 @@ public interface EnrollmentDao {
 	 * @return
 	 */
 	public Date findCurrentEnrollmentStartDate(int inventoryId, int loadGroupId);
-    
+
+    /**
+     * Determine if the given inventory item is in service.
+     * @param inventoryId The id of the inventory item to check.
+     * @return true if the inventory is in service.
+     */
+	public boolean isInService(int inventoryId);
 }

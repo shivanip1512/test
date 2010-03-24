@@ -10,9 +10,8 @@ import java.util.TreeSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
-import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
@@ -22,7 +21,8 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.stars.util.InventoryUtils;
+import com.google.common.collect.Lists;
 
 @Repository
 public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao implements DisplayableEnrollmentDao {
@@ -30,14 +30,11 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
 	private EnrollmentDao enrollmentDao;
 	
     @Override
-    public List<DisplayableEnrollment> getDisplayableEnrollments(final CustomerAccount customerAccount,
-            final YukonUserContext yukonUserContext) {
+    public List<DisplayableEnrollment> find(int customerAccountId) {
 
-        final int customerAccountId = customerAccount.getAccountId();
-        
         // Get All ApplianceCategory's that the CustomerAccount could enroll in
         final List<ApplianceCategory> applianceCategories = 
-        	applianceCategoryDao.getApplianceCategories(customerAccount);
+        	applianceCategoryDao.findApplianceCategories(customerAccountId);
         
         // Get all Programs that belong to the ApplianceCategory's.
         final Map<ApplianceCategory, List<Program>> typeMap = 
@@ -65,13 +62,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
                 enrollment = new DisplayableEnrollment();
                 
                 enrollment.setApplianceCategory(applianceCategory);
-                
-                ApplianceTypeEnum applianceTypeEnum = applianceCategory.getApplianceTypeEnum();
-                enrollment.setApplianceType(applianceTypeEnum);
-                
-                String logoPath = applianceCategory.getLogoPath();
-                enrollment.setApplianceLogo(logoPath);
-                
+
                 enrollment.setEnrollmentPrograms(
                     new TreeSet<DisplayableEnrollmentProgram>(DisplayableEnrollment.enrollmentProgramComparator));
                 enrollmentMap.put(applianceCategory, enrollment);
@@ -79,7 +70,9 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
             
             for (Program program : programList) {
             	DisplayableEnrollmentProgram displayableEnrollmentProgram = 
-            		this.createDisplayableEnrollmentProgram(program, hardwareList, activeEnrollments);
+            		createDisplayableEnrollmentProgram(applianceCategory,
+            		                                   program, hardwareList,
+            		                                   activeEnrollments);
             	enrollment.getEnrollmentPrograms().add(displayableEnrollmentProgram);
             }
             
@@ -89,13 +82,41 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         Collections.sort(resultList, DisplayableEnrollment.enrollmentComparator);
         return resultList;
     }
-    
+
+    @Override
+    public List<DisplayableEnrollmentProgram> findEnrolledPrograms(int accountId) {
+        List<DisplayableEnrollment> enrollments = find(accountId);
+
+        List<DisplayableEnrollmentProgram> enrollmentPrograms = Lists.newArrayList();
+        for (DisplayableEnrollment enrollment : enrollments) {
+            for (DisplayableEnrollmentProgram enrollmentProgram
+                    : enrollment.getEnrollmentPrograms()) {
+                if (enrollmentProgram.isEnrolled()) {
+                    enrollmentPrograms.add(enrollmentProgram);
+                }
+            }
+        }
+        return enrollmentPrograms;
+    }
+
+    @Override
+    public DisplayableEnrollmentProgram getProgram(int accountId, int programId) {
+        List<DisplayableEnrollment> customerEnrollments = find(accountId);
+        for (DisplayableEnrollment enrollment : customerEnrollments) {
+            for (DisplayableEnrollmentProgram enrollmentProgram : enrollment.getEnrollmentPrograms()) {
+                if (enrollmentProgram.getProgram().getProgramId() == programId) {
+                    return enrollmentProgram;
+                }
+            }
+        }
+        throw new NotFoundException("could not find enrollment program for " +
+        		"account " + accountId + " and program " + programId);
+    }
+
     private DisplayableEnrollmentProgram createDisplayableEnrollmentProgram(
-    		Program program, 
-    		List<HardwareSummary> hardwareList, 
-    		List<ProgramEnrollment> activeEnrollments) 
-    {
-    
+            ApplianceCategory applianceCategory, Program program,
+            List<HardwareSummary> hardwareList,
+            List<ProgramEnrollment> activeEnrollments) {
     	int programId = program.getProgramId();
     	List<DisplayableEnrollmentInventory> enrollmentInventoryList = 
     		new ArrayList<DisplayableEnrollmentInventory>();
@@ -106,8 +127,8 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
     		enrollmentInventoryList.add(displayableEnrollmentInventory);
     	}
     	
-    	return new DisplayableEnrollmentProgram(program, enrollmentInventoryList);
-    	
+        return new DisplayableEnrollmentProgram(applianceCategory, program,
+                                                enrollmentInventoryList);
     }
 
     private DisplayableEnrollmentInventory createDisplayableEnrollmentInventory(
@@ -118,18 +139,34 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         
     	Integer inventoryId = hardware.getInventoryId();
 		
-		boolean isEnrolled = false;
+		boolean enrolled = false;
+		int loadGroupId = 0;
+		int relay = 0;
 		for(ProgramEnrollment activeEnrollment : activeEnrollments){
 			int enrollmentProgramId = activeEnrollment.getProgramId();
 			int enrollmentInventoryId = activeEnrollment.getInventoryId();
 			
 			if(enrollmentProgramId == programId && enrollmentInventoryId == inventoryId) {
 				// This inventory IS enrolled in this program
-				isEnrolled = true;
+				enrolled = true;
+				loadGroupId = activeEnrollment.getLmGroupId();
+				relay = activeEnrollment.getRelay();
 				break;
 			}
 		}
-		return new DisplayableEnrollmentInventory(inventoryId, hardware.getDisplayName(), isEnrolled);
+		boolean inService = false;
+		if (enrolled) {
+	        inService =
+	            enrollmentDao.isInService(inventoryId);
+		}
+
+        int hwConfigType = InventoryUtils.getHardwareConfigType(hardware.getDeviceTypeId());
+        int numRelays =
+            (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) ? 8 : 4;
+        return new DisplayableEnrollmentInventory(inventoryId,
+                                                  hardware.getDisplayName(),
+                                                  enrolled, inService, loadGroupId,
+                                                  relay, numRelays);
 		
     }
     

@@ -258,6 +258,8 @@
 
     <!-- Device Reconfig -->
     <bean id="deviceReconfigDao" class="com.cannontech.stars.dr.deviceReconfig.dao.impl.DeviceReconfigDaoImpl"/>
+
+    <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     
     <!-- Import Customer Accounts/Hardware Import Job -->    
     <bean id="importCustAccountsSchedulerJob"

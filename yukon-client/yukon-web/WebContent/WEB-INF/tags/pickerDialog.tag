@@ -8,6 +8,7 @@
 <%@ attribute name="memoryGroup" %>
 <%@ attribute name="asButton" type="java.lang.Boolean" %>
 <%@ attribute name="styleClass" %>
+<%@ attribute name="extraArgs" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -32,6 +33,9 @@
     </c:if>
     <c:if test="${!empty pageScope.memoryGroup}">
         ${pageScope.id}.memoryGroup = '${pageScope.memoryGroup}';
+    </c:if>
+    <c:if test="${!empty pageScope.extraArgs}">
+        ${pageScope.id}.extraArgs = '${pageScope.extraArgs}';
     </c:if>
 </script>
 <span id="picker_${pageScope.id}_inputArea"></span>

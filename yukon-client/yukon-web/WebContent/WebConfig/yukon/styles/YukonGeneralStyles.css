@@ -10,10 +10,6 @@ h2 { /*Page Header*/
   margin: 0;
 }
 
-.pickerLink a {
-	color: #FC6;
-}
-
 .contentArea {
 	font-family: Arial, Helvetica, sans-serif;
 }
@@ -894,7 +890,7 @@ span.footerLink span {
 }
 
 span.footerLink span,
-a.simpleLink span {
+span.simpleLink span {
 	vertical-align: middle;
 }
 
@@ -975,6 +971,14 @@ div.padded {
     filter:mask();/*must have*/
     width:3000px;/*must have for any big value*/
     height:3000px/*must have for any big value*/;
+}
+
+#hardwareConfigEditDialog {
+    width: 500px;
+}
+
+#hardwareConfigEditDialog .actionArea input {
+    width: 115px;
 }
 
 .i18nInline {

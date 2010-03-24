@@ -1,0 +1,65 @@
+/**
+ * 
+ */
+package com.cannontech.stars.dr.appliance.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
+import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
+import com.cannontech.stars.dr.appliance.model.UltraLightAssignedProgram;
+
+public class UltraLightAssignedProgramRowMapper extends
+        AbstractRowMapperWithBaseQuery<UltraLightAssignedProgram> {
+
+    public UltraLightAssignedProgramRowMapper() {
+    }
+
+    @Override
+    public SqlFragmentSource getBaseQuery() {
+        SqlStatementBuilder retVal = new SqlStatementBuilder();
+        retVal.append("SELECT p.applianceCategoryId, " +
+                      "ac.description AS applianceCategoryName," +
+                      "p.deviceId AS programId, wc.alternateDisplayName, " +
+                      "p.programId AS assignedProgramId, pao.paoName");
+        retVal.append("FROM lmProgramWebPublishing p");
+        retVal.append("INNER JOIN yukonPaobject pao");
+        retVal.append("ON pao.paobjectId = p.deviceId");
+        retVal.append("INNER JOIN applianceCategory ac");
+        retVal.append("ON ac.applianceCategoryId = p.applianceCategoryId");
+        retVal.append("INNER JOIN yukonWebConfiguration wc");
+        retVal.append("ON wc.configurationId = p.webSettingsId");
+        return retVal;
+    }
+
+    @Override
+    public SqlFragmentSource getOrderBy() {
+        SqlStatementBuilder retVal = new SqlStatementBuilder();
+        retVal.append("ORDER BY LOWER(pao.paoName)");
+        return retVal;
+    }
+
+    @Override
+    public UltraLightAssignedProgram mapRow(ResultSet rs, int rowNum)
+            throws SQLException {
+        int assignedProgramId = rs.getInt("assignedProgramId");
+        int programId = rs.getInt("programId");
+        AssignedProgramName name =
+            new AssignedProgramName(rs.getString("paoName"),
+                                     rs.getString("alternateDisplayName"));
+        int applianceCategoryId = rs.getInt("applianceCategoryId");
+        String applianceCategoryName = rs.getString("applianceCategoryName");
+
+        UltraLightAssignedProgram retVal =
+            new UltraLightAssignedProgram(assignedProgramId, programId,
+                                          name.getProgramName(),
+                                          name.getDisplayName(),
+                                          applianceCategoryId,
+                                          applianceCategoryName);
+
+        return retVal;
+    }
+}

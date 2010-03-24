@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Override this class to implement a picker.  Instances of implementing
@@ -32,7 +33,9 @@ public interface Picker<T> {
      * @param start The zero-based index of the first match to return.
      * @param count The maximum number of matches to return. The size of the
      *            return value should be less than or equal to count.
+     * @param extraArgs optional string which comes from the "extraArgs" argument to the 
      * @return An instance of SearchResult populated appropriately.
      */
-    public SearchResult<T> search(String ss, int start, int count);
+    public SearchResult<T> search(String ss, int start, int count,
+            String extraArgs, YukonUserContext userContext);
 }

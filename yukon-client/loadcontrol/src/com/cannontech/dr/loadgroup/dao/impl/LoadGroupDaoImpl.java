@@ -2,6 +2,7 @@ package com.cannontech.dr.loadgroup.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -11,6 +12,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 
@@ -35,6 +37,19 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                                                            rs.getString("paoName"));
             return retVal;
         }};
+
+    @Override
+    public List<DisplayablePao> getForProgram(int programId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT paobjectId, paoName, type FROM yukonPaobject");
+        sql.append("WHERE paobjectId IN (");
+        sql.append("SELECT lmGroupDeviceId FROM lmProgramDirectGroup");
+        sql.append("WHERE deviceId").eq(programId).append(")");
+
+        return simpleJdbcTemplate.query(sql.getSql(),
+                                        loadGroupRowMapper,
+                                        sql.getArguments());
+    }
 
     @Override
     public DisplayablePao getLoadGroup(int loadGroupId) {

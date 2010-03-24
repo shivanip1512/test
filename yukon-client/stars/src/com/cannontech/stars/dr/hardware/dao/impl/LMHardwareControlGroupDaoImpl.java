@@ -3,6 +3,8 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -18,9 +20,13 @@ import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
+import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.google.common.collect.Lists;
 
 public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao, InitializingBean {
     private static final String removeSql;
@@ -310,7 +316,76 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper, energyCompanyId);
         return list;
     }
-    
+
+    @Override
+    public List<HardwareConfigAction> getHardwareConfigActions(int accountId) {
+        List<HardwareConfigAction> retVal = Lists.newArrayList();
+
+        retVal.addAll(getHardwareConfigActions(accountId, EnrollmentEnum.ENROLL));
+        retVal.addAll(getHardwareConfigActions(accountId, EnrollmentEnum.UNENROLL));
+
+        Collections.sort(retVal, new Comparator<HardwareConfigAction>() {
+            @Override
+            public int compare(HardwareConfigAction hca1, HardwareConfigAction hca2) {
+                return -hca1.getDate().compareTo(hca2.getDate());
+            }});
+
+        return retVal;
+    }
+
+    private List<HardwareConfigAction> getHardwareConfigActions(int accountId,
+            final EnrollmentEnum actionType) {
+        final String dateColumn =
+            actionType == EnrollmentEnum.ENROLL ? "groupEnrollStart" : "groupEnrollStop";
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT hb.manufacturerSerialNumber, hcg.relay, pao.paoName,");
+        sql.append("wc.alternateDisplayName,");
+        sql.append("hcg.lmGroupId, lgPao.paoName as loadGroupName,");
+        sql.append("hcg.").append(dateColumn);
+        sql.append("FROM lmHardwareControlGroup hcg");
+        sql.append("LEFT JOIN lmHardwareBase hb on hb.inventoryId = hcg.inventoryId");
+        sql.append("INNER JOIN lmProgramWebPublishing wp on hcg.programId = wp.programId");
+        sql.append("INNER JOIN yukonPAObject pao on wp.deviceId = pao.paobjectId");
+        sql.append("INNER JOIN yukonPAObject lgPao on lgPao.paobjectId = hcg.lmGroupId");
+        sql.append("INNER JOIN yukonWebConfiguration wc on wc.ConfigurationId = wp.websettingsId");
+        sql.append("WHERE hcg.accountId").eq(accountId);
+        sql.append("AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append("AND hcg.").append(dateColumn).append("IS NOT NULL");
+        ParameterizedRowMapper<HardwareConfigAction> rowMapper =
+            new ParameterizedRowMapper<HardwareConfigAction>() {
+                @Override
+                public HardwareConfigAction mapRow(ResultSet rs, int index)
+                        throws SQLException {
+                    Date date = rs.getTimestamp(dateColumn);
+
+                    AssignedProgramName name =
+                        new AssignedProgramName(rs.getString("paoName"),
+                                                 rs.getString("alternateDisplayName"));
+
+                    String loadGroupName = "";
+                    if (rs.getInt("lmGroupId") != 0) {
+                        loadGroupName = rs.getString("loadGroupName");
+                    }
+
+                    String hardwareSerialNumber = rs.getString("manufacturerSerialNumber");
+                    if (rs.wasNull()) {
+                        hardwareSerialNumber = null;
+                    }
+                    int relay = rs.getInt("relay");
+
+                    HardwareConfigAction retVal =
+                        new HardwareConfigAction(date, actionType,
+                                                 name.getDisplayName(),
+                                                 loadGroupName,
+                                                 hardwareSerialNumber, relay);
+                    return retVal;
+                }
+        };
+        List<HardwareConfigAction> retVal =
+            simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
+        return retVal;
+    }
+
     private static final ParameterizedRowMapper<LMHardwareControlGroup> createRowMapper() {
         final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper = new ParameterizedRowMapper<LMHardwareControlGroup>() {
             public LMHardwareControlGroup mapRow(ResultSet rs, int rowNum) throws SQLException {

@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.appliance.dao;
 
 import java.util.List;
 
-import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 
 public interface ApplianceCategoryDao {
@@ -14,7 +13,7 @@ public interface ApplianceCategoryDao {
 
     public List<Integer> getEnergyCompaniesByApplianceCategoryId(int applianceCategoryId);
 
-    public List<ApplianceCategory> getApplianceCategories(CustomerAccount customerAccount);
+    public List<ApplianceCategory> findApplianceCategories(int customerAccountId);
 
-    public List<Integer> getApplianceCategoryIds(final CustomerAccount customerAccount);    
+    public List<Integer> getApplianceCategoryIds(int accountId);    
 }

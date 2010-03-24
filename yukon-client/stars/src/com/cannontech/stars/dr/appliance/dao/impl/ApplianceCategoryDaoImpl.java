@@ -24,7 +24,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
@@ -85,9 +84,9 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<Integer> getApplianceCategoryIds(final CustomerAccount customerAccount) {
+    public List<Integer> getApplianceCategoryIds(int accountId) {
 
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
         List<Integer> idList;
         if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
             List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
@@ -116,9 +115,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<ApplianceCategory> getApplianceCategories(final CustomerAccount customerAccount) {
-
-        List<Integer> applianceCategoryIdList = getApplianceCategoryIds(customerAccount);
+    public List<ApplianceCategory> findApplianceCategories(int customerAccountId) {
+        List<Integer> applianceCategoryIdList = getApplianceCategoryIds(customerAccountId);
         
         final Set<ApplianceCategory> set = new HashSet<ApplianceCategory>(applianceCategoryIdList.size());
         

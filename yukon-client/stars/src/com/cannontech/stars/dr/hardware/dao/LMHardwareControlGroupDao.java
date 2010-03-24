@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
@@ -66,4 +67,6 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId);
     
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId);
+
+    public List<HardwareConfigAction> getHardwareConfigActions(int accountId);
 }

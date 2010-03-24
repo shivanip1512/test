@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.consumer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,7 +48,7 @@ public class EnrollmentController extends AbstractConsumerController {
         webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT);
         
         List<DisplayableEnrollment> enrollments = 
-            displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
+            displayableEnrollmentDao.find(customerAccount.getAccountId());
         map.addAttribute("enrollments", enrollments);
         
         return "consumer/enrollment/enrollment.jsp";
@@ -61,7 +60,7 @@ public class EnrollmentController extends AbstractConsumerController {
     	webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
         
     	List<DisplayableEnrollment> enrollments = 
-    		displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
+    		displayableEnrollmentDao.find(customerAccount.getAccountId());
     	map.addAttribute("enrollments", enrollments);
     	
     	return "consumer/enrollment/enrollmentDetail.jsp";

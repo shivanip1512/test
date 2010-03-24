@@ -24,7 +24,11 @@ public class Program {
     public Program() {
         
     }
-    
+
+    /**
+     * Get the assigned (STARS) program id.
+     * @return the assigned program id.
+     */
     public int getProgramId() {
         return programId;
     }
@@ -32,18 +36,19 @@ public class Program {
     public void setProgramId(int programId) {
         this.programId = programId;
     }
-    
+
     /**
-     * The program's STARS name ("AlternateDisplayName") is available, otherwise pao name.
-     * @return
+     * The program's assigned (STARS) name ("AlternateDisplayName") if available, otherwise
+     * PAO name.
+     * @return the assigned program name.
      */
     public String getProgramName() {
         return programName;
     }
     
     /**
-     * The program's STARS name ("AlternateDisplayName") is available, otherwise pao name.
-     * @return
+     * Set the program's assigned name ("AlternateDisplayName") if available,
+     * otherwise PAO name.
      */
     public void setProgramName(String programName) {
         this.programName = programName;

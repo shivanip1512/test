@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.IntegerRowMapper;
@@ -61,31 +62,27 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         }
         return programEnrollments;
     }
-    
-	@Override
-	@Transactional
-	public List<Program> getCurrentlyEnrolledProgramsByInventoryId(int inventoryId) {
 
-		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT pwp.ProgramID, ProgramOrder, ywc.Description, ywc.url, AlternateDisplayName");
-		sql.append("	, PAOName, yle.EntryText as ChanceOfControl, ApplianceCategoryID, LogoLocation ");
-		sql.append("FROM LMProgramWebPublishing pwp");
-		sql.append("	JOIN YukonWebConfiguration ywc ON pwp.WebsettingsID = ywc.ConfigurationID");
-		sql.append("	JOIN YukonPAObject ypo ON ypo.PAObjectID = pwp.DeviceID");
-		sql.append("	JOIN YukonListEntry yle ON yle.EntryID = pwp.ChanceOfControlID");
-		sql.append("	JOIN LMHardwareControlGroup lmhcg ON lmhcg.ProgramID = pwp.ProgramID");
-		sql.append("WHERE lmhcg.InventoryId = ? AND lmhcg.Type = ?");
-		sql.append("	AND NOT lmhcg.groupEnrollStart IS NULL");
-		sql.append("	AND lmhcg.groupEnrollStop IS NULL");
-		
-		List<Program> programList = yukonJdbcTemplate.query(sql.toString(),
-                                                             new ProgramRowMapper(yukonJdbcTemplate),
-                                                             inventoryId,
-                                                             LMHardwareControlGroup.ENROLLMENT_ENTRY);
-		
-		return programList;
-	}
-	
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProgramEnrollment> findActiveEnrollments(int accountId,
+            int assignedProgramId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(enrollmentSQLHeader);
+        sql.append("WHERE lmhcg.accountId").eq(accountId);
+        sql.append("AND lmhcg.programId").eq(assignedProgramId);
+        sql.append("AND lmhcg.groupEnrollStart IS NOT NULL");
+        sql.append("AND lmhcg.groupEnrollStop IS NULL");
+
+        List<ProgramEnrollment> retVal = null;
+        retVal = yukonJdbcTemplate.query(sql, enrollmentRowMapper());
+        for (ProgramEnrollment programEnrollment : retVal) {
+            programEnrollment.setEnroll(true);
+        }
+
+        return retVal;
+    }
+
 	@Override
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime) {
 		
@@ -240,6 +237,32 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         	return null;
         }
     }
+
+	@Override
+    public boolean isInService(int inventoryId) {
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+
+	    sql.append("SELECT le.yukonDefinitionId FROM lmHardwareEvent he");
+	    sql.append("JOIN lmCustomerEventBase ceb ON he.eventId = ceb.eventId");
+	    sql.append("JOIN yukonListEntry le ON ceb.actionId = le.entryId");
+	    sql.append("WHERE le.yukonDefinitionId IN (");
+	    sql.append(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED).append(",");
+	    sql.append(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP).append(",");
+	    sql.append(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION).append(",");
+	    sql.append(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION).append(")");
+	    sql.append("AND he.inventoryId").eq(inventoryId);
+	    sql.append("ORDER BY eventDateTime DESC");
+
+	    List<Integer> actions = yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+	    if (actions.size() == 0) {
+	        return true;
+	    }
+
+	    int lastAction = actions.get(0);
+	    return lastAction == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED
+	        || lastAction == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_SIGNUP;
+    }
+
     private static final ParameterizedRowMapper<ProgramEnrollment> enrollmentRowMapper() {
         final ParameterizedRowMapper<ProgramEnrollment> oldConfigInfoRowMapper = new ParameterizedRowMapper<ProgramEnrollment>() {
             public ProgramEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {

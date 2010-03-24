@@ -254,7 +254,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         List<CustomerAccount> customerAccountList = customerAccountDao.getByUser(user);
         CustomerAccount customerAccount = customerAccountList.get(0);
         
-        final List<Integer> categoryIdList = applianceCategoryDao.getApplianceCategoryIds(customerAccount);
+        final List<Integer> categoryIdList = applianceCategoryDao.getApplianceCategoryIds(customerAccount.getAccountId());
         
         return categoryIdList;
     }

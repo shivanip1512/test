@@ -54,13 +54,14 @@ public class PickerController {
     @RequestMapping
     public void search(HttpServletResponse response, String type, String ss,
             @RequestParam(value = "start", required = false) String startStr,
-            Integer count, YukonUserContext userContext)
+            Integer count, String extraArgs, YukonUserContext userContext)
             throws ServletException, IOException {
         int start = NumberUtils.toInt(startStr, 0);
         count = count == null ? 20 : count;
 
         Picker<?> picker = pickerService.getPicker(type);
-        SearchResult<?> hits = picker.search(ss, start, count);
+        SearchResult<?> hits = picker.search(ss, start, count, extraArgs,
+                                             userContext);
 
         response.setContentType("application/json");
 

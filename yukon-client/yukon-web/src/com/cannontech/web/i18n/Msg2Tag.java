@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.jsp.JspException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -188,7 +187,6 @@ public class Msg2Tag extends YukonTagSupport {
         this.blankIfMissing = blankIfMissing;
     }
     
-    @Autowired
     public void setObjectFormattingService(
             ObjectFormattingService objectFormattingService) {
         this.objectFormattingService = objectFormattingService;

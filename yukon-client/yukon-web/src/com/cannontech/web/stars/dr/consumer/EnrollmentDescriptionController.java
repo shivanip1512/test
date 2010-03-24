@@ -27,9 +27,9 @@ public class EnrollmentDescriptionController extends AbstractConsumerController 
 	public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount, 
 			Integer programId, Integer categoryId, YukonUserContext yukonUserContext, ModelMap map) {
 
-		List<DisplayableEnrollment> enrollments = displayableEnrollmentDao
-				.getDisplayableEnrollments(customerAccount, yukonUserContext);
-		
+		List<DisplayableEnrollment> enrollments =
+		    displayableEnrollmentDao.find(customerAccount.getAccountId());
+
 		// Get enrollment from customer enrollments for the category id
 		DisplayableEnrollment currentEnrollment = null;
 		for(DisplayableEnrollment enrollment : enrollments) {
