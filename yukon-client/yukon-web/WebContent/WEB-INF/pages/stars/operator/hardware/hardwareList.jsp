@@ -9,10 +9,15 @@
 
 <%-- For lining up the columns of the three tables --%>
 <style type="text/css">
-    td.name, th.name {width:30%}
-    td.type, th.type {width:30%}
-    td.label, th.label {width:30%}
-    td.actions, th.actions {width:10%}
+	table.hardwareListTable th.name,
+    table.hardwareListTable th.type,
+    table.hardwareListTable th.label {
+        width: 30%;
+    }
+    
+    table.hardwareListTable th.actions {
+        width: 10%;
+    }
 </style>
 
 <cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
@@ -31,7 +36,7 @@
                 <cti:msg2 key=".switches.none"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable fourColumnTable">
+                <table class="compactResultsTable hardwareListTable">
                     <tr>
                         <th class="name"><cti:msg2 key=".switches.tableHeader.serialNumber"/></th>
                         <th class="type"><cti:msg2 key=".switches.tableHeader.deviceType"/></th>
@@ -51,14 +56,14 @@
                         </c:choose>
                         <c:set var="switchesCount" value="${switchesCount + 1}"/>
                         <tr class="${switchesRowClass}">
-                            <td class="name">
+                            <td>
                                 <a href="${editUrl}${switch.inventoryId}">
                                     <spring:escapeBody htmlEscape="true">${switch.serialNumber}</spring:escapeBody>
                                 </a>
                             </td>
-                            <td class="type"><spring:escapeBody htmlEscape="true">${switch.deviceType}</spring:escapeBody></td>
-                            <td class="label"><spring:escapeBody htmlEscape="true">${switch.deviceLabel}</spring:escapeBody></td>
-                            <td class="actions">
+                            <td><spring:escapeBody htmlEscape="true">${switch.deviceType}</spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true">${switch.deviceLabel}</spring:escapeBody></td>
+                            <td>
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                     <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
                                         <cti:img key="changeOut" href="${changeOutUrl}${thermostat.inventoryId}"/>
@@ -90,7 +95,7 @@
                 <cti:msg2 key=".thermostats.none"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable fourColumnTable">
+                <table class="compactResultsTable hardwareListTable">
                     <tr>
                         <th class="name"><cti:msg2 key=".thermostats.tableHeader.serialNumber"/></th>
                         <th class="type"><cti:msg2 key=".thermostats.tableHeader.deviceType"/></th>
@@ -110,14 +115,14 @@
                         </c:choose>
                         <c:set var="thermostatsCount" value="${thermostatsCount + 1}"/>
                         <tr class="${thermostatsRowClass}">
-                            <td class="name">
+                            <td>
                                 <a href="${editUrl}${thermostat.inventoryId}">
                                     <spring:escapeBody htmlEscape="true">${thermostat.serialNumber}</spring:escapeBody>
                                 </a>
                             </td>
-                            <td class="type"><spring:escapeBody htmlEscape="true">${thermostat.deviceType}</spring:escapeBody></td>
-                            <td class="label"><spring:escapeBody htmlEscape="true">${thermostat.deviceLabel}</spring:escapeBody></td>
-                            <td class="actions">
+                            <td><spring:escapeBody htmlEscape="true">${thermostat.deviceType}</spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true">${thermostat.deviceLabel}</spring:escapeBody></td>
+                            <td>
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                     <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
                                         <cti:img key="changeOut" href="${changeOutUrl}${thermostat.inventoryId}"/>
@@ -156,7 +161,7 @@
                 <cti:msg2 key=".meters.none"/>
             </c:when>
             <c:otherwise>
-                <table class="compactResultsTable fourColumnTable">
+                <table class="compactResultsTable hardwareListTable">
                     <tr>
                         <th class="name"><cti:msg2 key=".meters.tableHeader.deviceName"/></th>
                         <th class="type"><cti:msg2 key=".meters.tableHeader.deviceType"/></th>
@@ -176,14 +181,14 @@
                         </c:choose>
                         <c:set var="metersCount" value="${metersCount + 1}"/>
                         <tr class="${metersRowClass}">
-                            <td class="name">
+                            <td>
                                 <a href="${editUrl}${meter.inventoryId}">
                                     <spring:escapeBody htmlEscape="true">${meter.deviceName}</spring:escapeBody>
                                 </a>
                             </td>
-                            <td class="type"><spring:escapeBody htmlEscape="true">${meter.deviceType}</spring:escapeBody></td>
-                            <td class="label"><spring:escapeBody htmlEscape="true">${meter.deviceLabel}</spring:escapeBody></td>
-                            <td class="actions">
+                            <td><spring:escapeBody htmlEscape="true">${meter.deviceType}</spring:escapeBody></td>
+                            <td><spring:escapeBody htmlEscape="true">${meter.deviceLabel}</spring:escapeBody></td>
+                            <td>
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                     <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
                                         <cti:img key="changeOut" href="${changeOutUrl}${meter.inventoryId}"/>
