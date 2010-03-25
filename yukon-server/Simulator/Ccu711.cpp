@@ -814,7 +814,7 @@ error_t Ccu711::extractTS_Values(const words_t &reply_words, queue_entry &entry)
         // If the D-word's alarm bit is set to true, then our response data needs to 
         // reflect this. Bit 0 of the TS values is the general alarm bit. Using a 
         // bitwise OR with 1 correctly sets this bit.
-        entry.result.ts_values = entry.result.ts_values | 1;
+        entry.result.ts_values = entry.result.ts_values | 0x100;
     }
     
     return error_t::success;
@@ -1345,8 +1345,8 @@ error_t Ccu711::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                     //  b6 = E word occurred
                     //  b7 = last request timed out
 
+                    completed_entry_buf.push_back(completed_itr->result.ts_values >> 8);
                     completed_entry_buf.push_back(completed_itr->result.ts_values);
-                    completed_entry_buf.push_back(0x00);
 
                     //  D1
                     completed_entry_buf.insert(completed_entry_buf.end(),

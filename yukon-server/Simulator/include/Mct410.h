@@ -122,6 +122,38 @@ private:
         FW_PointOfInterest = 0x05
     };
 
+    enum MemoryMap
+    {
+        MM_EventFlags1  = 0x06,
+        MM_EventFlags2  = 0x07,
+        MM_MeterAlarms1 = 0x08,
+        MM_EventFlags1AlarmMask = 0x0A
+    };
+
+    enum EventFlags1StatusFlags
+    {
+        EF1_TamperFlag  = 0x80
+        /* Other Status flags that may be used in the future:
+            DSTChange   = 0x40,
+            HolidayFlag = 0x20,
+            RTCAdjusted = 0x10,
+            PowerFailCarryover  = 0x08,
+            OverVoltage    = 0x04,
+            UnderVoltage   = 0x02,
+            PowerFailEvent = 0x01
+        */
+    };
+    
+    enum EventFlags2StatusFlags
+    {
+        EF2_ZeroUsage = 0x01
+    };
+
+    enum MeterAlarms1StatusFlags
+    {
+        MA1_ReversePower = 0x80
+    };
+
     bytes processRead (bool function, unsigned function_code);
     bool    processWrite(bool function, unsigned function_code, bytes data);
 

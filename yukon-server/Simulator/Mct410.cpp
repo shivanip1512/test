@@ -46,7 +46,7 @@ Mct410Sim::Mct410Sim(int address)
     // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order 
     // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
     // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
-    _memory_map[0x0A]=0x80;
+    _memory_map[MM_EventFlags1AlarmMask]= 0x80;
 }
 
 
@@ -157,9 +157,9 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         if( value < 0.50 )
         {    
             // Only set the zero usage flag to true if it isn't already set...
-            if ( _memory_map[0x07] != 0x01 )
+            if ( (_memory_map[MM_EventFlags2] & EF2_ZeroUsage) == 0 )
             {
-                _memory_map[0x07] = 0x01;
+                _memory_map[MM_EventFlags2] |= EF2_ZeroUsage;
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
                     dout << "******** Zero-Usage flag set! ********" << endl;
@@ -169,9 +169,9 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         else // If value >= 0.50
         {
             // Only set the reverse-power flag to true if it isn't already set...
-            if( _memory_map[0x08] != 0x80 )
+            if( (_memory_map[MM_MeterAlarms1] & MA1_ReversePower) == 0 )
             {
-                _memory_map[0x08] = 0x80;
+                _memory_map[MM_MeterAlarms1] |= MA1_ReversePower;
                 {
                     CtiLockGuard<CtiLogger> dout_guard(dout);
                     dout << "******** Reverse-power flag set! ********" << endl;
@@ -181,19 +181,18 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
     }
 
     // Tamper flag (bit 7 of address 0x06) gets set if reverse-power or zero usage bits are set.
-    if( (_memory_map[0x07] == 0x01) || (_memory_map[0x08] == 0x80) )
+    if( ((_memory_map[MM_EventFlags2] & EF2_ZeroUsage) != 0) || ((_memory_map[MM_MeterAlarms1] & MA1_ReversePower) != 0) )
     {
         // Only set tamper flag if it isn't already set.
-        if ( _memory_map[0x06] != 0x80 )
+        if ( (_memory_map[MM_EventFlags1] & EF1_TamperFlag) == 0 )
         {
-            _memory_map[0x06] = 0x80;
+            _memory_map[MM_EventFlags1] |= EF1_TamperFlag;
             {
                         CtiLockGuard<CtiLogger> dout_guard(dout);
                         dout << "******** Tamper flag set! ********" << endl;
             }
         }
     }
-    
 
     if( response_bytes.size() < EmetconWordD1::PayloadLength +
                                 EmetconWordD2::PayloadLength +
@@ -210,9 +209,9 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
     // Check to see if the alarm bit needs to be set! If the tamper flag has 
     // previously been set, then the general alarm bit needs to be as well.
     bool alarm = false;
-    if( _memory_map.size() > 0x0A )
+    if( _memory_map.size() >= MM_EventFlags1AlarmMask )
     {
-        if( (_memory_map[0x06] & _memory_map[0x0A]) > 0 )
+        if( (_memory_map[MM_EventFlags1] & _memory_map[MM_EventFlags1AlarmMask]) > 0 )
         {
             alarm = true;
         }
@@ -357,7 +356,7 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
             fn_itr->second(this, data);
         }
     }
-    if( data.empty() )
+    if( !function_write && data.empty() )
     {
         commands_t::const_iterator cmd_itr = _commands.find(function);
 
@@ -366,7 +365,9 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
             cmd_itr->second(this);
         }
     }
-    else
+    else if( !function_write && (data.size() > 0) )
+    {
+    }
     {
         if( _memory_map.size() > function )
         {
@@ -693,8 +694,8 @@ void Mct410Sim::putPointOfInterest(const bytes &payload)
 
 void Mct410Sim::clearEventFlags()
 {
-    _memory_map[0x06] = 0x00;
-    _memory_map[0x07] = 0x00;
+    _memory_map[MM_EventFlags1] = 0x00;
+    _memory_map[MM_MeterAlarms1] = 0x00;
 }
 
 }
