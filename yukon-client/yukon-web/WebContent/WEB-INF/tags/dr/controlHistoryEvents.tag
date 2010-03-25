@@ -9,7 +9,7 @@
 
 <cti:msgScope paths=".controlHistoryEvent, components.controlHistoryEvent">
   <c:set var="controlHistoryEventListSize" value="${fn:length(controlHistoryEventList)}"/>
-  <table width="99%">
+  <table width="96%">
     <c:choose>
       <c:when test="${controlHistoryEventListSize > 0}">
         <tr>
