@@ -80,7 +80,7 @@
 	<entry key="yukon.web.modules.operator.optOut.resetToLimit.hoverText">Resets a device's opt out limit.</entry>
 	<entry key="yukon.web.modules.operator.optOut.resetToLimitDisabled.imageUrl">/WebConfig/yukon/Icons/arrow_undo_disabled.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.resetToLimitDisabled.hoverText">The device is already at or above its opt out limit.</entry>
-	<entry key="yukon.web.modules.operator.optOut.resetToLimitIconText">Resets a device's opt out limit. This action is disabled it the [device/inventory] is already at or above the system opt out limit.</entry>
+	<entry key="yukon.web.modules.operator.optOut.resetToLimitIconText">Resets a device's opt out limit. This action is disabled if the [device/inventory] is already at or above the system opt out limit.</entry>
 	
 	<entry key="yukon.web.modules.operator.optOut.noCurrentOptOuts">There are no Active or Scheduled Opt Outs.</entry>
 	
