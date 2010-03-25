@@ -1243,6 +1243,7 @@
 		<row><td>NewShortcut14</td><td>Alarm Monitor</td></row>
 		<row><td>NewShortcut15</td><td>Tomcat</td></row>
 		<row><td>NewShortcut16</td><td>Tomcat</td></row>
+		<row><td>NewShortcut17</td><td>API Extras</td></row>
 		<row><td>NewShortcut2</td><td>Dispatch</td></row>
 		<row><td>NewShortcut3</td><td>Scanner</td></row>
 		<row><td>NewShortcut4</td><td>MACS</td></row>
@@ -1403,6 +1404,7 @@
 		<row><td>ID_STRING74</td><td>1033</td><td>Custom</td><td>0</td><td/><td>-2128690263</td></row>
 		<row><td>ID_STRING75</td><td>1033</td><td>Install all Yukon features.</td><td>0</td><td/><td>421435952</td></row>
 		<row><td>ID_STRING76</td><td>1033</td><td>Select which Yukon features to install.</td><td>0</td><td/><td>421427760</td></row>
+		<row><td>ID_STRING77</td><td>1033</td><td>Configuration</td><td>0</td><td/><td>-912357523</td></row>
 		<row><td>ID_STRING8</td><td>1033</td><td>Runs distributed automation operations based on data gathered by the system.</td><td>0</td><td/><td>-1516388534</td></row>
 		<row><td>ID_STRING9</td><td>1033</td><td>Transmits and receives real-time data to and from other systems outside of Yukon.</td><td>0</td><td/><td>-1516413078</td></row>
 		<row><td>NEW_STRING1</td><td>1033</td><td>Checkbox</td><td>0</td><td/><td>-979530865</td></row>
@@ -1736,6 +1738,7 @@ UgBlAGwAZQBhAHMAZQAgADEAAQBNAGUAZABpAGEA
 		<row><td>NewShortcut14</td><td>newfolder2</td><td>##ID_STRING63##</td><td/><td>&lt;TARGETDIR&gt;\Runtime\bin\javaw.exe</td><td>-Dsun.java2d.noddraw=true -Dyukon.base=%YUKON_BASE% -jar "&lt;TARGETDIR&gt;\client\bin\monitor.jar"</td><td/><td/><td>NewShortcut14_476158FB29004649B0DF05910FC5DF19</td><td>0</td><td>1</td><td>BIN</td><td/><td/><td/><td/><td/><td>Alarm Monitor Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut15</td><td>DesktopFolder</td><td>##ID_STRING71##</td><td/><td>http://127.0.0.1:8080/setup.jsp</td><td/><td/><td/><td>NewShortcut15_E12A9EBD3D8F456E927EF546B2B80894.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Setup Link</td><td>19</td></row>
 		<row><td>NewShortcut16</td><td>DesktopFolder</td><td>##ID_STRING72##</td><td/><td>http://127.0.0.1:8080/login.jsp</td><td/><td/><td/><td>NewShortcut16_8779B65EF9F047C7A0909797F114A473.com</td><td>0</td><td>1</td><td/><td/><td/><td/><td/><td/><td>Yukon Login Link</td><td>19</td></row>
+		<row><td>NewShortcut17</td><td>newfolder1</td><td>##ID_STRING77##</td><td/><td>C:\WINDOWS\system32\notepad.exe &lt;TARGETDIR&gt;\Server\Config\master.cfg</td><td/><td/><td/><td/><td/><td>1</td><td/><td/><td/><td/><td/><td/><td>NewShortcut17</td><td>18</td></row>
 		<row><td>NewShortcut2</td><td>newfolder1</td><td>##ID_STRING50##</td><td/><td>cmd.exe</td><td>/k dispatch.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>Dispatch Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut3</td><td>newfolder1</td><td>##ID_STRING51##</td><td/><td>cmd.exe</td><td>/k scanner.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>Scanner Shortcut</td><td>18</td></row>
 		<row><td>NewShortcut4</td><td>newfolder1</td><td>##ID_STRING52##</td><td/><td>cmd.exe</td><td>/k macs.exe</td><td/><td/><td/><td/><td>1</td><td>BIN1</td><td/><td/><td/><td/><td/><td>MACS Shortcut</td><td>18</td></row>
