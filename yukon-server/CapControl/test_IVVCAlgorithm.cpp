@@ -266,6 +266,223 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_power_factor_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        double test_calculatePowerFactor(const double varValue, const double wattValue)
+        {
+            return calculatePowerFactor(varValue, wattValue);
+        }
+    };
+
+    test_IVVCAlgorithm  _algorithm;
+
+    // check to 6 significant digits (rounded)
+
+    BOOST_CHECK_CLOSE( 1.000000 , _algorithm.test_calculatePowerFactor(     0,  6000 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.000000 , _algorithm.test_calculatePowerFactor( -1500,     0 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.000000 , _algorithm.test_calculatePowerFactor( -1500,     0 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.986394 , _algorithm.test_calculatePowerFactor(  1000,  6000 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.986394 , _algorithm.test_calculatePowerFactor( -1000,  6000 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.970143 , _algorithm.test_calculatePowerFactor(  1500,  6000 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.970143 , _algorithm.test_calculatePowerFactor( -1500,  6000 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.977189 , _algorithm.test_calculatePowerFactor(  1234,  5678 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.977189 , _algorithm.test_calculatePowerFactor( -1234,  5678 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.924276 , _algorithm.test_calculatePowerFactor(  2345,  5678 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.924276 , _algorithm.test_calculatePowerFactor( -2345,  5678 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.707107 , _algorithm.test_calculatePowerFactor(  6000,  6000 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.707107 , _algorithm.test_calculatePowerFactor( -6000,  6000 ) , 0.0001 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        double test_calculateVf(const PointValueMap &voltages, const long varPointID, const long wattPointID)
+        {
+            return calculateVf(voltages, varPointID, wattPointID);
+        }
+    };
+
+    test_IVVCAlgorithm  _algorithm;
+
+    PointValue    _value;
+    PointValueMap _voltages;
+
+    _value.quality   = NormalQuality;
+    _value.timestamp = CtiTime();
+
+    _value.value    = 120.0;
+    _voltages[1000] = _value;
+
+    _value.value    = 121.2;
+    _voltages[1001] = _value;
+
+    _value.value    = 122.1;
+    _voltages[1002] = _value;
+
+    _value.value    = 119.6;
+    _voltages[1003] = _value;
+
+    _value.value    = 120.3;
+    _voltages[1004] = _value;
+
+    _value.value    = 119.8;
+    _voltages[1005] = _value;
+
+    _value.value    = 118.2;
+    _voltages[1006] = _value;
+
+    _value.value    = 121.9;
+    _voltages[1007] = _value;
+
+    /*
+        The second and third parameter are point IDs to ignore in the flatness calculation.  Use this
+         feature to generate different test values with the same set of data.
+    */
+
+    // check to 6 significant digits (rounded)
+
+    // Don't exclude any points
+    BOOST_CHECK_CLOSE( 2.187500 , _algorithm.test_calculateVf( _voltages,    0,    0 ) , 0.0001 );
+
+    // Exclude a single point
+    BOOST_CHECK_CLOSE( 2.242857 , _algorithm.test_calculateVf( _voltages, 1000,    0 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 2.242857 , _algorithm.test_calculateVf( _voltages,    0, 1000 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 1.942857 , _algorithm.test_calculateVf( _voltages, 1002,    0 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 1.942857 , _algorithm.test_calculateVf( _voltages,    0, 1002 ) , 0.0001 );
+
+    // Exclude two points
+    BOOST_CHECK_CLOSE( 1.966667 , _algorithm.test_calculateVf( _voltages, 1002, 1000 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 1.966667 , _algorithm.test_calculateVf( _voltages, 1000, 1002 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 0.900000 , _algorithm.test_calculateVf( _voltages, 1006, 1007 ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.900000 , _algorithm.test_calculateVf( _voltages, 1007, 1006 ) , 0.0001 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_bus_weight_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        double test_calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
+        {
+            return calculateBusWeight(Kv, Vf, Kp, powerFactor);
+        }
+    };
+
+    test_IVVCAlgorithm  _algorithm;
+
+    // check to 6 significant digits (rounded)
+
+    BOOST_CHECK_CLOSE( 0.500000 , _algorithm.test_calculateBusWeight( 0.500000, 1.000000, 0.500000, 1.000000 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 2.000000 , _algorithm.test_calculateBusWeight( 0.500000, 1.000000, 0.500000, 0.970000 ) , 0.0001 );
+
+    BOOST_CHECK_CLOSE( 2.625000 , _algorithm.test_calculateBusWeight( 0.250000, 2.500000, 0.500000, 0.960000 ) , 0.0001 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_ltc_tap_operation_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        int test_calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax,
+                              const long varPointID, const long wattPointID)
+        {
+            return calculateVte(voltages, Vmin, Vrm, Vmax, varPointID, wattPointID);
+        }
+    };
+
+    test_IVVCAlgorithm  _algorithm;
+
+    PointValue    _value;
+    PointValueMap _voltages;
+
+    _value.quality   = NormalQuality;
+    _value.timestamp = CtiTime();
+
+    _value.value    = 120.0;
+    _voltages[1000] = _value;
+
+    _value.value    = 121.2;
+    _voltages[1001] = _value;
+
+    _value.value    = 122.1;
+    _voltages[1002] = _value;
+
+    _value.value    = 119.6;
+    _voltages[1003] = _value;
+
+    _value.value    = 120.3;
+    _voltages[1004] = _value;
+
+    _value.value    = 119.8;
+    _voltages[1005] = _value;
+
+    _value.value    = 118.2;
+    _voltages[1006] = _value;
+
+    _value.value    = 121.9;
+    _voltages[1007] = _value;
+
+    /*
+        The fifth and sixth parameter are point IDs to ignore in the tap operation calculation.  Use this
+         feature to generate different test values with the same set of data.
+    */
+
+    // Don't exclude any points - all voltages within limits, on both sides of the margin - no operation
+
+    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 125.0,    0,    0 ) );
+
+    // exclude the only point that is below the marginal voltage - should tap down
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 125.0, 1006,    0 ) );
+
+    // Don't exclude any points - single voltage over limit - should tap down
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 122.0,    0,    0 ) );
+
+    // exclude the only point that is above the max voltage - no operation
+
+    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 122.0, 1002,    0 ) );
+
+
+    // Don't exclude any points - single voltage over limit and single voltage under limit - should tap down
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0,    0,    0 ) );
+
+    // exclude the point above the max voltage - should tap up
+
+    BOOST_CHECK_EQUAL(  1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0, 1002,    0 ) );
+
+    // exclude the point below the min voltage - should tap down
+
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0, 1006,    0 ) );
+
+    // exclude the points above the max voltage and below min - no operation
+
+    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0, 1002, 1006 ) );
+}
+
+
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm)
 {
     Test_CtiCCSubstationBusStore* store = new Test_CtiCCSubstationBusStore();
@@ -301,10 +518,10 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm)
     // END of setup....
 
 
+
+
+
     BOOST_CHECK( true );        // something here so hudson doesn't choke on an empty unit test
-
-
-
 
 
 

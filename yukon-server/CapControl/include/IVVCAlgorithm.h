@@ -9,29 +9,33 @@ class IVVCStrategy;
 class IVVCAlgorithm
 {
     public:
+
         IVVCAlgorithm(const PointDataRequestFactoryPtr& factory);
 
         void execute(IVVCStatePtr p, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, bool allowScanning);
 
         void setPointDataRequestFactory(const PointDataRequestFactoryPtr& factory);
 
-    private:
-        static bool checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow);
-        static void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<long>& pointIds, std::set<long>& requestPoints);
+    protected:
 
-        static double calculateVf(const PointValueMap &voltages, const long varPointID, const long wattPointID);
-        static int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax,
+        virtual bool checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow);
+        virtual void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<long>& pointIds, std::set<long>& requestPoints);
+
+        double calculatePowerFactor(const double varValue, const double wattValue);
+        double calculateVf(const PointValueMap &voltages, const long varPointID, const long wattPointID);
+        int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax,
                                 const long varPointID, const long wattPointID);
-        static double calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor);
+        double calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor);
 
-        static void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
-        static void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+        virtual void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);
+        virtual void sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
 
-        static void sendKeepAlive(CtiCCSubstationBusPtr subbus);
+        virtual void sendKeepAlive(CtiCCSubstationBusPtr subbus);
 
-        static bool isLtcInRemoteMode(const long ltcId);
+        virtual bool isLtcInRemoteMode(const long ltcId);
 
-
+        virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
+        
         PointDataRequestFactoryPtr _requestFactory;
 };
 

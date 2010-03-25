@@ -90,7 +90,6 @@ extern BOOL CC_TERMINATE_THREAD_TEST;
 extern ULONG _POST_CONTROL_WAIT;
 extern BOOL _ENABLE_IVVC;
 extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
-extern bool _IVVC_ANALYZE_BYPASS;
 extern ULONG _IVVC_COMMS_RETRY_COUNT;
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -4539,25 +4538,6 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             std::transform(str.begin(), str.end(), str.begin(), ::tolower);
             _USE_FLIP_FLAG = (str=="true"?TRUE:FALSE);
-            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << str << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
-
-        _IVVC_ANALYZE_BYPASS = FALSE;
-
-        strcpy(var, "CAP_CONTROL_IVVC_ANALYZE_BYPASS");
-        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
-        {
-            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-            _IVVC_ANALYZE_BYPASS = (str=="true"?TRUE:FALSE);
             if ( _CC_DEBUG & CC_DEBUG_STANDARD)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
