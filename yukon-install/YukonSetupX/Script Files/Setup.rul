@@ -269,7 +269,7 @@ begin
 		sMsg2 = "To complete the upgrade, please uninstall the old version" 
 				+ " and run this installer again.";
 		SdFinish("Install Type Not Supported", sMsg1, sMsg2, "", "", bOpt, bOpt);
-		abort;
+		abort; //do not continue until they've uninstalled the old version
 	endif;
 	
 	Dialog_Welcome:

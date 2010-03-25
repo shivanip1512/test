@@ -194,6 +194,7 @@ function BackupTargetDir()
 string sDir, sDateString, sTimeString;
 number nResult;
 begin
+	sDir = "C:\\YukonBackups";
 	nResult = SdAskDestPath("Select backup location.",
 							"Select a location to store the backup file."
 							+ " Note that log files will not be copied.",
