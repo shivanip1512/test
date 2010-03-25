@@ -191,7 +191,7 @@
         <mkdir dir="${log.dir}" />
 		
         <property name="client.bag" value="${basedir}/yukon-client/lib" />
-        <property name="webcontent.bag" value="${basedir}/yukon-client/WebContent" />
+        <property name="webcontent.bag" value="${basedir}/yukon-client/lib/WebContent" />
         <property name="install.bag" value="${basedir}/yukon-install/build" />
         <property name="server.bag" value="${basedir}/yukon-server/bin" />
         

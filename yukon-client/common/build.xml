@@ -132,6 +132,7 @@
                 <dirset dir="test" />
                 <fileset dir="${yukon.lib}">
                     <include name="**/*.jar" />
+                    <exclude name="**/WebContent/**" />
                 </fileset>
             </classpath>
             <formatter type="xml" />

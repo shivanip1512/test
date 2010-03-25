@@ -48,7 +48,7 @@
      -->
 	<target name="clean">
         
-		<delete dir="${yukon.base}/WebContent" />
+		<delete dir="${yukon.lib}/WebContent" />
 		<delete file="${yukon.lib}/yukon-web.jar" />
 		<delete dir="build" />
 		<delete dir="${yukon.web.src_build}"/>
@@ -177,11 +177,11 @@
         <copy todir="${yukon-web}/WebContent_merged" flatten="true" file="${yukon-web}/resources/login.jsp" overwrite="true"/>
 
         <!-- Copy everything to yukon-client dir -->   
-        <mkdir dir="${yukon.base}/WebContent" />
- 	 	<copy todir="${yukon.base}/WebContent">
+        <mkdir dir="${yukon.lib}/WebContent" />
+ 	 	<copy todir="${yukon.lib}/WebContent">
      	    <fileset dir="${yukon-web}/WebContent_merged" />
  	 	</copy>
- 	 	<copy tofile="${yukon.base}/WebContent/WEB-INF/web.xml" file="${yukon-web}/generated_web.xml" />
+ 	 	<copy tofile="${yukon.lib}/WebContent/WEB-INF/web.xml" file="${yukon-web}/generated_web.xml" />
     </target>
     
 </project>
