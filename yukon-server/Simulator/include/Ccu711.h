@@ -35,6 +35,11 @@ public:
 
 private:
 
+    enum TSBitValues
+    {
+        TS_AlarmEnabled = 0x0100
+    };
+
     enum IDLCSizes
     {
         Idlc_HeaderLength = 3,

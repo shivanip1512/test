@@ -46,7 +46,7 @@ Mct410Sim::Mct410Sim(int address)
     // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order 
     // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
     // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
-    _memory_map[MM_EventFlags1AlarmMask]= 0x80;
+    _memory_map[MM_EventFlags1AlarmMask]= EF1_TamperFlag;
 }
 
 
@@ -217,12 +217,6 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         }
     }
 
-    if( alarm )
-    {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << "******** General Alarm set! ********" << endl;
-    }
-
     response_words.push_back(word_t(new EmetconWordD1(b_word.repeater_variable,
                                                       b_word.dlc_address & ((1 << 14) - 1),  //  lowest 13 bits set
                                                       response_bytes[0],
@@ -356,7 +350,7 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
             fn_itr->second(this, data);
         }
     }
-    if( !function_write && data.empty() )
+    else if( !function_write && data.empty() )
     {
         commands_t::const_iterator cmd_itr = _commands.find(function);
 
@@ -366,8 +360,6 @@ bool Mct410Sim::processWrite(bool function_write, unsigned function, bytes data)
         }
     }
     else if( !function_write && (data.size() > 0) )
-    {
-    }
     {
         if( _memory_map.size() > function )
         {
