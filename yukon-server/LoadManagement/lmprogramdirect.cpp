@@ -566,222 +566,11 @@ CtiLMProgramDirect& CtiLMProgramDirect::setControlActivatedByStatusTrigger(BOOL 
     return *this;
 }
 
-void CtiLMProgramDirect::processThermostatRampingGear(DOUBLE &expectedLoadReduced, CtiMultiMsg *multiPilMsg, CtiLMProgramDirectGear *currentGearObject)
-{
-    CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
-    string settings = thermostatGearObject->getSettings();
-    LONG minValue = thermostatGearObject->getMinValue();
-    LONG maxValue = thermostatGearObject->getMaxValue();
-    LONG valueB = thermostatGearObject->getPrecoolTemp();
-    LONG valueD = thermostatGearObject->getControlTemp();
-    LONG valueF = thermostatGearObject->getRestoreTemp();
-    LONG random = thermostatGearObject->getRandom();
-    LONG valueTA = thermostatGearObject->getDelayTime();
-    LONG valueTB = thermostatGearObject->getPrecoolTime();
-    LONG valueTC = thermostatGearObject->getPrecoolHoldTime();
-    LONG valueTD = thermostatGearObject->getControlTime();
-    LONG valueTE = thermostatGearObject->getControlHoldTime();
-    LONG valueTF = thermostatGearObject->getRestoreTime();
+/*---------------------------------------------------------------------------
+    reduceProgramLoad
 
-    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
-    }
-
-    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
-    {
-        CtiLMGroupPtr currentLMGroup  = *i;
-        if( !currentLMGroup->getDisableFlag() &&
-            !currentLMGroup->getControlInhibit() &&
-            (getConstraintOverride() || !hasGroupExceededMaxDailyOps(currentLMGroup)) )
-        {
-            if( isExpresscomGroup(currentLMGroup->getPAOType()) )
-            {
-                // XXX thermostat constraints??
-                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
-                startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
-
-                if( currentGearObject->getPercentReduction() > 0.0 )
-                {
-                    expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
-                }
-                else
-                {
-                    expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
-                }
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-        }
-    }
-    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
-    {
-        setProgramState(CtiLMProgramBase::FullyActiveState);
-    }
-}
-
-
-void CtiLMProgramDirect::processLatchingGear(DOUBLE& expectedLoadReduced, CtiMultiMsg *multiPilMsg, CtiMultiMsg *multiDispatchMsg, CtiLMProgramDirectGear *currentGearObject)
-{
-    LONG gearStartRawState = currentGearObject->getMethodRateCount();
-
-    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Controlling latch groups, LM Program: " << getPAOName() << endl;
-    }
-
-
-    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
-    {
-        CtiLMGroupPtr currentLMGroup  = *i;
-
-        if( !currentLMGroup->getDisableFlag() &&
-            !currentLMGroup->getControlInhibit() &&
-            (getConstraintOverride() || !hasGroupExceededMaxDailyOps(currentLMGroup)) )
-        {
-            // TODO:  Why isn't startGroupControl called here?
-            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
-            {
-                multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
-            }
-            else
-            {
-                multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(gearStartRawState, defaultLMStartPriority) );
-            }
-
-
-            setLastControlSent(CtiTime());
-            setLastGroupControlled(currentLMGroup->getPAOId());
-            currentLMGroup->setLastControlSent(CtiTime());
-            currentLMGroup->setControlStartTime(CtiTime());
-            if( currentLMGroup->getGroupControlState() != CtiLMGroupBase::ActiveState )
-            {
-                currentLMGroup->incrementDailyOps();
-                currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
-            }
-            if( currentGearObject->getPercentReduction() > 0.0 )
-            {
-                expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
-            }
-            else
-            {
-                expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
-            }
-        }
-    }
-    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
-    {
-        setProgramState(CtiLMProgramBase::FullyActiveState);
-    }
-}
-
-void CtiLMProgramDirect::processRotationGear(DOUBLE &expectedLoadReduced, ULONG &secondsFrom1901, CtiMultiMsg *multiPilMsg, CtiLMProgramDirectGear *currentGearObject, bool isRefresh)
-{
-    LONG sendRate = currentGearObject->getMethodRate();
-    LONG shedTime = currentGearObject->getMethodPeriod();
-    LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
-
-    if( numberOfGroupsToTake == 0 )
-    {
-        numberOfGroupsToTake = _lmprogramdirectgroups.size();
-    }
-
-    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Controlling rotation groups, LM Program: " << getPAOName() << ", number of groups to control: " << numberOfGroupsToTake << endl;
-    }
-
-    ULONG sendRateEndFrom1901 = 0;
-
-    if( isRefresh )
-    {
-        
-
-        // First we need to update the state of the currently active rotating groups
-        for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
-        {
-            CtiLMGroupPtr currentLMGroup  = *i;
-            if( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState )
-            {
-                if( secondsFrom1901 >= currentLMGroup->getLastControlSent().seconds()+shedTime )
-                {
-                    currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
-                    currentLMGroup->setControlCompleteTime(CtiTime());
-                    //returnBoolean = TRUE;
-                }
-            }
-
-            if( currentLMGroup->getLastControlSent().seconds()+sendRate > sendRateEndFrom1901 )//sendRateEndFrom1901 is set to the latest of the new group controls
-            {
-                sendRateEndFrom1901 = currentLMGroup->getLastControlSent().seconds()+sendRate;
-            }
-        }
-    }
-
-    if( !isRefresh || ( secondsFrom1901 >= sendRateEndFrom1901 ) )
-    {
-        int groups_taken = 0;
-        do
-        {
-            CtiLMGroupPtr currentLMGroup = findGroupToTake(currentGearObject);
-    
-            if( currentLMGroup.get() == NULL )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Program: " << getPAOName() << " couldn't find any groups to take in: " << __FILE__ << " at:" << __LINE__ << endl;
-                break;
-            }
-            else
-            {
-                CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
-                if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
-                {
-                    groups_taken++;
-                    CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
-    
-                    setLastGroupControlled(currentLMGroup->getPAOId());
-                    startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
-    
-                    if( currentGearObject->getPercentReduction() > 0.0 )
-                    {
-                        expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
-                    }
-                    else
-                    {
-                        expectedLoadReduced += currentLMGroup->getKWCapacity();
-                    }
-                }
-                else
-                {
-                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                    {
-                        con_checker.dumpViolations();
-                    }
-                }
-            }
-        } while( groups_taken < numberOfGroupsToTake );
-    
-        if( getProgramState() == CtiLMProgramBase::InactiveState )
-        {
-            // Let the world know we are starting up!
-            scheduleStartNotification(CtiTime());
-        }
-    }
-
-    if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
-        getProgramState() != CtiLMProgramBase::TimedActiveState )
-    {
-        setProgramState(CtiLMProgramBase::FullyActiveState);
-    }
-
-    // setProgramState(CtiLMProgramBase::ManualActiveState); ??????
-}
+    Sets the group selection method of the direct program
+---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
     DOUBLE expectedLoadReduced = 0.0;
@@ -1142,15 +931,177 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                 }
                 else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
                 {
-                    processRotationGear(expectedLoadReduced, secondsFrom1901, multiPilMsg, currentGearObject, false);
+                    LONG sendRate = currentGearObject->getMethodRate();
+                    LONG shedTime = currentGearObject->getMethodPeriod();
+                    LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+                    if( numberOfGroupsToTake == 0 )
+                    {
+                        numberOfGroupsToTake = _lmprogramdirectgroups.size();
+                    }
+
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Controlling rotation groups, LM Program: " << getPAOName() << ", number of groups to control: " << numberOfGroupsToTake << endl;
+                    }
+
+                    int groups_taken = 0;
+                    do
+                    {
+                        CtiLMGroupPtr currentLMGroup = findGroupToTake(currentGearObject);
+
+                        if( currentLMGroup.get() == NULL )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Program: " << getPAOName() << " couldn't find any groups to take in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            break;
+                        }
+                        else
+                        {
+                            CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                            if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                            {
+                                groups_taken++;
+                                CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+
+                                setLastGroupControlled(currentLMGroup->getPAOId());
+                                startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
+
+                                if( currentGearObject->getPercentReduction() > 0.0 )
+                                {
+                                    expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                                }
+                                else
+                                {
+                                    expectedLoadReduced += currentLMGroup->getKWCapacity();
+                                }
+                            }
+                        }
+                    } while( groups_taken < numberOfGroupsToTake );
+
+                    if( getProgramState() == CtiLMProgramBase::InactiveState )
+                    {
+                        // Let the world know we are starting up!
+                        scheduleStartNotification(CtiTime());
+                    }
+
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
                 }
                 else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
                 {
-                    processLatchingGear(expectedLoadReduced, multiPilMsg, multiDispatchMsg, currentGearObject);
+                    LONG gearStartRawState = currentGearObject->getMethodRateCount();
+
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Controlling latch groups, LM Program: " << getPAOName() << endl;
+                    }
+
+
+                    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+                    {
+                        CtiLMGroupPtr currentLMGroup  = *i;
+
+                        if( !currentLMGroup->getDisableFlag() &&
+                            !currentLMGroup->getControlInhibit() &&
+                            !hasGroupExceededMaxDailyOps(currentLMGroup) )
+                        {
+                            // TODO:  Why isn't startGroupControl called here?
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                            {
+                                multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
+                            }
+                            else
+                            {
+                                multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(gearStartRawState, defaultLMStartPriority) );
+                            }
+
+
+                            setLastControlSent(CtiTime());
+                            setLastGroupControlled(currentLMGroup->getPAOId());
+                            currentLMGroup->setLastControlSent(CtiTime());
+                            currentLMGroup->setControlStartTime(CtiTime());
+                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                            if( currentGearObject->getPercentReduction() > 0.0 )
+                            {
+                                expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                            }
+                            else
+                            {
+                                expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                            }
+                        }
+                    }
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
+
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
                 }
                 else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) )
                 {
-                    processThermostatRampingGear(expectedLoadReduced, multiPilMsg, currentGearObject);
+                    CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                    string settings = thermostatGearObject->getSettings();
+                    LONG minValue = thermostatGearObject->getMinValue();
+                    LONG maxValue = thermostatGearObject->getMaxValue();
+                    LONG valueB = thermostatGearObject->getPrecoolTemp();
+                    LONG valueD = thermostatGearObject->getControlTemp();
+                    LONG valueF = thermostatGearObject->getRestoreTemp();
+                    LONG random = thermostatGearObject->getRandom();
+                    LONG valueTA = thermostatGearObject->getDelayTime();
+                    LONG valueTB = thermostatGearObject->getPrecoolTime();
+                    LONG valueTC = thermostatGearObject->getPrecoolHoldTime();
+                    LONG valueTD = thermostatGearObject->getControlTime();
+                    LONG valueTE = thermostatGearObject->getControlHoldTime();
+                    LONG valueTF = thermostatGearObject->getRestoreTime();
+
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
+                    }
+
+                    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+                    {
+                        CtiLMGroupPtr currentLMGroup  = *i;
+                        if( !currentLMGroup->getDisableFlag() &&
+                            !currentLMGroup->getControlInhibit() &&
+                            !hasGroupExceededMaxDailyOps(currentLMGroup) )
+                        {
+                            if(isExpresscomGroup(currentLMGroup->getPAOType()))
+                            {
+                                // XXX thermostat constraints??
+                                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                                startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
+
+                                if( currentGearObject->getPercentReduction() > 0.0 )
+                                {
+                                    expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                                }
+                                else
+                                {
+                                    expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                                }
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+                    }
+                    if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
                 }
                 else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                 {
@@ -1472,12 +1423,111 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
             }
             else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::RotationMethod) )
             {
-                processRotationGear(expectedLoadReduced, secondsFrom1901, multiPilMsg, currentGearObject, false);
+                LONG sendRate = currentGearObject->getMethodRate();
+                LONG shedTime = currentGearObject->getMethodPeriod();
+                LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+                if( numberOfGroupsToTake == 0 )
+                {
+                    numberOfGroupsToTake = _lmprogramdirectgroups.size();
+                }
+
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Controlling rotation groups, LM Program: " << getPAOName() << ", number of groups to control: " << numberOfGroupsToTake << endl;
+                }
+
+                int groups_taken = 0;
+                do
+                {
+                    CtiLMGroupPtr currentLMGroup = findGroupToTake(currentGearObject);
+                    if( currentLMGroup.get() == NULL )   // No more groups to take, get outta here
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Program: " << getPAOName() << " couldn't find any groups to take in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        break;
+                    }
+                    else
+                    {
+                        CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+                        if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                        {
+                            groups_taken++;
+                            CtiRequestMsg* requestMsg = currentLMGroup->createRotationRequestMsg(sendRate, shedTime, defaultLMStartPriority);
+
+                            setLastGroupControlled(currentLMGroup->getPAOId());
+                            startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
+
+                            currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                            if( currentGearObject->getPercentReduction() > 0.0 )
+                            {
+                                expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                            }
+                            else
+                            {
+                                expectedLoadReduced += currentLMGroup->getKWCapacity();
+                            }
+                        }
+                        else
+                        {
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                con_checker.dumpViolations();
+                            }
+                        }
+                    }
+                } while( groups_taken < numberOfGroupsToTake );
+
+
                 setProgramState(CtiLMProgramBase::ManualActiveState);
             }
             else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
             {
-                processLatchingGear(expectedLoadReduced, multiPilMsg, multiDispatchMsg, currentGearObject);
+                LONG gearStartRawState = currentGearObject->getMethodRateCount();
+
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Controlling latch groups, LM Program: " << getPAOName() << endl;
+                }
+                for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+                {
+                    CtiLMGroupPtr currentLMGroup  = *i;
+
+                    if( !currentLMGroup->getDisableFlag() &&
+                        !currentLMGroup->getControlInhibit() )
+                    {
+                        // TODO: Why isn't startGroupControl called here?
+                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                        {
+                            multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
+                        }
+                        else
+                        {
+                            multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(gearStartRawState, defaultLMStartPriority) );
+                        }
+
+                        setLastControlSent(CtiTime());
+                        setLastGroupControlled(currentLMGroup->getPAOId());
+                        currentLMGroup->setLastControlSent(CtiTime());
+                        currentLMGroup->incrementDailyOps();
+                        currentLMGroup->setControlStartTime(CtiTime());
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::ActiveState);
+                        if( currentGearObject->getPercentReduction() > 0.0 )
+                        {
+                            expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                        }
+                        else
+                        {
+                            expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                        }
+                    }
+                }
+                if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
             }
             else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
                      !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
@@ -1765,8 +1815,59 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
             }
             else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::ThermostatRampingMethod) )
             {
-                processThermostatRampingGear(expectedLoadReduced, multiPilMsg, currentGearObject);
-                setProgramState(CtiLMProgramBase::ManualActiveState);
+                CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+                string settings = thermostatGearObject->getSettings();
+                LONG minValue = thermostatGearObject->getMinValue();
+                LONG maxValue = thermostatGearObject->getMaxValue();
+                LONG valueB = thermostatGearObject->getPrecoolTemp();
+                LONG valueD = thermostatGearObject->getControlTemp();
+                LONG valueF = thermostatGearObject->getRestoreTemp();
+                LONG random = thermostatGearObject->getRandom();
+                LONG valueTA = thermostatGearObject->getDelayTime();
+                LONG valueTB = thermostatGearObject->getPrecoolTime();
+                LONG valueTC = thermostatGearObject->getPrecoolHoldTime();
+                LONG valueTD = thermostatGearObject->getControlTime();
+                LONG valueTE = thermostatGearObject->getControlHoldTime();
+                LONG valueTF = thermostatGearObject->getRestoreTime();
+
+                if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Thermostat Set Point command all groups, LM Program: " << getPAOName() << endl;
+                }
+                for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+                {
+                    CtiLMGroupPtr currentLMGroup  = *i;
+                    if( !currentLMGroup->getDisableFlag() &&
+                        !currentLMGroup->getControlInhibit() )
+                    {
+                        if( isExpresscomGroup(currentLMGroup->getPAOType()) )
+                        {
+                            // thermo constraints?? XXX
+
+                            CtiRequestMsg* requestMsg = currentLMGroup->createSetPointRequestMsg(settings, minValue, maxValue, valueB, valueD, valueF, random, valueTA, valueTB, valueTC, valueTD, valueTE, valueTF, defaultLMStartPriority);
+                            startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
+
+                            if( currentGearObject->getPercentReduction() > 0.0 )
+                            {
+                                expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                            }
+                            else
+                            {
+                                expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                            }
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }
+                    }
+                }
+                if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
             }
             else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
             {
@@ -4014,8 +4115,85 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) )
         {
-            DOUBLE expectedLoadReduced;
-            processRotationGear(expectedLoadReduced, secondsFrom1901, multiPilMsg, currentGearObject, true);
+            LONG sendRate = currentGearObject->getMethodRate();
+            LONG shedTime = currentGearObject->getMethodPeriod();
+            LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
+
+            if( numberOfGroupsToTake == 0 )
+            {
+                numberOfGroupsToTake = _lmprogramdirectgroups.size();
+            }
+
+            ULONG sendRateEndFrom1901 = 0;
+
+            // First we need to update the state of the currently active rotating groups
+            for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+            {
+                CtiLMGroupPtr currentLMGroup  = *i;
+                if( currentLMGroup->getGroupControlState() == CtiLMGroupBase::ActiveState )
+                {
+                    if( secondsFrom1901 >= currentLMGroup->getLastControlSent().seconds()+shedTime )
+                    {
+                        currentLMGroup->setGroupControlState(CtiLMGroupBase::InactiveState);
+                        currentLMGroup->setControlCompleteTime(CtiTime());
+                        returnBoolean = TRUE;
+                    }
+                }
+
+                if( currentLMGroup->getLastControlSent().seconds()+sendRate > sendRateEndFrom1901 )//sendRateEndFrom1901 is set to the latest of the new group controls
+                {
+                    sendRateEndFrom1901 = currentLMGroup->getLastControlSent().seconds()+sendRate;
+                }
+            }
+
+            if( secondsFrom1901 >= sendRateEndFrom1901 )
+            {
+                // Now we need to take the next groups for the rotation method
+                int groups_taken = 0;
+                do
+                {
+                    CtiLMGroupPtr nextLMGroupToTake = findGroupToTake(currentGearObject);
+                    if( nextLMGroupToTake.get() == NULL )   // No more groups to take, get outta here
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Program: " << getPAOName() << " couldn't find any groups to take in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        break;
+                    }
+                    else
+                    {
+                        CtiLMGroupConstraintChecker con_checker(*this, nextLMGroupToTake, secondsFrom1901);
+                        if( getConstraintOverride() || con_checker.checkControl(shedTime, true) )
+                        {
+                            groups_taken++;
+                            CtiRequestMsg* requestMsg = nextLMGroupToTake->createRotationRequestMsg(sendRate, shedTime, defaultLMRefreshPriority);
+
+                            setLastGroupControlled(nextLMGroupToTake->getPAOId());
+                            if( nextLMGroupToTake->getGroupControlState() == CtiLMGroupBase::InactiveState )
+                            {
+                                startGroupControl(nextLMGroupToTake, requestMsg, multiPilMsg);
+                            }
+                            else
+                            {
+                                refreshGroupControl(nextLMGroupToTake, requestMsg, multiPilMsg);
+                            }
+                            returnBoolean = TRUE;
+                        }
+                        else
+                        {
+                            if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                            {
+                                con_checker.dumpViolations();
+                            }
+                        }
+                    }
+                } while( groups_taken < numberOfGroupsToTake );
+            }
+
+            if( getProgramState() != CtiLMProgramBase::ManualActiveState &&
+                getProgramState() != CtiLMProgramBase::TimedActiveState )
+            {
+                setProgramState(CtiLMProgramBase::FullyActiveState);
+            }
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::LatchingMethod ) )
         {
@@ -4083,12 +4261,7 @@ bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMu
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " - " <<  text << endl;
             }
-
-            if( (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
-            {
-                (*sub_iter)->scheduleStopNotification(CtiTime());
-                stopped_programs = true;
-            }
+            stopped_programs = (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) || stopped_programs;
         }
     }
     return stopped_programs;
