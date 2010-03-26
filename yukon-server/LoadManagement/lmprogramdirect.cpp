@@ -4261,7 +4261,12 @@ bool CtiLMProgramDirect::stopSubordinatePrograms(CtiMultiMsg* multiPilMsg, CtiMu
                 CtiLockGuard<CtiLogger> dout_guard(dout);
                 dout << CtiTime() << " - " <<  text << endl;
             }
-            stopped_programs = (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) || stopped_programs;
+            
+            if( (*sub_iter)->stopProgramControl(multiPilMsg, multiDispatchMsg, multiNotifMsg, secondsFrom1901) )
+            {
+                (*sub_iter)->scheduleStopNotification(CtiTime());
+                stopped_programs = true;
+            }
         }
     }
     return stopped_programs;
