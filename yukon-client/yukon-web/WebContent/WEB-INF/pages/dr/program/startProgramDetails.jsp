@@ -20,9 +20,9 @@ submitForm = function() {
     combineDateAndTimeFields('startDate');
     combineDateAndTimeFields('stopDate');
     if (targetCycleGears[$('gearNumber').value] && $('addAdjustmentsCheckbox').checked) {
-        url = '<cti:url value="/spring/dr/program/startProgramGearAdjustments"/>';
+        url = '<cti:url value="/spring/dr/program/start/gearAdjustments"/>';
     } else {
-        url = '<cti:url value="/spring/dr/program/startProgramConstraints"/>';
+        url = '<cti:url value="/spring/dr/program/start/constraints"/>';
     }
     return submitFormViaAjax('drDialog', 'startProgramForm', url);
 }
@@ -57,6 +57,8 @@ updateSubmitButtons = function() {
 }
 </script>
 
+<tags:errorMessages/>
+
 <h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
         argument="${program.name}"/>
@@ -64,6 +66,8 @@ updateSubmitButtons = function() {
 
 <form:form id="startProgramForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="programId"/>
+    <input type="hidden" name="from" value="details"/>
+    <form:hidden path="now"/>
 
     <table class="compactResultsTable">
         <tr class="headerRow">
@@ -105,7 +109,7 @@ updateSubmitButtons = function() {
                         </label><br>
                     </td></tr>
                     <tr><td class="padded">
-                        <tags:dateTimeInput fieldId="startDate" fieldValue="${backingBean.startDate}"
+                        <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
                             disabled="true"/>
                     </td></tr>
                 </table>
@@ -119,7 +123,7 @@ updateSubmitButtons = function() {
                         </label><br>
                     </td></tr>
                     <tr><td class="padded">
-                        <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"/>
+                        <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
                     </td></tr>
                 </table>
             </td>

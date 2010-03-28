@@ -137,7 +137,7 @@
                             
                                 <%-- Actions shown when the Program is manually active and enabled --%>
                             
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -172,7 +172,7 @@
                             
                                 <%-- Actions shown when the Program is not manually active and enabled --%>
                             
-                                <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+                                <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -182,7 +182,7 @@
                                                        labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
     
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -214,7 +214,7 @@
                             
                                 <%-- Actions shown when the Program is manually active and disabled --%>
                             
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -249,7 +249,7 @@
                             
                                 <%-- Actions shown when the Program is not manually active and disabled --%>
                             
-                                <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+                                <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -259,7 +259,7 @@
                                                        labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
 
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 

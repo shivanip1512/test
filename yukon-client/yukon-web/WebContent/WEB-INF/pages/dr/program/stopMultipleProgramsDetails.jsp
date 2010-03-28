@@ -51,7 +51,7 @@ singleProgramChecked = function(boxChecked) {
     </c:if>
 </h1>
 
-<cti:url var="submitUrl" value="/spring/dr/program/stopMultiplePrograms"/>
+<cti:url var="submitUrl" value="/spring/dr/program/stop/stopMultiple"/>
 <form:form id="stopProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitForm();">
     <form:hidden path="controlAreaId"/>
@@ -70,7 +70,7 @@ singleProgramChecked = function(boxChecked) {
                     </label>
                 </td></tr>
                 <tr><td class="padded">
-                    <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
+                    <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
                         disabled="true"/>
                 </td></tr>
             </table>

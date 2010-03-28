@@ -131,7 +131,7 @@
 
                                 <%-- Actions shown when the Control Area is enabled but not fully active --%>
 
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -141,7 +141,7 @@
                                                        labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
 
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -219,7 +219,7 @@
 
                                 <%-- Actions shown when the Control Area is fully active and enabled --%>
 
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -297,7 +297,7 @@
 
                                 <%-- Actions shown when the Control Area is disabled but not fully active --%>
 
-                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                                <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -306,7 +306,7 @@
                                                        logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"
                                                        labelKey="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                                 <br>
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
@@ -384,7 +384,7 @@
 
                                 <%-- Actions shown when the Control Area is fully active and disabled --%>
 
-                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                                <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                                     <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                 </cti:url>
                                 <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"

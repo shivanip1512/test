@@ -131,6 +131,14 @@
 <entry key="yukon.web.modules.dr.program.startProgram.constraintsViolated">The following constraints would be violated.</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.overrideConstraints">Override These Constraints</entry>
 
+<entry key="yukon.web.modules.dr.program.startProgram.required.startDate">A valid start date is required if "start now" is not selected.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.typeMismatch.startDate">A valid start date is required if "start now" is not selected.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.required.stopDate">A valid stop date is required if "schedule stop" is selected.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.typeMismatch.stopDate">A valid stop date is required if "schedule stop" is selected.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.startTimeNotBeforeStopTime">Start time must be earlier than stop time.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.adjustmentOutOfRange">Gear adjustment must be an integer between 0 and 250.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.typeMismatch.gearAdjustments.adjustmentValue">Gear adjustment must be an integer between 0 and 250.</entry>
+
 <entry key="yukon.web.modules.dr.program.startProgram.backButton">Back</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.okButton">OK</entry>
@@ -154,6 +162,9 @@
 <entry key="yukon.web.modules.dr.program.stopProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
+
+<entry key="yukon.web.modules.dr.program.startProgram.required.stopDate">A valid stop date is required if "stop now" not selected.</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.typeMismatch.stopDate">A valid stop date is required if "stop now" not selected.</entry>
 
 <!-- start multiple programs -->
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.title">Start Programs</entry>

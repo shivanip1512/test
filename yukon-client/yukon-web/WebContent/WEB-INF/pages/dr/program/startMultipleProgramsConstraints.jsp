@@ -32,12 +32,14 @@ singleOverrideChecked = function(boxChecked) {
 }
 </script>
 
-<cti:url var="submitUrl" value="/spring/dr/program/startMultiplePrograms"/>
+<cti:url var="submitUrl" value="/spring/dr/program/start/multipleStart"/>
 <form:form id="startMultipleProgramsForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startMultipleProgramsForm');">
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
+    <input type="hidden" name="from" value="constraints"/>
     <form:hidden path="startNow"/>
+    <form:hidden path="now"/>
     <form:hidden path="startDate"/>
     <form:hidden path="scheduleStop"/>
     <form:hidden path="stopDate"/>
@@ -139,9 +141,13 @@ singleOverrideChecked = function(boxChecked) {
     <br>
 
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/startMultipleProgramsDetails"/>
+        <cti:url var="backUrl" value="/spring/dr/program/start/multipleDetails">
+            <cti:param name="fromBack" value="true"/>
+        </cti:url>
         <c:if test="${backingBean.addAdjustments}">
-            <cti:url var="backUrl" value="/spring/dr/program/startMultipleProgramsGearAdjustments"/>
+            <cti:url var="backUrl" value="/spring/dr/program/start/multipleGearAdjustments">
+                <cti:param name="fromBack" value="true"/>
+            </cti:url>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'startMultipleProgramsForm', '${backUrl}')"/>

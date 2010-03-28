@@ -7,7 +7,7 @@
 
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+    <cti:url var="startScenarioUrl" value="/spring/dr/program/start/multipleDetails">
         <cti:param name="scenarioId" value="${paoId}"/>
     </cti:url>
     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
@@ -15,7 +15,7 @@
                            actionUrl="${startScenarioUrl}" 
                            logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
 
-    <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+    <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
         <cti:param name="scenarioId" value="${paoId}"/>
     </cti:url>
     <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 

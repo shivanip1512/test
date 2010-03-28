@@ -14,9 +14,9 @@ submitForm = function() {
     combineDateAndTimeFields('stopDate');
 
     if ($('addAdjustmentsCheckbox').checked) {
-        url = '<cti:url value="/spring/dr/program/startMultipleProgramsGearAdjustments"/>';
+        url = '<cti:url value="/spring/dr/program/start/multipleGearAdjustments"/>';
     } else {
-        url = '<cti:url value="/spring/dr/program/startMultipleProgramsConstraints"/>';
+        url = '<cti:url value="/spring/dr/program/start/multipleConstraints"/>';
     }
 
     return submitFormViaAjax('drDialog', 'startMultipleProgramsForm', url);
@@ -91,6 +91,8 @@ gearChanged = function() {
 
 </script>
 
+<tags:errorMessages/>
+
 <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"
@@ -102,11 +104,11 @@ gearChanged = function() {
     </c:if>
 </h1>
 
-<tags:errorMessages/>
-
 <form:form id="startMultipleProgramsForm" commandName="backingBean" onsubmit="return submitForm();">
     <form:hidden path="controlAreaId"/>
     <form:hidden path="scenarioId"/>
+    <input type="hidden" name="from" value="details"/>
+    <form:hidden path="now"/>
 
     <table class="compactResultsTable">
         <tr>
@@ -123,8 +125,8 @@ gearChanged = function() {
                         </label>
                     </td></tr>
                     <tr><td class="padded">
-                        <tags:dateTimeInput fieldId="startDate" fieldValue="${backingBean.startDate}"
-                    disabled="true"/>
+                        <tags:dateTimeInput path="startDate" fieldValue="${backingBean.startDate}"
+                            disabled="true"/>
                     </td></tr>
                 </table>
             </td>
@@ -137,7 +139,7 @@ gearChanged = function() {
                         </label>
                     </td></tr>
                     <tr><td class="padded">
-                        <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"/>
+                        <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"/>
                     </td></tr>
                 </table>
             </td>

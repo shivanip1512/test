@@ -8,10 +8,10 @@
 <script type="text/javascript">
 submitForm = function() {
     combineDateAndTimeFields('stopDate');
-    url = '<cti:url value="/spring/dr/program/stopProgram"/>';
+    url = '<cti:url value="/spring/dr/program/stop/stop"/>';
     <c:if test="${stopGearAllowed}">
         if (!$('stopNowCheckbox').checked && $('useStopGearCheckbox').checked) {
-            url = '<cti:url value="/spring/dr/program/stopProgramConstraints"/>';
+            url = '<cti:url value="/spring/dr/program/stop/constraints"/>';
         }
     </c:if>
     return submitFormViaAjax('drDialog', 'stopProgramForm', url);
@@ -64,7 +64,7 @@ updateComponentAvailability = function() {
                         </label>
                     </td></tr>
                     <tr><td class="padded">
-                        <tags:dateTimeInput fieldId="stopDate" fieldValue="${backingBean.stopDate}"
+                        <tags:dateTimeInput path="stopDate" fieldValue="${backingBean.stopDate}"
                             disabled="true"/>
                     </td></tr>
                 </table>

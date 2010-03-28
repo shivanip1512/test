@@ -17,6 +17,8 @@ import com.google.common.collect.Lists;
 @SuppressWarnings("unchecked")
 public abstract class StartProgramBackingBeanBase {
     private boolean startNow;
+    // This date represents "now" for when "startNow" is checked.
+    private Date now;
     private Date startDate;
     private boolean scheduleStop;
     private Date stopDate;
@@ -33,6 +35,14 @@ public abstract class StartProgramBackingBeanBase {
 
     public void setStartNow(boolean startNow) {
         this.startNow = startNow;
+    }
+
+    public Date getNow() {
+        return now;
+    }
+
+    public void setNow(Date now) {
+        this.now = now;
     }
 
     public Date getStartDate() {
@@ -98,6 +108,7 @@ public abstract class StartProgramBackingBeanBase {
         // always know if the user chose those options.
         startNow = true;
         DateTime now = new DateTime(userContext.getJodaTimeZone());
+        this.now = now.toDate();
         startDate = now.toDate();
         scheduleStop = true;
         stopDate = now.plusHours(4).toDate();

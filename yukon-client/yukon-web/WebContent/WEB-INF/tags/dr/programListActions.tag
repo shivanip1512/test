@@ -22,7 +22,7 @@
             <span class="subtleGray" title="${programUnknown}">
                 <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
             </span>
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -31,7 +31,7 @@
                                    logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="enabled">
-            <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+            <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -39,7 +39,7 @@
                                    actionUrl="${startProgramUrl}" 
                                    logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
 
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -48,7 +48,7 @@
                                    logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="runningDisabled">
-            <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+            <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -56,7 +56,7 @@
                                    actionUrl="${startProgramUrl}" 
                                    logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
 
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
@@ -65,7 +65,7 @@
                                    logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
-            <cti:url var="startProgramUrl" value="/spring/dr/program/startProgramDetails">
+            <cti:url var="startProgramUrl" value="/spring/dr/program/start/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startProgram.title" 
@@ -73,7 +73,7 @@
                                    actionUrl="${startProgramUrl}" 
                                    logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"/>
 
-            <cti:url var="stopProgramUrl" value="/spring/dr/program/stopProgramDetails">
+            <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                 <cti:param name="programId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 

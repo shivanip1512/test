@@ -4,20 +4,21 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<tags:errorMessages/>
 
 <c:if test="${!empty program}">
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.program.startProgram.enterAdjustments"
             argument="${program.name}"/>
     </h1>
-    <cti:url var="submitUrl" value="/spring/dr/program/startProgramConstraints"/>
+    <cti:url var="submitUrl" value="/spring/dr/program/start/constraints"/>
     <dr:programStartInfo page="startProgram"/>
 </c:if>
 <c:if test="${empty program}">
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.program.startProgram.enterMultipleAdjustments"/>
     </h1>
-    <cti:url var="submitUrl" value="/spring/dr/program/startMultipleProgramsConstraints"/>
+    <cti:url var="submitUrl" value="/spring/dr/program/start/multipleConstraints"/>
     <dr:programStartInfo page="startMultiplePrograms"/>
 </c:if>
 
@@ -25,6 +26,7 @@
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
 
+    <input type="hidden" name="from" value="gear_adjustments"/>
     <c:if test="${!empty program}">
         <form:hidden path="programId"/>
         <form:hidden path="gearNumber"/>
@@ -40,6 +42,7 @@
     </c:if>
 
     <form:hidden path="startNow"/>
+    <form:hidden path="now"/>
     <form:hidden path="startDate"/>
     <form:hidden path="scheduleStop"/>
     <form:hidden path="stopDate"/>
@@ -60,7 +63,7 @@
 		            <cti:formatDate type="TIME24H" value="${gearAdjustment.endTime}"/>
                 </td>
                 <td>
-		            <form:input path="gearAdjustments[${status.count-1}].adjustmentValue"
+                    <tags:input path="gearAdjustments[${status.count-1}].adjustmentValue"
 		                maxlength="3" size="5"/><br>
                 </td>
 	        </tr>
@@ -76,12 +79,18 @@
         <cti:msg var="submitButtonText" key="yukon.web.modules.dr.program.startProgram.okButton"/>
     </c:if>
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/startProgramDetails"/>
-        <c:if test="${empty program}">
-            <cti:url var="backUrl" value="/spring/dr/program/startMultipleProgramsDetails"/>
+        <c:if test="${empty errors}">
+            <cti:url var="backUrl" value="/spring/dr/program/start/details">
+                <cti:param name="fromBack" value="true"/>
+            </cti:url>
+            <c:if test="${empty program}">
+                <cti:url var="backUrl" value="/spring/dr/program/start/multipleDetails">
+                    <cti:param name="fromBack" value="true"/>
+                </cti:url>
+            </c:if>
+            <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
+                onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
         </c:if>
-        <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
-            onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>
 
         <input type="submit" value="${submitButtonText}"/>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.cancelButton"/>"

@@ -10,7 +10,7 @@
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
     <tags:dynamicChoose updaterString="DR_CONTROLAREA/${paoId}/SHOW_ACTION" suffix="${paoId}">
         <tags:dynamicChooseOption optionId="enabled">
-            <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+            <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
@@ -18,7 +18,7 @@
                                    actionUrl="${startControlAreaUrl}" 
                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
             
-            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
@@ -31,7 +31,7 @@
             <span class="subtleGray" title="${controlAreaFullyActive}">
                 <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
             </span>
-            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
@@ -40,7 +40,7 @@
                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="disabled">
-            <cti:url var="startControlAreaUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+            <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
@@ -48,7 +48,7 @@
                                    actionUrl="${startControlAreaUrl}" 
                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.startIcon"/>
 
-            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
@@ -57,7 +57,7 @@
                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveDisabled">
-            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+            <cti:url var="stopControlAreaUrl" value="/spring/dr/program/stop/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>
             </cti:url>
             <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 

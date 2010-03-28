@@ -108,6 +108,7 @@
             <c:if test="${!empty recents}">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.home.recents"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
+                    <tags:alternateRowReset/>
                     <table class="compactResultsTable rowHighlighting">
                         <tr>
                             <th></th>

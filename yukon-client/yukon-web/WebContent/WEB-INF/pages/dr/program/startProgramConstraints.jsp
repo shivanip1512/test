@@ -12,12 +12,14 @@ overrideConstraintsChecked = function() {
 }
 </script>
 
-<cti:url var="submitUrl" value="/spring/dr/program/startProgram"/>
+<cti:url var="submitUrl" value="/spring/dr/program/start/start"/>
 <form:form id="startProgramForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('drDialog', 'startProgramForm');">
     <form:hidden path="programId"/>
     <form:hidden path="gearNumber"/>
+    <input type="hidden" name="from" value="constraints"/>
     <form:hidden path="startNow"/>
+    <form:hidden path="now"/>
     <form:hidden path="startDate"/>
     <form:hidden path="scheduleStop"/>
     <form:hidden path="stopDate"/>
@@ -59,9 +61,11 @@ overrideConstraintsChecked = function() {
     <br>
 
     <div class="actionArea">
-        <cti:url var="backUrl" value="/spring/dr/program/startProgramDetails"/>
+        <cti:url var="backUrl" value="/spring/dr/program/start/details">
+            <cti:param name="fromBack" value="true"/>
+        </cti:url>
         <c:if test="${backingBean.addAdjustments}">
-            <cti:url var="backUrl" value="/spring/dr/program/startProgramGearAdjustments"/>
+            <cti:url var="backUrl" value="/spring/dr/program/start/gearAdjustments"/>
         </c:if>
         <input type="button" value="<cti:msg key="yukon.web.modules.dr.program.startProgram.backButton"/>"
             onclick="submitFormViaAjax('drDialog', 'startProgramForm', '${backUrl}')"/>

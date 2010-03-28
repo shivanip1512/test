@@ -53,7 +53,7 @@
             
             <c:if test="${status.error}">
                 <br>
-                <form:errors path="${fieldName}" cssClass="errorRed"/>
+                <form:errors path="${fieldName}" cssClass="errorMessage"/>
             </c:if>
         
         </spring:bind>

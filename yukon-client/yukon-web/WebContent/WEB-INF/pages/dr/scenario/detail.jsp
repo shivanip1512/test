@@ -50,7 +50,7 @@
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.scenarioDetail.heading.actions"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
-                        <cti:url var="startScenarioUrl" value="/spring/dr/program/startMultipleProgramsDetails">
+                        <cti:url var="startScenarioUrl" value="/spring/dr/program/start/multipleDetails">
                             <cti:param name="scenarioId" value="${scenarioId}"/>
                         </cti:url>
                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title"
@@ -60,7 +60,7 @@
                                                        labelKey="yukon.web.modules.dr.scenarioDetail.actions.start"/>
                         <br>
 
-                        <cti:url var="stopScenarioUrl" value="/spring/dr/program/stopMultipleProgramsDetails">
+                        <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
                             <cti:param name="scenarioId" value="${scenarioId}"/>
                         </cti:url>
                         <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title"
