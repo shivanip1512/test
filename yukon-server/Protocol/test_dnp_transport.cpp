@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_wraparound)
 {
     using Cti::Protocol::DNP::Transport::TransportPacket;
 
-    //  try from 1 to 5 packets
+    //  try from 1 to 5 packets - can't go to 64 since next_permutation() is O(N!) below
     for( int packet_count = 1; packet_count <= 5; ++packet_count )
     {
         //  start the first packet at all 64 possibilities
