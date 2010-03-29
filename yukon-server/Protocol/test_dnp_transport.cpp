@@ -177,6 +177,67 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_three_packets)
 }
 
 
+BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_wraparound)
+{
+    using Cti::Protocol::DNP::Transport::TransportPacket;
+
+    //  try from 1 to 5 packets
+    for( int packet_count = 1; packet_count <= 5; ++packet_count )
+    {
+        //  start the first packet at all 64 possibilities
+        for( int start_index = 0; start_index < 64; ++start_index )
+        {
+            vector<TransportPacket> packets;
+
+            for( int i = 0; i < packet_count; ++i )
+            {
+                //  make the start value
+                unsigned char header = (start_index + i) & 0x3f;
+
+                //  first
+                if( i == 0 )
+                {
+                    header |= 0x40;
+                }
+                //  final
+                if( i == packet_count - 1 )
+                {
+                    header |= 0x80;
+                }
+
+                packets.push_back(TransportPacket(header, 0, 0));
+            }
+
+            //  start out sorted
+            std::sort(packets.begin(), packets.end());
+
+            //  and go through every possible permutation of inserting the packets
+            while( std::next_permutation(packets.begin(), packets.end()) )
+            {
+                test_Transport::packet_sequence_t packet_sequence;
+
+                //  don't insert the first packet
+                for( int i = 1; i < packet_count; ++i )
+                {
+                    count++;
+
+                    packet_sequence.insert(packets[i]);
+
+                    //  verify that it's continuously not valid without the first packet
+                    BOOST_CHECK_EQUAL(false, test_Transport::test_isPacketSequenceValid(packet_sequence));
+                }
+
+                //  now insert the first packet
+                packet_sequence.insert(packets[0]);
+
+                //  and verify that it's valid
+                BOOST_CHECK_EQUAL(true, test_Transport::test_isPacketSequenceValid(packet_sequence));
+            }
+        }
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_no_packets)
 {
     test_Transport::packet_sequence_t packet_sequence;

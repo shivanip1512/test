@@ -277,7 +277,7 @@ bool TransportLayer::isPacketSequenceValid(const packet_sequence_t &packet_seque
         }
 
         //  if we found a final packet, the next one must be a first packet
-        if( final_found && !packet.isFirst() )
+        if( final_found && !first_found && !packet.isFirst() )
         {
             return false;
         }
