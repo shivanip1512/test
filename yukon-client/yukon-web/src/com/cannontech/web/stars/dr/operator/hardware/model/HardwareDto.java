@@ -12,6 +12,7 @@ public class HardwareDto {
     private String displayName;
     private String displayLabel;
     private String displayType;
+    private String categoryName;
     private String serialNumber;
     private String altTrackingNumber;
     private Integer voltageEntryId;
@@ -47,6 +48,14 @@ public class HardwareDto {
         this.displayType = displayType;
     }
     
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     public String getSerialNumber() {
         return serialNumber;
     }

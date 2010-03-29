@@ -87,6 +87,8 @@ public class HardwareServiceImpl implements HardwareService {
         int categoryId = inventoryBase.getCategoryId();
         YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(categoryId);
         
+        YukonListEntry categoryNameYLE = yukonListDao.getYukonListEntry(inventoryBase.getCategoryId());
+        hardwareDto.setCategoryName(categoryNameYLE.getEntryText());
         hardwareDto.setDeviceId(inventoryBase.getDeviceId());
         hardwareDto.setDisplayLabel(inventoryBase.getDeviceLabel());
         hardwareDto.setAltTrackingNumber(inventoryBase.getAlternateTrackingNumber());
