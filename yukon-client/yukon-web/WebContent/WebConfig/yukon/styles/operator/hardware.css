@@ -1,0 +1,27 @@
+#chosenYukonDeviceNameField {
+    font-size: 11px;
+}
+
+div.historyContainer {
+    height: 112px;
+    overflow: auto;
+}
+
+.newDevice input {
+    width: 60px;
+}
+
+table.hardwareListTable th.name,
+table.hardwareListTable th.type,
+table.hardwareListTable th.label {
+    width: 30%;
+}
+
+table.hardwareListTable th.actions {
+    width: 10%;
+}
+
+td.serviceCompanyInfo {
+    padding-top: 0px !important;
+    vertical-align: top;
+}

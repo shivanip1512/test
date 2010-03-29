@@ -52,9 +52,9 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, Initi
     public void updateNotesForEvent(int eventId, Date date, String notes){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("update LMCustomerEventBase");
-        sql.append("set Notes = ").appendArgument(notes);
-        sql.append(", EventDateTime = ").appendArgument(date);
-        sql.append("where EventId = ").appendArgument(eventId);
+        sql.append("set Notes ").eq(notes);
+        sql.append(", EventDateTime ").eq(date);
+        sql.append("where EventId ").eq(eventId);
         simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
     }
     

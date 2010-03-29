@@ -7,9 +7,12 @@ import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServic
 
 public class HardwareDto {
     private int inventoryId;
-    private String deviceType;
+    private Integer deviceId = 0;
+    private int energyCompanyId;
+    private String displayName;
+    private String displayLabel;
+    private String displayType;
     private String serialNumber;
-    private String deviceLabel;
     private String altTrackingNumber;
     private Integer voltageEntryId;
     private Date fieldInstallDate;
@@ -23,13 +26,10 @@ public class HardwareDto {
     private Integer deviceStatusEntryId;
     private Integer originalDeviceStatusEntryId;
     private String twoWayDeviceName;
-    private Integer deviceId = 0;
-    private boolean twoWayLcr = false;
     private List<HardwareHistory> hardwareHistory;
-    private String deviceName;
-    private boolean isMct;
-    private int energyCompanyId;
-    private boolean isThermostat;
+    private boolean twoWayLcr = false;
+    private boolean mct = false;
+    private boolean thermostat = false;
     
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -39,12 +39,12 @@ public class HardwareDto {
         this.deviceStatusEntryId = deviceStatusEntryId;
     }
     
-    public String getDeviceType() {
-        return deviceType;
+    public String getDisplayType() {
+        return displayType;
     }
     
-    public void setDeviceType(String deviceType) {
-        this.deviceType = deviceType;
+    public void setDisplayType(String displayType) {
+        this.displayType = displayType;
     }
     
     public String getSerialNumber() {
@@ -55,12 +55,12 @@ public class HardwareDto {
         this.serialNumber = serialNumber;
     }
     
-    public String getDeviceLabel() {
-        return deviceLabel;
+    public String getDisplayLabel() {
+        return displayLabel;
     }
     
-    public void setDeviceLabel(String deviceLabel) {
-        this.deviceLabel = deviceLabel;
+    public void setDisplayLabel(String displayLabel) {
+        this.displayLabel = displayLabel;
     }
     
     public String getAltTrackingNumber() {
@@ -159,14 +159,6 @@ public class HardwareDto {
         this.deviceId = deviceId;
     }
 
-    public boolean isTwoWayLcr() {
-        return twoWayLcr;
-    }
-    
-    public void setIsTwoWayLcr(boolean twoWayLcr) {
-        this.twoWayLcr = twoWayLcr;
-    }
-
     public void setHardwareHistory(List<HardwareHistory> hardwareHistory) {
         this.hardwareHistory = hardwareHistory;
     }
@@ -184,25 +176,17 @@ public class HardwareDto {
     }
 
     public boolean hasDevice() {
-        return getDeviceType().startsWith("MCT") || getDeviceType().equalsIgnoreCase("LCR-3102");
+        return getDisplayType().startsWith("MCT") || getDisplayType().equalsIgnoreCase("LCR-3102");
     }
 
-    public String getDeviceName(){
-        return deviceName;
+    public String getDisplayName(){
+        return displayName;
     }
     
-    public void setDeviceName(String deviceName) {
-        this.deviceName = deviceName;
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     
-    public boolean getIsMct() {
-        return isMct;
-    }
-
-    public void setIsMct(boolean isMtc) {
-        this.isMct = isMtc;
-    }
-
     public Integer getOriginalDeviceStatusEntryId() {
         return originalDeviceStatusEntryId;
     }
@@ -219,11 +203,27 @@ public class HardwareDto {
         return energyCompanyId;
     }
 
-    public void setIsThermostat(boolean isThermostat) {
-        this.isThermostat = isThermostat;
+    public void setThermostat(boolean thermostat) {
+        this.thermostat = thermostat;
     }
     
-    public boolean getIsThermostat() {
-        return isThermostat;
+    public boolean isThermostat() {
+        return thermostat;
+    }
+    
+    public boolean isTwoWayLcr() {
+        return twoWayLcr;
+    }
+    
+    public void setTwoWayLcr(boolean twoWayLcr) {
+        this.twoWayLcr = twoWayLcr;
+    }
+    
+    public boolean isMct() {
+        return mct;
+    }
+
+    public void setMct(boolean mct) {
+        this.mct = mct;
     }
 }

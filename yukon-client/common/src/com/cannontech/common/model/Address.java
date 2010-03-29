@@ -1,5 +1,6 @@
 package com.cannontech.common.model;
 
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.lite.LiteAddress;
 
 public class Address {
@@ -70,7 +71,18 @@ public class Address {
     public void setCounty(final String country) {
         this.country = country;
     }
-   
+    
+    public static Address getDisplayableAddress(LiteAddress liteAddress) {
+        Address address = new Address();
+        address.setLocationAddress1(StringUtils.stripNone(liteAddress.getLocationAddress1()));
+        address.setLocationAddress2(StringUtils.stripNone(liteAddress.getLocationAddress2()));
+        address.setCityName(StringUtils.stripNone(liteAddress.getCityName()));
+        address.setStateCode(StringUtils.stripNone(liteAddress.getStateCode()));
+        address.setZipCode(StringUtils.stripNone(liteAddress.getZipCode()));
+        address.setCounty(StringUtils.stripNone(liteAddress.getCounty()));
+        return address;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (o == null || !(o instanceof Address)) return false;

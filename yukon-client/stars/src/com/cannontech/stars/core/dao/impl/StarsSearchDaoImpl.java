@@ -79,7 +79,7 @@ public class StarsSearchDaoImpl implements StarsSearchDao {
 		}
 		
 		LiteStarsLMHardware liteHardware = liteHardwareList.get(0);
-		if(!new Integer(energyCompanyId).equals(liteHardware.getEnergyCompanyId())) {
+		if(energyCompanyId != liteHardware.getEnergyCompanyId()) {
 			LiteStarsEnergyCompany inventoryEC = ecMappingDao.getInventoryEC(liteHardware.getInventoryID());
 			throw new ObjectInOtherEnergyCompanyException( liteHardware, inventoryEC);
 		}

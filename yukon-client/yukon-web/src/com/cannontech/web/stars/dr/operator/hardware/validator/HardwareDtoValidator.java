@@ -18,42 +18,47 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     public void doValidation(HardwareDto hardwareDto, Errors errors) {
         
         /* Serial Number */
-        if(!hardwareDto.getIsMct()){  /* Check serial numbers for switches and tstats */
+        if(!hardwareDto.isMct()){  /* Check serial numbers for switches and tstats */
             if (StringUtils.isBlank(hardwareDto.getSerialNumber())) {
-                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.serialNumberRequired");
+                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.required");
             } else if(hardwareDto.getSerialNumber().length() > 30) {
-                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.serialNumberTooLong");
+                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.tooLong");
             } else if (!StringUtils.containsOnly(hardwareDto.getSerialNumber(), validSerialNumberChars)){
-                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.serialNumberInvalidChars");
+                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.invalid");
             }
         }
         
         /* Device Label */
-        if (StringUtils.isNotBlank(hardwareDto.getDeviceLabel())) {
-            if(hardwareDto.getDeviceLabel().length() > 60){
-                errors.rejectValue("deviceLabel", "yukon.web.modules.operator.hardwareEdit.error.deviceLabelTooLong");
+        if (StringUtils.isNotBlank(hardwareDto.getDisplayLabel())) {
+            if(hardwareDto.getDisplayLabel().length() > 60){
+                errors.rejectValue("displayLabel", "yukon.web.modules.operator.hardwareEdit.error.tooLong");
             }
         }
         
         /* Alternate Tracking Number */
         if (StringUtils.isNotBlank(hardwareDto.getAltTrackingNumber())) {
             if(hardwareDto.getAltTrackingNumber().length() > 40){
-                errors.rejectValue("altTrackingNumber", "yukon.web.modules.operator.hardwareEdit.error.altTrackingNumberTooLong");
+                errors.rejectValue("altTrackingNumber", "yukon.web.modules.operator.hardwareEdit.error.tooLong");
             }
         }
         
         /* Device Info Notes */
         if (StringUtils.isNotBlank(hardwareDto.getDeviceNotes())) {
             if(hardwareDto.getDeviceNotes().length() > 500){
-                errors.rejectValue("deviceNotes", "yukon.web.modules.operator.hardwareEdit.error.deviceNotesTooLong");
+                errors.rejectValue("deviceNotes", "yukon.web.modules.operator.hardwareEdit.error.tooLong");
             }
         }
         
         /* Install Notes */
         if (StringUtils.isNotBlank(hardwareDto.getInstallNotes())) {
             if(hardwareDto.getInstallNotes().length() > 500){
-                errors.rejectValue("installNotes", "yukon.web.modules.operator.hardwareEdit.error.installNotesTooLong");
+                errors.rejectValue("installNotes", "yukon.web.modules.operator.hardwareEdit.error.tooLong");
             }
+        }
+        
+        /* Two Way Device: only applicable for two way lcr's */
+        if(hardwareDto.isTwoWayLcr() && !(hardwareDto.getDeviceId() > 0)){
+            errors.rejectValue("deviceId", "yukon.web.modules.operator.hardwareEdit.error.invalid");
         }
     }
 

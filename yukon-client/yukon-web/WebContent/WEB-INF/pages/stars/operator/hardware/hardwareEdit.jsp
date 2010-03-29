@@ -6,6 +6,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <cti:standardPage module="operator" page="hardwareEdit">
+    <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
+
     <script type="text/javascript">
         function changeTwoWayDeviceName(selectedItems) {
             var selectedPao = selectedItems[0];
@@ -79,12 +81,12 @@
     <!-- Create Two Way Device Popup -->
     <i:simplePopup titleKey=".createTwoWay" id="createDevicePopup" styleClass="smallSimplePopup">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".deviceName">
+                <tags:nameValue2 nameKey=".displayName">
                     <input type="text" name="deviceName" id="createTwoWayDeviceName">
                     <input type="button" value="Create" onclick="createTwoWayDevice()">
                 </tags:nameValue2>
             </tags:nameValueContainer2>
-            <div id="creationErrors" class="errorRed">
+            <div id="creationErrors" class="errorMessage">
                 <span id="nameAlreadyExists" style="display:none;"><cti:msg2 key=".createTwoWay.error.nameAlreadyExists"/></span>
                 <span id="mustSupplyName" style="display:none;"><cti:msg2 key=".createTwoWay.error.mustSupplyName"/></span>
                 <span id="unknown" style="display:none;"><cti:msg2 key=".createTwoWay.error.unknown"/></span>
@@ -92,20 +94,20 @@
     </i:simplePopup>
     
     <!-- Delete Hardware Popup -->
-    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardwareDto.deviceName}">
+    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
         <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <c:choose>
-                <c:when test="${hardwareDto.isMct}">
+                <c:when test="${hardwareDto.mct}">
                     <c:set var="deleteMsgKeySuffix" value="DeviceName"/>
                 </c:when>
                 <c:otherwise>
                     <c:set var="deleteMsgKeySuffix" value="SerialNumber"/>
                 </c:otherwise>
             </c:choose>
-            <cti:msg2 key=".delete.deleteMessage${deleteMsgKeySuffix}" argument="${hardwareDto.deviceName}"/>
+            <cti:msg2 key=".delete.deleteMessage${deleteMsgKeySuffix}" argument="${hardwareDto.displayName}"/>
             <br><br>
             <input type="radio" name="deleteOption" value="remove" checked="checked"><span class="radioLabel"><cti:msg2 key=".delete.option1"/></span>
             <br>
@@ -118,23 +120,17 @@
         </form>
     </i:simplePopup>
     
-    <c:if test="${not empty errorMsg}">
-            <div class="errorRed">${errorMsg}</div>
-        <br>
-    </c:if>
-    <c:if test="${not empty infoMsg}">
-            <div class="okGreen">${infoMsg}</div>
-        <br>
-    </c:if>
+    <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
     
     <form:form id="updateForm" commandName="hardwareDto" action="/spring/stars/operator/hardware/updateHardware">
     
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="inventoryId" value="${inventoryId}">
-        <form:hidden path="isMct"/>
+        <form:hidden path="mct"/>
+        <form:hidden path="twoWayLcr"/>
         <form:hidden path="energyCompanyId"/>
-        <form:hidden path="deviceType"/>
-        <form:hidden path="deviceName"/>
+        <form:hidden path="displayType"/>
+        <form:hidden path="displayName"/>
         
         <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:50%;" tableClasses="widgetColumns">
         
@@ -145,19 +141,20 @@
                     
                     <tags:nameValueContainer2>
                     
-                        <tags:nameValue2 nameKey=".deviceType">${hardwareDto.deviceType}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".displayType"><spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody></tags:nameValue2>
                         
                         <c:choose>
-                            <c:when test="${hardwareDto.isMct}">
+                            <c:when test="${hardwareDto.mct}">
                                 <%-- For Mct's, show device name instead of serial number --%>
-                                <tags:nameValue2 nameKey=".deviceName">${hardwareDto.deviceName}</tags:nameValue2>
+                                <tags:nameValue2 nameKey=".displayName"><spring:escapeBody htmlEscape="true">${hardwareDto.displayName}</spring:escapeBody></tags:nameValue2>
                             </c:when>
                             <c:otherwise>
                                 <%-- For switchs and tstat's, show serial number --%>
                                 <c:choose>
                                     <%-- If they don't have the inventory checking role property, let them edit the serial number --%>
                                     <c:when test="${inventoryChecking}">
-                                        <tags:nameValue2 nameKey=".serialNumber">${hardwareDto.serialNumber}</tags:nameValue2>
+                                        <form:hidden path="serialNumber"/>
+                                        <tags:nameValue2 nameKey=".serialNumber"><spring:escapeBody htmlEscape="true">${hardwareDto.serialNumber}</spring:escapeBody></tags:nameValue2>
                                     </c:when>
                                     <c:otherwise>
                                         <tags:inputNameValue nameKey=".serialNumber" path="serialNumber"></tags:inputNameValue>
@@ -166,7 +163,7 @@
                             </c:otherwise>
                         </c:choose>
                         
-                        <tags:inputNameValue nameKey=".deviceLabel" path="deviceLabel"/>
+                        <tags:inputNameValue nameKey=".displayLabel" path="displayLabel"/>
                         
                         <tags:inputNameValue nameKey=".altTrackingLabel" path="altTrackingNumber"/>
                         
@@ -186,26 +183,35 @@
                         
                         <tags:textareaNameValue nameKey=".deviceNotesLabel" path="deviceNotes" rows="4" cols="30" />
                         
-                        <c:if test="${not hardwareDto.isMct}">
+                        <c:if test="${not hardwareDto.mct}">
                             <tags:selectNameValue nameKey=".routeLabel" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                         </c:if>
                         
                         <tags:yukonListEntrySelectNameValue nameKey=".deviceStatusLabel" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
                         
                         <form:hidden path="originalDeviceStatusEntryId"/>
-                        <form:hidden path="deviceId" id="chosenYukonDeviceId"/>
                         
                         <c:if test="${hardwareDto.twoWayLcr}">
                             
                             <%-- Two Way LCR's Yukon Device --%>
                             <tags:nameValue2 nameKey=".twoWayDeviceLabel">
-                                <span id="chosenYukonDeviceNameField" style="font-size:11px;"><spring:escapeBody htmlEscape="true">${hardwareDto.twoWayDeviceName}</spring:escapeBody></span> 
+                                <span id="chosenYukonDeviceNameField">
+                                    <c:choose>
+                                        <c:when test="${hardwareDto.deviceId > 0}">
+                                            <spring:escapeBody htmlEscape="true">${hardwareDto.twoWayDeviceName}</spring:escapeBody>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <cti:msg2 key=".noTwoWayDeviceName"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span> 
                                 <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" asButton="true" immediateSelectMode="true"
                                     destinationFieldId="chosenYukonDeviceId" 
                                     destinationFieldName="chosenYukonDeviceId"
-                                    endAction="changeTwoWayDeviceName" styleClass="newDevice">Choose</tags:pickerDialog>
-                                <input type="button" value="New" onclick="showDeviceCreationPopup();">
+                                    endAction="changeTwoWayDeviceName" styleClass="newDevice"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
+                                <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();">
                                 
+                                <tags:hidden path="deviceId" id="chosenYukonDeviceId"/>
                             </tags:nameValue2>
                         
                         </c:if>
@@ -229,7 +235,7 @@
                         <tags:nameValue2 nameKey=".serviceCompanyInfoLabel">
                             <div id="serviceCompanyContainer"></div>
                         </tags:nameValue2>
-                        <tags:selectNameValue nameKey=".warehouseLabel" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="(none)"/>
+                        <tags:selectNameValue nameKey=".warehouseLabel" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
                         <tags:textareaNameValue nameKey=".installNotesLabel" path="installNotes" rows="4" cols="30" />
                         
                     </tags:nameValueContainer2>
@@ -256,8 +262,8 @@
                                     </c:choose>
                                     <c:set var="deviceStatusCount" value="${deviceStatusCount + 1}"/>
                                     <tr class="${deviceStatusRowClass}">
-                                        <td>${event.actionText}</td>
-                                        <td>${event.userName}</td>
+                                        <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                        <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
                                         <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
                                     </tr>
                                 </c:forEach>
@@ -288,14 +294,13 @@
                                     <c:set var="hardwareHistoryCount" value="${hardwareHistoryCount + 1}"/>
                                     <tr class="${hardwareHistoryRowClass}">
                                         <td><cti:formatDate value="${event.date}" type="BOTH"/></td>
-                                        <td>${event.action}</td>
+                                        <td><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
                                     </tr>
                                 </c:forEach>
                                 
                             </table>
                         </div>
                     </tags:boxContainer2>
-                    
                 </tags:sectionContainer2>
             
             </cti:dataGridCell>
@@ -310,7 +315,7 @@
         </cti:checkRolesAndProperties>
         <tags:reset/>
         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-            <input type="button" style="width:80px;" onclick="showDeletePopup()" value="<cti:msg2 key=".delete.deleteButton"/>"/>
+            <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key=".delete.deleteButton"/>"/>
         </cti:checkRolesAndProperties>
     </form:form>
     

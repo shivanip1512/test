@@ -17,6 +17,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
@@ -71,38 +72,35 @@ public List<DisplayableServiceCompany> getAllInheritedServiceCompanies(int energ
     sql.append("where ecgm.EnergyCompanyID in (").appendArgumentList(energyCompanyIds).append(")");
     sql.append("and ecgm.MappingCategory = 'ServiceCompany'");
     
-    try {
-        return simpleJdbcTemplate.query(sql.getSql(), new ParameterizedRowMapper<DisplayableServiceCompany>() {
-            @Override
-            public DisplayableServiceCompany mapRow(ResultSet rs, int rowNum) throws SQLException {
-                DisplayableServiceCompany sc = new DisplayableServiceCompany();
-                sc.setServiceCompanyId(rs.getInt("companyId"));
-                sc.setServiceCompanyName(rs.getString("companyName"));
-                return sc;
-            }
-        }, sql.getArguments());
-    } catch (EmptyResultDataAccessException e) {
-        return Lists.newArrayList(); 
-    }
+    return simpleJdbcTemplate.query(sql.getSql(), new ParameterizedRowMapper<DisplayableServiceCompany>() {
+        @Override
+        public DisplayableServiceCompany mapRow(ResultSet rs, int rowNum) throws SQLException {
+            DisplayableServiceCompany sc = new DisplayableServiceCompany();
+            sc.setServiceCompanyId(rs.getInt("companyId"));
+            sc.setServiceCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
+            return sc;
+        }
+    }, sql.getArguments());
 }
 
 @Override
 public List<Integer> getParentEnergyCompanyIds(int energyCompanyId){
     List<Integer> parentIds = Lists.newArrayList();
-    while(true) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select EnergyCompanyId");
-        sql.append("from ECToGenericMapping");
-        sql.append("where MappingCategory = 'Member'");
-        sql.append("and ItemId = ").appendArgument(energyCompanyId);
+    
+    SqlStatementBuilder sql = new SqlStatementBuilder();
+    sql.append("select EnergyCompanyId");
+    sql.append("from ECToGenericMapping");
+    sql.append("where MappingCategory = 'Member'");
+    sql.append("and ItemId = ").appendArgument(energyCompanyId);
+    
+    try {
+        int parentId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        parentIds.add(parentId);
         
-        try {
-            int parentId = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
-            parentIds.add(parentId);
-            energyCompanyId = parentId;
-        } catch (EmptyResultDataAccessException e) {
-            break;
-        }
+        /* Recursive call to get the whole parent chain */
+        parentIds.addAll(getParentEnergyCompanyIds(parentId));
+    } catch (EmptyResultDataAccessException e) {
+        /* We found the last parent which means we are done */
     }
     
     return parentIds;

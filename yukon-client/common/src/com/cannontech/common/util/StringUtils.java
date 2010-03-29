@@ -182,4 +182,7 @@ public final class StringUtils {
         return result.toString();
     }
     
+    public static String stripNone (String value) {
+        return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
+    }
 }

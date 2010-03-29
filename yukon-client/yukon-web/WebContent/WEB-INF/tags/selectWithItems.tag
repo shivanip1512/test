@@ -10,9 +10,21 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
-<form:select path="${path}" id="${path}" onchange="${onchange}">
-	<c:if test="${not empty pageScope.defaultItemLabel}">
-		<form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
-	</c:if>
-	<form:options items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
-</form:select>
+<c:choose>
+    <c:when test="${not empty pageScope.onchange}">
+        <form:select path="${path}" id="${path}" onchange="${onchange}">
+            <c:if test="${not empty pageScope.defaultItemLabel}">
+                <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
+            </c:if>
+            <form:options items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+        </form:select>
+    </c:when>
+    <c:otherwise>
+        <form:select path="${path}" id="${path}">
+            <c:if test="${not empty pageScope.defaultItemLabel}">
+                <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
+            </c:if>
+            <form:options items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}"/>
+        </form:select>
+    </c:otherwise>
+</c:choose>

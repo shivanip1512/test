@@ -200,6 +200,8 @@
     
     <bean id="siteInformationDao" class="com.cannontech.stars.core.dao.impl.SiteInformationDaoImpl"/>
     
+    <bean id="warehouseDao" class="com.cannontech.stars.core.dao.impl.WarehouseDaoImpl"/>
+    
     <bean id="eventAccountDao" class="com.cannontech.stars.dr.event.dao.impl.EventAccountDaoImpl"/>
     
     <bean id="lmProgramEventDao" class="com.cannontech.stars.dr.event.dao.impl.LMProgramEventDaoImpl"/>

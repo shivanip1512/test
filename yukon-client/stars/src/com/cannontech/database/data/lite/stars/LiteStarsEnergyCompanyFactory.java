@@ -11,6 +11,7 @@ import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
 public class LiteStarsEnergyCompanyFactory {
@@ -23,6 +24,7 @@ public class LiteStarsEnergyCompanyFactory {
 	private ThermostatScheduleDao thermostatScheduleDao;
 	private RolePropertyDao rolePropertyDao;
 	private SystemDateFormattingService systemDateFormattingService;
+	private WarehouseDao warehouseDao;
 	
     public LiteStarsEnergyCompany createEnergyCompany(EnergyCompany energyCompany) {
         LiteStarsEnergyCompany liteStarsEnergyCompany = new LiteStarsEnergyCompany(energyCompany);
@@ -46,6 +48,7 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setThermsotatScheduleDao(thermostatScheduleDao);
         energyCompany.setRolePropertyDao(rolePropertyDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
+        energyCompany.setWarehouseDao(warehouseDao);
         
         energyCompany.initialize();
     }
@@ -99,4 +102,9 @@ public class LiteStarsEnergyCompanyFactory {
 			SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
 	}
+    
+    @Autowired
+    public void setWarehouseDao(WarehouseDao warehouseDao) {
+        this.warehouseDao = warehouseDao;
+    }
 }

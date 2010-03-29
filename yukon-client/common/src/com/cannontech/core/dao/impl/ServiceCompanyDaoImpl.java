@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.model.ServiceCompanyDto;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ServiceCompanyDao;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 
 public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
@@ -26,12 +27,12 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             public ServiceCompanyDto mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ServiceCompanyDto serviceCompanyDto = new ServiceCompanyDto();
                 serviceCompanyDto.setCompanyId(rs.getInt("companyId"));
-                serviceCompanyDto.setCompanyName(rs.getString("companyName"));
+                serviceCompanyDto.setCompanyName(SqlUtils.convertDbValueToString(rs.getString("companyName")));
                 serviceCompanyDto.setAddressId(rs.getInt("addressId"));
-                serviceCompanyDto.setMainPhoneNumber(rs.getString("mainPhoneNumber"));
-                serviceCompanyDto.setMainFaxNumber(rs.getString("mainFaxNumber"));
+                serviceCompanyDto.setMainPhoneNumber(SqlUtils.convertDbValueToString(rs.getString("mainPhoneNumber")));
+                serviceCompanyDto.setMainFaxNumber(SqlUtils.convertDbValueToString(rs.getString("mainFaxNumber")));
                 serviceCompanyDto.setPrimaryContactId(rs.getInt("primaryContactId"));
-                serviceCompanyDto.setHiType(rs.getString("hiType"));
+                serviceCompanyDto.setHiType(SqlUtils.convertDbValueToString(rs.getString("hiType")));
                 return serviceCompanyDto;
             }
         });

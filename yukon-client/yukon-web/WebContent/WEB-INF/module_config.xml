@@ -941,10 +941,10 @@
                     <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
                     <pages>
-                        <page name="hardwareEdit" type="DETAIL_CHILD">
+                        <page name="hardwareEdit" type="DETAIL">
                             <menu>account</menu>
                             <link>/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                            <labelArgument>${deviceName}</labelArgument>
+                            <labelArgument>${displayName}</labelArgument>
                         </page>
                         <page name="hardwareConfig" type="DETAIL_CHILD">
                             <menu>general</menu>

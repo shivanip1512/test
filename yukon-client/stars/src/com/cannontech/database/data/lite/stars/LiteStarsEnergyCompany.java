@@ -67,6 +67,7 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
@@ -209,6 +210,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     private volatile EnergyCompanyHierarchy energyCompanyHierarchy = null;
+
+    private WarehouseDao warehouseDao;
     
     protected LiteStarsEnergyCompany() {
         super();
@@ -743,7 +746,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         List<Warehouse> tempWarehouses = warehouses;
         if (tempWarehouses == null) {
             tempWarehouses = new ArrayList<Warehouse>();
-            tempWarehouses = Warehouse.getAllWarehousesForEnergyCompany(getEnergyCompanyID().intValue());
+            tempWarehouses = warehouseDao.getAllWarehousesForEnergyCompanyId(getEnergyCompanyID());
             CTILogger.info( "All Warehouses loaded for energy company #" + getEnergyCompanyID() );            
 
             warehouses = tempWarehouses;
@@ -2121,4 +2124,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 			SystemDateFormattingService systemDateFormattingService) {
 		this.systemDateFormattingService = systemDateFormattingService;
 	}
+    
+    public void setWarehouseDao(WarehouseDao warehouseDao) {
+        this.warehouseDao = warehouseDao;
+    }
 }

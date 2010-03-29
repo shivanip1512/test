@@ -12,10 +12,7 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
@@ -24,37 +21,26 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 import com.google.common.collect.Lists;
 
 public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 
-	private StarsInventoryBaseDao starsInventoryBaseDao;
 	private InventoryDao inventoryDao;
+	private HardwareService hardwareService;
 	
 	@Override
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap) {
 		
 		List<Integer> thermostatIdsList = ServletUtil.getIntegerListFromString(thermostatIds);
-		validateInventoryAgainstAccount(thermostatIdsList, accountInfoFragment.getAccountId());
+		hardwareService.validateInventoryAgainstAccount(thermostatIdsList, accountInfoFragment.getAccountId());
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		modelMap.addAttribute("thermostatIds", thermostatIds);
 		addThermostatNamesToModelMap(thermostatIdsList, modelMap);
 		
 		return thermostatIdsList;
-	}
-	
-	@Override
-	public void validateInventoryAgainstAccount(List<Integer> inventoryIdList, int accountId) throws NotAuthorizedException {
-
-		for(Integer inventoryId : inventoryIdList) {
-	    	
-	    	LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(inventoryId);
-			if(inventory.getAccountID() != accountId) {
-	    		throw new NotAuthorizedException("The Inventory with id: " + inventoryId + " does not belong to the current customer account with id: " + accountId);
-	    	}
-    	}
 	}
 	
 	@Override
@@ -224,12 +210,12 @@ public class OperatorThermostatHelperImpl implements OperatorThermostatHelper {
 	}
 	
 	@Autowired
-	public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	public void setInventoryDao(InventoryDao inventoryDao) {
+		this.inventoryDao = inventoryDao;
 	}
 	
 	@Autowired
-	public void setInventoryDao(InventoryDao inventoryDao) {
-		this.inventoryDao = inventoryDao;
+	public void setHardwareService(HardwareService hardwareService) {
+	    this.hardwareService = hardwareService;
 	}
 }

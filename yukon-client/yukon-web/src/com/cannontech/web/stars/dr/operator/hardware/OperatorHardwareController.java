@@ -1,12 +1,12 @@
 package com.cannontech.web.stars.dr.operator.hardware;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ServiceCompanyDto;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.EnergyCompanyDao;
@@ -37,6 +38,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventInventory;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.util.EventUtils;
@@ -53,6 +55,7 @@ import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.ListMultimap;
 
+@RequestMapping("/operator/hardware/*")
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class OperatorHardwareController {
@@ -64,52 +67,51 @@ public class OperatorHardwareController {
     private AddressDao addressDao;
     private RolePropertyDao rolePropertyDao;
     private HardwareDtoValidator hardwareDtoValidator;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     /* HARDWARE LIST */
-    @RequestMapping(value = "/operator/hardware/hardwareList")
-    public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment,
-                               int accountId, int energyCompanyId) throws ServletRequestBindingException {
+    @RequestMapping
+    public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
-        ListMultimap<String, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountId, energyCompanyId);
+        ListMultimap<String, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId());
         
         modelMap.addAttribute("switches", hardwareMap.get("switches"));
         modelMap.addAttribute("meters", hardwareMap.get("meters"));
         modelMap.addAttribute("thermostats", hardwareMap.get("thermostats"));
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        modelMap.addAttribute("accountId", accountId);
-        modelMap.addAttribute("energyCompanyId", energyCompanyId);
+        modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
         return "operator/hardware/hardwareList.jsp";
     }
     
-    @RequestMapping(value = "/operator/hardware/hardwareEdit")
-    public String hardwareEdit(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext,  AccountInfoFragment accountInfoFragment, 
-                               int energyCompanyId,
-                               int accountId,
-                               int inventoryId) {
-        HardwareDto hardwareDto = hardwareService.getHardwareDto(inventoryId, energyCompanyId);
+    @RequestMapping
+    public String hardwareEdit(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext,  AccountInfoFragment accountInfoFragment, int inventoryId) {
+        
+        hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
+        
+        HardwareDto hardwareDto = hardwareService.getHardwareDto(inventoryId, accountInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("hardwareDto", hardwareDto);
-        modelMap.addAttribute("deviceName", hardwareDto.getDeviceName());
+        modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
         
         /* Setup HardwareInfo ModelMap */
-        setupHardwareInfoModelMap(accountInfoFragment, accountId, inventoryId, modelMap, userContext);
+        setupHardwareInfoModelMap(accountInfoFragment, inventoryId, modelMap, userContext);
         
         return "/operator/hardware/hardwareEdit.jsp";
     }
     
-    @RequestMapping(value = "/operator/hardware/updateHardware")
+    @RequestMapping
     public String updateHardware(@ModelAttribute("hardwareDto") HardwareDto hardwareDto, BindingResult bindingResult,
                                  ModelMap modelMap, 
                                  YukonUserContext userContext,
                                  HttpServletRequest request,
                                  FlashScope flashScope,
                                  AccountInfoFragment accountInfoFragment,
-                                 int energyCompanyId,
-                                 int accountId,
                                  int inventoryId) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
         
         boolean statusChange = false;
         
@@ -123,14 +125,15 @@ public class OperatorHardwareController {
                 statusChange = hardwareService.updateHardware(hardwareDto);
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
-            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.serialNumberAlreadyInUse");
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
         } finally {
             /* Setup HardwareInfo ModelMap */
-            setupHardwareInfoModelMap(accountInfoFragment, accountId, inventoryId, modelMap, userContext);
+            setupHardwareInfoModelMap(accountInfoFragment, inventoryId, modelMap, userContext);
             if (bindingResult.hasErrors()) {
             	
             	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+                modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
                 return "/operator/hardware/hardwareEdit.jsp";
             } 
         }
@@ -146,51 +149,30 @@ public class OperatorHardwareController {
         return "redirect:hardwareEdit";
     }
     
-    @RequestMapping(value = "/operator/hardware/deleteHardware")
+    @RequestMapping
     public String deleteHardware(ModelMap modelMap, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope, AccountInfoFragment accountInfoFragment,
-                                 int energyCompanyId, 
-                                 int accountId, 
-                                 int inventoryId, 
-                                 String deleteOption) throws Exception {
+                                 int inventoryId, String deleteOption) throws Exception {
         
+        hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        hardwareService.deleteHardware(delete, inventoryId, accountId, energyCompany);
+        hardwareService.deleteHardware(delete, inventoryId, accountInfoFragment.getAccountId(), energyCompany);
         
-        setupHardwareInfoModelMap(accountInfoFragment, accountId, null, modelMap, userContext);
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareDeleted"));
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        if(delete) {
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareDeleted"));
+        } else {
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareRemoved"));
+        }
         return "redirect:hardwareList";
     }
     
-     /* INIT BINDER */
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        DateType dateValidationType = new DateType();
-        binder.registerCustomEditor(Date.class, "fieldInstallDate", dateValidationType.getPropertyEditor());
-        binder.registerCustomEditor(Date.class, "fieldReceiveDate", dateValidationType.getPropertyEditor());
-        binder.registerCustomEditor(Date.class, "fieldRemoveDate", dateValidationType.getPropertyEditor());
-    }
 
-    /* HARDWARE INFO WRAPPER */
-    public static class HardwareInfo {
-        
-        private HardwareDto hardwareDto = new HardwareDto();
-        
-        public HardwareDto getHardwareDto() {
-            return hardwareDto;
-        }
-        public void setHardwareDto(HardwareDto hardwareDto) {
-            this.hardwareDto = hardwareDto;
-        }
-    }
-    
-    @RequestMapping(value = "/operator/hardware/createYukonDevice")
-    public View createYukonDevice(ModelMap modelMap, String deviceName, int accountId, int inventoryId, HttpServletResponse response) throws ServletRequestBindingException {
-        response.setContentType("text/plain");
+    @RequestMapping
+    public View createYukonDevice(ModelMap modelMap, String deviceName, int inventoryId, HttpServletResponse response) throws ServletRequestBindingException {
         int deviceId = -1;
         try {
             SimpleDevice yukonDevice = hardwareService.createTwoWayDevice(inventoryId, deviceName);
@@ -206,54 +188,48 @@ public class OperatorHardwareController {
         return new JsonView();
     }
     
-    @RequestMapping(value = "/operator/hardware/serviceCompanyInfo")
+    @RequestMapping
     public String serviceCompanyInfo(ModelMap modelMap, YukonUserContext userContext, int serviceCompanyId) throws ServletRequestBindingException {
         ServiceCompanyDto serviceCompanyDto = serviceCompanyDao.getCompanyById(serviceCompanyId);
         LiteAddress serviceCompanyAddress = addressDao.getByAddressId(serviceCompanyDto.getAddressId());
+        Address address = Address.getDisplayableAddress(serviceCompanyAddress);
         
         modelMap.addAttribute("companyName", serviceCompanyDto.getCompanyName());
-        
-        if(isValidInfoPart(serviceCompanyAddress.getLocationAddress1())) {
-            modelMap.addAttribute("locationAddress1", serviceCompanyAddress.getLocationAddress1());
-        }
-        
-        if(isValidInfoPart(serviceCompanyAddress.getLocationAddress2())) {
-            modelMap.addAttribute("locationAddress2", serviceCompanyAddress.getLocationAddress2());
-        }
-        
-        String locationAddress3 = getLocationAddressLine3(serviceCompanyAddress);
-        if(StringUtils.isNotBlank(locationAddress3)) {
-            modelMap.addAttribute("locationAddress3", locationAddress3);
-        }
-        
-        if(isValidInfoPart(serviceCompanyDto.getMainPhoneNumber())) {
-            modelMap.addAttribute("mainPhoneNumber", serviceCompanyDto.getMainPhoneNumber());
-        }
+        modelMap.addAttribute("address", address);
+        modelMap.addAttribute("mainPhoneNumber", serviceCompanyDto.getMainPhoneNumber());
         
         return "/operator/hardware/serviceCompanyInfo.jsp";
     }
     
+    /* INIT BINDER */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        DateType dateValidationType = new DateType();
+        binder.registerCustomEditor(Date.class, "fieldInstallDate", dateValidationType.getPropertyEditor());
+        binder.registerCustomEditor(Date.class, "fieldReceiveDate", dateValidationType.getPropertyEditor());
+        binder.registerCustomEditor(Date.class, "fieldRemoveDate", dateValidationType.getPropertyEditor());
+    }
+
     /* HELPERS */
-    
-    private void setupHardwareInfoModelMap(AccountInfoFragment accountInfoFragment, int accountId, Integer inventoryId, ModelMap modelMap, YukonUserContext userContext){
+    private void setupHardwareInfoModelMap(AccountInfoFragment accountInfoFragment, Integer inventoryId, ModelMap modelMap, YukonUserContext userContext){
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         String defaultRoute;
         try {
             /* Apperently 'getDefaultRouteID' is not a simple getter and relies heavily on deep magic. */
             defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteID());
-            defaultRoute = "Default - " + defaultRoute;
+            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardwareEdit.defaultRouteLabel") + defaultRoute;
         } catch(NotFoundException e) {
-            defaultRoute = "Default - (None)";
+            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardwareEdit.defaultRouteNoneLabel");
         }
         modelMap.addAttribute("defaultRoute", defaultRoute);
         
         LiteYukonPAObject[] routes = energyCompany.getAllRoutes();
         modelMap.addAttribute("routes", routes);
         
-        modelMap.addAttribute("accountId", accountId);
         modelMap.addAttribute("inventoryId", inventoryId);
         
         modelMap.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyID()));
@@ -274,34 +250,6 @@ public class OperatorHardwareController {
         modelMap.addAttribute("inventoryChecking", inventoryChecking);
     }
     
-    private boolean isValidInfoPart(String part) {
-        return StringUtils.isNotBlank(part) && !part.equalsIgnoreCase(CtiUtilities.STRING_NONE);
-    }
-    
-    private String getLocationAddressLine3(LiteAddress serviceCompanyAddress) {
-        String locationAddress3 = "";
-        if(isValidInfoPart(serviceCompanyAddress.getCityName())){
-            locationAddress3 += serviceCompanyAddress.getCityName();
-        }
-        
-        if(isValidInfoPart(serviceCompanyAddress.getStateCode())){
-            if(StringUtils.isBlank(locationAddress3)){
-                locationAddress3 += serviceCompanyAddress.getStateCode();
-            } else {
-                locationAddress3 += ", " + serviceCompanyAddress.getStateCode();
-            }
-        }
-        
-        if(isValidInfoPart(serviceCompanyAddress.getZipCode())){
-            if(StringUtils.isBlank(locationAddress3)){
-                locationAddress3 += serviceCompanyAddress.getZipCode();
-            } else {
-                locationAddress3 += " " + serviceCompanyAddress.getZipCode();
-            }
-        }
-        return locationAddress3;
-    }
-
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
@@ -340,5 +288,10 @@ public class OperatorHardwareController {
     @Autowired
     public void setHardwareDtoValidator(HardwareDtoValidator hardwareDtoValidator) {
         this.hardwareDtoValidator = hardwareDtoValidator;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
 }

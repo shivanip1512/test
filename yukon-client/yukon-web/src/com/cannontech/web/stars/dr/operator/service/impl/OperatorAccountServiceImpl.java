@@ -138,10 +138,10 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
         }
         
         // notes
-        operatorGeneralUiExtras.setNotes(stripNone(customerAccount.getAccountNotes()));
+        operatorGeneralUiExtras.setNotes(com.cannontech.common.util.StringUtils.stripNone(customerAccount.getAccountNotes()));
         
         // account site notes
-        operatorGeneralUiExtras.setAccountSiteNotes(stripNone(accountSite.getPropertyNotes()));
+        operatorGeneralUiExtras.setAccountSiteNotes(com.cannontech.common.util.StringUtils.stripNone(accountSite.getPropertyNotes()));
         
         // usePrimaryAddressForBilling
         // true if there is no billing address
@@ -344,22 +344,12 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	accountInfoFragment.setWorkPhoneNotif(workPhoneNotif);
     	
     	// address
-    	Address address = new Address();
-    	address.setLocationAddress1(stripNone(liteAddress.getLocationAddress1()));
-        address.setLocationAddress2(stripNone(liteAddress.getLocationAddress2()));
-        address.setCityName(stripNone(liteAddress.getCityName()));
-        address.setStateCode(stripNone(liteAddress.getStateCode()));
-        address.setZipCode(stripNone(liteAddress.getZipCode()));
-        address.setCounty(stripNone(liteAddress.getCounty()));
+    	Address address = Address.getDisplayableAddress(liteAddress);
     	accountInfoFragment.setAddress(address);
     	
     	return accountInfoFragment;
     }
 	
-    private String stripNone (String value) {
-    	return CtiUtilities.STRING_NONE.equals(value) ? "" : value;
-    }
-    
 	@Autowired
 	public void setAccountSiteDao(AccountSiteDao accountSiteDao) {
 		this.accountSiteDao = accountSiteDao;

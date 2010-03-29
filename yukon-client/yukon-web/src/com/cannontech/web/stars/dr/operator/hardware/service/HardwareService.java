@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
@@ -62,5 +63,14 @@ public interface HardwareService {
      * @return ListMultimap<String, HardwareDto>
      */
     public ListMultimap<String, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId);
+
+    /**
+     * Checks that the inventory items are assigned to the account and throws a NotAuthorizedExcpetion
+     * if any of them are not.
+     * @param inventoryIdList
+     * @param accountId
+     * @throws NotAuthorizedException
+     */
+    void validateInventoryAgainstAccount(List<Integer> inventoryIdList, int accountId) throws NotAuthorizedException;
 
 }

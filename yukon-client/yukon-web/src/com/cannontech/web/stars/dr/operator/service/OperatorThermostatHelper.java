@@ -6,15 +6,12 @@ import net.sf.json.JSONObject;
 
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 
 public interface OperatorThermostatHelper {
 
-	public void validateInventoryAgainstAccount(List<Integer> inventoryIdList, int accountId) throws NotAuthorizedException;
-	
 	public List<Integer> setupModelMapForThermostats(String thermostatIds, AccountInfoFragment accountInfoFragment, ModelMap modelMap);
 	
 	/**

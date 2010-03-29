@@ -1065,18 +1065,19 @@ div.accountInfoFragment {
 div.smallSimplePopup {
     width: 400px;
 }
+
 span.radioLabel {
     padding-left: 5px;
 }
-div.historyContainer {
-    height: 112px;
-    overflow: auto;
-}
-
-.newDevice input {
-    width: 60px;
-}
 
 input.calendarInput {
-    width:70px;
+    width: 70px;
+}
+
+input.formSubmit {
+    width: 80px;
+}
+
+input.createAddButton {
+	float: right;
 }

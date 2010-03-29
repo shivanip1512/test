@@ -14,27 +14,25 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.device.TwoWayLCR;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
-import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.stars.hardware.Warehouse;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -71,9 +69,10 @@ public class HardwareServiceImpl implements HardwareService {
     private EnrollmentHelperService enrollmentHelperService;
     private CustomerAccountDao customerAccountDao;
     private DeviceCreationService deviceCreationService;
-    private DBPersistentDao dbPersistentDao;
     private StarsSearchDao starsSearchDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private WarehouseDao warehouseDao;
+    private PaoLoadingService paoLoadingService;
 
     @Override
     public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId) {
@@ -89,11 +88,11 @@ public class HardwareServiceImpl implements HardwareService {
         YukonListEntry categoryEntry = yukonListDao.getYukonListEntry(categoryId);
         
         hardwareDto.setDeviceId(inventoryBase.getDeviceId());
-        hardwareDto.setDeviceLabel(inventoryBase.getDeviceLabel());
+        hardwareDto.setDisplayLabel(inventoryBase.getDeviceLabel());
         hardwareDto.setAltTrackingNumber(inventoryBase.getAlternateTrackingNumber());
         hardwareDto.setVoltageEntryId(inventoryBase.getVoltageId());
         
-        DateTime beginningOfJavaTime = new DateTime().withDate(1970, 1, 1);
+        DateTime beginningOfJavaTime = new DateTime(0);
         DateTime installDT = new DateTime(inventoryBase.getInstallDate());
         if(installDT.isAfter(beginningOfJavaTime)){
             hardwareDto.setFieldInstallDate(installDT.toDate());
@@ -140,49 +139,49 @@ public class HardwareServiceImpl implements HardwareService {
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryBase.getInventoryId());
             /* Must be a switch or thermostat. */
             YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
-            hardwareDto.setDeviceType(deviceTypeEntry.getEntryText());
+            hardwareDto.setDisplayType(deviceTypeEntry.getEntryText());
             hardwareDto.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
-            hardwareDto.setDeviceName(lmHardwareBase.getManufacturerSerialNumber());
+            hardwareDto.setDisplayName(lmHardwareBase.getManufacturerSerialNumber());
             hardwareDto.setRouteId(lmHardwareBase.getRouteId());
             
             boolean isThermostat = isThermostat(categoryId, lmHardwareBase.getLMHarewareTypeId());
-            hardwareDto.setIsThermostat(isThermostat);
+            hardwareDto.setThermostat(isThermostat);
             
             /* Two Way LCR's */
-            if (!hardwareDto.getIsThermostat() && InventoryUtils.isTwoWayLcr(deviceTypeEntry.getEntryID())) {
-                hardwareDto.setIsTwoWayLcr(true);
+            if (!hardwareDto.isThermostat() && InventoryUtils.isTwoWayLcr(deviceTypeEntry.getEntryID())) {
+                hardwareDto.setTwoWayLcr(true);
                 if(inventoryBase.getDeviceId() > 0){
-                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(inventoryBase.getDeviceId());
-                    hardwareDto.setTwoWayDeviceName(pao.getPaoName());
-                } else {
-                    hardwareDto.setTwoWayDeviceName("(none chosen)");
+                    YukonPao pao = paoDao.getYukonPao(inventoryBase.getDeviceId());
+                    DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(pao);
+                    hardwareDto.setTwoWayDeviceName(displayablePao.getName());
                 }
             }
         } catch (NotFoundException e) {
             /* Not a thermostat or switch */
             if(categoryEntry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT) {
                 /* Hardware is an MCT */
-                hardwareDto.setIsMct(true);
+                hardwareDto.setMct(true);
                 
                 if(inventoryBase.getDeviceId() > 0) {
                     /* The device id has been set to a real MCT. */
-                    LiteYukonPAObject pao =  paoDao.getLiteYukonPAO(inventoryBase.getDeviceId());
-                    PaoType deviceType = PaoType.getForId(pao.getType());
-                    hardwareDto.setDeviceType(deviceType.getPaoTypeName());
-                    hardwareDto.setDeviceName(pao.getPaoName());
+                    YukonPao pao = paoDao.getYukonPao(inventoryBase.getDeviceId());
+                    DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(pao);
+                    hardwareDto.setDisplayType(displayablePao.getPaoIdentifier().getPaoType().getPaoTypeName());
+                    hardwareDto.setDisplayName(displayablePao.getName());
                 } else {
                     /* Not attached to a real MCT yet. Use label for name if you can */
                     /* and use the MCT list enty of the energy company as the device type. */
                     YukonListEntry mctDeviceType = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
-                    hardwareDto.setDeviceType(mctDeviceType.getEntryText());
+                    hardwareDto.setDisplayType(mctDeviceType.getEntryText());
                     if(StringUtils.isNotBlank(inventoryBase.getDeviceLabel())){
-                        hardwareDto.setDeviceName(inventoryBase.getDeviceLabel());
+                        hardwareDto.setDisplayName(inventoryBase.getDeviceLabel());
                     } else {
-                        hardwareDto.setDeviceName(CtiUtilities.STRING_NONE);
+                        hardwareDto.setDisplayName(CtiUtilities.STRING_NONE);
                     }
                 }
             } else {
-                /* This is not a device we know about, maybe we should throw something here. */
+                /* This is not a device we know about, maybe we should throw something smarter here. */
+                throw new NotFoundException("Device type not found for inventory id:" + inventoryId);
             }
         }
         
@@ -196,9 +195,9 @@ public class HardwareServiceImpl implements HardwareService {
         List<Integer> inventoryIds = inventoryBaseDao.getInventoryIdsByAccountId(accountId);
         for(int inventoryId : inventoryIds) {
             HardwareDto hardwareDto = getHardwareDto(inventoryId, energyCompanyId);
-            if(hardwareDto.getIsMct()) {
+            if(hardwareDto.isMct()) {
                 hardwareMap.put("meters", hardwareDto);
-            } else if (hardwareDto.getIsThermostat()) {
+            } else if (hardwareDto.isThermostat()) {
                 hardwareMap.put("thermostats", hardwareDto);
             } else {
                 hardwareMap.put("switches", hardwareDto);
@@ -227,23 +226,15 @@ public class HardwareServiceImpl implements HardwareService {
             throw new StarsTwoWayLcrYukonDeviceCreationException(errorMsgKey);
         }
         
-        YukonListDao yukonListDao = YukonSpringHook.getBean("yukonListDao", YukonListDao.class);
         YukonListEntry entry = yukonListDao.getYukonListEntry(deviceTypeEntry.getEntryID());
         String deviceTypeName = entry.getEntryText();
-        int yukonDeviceTypeId = PAOGroups.getDeviceType(deviceTypeName);
+        PaoType paoType = PaoType.getForDbString(deviceTypeName);
+        int yukonDeviceTypeId = paoType.getDeviceTypeId();
         
         SimpleDevice yukonDevice = null;
         try {
             int serialNumber = Integer.parseInt(lmHardwareBase.getManufacturerSerialNumber());
             yukonDevice = deviceCreationService.createDeviceByDeviceType(yukonDeviceTypeId, deviceName, serialNumber , lmHardwareBase.getRouteId(), true);
-            
-            // set demand rate on new device
-            LiteYukonPAObject paoDevice = paoDao.getLiteYukonPAO(yukonDevice.getDeviceId());
-            YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(paoDevice);
-            DeviceLoadProfile deviceLoadProfile = ((TwoWayLCR)yukonPaobject).getDeviceLoadProfile();
-            deviceLoadProfile.setLastIntervalDemandRate(300);
-            dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
-            
         } catch (DeviceCreationException e) {
             throw new StarsTwoWayLcrYukonDeviceCreationException("unknown", e);
         } catch (NumberFormatException nfe){
@@ -257,7 +248,7 @@ public class HardwareServiceImpl implements HardwareService {
     @Transactional
     public boolean updateHardware(HardwareDto hardwareDto) {
         InventoryBase inventoryBase = inventoryBaseDao.getById(hardwareDto.getInventoryId());
-        setInventoryFieldsFromDTO(inventoryBase, hardwareDto);
+        setInventoryFieldsFromDto(inventoryBase, hardwareDto);
         
         try {
             LiteInventoryBase liteInventoryBase = starsSearchDao.searchLMHardwareBySerialNumber(hardwareDto.getSerialNumber(), hardwareDto.getEnergyCompanyId());
@@ -269,16 +260,21 @@ public class HardwareServiceImpl implements HardwareService {
         /* Update InventoryBase */
         inventoryBaseDao.update(inventoryBase);
         
-        
-        /* Update route */
-        if(hardwareDto.getRouteId() != null) {
+        if(!hardwareDto.isMct()){
+            /* For switches and thermostats update serial number and route. */
             LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryBase.getInventoryId());
+
+            /* Update Route */
             lmHardwareBase.setRouteId(hardwareDto.getRouteId());
+            
+            /* Update Serial Number */
+            lmHardwareBase.setManufactoruerSerialNumber(hardwareDto.getSerialNumber());
+            
             lmHardwareBaseDao.update(lmHardwareBase);
         }
         
         /* Update warehouse mapping */
-        Warehouse.moveInventoryToAnotherWarehouse(hardwareDto.getInventoryId(), hardwareDto.getWarehouseId());
+        warehouseDao.moveInventoryToAnotherWarehouse(hardwareDto.getInventoryId(), hardwareDto.getWarehouseId());
         
         /* Update the installation notes */
         List<LiteLMHardwareEvent> events = lmHardwareEventDao.getByInventoryId(inventoryBase.getInventoryId());
@@ -311,6 +307,18 @@ public class HardwareServiceImpl implements HardwareService {
             hardwareHistory.add(historyEvent);
         }
         return hardwareHistory;
+    }
+    
+    @Override
+    public void validateInventoryAgainstAccount(List<Integer> inventoryIdList, int accountId) throws NotAuthorizedException {
+
+        for(Integer inventoryId : inventoryIdList) {
+            
+            LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(inventoryId);
+            if(inventory.getAccountID() != accountId) {
+                throw new NotAuthorizedException("The Inventory with id: " + inventoryId + " does not belong to the current customer account with id: " + accountId);
+            }
+        }
     }
     
     /* History Wrapper */
@@ -358,8 +366,8 @@ public class HardwareServiceImpl implements HardwareService {
     /**
      * Populates InventoryBase with update fields of the HardwareDto object.
      */
-    private void setInventoryFieldsFromDTO(InventoryBase inventoryBase, HardwareDto hardwareDto) {
-        inventoryBase.setDeviceLabel(hardwareDto.getDeviceLabel());
+    private void setInventoryFieldsFromDto(InventoryBase inventoryBase, HardwareDto hardwareDto) {
+        inventoryBase.setDeviceLabel(hardwareDto.getDisplayLabel());
         inventoryBase.setAlternateTrackingNumber(hardwareDto.getAltTrackingNumber());
         inventoryBase.setVoltageId(hardwareDto.getVoltageEntryId());
         
@@ -492,11 +500,6 @@ public class HardwareServiceImpl implements HardwareService {
     }
     
     @Autowired
-    public void setDBPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-    
-    @Autowired
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
         this.starsSearchDao = starsSearchDao;
     }
@@ -504,5 +507,15 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
+    }
+    
+    @Autowired
+    public void setWarehouseDao(WarehouseDao warehouseDao) {
+        this.warehouseDao = warehouseDao;
+    }
+    
+    @Autowired
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
     }
 }
