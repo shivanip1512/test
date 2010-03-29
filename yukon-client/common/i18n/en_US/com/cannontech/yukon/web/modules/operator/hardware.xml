@@ -18,6 +18,10 @@
     <entry key="yukon.web.modules.operator.hardwareList.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareList.manual.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareList.manual.hoverText">Manual Adjustment</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareList.savedSchedules.imageUrl">/WebConfig/yukon/Icons/clipboard.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.savedSchedules.hoverUrl">/WebConfig/yukon/Icons/clipboard_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.savedSchedules.hoverText">Saved Schedules</entry>
     
     <entry key="yukon.web.modules.operator.hardwareList.commander.imageUrl">/WebConfig/yukon/Icons/commander.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareList.commander.hoverUrl">/WebConfig/yukon/Icons/commander_over.gif</entry>
@@ -54,6 +58,11 @@
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverText">Add a thermostat to this account.</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.label">Add Thermostat</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.imageUrl">/WebConfig/yukon/Icons/folder_explore.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.hoverUrl">/WebConfig/yukon/Icons/folder_explore_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.hoverText">Add a thermostat to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.label">Select Multiple</entry>
     
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultiple">Select Multiple</entry>
     
