@@ -234,6 +234,7 @@ public class TabularHtml extends HTMLBuffer
 			}
 		}
 		buf.append("</tr></table></center>\n");	
+		buf.append("</td></tr></table>\n");	
 	
 		return buf;
 	}

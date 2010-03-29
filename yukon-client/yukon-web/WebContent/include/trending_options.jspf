@@ -18,8 +18,8 @@
               <INPUT TYPE="hidden" NAME="view" VALUE="<%=graphBean.getViewType()%>">
               <INPUT TYPE="hidden" NAME="option" VALUE = "<%=graphBean.getOption()%>" >
               <INPUT TYPE="hidden" NAME="action" VALUE = "updateOptions" >
-              <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?gdefid=<%=graphBean.getGdefid()%>">
-			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?gdefid=<%= graphBean.getGdefid()%>">
+              <input type="hidden" id="trendingOptionMFormRedirect" name="REDIRECT" value="<%= request.getRequestURI() %>?gdefid=<%=graphBean.getGdefid()%>">
+			  <input type="hidden" id="trendingOptionMFormReferrer" name="REFERRER" value="<%= request.getRequestURI() %>?gdefid=<%= graphBean.getGdefid()%>">
               
               <%
                   boolean isEvent = com.cannontech.util.ServletUtil.EVENT.equals(graphBean.getPeriod());

@@ -216,6 +216,8 @@
     </bean>
 
     <bean id="customerResidenceDaoImpl" class="com.cannontech.stars.dr.account.dao.impl.CustomerResidenceDaoImpl"/>
+
+    <bean id="customerGraphDaoImpl" class="com.cannontech.stars.dr.account.dao.impl.CustomerGraphDaoImpl"/>
     
     <bean id="accountService" class="com.cannontech.stars.dr.account.service.impl.AccountServiceImpl"/>
 

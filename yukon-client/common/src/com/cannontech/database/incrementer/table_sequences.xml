@@ -209,5 +209,8 @@
       <sequence name="CustomerResidence">
         <table name="CustomerResidence" identitycolumn="AccountSiteId"/>
       </sequence>
+      <sequence name="GraphCustomerList">
+        <table name="GraphCustomerList" identitycolumn="GraphDefinitionId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

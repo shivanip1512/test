@@ -1,0 +1,29 @@
+/* trends.jsp */
+
+table.trendPageContent td.trendsListingTd {
+	padding-left:30px;
+}
+
+table.trendPageContent td.graphArea {
+	text-align:center;
+}
+
+table.trendPageContent tr {
+	vertical-align:top;
+}
+
+table.trendList td.nameCol {
+	padding-bottom:10px;
+}
+
+table.trendList td.editCol {
+	padding-left:50px;
+	font-size:11px;
+}
+
+/* selectTrends.jsp */
+
+div.availableTrendOption {
+	
+	padding-bottom:10px;
+}
