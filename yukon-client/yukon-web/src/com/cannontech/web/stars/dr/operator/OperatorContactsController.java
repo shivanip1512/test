@@ -15,7 +15,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -42,7 +41,6 @@ public class OperatorContactsController {
 	private CustomerAccountDao customerAccountDao;
 	private CustomerDao customerDao;
 	private ContactDao contactDao;
-	private ContactNotificationDao contactNotificationDao;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private ContactDtoValidator contactDtoValidator;
 	
@@ -59,14 +57,14 @@ public class OperatorContactsController {
 		// primary contact
 		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
 		LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
-		ContactDto primaryContact = operatorAccountService.getContactDto(customer.getPrimaryContactID(), 0, userContext);
+		ContactDto primaryContact = operatorAccountService.getContactDto(customer.getPrimaryContactID(), userContext);
 		contacts.add(primaryContact);
 		
 		// additional contacts
 		List<LiteContact> additionalLiteContacts = contactDao.getAdditionalContactsForAccount(accountId);
 		for (LiteContact additionalLiteContact : additionalLiteContacts) {
 			
-			ContactDto additionalContact = operatorAccountService.getContactDto(additionalLiteContact.getContactID(), 0, userContext);
+			ContactDto additionalContact = operatorAccountService.getContactDto(additionalLiteContact.getContactID(), userContext);
 			contacts.add(additionalContact);
 		}
 		modelMap.addAttribute("contacts", contacts);
@@ -79,20 +77,14 @@ public class OperatorContactsController {
 	// CONTACT EDIT
 	@RequestMapping
     public String contactEdit(int contactId,
-    						  Integer additionalBlankNotifications,
     						  ModelMap modelMap, 
     						  YukonUserContext userContext,
     						  AccountInfoFragment accountInfoFragment) {
 		
 		// contactDto
-		if (additionalBlankNotifications == null) {
-			additionalBlankNotifications = 0;
-		}
-		ContactDto contactDto = operatorAccountService.getContactDto(contactId, additionalBlankNotifications, userContext);
+		ContactDto contactDto = operatorAccountService.getContactDto(contactId, userContext);
 		if (contactDto == null) {
 			contactDto = operatorAccountService.getBlankContactDto(4);
-		} else {
-			modelMap.addAttribute("hasPendingNewNotification", additionalBlankNotifications > 0);
 		}
 		modelMap.addAttribute("contactDto", contactDto);
 		
@@ -111,10 +103,13 @@ public class OperatorContactsController {
 					    		FlashScope flashScope,
 					    		AccountInfoFragment accountInfoFragment) {
 		
+		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+		LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+		
 		// validate/save
 		contactDtoValidator.validate(contactDto, bindingResult);
 		if (!bindingResult.hasErrors()) {
-			operatorAccountService.saveContactDto(contactDto);
+			operatorAccountService.saveContactDto(contactDto, customer);
 		}
 		
 		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
@@ -124,31 +119,23 @@ public class OperatorContactsController {
 			return "operator/contacts/contactEdit.jsp";
 		}
 		
-		// additionalBlankNotifications
-		if (additionalBlankNotifications == null) {
-			additionalBlankNotifications = 0;
-		}
-		modelMap.addAttribute("additionalBlankNotifications", additionalBlankNotifications);
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactUpdated"));
 		
-		if (additionalBlankNotifications <= 0) {
-			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactUpdated"));
-		}
 		return "redirect:contactEdit";
 	}
 	
-	// REMOVE NOTIFICATION
-	@RequestMapping
-    public String contactsRemoveNotification(int contactId,
-    										 int removeNotificationId,
-    										 ModelMap modelMap, 
-    										 FlashScope flashScope,
-    										 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+	// ADD NOTIFICATION
+	@RequestMapping(params = "newNotification")
+    public String contactsAddNotification(@ModelAttribute("contactDto") ContactDto contactDto, 
+								    		ModelMap modelMap, 
+								    		YukonUserContext userContext,
+								    		FlashScope flashScope,
+								    		AccountInfoFragment accountInfoFragment) {
 		
-		contactNotificationDao.removeNotification(removeNotificationId);
+		contactDto.getOtherNotifications().get(contactDto.getOtherNotifications().size());
+		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
 		
-		setupContactBasicModelMap(contactId, accountInfoFragment, modelMap);
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.notificationDeleted"));
-		return "redirect:contactEdit";
+		return "operator/contacts/contactEdit.jsp";
 	}
 	
 	// DELETE ADDITIONAL CONTACT
@@ -211,11 +198,6 @@ public class OperatorContactsController {
 	@Autowired
 	public void setContactDao(ContactDao contactDao) {
 		this.contactDao = contactDao;
-	}
-	
-	@Autowired
-	public void setContactNotificationDao(ContactNotificationDao contactNotificationDao) {
-		this.contactNotificationDao = contactNotificationDao;
 	}
 	
 	@Autowired

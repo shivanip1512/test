@@ -4,27 +4,27 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.user.UserUtils;
 
 public class ContactServiceImpl implements ContactService {
 
 	private ContactDao contactDao;
-	private DBPersistentDao dbPersistentDao;
 	
 	public LiteContact createContact(String firstName, String lastName, LiteYukonUser contactUser) {
 		
 		LiteContact liteContact = new LiteContact(-1); //  contactDao.saveContact will insert for -1, otherwise update
 		saveContact(liteContact, firstName, lastName, contactUser == null ? UserUtils.USER_DEFAULT_ID : contactUser.getUserID());
-	    dbPersistentDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
-                DBChangeMsg.CHANGE_CONTACT_DB,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CHANGE_TYPE_ADD));
+	    
+	    return liteContact;
+	}
+	
+	public LiteContact createAdditionalContact(String firstName, String lastName, int customerId, LiteYukonUser contactUser) {
+		
+		LiteContact liteContact =  this.createContact(firstName, lastName, contactUser);
+	    contactDao.associateAdditionalContact(customerId, liteContact.getContactID());
 	    
 	    return liteContact;
 	}
@@ -32,11 +32,6 @@ public class ContactServiceImpl implements ContactService {
 	public void updateContact(LiteContact liteContact, String firstName, String lastName, Integer loginId) {
 	
 		saveContact(liteContact, firstName, lastName, loginId);
-		dbPersistentDao.processDBChange(new DBChangeMsg(liteContact.getLiteID(),
-	            DBChangeMsg.CHANGE_CONTACT_DB,
-	            DBChangeMsg.CAT_CUSTOMERCONTACT,
-	            DBChangeMsg.CAT_CUSTOMERCONTACT,
-	            DBChangeMsg.CHANGE_TYPE_UPDATE));
 	}
 	
 	private void saveContact(LiteContact liteContact, String firstName, String lastName, Integer loginId) {
@@ -52,10 +47,5 @@ public class ContactServiceImpl implements ContactService {
 	@Autowired
 	public void setContactDao(ContactDao contactDao) {
 		this.contactDao = contactDao;
-	}
-	
-	@Autowired
-	public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-		this.dbPersistentDao = dbPersistentDao;
 	}
 }

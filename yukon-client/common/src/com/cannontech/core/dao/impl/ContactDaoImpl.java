@@ -680,6 +680,18 @@ public final class ContactDaoImpl implements ContactDao {
         int customerId = customer.getCustomerID();
         int contactId = contact.getContactID();
 
+        this.associateAdditionalContact(customerId, contactId);
+        
+    }
+    
+    @Override
+    @Transactional
+    public void associateAdditionalContact(int customerId, int contactId) {
+
+    	StringBuilder sql = new StringBuilder("INSERT INTO CustomerAdditionalContact");
+        sql.append(" (CustomerId, ContactId, Ordering)");
+        sql.append(" VALUES (?,?,?)");
+        
         StringBuilder orderSql = new StringBuilder("SELECT MAX(Ordering) + 1 FROM CustomerAdditionalContact WHERE CustomerId = ?");
         int order = simpleJdbcTemplate.queryForInt(orderSql.toString(), customerId);
         
@@ -692,7 +704,7 @@ public final class ContactDaoImpl implements ContactDao {
                                                 DBChangeMsg.CHANGE_TYPE_UPDATE);
         
         dbPersistantDao.processDBChange(changeMsg);
-        
+    	
     }
 
     /**

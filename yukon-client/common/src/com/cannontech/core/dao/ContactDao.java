@@ -151,6 +151,8 @@ public interface ContactDao {
      * @param customer - Customer to add contact to
      */
     public void addAdditionalContact(LiteContact contact, LiteCustomer customer);
+    
+    public void associateAdditionalContact(int contactId, int customerId);
 
     /**
      * Method to remove an additional contact

@@ -36,6 +36,7 @@ import com.cannontech.web.stars.dr.operator.model.ContactDto;
 import com.cannontech.web.stars.dr.operator.model.ContactNotificationDto;
 import com.cannontech.web.stars.dr.operator.model.OperatorGeneralUiExtras;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
+import com.google.common.collect.Lists;
 
 public class OperatorAccountServiceImpl implements OperatorAccountService {
 
@@ -184,7 +185,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     
     // GET CONTACT DTO
     @Override
-    public ContactDto getContactDto(int contactId, int additionalBlankNotifications, YukonUserContext userContext) {
+    public ContactDto getContactDto(int contactId, YukonUserContext userContext) {
 
     	LiteContact contact = null;
     	if (contactId <= 0) {
@@ -221,22 +222,14 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 			contactDto.getOtherNotifications().add(contactNotificationDto);
     	}
     	
-    	// addAdditionalBlankNotifications
-    	addAdditionalBlankNotifications(contactDto, additionalBlankNotifications);
-    	
     	return contactDto;
     }
     
     private String getAndFormatAndRemoveFirstOfType(List<LiteContactNotification> notificationsForContact, ContactNotificationType contactNotificationType, YukonUserContext userContext) {
     	
-    	for (int i = 0; i < notificationsForContact.size(); i++) {
-    		
-    		LiteContactNotification notification = notificationsForContact.get(i);
-    		if (notification.getContactNotificationType() == contactNotificationType) {
-
-    			notificationsForContact.remove(i);
-    			return contactNotificationFormattingService.formatNotification(notification, userContext);
-    		}
+    	LiteContactNotification firstOfType = removeFirstOfType(notificationsForContact, contactNotificationType);
+    	if (firstOfType != null) {
+    		return contactNotificationFormattingService.formatNotification(firstOfType, userContext);
     	}
     	
     	return null;
@@ -257,64 +250,73 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     
     @Override
     @Transactional
-    public void saveContactDto(ContactDto contactDto) {
+    public void saveContactDto(ContactDto contactDto, LiteCustomer customer) {
 
-    	// save contact
-    	LiteContact contact;
-    	if (contactDto.getContactId() <= 0) {
-    		contact = contactService.createContact(contactDto.getFirstName(), contactDto.getLastName(), null);
-    	} else {
-    		contact = contactDao.getContact(contactDto.getContactId());
-    	}
-    	contactService.updateContact(contact, contactDto.getFirstName(), contactDto.getLastName(), null);
+        // save contact
+        LiteContact contact;
+        if (contactDto.getContactId() <= 0) {
+            contact = contactService.createAdditionalContact(contactDto.getFirstName(), contactDto.getLastName(), customer.getCustomerID(), null);
+        } else {
+            contact = contactDao.getContact(contactDto.getContactId());
+        }
+        contactService.updateContact(contact, contactDto.getFirstName(), contactDto.getLastName(), null);
+
+        // save notifications
+        List<LiteContactNotification> notificationsToSave = Lists.newArrayListWithExpectedSize(5);
+        List<LiteContactNotification> existingNotifications = contactNotificationDao.getNotificationsForContact(contact.getContactID());
+
+        processNotificationForType(existingNotifications, ContactNotificationType.HOME_PHONE, contactDto.getHomePhone(), contact, notificationsToSave);
+        processNotificationForType(existingNotifications, ContactNotificationType.WORK_PHONE, contactDto.getWorkPhone(), contact, notificationsToSave);
+        processNotificationForType(existingNotifications, ContactNotificationType.EMAIL, contactDto.getEmail(), contact, notificationsToSave);
+
+        List<ContactNotificationDto> otherNotifications = contactDto.getOtherNotifications();
+        for (ContactNotificationDto contactNotificationDto : otherNotifications) {
+            processNotificationForType(existingNotifications, contactNotificationDto.getContactNotificationType(), contactNotificationDto.getNotificationValue(), contact, notificationsToSave);
+        }
+
+        // delete anything left in existing
+        for (LiteContactNotification contactNotification : existingNotifications) {
+            contactNotificationDao.removeNotification(contactNotification.getContactNotifID());
+        }
+
+        int order = 1;
+        for (LiteContactNotification contactNotification : notificationsToSave) {
+            contactNotification.setOrder(order++);
+            contactNotificationDao.saveNotification(contactNotification);
+        }
+
+        contactDto.setContactId(contact.getLiteID());
+    }
+
+    private void processNotificationForType(List<LiteContactNotification> existingNotifications,
+								            ContactNotificationType type, String notificationText, LiteContact contact,
+								            List<LiteContactNotification> allNotifications) {
     	
-    	// save first notifications
-    	LiteContactNotification firstHomePhoneNotification = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.HOME_PHONE.getDefinitionId());
-    	updateNotification(contact, firstHomePhoneNotification, ContactNotificationType.HOME_PHONE, contactDto.getHomePhone());
-    	
-    	LiteContactNotification firstWorkPhoneNotification = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.WORK_PHONE.getDefinitionId());
-    	updateNotification(contact, firstWorkPhoneNotification, ContactNotificationType.WORK_PHONE, contactDto.getWorkPhone());
-    	
-    	LiteContactNotification firstEmailNotification = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.EMAIL.getDefinitionId());
-    	updateNotification(contact, firstEmailNotification, ContactNotificationType.EMAIL, contactDto.getEmail());
-    	
-    	// save other notifications
-    	List<ContactNotificationDto> otherNotifications = contactDto.getOtherNotifications();
-    	for (ContactNotificationDto contactNotificationDto : otherNotifications) {
-    		
-    		int notificationId = contactNotificationDto.getNotificationId();
-    		LiteContactNotification notification = null;
-    		if (notificationId > 0) {
-    			notification = contactNotificationDao.getNotificationForContact(notificationId);
-    		}
-    		
-			updateNotification(contact, notification, contactNotificationDto.getContactNotificationType(), contactNotificationDto.getNotificationValue());
-    	}
-    	
-    	contactDto.setContactId(contact.getLiteID());
+        if (type == null || StringUtils.isBlank(notificationText)){
+        	return;
+        }
+
+        LiteContactNotification notification = removeFirstOfType(existingNotifications, type);
+        if (notification != null) {
+            notification.setNotification(notificationText);
+            allNotifications.add(notification);
+        } else {
+            // need new object
+            LiteContactNotification newNotification = contactNotificationService.createNotification(contact, type, notificationText);
+            allNotifications.add(newNotification);
+        }
     }
     
-    private void updateNotification(LiteContact contact, LiteContactNotification notification, ContactNotificationType contactNotificationType, String notificationValue) {
+    private LiteContactNotification removeFirstOfType(List<LiteContactNotification> notificationsForContact, ContactNotificationType contactNotificationType) {
     	
-    	if (contactNotificationType != null && StringUtils.isNotBlank(notificationValue)) {
-    		
-    		// update
-    		if (notification != null) {
-    			notification.setNotification(notificationValue);
-    			notification.setNotificationCategoryID(contactNotificationType.getDefinitionId());
-    			contactNotificationDao.saveNotification(notification);
-    			
-    		// create
-    		} else {
-    			contactNotificationService.createNotification(contact, contactNotificationType, notificationValue);
-    		}
-    	} else {
-    		
-    		// delete
-    		if (notification != null) {
-    			contactNotificationDao.removeNotification(notification.getContactNotifID());
+    	for (int i = 0; i < notificationsForContact.size(); i++) {
+    		LiteContactNotification notification = notificationsForContact.get(i);
+    		if (notification.getContactNotificationType() == contactNotificationType) {
+    			return notificationsForContact.remove(i);
     		}
     	}
+    	
+    	return null;
     }
     
     @Override

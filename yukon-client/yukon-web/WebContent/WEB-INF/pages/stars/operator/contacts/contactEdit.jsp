@@ -17,10 +17,12 @@
 			});
 		});
 	
-		function removeNotification(id) {
+		function removeNotification(it) {
 
-			$('removeNotificationId').value = id;
-			$('contactsRemoveNotificationForm').submit();
+			$(it).ancestors().findAll(function(el) {return el.match('tr')}).each(function(tr) {
+				tr.remove();
+			});
+			$('contactsUpdateForm').submit();
 		}
 		
 	</script>
@@ -35,19 +37,11 @@
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
 	</form>
 	
-	<form:form id="contactsRemoveNotificationForm" commandName="contactDto" action="/spring/stars/operator/contacts/contactsRemoveNotification" method="post">
-		<input type="hidden" name="contactId" value="${contactDto.contactId}"/>
-		<input type="hidden" name="accountId" value="${accountId}"/>
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
-		<input type="hidden" id="removeNotificationId" name="removeNotificationId" value=""/>
-	</form:form>
-	
 	<form:form id="contactsUpdateForm" commandName="contactDto" action="/spring/stars/operator/contacts/contactUpdate" method="post">
 	
 		<input type="hidden" name="contactId" value="${contactDto.contactId}">
 		<input type="hidden" name="accountId" value="${accountId}"/>
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
-		<input type="hidden" name="additionalBlankNotifications" id="additionalBlankNotifications" value="0"/>
 		<input type="hidden" name="hasPendingNewNotification" value="${hasPendingNewNotification == true}"/>
 		
 		<c:set var="newContact" value="${contactDto.contactId <= 0}"/>
@@ -111,7 +105,7 @@
 						
 						<c:if test="${!newNotification}">
 							<td style="text-align:center;">
-								<img src="${delete}" onclick="removeNotification(${notif.notificationId})" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
+								<img src="${delete}" onclick="removeNotification(this)" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
 							</td>
 						</c:if>
 						
@@ -123,7 +117,8 @@
 					<tr style="background-color:#EEE;">
 						<td colspan="3">
 						
-							<img src="${add}" onclick="$('additionalBlankNotifications').value = 1;$('contactsUpdateForm').submit();" onmouseover="javascript:this.src='${addOver}'" onmouseout="javascript:this.src='${add}'">
+							<input type="image" src="${add}" name="newNotification" value="true">
+						
 							<i:inline key=".notificationTable.addNotification"/>
 							 
 						</td>
