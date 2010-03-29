@@ -4,8 +4,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <cti:standardPage module="operator" page="optOut">
-    <cti:standardMenu />
-
 
 <h3><i:inline key="yukon.dr.operator.optoutError.header"/></h3>
 

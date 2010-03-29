@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.dr.operator;
 
-import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,17 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -46,67 +47,52 @@ import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.OptOutControllerHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
+import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 public class OperatorProgramOptOutOperatorController {
     
-    private OptOutService optOutService; 
-    private OptOutEventDao optOutEventDao;
-    private OptOutAdditionalDao optOutAdditionalDao;
     private CustomerAccountDao customerAccountDao;
-    private StarsInventoryBaseDao starsInventoryBaseDao;
     private DisplayableInventoryDao displayableInventoryDao;
-    private DateFormattingService dateFormattingService;
-    private RolePropertyDao rolePropertyDao;
+    private OptOutAdditionalDao optOutAdditionalDao;
+    private OptOutEventDao optOutEventDao;
+    private OptOutService optOutService; 
+    private OptOutValidatorFactory optOutValidatorFactory;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    private static class StartDateException extends Exception {
-        private final static long serialVersionUID = 1L;
-
-        private StartDateException(String message) {
-            super(message);
-        }
-    };
-
-    @ModelAttribute("customerAccount")
-    public CustomerAccount getCustomerAccount(HttpServletRequest request) throws ServletRequestBindingException {
-        
-        // Get the account info from the session
-        int accountId = ServletRequestUtils.getRequiredIntParameter(request, "accountId");
-        CustomerAccount account = customerAccountDao.getById(accountId);
-        return account;
-    }
-    
     @RequestMapping(value = "/operator/program/optOut")
-    public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    				   int accountId,
-    				   int energyCompanyId,
-                       Integer eventId, 
-                       YukonUserContext yukonUserContext, 
-                       ModelMap modelMap,
-                       AccountInfoFragment accountInfoFragment) {
+    public String view(Integer eventId, 
+                        YukonUserContext yukonUserContext, 
+                        ModelMap modelMap,
+                        AccountInfoFragment accountInfoFragment) {
         
-        LiteYukonUser user = yukonUserContext.getYukonUser();        
-        Calendar cal = Calendar.getInstance(yukonUserContext.getTimeZone());
-        Date currentDate = cal.getTime();
-        modelMap.addAttribute("currentDate", currentDate);
+        Date today = new Date();
+        OptOutBackingBean optOutBackingBean = new OptOutBackingBean();
+        optOutBackingBean.setStartDate(today);
+        modelMap.addAttribute("optOutBackingBean", optOutBackingBean);
         
         //Get the list of current and scheduled opt outs
-        List<OptOutEventDto> currentOptOutList =  optOutEventDao.getCurrentOptOuts(accountId);
+        List<OptOutEventDto> currentOptOutList =  optOutEventDao.getCurrentOptOuts(accountInfoFragment.getAccountId());
         modelMap.addAttribute("currentOptOutList", currentOptOutList);
         
         // Get the list of completed and canceled opt outs
-        List<OptOutEventDto> previousOptOutList =  optOutEventDao.getOptOutHistoryForAccount(accountId, 6);
+        List<OptOutEventDto> previousOptOutList =  optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId(), 6);
         modelMap.addAttribute("previousOptOutList", previousOptOutList);
         
         // Get the current counts for used opt outs and remaining allowed opt outs for each device
-        List<DisplayableInventory> displayableInventories = displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
-        Map<Integer, OptOutCountHolder> optOutCounts = getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
+        List<DisplayableInventory> displayableInventories = displayableInventoryDao.getDisplayableInventory(accountInfoFragment.getAccountId());
+        Map<Integer, OptOutCountHolder> optOutCounts = getOptOutCountsForInventories(displayableInventories, accountInfoFragment.getAccountId());
 
         boolean allOptedOut = true;
         boolean optOutsAvailable = false;
@@ -130,7 +116,7 @@ public class OperatorProgramOptOutOperatorController {
         }
         modelMap.addAttribute("noOptOutLimits", noOptOutLimits);
         
-        OptOutLimit currentOptOutLimit = optOutService.getCurrentOptOutLimit(accountId);
+        OptOutLimit currentOptOutLimit = optOutService.getCurrentOptOutLimit(accountInfoFragment.getAccountId());
         int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
         if(currentOptOutLimit != null) {
             optOutLimit = currentOptOutLimit.getLimit();
@@ -140,105 +126,87 @@ public class OperatorProgramOptOutOperatorController {
         modelMap.addAttribute("allOptedOut", allOptedOut);
         modelMap.addAttribute("optOutsAvailable", optOutsAvailable);
         
-        List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(user);
-        modelMap.addAttribute("optOutPeriodList", optOutPeriodList);
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "operator/program/optOut/optOut.jsp";
     }
 
     @RequestMapping(value = "/operator/program/optOut/view2")
-    public String view2(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    					int accountId,
-    					int energyCompanyId,
-            			String startDate, 
-            			int durationInDays, 
-            			String error, 
-            			ModelMap modelMap,
-            			YukonUserContext yukonUserContext,
-            			AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+    public String view2(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
+                         BindingResult bindingResult,
+                         ModelMap modelMap,
+                         YukonUserContext userContext,
+                         FlashScope flashScope,
+                         AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
-        
-    	modelMap.addAttribute("durationInDays", durationInDays);
-    	modelMap.addAttribute("startDate", startDate);
-    	modelMap.addAttribute("error", error);
+        OptOutValidator optOutValidator = optOutValidatorFactory.getOptOutValidator(userContext);
+        optOutValidator.validate(optOutBackingBean, bindingResult);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
 
-        // Validate the start date
-        Date startDateObj = parseDate(startDate, yukonUserContext);
-        TimeZone userTimeZone = yukonUserContext.getTimeZone();
-        final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
-        try {
-            validateStartDate(startDateObj, today, yukonUserContext);
-        } catch (StartDateException exception) {
-            MessageSourceResolvable errorMsg = new YukonMessageSourceResolvable(exception.getMessage());
-            modelMap.addAttribute("error", errorMsg);
-            return "operator/program/optOut/optOutError.jsp";
-        }
+        if (bindingResult.hasErrors()) {
+            
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            return "operator/program/optOut/optOut.jsp";
+        } 
 
-        boolean isSameDay = TimeUtil.isSameDay(startDateObj, today, yukonUserContext.getTimeZone());
+    	TimeZone userTimeZone = userContext.getTimeZone();
+    	final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
+        boolean isSameDay = TimeUtil.isSameDay(optOutBackingBean.getStartDate(), today, userContext.getTimeZone());
         modelMap.addAttribute("isSameDay", isSameDay);
 
-        List<DisplayableInventory> displayableInventories = displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
-        Map<Integer, OptOutCountHolder> optOutCounts = getOptOutCountsForInventories(displayableInventories, customerAccount.getAccountId());
+        List<DisplayableInventory> displayableInventories = displayableInventoryDao.getDisplayableInventory(accountInfoFragment.getAccountId());
+        Map<Integer, OptOutCountHolder> optOutCounts = getOptOutCountsForInventories(displayableInventories, accountInfoFragment.getAccountId());
 
         modelMap.addAttribute("displayableInventories", displayableInventories);
         modelMap.addAttribute("optOutCounts", optOutCounts);
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return "operator/program/optOut/optOutList.jsp";
     }
 
     @RequestMapping(value = "/operator/program/optOut/optOutQuestions")
-    public String optOutQuestions(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-						    	  int accountId,
-								  int energyCompanyId,
-            					  String startDate, 
-            					  int durationInDays, 
-            					  String jsonInventoryIds, 
-            					  ModelMap modelMap,
-            					  YukonUserContext yukonUserContext,
-            					  AccountInfoFragment accountInfoFragment) {
-
+    public String optOutQuestions(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
+                                   String jsonInventoryIds, 
+                                   ModelMap modelMap,
+                                   YukonUserContext yukonUserContext,
+                                   FlashScope flashScope,
+                                   AccountInfoFragment accountInfoFragment) {
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
         if (inventoryIds.size() == 0) {
         	
-        	modelMap.addAttribute("startDate", startDate);
-        	modelMap.addAttribute("duration", durationInDays);
-        	modelMap.addAttribute("error", "yukon.dr.operator.optOutlist.noInventorySelected");
-            return "operator/program/optOut/view2.jsp";
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.noInventorySelected"), FlashScopeMessageType.ERROR);
+            return "redirect:/spring/stars/operator/program/optOut";
+
         }
 
         List<String> questions = OptOutControllerHelper.getConfirmQuestions(
                 messageSourceResolver, 
                 yukonUserContext,
                 "yukon.dr.operator.optOutconfirm.question.");
-        
+
+        modelMap.addAttribute("jsonInventoryIds", jsonInventoryIds);
+        modelMap.addAttribute("startDate", optOutBackingBean.getStartDate());
+        modelMap.addAttribute("durationInDays", optOutBackingBean.getDurationInDays());
+
         if (questions.size() == 0) {
-            return "redirect:/spring/stars/operator/program/optOut/update?accountId="+customerAccount.getAccountId()+"&energyCompanyId="+energyCompanyId
-            + "&startDate=" + startDate + "&durationInDays=" + durationInDays + "&jsonInventoryIds=" + jsonInventoryIds;
+            return "redirect:/spring/stars/operator/program/optOut/update?accountId="+accountInfoFragment.getAccountId()+"&energyCompanyId="+accountInfoFragment.getEnergyCompanyId()+
+                    "&startDate="+optOutBackingBean.getStartDate()+"&startDateTime=" + optOutBackingBean.getStartDate().getTime() + "&durationInDays=" + optOutBackingBean.getDurationInDays() + "&jsonInventoryIds=" + jsonInventoryIds;
         }
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "operator/program/optOut/confirm";
     }
     
     @RequestMapping("/operator/program/optOut/confirm")
-    public String confirm(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    					  int accountId,
-    					  int energyCompanyId,
-            			  String startDate, 
-            			  int durationInDays,
-            			  String jsonInventoryIds, 
-            			  ModelMap modelMap,
-            			  YukonUserContext yukonUserContext,
-            			  AccountInfoFragment accountInfoFragment) {
+    public String confirm(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
+                           String jsonInventoryIds, 
+                           ModelMap modelMap,
+                           YukonUserContext yukonUserContext,
+                           AccountInfoFragment accountInfoFragment) {
 
-        
-    	modelMap.addAttribute("startDate", startDate);
-    	modelMap.addAttribute("durationInDays", durationInDays);
-        
         List<String> questions = 
             OptOutControllerHelper.getConfirmQuestions(
                     messageSourceResolver, 
@@ -249,20 +217,16 @@ public class OperatorProgramOptOutOperatorController {
         String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);
         modelMap.addAttribute("jsonInventoryIds", escaped);
 
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "operator/program/optOut/optOutConfirm.jsp";
     }
     
     @RequestMapping(value = "/operator/program/optOut/optOutHistory", method = RequestMethod.GET)
-    public String optOutHistory(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    							int accountId,
-    							int energyCompanyId,
-                                ModelMap modelMap,
-                                AccountInfoFragment accountInfoFragment) {
-        
+    public String optOutHistory(ModelMap modelMap,
+                                 AccountInfoFragment accountInfoFragment) {
         
         // Get the list of completed and canceled opt outs
-        List<OptOutEventDto> previousOptOutList = optOutEventDao.getOptOutHistoryForAccount(customerAccount.getAccountId());
+        List<OptOutEventDto> previousOptOutList = optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId());
 
         modelMap.addAttribute("previousOptOutList", previousOptOutList);
         
@@ -271,126 +235,125 @@ public class OperatorProgramOptOutOperatorController {
     }
     
     @RequestMapping("/operator/program/optOut/update")
-    public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    					int accountId,
-    					int energyCompanyId,
-            			String startDate, 
-            			int durationInDays,
-            			String jsonInventoryIds, 
-            			HttpServletRequest request, 
-            			ModelMap modelMap,
-            			YukonUserContext yukonUserContext,
-            			AccountInfoFragment accountInfoFragment) throws Exception {
+    public String update(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
+                          BindingResult bindingResult,
+                          String jsonInventoryIds, 
+                          HttpServletRequest request, 
+                          ModelMap modelMap,
+                          YukonUserContext userContext,
+                          FlashScope flashScope,
+                          AccountInfoFragment accountInfoFragment) throws Exception {
+        long startDateInt = ServletRequestUtils.getLongParameter(request, "startDateTime");
+        Date startDate = new Date(startDateInt);
+        optOutBackingBean.setStartDate(startDate);
+        Integer durationInDays = ServletRequestUtils.getIntParameter(request, "durationInDays");
+        optOutBackingBean.setDurationInDays(durationInDays);
         
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
+
+        bindingResult = new BeanPropertyBindingResult(optOutBackingBean, "optOutBackingBean");
+        
+        Integer accountId = ServletRequestUtils.getIntParameter(request, "accountId");
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         
         this.checkInventoryAgainstAccount(inventoryIds, customerAccount);
-
-        Date startDateObj = parseDate(startDate, yukonUserContext);
-
-        MessageSourceResolvable result = 
-            new YukonMessageSourceResolvable("yukon.dr.operator.optOutresult.success");
         
-        // Validate the start date
-        final Date now = new Date();
-        TimeZone userTimeZone = yukonUserContext.getTimeZone();
-        final Date today = TimeUtil.getMidnight(now, userTimeZone);
-        try {
-            validateStartDate(startDateObj, today, yukonUserContext);
-        } catch (StartDateException exception) {
-        	modelMap.addAttribute("startDate", startDate);
-        	modelMap.addAttribute("duration", durationInDays);
-        	modelMap.addAttribute("error", exception.getMessage());
-            result = new YukonMessageSourceResolvable(exception.getMessage());
-            modelMap.addAttribute("result", result);
-            return "operator/program/optOut/optOut.jsp";
-        }
+        // validate/update
+        OptOutValidator optOutValidator = optOutValidatorFactory.getOptOutValidator(userContext);
+        optOutValidator.validate(optOutBackingBean, bindingResult);
+        if (!bindingResult.hasErrors()) {
+            String jsonQuestions = ServletRequestUtils.getStringParameter(request, "jsonQuestions");
+            List<ScheduledOptOutQuestion> questionList = OptOutControllerHelper.toOptOutQuestionList(jsonQuestions);
 
-        boolean isSameDay = TimeUtil.isSameDay(startDateObj,
-                                               today,
-                                               yukonUserContext.getTimeZone());
-
-        String jsonQuestions = ServletRequestUtils.getStringParameter(request,
-                                                                      "jsonQuestions");
-        List<ScheduledOptOutQuestion> questionList = OptOutControllerHelper.toOptOutQuestionList(jsonQuestions);
-
-        OptOutRequest optOutRequest = new OptOutRequest();
-        if (isSameDay) {
-            int extraHours = 0;
-            // If durationInDays is 1 that means the rest of today only
-            if (durationInDays > 1) {
-                // Today counts as the first day
-                extraHours = (durationInDays - 1) * 24;
-            }
+            OptOutRequest optOutRequest = new OptOutRequest();
+            optOutRequest.setInventoryIdList(inventoryIds);
+            optOutRequest.setQuestions(questionList);
             
-            int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userTimeZone);
-            optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
-            optOutRequest.setStartDate(null); // Same day OptOut's have null
-                                              // startDates.
-        } else {
-            optOutRequest.setStartDate(startDateObj);
-            optOutRequest.setDurationInHours(durationInDays * 24);
-        }
-        optOutRequest.setInventoryIdList(inventoryIds);
-        optOutRequest.setQuestions(questionList);
+            
+            final Date now = new Date();
+            TimeZone userTimeZone = userContext.getTimeZone();
+            final Date today = TimeUtil.getMidnight(now, userTimeZone);
+            boolean isSameDay = TimeUtil.isSameDay(startDate,
+                                                   today,
+                                                   userContext.getTimeZone());
 
-        LiteYukonUser user = yukonUserContext.getYukonUser();
-        optOutService.optOut(customerAccount, optOutRequest, user);
-        
-        modelMap.addAttribute("result", result);
-        
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/program/optOut?accountId="+customerAccount.getAccountId();
+            if (isSameDay) {
+                int extraHours = 0;
+                // If durationInDays is 1 that means the rest of today only
+                if (durationInDays > 1) {
+                    // Today counts as the first day
+                    extraHours = (durationInDays - 1) * 24;
+                }
+
+                int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userContext.getTimeZone());
+                optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
+                optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
+            } else {
+                optOutRequest.setStartDate(startDate);
+                optOutRequest.setDurationInHours(durationInDays * 24);
+            }
+
+            LiteYukonUser user = userContext.getYukonUser();
+            optOutService.optOut(customerAccount, optOutRequest, user);
+        }
+
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
+
+        if (bindingResult.hasErrors()) {
+            
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            
+            return "operator/program/optOut/optOut.jsp";
+        } 
+       
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.success"));
+        return "redirect:/spring/stars/operator/program/optOut";
     }
     
     @RequestMapping(value = "/operator/program/optOut/cancel")
-    public String cancel(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    					int accountId,
-    					int energyCompanyId,
-                         Integer eventId, 
-                         ModelMap modelMap,
-                         YukonUserContext yukonUserContext,
-                         AccountInfoFragment accountInfoFragment) throws Exception {
+    public String cancel(Integer eventId, 
+                          ModelMap modelMap,
+                          YukonUserContext yukonUserContext,
+                          AccountInfoFragment accountInfoFragment) throws Exception {
         
         // Check that the inventory we're working with belongs to the current account
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkEventAgainstAccount(eventId, customerAccount);
         
         LiteYukonUser user = yukonUserContext.getYukonUser();
         optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/program/optOut?accountId="+customerAccount.getAccountId();
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
+        return "redirect:/spring/stars/operator/program/optOut";
     }
 
     @RequestMapping(value = "/operator/program/optOut/allowAnother")
-    public String allowAnother(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    						   int accountId,
-    						   int energyCompanyId,
-                               Integer inventoryId,  
-                               ModelMap modelMap,
-                               AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+    public String allowAnother(Integer inventoryId,  
+                                ModelMap modelMap,
+                                YukonUserContext userContext,
+                                AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
         // Check that the inventory we're working with belongs to the current account
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
         
         optOutAdditionalDao.addAdditonalOptOuts(inventoryId, customerAccount.getAccountId(), 1);
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/program/optOut?accountId="+customerAccount.getAccountId();
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
+        return "redirect:/spring/stars/operator/program/optOut";
     }
     
     @RequestMapping(value = "/operator/program/optOut/repeat")
-    public String repeat(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-                         Integer inventoryId, 
-                         int accountId,
-						 int energyCompanyId,
-                         ModelMap modelMap,
-                         YukonUserContext yukonUserContext,
-                         AccountInfoFragment accountInfoFragment) throws Exception {
+    public String repeat(Integer inventoryId, 
+                          ModelMap modelMap,
+                          YukonUserContext yukonUserContext,
+                          AccountInfoFragment accountInfoFragment) throws Exception {
         
         
         // Check that the inventory we're working with belongs to the current account
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
         
         optOutService.resendOptOut(
@@ -398,26 +361,39 @@ public class OperatorProgramOptOutOperatorController {
                 customerAccount.getAccountId(), 
                 yukonUserContext.getYukonUser());
         
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/program/optOut?accountId="+customerAccount.getAccountId();
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
+        return "redirect:/spring/stars/operator/program/optOut";
     }
     
     @RequestMapping(value = "/operator/program/optOut/resetToLimit")
-    public String resetToLimit(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    						   int accountId,
-    						   int energyCompanyId,
-                               Integer inventoryId, 
-                               ModelMap modelMap,
-                               AccountInfoFragment accountInfoFragment) {
+    public String resetToLimit(Integer inventoryId, 
+                                ModelMap modelMap,
+                                YukonUserContext userContext,
+                                AccountInfoFragment accountInfoFragment) {
 
         
         // Check that the inventory we're working with belongs to the current account
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
         
         optOutService.resetOptOutLimitForInventory(inventoryId, customerAccount.getAccountId());
         
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
+        return "redirect:/spring/stars/operator/program/optOut";
+    }
+    
+    /**
+     * This method builds up the basic modelMap entries for an optOutPage
+     */
+    private void setupOptOutModelMapBasics(AccountInfoFragment accountInfoFragment,
+                                           ModelMap modelMap,
+                                           YukonUserContext userContext) {
+        
+        List<Integer> optOutPeriodList = optOutService.getAvailableOptOutPeriods(userContext.getYukonUser());
+        modelMap.addAttribute("optOutPeriodList", optOutPeriodList);
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        return "redirect:/spring/stars/operator/program/optOut?accountId="+customerAccount.getAccountId();
+        
     }
     
     /**
@@ -451,49 +427,6 @@ public class OperatorProgramOptOutOperatorController {
         }
     }
 
-    private Date parseDate(String dateStr, YukonUserContext yukonUserContext) {
-        try {
-            return dateFormattingService.flexibleDateParser(dateStr,
-                                                            yukonUserContext);
-        } catch (ParseException e) {
-            // caller requires a date so null is treated as an error
-        }
-        return null;
-    }
-
-    private void validateStartDate(Date startDate, Date todayDate,
-            YukonUserContext userContext) throws StartDateException {
-        // this shouldn't happen unless the user is hacking the UI
-        if (startDate == null) throw new RuntimeException("empty start date");
-
-        long startTime = startDate.getTime();
-        long todayTime = todayDate.getTime();
-
-        if (startTime < todayTime) {
-            throw new StartDateException("yukon.dr.operator.optout.startDateTooEarly");
-        }
-
-        Calendar cal = dateFormattingService.getCalendar(userContext);
-        cal.setTime(todayDate);
-        cal.add(Calendar.YEAR, 1);
-        long yearInFuture = cal.getTimeInMillis();
-        if (startTime > yearInFuture) {
-            throw new StartDateException("yukon.dr.operator.optout.startDateTooLate");
-        }
-        
-        boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(
-                YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
-        if(optOutTodayOnly) {
-            cal.setTime(todayDate);
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-            long dayInFuture = cal.getTimeInMillis();
-            
-            if (startTime > dayInFuture) {
-                throw new IllegalArgumentException("Start date must be today");
-            }
-        }
-    }
-
     private Map<Integer, OptOutCountHolder> getOptOutCountsForInventories(
             Iterable<DisplayableInventory> inventories, int customerAccountId) {
         Map<Integer, OptOutCountHolder> retVal = new HashMap<Integer, OptOutCountHolder>();
@@ -506,6 +439,13 @@ public class OperatorProgramOptOutOperatorController {
         return retVal;
     }
 
+    /* INIT BINDER */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        DateType dateValidationType = new DateType();
+        binder.registerCustomEditor(Date.class, "startDate", dateValidationType.getPropertyEditor());
+    }
+    
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
         this.optOutService = optOutService;
@@ -539,20 +479,13 @@ public class OperatorProgramOptOutOperatorController {
     }
     
     @Autowired
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-    
-    @Autowired
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
     
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
+    public void setOptOutValidatorFactory(OptOutValidatorFactory optOutValidatorFactory) {
+        this.optOutValidatorFactory = optOutValidatorFactory;
     }
-    
 }

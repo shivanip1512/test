@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
@@ -14,11 +15,11 @@
 <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
 <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
     <table >
-        <tr style="height: 10%"><td>
+        <tr><td>
             <cti:img key="allowOne"/><i:inline key=".allowOneIconText" />
         </td></tr>
         <tr height="6px"></tr>
-        <tr style="height: 10%"><td>
+        <tr><td>
             <cti:img key="resetToLimit"/><i:inline key=".resetToLimitIconText" />
         </td></tr>
     </table>
@@ -36,24 +37,25 @@
 <c:if test="${!allOptedOut}">
 	<i:inline key=".description"/><br><br>
 
-	<form action="/spring/stars/operator/program/optOut/view2" method="POST">
-		<input type="hidden" name="accountId" value="${customerAccount.accountId}" />
+    <form:form id="optOutForm" action="/spring/stars/operator/program/optOut/view2" commandName="optOutBackingBean">
+
+		<input type="hidden" name="accountId" value="${accountId}" />
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
 
-		<tags:nameValueContainer2 style="width: 25%;">
+		<tags:nameValueContainer2 nameColumnWidth="10%;">
 		
-			<tags:nameValue2 nameKey=".startDate">
-				<cti:formatDate  value="${currentDate}" type="DATE" var="formattedDate"/>
+            <tags:nameValue2 nameKey=".startDate">
                 <c:choose>
                     <c:when test="${optOutTodayOnly}">
-                        <input type="hidden" name="startDate" value="${formattedDate}" />
+                        <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" var="formattedDate"/>
+                        <form:hidden path="startDate"/>
                         <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
                     </c:when>
                     <c:otherwise>
-                        <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}"/>
+                        <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" springInput="true" />
                     </c:otherwise>
                 </c:choose>
-			</tags:nameValue2>
+            </tags:nameValue2>
 		
 			<tags:nameValue2 nameKey=".duration">
 				<select name="durationInDays">
@@ -75,7 +77,7 @@
 		</tags:nameValueContainer2>
         <br>
         <input type="submit" value="<i:inline key=".optOut" />" />
-	</form>
+	</form:form>
 </c:if>
 </tags:boxContainer2>
 <br><br>
@@ -117,7 +119,7 @@
                     <td valign="top">
 
                         <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/cancel">
-                            <cti:param name="accountId" value="${customerAccount.accountId}"/>
+                            <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                             <cti:param name="eventId" value="${optOut.eventId}" />
                         </cti:url>
@@ -127,7 +129,7 @@
                         <c:choose>
                             <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
                                 <cti:url var="resendOptOutUrl" value="/spring/stars/operator/program/optOut/repeat">
-                                    <cti:param name="accountId" value="${customerAccount.accountId}"/>
+                                    <cti:param name="accountId" value="${accountId}"/>
                                     <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                     <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
                                     <cti:param name="eventId" value="${optOut.eventId}" />
@@ -188,7 +190,7 @@
                 <c:if test="${!noOptOutLimits}">
             
                     <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
-                        <cti:param name="accountId" value="${customerAccount.accountId}"/>
+                        <cti:param name="accountId" value="${accountId}"/>
                         <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                         <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                     </cti:url>
@@ -201,7 +203,7 @@
 	                    <c:otherwise> 
 
                             <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
-                                <cti:param name="accountId" value="${customerAccount.accountId}"/>
+                                <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                 <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                             </cti:url>
@@ -224,7 +226,11 @@
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 	
 	<c:if test="${fn:length(previousOptOutList) > 0}">
-        <a href="optOut/optOutHistory?accountId=${customerAccount.accountId}&energyCompanyId=${energyCompanyId}" ><cti:msg key="yukon.dr.operator.optout.viewAll" /></a>
+        <cti:url var="optOutHistoryUrl" value="/spring/stars/operator/program/optOut/optOutHistory">
+            <cti:param name="accountId" value="${accountId}"/>
+            <cti:param name="energyCompanyId" value="${energyCompanyId}" />
+        </cti:url>
+        <a href="${optOutHistoryUrl}" ><cti:msg key="yukon.dr.operator.optout.viewAll" /></a>
         <br><br>
     </c:if>
 </tags:boxContainer2>

@@ -2,14 +2,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="operator" page="optOut">
-    <cti:standardMenu />
 
 <cti:url var="actionUrl" value="/spring/stars/operator/program/optOut/optOutQuestions">
-    <cti:param name="accountId" value="${customerAccount.accountId}" />
+    <cti:param name="accountId" value="${accountId}" />
     <cti:param name="energyCompanyId" value="${energyCompanyId}" />
 </cti:url>
 
@@ -58,7 +58,10 @@ function createJSON() {
         <br>
         <br>
 
-        <form id="form" action="${actionUrl}" method="POST" onsubmit="createJSON();">
+        <form:form id="form" commandName="optOutBackingBean" action="/spring/stars/operator/program/optOut/optOutQuestions" method="POST" onsubmit="createJSON();">
+            <input type="hidden" name="accountId" value="${accountId}" />
+            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />"
+
             <div id="controlEventsDiv" style="height: auto;">
                 <table class="compactResultsTable" width="99%">
                     <tr>
@@ -116,15 +119,15 @@ function createJSON() {
                 <input type="submit" width="80px" value="<i:inline key='.save'/>"></input>
             </span>    
             <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
-            	<cti:param name="accountId" value="${customerAccount.accountId}" />
+            	<cti:param name="accountId" value="${accountId}" />
             	<cti:param name="energyCompanyId" value="${energyCompanyId}" />
             </cti:url>
             <input type="button" width="80px" value="<i:inline key='.cancel'/>"
                    onclick="javascript:location.href='${optOutUrl}';"></input>
             
-            <input type="hidden" name="durationInDays" value="${durationInDays}"></input>
-            <input type="hidden" name="startDate" value="${startDate}"></input>
-        </form>
+            <form:hidden path="durationInDays" />
+            <form:hidden path="startDate"/>
+        </form:form>
         </tags:boxContainer2>
     </div>    
     

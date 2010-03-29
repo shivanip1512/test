@@ -41,6 +41,16 @@
 	<entry key="yukon.web.modules.operator.optOut.days">Days</entry>
 	<entry key="yukon.web.modules.operator.optOut.optOut">Opt Out</entry>
 
+	<entry key="yukon.web.modules.operator.optOut.success">Opt Out Successful</entry>
+	<entry key="yukon.web.modules.operator.optOut.noInventorySelected">No inventory selected</entry>
+
+    <!-- Validation -->
+    <entry key="yukon.web.modules.operator.optOutBackingBean.invalidStartDate">Invalid start date.</entry>
+    <entry key="yukon.web.modules.operator.optOutBackingBean.startDateTooEarly">The start date cannot be earlier than today.</entry>
+    <entry key="yukon.web.modules.operator.optOutBackingBean.startDateTooLate">The start date cannot be more than one year in the future.</entry>
+    <entry key="yukon.web.modules.operator.optOutBackingBean.startDateToday">The start date must be today.</entry>
+    <entry key="yukon.web.modules.operator.optOutBackingBean.invalidDuration">Invalid duration</entry>
+
 	<!-- Program Opting Out Page -->
 	<entry key="yukon.web.modules.operator.optOut.pageName">Override</entry>
 	<entry key="yukon.web.modules.operator.optOut.description">Please select the hardware you want to opt out of.</entry>
