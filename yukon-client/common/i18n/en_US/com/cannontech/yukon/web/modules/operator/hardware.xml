@@ -59,11 +59,6 @@
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverText">Add a thermostat to this account.</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.label">Add Thermostat</entry>
 
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.imageUrl">/WebConfig/yukon/Icons/folder_explore.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.hoverUrl">/WebConfig/yukon/Icons/folder_explore_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.hoverText">Add a thermostat to this account.</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultipleThermostats.label">Select Multiple</entry>
-    
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultiple">Select Multiple</entry>
     
     <!-- Meters -->
