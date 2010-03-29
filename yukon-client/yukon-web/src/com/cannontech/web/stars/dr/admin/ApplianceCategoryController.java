@@ -27,6 +27,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -63,33 +64,21 @@ public class ApplianceCategoryController {
     private StarsDatabaseCache starsDatabaseCache;
     private PaoDao paoDao;
 
-    private Validator detailsValidator = new Validator() {
-        @SuppressWarnings("unchecked")
+    private Validator detailsValidator = new SimpleValidator<ApplianceCategory>(ApplianceCategory.class) {
         @Override
-        public boolean supports(Class cls) {
-            return ApplianceCategory.class.isAssignableFrom(cls);
-        }
-
-        @Override
-        public void validate(Object target, Errors errors) {
+        public void doValidation(ApplianceCategory target, Errors errors) {
             String[] requiredFields = new String[] { "name", "displayName" };
             for (String requiredField : requiredFields) {
-                ValidationUtils.rejectIfEmptyOrWhitespace(errors, requiredField,
-                    baseKey + ",editApplianceCategory.empty");
+                ValidationUtils.rejectIfEmptyOrWhitespace(errors,
+                                                          requiredField,
+                                                          baseKey + ".editApplianceCategory.empty");
             }
         }
     };
 
-    private Validator assignedProgramValidator = new Validator() {
-        @SuppressWarnings("unchecked")
+    private Validator assignedProgramValidator = new SimpleValidator<AssignProgramBackingBean>(AssignProgramBackingBean.class) {
         @Override
-        public boolean supports(Class cls) {
-            return AssignProgramBackingBean.class.isAssignableFrom(cls);
-        }
-
-        @Override
-        public void validate(Object target, Errors errors) {
-            AssignProgramBackingBean assignedProgram = (AssignProgramBackingBean) target;
+        public void doValidation(AssignProgramBackingBean assignedProgram, Errors errors) {
             if (assignedProgram.isVirtual()) {
                 // display name is required for virtual programs
                 ValidationUtils.rejectIfEmptyOrWhitespace(errors,
