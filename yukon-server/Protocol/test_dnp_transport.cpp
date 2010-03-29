@@ -219,8 +219,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_wraparound)
                 //  don't insert the first packet
                 for( int i = 1; i < packet_count; ++i )
                 {
-                    count++;
-
                     packet_sequence.insert(packets[i]);
 
                     //  verify that it's continuously not valid without the first packet
