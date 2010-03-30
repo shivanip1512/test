@@ -15,7 +15,9 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.SimpleTemplateProcessor;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.PageInfo;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -69,9 +71,14 @@ public class PageDetailProducer {
         pageInfosForMenu.add(root);
         pageInfosForMenu.addAll(root.getChildPages());
         
+        LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
+        
         List<PageContext> pageContextsForMenu = Lists.newArrayListWithCapacity(pageInfosForMenu.size());
         for (PageInfo pageInfo : pageInfosForMenu) {
-            pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor, null));
+            // apply security checks
+            if (pageInfo.getUserChecker().check(yukonUser)) {
+                pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor, null));
+            }
         }
         StringBuilder result = new StringBuilder();
         result.append("<ul>\n");

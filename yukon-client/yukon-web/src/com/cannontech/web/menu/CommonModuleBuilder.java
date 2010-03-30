@@ -170,6 +170,13 @@ public class CommonModuleBuilder implements ModuleBuilder {
             String infoInclude = pageElement.getChildTextTrim("infoInclude");
             pageInfo.setDetailInfoIncludePath(infoInclude);
             
+            UserChecker userChecker = getCheckerForElement(pageElement);
+            if(parent != null){
+                pageInfo.setUserChecker(new AggregateAndUserChecker(userChecker, parent.getUserChecker()));
+            } else {
+                pageInfo.setUserChecker(userChecker);
+            }
+            
             // now add the children of the element
             Element subPagesElement = pageElement.getChild("pages");
             List<PageInfo> childPages = processPages(subPagesElement, moduleName, pageInfo);

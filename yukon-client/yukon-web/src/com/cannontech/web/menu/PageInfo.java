@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 
+import com.cannontech.user.checker.UserChecker;
 import com.google.common.collect.Lists;
 
 public class PageInfo implements Comparable<PageInfo> {
@@ -17,7 +18,7 @@ public class PageInfo implements Comparable<PageInfo> {
     private String menuSelection;
     private List<PageInfo> childPages;
     private String detailInfoIncludePath;
-    
+    private UserChecker userChecker;
     
     public String getName() {
         return name;
@@ -121,6 +122,14 @@ public class PageInfo implements Comparable<PageInfo> {
 
     public String getDetailInfoIncludePath() {
         return detailInfoIncludePath;
+    }
+    
+    public void setUserChecker(UserChecker userChecker) {
+            this.userChecker = userChecker;
+    }
+        
+    public UserChecker getUserChecker() {
+        return userChecker;
     }
     
     @Override
