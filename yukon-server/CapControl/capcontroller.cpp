@@ -1380,12 +1380,13 @@ void CtiCapController::processCCEventMsgs()
 {
     try
     {
-        CtiTime tempTime;
-
         CtiCCEventLogMsg* msg = NULL;
 
         RWCollectable* msg1 = NULL;
-        while(_ccEventMsgQueue.canRead())
+        int msgCount = 0;
+        CtiTime processTimeStart = CtiTime();
+
+        while(_ccEventMsgQueue.canRead() && msgCount < 100)
         {
             try
             {
@@ -1399,7 +1400,7 @@ void CtiCapController::processCCEventMsgs()
 
                         msg = (CtiCCEventLogMsg *) temp[i];
                         CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
-                        //delete msg;
+                        msgCount++;
                     }
                     if (msg1 != NULL)
                     {
@@ -1412,6 +1413,7 @@ void CtiCapController::processCCEventMsgs()
                 {
                     msg = (CtiCCEventLogMsg *) msg1;
                     CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
+                    msgCount++;
                     delete msg;
                 }
                 else
@@ -1430,6 +1432,12 @@ void CtiCapController::processCCEventMsgs()
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
         };
+        LONG processTimeSecs = CtiTime().seconds() - processTimeStart.seconds();
+        if (_CC_DEBUG & CC_DEBUG_CCEVENTINSERT)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Processed "<<msgCount<<" CC Event Log Messages in "<<processTimeSecs<<" seconds."<< endl;
+        }
 
     }
     catch(...)

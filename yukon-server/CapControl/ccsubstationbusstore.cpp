@@ -3702,7 +3702,6 @@ bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* 
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
     {
         INT logId = CCEventLogIdGen();
 
