@@ -249,7 +249,7 @@ public class HardwareServiceImpl implements HardwareService {
         } catch (DeviceCreationException e) {
             throw new StarsTwoWayLcrYukonDeviceCreationException("unknown", e);
         } catch (NumberFormatException nfe){
-            throw new StarsTwoWayLcrYukonDeviceCreationException("unknown", nfe);
+            throw new StarsTwoWayLcrYukonDeviceCreationException("nonNumericSerialNumber", nfe);
         }
         
         return yukonDevice;

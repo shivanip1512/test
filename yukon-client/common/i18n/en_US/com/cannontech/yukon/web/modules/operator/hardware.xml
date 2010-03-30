@@ -137,6 +137,7 @@
     <!-- Errors -->
     <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.nameAlreadyExists">Yukon device with that name already exists.</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.mustSupplyName">Yukon device name is required.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.nonNumericSerialNumber">Two Way LCR serial number must be numeric.</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.unknown">Unable to create new yukon device.</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.error.required.serialNumber">A serial number is required.</entry>
@@ -151,6 +152,9 @@
     
     <entry key="yukon.web.modules.operator.hardwareEdit.error.invalid.deviceId">A two way device MUST be setup for the two way LCR.</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.error.unavailable.deviceId">Device {0} is already in use.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.addressMismatch.deviceId">The address of the two way device must match the serial number.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.notFound.deviceId">The chosen two way device no longer exists.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.invalidDeviceType.deviceId">The device with id:{0} and name:{1} is not a two way device.</entry>
     
     <entry key="typeMismatch.fieldInstallDate">Field Install Date must be a valid date.</entry>
     <entry key="typeMismatch.fieldReceiveDate">Field Receive Date must be a valid date.</entry>
