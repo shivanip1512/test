@@ -104,7 +104,7 @@ class CtiCapController : public MessageListener
 
         void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
         void updateAllPointQualities(long quality);
-        void adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr currentBus);
+        void adjustAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentBus);
         void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
 
         void parseMessage(RWCollectable* message);

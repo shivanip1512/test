@@ -2431,7 +2431,7 @@ DOUBLE convertPowerFactorToSend(DOUBLE powerFactor)
     return returnPowerFactor;
 }
 
-void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstationBusPtr currentBus)
+void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentBus)
 {
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2468,6 +2468,11 @@ void CtiCapController::adjustAlternateBusModeValues(double value, CtiCCSubstatio
                                        primarySub->getRawCurrentVarLoadPointValue() + currentBus->getRawCurrentVarLoadPointValue(),
                                        primarySub->getRawCurrentWattLoadPointValue() + currentBus->getRawCurrentWattLoadPointValue());
                 primarySub->setNewPointDataReceivedFlag(TRUE);
+
+                if ((primarySub->isControlPoint(pointID) || currentBus->isControlPoint(pointID) ) && primarySub->getStrategy()->getIntegrateFlag())
+                {
+                    primarySub->updateIntegrationVPoint(CtiTime());
+                }
             }
 
             currentBus->setAllAltSubValues(currentBus->getCurrentVoltLoadPointValue(),
@@ -2588,6 +2593,13 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 altSub->setAllAltSubValues((altSub->getCurrentVoltLoadPointValue() + currentSubstationBus->getCurrentVoltLoadPointValue()) / 2,
                                                        altSub->getRawCurrentVarLoadPointValue() + currentSubstationBus->getRawCurrentVarLoadPointValue(),
                                                        altSub->getRawCurrentWattLoadPointValue() + currentSubstationBus->getRawCurrentWattLoadPointValue());
+
+                                if ((altSub->isControlPoint(pointID) || currentSubstationBus->isControlPoint(pointID) ) && altSub->getStrategy()->getIntegrateFlag())
+                                {
+                                    altSub->setIVCount( 0 );
+                                    altSub->updateIntegrationVPoint(CtiTime());
+                                }
+
                                 CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
                                 int j = ccFeeders.size();
                                 while (j > 0)
@@ -2649,6 +2661,13 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 altSub->reOrderFeederDisplayOrders();
                                 store->UpdateFeederSubAssignmentInDB(currentSubstationBus);
                                 store->UpdateFeederSubAssignmentInDB(altSub);
+                                if ((altSub->isControlPoint(pointID) || currentSubstationBus->isControlPoint(pointID) ) && altSub->getStrategy()->getIntegrateFlag())
+                                {
+                                    altSub->setIVCount( 0 );
+                                    altSub->updateIntegrationVPoint(CtiTime());
+                                    currentSubstationBus->setIVCount( 0 );
+                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());                                
+                                }
                             }
                         }
 
@@ -2989,12 +3008,12 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             {
                                 currentSubstationBus->setCurrentVarLoadPointValue(value,timestamp);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
-                                {
-                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());
-                                }
                             }
-                            adjustAlternateBusModeValues(value, currentSubstationBus);
+                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
+                            {
+                                currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                            }
+                            adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
 
                         }
                         else //phase A point id
@@ -3003,13 +3022,13 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             {
                                 currentSubstationBus->setPhaseAValue(value,timestamp);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                 currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue(), timestamp);
-                                if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
-                                {
-                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());
-                                }
+                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue(), timestamp);
                             }
-                            adjustAlternateBusModeValues(value, currentSubstationBus);
+                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
+                            {
+                                currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                            }
+                            adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                         }
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->setCurrentVarPointQuality(quality);
@@ -3066,10 +3085,10 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         {
                             currentSubstationBus->setCurrentWattLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
-                            {
-                                currentSubstationBus->updateIntegrationWPoint(CtiTime());
-                            }
+                        }
+                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
+                        {
+                            currentSubstationBus->updateIntegrationWPoint(CtiTime());
                         }
 
                         currentSubstationBus->setCurrentWattPointQuality(quality);
@@ -3096,7 +3115,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                         currentSubstationBus->figureAndSetTargetVarValue();
-                        adjustAlternateBusModeValues(value, currentSubstationBus);
+                        adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                     }
                 }
                 else if( currentSubstationBus->getCurrentVoltLoadPointId() == pointID )
@@ -3109,13 +3128,13 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         {
                             currentSubstationBus->setCurrentVoltLoadPointValue(value);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
-                            {
-                                currentSubstationBus->updateIntegrationVPoint(CtiTime());
-                            }
+                        }
+                        if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getStrategy()->getIntegrateFlag())
+                        {
+                            currentSubstationBus->updateIntegrationVPoint(CtiTime());
                         }
                         currentSubstationBus->setCurrentVoltPointQuality(quality);
-                        adjustAlternateBusModeValues(value, currentSubstationBus);
+                        adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
                         currentSubstationBus->figureAndSetTargetVarValue();
                     }
@@ -3152,7 +3171,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             }
                         }
 
-                        adjustAlternateBusModeValues(value, currentSubstationBus);
+                        adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                         currentSubstationBus->figureEstimatedVarLoadPointValue();
                         currentSubstationBus->figureAndSetTargetVarValue();
                     }
