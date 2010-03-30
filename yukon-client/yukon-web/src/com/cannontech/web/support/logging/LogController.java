@@ -44,7 +44,32 @@ public class LogController {
         
         return logFile;
     }
-
+    
+    protected String getRootlessFilePath(File file){
+        if(isLogRoot(file)){
+            return "/";
+        } else {
+            return getRootlessFilePath(file.getParentFile()) + file.getName() + "/";
+        }
+    }
+    
+    protected boolean isLogRoot(File file){
+        if(file == null){
+            return true;
+        }
+        try{
+            boolean equalWithoutTrailingSlash = file.getCanonicalFile().equals(localDir);
+            //Due to a bug in the File class, the presence of a trailing file
+            //separator can make equals() behave incorrectly, so we must test
+            //against paths with and without trailing slash.
+            File test = new File(localDir.getCanonicalPath(), "/");
+            boolean equalWithTrailingSlash = file.getCanonicalFile().equals(test);    
+            return equalWithoutTrailingSlash || equalWithTrailingSlash;
+        } catch (IOException e){
+            return true;
+        }
+    }
+    
 	protected String getFileNameParameter(HttpServletRequest request) {
 		String fileName = ServletRequestUtils.getStringParameter(request, "file", "");
 		return fileName;

@@ -8,6 +8,7 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ public class LogViewController extends LogController {
             map.addAttribute("logFileName", logFile.getName());
             String fileName = ServletRequestUtils.getRequiredStringParameter(request, "file");
             map.addAttribute("logFilePath", fileName);
+            String rootlessDirFileString = getRootlessFilePath(logFile.getParentFile());
+            map.addAttribute("rootlessDirFileString", rootlessDirFileString);
             map.addAttribute("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
             map.addAttribute("logContents", new Writable() {
                 public void write(Writer out) throws IOException {

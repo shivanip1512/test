@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,8 @@ public class LogTailController extends LogController {
        		// Setting value to the mav object
        		map.addAttribute("logContents", logLines);
        		map.addAttribute("logFileName", logFile.getName());
+       		String rootlessDirFileString = getRootlessFilePath(logFile.getParentFile());
+       		map.addAttribute("rootlessDirFileString", rootlessDirFileString);
             map.addAttribute("fileDateMod", lastMod);
             map.addAttribute("fileLength", fileLength);
         } else {

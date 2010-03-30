@@ -2,14 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage module="support">
-<cti:standardMenu menuSelection="logs"/>
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/support/logging/menu" title="Log File Menu"  />
-    <cti:crumbLink url="/spring/support/logging/tail?file=${file}" title="Log Tailer"  />
-    <cti:crumbLink>Log View</cti:crumbLink>
-</cti:breadCrumbs>
+<cti:standardPage module="support" page="logView">
 
 <div id="logInfo" style="width:600px;">
 <tags:nameValueContainer altRowOn="true">

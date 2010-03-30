@@ -60,7 +60,7 @@ public class LogMenuController extends LogController {
     @RequestMapping(value = "/logging/menu", method = RequestMethod.GET)
     public String menu(HttpServletRequest request, YukonUserContext userContext,
                        ModelMap map) throws Exception {
-
+        
         // Checks the request for parameters to update the defaults
         String sortType = ServletRequestUtils.getStringParameter(request,
                                                                  "sortType",
@@ -85,16 +85,24 @@ public class LogMenuController extends LogController {
             resultSet = sortByAlphabet(localLogList, userContext);
         }
 
+        boolean isNotLogRoot = true;
+        if(isLogRoot(logDir)){
+            isNotLogRoot = false;
+        }
         // add local list to model
+        map.addAttribute("isNotLogRoot", isNotLogRoot);
+        map.addAttribute("rootlessParentDir", getRootlessFilePath(logDir.getParentFile()));
         map.addAttribute("oldStateSort", sortType);
         map.addAttribute("dirFile", logDir);
+        String rootlessDirFileString = getRootlessFilePath(logDir);
+        map.addAttribute("rootlessDirFileString", rootlessDirFileString);
         map.addAttribute("file", HtmlUtils.htmlEscape(getFileNameParameter(request)));
         map.addAttribute("dirList", directoryNameList);
         map.addAttribute("localLogList", resultSet.asMap());
 
         return "logging/menu.jsp";
     }
-
+    
     private void populateFileLists(File currentDir, Collection<File> localLogList, Collection<File> localDirectoryList) {
         // iterates through everything in the given directory and sort into files and directories
         File[] localDirAndFiles = currentDir.listFiles();

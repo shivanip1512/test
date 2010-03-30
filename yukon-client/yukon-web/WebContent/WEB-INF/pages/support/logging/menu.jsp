@@ -1,17 +1,17 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<cti:standardPage module="support">
-<cti:standardMenu menuSelection="logs"/>
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/support/" title="Support" />
-    <cti:crumbLink url="/spring/support/logging/menu" title="Log File Menu" />
-    <cti:crumbLink>${dirFile.name}</cti:crumbLink>
-</cti:breadCrumbs>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<c:url var="DirUpImg" value="/WebConfig/yukon/Icons/arrow_turn_left.png"/>
 
-<h3>Current Directory: ${dirFile.name}</h3> <br />
+<cti:standardPage module="support" page="logMenu">
 
+<tags:layoutHeadingFavoritesPart>
+	<c:if test="${isNotLogRoot}">
+		<a href="?file=${rootlessParentDir}&sortType=${oldStateSort}"><img src="${DirUpImg}" /></a>
+	</c:if>
+</tags:layoutHeadingFavoritesPart>
+	
 <h4>Sort By: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 
 <!-- Display and link to the local log files -->
