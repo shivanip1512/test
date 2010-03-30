@@ -265,10 +265,10 @@ begin
 	Disable(BACKBUTTON);
 	if(!IsUpgradeSupported()) then
 		sMsg1 = "An older version of the Yukon Application Suite is currently installed. "
-				+ "This version does not support the Upgrade install type.";
-		sMsg2 = "To complete the upgrade, please uninstall the old version" 
+				+ "This version does not support the Update install type.";
+		sMsg2 = "To complete the update, please uninstall the old version" 
 				+ " and run this installer again.";
-		SdFinish("Install Type Not Supported", sMsg1, sMsg2, "", "", bOpt, bOpt);
+		SdFinish("Update Install Type Not Supported", sMsg1, sMsg2, "", "", bOpt, bOpt);
 		abort; //do not continue until they've uninstalled the old version
 	endif;
 	
