@@ -103,6 +103,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                 } catch (NumberFormatException ignore) {/* Ignore this since we are checking serial number above. */}
                 
             } catch (NotFoundException e) {
+                /* Device no longer exists.*/
                 errors.rejectValue("deviceId", "yukon.web.modules.operator.hardwareEdit.error.notFound");
             }
 
