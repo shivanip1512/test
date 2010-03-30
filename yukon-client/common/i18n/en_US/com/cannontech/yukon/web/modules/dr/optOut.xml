@@ -75,6 +75,7 @@
     <entry key="yukon.dr.operator.optout.viewAll">View Full History</entry>
     <entry key="yukon.dr.operator.optout.allOptedOut">All devices have already been opted out.</entry>
     <entry key="yukon.dr.operator.optout.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
+    <entry key="yukon.dr.operator.optout.invalidStartDate">The start date supplied was invalid.</entry>
     <entry key="yukon.dr.operator.optout.startDateTooEarly">The start date cannot be earlier than today.</entry>
     <entry key="yukon.dr.operator.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
 

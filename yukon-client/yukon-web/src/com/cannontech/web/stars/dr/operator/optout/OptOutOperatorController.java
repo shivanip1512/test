@@ -404,7 +404,7 @@ public class OptOutOperatorController {
     private void validateStartDate(Date startDate, Date todayDate,
             YukonUserContext userContext) throws StartDateException {
         // this shouldn't happen unless the user is hacking the UI
-        if (startDate == null) throw new RuntimeException("empty start date");
+        if (startDate == null) throw new StartDateException("yukon.dr.operator.optout.invalidStartDate");
 
         long startTime = startDate.getTime();
         long todayTime = todayDate.getTime();

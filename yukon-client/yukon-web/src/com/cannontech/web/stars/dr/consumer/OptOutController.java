@@ -310,7 +310,7 @@ public class OptOutController extends AbstractConsumerController {
             YukonUserContext userContext) throws StartDateException {
         // this shouldn't happen unless the user is hacking the UI
         if (startDate == null)
-            throw new RuntimeException("empty start date");
+            throw new StartDateException("yukon.dr.consumer.optout.invalidStartDate");
 
         long startTime = startDate.getTime();
         long todayTime = todayDate.getTime();
