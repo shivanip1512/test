@@ -19,33 +19,22 @@
 <cti:url var="changeOutUrl" value="/spring/stars/operator/hardware/changeOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
 
 <%-- SWITCHES TABLE --%>
-<c:set var="switchesCount" value="0"/>
 <tags:boxContainer2 key="switches">
     <c:choose>
         <c:when test="${empty switches}">
-            <cti:msg2 key=".switches.none"/>
+            <i:inline key=".switches.none"/>
         </c:when>
         <c:otherwise>
             <table class="compactResultsTable hardwareListTable">
                 <tr>
-                    <th class="name"><cti:msg2 key=".switches.tableHeader.serialNumber"/></th>
-                    <th class="type"><cti:msg2 key=".switches.tableHeader.displayType"/></th>
-                    <th class="label"><cti:msg2 key=".switches.tableHeader.label"/></th>
-                    <th class="actions"><cti:msg2 key=".switches.tableHeader.actions"/></th>
+                    <th class="name"><i:inline key=".switches.tableHeader.serialNumber"/></th>
+                    <th class="type"><i:inline key=".switches.tableHeader.displayType"/></th>
+                    <th class="label"><i:inline key=".switches.tableHeader.label"/></th>
+                    <th class="actions"><i:inline key=".switches.tableHeader.actions"/></th>
                 </tr>
                 
                 <c:forEach var="switch" items="${switches}">
-                    <c:set var="switchesRowClass" value="tableCell"/>
-                    <c:choose>
-                        <c:when test="${switchesCount % 2 == 0}">
-                            <c:set var="switchesRowClass" value="tableCell"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="switchesRowClass" value="altTableCell"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <c:set var="switchesCount" value="${switchesCount + 1}"/>
-                    <tr class="${switchesRowClass}">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td>
                             <a href="${editUrl}${switch.inventoryId}">
                                 <spring:escapeBody htmlEscape="true">${switch.serialNumber}</spring:escapeBody>
@@ -69,7 +58,7 @@
             
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
                 <form action="/spring/stars/operator/hardware/addSwitch?energyCompany=${energyCompany}&amp;accountId=${accountId}">
-                    <input type="button" value="<cti:msg2 key=".switches.add"/>" class="createAddButton formSubmit">
+                    <input type="button" value="<i:inline key=".switches.add"/>" class="createAddButton formSubmit">
                 </form>
             </cti:checkRolesAndProperties>
             
@@ -80,33 +69,23 @@
 <br><br>
 
 <%-- THERMOSTATS TABLE --%>
-<c:set var="thermostatsCount" value="0"/>
 <tags:boxContainer2 key="thermostats">
     <c:choose>
         <c:when test="${empty thermostats}">
-            <cti:msg2 key=".thermostats.none"/>
+            <i:inline key=".thermostats.none"/>
         </c:when>
         <c:otherwise>
+            <tags:alternateRowReset/>
             <table class="compactResultsTable hardwareListTable">
                 <tr>
-                    <th class="name"><cti:msg2 key=".thermostats.tableHeader.serialNumber"/></th>
-                    <th class="type"><cti:msg2 key=".thermostats.tableHeader.displayType"/></th>
-                    <th class="label"><cti:msg2 key=".thermostats.tableHeader.label"/></th>
-                    <th class="actions"><cti:msg2 key=".thermostats.tableHeader.actions"/></th>
+                    <th class="name"><i:inline key=".thermostats.tableHeader.serialNumber"/></th>
+                    <th class="type"><i:inline key=".thermostats.tableHeader.displayType"/></th>
+                    <th class="label"><i:inline key=".thermostats.tableHeader.label"/></th>
+                    <th class="actions"><i:inline key=".thermostats.tableHeader.actions"/></th>
                 </tr>
                 
                 <c:forEach var="thermostat" items="${thermostats}">
-                    <c:set var="thermostatsRowClass" value="tableCell"/>
-                    <c:choose>
-                        <c:when test="${thermostatsCount % 2 == 0}">
-                            <c:set var="thermostatsRowClass" value="tableCell"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="thermostatsRowClass" value="altTableCell"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <c:set var="thermostatsCount" value="${thermostatsCount + 1}"/>
-                    <tr class="${thermostatsRowClass}">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td>
                             <a href="${editUrl}${thermostat.inventoryId}">
                                 <spring:escapeBody htmlEscape="true">${thermostat.serialNumber}</spring:escapeBody>
@@ -136,13 +115,20 @@
             
             <br>
             
-            <a href="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}&amp;energyCompanyId=${energyCompanyId}"><cti:msg2 key=".thermostats.selectMultiple"></cti:msg2></a>
-            
-            <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                <form action="/spring/stars/operator/hardware/addThermostat?energyCompany=${energyCompany}&amp;accountId=${accountId}">
-                    <input type="button" value="<cti:msg2 key=".thermostats.add"/>" class="createAddButton formSubmit">
-                </form>
-            </cti:checkRolesAndProperties>
+            <table style="width:100%;">
+                <tr>
+                    <td>
+                        <a href="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}&amp;energyCompanyId=${energyCompanyId}"><i:inline key=".thermostats.selectMultiple"/></a>
+                    </td>
+                    <td>
+                        <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+                            <form action="/spring/stars/operator/hardware/addThermostat?energyCompany=${energyCompany}&amp;accountId=${accountId}">
+                                <input type="button" value="<cti:msg2 key=".thermostats.add"/>" class="createAddButton formSubmit">
+                            </form>
+                        </cti:checkRolesAndProperties>
+                    </td>
+                </tr>
+            </table>
             
         </c:otherwise>
     </c:choose>
@@ -151,33 +137,23 @@
 <br><br>
 
 <%-- METERS TABLE --%>
-<c:set var="metersCount" value="0"/>
 <tags:boxContainer2 key="meters">
     <c:choose>
         <c:when test="${empty meters}">
-            <cti:msg2 key=".meters.none"/>
+            <i:inline key=".meters.none"/>
         </c:when>
         <c:otherwise>
+            <tags:alternateRowReset/>
             <table class="compactResultsTable hardwareListTable">
                 <tr>
-                    <th class="name"><cti:msg2 key=".meters.tableHeader.displayName"/></th>
-                    <th class="type"><cti:msg2 key=".meters.tableHeader.displayType"/></th>
-                    <th class="label"><cti:msg2 key=".meters.tableHeader.label"/></th>
-                    <th class="actions"><cti:msg2 key=".meters.tableHeader.actions"/></th>
+                    <th class="name"><i:inline key=".meters.tableHeader.displayName"/></th>
+                    <th class="type"><i:inline key=".meters.tableHeader.displayType"/></th>
+                    <th class="label"><i:inline key=".meters.tableHeader.label"/></th>
+                    <th class="actions"><i:inline key=".meters.tableHeader.actions"/></th>
                 </tr>
                 
                 <c:forEach var="meter" items="${meters}">
-                    <c:set var="metersRowClass" value="tableCell"/>
-                    <c:choose>
-                        <c:when test="${metersCount % 2 == 0}">
-                            <c:set var="metersRowClass" value="tableCell"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="metersRowClass" value="altTableCell"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <c:set var="metersCount" value="${metersCount + 1}"/>
-                    <tr class="${metersRowClass}">
+                    <tr class="<tags:alternateRow odd="" even="altRow"/>">
                         <td>
                             <a href="${editUrl}${meter.inventoryId}">
                                 <spring:escapeBody htmlEscape="true">${meter.displayName}</spring:escapeBody>

@@ -41,6 +41,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -73,11 +74,11 @@ public class OperatorHardwareController {
     @RequestMapping
     public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
-        ListMultimap<String, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId());
+        ListMultimap<LMHardwareClass, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId());
         
-        modelMap.addAttribute("switches", hardwareMap.get("switches"));
-        modelMap.addAttribute("meters", hardwareMap.get("meters"));
-        modelMap.addAttribute("thermostats", hardwareMap.get("thermostats"));
+        modelMap.addAttribute("switches", hardwareMap.get(LMHardwareClass.SWITCH));
+        modelMap.addAttribute("meters", hardwareMap.get(LMHardwareClass.METER));
+        modelMap.addAttribute("thermostats", hardwareMap.get(LMHardwareClass.THERMOSTAT));
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
@@ -126,17 +127,17 @@ public class OperatorHardwareController {
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
-        } finally {
-            /* Setup HardwareInfo ModelMap */
-            setupHardwareInfoModelMap(accountInfoFragment, inventoryId, modelMap, userContext);
-            if (bindingResult.hasErrors()) {
-            	
-            	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
-                flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-                modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
-                return "/operator/hardware/hardwareEdit.jsp";
-            } 
         }
+        
+        /* Setup HardwareInfo ModelMap */
+        setupHardwareInfoModelMap(accountInfoFragment, inventoryId, modelMap, userContext);
+        if (bindingResult.hasErrors()) {
+            
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
+            return "/operator/hardware/hardwareEdit.jsp";
+        } 
         
         /* If the device status was changed, spawn an event for it */
         if(statusChange){

@@ -552,17 +552,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public List<HardwareType> getAvailableThermostatTypes() {
     	List<HardwareType> typeList = new ArrayList<HardwareType>();
     	
-    	YukonSelectionList selectionList = 
-    		this.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
+    	YukonSelectionList selectionList = this.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
     	for(YukonListEntry entry : selectionList.getYukonListEntries()) {
-    		int definitionId = entry.getYukonDefID();
-    		if(definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT ||
-				definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT ||
-				definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP ||
-				definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO || 
-	            definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO) 
-    		{
-    			HardwareType type = HardwareType.valueOf(definitionId);
+    		HardwareType type = HardwareType.valueOf(entry.getYukonDefID());
+    		if(type.isThermostat()) {
 	    		typeList.add(type);
     		}
     	}

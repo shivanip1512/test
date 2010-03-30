@@ -7,6 +7,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
 import com.google.common.collect.ListMultimap;
@@ -57,12 +58,14 @@ public interface HardwareService {
     public List<HardwareHistory> getHardwareHistory(int inventoryId);
 
     /**
-     * Retrieves the hardware for account in a list map as either a meter, thermostat or switch.
+     * Retrieves the hardware for account in a list map as either a meter, thermostat or switch
+     * where the key LMHardwareClass.METER is for the list of meters, LMHardwareClass.THERMOSTAT
+     * for the list of thermostats and LMHardwareClass.SWITCH for the list of switches.
      * @param accountId
      * @param energyCompanyId
      * @return ListMultimap<String, HardwareDto>
      */
-    public ListMultimap<String, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId);
+    public ListMultimap<LMHardwareClass, HardwareDto> getHardwareMapForAccount(int accountId, int energyCompanyId);
 
     /**
      * Checks that the inventory items are assigned to the account and throws a NotAuthorizedExcpetion

@@ -3,7 +3,7 @@
 }
 
 div.historyContainer {
-    height: 112px;
+    max-height: 112px;
     overflow: auto;
 }
 

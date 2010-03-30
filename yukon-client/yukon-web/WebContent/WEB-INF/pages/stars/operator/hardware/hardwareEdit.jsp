@@ -131,6 +131,7 @@
         <form:hidden path="energyCompanyId"/>
         <form:hidden path="displayType"/>
         <form:hidden path="displayName"/>
+        <form:hidden path="twoWayDeviceName"/>
         
         <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:50%;" tableClasses="widgetColumns">
         
@@ -241,65 +242,58 @@
                     </tags:nameValueContainer2>
                     
                     <br>
-                    <c:set var="deviceStatusCount" value="0"/>
                     <tags:boxContainer2 key="deviceStatusHistory">
-                        <div class="historyContainer">
-                            <table class="compactResultsTable">
-                                <tr>
-                                    <th><cti:msg2 key=".deviceStatusHistory.tableHeader.event"/></th>
-                                    <th><cti:msg2 key=".deviceStatusHistory.tableHeader.userName"/></th>
-                                    <th><cti:msg2 key=".deviceStatusHistory.tableHeader.timeOfEvent"/></th>
-                                </tr>
-                                <c:forEach var="event" items="${deviceStatusHistory}">
-                                    <c:set var="deviceStatusRowClass" value="tableCell"/>
-                                    <c:choose>
-                                        <c:when test="${deviceStatusCount % 2 == 0}">
-                                            <c:set var="deviceStatusRowClass" value="tableCell"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:set var="deviceStatusRowClass" value="altTableCell"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <c:set var="deviceStatusCount" value="${deviceStatusCount + 1}"/>
-                                    <tr class="${deviceStatusRowClass}">
-                                        <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
-                                        <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
-                                        <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-                        </div>
+                        <c:choose>
+                            <c:when test="${empty deviceStatusHistory}">
+                                <i:inline key=".deviceStatusHistory.none"/>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="historyContainer">
+                                    <table class="compactResultsTable">
+                                        <tr>
+                                            <th><cti:msg2 key=".deviceStatusHistory.tableHeader.event"/></th>
+                                            <th><cti:msg2 key=".deviceStatusHistory.tableHeader.userName"/></th>
+                                            <th><cti:msg2 key=".deviceStatusHistory.tableHeader.timeOfEvent"/></th>
+                                        </tr>
+                                        <c:forEach var="event" items="${deviceStatusHistory}">
+                                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                                <td><spring:escapeBody htmlEscape="true">${event.actionText}</spring:escapeBody></td>
+                                                <td><spring:escapeBody htmlEscape="true">${event.userName}</spring:escapeBody></td>
+                                                <td><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
+                                            </tr>
+                                        </c:forEach>
+                                    </table>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </tags:boxContainer2>
                     
                     <br>
-                    <c:set var="hardwareHistoryCount" value="0"/>
                     <tags:boxContainer2 key="hardwareHistory">
-                        <div class="historyContainer">
-                            <table class="compactResultsTable">
-                                <tr>
-                                    <th><cti:msg2 key=".hardwareHistory.tableHeader.date"/></th>
-                                    <th><cti:msg2 key=".hardwareHistory.tableHeader.action"/></th>
-                                </tr>
-                                
-                                <c:forEach var="event" items="${hardwareHistory}">
-                                    <c:set var="hardwareHistoryRowClass" value="tableCell"/>
-                                    <c:choose>
-                                        <c:when test="${hardwareHistoryCount % 2 == 0}">
-                                            <c:set var="hardwareHistoryRowClass" value="tableCell"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <c:set var="hardwareHistoryRowClass" value="altTableCell"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    <c:set var="hardwareHistoryCount" value="${hardwareHistoryCount + 1}"/>
-                                    <tr class="${hardwareHistoryRowClass}">
-                                        <td><cti:formatDate value="${event.date}" type="BOTH"/></td>
-                                        <td><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
-                                    </tr>
-                                </c:forEach>
-                                
-                            </table>
-                        </div>
+                        <c:choose>
+                            <c:when test="${empty hardwareHistory}">
+                                <i:inline key=".hardwareHistory.none"/>
+                            </c:when>
+                            <c:otherwise>
+                                <div class="historyContainer">
+                                    <tags:alternateRowReset/>
+                                    <table class="compactResultsTable">
+                                        <tr>
+                                            <th><cti:msg2 key=".hardwareHistory.tableHeader.date"/></th>
+                                            <th><cti:msg2 key=".hardwareHistory.tableHeader.action"/></th>
+                                        </tr>
+                                        
+                                        <c:forEach var="event" items="${hardwareHistory}">
+                                            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                                                <td><cti:formatDate value="${event.date}" type="BOTH"/></td>
+                                                <td><spring:escapeBody htmlEscape="true">${event.action}</spring:escapeBody></td>
+                                            </tr>
+                                        </c:forEach>
+                                        
+                                    </table>
+                                </div>
+                            </c:otherwise>
+                        </c:choose>
                     </tags:boxContainer2>
                 </tags:sectionContainer2>
             

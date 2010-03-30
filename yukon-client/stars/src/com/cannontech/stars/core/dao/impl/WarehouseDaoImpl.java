@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -15,24 +16,25 @@ import com.cannontech.stars.core.dao.WarehouseDao;
 
 public class WarehouseDaoImpl implements WarehouseDao{
     private YukonJdbcTemplate yukonJdbcTemplate;
+    
+    public ParameterizedRowMapper<Warehouse> warehouseRowMapper = new ParameterizedRowMapper<Warehouse>() {
+        public Warehouse mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Warehouse warehouse = new Warehouse();
+            warehouse.setEnergyCompanyID(rs.getInt("EnergyCompanyId"));
+            warehouse.setWarehouseID(rs.getInt("WarehouseId"));
+            warehouse.setWarehouseName(SqlUtils.convertDbValueToString(rs.getString("WarehouseName")));
+            warehouse.setAddressID(rs.getInt("AddressId"));
+            warehouse.setNotes(SqlUtils.convertDbValueToString(rs.getString("Notes")));
+            return warehouse;
+        }
+    };
 
     @Override
-    public List<Warehouse> getAllWarehousesForEnergyCompanyId (final int energyCompanyId) {
+    public List<Warehouse> getAllWarehousesForEnergyCompanyId (int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM Warehouse WHERE ENERGYCOMPANYID ").eq(energyCompanyId);
         
-        List<Warehouse> warehouses = yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<Warehouse>() {
-            @Override
-            public Warehouse mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Warehouse warehouse = new Warehouse();
-                warehouse.setEnergyCompanyID(energyCompanyId);
-                
-                warehouse.setWarehouseID(rs.getInt("WarehouseId"));
-                warehouse.setWarehouseName(SqlUtils.convertDbValueToString(rs.getString("WarehouseName")));
-                warehouse.setAddressID(rs.getInt("AddressId"));
-                warehouse.setNotes(SqlUtils.convertDbValueToString(rs.getString("Notes")));
-                return warehouse;
-            }});
+        List<Warehouse> warehouses = yukonJdbcTemplate.query(sql, warehouseRowMapper);
         
         return warehouses;
     }
@@ -55,6 +57,19 @@ public class WarehouseDaoImpl implements WarehouseDao{
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from InventoryToWarehouseMapping where inventoryId ").eq(inventoryId);
         yukonJdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public Warehouse findWarehouseForInventoryId(int inventoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select wh.* from Warehouse wh");
+        sql.append("join InventoryToWarehouseMapping inv on wh.WarehouseId = inv.WarehouseId");
+        sql.append("where inv.InventoryId ").eq(inventoryId);
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, warehouseRowMapper);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
     
     @Autowired

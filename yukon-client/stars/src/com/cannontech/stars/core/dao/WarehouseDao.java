@@ -27,4 +27,12 @@ public interface WarehouseDao {
      */
     public void moveInventoryToAnotherWarehouse(int inventoryId, int newWarehouseId);
 
+    /** 
+     * Retreives the warehouse for the given inventoryId or null if 
+     * the inventory is not in a warehouse.
+     * @param inventoryId
+     * @return Warehouse
+     */
+    public Warehouse findWarehouseForInventoryId(int inventoryId);
+
 }

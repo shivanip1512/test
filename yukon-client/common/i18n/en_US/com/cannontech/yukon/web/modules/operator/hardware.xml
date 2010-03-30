@@ -29,7 +29,7 @@
     
     <entry key="yukon.web.modules.operator.hardwareList.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverText">Change out this device for different for a different device.</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverText">Change out this device for a different device.</entry>
     
     <!-- Swiches -->
     <entry key="yukon.web.modules.operator.hardwareList.switches.title">Switches</entry>
@@ -76,7 +76,7 @@
 	<entry key="yukon.web.modules.operator.hardwareList.meters.add.label">Add Meter</entry>
 
     <!-- hardwareEdit.jsp -->
-    <entry key="yukon.web.modules.operator.hardwareEdit.pageName">{0}</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.pageName">Hardware</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.pageDescription">{0}</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareUpdated">Hardware Updated</entry>
@@ -96,7 +96,7 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.deviceNotesLabel">Notes</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.twoWayDeviceLabel">Two Way Device</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.routeLabel">Route</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.defaultRouteNoneLabel">Default - (None)</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.defaultRouteNoneLabel">Default - (none)</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.defaultRouteLabel">Default - </entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.serviceAndStorageSection.title">Service And Storage</entry>
@@ -113,10 +113,12 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.event">Event</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.userName">User Name</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.timeOfEvent">Time of Event</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.none">No Device Status Events</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.title">Hardware History</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.tableHeader.date">Date</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.tableHeader.action">Action</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.none">No Hardware Events</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay">Create Two-Way LCR</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.twoWayPickerButton">Choose</entry>
@@ -148,6 +150,7 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.installNotes">Install Notes must be 500 characters or less.</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.error.invalid.deviceId">A two way device MUST be setup for the two way LCR.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.unavailable.deviceId">Device {0} is already in use.</entry>
     
     <entry key="typeMismatch.fieldInstallDate">Field Install Date must be a valid date.</entry>
     <entry key="typeMismatch.fieldReceiveDate">Field Receive Date must be a valid date.</entry>

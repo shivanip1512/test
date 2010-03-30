@@ -1,14 +1,22 @@
 package com.cannontech.web.stars.dr.operator.hardware.validator;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 
 public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     
     private static final char[] validSerialNumberChars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    private InventoryBaseDao inventoryBaseDao;
+    private PaoDao paoDao;
     
     public HardwareDtoValidator() {
     	super(HardwareDto.class);
@@ -56,10 +64,31 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
             }
         }
         
-        /* Two Way Device: only applicable for two way lcr's */
-        if(hardwareDto.isTwoWayLcr() && !(hardwareDto.getDeviceId() > 0)){
-            errors.rejectValue("deviceId", "yukon.web.modules.operator.hardwareEdit.error.invalid");
+        /* Two Way LCR's */
+        if(hardwareDto.isTwoWayLcr()){
+            /* If they have not picked a device for this two way inventory, reject this device id */
+            if(!(hardwareDto.getDeviceId() > 0)){
+                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardwareEdit.error.invalid");
+            }
+            
+            /* Device can only be used by one lcr at a time */
+            List<InventoryBase> matchedInventory = inventoryBaseDao.getByDeviceId(hardwareDto.getDeviceId());
+            InventoryBase inventory = inventoryBaseDao.getById(hardwareDto.getInventoryId());
+            /* If something is using this device and it's not this inventory reject this device id */
+            if (matchedInventory.size() != 0 && matchedInventory.get(0).getDeviceId() != inventory.getDeviceId()) {
+                String unavailableDeviceName = paoDao.getYukonPAOName(hardwareDto.getDeviceId());
+                errors.rejectValue("deviceId", "yukon.web.modules.operator.hardwareEdit.error.unavailable", new String[] {unavailableDeviceName}, null);
+            }
         }
     }
-
+    
+    @Autowired
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
 }
