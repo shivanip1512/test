@@ -154,48 +154,48 @@ Picker.prototype = {
 			this.multiSelectMode = false;
 		}
 		this.reset(false, true);
-		var pickerThis = this;
-		var doShow = function(transport, json) {
-			if (json) {
-				pickerThis.ssInput = $('picker_' + pickerThis.pickerId + '_ss');
-				pickerThis.showAllLink = $('picker_' + pickerThis.pickerId + '_showAllLink');
-				pickerThis.inputAreaDiv = $('picker_' + pickerThis.pickerId + '_inputArea');
-				pickerThis.resultsDiv = $('picker_' + pickerThis.pickerId + '_results');
-				pickerThis.noResultsDiv = $('picker_' + pickerThis.pickerId + '_noResults');
-				pickerThis.nothingSelectedDiv = $('picker_' + pickerThis.pickerId + '_nothingSelected');
-				pickerThis.selectAllCheckBox = $('picker_' + pickerThis.pickerId + '_selectAll');
-				pickerThis.outputColumns = json.outputColumns;
-				pickerThis.idFieldName = json.idFieldName;
-			}
-			if (pickerThis.memoryGroup && Picker.rememberedSearches[pickerThis.memoryGroup]) {
-				pickerThis.ssInput.value =
-					Picker.rememberedSearches[pickerThis.memoryGroup];
-			}
-			$(pickerThis.pickerId).show();
-			pickerThis.ssInput.focus();
-			pickerThis.doSearch();
-		};
-		var errorCallback = function() {
-			alert('could not load picker dialog');
-		};
 		if (!$(this.pickerId)) {
 			var bodyElem = document.documentElement.getElementsByTagName('body')[0];
 			var pickerDialogDivContainer = document.createElement('div');
 			bodyElem.appendChild(pickerDialogDivContainer);
-			new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', {
-				'parameters': {
+			var parameters = {
 					'type' : this.pickerType,
 					'id' : this.pickerId,
 					'multiSelectMode' : this.multiSelectMode,
 					'immediateSelectMode' : this.immediateSelectMode
-				},
+				};
+			new Ajax.Updater(pickerDialogDivContainer, '/picker/v2/build', {
+				'parameters': parameters,
 				'evalScripts': true,
-				'onFailure' : errorCallback,
-				'onComplete': doShow
+				'onComplete': this.onComplete.bind(this)
 			});
 		} else {
-			doShow();
+			this.doShow();
 		}
+	},
+
+	doShow : function() {
+		adjustDialogSizeAndPosition(this.pickerId);
+		if (this.memoryGroup && Picker.rememberedSearches[this.memoryGroup]) {
+			this.ssInput.value =
+				Picker.rememberedSearches[this.memoryGroup];
+		}
+		$(this.pickerId).show();
+		this.ssInput.focus();
+		this.doSearch();
+	},
+
+	onComplete : function(transport, json) {
+		this.ssInput = $('picker_' + this.pickerId + '_ss');
+		this.showAllLink = $('picker_' + this.pickerId + '_showAllLink');
+		this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
+		this.resultsDiv = $('picker_' + this.pickerId + '_results');
+		this.noResultsDiv = $('picker_' + this.pickerId + '_noResults');
+		this.nothingSelectedDiv = $('picker_' + this.pickerId + '_nothingSelected');
+		this.selectAllCheckBox = $('picker_' + this.pickerId + '_selectAll');
+		this.outputColumns = json.outputColumns;
+		this.idFieldName = json.idFieldName;
+		this.doShow();
 	},
 
 	/**

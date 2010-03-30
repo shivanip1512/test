@@ -15,6 +15,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:includeScript link="/JavaScript/picker.js"/>
+<cti:includeScript link="/JavaScript/simpleDialog.js"/>
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 
 <script type="text/javascript">

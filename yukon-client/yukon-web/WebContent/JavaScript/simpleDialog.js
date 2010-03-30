@@ -1,54 +1,60 @@
-function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters) {
-    var dialogDiv = $(dialogId);
+var naturalDialogSizes = {};
 
-    if (arguments.length > 2) {
+function adjustDialogSizeAndPosition(dialogId) {
+    var dialogDiv = $(dialogId);
+    var dialogDimensions = naturalDialogSizes[dialogId];
+    if (!dialogDimensions) {
+        dialogDimensions = dialogDiv.getDimensions();
+        naturalDialogSizes[dialogId] = dialogDimensions;
+    }
+    dialogDiv.setStyle({
+        'width': dialogDimensions.width + "px",
+		'height': "auto"
+    });
+
+    var viewportDimensions = getViewportDimensions();
+    var dialogDimensions = dialogDiv.getDimensions();
+
+    var minPadding = 34;
+    var newWidth = dialogDimensions.width;
+    if (dialogDimensions.width > viewportDimensions.width - minPadding) {
+    	dialogDimensions.width = viewportDimensions.width - minPadding;
+        dialogDiv.setStyle({
+            'width': dialogDimensions.width + "px"
+        });
+    }
+    var newHeight = dialogDimensions.height;
+    if (dialogDimensions.height > viewportDimensions.height - minPadding) {
+    	dialogDimensions.height = viewportDimensions.height - minPadding;
+    	dialogDiv.setStyle({
+    		'height': dialogDimensions.height + "px"
+    	});
+    }
+
+    var x = (viewportDimensions.width - dialogDimensions.width - 24) / 2;
+    var y = (viewportDimensions.height - dialogDimensions.height - 24) / 2;
+    dialogDiv.setStyle({
+        'top': y + "px",
+        'left': x + "px"
+    });
+}
+
+function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters) {
+
+    if (arguments.length > 2 && title) {
         $(dialogId + '_title').innerHTML = title;
     }
 
-    var successCallback = function(transport) {
-        var windowWidth = 790, windowHeight = 580;
-        if (Prototype.Browser.IE) {
-            windowWidth = document.body.offsetWidth;
-            windowHeight = document.body.offsetHeight;
-        } else {
-            windowWidth = window.innerWidth;
-            windowHeight = window.innerHeight;
-        }
-
-        var borderWidth = 12;
-        var dialogWidth = dialogDiv.getWidth();
-        var dialogHeight = dialogDiv.getHeight();
-        var x = 0, y = 0;
-        if (dialogWidth + borderWidth * 2 > windowWidth - 50) {
-            dialogWidth = windowWidth - 50 - 2 * borderWidth;
-            dialogDiv.setStyle({
-                'width': dialogWidth + "px"
-            });
-        }
-        var dialogWidth = dialogDiv.getWidth();
-        x = (windowWidth - dialogWidth) / 2 - borderWidth;
-
-        // For now, we hard-code y.  Once we update prototype, it would be
-        // nice to take advantage of document.viewport and roughly center the
-        // dialog on the browser window.
-        y = 125;
-
-        dialogDiv.setStyle({
-            'top': y + "px",
-            'left': x + "px"
-        });
-
-        dialogDiv.show();
+    var onComplete = function(transport, json) {
+    	adjustDialogSizeAndPosition(dialogId);
+        $(dialogId).show();
     }
 
-    var errorCallback = successCallback;
-
-    new Ajax.Updater(dialogId + '_body', innerHtmlUrl, {
+    new Ajax.Updater($(dialogId + '_body'), innerHtmlUrl, {
             'evalScripts': true,
             'method': 'post',
             'parameters': parameters,
-            'onSuccess': successCallback,
-            'onFailure' : errorCallback
+            'onComplete': onComplete
         });
 }
 
