@@ -2587,10 +2587,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 setKVARSolution(calculateKVARSolution(getStrategy()->getControlUnits(),setPoint, getIVControl(), getIWControl()));
                 setTargetVarValue( getKVARSolution() + getIVControl());
 
-                if( !_IGNORE_NOT_NORMAL_FLAG ||
-                    ( getCurrentVarPointQuality() == NormalQuality ||
-                      getCurrentWattPointQuality() == NormalQuality ||
-                      getCurrentVoltPointQuality() == NormalQuality ) )
+
+                bool arePointsNormalQuality = ( getCurrentVarPointQuality() == NormalQuality &&
+                                     ( !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ? getCurrentWattPointQuality() == NormalQuality :
+                                     ( !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ? getCurrentVoltPointQuality() == NormalQuality : getCurrentVarPointQuality()  == NormalQuality) ) );
+
+                if( !_IGNORE_NOT_NORMAL_FLAG || arePointsNormalQuality )
                 {
                     if( !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
                     {

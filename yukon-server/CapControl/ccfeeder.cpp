@@ -2537,10 +2537,13 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     //checks max daily op count, feeder disable if maxOperationDisableFlag set.
     checkMaxDailyOpCountExceeded(pointChanges);
 
+    bool arePointsNormalQuality = ( getCurrentVarPointQuality() == NormalQuality &&
+                         ( !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::PFactorKWKVarControlUnit) ? getCurrentWattPointQuality() == NormalQuality :
+                         ( !stringCompareIgnoreCase(feederControlUnits,ControlStrategy::VoltsControlUnit) ? getCurrentVoltPointQuality() == NormalQuality : getCurrentVarPointQuality()  == NormalQuality) ) );
+
     if( !getDisableFlag() &&
         !getWaiveControlFlag() &&
-        ( !_IGNORE_NOT_NORMAL_FLAG || ( getCurrentVarPointQuality() == NormalQuality &&
-            getCurrentWattPointQuality() == NormalQuality && getCurrentVoltPointQuality() == NormalQuality ) ) &&
+        ( !_IGNORE_NOT_NORMAL_FLAG || arePointsNormalQuality ) &&
         ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getStrategy()->getControlDelayTime() ) )
     {
         if( (!stringCompareIgnoreCase(feederControlUnits, ControlStrategy::KVarControlUnit) &&
