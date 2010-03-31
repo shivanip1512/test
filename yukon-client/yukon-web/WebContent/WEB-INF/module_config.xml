@@ -908,11 +908,11 @@
               <link>/spring/stars/operator/callTracking/callList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
               <labelArgument>${accountNumber}</labelArgument>
               <pages>
-                <page name="viewCall" type="DETAIL_CHILD">
+                <page name="viewCall" type="DETAIL">
                   <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
                   <menu>account</menu>
                   <link>/spring/stars/operator/callTracking/viewCall?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-                  <labelArgument>${accountNumber}</labelArgument>
+                  <labelArgument>${callReport.callNumber}</labelArgument>
                 </page>
               </pages>
             </page>
