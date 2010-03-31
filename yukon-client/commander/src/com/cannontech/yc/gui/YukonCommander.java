@@ -29,6 +29,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.text.BadLocationException;
@@ -1258,38 +1259,47 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
     /**
      * @see com.cannontech.database.cache.DBChangeListener#handleDBChangeMsg(DBChangeMsg, LiteBase)
      */
-    public void handleDBChangeMsg(DBChangeMsg msg, LiteBase object) {
+    public void handleDBChangeMsg(final DBChangeMsg msg, final LiteBase object) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                Cursor savedCursor = null;
+                try {
         
-        Cursor savedCursor = null;
-        try {
-
-            if (DBChangeMsg.CAT_YUKON_USER_GROUP.equals(msg.getCategory())) {
-                this.updateCommandSelection();
+                    if (DBChangeMsg.CAT_YUKON_USER_GROUP.equals(msg.getCategory())) {
+                        updateCommandSelection();
+                    }
+                    
+                    savedCursor = getRootPane().getCursor();
+                    getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+                    
+                    // Update the route combo box - if necessary
+                    if(msg.getCategory().equals(PAOGroups.STRING_CAT_ROUTE)){
+                        updateRouteCombo(msg.getTypeOfChange(), object);
+                    }
+                    
+                    // Update the tree
+                    Object selectedObject = getTreeViewPanel().getSelectedItem();
+                    getTreeViewPanel().processDBChange(msg.getTypeOfChange(), object);
+                    
+                    //if we had something selected we just lost it... so reselect it now
+                    if ( selectedObject != null ) {
+                        getTreeViewPanel().selectByString( selectedObject.toString() );
+                    }
+                    
+                    // Update TOUSchedule list if a tou schedule msg is received
+                    if (msg.getDatabase() == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB
+                            && msg.getCategory().equals(DBChangeMsg.CAT_TOU_SCHEDULE)
+                            && msg.getObjectType().equals(DBChangeMsg.CAT_TOU_SCHEDULE)) {
+                        getDownloadTOUDialog().addItems();
+                    }
+                    
+                } catch( Exception e ) {
+                    e.printStackTrace();
+                } finally {
+                    getRootPane().setCursor( savedCursor);
+                }
             }
-            
-            savedCursor = getRootPane().getCursor();
-            getRootPane().setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            
-            // Update the route combo box - if necessary
-            if(msg.getCategory().equals(PAOGroups.STRING_CAT_ROUTE)){
-                this.updateRouteCombo(msg.getTypeOfChange(), object);
-            }
-            
-            // Update the tree
-            this.getTreeViewPanel().processDBChange(msg.getTypeOfChange(), object);
-            
-            // Update TOUSchedule list if a tou schedule msg is received
-            if (msg.getDatabase() == DBChangeMsg.CHANGE_TOU_SCHEDULE_DB
-                    && msg.getCategory().equals(DBChangeMsg.CAT_TOU_SCHEDULE)
-                    && msg.getObjectType().equals(DBChangeMsg.CAT_TOU_SCHEDULE)) {
-                getDownloadTOUDialog().addItems();
-            }
-            
-        } catch( Exception e ) {
-            e.printStackTrace();
-        } finally {
-            getRootPane().setCursor( savedCursor);
-        }
+        });
     }
     
     /**

@@ -33,6 +33,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.tree.TreeModel;
@@ -1950,24 +1951,29 @@ public AdvancedOptionsPanel getAdvOptsPanel()
  * Creation date: (12/20/2001 5:12:47 PM)
  * @param msg com.cannontech.message.dispatch.message.DBChangeMsg
  */
-public void dbChangeReceived(DBChangeMsg msg)
+public void dbChangeReceived(final DBChangeMsg msg)
 {
 	if (!msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE))
 	{
-		CTILogger.info(" ## DBChangeMsg ##\n" + msg);
-
-		// Refreshes the device trees in the createGraphPanel if that's the panel that is open panel.
-		if( createPanel != null)
-		{
-			((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
-		}
-
-		// Refreshes the device tree panel in the GraphClient. (Main Frame)	
-		Object sel = getTreeViewPanel().getSelectedItem();
-		getTreeViewPanel().refresh();
-
-		if( sel != null )
-			getTreeViewPanel().selectByString(sel.toString());
+	    SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+        		CTILogger.info(" ## DBChangeMsg ##\n" + msg);
+        
+        		// Refreshes the device trees in the createGraphPanel if that's the panel that is open panel.
+        		if( createPanel != null)
+        		{
+        			((DeviceTree_CustomPointsModel) createPanel.getTreeViewPanel().getTree().getModel()).update();
+        		}
+        
+        		// Refreshes the device tree panel in the GraphClient. (Main Frame)	
+        		Object sel = getTreeViewPanel().getSelectedItem();
+        		getTreeViewPanel().refresh();
+        
+        		if( sel != null ) {
+        			getTreeViewPanel().selectByString(sel.toString());
+                }
+            }
+	    });
 	}
 }
 
