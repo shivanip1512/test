@@ -147,5 +147,28 @@ public final class FileUtil {
         }
     }
 
-
+    /**
+     * Checks two files for equality, ignoring any trailing
+     * separator characters in the file path.  (The File.equals
+     * method displays incorrect behavior regarding this.  See
+     * Java bug #4730835 for more info).
+     * @param file1
+     * @param file2
+     * @return true if the files have equivalent paths, otherwise
+     * false
+     */
+    public static boolean areFilesEqual(File file1, File file2){
+        try{
+            file1 = file1.getCanonicalFile();
+            file2 = file2.getCanonicalFile();
+            if(file1.equals(file2)) return true;
+            File fileWithTrailingSeparator = new File(file1, "/");
+            if(fileWithTrailingSeparator.equals(file2)) return true;
+            fileWithTrailingSeparator = new File(file2, "/");
+            if(fileWithTrailingSeparator.equals(file1)) return true;
+        } catch (IOException e){
+            log.warn("Exception occurred testing file equality.", e);
+        }
+        return false;
+    }
 }

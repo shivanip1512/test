@@ -90,4 +90,29 @@ public class FileUtilTest {
 
     }
 
+    @Test
+    public void testAreFilesEqual(){
+        String path = "C:\\Yukon\\Server\\Log";
+        File file1 = new File(path);
+        File file2 = new File(path);
+        File tsFile1 = new File(file1, "/");
+        File tsFile2 = new File(file1, "/");
+        File altPathFile = new File("C:\\Yukon\\Server");
+        
+        if(FileUtil.areFilesEqual(file1, file2) == false){
+            fail("Basic file equality incorrect!");
+        }
+        if(FileUtil.areFilesEqual(file1, tsFile1) == false){
+            fail("First file with trailing separator - equality incorrect!");
+        }
+        if(FileUtil.areFilesEqual(tsFile1, file1) == false){
+            fail("Second file with trailing separator - equality incorrect!");
+        }
+        if(FileUtil.areFilesEqual(tsFile1, tsFile2) == false){
+            fail("Both files with trailing separator - equality incorrect!");
+        }
+        if(FileUtil.areFilesEqual(file1, altPathFile)){
+            fail("Different file paths - equality incorrect!");
+        }
+    }
 }

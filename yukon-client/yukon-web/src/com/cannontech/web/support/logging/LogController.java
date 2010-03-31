@@ -9,6 +9,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FileUtil;
 
 /**
  * LogController acts as an abstract base
@@ -57,17 +58,7 @@ public class LogController {
         if(file == null){
             return true;
         }
-        try{
-            boolean equalWithoutTrailingSlash = file.getCanonicalFile().equals(localDir);
-            //Due to a bug in the File class, the presence of a trailing file
-            //separator can make equals() behave incorrectly, so we must test
-            //against paths with and without trailing slash.
-            File test = new File(localDir.getCanonicalPath(), "/");
-            boolean equalWithTrailingSlash = file.getCanonicalFile().equals(test);    
-            return equalWithoutTrailingSlash || equalWithTrailingSlash;
-        } catch (IOException e){
-            return true;
-        }
+        return FileUtil.areFilesEqual(file, localDir);
     }
     
 	protected String getFileNameParameter(HttpServletRequest request) {
