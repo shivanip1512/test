@@ -20,6 +20,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.PageInfo;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -80,6 +81,14 @@ public class PageDetailProducer {
                 pageContextsForMenu.add(createPageContext(pageInfo, request, messageSourceAccessor, null));
             }
         }
+        
+        PageContext pageToSelect = null;
+        for (PageContext pageToEvaluate : Iterables.reverse(pageContextsForMenu)) {
+            if (isPageDescendantOf(pageContext.pageInfo, pageToEvaluate.pageInfo)) {
+                pageToSelect = pageToEvaluate;
+                break;
+            }
+        }
         StringBuilder result = new StringBuilder();
         result.append("<ul>\n");
         for (PageContext page : pageContextsForMenu) {
@@ -88,7 +97,7 @@ public class PageDetailProducer {
             String link = expressionLanguageResolver.resolveElExpression(page.pageInfo.getLinkExpression(), request);
 
             String linkText = createLink(label, link);
-            if (page.pageInfo.equals(pageContext.pageInfo)) {
+            if (page == pageToSelect) {
                 result.append("<li class=\"selected\">");
             } else {
                 result.append("<li>");
@@ -100,6 +109,13 @@ public class PageDetailProducer {
         result.append("</ul>\n");
         
         return result.toString();
+    }
+
+    private boolean isPageDescendantOf(PageInfo one, PageInfo two) {
+        if (one == null) {
+            return false;
+        }
+        return one.equals(two) || isPageDescendantOf(one.getParent(), two);
     }
 
     public String renderCrumbsFinal(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {

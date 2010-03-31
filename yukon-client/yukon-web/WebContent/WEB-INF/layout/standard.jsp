@@ -46,7 +46,7 @@
 
 <div id="ContentWrapper">
 <div id="Content">
-<c:if test="${not showContextualNavigation and not empty pageDetail.pageHeading}">
+<c:if test="${not empty pageDetail.pageHeading}">
     <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${pageDetail.pageHeading}</h2>
 </c:if>
 
@@ -77,9 +77,6 @@
 <div id="LeftColumn">
 <div class="innertube">
 <div id="detailAdditionalInfo">
-<c:if test="${not empty pageDetail.pageHeading}">
-    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${pageDetail.pageHeading}</h2>
-</c:if>
 <div id="detailAdditionalInfoBlock">
 <jsp:include page="${pageDetail.detailInfoIncludePath}"/>
 </div>

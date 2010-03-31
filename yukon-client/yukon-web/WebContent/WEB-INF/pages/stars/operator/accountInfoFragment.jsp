@@ -4,7 +4,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <div class="accountInfoFragment">
-
+	<h2 class="standardPageHeading">${accountInfoFragment.accountNumber}</h2>
 	<c:if test="${not empty accountInfoFragment.companyName}">
 		${accountInfoFragment.companyName}
 		<br>

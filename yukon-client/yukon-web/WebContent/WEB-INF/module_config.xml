@@ -27,8 +27,7 @@
         <options>
           <option name="newAccount">
             <requireRoleProperty value="OPERATOR_NEW_ACCOUNT_WIZARD" />
-            <link>/operator/Consumer/New.jsp?Init=true&amp;Wizard=true
-            </link>
+            <link>/operator/Consumer/New.jsp?Init=true&amp;Wizard=true</link>
           </option>
           <option name="newAccount">
             <requireRoleProperty value="!OPERATOR_NEW_ACCOUNT_WIZARD" />
@@ -275,17 +274,14 @@
         </option>
         <option name="commandRequestExecution">
           <requireRoleProperty value="SCHEDULER" />
-          <link>/spring/group/scheduledGroupRequestExecutionResults/jobs
-          </link>
+          <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
           <options>
             <option name="scheduleLogs">
-              <link>/spring/group/scheduledGroupRequestExecutionResults/jobs
-              </link>
+              <link>/spring/group/scheduledGroupRequestExecutionResults/jobs</link>
             </option>
             <option name="createSchedule">
               <requireRoleProperty value="MANAGE_SCHEDULES" />
-              <link>/spring/group/scheduledGroupRequestExecution/home
-              </link>
+              <link>/spring/group/scheduledGroupRequestExecution/home</link>
             </option>
           </options>
         </option>
@@ -499,27 +495,19 @@
           <options>
             <option name="todaykvarperwatt">
               <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('Today kVAR/Watt',
-                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')
-              </script>
+              <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
             </option>
             <option name="todaypf">
               <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('Today PF',
-                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')
-              </script>
+              <script>loadPointChartGreyBox('Today PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')</script>
             </option>
             <option name="30daykvarperwatt">
               <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('30 Day kVAR/Watt',
-                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')
-              </script>
+              <script>loadPointChartGreyBox('30 Day kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')</script>
             </option>
             <option name="30daypf">
               <requireRoleProperty value="!HIDE_GRAPHS" />
-              <script>loadPointChartGreyBox('30 Day PF',
-                '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')
-              </script>
+              <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
             </option>
           </options>
         </option>
@@ -533,8 +521,7 @@
             </option>
 
             <option name="scheduleassignment">
-              <link>/spring/capcontrol/schedule/scheduleAssignments
-              </link>
+              <link>/spring/capcontrol/schedule/scheduleAssignments</link>
             </option>
             <option name="recentcontrols">
               <script>showRecentCmds('recentControls')</script>
@@ -543,8 +530,7 @@
               <link>/spring/capcontrol/move/movedCapBanks</link>
             </option>
             <option name="specialareas">
-              <link>/spring/capcontrol/tier/areas?isSpecialArea=true
-              </link>
+              <link>/spring/capcontrol/tier/areas?isSpecialArea=true</link>
             </option>
 
           </options>
@@ -552,28 +538,22 @@
         <option name="orphans">
           <options>
             <option name="orphanedsubstations">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__
-              </link>
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubstations__</link>
             </option>
             <option name="orphanedsubstationbuses">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__
-              </link>
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oSubBuses__</link>
             </option>
             <option name="orphanedfeeders">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__
-              </link>
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__</link>
             </option>
             <option name="orphanedcapbanks">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__
-              </link>
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__</link>
             </option>
             <option name="orphanedcbcs">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__
-              </link>
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__</link>
             </option>
             <option name="orphanedltcs">
-              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oLTCs__
-              </link>
+              <link>/spring/capcontrol/search/searchResults?cbc_lastSearch=__cti_oLTCs__</link>
             </option>
           </options>
         </option>
@@ -646,8 +626,7 @@
         <option name="reports">
           <options>
             <option name="administrator">
-              <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE
-              </link>
+              <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
               <requireRoleProperty value="ADMIN_REPORTS_GROUP" />
             </option>
             <option name="metering">
@@ -667,8 +646,7 @@
               <requireRoleProperty value="DATABASE_REPORTS_GROUP" />
             </option>
             <option name="management">
-              <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT
-              </link>
+              <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
               <requireRoleProperty value="LOAD_MANAGEMENT_REPORTS_GROUP" />
             </option>
             <option name="stars">
@@ -716,8 +694,7 @@
               <link>/msp_setup.jsp?init</link>
             </option>
             <option name="route_mappings">
-              <link>/spring/multispeak/setup/routemapping/mappings
-              </link>
+              <link>/spring/multispeak/setup/routemapping/mappings</link>
             </option>
             <option name="lm_mappings">
               <link>/spring/multispeak/setup/lmMappings/home</link>
@@ -727,12 +704,10 @@
         </option>
 
         <option name="sync">
-          <link>/spring/multispeak/setup/syncCisSubstationGroup/home
-          </link>
+          <link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
           <options>
             <option name="sync_cis_substation_group">
-              <link>/spring/multispeak/setup/syncCisSubstationGroup/home
-              </link>
+              <link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
             </option>
           </options>
         </option>
@@ -892,154 +867,157 @@
             </dynamicOptions>
 	  	</options>  
     </menu>
-    
+
     <pages>
-    	<page name="home" type="LANDING">
-    		<menu>account</menu>
-           	<link>/spring/stars/operator/home</link>
-    	</page>
-    	<page name="accountList" type="BASIC">
-    		<menu>account</menu>
-    		<link>/spring/stars/operator/account/accountList</link>
-    	</page>
-    	<page name="accountEdit" type="DETAIL_WITH_NAVIGATION">
-    		<menu>account</menu>
-           	<link>/spring/stars/operator/account/accountEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-           	<labelArgument>${accountNumber}</labelArgument>
-           	<infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
-           	<pages>
-		   		<page name="contactList" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/contacts/contactList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-			        <pages>
-				   		<page name="contactEdit" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				           	<link>/spring/stars/operator/contacts/contactEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;contactId=${contactId}</link>
-				           	<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-			    	</pages>
-		    	</page>
-		    	<page name="residence" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/residence/residenceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-		    	<page name="callList" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/callTracking/callList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		           	<pages>
-				    	<page name="viewCall" type="DETAIL_CHILD">
-				    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
-				    		<menu>account</menu>
-				           	<link>/spring/stars/operator/callTracking/viewCall?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-				           	<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-		           	</pages>
-		    	</page>
-		    	<page name="metering" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/metering/viewTrend?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		           	<pages>
-		           		<page name="selectTrends" type="DETAIL_CHILD_WITH_NAVIGATION">
-				    		<menu>account</menu>
-				           	<link>/spring/stars/operator/metering/selectTrends?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;trendId={trendId}</link>
-				           	<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-		           	</pages>
-		    	</page>
-		    	<page name="controlHistory" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/program/controlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		           	<pages>
-				   		<page name="completeControlHistory" type="DETAIL_CHILD_WITH_NAVIGATION">
-				    		<menu>account</menu>
-				           	<link>/spring/stars/operator/program/completeControlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	        <labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-			    	</pages>
-		    	</page>
-		    	<page name="enrollmentList" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/enrollment/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-		    	<page name="optOut" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/program/optOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-		    	<page name="appliances" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/appliances/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-		    	<page name="hardwareList" type="DETAIL_CHILD_WITH_NAVIGATION">
-                    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
-                    <menu>account</menu>
-                    <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-                    <labelArgument>${accountNumber}</labelArgument>
-                    <pages>
-                        <page name="hardwareEdit" type="DETAIL">
-                            <menu>account</menu>
-                            <link>/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                            <labelArgument>${displayName}</labelArgument>
-                        </page>
-                        <page name="hardwareConfig" type="DETAIL_CHILD">
-                            <menu>general</menu>
-                            <link>/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                            <labelArguments>${accountNumber}</labelArguments>
-                        </page>
-                        <page name="thermostatSelect" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				    		<link>/spring/stars/operator/thermostat/select?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           			<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-                        <page name="thermostatManual" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				    		<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-                        <page name="thermostatSchedule" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				    		<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-                        <page name="thermostatScheduleConfirm" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				    		<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-                        <page name="thermostatScheduleHints" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				    		<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-                        <page name="thermostatSavedSchedules" type="DETAIL_CHILD">
-				    		<menu>account</menu>
-				    		<labelArgument>${accountNumber}</labelArgument>
-				    	</page>
-                    </pages>
+    <page name="home" type="LANDING">
+      <menu>account</menu>
+      <link>/spring/stars/operator/home</link>
+    </page>
+    <page name="accountList" type="BASIC">
+      <menu>account</menu>
+      <link>/spring/stars/operator/account/accountList</link>
+      <pages>
+        <page name="accountEdit" type="DETAIL_WITH_NAVIGATION">
+          <menu>account</menu>
+          <link>/spring/stars/operator/account/accountEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+          <labelArgument>${accountNumber}</labelArgument>
+          <infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
+          <pages>
+            <page name="contactList" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/contacts/contactList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+              <pages>
+                <page name="contactEdit" type="DETAIL">
+                  <menu>account</menu>
+                  <link>/spring/stars/operator/contacts/contactEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;contactId=${contactId}</link>
+                  <labelArgument>${contactDto.firstName}</labelArgument>
+                  <labelArgument>${contactDto.lastName}</labelArgument>
                 </page>
-		    	<page name="serviceRequest" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/serviceRequest/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-		    	<page name="changeLogin" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/login/changeLogin?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-		    	<page name="accountLog" type="DETAIL_CHILD_WITH_NAVIGATION">
-		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/account/accountLog?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	<labelArgument>${accountNumber}</labelArgument>
-		    	</page>
-           	</pages>
+              </pages>
+            </page>
+            <page name="residence" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
+              <menu>account</menu>
+              <link>/spring/stars/operator/residence/residenceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+            <page name="callList" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+              <menu>account</menu>
+              <link>/spring/stars/operator/callTracking/callList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+              <pages>
+                <page name="viewCall" type="DETAIL_CHILD">
+                  <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+                  <menu>account</menu>
+                  <link>/spring/stars/operator/callTracking/viewCall?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+              </pages>
+            </page>
+            <page name="metering" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
+              <menu>account</menu>
+              <link>/spring/stars/operator/metering/viewTrend?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+              <pages>
+                <page name="selectTrends" type="DETAIL_CHILD_WITH_NAVIGATION">
+                  <menu>account</menu>
+                  <link>/spring/stars/operator/metering/selectTrends?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;trendId={trendId}</link>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+              </pages>
+            </page>
+            <page name="controlHistory" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/program/controlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+              <pages>
+                <page name="completeControlHistory" type="DETAIL_CHILD_WITH_NAVIGATION">
+                  <menu>account</menu>
+                  <link>/spring/stars/operator/program/completeControlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+              </pages>
+            </page>
+            <page name="enrollmentList" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/enrollment/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+            <page name="optOut" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/program/optOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+            <page name="appliances" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/appliances/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+            <page name="hardwareList" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
+              <menu>account</menu>
+              <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+              <pages>
+                <page name="hardwareEdit" type="DETAIL">
+                  <menu>account</menu>
+                  <link>/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                  <labelArgument>${displayName}</labelArgument>
+                </page>
+                <page name="hardwareConfig" type="DETAIL_CHILD">
+                  <menu>general</menu>
+                  <link>/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                  <labelArguments>${accountNumber}</labelArguments>
+                </page>
+                <page name="thermostatSelect" type="DETAIL_CHILD">
+                  <menu>account</menu>
+                  <link>/spring/stars/operator/thermostat/select?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+                <page name="thermostatManual" type="DETAIL_CHILD">
+                  <menu>account</menu>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+                <page name="thermostatSchedule" type="DETAIL_CHILD">
+                  <menu>account</menu>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+                <page name="thermostatScheduleConfirm" type="DETAIL_CHILD">
+                  <menu>account</menu>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+                <page name="thermostatScheduleHints" type="DETAIL_CHILD">
+                  <menu>account</menu>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+                <page name="thermostatSavedSchedules" type="DETAIL_CHILD">
+                  <menu>account</menu>
+                  <labelArgument>${accountNumber}</labelArgument>
+                </page>
+              </pages>
+            </page>
+            <page name="serviceRequest" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/serviceRequest/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+            <page name="changeLogin" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/login/changeLogin?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+            <page name="accountLog" type="DETAIL_CHILD_WITH_NAVIGATION">
+              <menu>account</menu>
+              <link>/spring/stars/operator/account/accountLog?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <labelArgument>${accountNumber}</labelArgument>
+            </page>
+          </pages>
         </page>
+      </pages>
+    </page>
     </pages>
   </module>
   
@@ -1093,23 +1071,19 @@
               <link>SelectDevice.jsp?SortBy=1005</link>
             </option>
             <option name="xcom">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom
-              </link>
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
               <requireRoleProperty value="EXPRESSCOM_SERIAL_MODEL" />
             </option>
             <option name="vcom">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom
-              </link>
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
               <requireRoleProperty value="VERSACOM_SERIAL_MODEL" />
             </option>
             <option name="205serial">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205
-              </link>
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
               <requireRoleProperty value="DCU_SA205_SERIAL_MODEL" />
             </option>
             <option name="305serial">
-              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305
-              </link>
+              <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
               <requireRoleProperty value="DCU_SA305_SERIAL_MODEL" />
             </option>
           </options>
@@ -1132,13 +1106,11 @@
     <menu>
       <options>
         <option name="loadManagement">
-          <link>/spring/multispeak/visualDisplays/loadManagement/home
-          </link>
+          <link>/spring/multispeak/visualDisplays/loadManagement/home</link>
         </option>
 
         <option name="probabilityForPeakLoad">
-          <link>/spring/multispeak/visualDisplays/probabilityForPeak/home
-          </link>
+          <link>/spring/multispeak/visualDisplays/probabilityForPeak/home</link>
         </option>
       </options>
     </menu>

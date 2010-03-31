@@ -12,8 +12,8 @@
     <entry key="yukon.web.modules.operator.contactList.isPrimary">(Primary)</entry>
     
 	<!-- contactEdit -->
-    <entry key="yukon.web.modules.operator.contactEdit.pageName">Contacts</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.pageName">Contact Edit</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.pageDescription">{0} {1}</entry>
     <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection.title">Contact Information</entry>
     <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection_isPrimary.title">Contact Information (Primary)</entry>
     <entry key="yukon.web.modules.operator.contactEdit.isPrimary">(Primary)</entry>
