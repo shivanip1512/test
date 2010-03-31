@@ -6,6 +6,8 @@
 
 <cti:standardPage module="operator" page="contactList">
 
+	<cti:includeCss link="/WebConfig/yukon/styles/operator/contacts.css"/>
+
 	<script type="text/javascript">
 	
 		function deleteAdditionalContact(id) {
@@ -15,20 +17,6 @@
 		}
 		
 	</script>
-	
-	<%-- for lining up notifications --%>
-	<style type="text/css">
-		table.contactNotificationListTable {
-			font-size:11px;
-			border-collapse:collapse;
-		}
-		table.contactNotificationListTable td {
-	        padding: 3px;
-	    }
-		table.contactNotificationListTable td.type {
-	        width: 100px;
-	    }
-	</style>
 	
 	<cti:url var="add" value="/WebConfig/yukon/Icons/add.gif"/>
 	<cti:url var="addOver" value="/WebConfig/yukon/Icons/add_over.gif"/>

@@ -1,0 +1,12 @@
+/* contactList.jsp */
+
+table.contactNotificationListTable {
+	font-size:11px;
+	border-collapse:collapse;
+}
+table.contactNotificationListTable td {
+       padding: 3px;
+   }
+table.contactNotificationListTable td.type {
+       width: 100px;
+   }
