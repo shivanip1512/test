@@ -188,7 +188,6 @@ img.graycssicon,input.graycssicon {
 #MainContainer.StandardWithNavLayout #LeftColumn {
     float: left;
     width: 140px; /* Width of left column minus its padding */
-    _width: 155px; /* CSS hack for IE6 */
     margin-left: -100%;
     padding-left: 15px;
 }
