@@ -1263,6 +1263,7 @@
     <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
     <bean id="contactDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
+    <bean id="callReportValidator" class="com.cannontech.web.stars.dr.operator.validator.CallReportValidator"/>
     
   	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.ChangeLoginValidatorFactoryImpl" />
   	<bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />

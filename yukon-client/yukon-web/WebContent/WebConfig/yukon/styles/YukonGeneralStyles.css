@@ -360,11 +360,11 @@ table.nameValueTable tr {
 
 table.nameValueTable tr.indent1 td.name {
 	padding-left:40px;
-	font-size: .8em;
+	font-size: .7em;
 }
 
 table.nameValueTable tr.indent1 td.value {
-	font-size: .7em;
+	font-size: .6em;
 }
 
 table.nameValueTable tr.section td {

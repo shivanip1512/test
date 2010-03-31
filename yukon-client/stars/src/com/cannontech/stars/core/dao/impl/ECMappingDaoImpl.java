@@ -146,6 +146,13 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     
     @Override
     @Transactional    
+    public void addECToCallReportMapping(int energyCompanyId, int callId) {
+        String sql = "INSERT INTO ECToCallReportMapping VALUES (?,?)";
+        simpleJdbcTemplate.update(sql, energyCompanyId, callId);
+    }
+    
+    @Override
+    @Transactional    
     public void deleteECToCallReportMapping(List<Integer> callReportIds) {
         if(!callReportIds.isEmpty()) {
             chunkyJdbcTemplate.update(new ECToCallReportMappingDeleteSqlGenerator(), callReportIds);

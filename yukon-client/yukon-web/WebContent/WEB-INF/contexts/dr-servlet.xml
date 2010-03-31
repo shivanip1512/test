@@ -16,7 +16,6 @@
         <property name="prefix" value="/WEB-INF/pages/"/>
     </bean>
 
-    <bean class="com.cannontech.web.dr.DatePropertyEditorFactory"/>
     <bean class="com.cannontech.web.dr.ProgramControllerHelper"/>
     <bean class="com.cannontech.web.dr.LoadGroupControllerHelper"/>
 

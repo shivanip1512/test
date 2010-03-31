@@ -925,10 +925,19 @@
 		           	<link>/spring/stars/operator/residence/residenceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
-		    	<page name="callTracking" type="DETAIL_CHILD_WITH_NAVIGATION">
+		    	<page name="callList" type="DETAIL_CHILD_WITH_NAVIGATION">
+		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/callTracking/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/callTracking/callList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
+		           	<pages>
+				    	<page name="viewCall" type="DETAIL_CHILD">
+				    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
+				    		<menu>account</menu>
+				           	<link>/spring/stars/operator/callTracking/viewCall?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+				           	<labelArgument>${accountNumber}</labelArgument>
+				    	</page>
+		           	</pages>
 		    	</page>
 		    	<page name="metering" type="DETAIL_CHILD_WITH_NAVIGATION">
 		    		<menu>account</menu>

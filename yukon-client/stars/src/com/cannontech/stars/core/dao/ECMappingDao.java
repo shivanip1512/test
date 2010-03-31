@@ -52,6 +52,13 @@ public interface ECMappingDao {
     public void deleteECToCustomerEventMapping(List<Integer> eventIds);
 
     /**
+     * Method to add a call report to call report mapping
+     * @param energyCompanyId
+     * @param callId
+     */
+    public void addECToCallReportMapping(int energyCompanyId, int callId);
+    
+    /**
      * Method to delete energy company to call report mappings
      * @param callReportIds
      */

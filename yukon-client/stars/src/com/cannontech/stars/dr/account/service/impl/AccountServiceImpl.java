@@ -46,12 +46,12 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.user.YukonGroup;
 import com.cannontech.i18n.service.YukonUserContextService;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.stars.core.dao.CallReportDao;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
+import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
@@ -451,7 +451,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete CallReports 
          */
-        callReportDao.deleteByAccount(account.getAccountId());
+        callReportDao.deleteAllCallsByAccount(account.getAccountId());
         
         /*
          * Delete thermostat schedules for account

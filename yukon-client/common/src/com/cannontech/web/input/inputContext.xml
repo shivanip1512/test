@@ -26,5 +26,6 @@
  <bean id="inputDeviceGroupType" class="com.cannontech.web.input.type.DeviceGroupType" />
  <bean id="commandRequestExecutionTypeType" class="com.cannontech.web.input.type.CommandRequestExecutionTypeType" />
  
+ <bean class="com.cannontech.web.input.DatePropertyEditorFactory"/>
  
  </beans>

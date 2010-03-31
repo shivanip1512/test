@@ -196,7 +196,7 @@
 
     <bean id="optOutNotificationService" class="com.cannontech.stars.dr.optout.service.impl.OptOutNotificationServiceImpl"/>
     
-    <bean id="callReportDao" class="com.cannontech.stars.core.dao.impl.CallReportDaoImpl"/>
+    <bean id="callReportDao" class="com.cannontech.stars.dr.account.dao.impl.CallReportDaoImpl"/>
     
     <bean id="siteInformationDao" class="com.cannontech.stars.core.dao.impl.SiteInformationDaoImpl"/>
     
