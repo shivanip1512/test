@@ -14,6 +14,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -1491,13 +1492,13 @@ public class StarsLiteFactory {
 			LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
 			
 			if (liteContact != null) {
-				LiteContactNotification liteNotifPhone = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_PHONE );
+				LiteContactNotification liteNotifPhone = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, ContactNotificationType.PHONE );
 				starsCompany.setMainPhoneNumber( StarsUtils.getNotification(liteNotifPhone) );
 				
-				LiteContactNotification liteNotifFax = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_FAX );
+				LiteContactNotification liteNotifFax = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, ContactNotificationType.FAX );
 				starsCompany.setMainFaxNumber( StarsUtils.getNotification(liteNotifFax) );
 				
-				LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+				LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( liteContact, ContactNotificationType.EMAIL );
 				starsCompany.setEmail( StarsUtils.getNotification(liteNotifEmail) );
 				
 				if (liteContact.getAddressID() != CtiUtilities.NONE_ZERO_ID) {

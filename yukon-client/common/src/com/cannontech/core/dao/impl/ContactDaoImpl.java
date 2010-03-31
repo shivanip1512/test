@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
@@ -270,7 +271,7 @@ public final class ContactDaoImpl implements ContactDao {
 		List<String> strList = new ArrayList<String>();
 
 		//find all the email addresses in the list ContactNotifications
-		for( LiteContactNotification liteContactNotification : contactNotificationDao.getNotificationsForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)) {	
+		for( LiteContactNotification liteContactNotification : contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.EMAIL)) {	
 		    strList.add( liteContactNotification.getNotification() );
 		}
 
@@ -283,7 +284,7 @@ public final class ContactDaoImpl implements ContactDao {
 	public LiteContactNotification[] getAllPINNotifDestinations( int contactId )
 	{
 		LiteContact contact = getContact( contactId );
-		List<LiteContactNotification> notificationsForContactByType = contactNotificationDao.getNotificationsForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_PIN);
+		List<LiteContactNotification> notificationsForContactByType = contactNotificationDao.getNotificationsForContactByType(contact, ContactNotificationType.VOICE_PIN);
 		return notificationsForContactByType.toArray( new LiteContactNotification[notificationsForContactByType.size()] );
 	}
 

@@ -16,7 +16,7 @@ import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -49,7 +49,7 @@ public class SendWorkOrderController extends StarsWorkorderActionController {
         String email = null;
         if (sc.getPrimaryContactID() > 0) {
             LiteContact contact = this.contactDao.getContact( sc.getPrimaryContactID() );
-            LiteContactNotification emailNotif = this.contactNotificationDao.getFirstNotificationForContactByType( contact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+            LiteContactNotification emailNotif = this.contactNotificationDao.getFirstNotificationForContactByType( contact, ContactNotificationType.EMAIL );
             if (emailNotif != null) email = emailNotif.getNotification();
         }
         

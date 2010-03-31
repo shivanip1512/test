@@ -2,6 +2,7 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 
@@ -28,9 +29,9 @@ public interface ContactNotificationDao {
     
     public List<LiteContactNotification> getNotificationsForContact(LiteContact liteContact);
     
-    public List<LiteContactNotification> getNotificationsForContactByType(int contactId, int notifCatID);
+    public List<LiteContactNotification> getNotificationsForContactByType(int contactId, ContactNotificationType contactNotificationType);
     
-    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID);
+    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType);
 
     /**
      * Method to return the lite notification for a contact of a specific type.
@@ -41,7 +42,7 @@ public interface ContactNotificationDao {
      * @param type
      * @return
      */
-    public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, int type);
+    public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType);
 
     /**
      * Method to save a list of contact notifications for a contact (will remove

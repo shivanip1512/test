@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.ContactDao;
@@ -226,7 +227,7 @@ public class ContactController extends AbstractConsumerController {
                         notificationText = ServletUtils.formatPin( notificationText );
                     } else if(yukonListDao.isEmail(notifCatId)) {
                         if (contactDao.isPrimaryContact(contact.getContactID())) {
-                            LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(contact, notifCatId);
+                            LiteContactNotification email = contactNotificationDao.getFirstNotificationForContactByType(contact, ContactNotificationType.getTypeForNotificationCategoryId(notifCatId));
                             if (email != null) {
                                 disabledFlag = email.getDisableFlag();
                             }

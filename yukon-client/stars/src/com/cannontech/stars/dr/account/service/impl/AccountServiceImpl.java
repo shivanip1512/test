@@ -749,11 +749,11 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update the notifications
          */
-        LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
-        LiteContactNotification ivrLoginNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_IVR_LOGIN);
-        LiteContactNotification voicePINNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_PIN);
+        LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
+        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
+        LiteContactNotification ivrLoginNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.IVR_LOGIN);
+        LiteContactNotification voicePINNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.VOICE_PIN);
         
         if(StringUtils.isNotBlank(accountDto.getHomePhone())) {
         	String homePhone = accountDto.getHomePhone();
@@ -990,9 +990,9 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Notifications
          */
-        LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
+        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
         if(homePhoneNotif != null) {
         	String homePhone = homePhoneNotif.getNotification();
         	homePhone = phoneNumberFormattingService.formatPhoneNumber(homePhone, userContext);

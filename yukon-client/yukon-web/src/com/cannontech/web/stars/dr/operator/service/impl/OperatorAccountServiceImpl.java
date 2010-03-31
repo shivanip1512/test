@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
@@ -60,7 +59,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
     	AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
     	LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
         LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteAddress billingAddress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
         
@@ -123,7 +122,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	CustomerAccount customerAccount = customerAccountDao.getById(accountId);
     	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
         LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        LiteContactNotification emailNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.EMAIL);
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
         LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteAddress billingAddress = addressDao.getByAddressId(customerAccount.getBillingAddressId());
@@ -327,8 +326,8 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
     	LiteAddress liteAddress = addressDao.getByAddressId(accountSite.getStreetAddressId());
     	LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
         
     	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountId, energyCompanyId, customerAccount.getAccountNumber());
 

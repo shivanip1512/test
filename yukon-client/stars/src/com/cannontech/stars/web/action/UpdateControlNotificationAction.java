@@ -6,6 +6,7 @@ import javax.xml.soap.SOAPMessage;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -87,7 +88,7 @@ public class UpdateControlNotificationAction implements ActionBase {
             
         	LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
         	LiteContact litePrimContact = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
-			LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( litePrimContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+			LiteContactNotification liteNotifEmail = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType( litePrimContact, ContactNotificationType.EMAIL );
             
             ContactNotification email = reqOper.getStarsUpdateControlNotification().getContactNotification();
             

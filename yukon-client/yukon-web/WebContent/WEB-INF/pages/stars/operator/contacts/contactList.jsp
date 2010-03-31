@@ -76,25 +76,25 @@
 					<table class="noStyle contactNotificationListTable">
 						<c:if test="${not empty contact.homePhone}">
 							<tr>
-								<td class="type"><cti:msg2 key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>
+								<td class="type"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.HOME_PHONE"/>:</td>
 								<td>${contact.homePhone}</td>
 							</tr>
 						</c:if>
 						<c:if test="${not empty contact.workPhone}">
 							<tr>
-								<td class="type"><cti:msg2 key="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE"/>:</td>
+								<td class="type"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.WORK_PHONE"/>:</td>
 								<td>${contact.workPhone}</td>
 							</tr>
 						</c:if>
 						<c:if test="${not empty contact.email}">
 							<tr>
-								<td class="type"><cti:msg2 key="yukon.web.modules.operator.contactNotificationEnum.EMAIL"/>:</td>
+								<td class="type"><i:inline key="yukon.web.modules.operator.contactNotificationEnum.EMAIL"/>:</td>
 								<td>${contact.email}</td>
 							</tr>
 						</c:if>
 						<c:forEach var="otherNotification" items="${contact.otherNotifications}">
 							<tr>
-								<td class="type"><cti:msg2 key="${otherNotification.contactNotificationType.formatKey}"/>:</td>
+								<td class="type"><i:inline key="${otherNotification.contactNotificationType.formatKey}"/>:</td>
 								<td>${otherNotification.notificationValue}</td>
 							</tr>
 						</c:forEach>

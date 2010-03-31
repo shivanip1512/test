@@ -19,9 +19,7 @@
 	
 		function removeNotification(it) {
 
-			$(it).ancestors().findAll(function(el) {return el.match('tr')}).each(function(tr) {
-				tr.remove();
-			});
+			$(it).ancestors().find(function(el) {return el.match('tr')}).remove();
 			$('contactsUpdateForm').submit();
 		}
 		
@@ -117,7 +115,7 @@
 					<tr style="background-color:#EEE;">
 						<td colspan="3">
 						
-							<input type="image" src="${add}" name="newNotification" value="true">
+							<input type="image" src="${add}" name="newNotification" value="true" onmouseover="javascript:this.src='${addOver}'" onmouseout="javascript:this.src='${add}'">
 						
 							<i:inline key=".notificationTable.addNotification"/>
 							 

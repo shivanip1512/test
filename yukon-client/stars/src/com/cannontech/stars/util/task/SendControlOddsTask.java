@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -88,7 +89,7 @@ public class SendControlOddsTask implements Runnable {
 					
 					LiteContact primContact = DaoFactory.getContactDao().getContact( accountInfo.getCustomer().getPrimaryContactID() );
 					LiteContactNotification email = DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(
-							primContact, com.cannontech.common.constants.YukonListEntryTypes.YUK_ENTRY_ID_EMAIL );
+							primContact, ContactNotificationType.EMAIL );
 					if (email == null || email.getDisableFlag().equalsIgnoreCase("Y"))
 						continue;
 					

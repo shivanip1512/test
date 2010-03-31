@@ -11,8 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.AddressDao;
@@ -283,8 +283,8 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
     	}
     	
     	// phone
-    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
     	
     	// address
     	Address address = null;

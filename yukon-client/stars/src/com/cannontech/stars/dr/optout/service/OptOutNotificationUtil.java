@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.optout.service;
 
 import java.util.List;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -90,11 +90,11 @@ public final class OptOutNotificationUtil {
         }
         
         String homePhone = StarsUtils.getNotification(
-                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE) );
+                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, ContactNotificationType.HOME_PHONE) );
         String workPhone = StarsUtils.getNotification(
-                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE) );
+                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, ContactNotificationType.WORK_PHONE) );
         String email = StarsUtils.getNotification(
-                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL) );
+                DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(cont, ContactNotificationType.EMAIL) );
         
         if (homePhone.length() > 0)
             text.append(homePhone).append(LINE_SEPARATOR);

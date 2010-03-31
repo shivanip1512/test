@@ -55,10 +55,6 @@ public class ContactDto {
 	public List<ContactNotificationDto> getOtherNotifications() {
 		return otherNotifications;
 	}
-	public void setOtherNotifications(
-			List<ContactNotificationDto> otherNotifications) {
-		this.otherNotifications = otherNotifications;
-	}
 	public boolean isPrimary() {
 		return primary;
 	}

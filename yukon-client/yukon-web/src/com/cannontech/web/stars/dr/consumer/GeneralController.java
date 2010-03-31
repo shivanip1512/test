@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -54,7 +55,7 @@ public class GeneralController extends AbstractConsumerController {
         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
         LiteContactNotification emailNotification = 
         	contactNotificationDao.getFirstNotificationForContactByType(
-        			primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        			primaryContact, ContactNotificationType.EMAIL);
         
         String email = "";
         boolean emailEnabled = false;
@@ -89,7 +90,7 @@ public class GeneralController extends AbstractConsumerController {
     	LiteContact primaryContact = contactDao.getPrimaryContactForAccount(accountId);
         LiteContactNotification emailNotification = 
         	contactNotificationDao.getFirstNotificationForContactByType(
-        			primaryContact, YukonListEntryTypes.YUK_ENTRY_ID_EMAIL);
+        			primaryContact, ContactNotificationType.EMAIL);
         
         boolean oddsForControlNotification = 
         	ServletRequestUtils.getBooleanParameter(request, "oddsForControlNotification", false);

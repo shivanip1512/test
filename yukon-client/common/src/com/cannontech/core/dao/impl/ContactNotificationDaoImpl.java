@@ -202,12 +202,12 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
-    public List<LiteContactNotification> getNotificationsForContactByType(int contactId, int notifCatID) {
+    public List<LiteContactNotification> getNotificationsForContactByType(int contactId, ContactNotificationType contactNotificationType) {
     	
     	List<LiteContactNotification> result = new ArrayList<LiteContactNotification>();
         List<LiteContactNotification> notificationsForContact = getNotificationsForContact(contactId);
         for (LiteContactNotification liteNotif : notificationsForContact) {
-            if (liteNotif.getNotificationCategoryID() == notifCatID) {
+            if (liteNotif.getNotificationCategoryID() == contactNotificationType.getDefinitionId()) {
                 result.add(liteNotif);
             }
         }
@@ -216,8 +216,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
-    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, int notifCatID) {
-        return getNotificationsForContactByType(liteContact.getContactID(), notifCatID);
+    public List<LiteContactNotification> getNotificationsForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType) {
+        return getNotificationsForContactByType(liteContact.getContactID(), contactNotificationType);
     }
     
     @Override
@@ -238,8 +238,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
-    public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, int type) {
-        List<LiteContactNotification> notificationsForContactByType = getNotificationsForContactByType(liteContact, type);
+    public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType) {
+        List<LiteContactNotification> notificationsForContactByType = getNotificationsForContactByType(liteContact, contactNotificationType);
         return notificationsForContactByType.isEmpty() ? null : notificationsForContactByType.get(0);
     }
 
