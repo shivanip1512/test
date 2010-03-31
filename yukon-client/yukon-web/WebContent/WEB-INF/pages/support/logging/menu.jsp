@@ -6,11 +6,11 @@
 
 <cti:standardPage module="support" page="logMenu">
 
-<tags:layoutHeadingFavoritesPart>
+<tags:layoutHeadingPrefixPart>
 	<c:if test="${isNotLogRoot}">
 		<a href="?file=${rootlessParentDir}&sortType=${oldStateSort}"><img src="${DirUpImg}" /></a>
 	</c:if>
-</tags:layoutHeadingFavoritesPart>
+</tags:layoutHeadingPrefixPart>
 	
 <h4>Sort By: <a href="?file=${file}&sortType=alphabetic" id="alphabetic" name="alphabetic">Alphabetic</a> or <a href="?file=${file}&sortType=date" id="date" name="alphabetic">Date</a></h4>
 
