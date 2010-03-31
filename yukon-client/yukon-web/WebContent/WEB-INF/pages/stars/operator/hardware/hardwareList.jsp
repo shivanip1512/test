@@ -58,7 +58,7 @@
             
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
                 <form action="/spring/stars/operator/hardware/addSwitch?energyCompany=${energyCompany}&amp;accountId=${accountId}">
-                    <input type="button" value="<i:inline key=".switches.add"/>" class="createAddButton formSubmit">
+                    <input type="button" value="<cti:msg2 key=".switches.add"/>" class="createAddButton formSubmit">
                 </form>
             </cti:checkRolesAndProperties>
             
