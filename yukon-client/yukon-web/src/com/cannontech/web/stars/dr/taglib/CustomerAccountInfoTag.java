@@ -7,15 +7,17 @@ import javax.servlet.jsp.JspWriter;
 
 import org.apache.ecs.html.Div;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.customer.model.CustomerInformation;
 import com.cannontech.database.data.lite.LiteAddress;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
@@ -30,6 +32,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     private AccountSiteDao accountSiteDao;
     private AddressDao addressDao;
     private PhoneNumberFormattingService phoneNumberFormattingService;
+    private RolePropertyDao rolePropertyDao;
     
     private CustomerAccount account = null;
     
@@ -54,6 +57,17 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         mainDiv.addAttribute("class", "customerAccount");
         
         addAccountNumberDiv(mainDiv, account, messageSource);
+
+        boolean showAltTracking = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_SHOW_ALTTRACKING_IN_HEADER, getUserContext().getYukonUser());
+        if (showAltTracking) {
+        	try {
+		        LiteCustomer liteCustomer = customerDao.getLiteCustomer(customer.getCustomerId());
+		        addAltTrackingDiv(mainDiv, liteCustomer);
+        	} catch (Exception e) {
+    			CTILogger.warn("Couldn't get customer info", e);
+    			throw new JspException(e);
+    		}
+        }
         
         addNameDiv(mainDiv, customer);
 
@@ -76,6 +90,12 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         String accountNumberLabel = messageSource.getMessage("yukon.dr.consumer.accountNumberLabel", account.getAccountNumber());
         accountNumberDiv.addElement(accountNumberLabel);
         mainDiv.addElement(accountNumberDiv);    
+    }
+    
+    private void addAltTrackingDiv(final Div mainDiv, final LiteCustomer customer) {
+        Div altTrackingDiv = new Div();
+        altTrackingDiv.addElement(customer.getAltTrackingNumber());
+        mainDiv.addElement(altTrackingDiv);    
     }
     
     private void addNameDiv(final Div mainDiv, final CustomerInformation customer) {
@@ -143,5 +163,9 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
             PhoneNumberFormattingService phoneNumberFormattingService) {
         this.phoneNumberFormattingService = phoneNumberFormattingService;
     }
+    
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
     
 }

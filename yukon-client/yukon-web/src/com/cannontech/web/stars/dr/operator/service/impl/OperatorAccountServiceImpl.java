@@ -329,8 +329,12 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
         LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
         
-    	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountId, energyCompanyId, customerAccount.getAccountNumber());
+    	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountId, energyCompanyId);
 
+    	// account number / alt tracking
+    	accountInfoFragment.setAccountNumber(customerAccount.getAccountNumber());
+    	accountInfoFragment.setAlternateTrackingNumber(customer.getAltTrackingNumber());
+    	
     	// name
     	accountInfoFragment.setFirstName(primaryContact.getContFirstName());
     	accountInfoFragment.setLastName(primaryContact.getContLastName());

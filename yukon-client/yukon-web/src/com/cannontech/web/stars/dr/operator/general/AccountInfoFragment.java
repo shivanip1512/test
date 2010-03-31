@@ -8,6 +8,7 @@ public class AccountInfoFragment {
 	private int accountId;
 	private int energyCompanyId;
 	private String accountNumber;
+	private String alternateTrackingNumber;
 	private String companyName;
 	private String firstName;
 	private String lastName;
@@ -15,10 +16,9 @@ public class AccountInfoFragment {
 	private LiteContactNotification homePhoneNotif;
 	private LiteContactNotification workPhoneNotif;
 	
-	public AccountInfoFragment(int accountId, int energyCompanyId, String accountNumber) {
+	public AccountInfoFragment(int accountId, int energyCompanyId) {
 		this.accountId = accountId;
 		this.energyCompanyId = energyCompanyId;
-		this.accountNumber = accountNumber;
 	}
 	
 	public int getAccountId() {
@@ -27,10 +27,19 @@ public class AccountInfoFragment {
 	public int getEnergyCompanyId() {
 		return energyCompanyId;
 	}
+	
 	public String getAccountNumber() {
 		return accountNumber;
 	}
-	
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+	public String getAlternateTrackingNumber() {
+		return alternateTrackingNumber;
+	}
+	public void setAlternateTrackingNumber(String alternateTrackingNumber) {
+		this.alternateTrackingNumber = alternateTrackingNumber;
+	}
 	public String getCompanyName() {
 		return companyName;
 	}

@@ -1027,6 +1027,7 @@
         <property name="addressDao" ref="addressDao"/>
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
         <property name="phoneNumberFormattingService" ref="phoneNumberFormattingService"/>
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>     
     
     <bean id="userNameTagPrototype" class="com.cannontech.web.taglib.UserNameTag">
