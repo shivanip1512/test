@@ -163,12 +163,21 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         if (allowList.size() == 0) {
             return AuthorizationResponse.UNKNOWN;
         } else {
-            for(Object entry : allowList){
-                if(entry.equals(AllowDeny.ALLOW.name())){
-                    return AuthorizationResponse.AUTHORIZED;
+            if(permission.getDefault()){
+                for(Object entry : allowList){
+                    if(entry.equals(AllowDeny.DENY.name())){
+                        return AuthorizationResponse.UNAUTHORIZED;
+                    }
                 }
+                return AuthorizationResponse.AUTHORIZED;
+            } else {
+                for(Object entry : allowList){
+                    if(entry.equals(AllowDeny.ALLOW.name())){
+                        return AuthorizationResponse.AUTHORIZED;
+                    }
+                }
+                return AuthorizationResponse.UNAUTHORIZED;
             }
-            return AuthorizationResponse.UNAUTHORIZED;
         }
     }
 
