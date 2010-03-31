@@ -35,19 +35,19 @@
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
 	</form>
 	
-	<table class="resultsTable">
+	<table class="resultsTable contactListTable">
 	
 		<tr>
 			<th><i:inline key=".header.contact"/></th>
 			<th><i:inline key=".header.notifications"/></th>
-			<th style="text-align:center;width:100px;"><i:inline key=".header.remove"/></th>
+			<th class="removeCol"><i:inline key=".header.remove"/></th>
 		</tr>
 	
 		<c:forEach var="contact" items="${contacts}">
 		
-			<tr style="vertical-align:top;">
+			<tr>
 			
-				<td style="width:20%;white-space:nowrap;">
+				<td class="nameCol">
 				
 					<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/contactEdit">
 						<cti:param name="accountId" value="${accountId}"/>
@@ -91,7 +91,7 @@
 					
 				</td>
 				
-				<td style="text-align:center;">
+				<td class="removeCol">
 				
 					<c:choose>
 						<c:when test="${!contact.primary}">

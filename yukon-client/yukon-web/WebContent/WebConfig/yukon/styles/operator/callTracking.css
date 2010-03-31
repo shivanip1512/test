@@ -1,0 +1,10 @@
+/* callList.jsp */
+
+table.callListTable th.removeCol {
+	text-align:center;
+	width:100px;
+}
+
+table.callListTable td.removeCol {
+	text-align:center;
+}

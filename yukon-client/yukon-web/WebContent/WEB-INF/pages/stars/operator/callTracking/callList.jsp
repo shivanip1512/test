@@ -9,6 +9,8 @@
 	
 <cti:standardPage module="operator" page="callList">
 
+	<cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
+
 	<form id="createCallForm" action="/spring/stars/operator/callTracking/viewCall" method="get">
 		<input type="hidden" name="accountId" value="${accountId}">
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
@@ -19,7 +21,7 @@
 		<input type="hidden" name="accountId" value="${accountId}">
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 
-		<table class="resultsTable rowHighlighting">
+		<table class="resultsTable callListTable rowHighlighting">
 		
 			<tr>
 				<th><i:inline key=".header.callNumber"/></th>
@@ -30,7 +32,7 @@
 				
 				<%-- delete header --%>
 				<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-					<th><i:inline key=".header.remove"/></th>
+					<th class="removeCol"><i:inline key=".header.remove"/></th>
 				</cti:checkRolesAndProperties>
 			</tr>
 			
@@ -59,7 +61,7 @@
 					
 					<%-- delete icon --%>
 					<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-						<td>
+						<td class="removeCol">
 							<input type="image" src="${delete}" name="callId" value="${callReportWrapper.callReport.callId}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
 						</td>
 					</cti:checkRolesAndProperties>
