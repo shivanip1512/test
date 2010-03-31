@@ -2796,6 +2796,20 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             dout << CtiTime() << " - Invalid control units: " << feederControlUnits << ", in feeder: " << getPaoName() << endl;
         }
     }
+    else
+    {
+        if ( _IGNORE_NOT_NORMAL_FLAG && !arePointsNormalQuality  )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Control Inhibited on Feeder: "<<getPaoName()<< " by Abnormal Point Quality " <<endl;
+            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            {
+                dout << " Var PointId: " <<getCurrentVarLoadPointId()  <<" (" << getCurrentVarPointQuality()
+                    <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality() 
+                    <<")  Volt PointId: "<<getCurrentVoltLoadPointId() <<" (" << getCurrentVoltPointQuality() <<")"<< endl;
+            }
+        }
+    }
 
     return returnBoolean;
 }

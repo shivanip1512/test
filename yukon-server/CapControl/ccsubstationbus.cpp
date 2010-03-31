@@ -2690,7 +2690,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                         {
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Not Normal Quality, in sub bus: " << getPaoName() << endl;
+                                dout << CtiTime() << " - Control Inhibited on SubBus: "<<getPaoName()<< " by Abnormal Point Quality " <<endl;
+                                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                                {
+                                    dout << " Var PointId: " <<getCurrentVarLoadPointId()  <<" (" << getCurrentVarPointQuality()
+                                        <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality() 
+                                        <<")  Volt PointId: "<<getCurrentVoltLoadPointId() <<" (" << getCurrentVoltPointQuality() <<")"<< endl;
+                                }
                             }
                             setSolution("Not Normal Quality.  PF Control Inhibited.");
                         }
@@ -2705,7 +2711,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 {
                    {
                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << CtiTime() << " - Not Normal Quality, in sub bus: " << getPaoName() << endl;
+                       dout << CtiTime() << " - Control Inhibited on SubBus: "<<getPaoName()<< " by Abnormal Point Quality " <<endl;
+                       if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                       {
+                           dout << " Var PointId: " <<getCurrentVarLoadPointId()  <<" (" << getCurrentVarPointQuality()
+                               <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality() 
+                               <<")  Volt PointId: "<<getCurrentVoltLoadPointId() <<" (" << getCurrentVoltPointQuality() <<")"<< endl;
+                       }
                    }
                    setSolution("Not Normal Quality.  Control Inhibited.");
                 }
