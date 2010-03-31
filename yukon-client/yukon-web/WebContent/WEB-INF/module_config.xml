@@ -921,6 +921,7 @@
 			    	</pages>
 		    	</page>
 		    	<page name="residence" type="DETAIL_CHILD_WITH_NAVIGATION">
+		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/residence/residenceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>

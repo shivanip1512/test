@@ -11,9 +11,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.CustomerResidenceDao;
@@ -22,13 +22,14 @@ import com.cannontech.stars.dr.account.model.CustomerResidence;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator;
 
 @Controller
-@SessionAttributes("customerResidence")
 @RequestMapping(value = "/operator/residence/*")
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE)
 public class OperatorResidenceController {
 
 	private CustomerAccountDao customerAccountDao;
