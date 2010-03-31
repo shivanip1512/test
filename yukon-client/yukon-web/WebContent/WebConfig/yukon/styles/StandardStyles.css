@@ -59,7 +59,6 @@ body {
 
 #MainContainer {
     margin-top: 8px;
-    padding: 0 15px;
 }
 
 #Content h2.standardPageHeading {
@@ -172,10 +171,14 @@ img.graycssicon,input.graycssicon {
 }
 
 #MainContainer.StandardWithNavLayout  #Content {
-    margin-left: 150px; /*width of left column*/
+    margin-left: 155px; /* width of left column*/
     border-left: 1px solid #ccc;
     padding: 8px 8px 8px 16px;
     min-height: 600px;
+}
+
+#MainContainer.StandardLayout {
+    padding: 0 15px;
 }
 
 #MainContainer.StandardLayout #LeftColumn {
@@ -184,8 +187,10 @@ img.graycssicon,input.graycssicon {
 
 #MainContainer.StandardWithNavLayout #LeftColumn {
     float: left;
-    width: 150px; /* Width of left column minus its padding */
+    width: 140px; /* Width of left column minus its padding */
+    _width: 155px; /* CSS hack for IE6 */
     margin-left: -100%;
+    padding-left: 15px;
 }
 
 #footer {
@@ -230,8 +235,7 @@ img.graycssicon,input.graycssicon {
     font-weight: bold;
     color: #0066cc;
     background-color: white;
-    min-height: 0;
-    /* causes 'haslayout' on IE, required for negative margin to work */
+    min-height: 0; /* causes 'haslayout' on IE, required for negative margin to work */
     margin-right: -1px;
 }
 

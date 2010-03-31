@@ -93,9 +93,9 @@ public class PageDetailProducer {
             } else {
                 result.append("<li>");
             }
-            result.append("<span>");
+            result.append("<div>");
             result.append(linkText);
-            result.append("</span></li>\n");
+            result.append("</div></li>\n");
         }
         result.append("</ul>\n");
         
@@ -160,7 +160,8 @@ public class PageDetailProducer {
         label = com.cannontech.common.util.StringUtils.elideCenter(label, 60);
         String safeLabel = StringEscapeUtils.escapeHtml(label);
         if (link == null) return safeLabel;
-        return "<a href=\"" + link + "\">" + safeLabel + "</a>";
+        String safeLink = StringEscapeUtils.escapeHtml(link);
+        return "<a href=\"" + safeLink + "\">" + safeLabel + "</a>";
     }
     
     private PageContext createPageContext(PageInfo pageInfo, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor, PageContext parent) {
