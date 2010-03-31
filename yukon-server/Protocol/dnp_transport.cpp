@@ -107,6 +107,8 @@ int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
     _payload_in.length = max_len;
     _payload_in.used = 0;
 
+    _inbound_packets.clear();
+
     _ioState = Input;
 
     return retVal;
@@ -228,15 +230,11 @@ int TransportLayer::decode( CtiXfer &xfer, int status )
 
                         memcpy(_payload_in.data, &payload.front(), _payload_in.used);
 
-                        _inbound_packets.clear();
-
                         _ioState = Complete;
                     }
                 }
                 else
                 {
-                    _inbound_packets.clear();
-
                     _ioState = Failed;
                 }
 
