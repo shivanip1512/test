@@ -10,6 +10,7 @@ import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.list.LazyList;
 import org.joda.time.DateTime;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -67,7 +68,7 @@ public abstract class StartProgramBackingBeanBase {
 
     public Date getActualStopDate() {
         return scheduleStop
-            ? stopDate : new DateTime(startDate).plusYears(1).toDate();
+            ? stopDate : CtiUtilities.get2035GregCalendar().getTime();
     }
 
     public void setStopDate(Date stopDate) {
