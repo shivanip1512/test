@@ -19,8 +19,9 @@
 				<div class="availableTrendOption">
 					<label>
 						<input type="checkbox" name="graphDefinitionId" value="${trend.graphDefinitionId}" <c:if test="${trend.selected}">checked</c:if>>
-						&nbsp;
-						<spring:escapeBody htmlEscape="true">${trend.name}</spring:escapeBody>
+						<span class="radioLabel">
+							<spring:escapeBody htmlEscape="true">${trend.name}</spring:escapeBody>
+						</span>
 					</label>
 				</div>
 			</c:forEach>

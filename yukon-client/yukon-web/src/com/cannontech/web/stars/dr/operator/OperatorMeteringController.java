@@ -17,7 +17,6 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerGraph;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.yukon.IDatabaseCache;
@@ -25,7 +24,6 @@ import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping(value = "/operator/metering/*")
-@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA)
 public class OperatorMeteringController {
 	
 	private RolePropertyDao rolePropertyDao;
@@ -39,6 +37,10 @@ public class OperatorMeteringController {
     						ModelMap modelMap, 
 	    					YukonUserContext userContext,
 	    					AccountInfoFragment accountInfoFragment) {
+		
+		rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), 
+											YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, 
+											YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE);
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		
@@ -71,6 +73,8 @@ public class OperatorMeteringController {
 								YukonUserContext userContext,
 								AccountInfoFragment accountInfoFragment) {
 		
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE, userContext.getYukonUser());
+		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		
 		// trends
@@ -100,6 +104,8 @@ public class OperatorMeteringController {
 									YukonUserContext userContext,
 									AccountInfoFragment accountInfoFragment,
 									FlashScope flashScope) {
+		
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE, userContext.getYukonUser());
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		

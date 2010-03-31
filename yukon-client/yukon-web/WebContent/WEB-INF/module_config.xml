@@ -940,6 +940,7 @@
 		           	</pages>
 		    	</page>
 		    	<page name="metering" type="DETAIL_CHILD_WITH_NAVIGATION">
+		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/metering/viewTrend?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>

@@ -48,6 +48,8 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 
 	<table class="trendPageContent">
 		<tr>
+		
+			<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA">
 			<td class="graphArea">
 			
 				<%@include file="/include/trending_options.jspf"%>
@@ -77,7 +79,9 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 				</c:if>
 				
 			</td>
+			</cti:checkRolesAndProperties>
 		
+			<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_CREATE">
 			<td class="trendsListingTd">
 			
 				<tags:sectionContainer2 key="trends">
@@ -115,6 +119,8 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 				</tags:sectionContainer2>
 			
 			</td>
+			</cti:checkRolesAndProperties>
+			
 		</tr>
 	</table>
 	
