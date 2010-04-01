@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsInventoryBaseDao" %>
+<%@ page import="com.cannontech.common.model.ContactNotificationType" %>
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <jsp:useBean id="detailBean" class="com.cannontech.stars.web.bean.InventoryDetailBean" scope="page"/>
 
@@ -668,9 +669,9 @@ var setChoosenYukonDevice = function() {
 
                 String name = StarsUtils.formatName(liteContact);
                 String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact,
-                                                                                                  YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
+                																					ContactNotificationType.HOME_PHONE));
                 String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact,
-                                                                                                  YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+                																					ContactNotificationType.WORK_PHONE));
                 String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 
                 StreetAddress starsAddr = new StreetAddress();

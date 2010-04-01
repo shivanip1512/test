@@ -7,6 +7,7 @@
 <%@ page import="com.cannontech.stars.web.util.WorkOrderManagerUtil" %>
 <%@ page import="com.cannontech.common.util.Pair" %>
 <%@ page import="com.cannontech.stars.core.dao.StarsWorkOrderBaseDao"%>
+<%@ page import="com.cannontech.common.model.ContactNotificationType"%>
 <%
     LiteWorkOrderBase liteOrder = null;
     LiteStarsEnergyCompany liteWOEnergyCompany = null;
@@ -395,8 +396,8 @@ function sendWorkOrder() {
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctSite.getStreetAddressID());
 		
 		String name = StarsUtils.formatName(liteContact);
-		String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE));
-		String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE));
+		String homePhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.HOME_PHONE));
+		String workPhone = StarsUtils.getNotification(DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(liteContact, ContactNotificationType.WORK_PHONE));
 		String mapNo = StarsUtils.forceNotNone(liteAcctSite.getSiteNumber());
 		
 		StreetAddress starsAddr = new StreetAddress();

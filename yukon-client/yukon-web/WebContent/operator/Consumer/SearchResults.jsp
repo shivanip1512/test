@@ -8,6 +8,7 @@
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%@ page import="com.cannontech.database.data.customer.CustomerTypes" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContactNotification" %>
+<%@page import="com.cannontech.common.model.ContactNotificationType"%>
 <%
     String pageName = request.getContextPath() + "/operator/Consumer/SearchResults.jsp";
 
@@ -210,9 +211,9 @@ function navPage()
                 }
                 else {
                     LiteContactNotification homeNotif = 
-                            DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
+                            DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, ContactNotificationType.HOME_PHONE);
                     LiteContactNotification workNotif = 
-                            DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE);
+                            DaoFactory.getContactNotificationDao().getFirstNotificationForContactByType(contact, ContactNotificationType.WORK_PHONE);
 %>
 					<cti:formatNotification var="homePhone" value="<%=homeNotif%>" htmlEscape="true" />
 					<cti:formatNotification var="workPhone" value="<%=workNotif%>" htmlEscape="true" />
