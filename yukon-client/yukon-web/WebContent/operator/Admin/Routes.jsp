@@ -64,7 +64,7 @@ function addRoutes(form) {
 	for (i = form.RoutesAvailable.length - 1; i >= 0; i--) {
 		var oOption = form.RoutesAvailable.options[i];
 		if (oOption.selected && oOption.value > 0) {
-			form.RoutesAvailable.options.remove(i);
+			form.RoutesAvailable.remove(i);
 			form.RoutesAssigned.options.add(oOption, insertIdx);
 			setContentChanged(true);
 		}
@@ -109,7 +109,7 @@ function removeRoutes(form) {
 	for (i = form.RoutesAssigned.length - 1; i >= 0; i--) {
 		var oOption = form.RoutesAssigned.options[i];
 		if (oOption.selected && oOption.value > 0) {
-			form.RoutesAssigned.options.remove(i);
+			form.RoutesAssigned.remove(i);
 			form.RoutesAvailable.options.add(oOption, insertIdx);
 			setContentChanged(true);
 		}
@@ -134,8 +134,11 @@ function init() {
 function prepareSubmit(form) {
 	if (form.RoutesAssigned.options[0].value > 0) {
 		for (i = 0; i < form.RoutesAssigned.length; i++) {
-			var html = '<input type="hidden" name="RouteIDs" value="' + form.RoutesAssigned.options[i].value + '">';
-			form.insertAdjacentHTML("beforeEnd", html);
+			var input = document.createElement('input');
+			input.setAttribute('type', 'hidden');
+			input.setAttribute('name', 'RouteIDs');
+			input.setAttribute('value', form.RoutesAssigned.options[i].value);
+			form.appendChild(input);
 		}
 	}
 }
