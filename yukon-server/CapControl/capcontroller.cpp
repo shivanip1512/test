@@ -2469,9 +2469,10 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
                                        primarySub->getRawCurrentWattLoadPointValue() + currentBus->getRawCurrentWattLoadPointValue());
                 primarySub->setNewPointDataReceivedFlag(TRUE);
 
-                if ((primarySub->isControlPoint(pointID) || currentBus->isControlPoint(pointID) ) && primarySub->getStrategy()->getIntegrateFlag())
+                if (currentBus->isControlPoint(pointID) && primarySub->getStrategy()->getIntegrateFlag())
                 {
                     primarySub->updateIntegrationVPoint(CtiTime());
+                    primarySub->updateIntegrationWPoint(CtiTime());
                 }
             }
 
@@ -2598,6 +2599,8 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 {
                                     altSub->setIVCount( 0 );
                                     altSub->updateIntegrationVPoint(CtiTime());
+                                    altSub->setIWCount( 0 );
+                                    altSub->updateIntegrationWPoint(CtiTime());
                                 }
 
                                 CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -2665,8 +2668,12 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                 {
                                     altSub->setIVCount( 0 );
                                     altSub->updateIntegrationVPoint(CtiTime());
+                                    altSub->setIWCount( 0 );
+                                    altSub->updateIntegrationWPoint(CtiTime());
                                     currentSubstationBus->setIVCount( 0 );
-                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());                                
+                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());  
+                                    currentSubstationBus->setIWCount( 0 );
+                                    currentSubstationBus->updateIntegrationWPoint(CtiTime());                             
                                 }
                             }
                         }
