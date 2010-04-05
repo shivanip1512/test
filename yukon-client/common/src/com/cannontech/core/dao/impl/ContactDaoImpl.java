@@ -586,86 +586,40 @@ public final class ContactDaoImpl implements ContactDao {
     
     @Override
     @Transactional
-    public void removeAdditionalContact(int contactId) {
+    public void deleteContact(int contactId) {
+    	
+    	Integer addressId = getContact(contactId).getAddressID();
 
-        // Remove all notifications
-        contactNotificationDao.removeNotificationsForContact(contactId);
-        deleteAdditionalContactById(contactId);
-        deleteContactById(contactId);
-        DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-            DBChangeMsg.CHANGE_CONTACT_DB,
-            DBChangeMsg.CAT_CUSTOMERCONTACT,
-            DBChangeMsg.CAT_CUSTOMERCONTACT,
-            DBChangeMsg.CHANGE_TYPE_DELETE);
-        
-        dbPersistantDao.processDBChange(changeMsg);
-    }
-    
-    @Override
-    public void deleteAllAdditionalContactsToCustomerReferences(Integer customerId) {
-        String sql = "DELETE FROM CustomerAdditionalContact WHERE CustomerID = ?";
-        simpleJdbcTemplate.update(sql, customerId);
-    }
-    
-    @Override
-    public void deleteContactById(Integer contactId) {
-        String sql = "DELETE FROM Contact WHERE contactId = ?";
-        simpleJdbcTemplate.update(sql, contactId);
-    }
-    
-    @Override
-    public void deleteAdditionalContactById(Integer contactId) {
-        String sql = "DELETE FROM CustomerAdditionalContact WHERE contactId = ?";
-        simpleJdbcTemplate.update(sql, contactId);
-    }
-    
-    @Override
-    public void deleteContactsByIds(List<Integer> contactIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("DELETE FROM Contact WHERE ContactId IN(");
-        sql.append(contactIds);
-        sql.append(")");
-        simpleJdbcTemplate.update(sql.toString());
-    }
-    
-    @Override
-    public void deleteAdditionalContactsByContactId(List<Integer> contactIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("DELETE FROM CustomerAdditionalContact WHERE ContactId IN(");
-        sql.append(contactIds);
-        sql.append(")");
-        simpleJdbcTemplate.update(sql.toString());
-    }
-    
-    @Override
-    @Transactional
-    public void deleteAllAdditionalContactsForCustomer(Integer customerId) {
-        List<Integer> contactIds = getAdditionalContactIdsForCustomer(customerId);
-        List<Integer> contactNotifIds = contactNotificationDao.getAllNotificationIdsForContactIds(contactIds);
-        contactNotificationDao.removeContactNotifDestinationsForNotifs(contactNotifIds);
-        contactNotificationDao.removeContactNotifsForContactIds(contactIds);
-        contactNotificationDao.removeContactNotifMapEntriesForContactIds(contactIds);
-        deleteAdditionalContactsByContactId(contactIds);
-        deleteContactsByIds(contactIds);
-    }
-    
-    @Override
-    @Transactional
-    public void deleteContact(Integer contactId) {
-        Integer addressId = getContact(contactId).getAddressID();
-        String deleteNotificationDestinations = "DELETE FROM NotificationDestination " + 
-            "WHERE RecipientID in (SELECT ContactNotifID " +
-            "FROM ContactNotification WHERE ContactID = ?)";
-        simpleJdbcTemplate.update(deleteNotificationDestinations, contactId);
-        String deleteContactNotification = "DELETE FROM ContactNotification WHERE ContactId = ?"; 
-        simpleJdbcTemplate.update(deleteContactNotification, contactId);
-        String deleteContactNotifGroupMap = "DELETE FROM ContactNotifGroupMap WHERE ContactId = ?";
+    	// delete notifications
+    	List<Integer> notificationIds = contactNotificationDao.getNotificationIdsForContact(contactId);
+    	contactNotificationDao.removeNotifications(notificationIds);
+    	
+    	// delete ContactNotifGroupMap
+    	String deleteContactNotifGroupMap = "DELETE FROM ContactNotifGroupMap WHERE ContactId = ?";
         simpleJdbcTemplate.update(deleteContactNotifGroupMap, contactId);
-        removeAdditionalContact(contactId);
+        
+        // delete CustomerAdditionalContact
+        String sql = "DELETE FROM CustomerAdditionalContact WHERE ContactId = ?";
+        simpleJdbcTemplate.update(sql, contactId);
+        
+        
+        // delete contact
         String delete = "DELETE FROM Contact WHERE ContactId = ?";
         simpleJdbcTemplate.update(delete, contactId);
+        
+        // delete address
         if(addressId != CtiUtilities.NONE_ZERO_ID) {
-            String deleteAddress = "DELETE FROM Address WHERE AddressId = ?";
-            simpleJdbcTemplate.update(deleteAddress, addressId);
+        	String deleteAddress = "DELETE FROM Address WHERE AddressId = ?";
+        	simpleJdbcTemplate.update(deleteAddress, addressId);
         }
+
+        // db change
+    	DBChangeMsg changeMsg = new DBChangeMsg(contactId,
+                DBChangeMsg.CHANGE_CONTACT_DB,
+                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                DBChangeMsg.CHANGE_TYPE_DELETE);
+        dbPersistantDao.processDBChange(changeMsg);
     }
     
     @Override

@@ -145,7 +145,7 @@ public class OperatorContactsController {
 										  FlashScope flashScope,
 										  AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
-		contactDao.removeAdditionalContact(deleteAdditionalContactId);
+		contactDao.deleteContact(deleteAdditionalContactId);
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactDeleted"));

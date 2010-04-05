@@ -65,49 +65,12 @@ public interface ContactNotificationDao {
      */
     public void removeNotification(int notificationId);
     
-    /**
-     * Method to remove all contact notificaitons for a contact
-     * @param contactId - Id of contact to remove notificaitons for
-     */
-    public void removeNotificationsForContact(int contactId);
-
+    public void removeNotifications(List<Integer> notificationIds);
+    
     /**
      * Method to return the contact notification ids for a contact
      * @param contactId
      * @return
      */
     public List<Integer> getNotificationIdsForContact(int contactId);
-
-    /**
-     * This method returns all the notification ids for the contacts provided.
-     * Useful when bulk deleting contacts.
-     * @param contactIds
-     * @return
-     */
-    public List<Integer> getAllNotificationIdsForContactIds(List<Integer> contactIds);
-
-    /**
-     * Method to delete the notifications for a list of contacts
-     * @param contactIds
-     */
-    public void removeNotificationsForContactIds(List<Integer> contactIds);
-
-    /**
-     * Method to delete notif destinations for a list of contact notifs.
-     * @param contactNotifIds
-     */
-    public void removeContactNotifDestinationsForNotifs(List<Integer> contactNotifIds);
-
-    /**
-     * Method to delete notifs for a list of contact ids.
-     * @param contactIds
-     */
-    public void removeContactNotifsForContactIds(List<Integer> contactIds);
-
-    /**
-     * Method to delete notif map entries for a list of contact ids.
-     * @param contactIds
-     */
-    public void removeContactNotifMapEntriesForContactIds(List<Integer> contactIds);
-
 }

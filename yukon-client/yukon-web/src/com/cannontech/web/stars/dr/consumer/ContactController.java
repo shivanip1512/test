@@ -136,7 +136,7 @@ public class ContactController extends AbstractConsumerController {
             String remove = ServletRequestUtils.getStringParameter(request, "remove", null);
 
             if(remove != null) {
-                contactDao.removeAdditionalContact(contactId);
+                contactDao.deleteContact(contactId);
                 //clean-up user login, if exists
                 if (contact.getLoginID() > 0) {
                     yukonUserDao.deleteUser(contact.getLoginID());

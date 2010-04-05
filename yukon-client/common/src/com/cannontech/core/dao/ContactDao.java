@@ -154,60 +154,14 @@ public interface ContactDao {
     
     public void associateAdditionalContact(int contactId, int customerId);
 
-    /**
-     * Method to remove an additional contact
-     * @param contactId - Id of contact to remove
-     */
-    public void removeAdditionalContact(int contactId);
-
-    /**
-     * Method to delete all addition contacts for a customer
-     * @param customerId
-     */
-    public void deleteAllAdditionalContactsToCustomerReferences(Integer customerId);
-
-    /**
-     * Method to delete a contact
-     * @param contactId
-     */
-    public void deleteContact(Integer contactId);
-
-    /**
-     * Method to delete all additional contacts for customer
-     * @param customerId
-     */
-    public void deleteAllAdditionalContactsForCustomer(Integer customerId);
-
+    public void deleteContact(int contactId);
+    
     /**
      * Method to get all contact ids for a customer
      * @param customerId
      * @return
      */
     List<Integer> getAdditionalContactIdsForCustomer(int customerId);
-
-    /**
-     * Method to delete a list of additional contacts.
-     * @param contactIds
-     */
-    public void deleteAdditionalContactsByContactId(List<Integer> contactIds);
-
-    /**
-     * Method to delete a contact by id.
-     * @param contactId
-     */
-    public void deleteContactById(Integer contactId);
-
-    /**
-     * Method to delete a list of contacts by ids.
-     * @param contactIds
-     */
-    public void deleteContactsByIds(List<Integer> contactIds);
-
-    /**
-     * Method to delete an additional contact by id.
-     * @param contactId
-     */
-    public void deleteAdditionalContactById(Integer contactId);
 
     /**
      * Method to retrieve a list of contacts for a given login id.

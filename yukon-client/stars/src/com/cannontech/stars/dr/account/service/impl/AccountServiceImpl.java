@@ -492,6 +492,7 @@ public class AccountServiceImpl implements AccountService {
         
         /*
          * Delete customer
+         * - handles contact deletion
          */
         customerDao.deleteCustomer(account.getCustomerId());
         dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
@@ -499,23 +500,6 @@ public class AccountServiceImpl implements AccountService {
                                            DBChangeMsg.CAT_CUSTOMER,
                                            DBChangeMsg.CAT_CUSTOMER,
                                            DBChangeMsg.CHANGE_TYPE_DELETE));
-        
-        /*
-         * Delete primary contact
-         */
-        contactDao.deleteContact(primaryContact.getContactID());
-        dbPersistantDao.processDBChange(new DBChangeMsg(primaryContact.getLiteID(),
-                               DBChangeMsg.CHANGE_CONTACT_DB,
-                               DBChangeMsg.CAT_CUSTOMERCONTACT,
-                               DBChangeMsg.CAT_CUSTOMERCONTACT,
-                               DBChangeMsg.CHANGE_TYPE_DELETE));
-        
-        /*
-         * Delete additional contacts
-         */
-        List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(account.getCustomerId());
-        contactDao.deleteAllAdditionalContactsForCustomer(account.getCustomerId());
-        processContactDeletes(additionalContacts);
         
         /*
          * Delete login
@@ -1085,18 +1069,6 @@ public class AccountServiceImpl implements AccountService {
         }
         
         return customerAccount;
-    }
-    
-    private void processContactDeletes(List<Integer> contactIds) {
-        for(Integer contactId : contactIds) {
-            DBChangeMsg changeMsg = new DBChangeMsg(contactId,
-                DBChangeMsg.CHANGE_CONTACT_DB,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CAT_CUSTOMERCONTACT,
-                DBChangeMsg.CHANGE_TYPE_DELETE);
-            
-            dbPersistantDao.processDBChange(changeMsg);
-        }
     }
     
     // we store "(none)" in the database for some reason

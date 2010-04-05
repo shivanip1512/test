@@ -157,7 +157,16 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     public void deleteCustomer(Integer customerId) {
         graphCustomerListDao.deleteGraphsForCustomer(customerId);
         deviceCustomerListDao.deleteDeviceListForCustomer(customerId);
-        contactDao.deleteAllAdditionalContactsToCustomerReferences(customerId); 
+        
+        /*
+         * Delete additional contacts
+         * - needs to happen before Customer is deleted
+         */
+        List<Integer> additionalContacts = contactDao.getAdditionalContactIdsForCustomer(customerId);
+        for (int contactId : additionalContacts) {
+        	contactDao.deleteContact(contactId);
+        }
+
         String deleteCustomerNotifGroupMap = "DELETE FROM CustomerNotifGroupMap WHERE CustomerId = ?";
         simpleJdbcTemplate.update(deleteCustomerNotifGroupMap, customerId);
         boolean isCICustomer = isCICustomer(customerId);
@@ -166,6 +175,14 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         }
         String delete = "DELETE FROM Customer WHERE CustomerId = ?";
         simpleJdbcTemplate.update(delete, customerId);
+        
+        /*
+         * Delete primary contact
+         * - needs to happen after Customer is deleted
+         */
+        LiteContact primaryContact = getPrimaryContact(customerId);
+        contactDao.deleteContact(primaryContact.getContactID());
+        
     }
     
     @Override

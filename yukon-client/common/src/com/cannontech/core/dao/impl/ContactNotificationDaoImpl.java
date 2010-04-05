@@ -3,6 +3,7 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -228,125 +229,72 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     @Override
-    public List<Integer> getAllNotificationIdsForContactIds(List<Integer> contactIds){
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ContactNotifId FROM ContactNotification WHERE ContactId IN (");
-        sql.append(contactIds);
-        sql.append(")");
-        List<Integer> notifIds = simpleJdbcTemplate.query(sql.toString(), new IntegerRowMapper());
-        return notifIds;
-    }
-    
-    @Override
     public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType) {
         List<LiteContactNotification> notificationsForContactByType = getNotificationsForContactByType(liteContact, contactNotificationType);
         return notificationsForContactByType.isEmpty() ? null : notificationsForContactByType.get(0);
     }
 
+    // REMOVING CONTACT NOTIFICATIONS
+    // --------------------------------------------------------------------------------------
+    
     @Override
     @Transactional
-    public void removeNotification(int notificationID) {
+    public void removeNotification(int notificationId) {
         
-        StringBuilder sql = new StringBuilder("DELETE ");
-        sql.append(" FROM ContactNotification");
-        sql.append(" WHERE ContactNotifId =  ?");
-        
-        simpleJdbcTemplate.update(sql.toString(), notificationID);
-        
+    	removeNotifications(Collections.singletonList(notificationId));
     }
     
     @Override
     @Transactional
-    public void removeNotificationsForContactIds(List<Integer> contactIds) {
-        StringBuilder sql = new StringBuilder("DELETE ");
-        sql.append(" FROM ContactNotification");
-        sql.append(" WHERE ContactId =  ?");
+    public void removeNotifications(List<Integer> notificationIds) {
         
-        simpleJdbcTemplate.update(sql.toString(), contactIds);
-        
+    	chunkyJdbcTemplate.update(new RemoveNotificationDestinationsSqlGenerator(), notificationIds);
+    	chunkyJdbcTemplate.update(new UpdatePointAlarmingSqlGenerator(), notificationIds);
+    	chunkyJdbcTemplate.update(new RemoveNotificationSqlGenerator(), notificationIds);
+    }
+    
+    // chunking cleanup sql
+    private class RemoveNotificationSqlGenerator implements SqlGenerator<Integer> {
+    	
+    	@Override
+    	public String generate(List<Integer> contactNotificationIds) {
+    		
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("DELETE FROM ContactNotification");
+    		sql.append("WHERE ContactNotifId IN (");
+    		sql.appendList(contactNotificationIds);
+    		sql.append(")");
+    		return sql.toString();
+    	}
     }
 
-    @Override
-    public void removeNotificationsForContact(int contactId) {
+	private class RemoveNotificationDestinationsSqlGenerator implements SqlGenerator<Integer> {
+    	
+    	@Override
+    	public String generate(List<Integer> contactNotificationIds) {
+    		
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("DELETE FROM NotificationDestination");
+    		sql.append("WHERE RecipientId IN (");
+    		sql.appendList(contactNotificationIds);
+    		sql.append(")");
+    		return sql.toString();
+    	}
+    }
 
-        StringBuilder sql = new StringBuilder("DELETE ");
-        sql.append(" FROM ContactNotification");
-        sql.append(" WHERE ContactId =  ?");
-        
-        simpleJdbcTemplate.update(sql.toString(), contactId);
-        
-    }
-    
-    @Override
-    public void removeContactNotifDestinationsForNotifs(List<Integer> contactNotifIds) {
-        chunkyJdbcTemplate.update(new NotifDestinationSqlGenerator(), contactNotifIds);
-    }
-    
-    @Override
-    public void removeContactNotifsForContactIds(List<Integer> contactIds) {
-        chunkyJdbcTemplate.update(new ContactNotifSqlGenerator(), contactIds);
-    }
-    
-    @Override
-    public void removeContactNotifMapEntriesForContactIds(List<Integer> contactIds) {
-        chunkyJdbcTemplate.update(new ContactNotifMapSqlGenerator(), contactIds);
-    }
-    
-    
-    /**
-     * Sql generator for deleting in NotificationDestination, useful for bulk deleteing
-     * with chunking sql template.
-     * @author asolberg
-     *
-     */
-    private class NotifDestinationSqlGenerator implements SqlGenerator<Integer> {
+    private class UpdatePointAlarmingSqlGenerator implements SqlGenerator<Integer> {
 
         @Override
-        public String generate(List<Integer> contactNotifIds) {
+        public String generate(List<Integer> contactNotificationIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM NotificationDestination WHERE RecipientId IN (");
-            sql.append(contactNotifIds);
+            sql.append("UPDATE PointAlarming pa SET pa.RecipientId = 0");
+            sql.append("WHERE pa.RecipientId IN (");
+            sql.appendList(contactNotificationIds);
             sql.append(")");
             return sql.toString();
         }
     }
     
-    /**
-     * Sql generator for deleting in ContactNotification, useful for bulk deleteing
-     * with chunking sql template.
-     * @author asolberg
-     *
-     */
-    private class ContactNotifSqlGenerator implements SqlGenerator<Integer> {
-
-        @Override
-        public String generate(List<Integer> contactNotifIds) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM ContactNotification WHERE ContactId IN (");
-            sql.append(contactNotifIds);
-            sql.append(")");
-            return sql.toString();
-        }
-    }
-    
-    /**
-     * Sql generator for deleting in ContactNotification, useful for bulk deleteing
-     * with chunking sql template.
-     * @author asolberg
-     *
-     */
-    private class ContactNotifMapSqlGenerator implements SqlGenerator<Integer> {
-
-        @Override
-        public String generate(List<Integer> contactNotifIds) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("DELETE FROM ContactNotifGroupMap WHERE ContactId IN (");
-            sql.append(contactNotifIds);
-            sql.append(")");
-            return sql.toString();
-        }
-    }
-
     /**
      * Helper class to map a result set into LiteContactNotifications
      */
