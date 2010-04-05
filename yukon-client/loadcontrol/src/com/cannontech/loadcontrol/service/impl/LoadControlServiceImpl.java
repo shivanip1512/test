@@ -234,13 +234,19 @@ public class LoadControlServiceImpl implements LoadControlService {
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
             Duration startOffset = scenarioProgram.getStartOffset();
             Duration stopOffset = scenarioProgram.getStopOffset();
+            Date stopTimeWithOffset = null;
+            if (stopTime != null) {
+                stopTimeWithOffset = new DateTime(stopTime, dateTimeZone).plus(stopOffset).toDate();
+            }
+            Date startTimeWithOffset = null;
+            if (startTime != null) {
+                startTimeWithOffset = new DateTime(startTime, dateTimeZone).plus(startOffset).toDate();
+            }
 
             ProgramStatus programStatus =
-                doExecuteStartRequest(program,
-                                      new DateTime(startTime, dateTimeZone).plus(startOffset).toDate(),
-                                      new DateTime(stopTime, dateTimeZone).plus(stopOffset).toDate(),
-                                      startingGearNumber, forceStart,
-                                      observeConstraintsAndExecute, user);
+                doExecuteStartRequest(program, startTimeWithOffset,
+                                      stopTimeWithOffset, startingGearNumber,
+                                      forceStart, observeConstraintsAndExecute, user);
             programStatuses.add(programStatus);
         }
         
@@ -300,11 +306,12 @@ public class LoadControlServiceImpl implements LoadControlService {
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
             Duration stopOffset = scenarioProgram.getStopOffset();
-            
+            Date stopTimeWithOffset = null;
+            if (stopTime != null) {
+                stopTimeWithOffset = new DateTime(stopTime, dateTimeZone).plus(stopOffset).toDate();
+            }
             ProgramStatus programStatus =
-                doExecuteStopRequest(program,
-                                     new DateTime(stopTime, dateTimeZone).plus(stopOffset).toDate(),
-                                     startingGearNumber, forceStop,
+                doExecuteStopRequest(program, stopTimeWithOffset, startingGearNumber, forceStop,
                                      observeConstraintsAndExecute, user);
             programStatuses.add(programStatus);
         }
