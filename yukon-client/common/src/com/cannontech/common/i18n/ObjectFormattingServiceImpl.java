@@ -1,5 +1,6 @@
 package com.cannontech.common.i18n;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
@@ -32,7 +33,7 @@ public class ObjectFormattingServiceImpl implements ObjectFormattingService {
             String string = templateProcessorFactory.processResolvableTemplate((ResolvableTemplate) object, userContext);
             return YukonMessageSourceResolvable.createDefaultWithoutCode(string);
         }
-        return YukonMessageSourceResolvable.createDefaultWithoutCode(object.toString());
+        return YukonMessageSourceResolvable.createDefaultWithoutCode(ObjectUtils.toString(object));
     }
 
     @Autowired
