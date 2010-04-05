@@ -40,7 +40,7 @@
 		<include name="dom4j-1.6.1.jar"/>
 		<include name="ecs-1.4.2.jar"/>
 		<include name="ejb3-persistence.jar"/>
-		<include name="google-collect-1.0-rc3.jar"/>
+		<include name="google-collect-1.0.jar"/>
 		<include name="hibernate-annotations.jar"/>
 		<include name="hibernate3.jar"/>
 		<include name="i18n-en_US.jar"/>
