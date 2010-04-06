@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,7 +21,6 @@ import com.cannontech.core.dao.GearNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
-import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -57,7 +53,6 @@ public class LoadControlServiceImpl implements LoadControlService {
     private PaoAuthorizationService paoAuthorizationService;
     private Executor executor;
     private ScenarioDao scenarioDao;
-    private SystemDateFormattingService systemDateFormattingService;
 
     private LoadControlClientConnection loadControlClientConnection;
     
@@ -133,7 +128,7 @@ public class LoadControlServiceImpl implements LoadControlService {
             return null;
         }
         
-        return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute, user);
+        return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
     }
     
     // START CONTROL BY PROGRAM NAME
@@ -154,7 +149,7 @@ public class LoadControlServiceImpl implements LoadControlService {
         
         int gearNumber = ((LMProgramDirect)program).getCurrentGearNumber();
         
-        return doExecuteStartRequest(program, startTime, stopTime, gearNumber, forceStart, observeConstraintsAndExecute, user);
+        return doExecuteStartRequest(program, startTime, null, stopTime, null, gearNumber, forceStart, observeConstraintsAndExecute, user);
     }
 
     // STOP CONTROL BY PROGRAM NAME
@@ -173,7 +168,7 @@ public class LoadControlServiceImpl implements LoadControlService {
             return null;
         }
         
-        return doExecuteStopRequest(program, stopTime, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute, user);
+        return doExecuteStopRequest(program, stopTime, null, ((LMProgramDirect)program).getCurrentGearNumber(), forceStop, observeConstraintsAndExecute, user);
     }
     
     // START CONTROL BY SCENAIO NAME
@@ -221,9 +216,6 @@ public class LoadControlServiceImpl implements LoadControlService {
 	}
 	
 	private ScenarioStatus doStartProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date startTime, Date stopTime, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
-
-        TimeZone timeZone = systemDateFormattingService.getSystemTimeZone();
-        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
 		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =
@@ -232,20 +224,10 @@ public class LoadControlServiceImpl implements LoadControlService {
                 
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
-            Duration startOffset = scenarioProgram.getStartOffset();
-            Duration stopOffset = scenarioProgram.getStopOffset();
-            Date stopTimeWithOffset = null;
-            if (stopTime != null) {
-                stopTimeWithOffset = new DateTime(stopTime, dateTimeZone).plus(stopOffset).toDate();
-            }
-            Date startTimeWithOffset = null;
-            if (startTime != null) {
-                startTimeWithOffset = new DateTime(startTime, dateTimeZone).plus(startOffset).toDate();
-            }
 
             ProgramStatus programStatus =
-                doExecuteStartRequest(program, startTimeWithOffset,
-                                      stopTimeWithOffset, startingGearNumber,
+                doExecuteStartRequest(program, startTime, scenarioProgram.getStartOffset(),
+                                      stopTime, scenarioProgram.getStopOffset(), startingGearNumber,
                                       forceStart, observeConstraintsAndExecute, user);
             programStatuses.add(programStatus);
         }
@@ -295,8 +277,6 @@ public class LoadControlServiceImpl implements LoadControlService {
 	
 	private ScenarioStatus doStopProgramsInScenario(List<Integer> programIds, int scenarioId, String scenarioName, Date stopTime, boolean forceStop, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
 
-        TimeZone timeZone = systemDateFormattingService.getSystemTimeZone();
-        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
 		List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
         List<LMProgramBase> programs = loadControlClientConnection.getProgramsForProgramIds(programIds);
         Map<Integer, ScenarioProgram> scenarioPrograms =
@@ -305,14 +285,9 @@ public class LoadControlServiceImpl implements LoadControlService {
             
             int startingGearNumber = loadControlProgramDao.getStartingGearForScenarioAndProgram(ProgramUtils.getProgramId(program), scenarioId);
             ScenarioProgram scenarioProgram = scenarioPrograms.get(program.getYukonID());
-            Duration stopOffset = scenarioProgram.getStopOffset();
-            Date stopTimeWithOffset = null;
-            if (stopTime != null) {
-                stopTimeWithOffset = new DateTime(stopTime, dateTimeZone).plus(stopOffset).toDate();
-            }
             ProgramStatus programStatus =
-                doExecuteStopRequest(program, stopTimeWithOffset, startingGearNumber, forceStop,
-                                     observeConstraintsAndExecute, user);
+                doExecuteStopRequest(program, stopTime, scenarioProgram.getStopOffset(),
+                                     startingGearNumber, forceStop, observeConstraintsAndExecute, user);
             programStatuses.add(programStatus);
         }
         
@@ -393,13 +368,13 @@ public class LoadControlServiceImpl implements LoadControlService {
      * @return
      * @throws TimeoutException
      */
-    private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Date stopTime, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+    private ProgramStatus doExecuteStartRequest(LMProgramBase program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart, boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
         programStatus.setProgram(program);
         
         // build control msg
-        LMManualControlRequest controlRequest = ProgramUtils.createStartRequest(program, startTime, stopTime, gearNumber, forceStart);
+        LMManualControlRequest controlRequest = ProgramUtils.createStartRequest(program, startTime, startOffset, stopTime, stopOffset, gearNumber, forceStart);
         
         // execute and update program status
         executeProgramChangeAndUpdateProgramStatus(controlRequest, programStatus, forceStart, observeConstraintsAndExecute, user);
@@ -416,13 +391,13 @@ public class LoadControlServiceImpl implements LoadControlService {
      * @return
      * @throws TimeoutException
      */
-    private ProgramStatus doExecuteStopRequest(LMProgramBase program, Date stopTime, int gearNumber, boolean forceStop,  boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
+    private ProgramStatus doExecuteStopRequest(LMProgramBase program, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStop,  boolean observeConstraintsAndExecute, LiteYukonUser user) throws TimeoutException {
         
         ProgramStatus programStatus = new ProgramStatus(program);
         programStatus.setProgram(program);
         
         // build control msg
-        LMManualControlRequest controlRequest = ProgramUtils.createStopRequest(program, stopTime, gearNumber, forceStop);
+        LMManualControlRequest controlRequest = ProgramUtils.createStopRequest(program, stopTime, stopOffset, gearNumber, forceStop);
         
         // execute and update program status
         executeProgramChangeAndUpdateProgramStatus(controlRequest, programStatus, forceStop, observeConstraintsAndExecute, user);
@@ -582,10 +557,4 @@ public class LoadControlServiceImpl implements LoadControlService {
     public void setScenarioDao(ScenarioDao scenarioDao) {
 		this.scenarioDao = scenarioDao;
 	}
-
-    @Autowired
-    public void setSystemDateFormattingService(
-            SystemDateFormattingService systemDateFormattingService) {
-        this.systemDateFormattingService = systemDateFormattingService;
-    }
 }

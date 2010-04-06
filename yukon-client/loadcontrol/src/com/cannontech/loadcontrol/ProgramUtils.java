@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.data.IGearProgram;
@@ -67,7 +69,6 @@ public class ProgramUtils {
      * @param program
      * @return
      */
-    @SuppressWarnings("unchecked")
     public static String getCurrentGearName(LMProgramBase program) {
         
         if (program instanceof IGearProgram) {
@@ -82,7 +83,7 @@ public class ProgramUtils {
     }
     
     /**
-     * Creates either a startNow or scheduledStart request message depending on wheather the given startTime is
+     * Creates either a startNow or scheduledStart request message depending on whether the given startTime is
      * equal to or less than the current time, or is sometime in the future.
      * @param program
      * @param startTime
@@ -91,7 +92,7 @@ public class ProgramUtils {
      * @param constraintFlag
      * @return
      */
-    public static LMManualControlRequest createStartRequest(LMProgramBase program, Date startTime, Date stopTime, int gearNumber, boolean forceStart) {
+    public static LMManualControlRequest createStartRequest(LMProgramBase program, Date startTime, Duration startOffset, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStart) {
         
         int constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         if (forceStart) {
@@ -103,19 +104,24 @@ public class ProgramUtils {
         if (stopTime == null) {
             stopTime = DateUtils.addYears(nowTime, 1);
         }
-        
+        if (startTime == null && startOffset != null) {
+            startTime = nowTime;
+        }
+
+        Date startTimeWithOffset = new Instant(startTime).plus(startOffset).toDate();
+        Date stopTimeWithOffset = new Instant(stopTime).plus(stopOffset).toDate();
         LMManualControlRequest request = null;
-        if (startTime == null || nowTime.getTime() >= startTime.getTime()) {
-            request = program.createStartStopNowMsg(stopTime, gearNumber, "", true, constraintFlag);
+        if (startTimeWithOffset == null || nowTime.getTime() >= startTimeWithOffset.getTime()) {
+            request = program.createStartStopNowMsg(stopTimeWithOffset, gearNumber, "", true, constraintFlag);
         } else {
-            request = program.createScheduledStartMsg(startTime, stopTime, gearNumber, null, "", constraintFlag);
+            request = program.createScheduledStartMsg(startTimeWithOffset, stopTimeWithOffset, gearNumber, null, "", constraintFlag);
         }
         
         return request;
     }
     
     /**
-     * Creates either a stopNow or scheduledStop request message depending on wheather the given stopTime is
+     * Creates either a stopNow or scheduledStop request message depending on whether the given stopTime is
      * equal to or less than the current time, or is sometime in the future.
      * @param program
      * @param startTime
@@ -124,7 +130,7 @@ public class ProgramUtils {
      * @param constraintFlag
      * @return
      */
-    public static LMManualControlRequest createStopRequest(LMProgramBase program, Date stopTime, int gearNumber, boolean forceStop) {
+    public static LMManualControlRequest createStopRequest(LMProgramBase program, Date stopTime, Duration stopOffset, int gearNumber, boolean forceStop) {
         
         int constraintFlag = LMManualControlRequest.CONSTRAINTS_FLAG_USE;
         if (forceStop) {
@@ -133,11 +139,18 @@ public class ProgramUtils {
         
         LMManualControlRequest request = null;
         Date nowTime = new Date();
-        
-        if (stopTime == null || nowTime.getTime() >= stopTime.getTime()) {
+        Date stopTimeWithOffset = stopTime;
+        if (stopOffset != null) {
+            if (stopTime == null) {
+                stopTime = nowTime;
+            }
+            stopTimeWithOffset = new Instant(stopTime).plus(stopOffset).toDate();
+        }
+
+        if (stopTimeWithOffset == null || nowTime.getTime() >= stopTimeWithOffset.getTime()) {
             request = program.createStartStopNowMsg(CtiUtilities.get1990GregCalendar().getTime(), gearNumber, "", false, constraintFlag);
         } else {
-            request = program.createScheduledStopMsg(CtiUtilities.get1990GregCalendar().getTime(), stopTime, gearNumber, "");
+            request = program.createScheduledStopMsg(CtiUtilities.get1990GregCalendar().getTime(), stopTimeWithOffset, gearNumber, "");
         }
         
         return request;
