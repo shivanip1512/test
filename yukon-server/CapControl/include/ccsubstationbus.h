@@ -204,7 +204,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setRecentlyControlledFlag(BOOL recentlycontrolled);
     CtiCCSubstationBus& setLastOperationTime(const CtiTime& lastoperation);
     CtiCCSubstationBus& setLastVerificationCheck(const CtiTime& checkTime);
-    CtiCCSubstationBus& setVarValueBeforeControl(DOUBLE oldvarval);
+    CtiCCSubstationBus& setVarValueBeforeControl(DOUBLE oldvarval, LONG originalParentId = 0);
     CtiCCSubstationBus& setLastFeederControlledPAOId(LONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlled(LONG lastfeederpao);
     CtiCCSubstationBus& setLastFeederControlledPosition(LONG lastfeederposition);

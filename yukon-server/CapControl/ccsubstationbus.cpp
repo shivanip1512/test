@@ -2002,7 +2002,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastVerificationCheck(const CtiTime& 
 
     Sets the var value before control of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarval)
+CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarval, LONG originalParentId)
 {
     if( _varvaluebeforecontrol != oldvarval )
     {
@@ -2014,19 +2014,30 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
     }
     _varvaluebeforecontrol = oldvarval;
 
-    if (getPrimaryBusFlag() &&
+    if (getPrimaryBusFlag() && originalParentId > 0 &&
        (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
        !stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::PFactorKWKVarControlUnit) ))
     {
-        setPhaseAValueBeforeControl(oldvarval / 3 );
-        setPhaseBValueBeforeControl(oldvarval / 3 );
-        setPhaseCValueBeforeControl(oldvarval / 3 );
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+        CtiCCSubstationBusPtr altBus = store->findSubBusByPAObjectID(originalParentId);
+        if (altBus != NULL)
+        {
+            setPhaseAValueBeforeControl(altBus->getPhaseAValue() );
+            setPhaseBValueBeforeControl(altBus->getPhaseBValue() );
+            setPhaseCValueBeforeControl(altBus->getPhaseCValue() );
+        }
+        else
+        {
+            setPhaseAValueBeforeControl(oldvarval / 3 );
+            setPhaseBValueBeforeControl(oldvarval / 3 );
+            setPhaseCValueBeforeControl(oldvarval / 3 );
+        }
     }
     else
     {
-    setPhaseAValueBeforeControl(getPhaseAValue());
-    setPhaseBValueBeforeControl(getPhaseBValue());
-    setPhaseCValueBeforeControl(getPhaseCValue());
+        setPhaseAValueBeforeControl(getPhaseAValue());
+        setPhaseBValueBeforeControl(getPhaseBValue());
+        setPhaseCValueBeforeControl(getPhaseCValue());
     }
 
 
@@ -3134,7 +3145,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
             setLastOperationTime(currentDateTime);
             setLastFeederControlled(currentFeeder->getPaoId());
             ((CtiCCFeeder*)_ccfeeders.at(currentPosition))->setLastOperationTime(currentDateTime);
-            setVarValueBeforeControl( getCurrentVarLoadPointValue() );
+            setVarValueBeforeControl( getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId() );
             setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
@@ -3497,7 +3508,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             setLastOperationTime(currentDateTime);
             setLastFeederControlled(lastFeederControlled->getPaoId());
             lastFeederControlled->setLastOperationTime(currentDateTime);
-            setVarValueBeforeControl( getCurrentVarLoadPointValue() );
+            setVarValueBeforeControl( getCurrentVarLoadPointValue(), lastFeederControlled->getOriginalParent().getOriginalParentId()  );
             setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
@@ -5895,7 +5906,7 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                         currentFeeder->setLastOperationTime(currentDateTime);
                        ((CtiCCFeeder*)_ccfeeders.at(i))->setLastOperationTime(currentDateTime);
-                        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                        setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
                         setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
@@ -6008,7 +6019,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         setLastFeederControlled(currentFeeder->getPaoId());
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPaoId());
                         currentFeeder->setLastOperationTime(currentDateTime);
-                        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                        setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
                         setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
@@ -8616,7 +8627,7 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
             parentFeeder->setLastCapBankControlledDeviceId( bestBank->getPaoId());
             parentFeeder->setRecentlyControlledFlag(TRUE);
             parentFeeder->setVarValueBeforeControl(parentFeeder->getCurrentVarLoadPointValue());
-            setVarValueBeforeControl(getCurrentVarLoadPointValue());
+            setVarValueBeforeControl(getCurrentVarLoadPointValue(), parentFeeder->getOriginalParent().getOriginalParentId());
             setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
@@ -8961,7 +8972,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                 {
                                     currentFeeder->setRecentlyControlledFlag(TRUE);
                                     setRecentlyControlledFlag(TRUE);
-                                    setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                                    setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
                                     if (currentNumClosed + 1 < targetNumClose)
                                     {
                                         setSendMoreTimeControlledCommandsFlag(TRUE);
@@ -9080,7 +9091,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                     {
                                         currentFeeder->setRecentlyControlledFlag(TRUE);
                                         setRecentlyControlledFlag(TRUE);
-                                        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                                        setVarValueBeforeControl(getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
                                         if (currentNumOpen + 1 < targetNumOpen)
                                         {
                                             setSendMoreTimeControlledCommandsFlag(TRUE);

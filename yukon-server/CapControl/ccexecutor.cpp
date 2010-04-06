@@ -2790,7 +2790,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                            currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
                             currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
 
                             if( currentCapBank->getStatusPointId() > 0 )
@@ -3106,7 +3106,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
+                            currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue(), currentFeeder->getOriginalParent().getOriginalParentId());
                             currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
                             if( currentCapBank->getStatusPointId() > 0 )
                             {
