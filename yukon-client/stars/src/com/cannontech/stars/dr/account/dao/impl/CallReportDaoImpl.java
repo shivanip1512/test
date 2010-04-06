@@ -60,6 +60,7 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
     }
     
     @Override
+    @Transactional
     public void insert(CallReport callReport, int energyCompanyId) {
     	
         template.insert(callReport);
@@ -68,6 +69,7 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
     }
 
     @Override
+    @Transactional
     public void update(CallReport callReport, int energyCompanyId) {
     	
     	if (callReport.getCallId() <= 0) {
