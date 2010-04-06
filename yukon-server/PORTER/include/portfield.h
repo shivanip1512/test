@@ -26,7 +26,6 @@ INT LogonToDevice( CtiPortSPtr aPortRecord, CtiDeviceSPtr aIED, INMESS *aInMessa
 
 void ShuffleVTUMessage( CtiPortSPtr &Port, CtiDeviceSPtr &Device, CtiOutMessage *OutMessage );
 INT GetPreferredProtocolWrap( CtiPortSPtr Port, CtiDeviceSPtr &Device );
-BOOL findNonExclusionOutMessage(void *data, void* d);
 BOOL findExclusionFreeOutMessage(void *data, void* d);
 bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &device );
 INT CheckIfOutMessageIsExpired(OUTMESS *&OutMessage);
@@ -34,7 +33,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
 INT ProcessPortPooling(CtiPortSPtr Port);
 INT ResetChannel(CtiPortSPtr &Port, CtiDeviceSPtr &Device);
 INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device);
-INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries);
+INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, bool timesyncPreference);
 
 INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMessage, CtiDeviceSPtr &Device, CtiTablePaoExclusion &exclusion);
 

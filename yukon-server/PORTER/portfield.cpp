@@ -156,6 +156,8 @@ VOID PortThread(void *pid)
 
         SetThreadName(-1, thread_name.c_str());
 
+        bool timesyncPreference = false;
+
         /* and wait for something to come in */
         for(;!PorterQuit;)
         {
@@ -214,7 +216,7 @@ VOID PortThread(void *pid)
                 ticks = GetTickCount();
             }
 
-            if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries )) != NORMAL )
+            if( !OutMessage && (status = GetWork( Port, OutMessage, QueEntries, timesyncPreference )) != NORMAL )
             {
                 if( profiling )
                 {
@@ -321,6 +323,8 @@ VOID PortThread(void *pid)
                 RequeueReportError(status, OutMessage);
                 continue;
             }
+
+            timesyncPreference = !timesyncPreference;
 
             /* Check if this port is dial up and initiate connection. */
             if((status = EstablishConnection(Port, &InMessage, OutMessage, Device)) != NORMAL)
@@ -4019,16 +4023,16 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
 }
 
 
-BOOL findNonExclusionOutMessage(void *data, void* d)
+BOOL findNonTimesyncOutMessage(void *data, void* d)
 {
     OUTMESS  *OutMessage = (OUTMESS *)d;
 
-    if(OutMessage)
-    {
-        return (OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic);
-    }
+    return OutMessage && !(OutMessage->EventCode & TSYNC);
+}
 
-    return false;
+BOOL findExclusionFreeNonTimesyncOutMessage(void *data, void *d)
+{
+    return findNonTimesyncOutMessage(data, d) && findExclusionFreeOutMessage(data, d);
 }
 
 /*
@@ -4036,10 +4040,8 @@ BOOL findNonExclusionOutMessage(void *data, void* d)
  */
 BOOL findExclusionFreeOutMessage(void *data, void* d)
 {
-    BOOL     bStatus = FALSE;
+    BOOL     mayExecute = FALSE;
     OUTMESS  *OutMessage = (OUTMESS *)d;
-
-    bool     blockedByExclusion = false;
 
     CtiDeviceManager::device_priorities_t *excluded_device_priorities = reinterpret_cast<CtiDeviceManager::device_priorities_t *>(data);
 
@@ -4056,7 +4058,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
                 if( DeviceManager.mayDeviceExecuteExclusionFree(Device, OutMessage->Priority, exclusion) )
                 {
-                    bStatus = TRUE;     // This device is locked in as executable!!!
+                    mayExecute = TRUE;     // This device is locked in as executable!!!
                     Device->setExecuting();
                 }
                 else if( excluded_device_priorities )  //  are we tracking priorities?
@@ -4072,13 +4074,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         }
         else
         {
-            if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " NON-Excludable OM found for PAOID " << OutMessage->DeviceID << endl;
-            }
-
-            bStatus = TRUE; // We can send anything which says it is non-excludable!
+            mayExecute = TRUE; // We can send anything which says it is non-excludable!
         }
     }
     catch(...)
@@ -4087,7 +4083,7 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
         dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return bStatus;
+    return mayExecute;
 }
 
 
@@ -4351,7 +4347,42 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
     return status;
 }
 
-INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
+
+void analyzePortQueue(CtiPortSPtr Port, bool timesyncPreference, CtiDeviceManager::device_priorities_t maxExcludedDevicePriorities)
+{
+    //  if the queue slot has already been set, we don't need to do anything
+    if( Port->getQueueSlot() != 0 )
+    {
+        return;
+    }
+
+    int slot = 0;
+
+    CtiDeviceManager::coll_type::reader_lock_guard_t find_dev_guard(DeviceManager.getLock());
+
+    void *maxex = reinterpret_cast<void *>(&maxExcludedDevicePriorities);
+
+    //  if we prefer non-timesync messages, try to find one
+    if( !timesyncPreference )
+    {
+        slot = Port->searchQueue(maxex, findExclusionFreeNonTimesyncOutMessage);
+    }
+
+    //  if we didn't find a non-exclusion non-timesync, just look for a non-exclusion message
+    if( !slot )
+    {
+        slot = Port->searchQueue(maxex, findExclusionFreeOutMessage);
+    }
+
+    //  if we found something, set the queue slot
+    if( slot )
+    {
+        Port->setQueueSlot(slot);
+    }
+}
+
+
+INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries, bool timesyncPreference)
 {
     INT status;
     ULONG ReadLength;
@@ -4362,17 +4393,8 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
 
     CtiDeviceManager::device_priorities_t maxExcludedDevicePriorities;
 
-    /*
-     *  Search for the first queue entry which is ok to send.  In the general case, this should be the zeroeth entry and
-     *  this call is relatively inexpensive.
-     */
-    if( Port->getQueueSlot() == 0 && Port->searchQueue(NULL, findNonExclusionOutMessage, false) != 0 )
-    {
-        CtiDeviceManager::coll_type::reader_lock_guard_t find_dev_guard(DeviceManager.getLock());
-
-        //  look for the first nonexcluded entry, noting the priorities of the blocked items as we pass them by
-        Port->setQueueSlot( Port->searchQueue( reinterpret_cast<void *>(&maxExcludedDevicePriorities), findExclusionFreeOutMessage, false ) );
-    }
+    //  Set the port queue slot to the next eligible work element we want to read
+    analyzePortQueue(Port, timesyncPreference, maxExcludedDevicePriorities);
 
     /*
      *  This is a Read from the CTI queueing structures which will originate from
@@ -4415,6 +4437,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
     {
         Port->incQueueSubmittal(1, CtiTime());
     }
+
     return status;
 }
 

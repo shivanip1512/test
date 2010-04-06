@@ -1258,7 +1258,9 @@ bool Klondike::hasRemoteWork() const
 {
     sync_guard_t guard(_sync);
 
-    return !_remote_requests.empty() || _device_status.response_buffer_has_unmarked_data;
+    return !_remote_requests.empty()
+            || _device_status.response_buffer_has_unmarked_data
+            || _device_status.response_buffer_has_marked_data;
 }
 
 
