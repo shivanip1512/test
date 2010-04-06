@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="items" required="true" type="java.lang.Object"%>
@@ -10,9 +11,16 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
+<spring:bind path="${path}">
+
+<c:set var="inputClass" value=""/>
+<c:if test="${status.error}">
+	<c:set var="inputClass" value="error"/>
+</c:if>
+
 <c:choose>
     <c:when test="${not empty pageScope.onchange}">
-        <form:select path="${path}" id="${path}" onchange="${onchange}">
+        <form:select path="${path}" id="${path}" onchange="${onchange}" cssClass="${inputClass}">
             <c:if test="${not empty pageScope.defaultItemLabel}">
                 <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
             </c:if>
@@ -20,7 +28,7 @@
         </form:select>
     </c:when>
     <c:otherwise>
-        <form:select path="${path}" id="${path}">
+        <form:select path="${path}" id="${path}" cssClass="${inputClass}">
             <c:if test="${not empty pageScope.defaultItemLabel}">
                 <form:option value="${pageScope.defaultItemValue}">${pageScope.defaultItemLabel}</form:option>
             </c:if>
@@ -28,3 +36,10 @@
         </form:select>
     </c:otherwise>
 </c:choose>
+
+<c:if test="${status.error}">
+	<br>
+	<form:errors path="${path}" cssClass="errorMessage"/>
+</c:if>
+
+</spring:bind>
