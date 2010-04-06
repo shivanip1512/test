@@ -11,6 +11,7 @@ import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.Ltc;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
@@ -26,6 +27,8 @@ public interface CapControlCache {
     public StreamableCapObject getArea(int paoId) throws NotFoundException;
     
     public CCArea getCBCArea(int id);
+    
+    public Ltc getLtc(int id);
     
     public CCSpecialArea getCBCSpecialArea(int id);
     

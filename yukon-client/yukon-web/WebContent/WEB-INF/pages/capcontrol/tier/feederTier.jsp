@@ -61,15 +61,6 @@
     // triggers call to greybox containing point chart(s)
     function loadPointChartGreyBox(title, url) {
         
-        // check if any substations, banks were selected, they are not valid targets
-        var elemStations = document.getElementsByName('cti_chkbxSubStation');
-        var staionElems = new Array();
-        getValidChecks( elemStations, staionElems );
-        if (staionElems.length > 0) {
-            alert(title + ' is not available for a Substation.\n\nChoose specific Substation Bus or Feeder within a Substation');
-            return void(0);
-        }
-        
         var elemBanks = document.getElementsByName('cti_chkbxBanks');
         var bankElems = new Array();
         getValidChecks( elemBanks, bankElems );
@@ -300,6 +291,8 @@
                     <td>
                         <c:choose>
                             <c:when test="${viewableSubBus.ltcId != null && viewableSubBus.ltcId > 0}">
+                                <capTags:ltcTapIndicator paoId="${viewableSubBus.ltcId}" type="LTC"/>
+                                <capTags:ltcModeIndicator paoId="${viewableSubBus.ltcId}" type="LTC"/>
                                 <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableSubBus.ltcId}" class="tierIconLink">
                                     <img alt="" class="tierImg" src="${editInfoImage}">
                                 </a>

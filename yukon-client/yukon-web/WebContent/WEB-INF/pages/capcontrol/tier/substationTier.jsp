@@ -3,14 +3,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
-<%@ page import="com.cannontech.spring.YukonSpringHook" %>
-<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
-<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
-<%@ page import="com.cannontech.core.dao.PaoDao" %>
-
-<%@page import="org.springframework.web.bind.ServletRequestUtils"%>
-
-
 <cti:standardPage title="${mainTitle}" module="capcontrol">
 <%@include file="/capcontrol/cbc_inc.jspf"%>
 
@@ -40,10 +32,6 @@
 </cti:breadCrumbs>
   
 <script type="text/javascript">
-
-	var GB_IMG_DIR = "/editor/css/greybox/";
-	GreyBox.preloadGreyBoxImages();
-
 	// handles analysis links (which are not functional for a substation - show error alert)
 	function loadPointChartGreyBox(title, url) {
 		alert(title + ' is not available for a Substation.\n\nChoose specific Substation Bus or Feeder within a Substation');
@@ -61,55 +49,47 @@
 </c:choose>
 
 <ct:abstractContainer type="box" hideEnabled="false" title="${containerTitle}" id="last_titled_container">
-          
-	<table id="subTable" class="tierTable">
-	  <tr class="columnHeader lAlign">              
-	    <th style="font-weight:bold;">
-	    	<input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
-	    	Sub Name
-	    </th>
-	    <th width="2%" style="font-weight:bold;"></th>
-	    <th style="font-weight:bold;">State</th>
-	    <th style="font-weight:bold;">Available<br/> kVARS</th>
-	    <th style="font-weight:bold;">Unavailable <br/>kVARS</th>
-	    <th style="font-weight:bold;">Closed <br/>kVARS</th>
-	    <th style="font-weight:bold;">Tripped <br/>kVARS</th>
-	    <th style="font-weight:bold;">PFactor / Est.</th>
+    
+    <table id="subTable" class="tierTable">
+        <tr>
+            <th>Sub Name</th>
+            <th>State</th>
+            <th>Available<br> kVARS</th>
+            <th>Unavailable <br>kVARS</th>
+            <th>Closed <br>kVARS</th>
+            <th>Tripped <br>kVARS</th>
+            <th>PFactor / Est.</th>
 	  </tr>
 
 		<c:forEach var="subStation" items="${subStations}">
 	        <tr class="<ct:alternateRow odd="" even="altRow"/>">
 				<td>
-					<input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}" />
-				    <input type="checkbox" name="cti_chkbxSubStation" value="${subStation.ccId}" />
-                       <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${subStation.ccId}&ignoreBookmark=true" style="text-decoration:none;">
-                           <img class="rAlign editImg" src="${editInfoImage}"/>
-                       </a>
-                       <c:if test="${hasEditingRole}">
-                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}" style="text-decoration:none;">
-                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
+                    <input type="hidden" id="paoId_${subStation.ccId}" value="${subStation.ccId}">
+                    <a class="tierIconLink" href="/editor/cbcBase.jsf?type=2&amp;itemid=${subStation.ccId}&amp;ignoreBookmark=true">
+                        <img class="tierImg" src="${editInfoImage}" alt="">
+                    </a>
+                    <c:if test="${hasEditingRole}">
+                        <a class="tierIconLink" href="/editor/deleteBasePAO.jsf?value=${subStation.ccId}">
+                            <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" alt="">
                         </a>
                     </c:if>
 
-				    <cti:url value="/spring/capcontrol/tier/feeders" var="myLink">
+				    <cti:url value="/spring/capcontrol/tier/feeders" var="feederLink">
 				    	<cti:param name="areaId" value="${areaId}"/>
 				    	<cti:param name="subStationId" value="${subStation.ccId}"/>
 				    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
 				    </cti:url>
 				    
-				    <a href="${myLink}" class="" id="anc_${subStation.ccId}"> ${subStation.ccName}</a>
+				    <a href="${feederLink}" id="anc_${subStation.ccId}">${subStation.ccName}</a>
 				    
 				    <span class="errorRed">
                         <cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="SA_ENABLED" />
                     </span>
 				</td>
                 
-                <td>
-                    <capTags:warningImg paoId="${subStation.ccId}" type="SUBSTATION"/>
-                </td>
-                
 				<td>
-                    <a id="substation_state_${subStation.ccId}" style=""
+                    <capTags:warningImg paoId="${subStation.ccId}" type="SUBSTATION"/>
+                    <a id="substation_state_${subStation.ccId}"
 	                    <c:if test="${hasSubstationControl}">
 						   href="javascript:void(0);" ${popupEvent}="getSubstationMenu('${subStation.ccId}', event);"
 	                    </c:if> 
@@ -125,9 +105,9 @@
                 <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
                 <td><cti:capControlValue paoId="${subStation.ccId}" type="SUBSTATION" format="PFACTOR" /></td>
             </tr>
-		</c:forEach>
+        </c:forEach>
 		
-		</table>
+    </table>
 
 
 <script type="text/javascript">
@@ -138,5 +118,5 @@
 
 <capTags:commandMsgDiv/>
 
-    <ct:disableUpdaterHighlights/>
+<ct:disableUpdaterHighlights/>
 </cti:standardPage>

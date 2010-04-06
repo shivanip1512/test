@@ -54,87 +54,78 @@
     </c:choose>
 	
 	<ct:abstractContainer type="box" hideEnabled="false" title="${title}" id="last_titled_container">
-		<form id="areaForm" action="" method="get">
-		<input type="hidden" name="CCSessionInfo.STR_CC_AREA" />
-		<input type="hidden" name="CCSessionInfo.STR_CC_AREAID"/>
-			<table id="areaTable" class="tierTable">
-    			<thead>
-        			<tr class="columnHeader lAlign">                
-                        <th style="text-align: left;">Area Name</th>
-                        <th width="2%" style="text-align: left;"></th>
-                        <th style="text-align: left;">State</th>
-                        <th style="text-align: left;">Setup</th>
-                        <th style="text-align: left;">Available<br/> kVARS</th>
-                        <th style="text-align: left;">Unavailable <br/>kVARS</th>
-                        <th style="text-align: left;">Closed <br/>kVARS</th>
-                        <th style="text-align: left;">Tripped <br/>kVARS</th>
-                        <th style="text-align: left;">PFactor/Est.</th>
-                	</tr>
-            	</thead>
-            	<tbody>
-            		<c:forEach var="viewableArea" items="${ccAreas}">
-            			<c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
-            			<tr class="<ct:alternateRow odd="" even="altRow"/>">
-    	        			<td>
-    	        				<input type="checkbox" name="cti_chkbxAreas" value="${thisAreaId}"/>
-    							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
-    								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
-    		                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=${thisAreaId}" style="text-decoration:none;">
-    		                            <img class="rAlign editImg" src="${editInfoImage}"/>
-    		                        </a>
-    		                        <c:if test="${hasEditingRole}">
-    			                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}" style="text-decoration:none;">
-    			                            <img class="rAlign editImg" src="/WebConfig/yukon/Icons/delete.gif"/>
-    			                        </a>
-                                    </c:if>
-    	        				<a href="/spring/capcontrol/tier/substations?areaId=${thisAreaId}&isSpecialArea=${isSpecialArea}">
-    	        					<c:out value="${viewableArea.area.ccName}"/>
-    	        				</a>
-    	        			</td>
-    	        			<td>
-    	        				<capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
-    	        			</td>
-    	        			<td>
-    	
-    						    <a id="area_state_${thisAreaId}"
-    		                       name="area_state"
-    		                       class=""
-    		                       href="javascript:void(0);" 
-    							   <c:if test="${!isSpecialArea}">onclick="getAreaMenu('${thisAreaId}', event);" </c:if><c:if test="${isSpecialArea}">onclick="getSpecialAreaMenu('${thisAreaId}', event);" </c:if>>
-    								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
-    							</a>
-    							
-    						<cti:dataUpdaterCallback function="updateStateColorGenerator('area_state_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
-    	        			
-    	        			</td>
-    	        			<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="SETUP" /> Substation(s)</td>
-    						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE" /></td>
-    						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE" /></td>
-    						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED" /></td>
-    						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED" /></td>
-    						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR" /></td>
-    					</tr>
-    					
-    					<tr>
-    						<td colspan="3" class="tableCellSnapShot">
-    						<table id="allAreas${thisAreaId}">
-    							<c:forEach var="station" items="${viewableArea.subStations}">
-    								<tr style="display: none;">
-    									<td><span class="lIndent">${station.subStationName}</span></td>
-    									<td align="right">${station.feederCount} Feeder(s)</td>
-    									<td align="right">${station.capBankCount} Bank(s)</td>
-    								</tr>
-    							</c:forEach>
-    	  					</table>
-    		  				</td>
-    						<td colspan="6" class="tableCellSnapShot"></td>
-    		  			</tr>
-    					
-            		</c:forEach>
-            	</tbody>
-            	
-            </table>
-        </form>
+		<table id="areaTable" class="tierTable">
+			<thead>
+    			<tr>
+                    <th>Area Name</th>
+                    <th>State</th>
+                    <th>Setup</th>
+                    <th>Available<br> kVARS</th>
+                    <th>Unavailable <br>kVARS</th>
+                    <th>Closed <br>kVARS</th>
+                    <th>Tripped <br>kVARS</th>
+                    <th>PFactor/Est.</th>
+            	</tr>
+        	</thead>
+        	<tbody>
+        		<c:forEach var="viewableArea" items="${ccAreas}">
+        			<c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
+        			<tr class="<ct:alternateRow odd="" even="altRow"/>">
+	        			<td>
+							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
+								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
+		                        <a class="tierIconLink" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisAreaId}">
+		                            <img class="tierImg" src="${editInfoImage}" alt="">
+		                        </a>
+		                        <c:if test="${hasEditingRole}">
+			                        <a class="tierIconLink" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
+			                            <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" alt="">
+			                        </a>
+                                </c:if>
+	        				<a href="/spring/capcontrol/tier/substations?areaId=${thisAreaId}&amp;isSpecialArea=${isSpecialArea}">
+	        					${viewableArea.area.ccName}
+	        				</a>
+	        			</td>
+	        			<td>
+                            <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
+						    <a id="area_state_${thisAreaId}"
+		                       name="area_state"
+		                       class=""
+		                       href="javascript:void(0);" 
+							   <c:if test="${!isSpecialArea}">onclick="getAreaMenu('${thisAreaId}', event);" </c:if><c:if test="${isSpecialArea}">onclick="getSpecialAreaMenu('${thisAreaId}', event);" </c:if>>
+								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
+							</a>
+							
+                            <cti:dataUpdaterCallback function="updateStateColorGenerator('area_state_${thisAreaId}')" initialize="true" value="${updaterType}/${thisAreaId}/STATE"/>
+	        			
+	        			</td>
+	        			<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="SETUP" /> Substation(s)</td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_AVAILABLE" /></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_UNAVAILABLE" /></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_CLOSED" /></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="KVARS_TRIPPED" /></td>
+						<td><cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="PFACTOR" /></td>
+					</tr>
+					
+					<tr>
+						<td colspan="2" class="tableCellSnapShot">
+						<table id="allAreas${thisAreaId}">
+							<c:forEach var="station" items="${viewableArea.subStations}">
+								<tr style="display: none;">
+									<td><span class="lIndent">${station.subStationName}</span></td>
+									<td align="right">${station.feederCount} Feeder(s)</td>
+									<td align="right">${station.capBankCount} Bank(s)</td>
+								</tr>
+							</c:forEach>
+	  					</table>
+		  				</td>
+						<td colspan="6" class="tableCellSnapShot"></td>
+		  			</tr>
+					
+        		</c:forEach>
+        	</tbody>
+        	
+        </table>
 
 	</ct:abstractContainer>
 	

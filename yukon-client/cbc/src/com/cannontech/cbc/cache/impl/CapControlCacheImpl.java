@@ -859,6 +859,12 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return area;
     }
     
+    public synchronized Ltc getLtc(int id) throws NotFoundException {
+        Ltc ltc = ltcMap.get(id);
+        checkObjectFound(ltc, id, Ltc.class);
+        return ltc;
+    }
+    
     public synchronized CCSpecialArea getCBCSpecialArea(int id) throws NotFoundException {
         CCSpecialArea area = cbcSpecialAreaMap.get(id);
         checkObjectFound(area, id, CCSpecialArea.class);        
@@ -882,6 +888,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         if (object != null) return object;
         
         object = capBankMap.get(id);
+        if (object != null) return object;
+
+        object = ltcMap.get(id);
         if (object != null) return object;
         
         throw new NotFoundException("StreamableCapObject with id: " + id + " not found.");

@@ -25,5 +25,6 @@ public enum DataType {
     PHASE_DETECT,
     VALIDATION_PROCESSING,
     DATABASE_MIGRATION,
+    LTC
     ;
 }

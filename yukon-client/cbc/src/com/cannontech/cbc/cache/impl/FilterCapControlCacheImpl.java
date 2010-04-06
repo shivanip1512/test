@@ -16,6 +16,7 @@ import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.CapControlClientConnection;
 import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.Ltc;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
@@ -83,6 +84,11 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return null;
 	}
 
+   public Ltc getLtc(int id) {
+        Ltc ltc = cache.getLtc(id);
+        return ltc;
+    }
+	
 	public CCSpecialArea getCBCSpecialArea(int id) {
 		CCSpecialArea area = cache.getCBCSpecialArea(id);
 		if (filter.valid(area)) return area;

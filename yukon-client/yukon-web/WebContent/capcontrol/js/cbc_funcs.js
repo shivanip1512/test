@@ -326,6 +326,46 @@ function updateCapBankWarningImage(id) {
     }
 }
 
+function updateLtcModeIndicator(id){
+	return function(data) {
+        var yellowLocalSpan = $(id + '_local_warning');
+        var greenLocalSpan = $(id + '_local_normal');
+        
+        var icon = data.value;
+        
+        if (icon == 'none') {
+            yellowLocalSpan.hide();
+            greenLocalSpan.hide();
+        } else if (icon == 'NormalLocal'){
+            yellowLocalSpan.hide();
+            greenLocalSpan.show();
+        } else if (icon == 'WarningLocal'){
+            yellowLocalSpan.show();
+            greenLocalSpan.hide();
+        }
+	}
+}
+
+function updateLtcTapIndicator(id){
+	return function(data) {
+        var lowerTapSpan = $(id + '_lower');
+        var raiseTapSpan = $(id + '_raise');
+        
+        var icon = data.value;
+        
+        if (icon == 'none') {
+        	lowerTapSpan.hide();
+        	raiseTapSpan.hide();
+        } else if (icon == 'RaiseTap'){
+        	lowerTapSpan.hide();
+        	raiseTapSpan.show();
+        } else if (icon == 'LowerTap'){
+        	lowerTapSpan.show();
+        	raiseTapSpan.hide();
+        }
+	}
+}
+
 function updateVerificationImage(spanId) {
     return function(data) {
         var isVerification = eval(data.value);
