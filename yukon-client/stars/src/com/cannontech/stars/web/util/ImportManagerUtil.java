@@ -19,37 +19,31 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsSearchDao;
+import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.action.CreateApplianceAction;
 import com.cannontech.stars.web.action.CreateLMHardwareAction;
 import com.cannontech.stars.web.action.CreateServiceRequestAction;
 import com.cannontech.stars.web.action.DeleteLMHardwareAction;
 import com.cannontech.stars.web.action.NewCustAccountAction;
-import com.cannontech.stars.web.action.ProgramSignUpAction;
-import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
-import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.UpdateLoginAction;
 import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
-import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ACType;
 import com.cannontech.stars.xml.serialize.AirConditioner;
@@ -92,7 +86,6 @@ import com.cannontech.stars.xml.serialize.PrimaryContact;
 import com.cannontech.stars.xml.serialize.PumpSize;
 import com.cannontech.stars.xml.serialize.PumpType;
 import com.cannontech.stars.xml.serialize.ResidenceType;
-import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.SecondaryEnergySource;
 import com.cannontech.stars.xml.serialize.ServiceCompany;
 import com.cannontech.stars.xml.serialize.ServiceType;
@@ -100,7 +93,7 @@ import com.cannontech.stars.xml.serialize.SoilType;
 import com.cannontech.stars.xml.serialize.SquareFeet;
 import com.cannontech.stars.xml.serialize.StandbySource;
 import com.cannontech.stars.xml.serialize.StarsApp;
-import com.cannontech.stars.xml.serialize.StarsCreateAppliance;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCreateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsCustAccount;
@@ -108,10 +101,7 @@ import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
-import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
-import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSiteInformation;
-import com.cannontech.stars.xml.serialize.StarsUpdateAppliance;
 import com.cannontech.stars.xml.serialize.StarsUpdateCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardware;
 import com.cannontech.stars.xml.serialize.StarsUpdateLogin;
@@ -458,7 +448,8 @@ public class ImportManagerUtil {
 	public static final String HARDWARE_ACTION_REMOVE = "REMOVE";
 	
 	private static final StarsSearchDao starsSearchDao =  YukonSpringHook.getBean("starsSearchDao", StarsSearchDao.class);
-
+    private static final StarsApplianceService starsApplianceService = YukonSpringHook.getBean("starsApplianceService", StarsApplianceService.class); 
+	
 	public static String[] prepareFields(int numFields) {
 		String[] fields = new String[ numFields ];
 		for (int i = 0; i < numFields; i++)
@@ -939,7 +930,7 @@ public class ImportManagerUtil {
 		
 		if (fields[IDX_APP_KW].length() > 0) {
 			double kwCap = Double.parseDouble(fields[IDX_APP_KW]);
-			if (kwCap >= 0) app.setKWCapacity( kwCap );
+			if (kwCap >= 0) app.setKwCapacity( kwCap );
 		}
 
         if (fields[IDX_RELAY_NUM].length() > 0) {
@@ -970,7 +961,7 @@ public class ImportManagerUtil {
 			
 			ACType type = new ACType();
 			type.setEntryID( 0 );
-			ac.setACType( type );
+			ac.setAcType( type );
 			
 			app.setAirConditioner( ac );
 		}
@@ -1138,10 +1129,10 @@ public class ImportManagerUtil {
 	public static void newAppliance(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
 		throws Exception
 	{
-		StarsCreateAppliance newApp = new StarsCreateAppliance();
+		StarsAppliance newApp = new StarsAppliance();
 		setStarsAppliance( newApp, fields, energyCompany );
 		
-		CreateApplianceAction.createAppliance( newApp, liteAcctInfo, energyCompany );
+        starsApplianceService.createStarsAppliance(newApp, energyCompany.getEnergyCompanyID(), liteAcctInfo.getAccountID());
 	}
 	
 	public static void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
@@ -1158,11 +1149,12 @@ public class ImportManagerUtil {
 		
 		if (liteApp != null) 
 		{
-			StarsUpdateAppliance updateApp = new StarsUpdateAppliance();
+			StarsAppliance updateApp = new StarsAppliance();
 			updateApp.setApplianceID( appID );
 			setStarsAppliance( updateApp, fields, energyCompany );
 			
-			UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
+			starsApplianceService.updateStarsAppliance(updateApp, energyCompany.getEnergyCompanyID());
+
         }
 		else
 			newAppliance( fields, liteAcctInfo, energyCompany );

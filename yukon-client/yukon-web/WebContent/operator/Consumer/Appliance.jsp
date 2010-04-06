@@ -13,8 +13,8 @@
 	if (appliance.hasYearManufactured())
 		yearMade = String.valueOf(appliance.getYearManufactured());
 	String kwCap = "";
-	if (appliance.hasKWCapacity())
-		kwCap = String.valueOf(appliance.getKWCapacity());
+	if (appliance.hasKwCapacity())
+		kwCap = String.valueOf(appliance.getKwCapacity());
 	String effRate = "";
 	if (appliance.hasEfficiencyRating())
 		effRate = String.valueOf(appliance.getEfficiencyRating());
@@ -51,7 +51,8 @@
 	}
 %>
 
-<html>
+
+<%@page import="com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -201,7 +202,8 @@ function deleteAppliance(form) {
                         </tr>
                       </table>
 <%
-	if (appliance.getAirConditioner() != null) {
+	
+if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.AIR_CONDITIONER)) {
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -232,7 +234,7 @@ function deleteAppliance(form) {
                             <select name="AC_Type" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
-		int typeID = (appliance.getAirConditioner().getACType() != null)? appliance.getAirConditioner().getACType().getEntryID() : 0;
+		int typeID = (appliance.getAirConditioner().getAcType() != null)? appliance.getAirConditioner().getAcType().getEntryID() : 0;
 		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
 			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
@@ -247,7 +249,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getDualStageAC() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.DUAL_STAGE)) {
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -297,7 +299,7 @@ function deleteAppliance(form) {
                             <select name="AC_Type" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
-		int typeID = (appliance.getDualStageAC().getACType() != null)? appliance.getDualStageAC().getACType().getEntryID() : 0;
+		int typeID = (appliance.getDualStageAC().getAcType() != null)? appliance.getDualStageAC().getAcType().getEntryID() : 0;
 		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
 			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
@@ -312,7 +314,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getChiller() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.CHILLER)) {
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -343,7 +345,7 @@ function deleteAppliance(form) {
                             <select name="AC_Type" onchange="setContentChanged(true)">
 <%
 		StarsCustSelectionList typeList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_AC_TYPE );
-		int typeID = (appliance.getChiller().getACType() != null)? appliance.getChiller().getACType().getEntryID() : 0;
+		int typeID = (appliance.getChiller().getAcType() != null)? appliance.getChiller().getAcType().getEntryID() : 0;
 		for (int i = 0; i < typeList.getStarsSelectionListEntryCount(); i++) {
 			StarsSelectionListEntry entry = typeList.getStarsSelectionListEntry(i);
 			String selectedStr = (entry.getEntryID() == typeID) ? "selected" : "";
@@ -358,7 +360,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getWaterHeater() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.WATER_HEATER)) {
 		String numElmt = "";
 		if (appliance.getWaterHeater().hasNumberOfElements())
 			numElmt = String.valueOf(appliance.getWaterHeater().getNumberOfElements());
@@ -415,7 +417,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getDualFuel() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.DUAL_FUEL)) {
 		String kwCap2 = "";
 		if (appliance.getDualFuel().hasSecondaryKWCapacity())
 			kwCap2 = String.valueOf(appliance.getDualFuel().getSecondaryKWCapacity());
@@ -472,7 +474,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getGenerator() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.GENERATOR)) {
 		String peakKW = "";
 		if (appliance.getGenerator().hasPeakKWCapacity())
 			peakKW = String.valueOf(appliance.getGenerator().getPeakKWCapacity());
@@ -553,7 +555,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getGrainDryer() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.GRAIN_DRYER)) {
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 
@@ -659,7 +661,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getStorageHeat() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.STORAGE_HEAT)) {
 		String peakKW = "";
 		if (appliance.getStorageHeat().hasPeakKWCapacity())
 			peakKW = String.valueOf(appliance.getStorageHeat().getPeakKWCapacity());
@@ -708,7 +710,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getHeatPump() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.HEAT_PUMP)) {
 		String restartDelay = "";
 		if (appliance.getHeatPump().hasRestartDelaySeconds())
 			restartDelay = String.valueOf(appliance.getHeatPump().getRestartDelaySeconds());
@@ -785,7 +787,7 @@ function deleteAppliance(form) {
                       </table>
 <%
 	}
-	else if (appliance.getIrrigation() != null) {
+	else if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum.IRRIGATION)) {
 %>
                       <table width="300" border="0" cellpadding="1" align="center" cellspacing="0">
                         <tr> 

@@ -8,7 +8,11 @@ public class GrainDryer {
     private BlowerHeatSource blowerHeatSource;
 
     public GrainDryer() {
-        
+        this.dryerType = new DryerType();
+        this.binSize = new BinSize();
+        this.blowerEnergySource = new BlowerEnergySource();
+        this.blowerHorsePower = new BlowerHorsePower();
+        this.blowerHeatSource = new BlowerHeatSource();
     }
 
     public BinSize getBinSize() {

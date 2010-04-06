@@ -8,7 +8,9 @@ public class HeatPump {
     private boolean hasRestartDelaySeconds;
 
     public HeatPump() {
-
+        this.pumpType = new PumpType();
+        this.pumpSize = new PumpSize();
+        this.standbySource = new StandbySource();
     }
 
     public void deleteRestartDelaySeconds() {

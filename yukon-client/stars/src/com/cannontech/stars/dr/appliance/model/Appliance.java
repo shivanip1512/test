@@ -9,6 +9,12 @@ public class Appliance {
     private int accountId;
     private int groupdId;
     private int relay;
+    private int manufacturerId;
+    private int yearManufactured;
+    private int locationId;
+    private float efficiencyRating;
+    private String notes;
+    private String modelNumber;
     
     public Appliance() {
     }
@@ -74,6 +80,48 @@ public class Appliance {
 
     public void setRelay(int relay) {
         this.relay = relay;
+    }
+
+    public int getManufacturerId() {
+        return manufacturerId;
+    }
+    public void setManufacturerId(int manufacturerId) {
+        this.manufacturerId = manufacturerId;
+    }
+
+    public int getYearManufactured() {
+        return yearManufactured;
+    }
+    public void setYearManufactured(int yearManufactured) {
+        this.yearManufactured = yearManufactured;
+    }
+
+    public int getLocationId() {
+        return locationId;
+    }
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
+    }
+
+    public float getEfficiencyRating() {
+        return efficiencyRating;
+    }
+    public void setEfficiencyRating(float efficiencyRating) {
+        this.efficiencyRating = efficiencyRating;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public String getModelNumber() {
+        return modelNumber;
+    }
+    public void setModelNumber(String modelNumber) {
+        this.modelNumber = modelNumber;
     }
 
     @Override

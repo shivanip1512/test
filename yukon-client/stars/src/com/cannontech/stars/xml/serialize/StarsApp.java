@@ -1,9 +1,14 @@
 package com.cannontech.stars.xml.serialize;
 
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
+
 public abstract class StarsApp {
     private int applianceID;
     private boolean hasApplianceID;
     private int applianceCategoryID;
+    private ApplianceCategory applianceCategory;
     private boolean hasApplianceCategoryID;
     private int inventoryID;
     private boolean hasInventoryID;
@@ -20,8 +25,8 @@ public abstract class StarsApp {
     private ServiceCompany serviceCompany;
     private String notes;
     private String modelNumber;
-    private double KWCapacity;
-    private boolean hasKWCapacity;
+    private double kwCapacity;
+    private boolean hasKwCapacity;
     private double efficiencyRating;
     private boolean hasEfficiencyRating;
     private AirConditioner airConditioner;
@@ -36,7 +41,19 @@ public abstract class StarsApp {
     private DualStageAC dualStageAC;
 
     public StarsApp() {
-        
+        this.location = new Location();
+        this.manufacturer = new Manufacturer();
+        this.applianceCategory = new ApplianceCategory();
+        this.airConditioner = new AirConditioner();
+        this.waterHeater = new WaterHeater();
+        this.dualFuel = new DualFuel();
+        this.generator = new Generator();
+        this.grainDryer = new GrainDryer();
+        this.storageHeat = new StorageHeat();
+        this.heatPump = new HeatPump();
+        this.irrigation = new Irrigation();
+        this.chiller = new Chiller();
+        this.dualStageAC = new DualStageAC();
     }
 
     public void deleteApplianceCategoryID() {
@@ -56,7 +73,7 @@ public abstract class StarsApp {
     } 
 
     public void deleteKWCapacity() {
-        this.hasKWCapacity = false;
+        this.hasKwCapacity = false;
     } 
 
     public void deleteLoadNumber() {
@@ -111,8 +128,8 @@ public abstract class StarsApp {
         return this.irrigation;
     } 
 
-    public double getKWCapacity() {
-        return this.KWCapacity;
+    public double getKwCapacity() {
+        return this.kwCapacity;
     }
 
     public int getAddressingGroupID() {
@@ -175,8 +192,8 @@ public abstract class StarsApp {
         return this.hasInventoryID;
     }
 
-    public boolean hasKWCapacity() {
-        return this.hasKWCapacity;
+    public boolean hasKwCapacity() {
+        return this.hasKwCapacity;
     }
 
     public boolean hasAddressingGroupID() {
@@ -202,8 +219,17 @@ public abstract class StarsApp {
     public void setApplianceCategoryID(int applianceCategoryID) {
         this.applianceCategoryID = applianceCategoryID;
         this.hasApplianceCategoryID = true;
+        ApplianceCategoryDao applianceCategoryDao = YukonSpringHook.getBean("applianceCategoryDao", ApplianceCategoryDao.class);
+        this.applianceCategory = applianceCategoryDao.getById(applianceCategoryID);
     }
 
+    public ApplianceCategory getApplianceCategory() {
+        return applianceCategory;
+    }
+    public void setApplianceCategory(ApplianceCategory applianceCategory) {
+        this.applianceCategory = applianceCategory;
+    }
+    
     public void setApplianceID(int applianceID) {
         this.applianceID = applianceID;
         this.hasApplianceID = true;
@@ -239,9 +265,9 @@ public abstract class StarsApp {
         this.irrigation = irrigation;
     } 
 
-    public void setKWCapacity(double KWCapacity) {
-        this.KWCapacity = KWCapacity;
-        this.hasKWCapacity = true;
+    public void setKwCapacity(double kwCapacity) {
+        this.kwCapacity = kwCapacity;
+        this.hasKwCapacity = true;
     }
 
     public void setAddressingGroupID(int addressingGroupID) {

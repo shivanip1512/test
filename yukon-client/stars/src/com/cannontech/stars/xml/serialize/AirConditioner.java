@@ -2,22 +2,23 @@ package com.cannontech.stars.xml.serialize;
 
 public class AirConditioner {
     private Tonnage tonnage;
-    private ACType ACType;
+    private ACType acType;
 
     public AirConditioner() {
-
+        this.tonnage = new Tonnage();
+        this.acType = new ACType();
     }
 
-    public ACType getACType() {
-        return this.ACType;
+    public ACType getAcType() {
+        return this.acType;
     } 
 
     public Tonnage getTonnage() {
         return this.tonnage;
     } 
 
-    public void setACType(ACType ACType) {
-        this.ACType = ACType;
+    public void setAcType(ACType acType) {
+        this.acType = acType;
     } 
 
     public void setTonnage(Tonnage tonnage) {

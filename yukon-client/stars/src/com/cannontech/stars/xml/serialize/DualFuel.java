@@ -7,7 +7,8 @@ public class DualFuel {
     private SecondaryEnergySource secondaryEnergySource;
 
     public DualFuel() {
-
+        this.switchOverType = new SwitchOverType();
+        this.secondaryEnergySource = new SecondaryEnergySource();
     }
 
     public void deleteSecondaryKWCapacity() {

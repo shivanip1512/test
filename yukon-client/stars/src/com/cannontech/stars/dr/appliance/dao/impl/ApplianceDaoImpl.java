@@ -34,9 +34,11 @@ public class ApplianceDaoImpl implements ApplianceDao {
     private String applianceSQLHeader = 
         "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, "+
         "       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, "+
-        "       LMHC.loadNumber, AB.kwCapacity "+
+        "       LMHC.loadNumber, AB.kwCapacity, AB.ManufacturerId, "+
+        "       AB.YearManufactured, AB.LocationId, AB.EfficiencyRating, "+
+        "       AB.Notes, AB.ModelNumber " +
         "FROM ApplianceBase AB "+
-        "INNER JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ";
+        "LEFT JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ";
     
     
     @Override
@@ -166,6 +168,14 @@ public class ApplianceDaoImpl implements ApplianceDao {
                 appliance.setProgramId(rs.getInt("ProgramID"));
                 appliance.setGroupdId(rs.getInt("AddressingGroupID"));
                 appliance.setRelay(rs.getInt("LoadNumber"));
+                
+                appliance.setManufacturerId(rs.getInt("ManufacturerId"));
+                appliance.setYearManufactured(rs.getInt("YearManufactured"));
+                appliance.setLocationId(rs.getInt("LocationId"));
+                appliance.setEfficiencyRating(rs.getFloat("EfficiencyRating"));
+                appliance.setNotes(rs.getString("Notes"));
+                appliance.setModelNumber(rs.getString("ModelNumber"));
+                
                 return appliance;
             }
         };

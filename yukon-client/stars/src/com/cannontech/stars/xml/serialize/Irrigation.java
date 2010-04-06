@@ -9,7 +9,12 @@ public class Irrigation {
     private MeterVoltage meterVoltage;
 
     public Irrigation() {
-
+        this.irrigationType = new IrrigationType();
+        this.horsePower = new HorsePower();
+        this.energySource = new EnergySource();
+        this.soilType = new SoilType();
+        this.meterLocation = new MeterLocation();
+        this.meterVoltage = new MeterVoltage();
     }
 
     public EnergySource getEnergySource() {

@@ -3,22 +3,24 @@ package com.cannontech.stars.xml.serialize;
 public class DualStageAC {
     private Tonnage tonnage;
     private Tonnage stageTwoTonnage;
-    private ACType ACType;
+    private ACType acType;
 
     public DualStageAC() {
-        
+        this.tonnage = new Tonnage();
+        this.stageTwoTonnage = new Tonnage();
+        this.acType = new ACType();
     }
 
-    public ACType getACType() {
-        return this.ACType;
+    public ACType getAcType() {
+        return this.acType;
     } 
 
     public Tonnage getTonnage() {
         return this.tonnage;
     } 
 
-    public void setACType(ACType ACType) {
-        this.ACType = ACType;
+    public void setAcType(ACType acType) {
+        this.acType = acType;
     } 
 
     public void setTonnage(Tonnage tonnage) {

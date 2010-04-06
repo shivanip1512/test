@@ -7,11 +7,11 @@ public class WaterHeater {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private NumberOfGallons _numberOfGallons;
+    private NumberOfGallons numberOfGallons;
 
-    private EnergySource _energySource;
+    private EnergySource energySource;
 
-    private int _numberOfElements;
+    private int numberOfElements;
 
     /**
      * keeps track of state for field: _numberOfElements
@@ -25,6 +25,8 @@ public class WaterHeater {
 
     public WaterHeater() {
         super();
+        this.numberOfGallons = new NumberOfGallons();
+        this.energySource = new EnergySource();
     } //-- com.cannontech.stars.xml.serialize.WaterHeater()
 
 
@@ -46,7 +48,7 @@ public class WaterHeater {
     **/
     public EnergySource getEnergySource()
     {
-        return this._energySource;
+        return this.energySource;
     } //-- EnergySource getEnergySource() 
 
     /**
@@ -56,7 +58,7 @@ public class WaterHeater {
     **/
     public int getNumberOfElements()
     {
-        return this._numberOfElements;
+        return this.numberOfElements;
     } //-- int getNumberOfElements() 
 
     /**
@@ -66,7 +68,7 @@ public class WaterHeater {
     **/
     public NumberOfGallons getNumberOfGallons()
     {
-        return this._numberOfGallons;
+        return this.numberOfGallons;
     } //-- NumberOfGallons getNumberOfGallons() 
 
     /**
@@ -83,7 +85,7 @@ public class WaterHeater {
     **/
     public void setEnergySource(EnergySource energySource)
     {
-        this._energySource = energySource;
+        this.energySource = energySource;
     } //-- void setEnergySource(EnergySource) 
 
     /**
@@ -93,7 +95,7 @@ public class WaterHeater {
     **/
     public void setNumberOfElements(int numberOfElements)
     {
-        this._numberOfElements = numberOfElements;
+        this.numberOfElements = numberOfElements;
         this._has_numberOfElements = true;
     } //-- void setNumberOfElements(int) 
 
@@ -104,7 +106,7 @@ public class WaterHeater {
     **/
     public void setNumberOfGallons(NumberOfGallons numberOfGallons)
     {
-        this._numberOfGallons = numberOfGallons;
+        this.numberOfGallons = numberOfGallons;
     } //-- void setNumberOfGallons(NumberOfGallons) 
 
 }

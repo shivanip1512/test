@@ -1262,6 +1262,7 @@
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
     <bean id="operatorThermostatHelperImpl" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorThermostatHelperImpl"/>
     <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
+    <bean id="applianceValidator" class="com.cannontech.web.stars.dr.operator.validator.ApplianceValidator"/>
     <bean id="contactDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
     <bean id="callReportValidator" class="com.cannontech.web.stars.dr.operator.validator.CallReportValidator"/>
@@ -1269,6 +1270,8 @@
   	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.ChangeLoginValidatorFactoryImpl" />
   	<bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />
 
+    <bean id="displayableApplianceService" class="com.cannontech.web.stars.dr.operator.service.impl.DisplayableApplianceServiceImpl"/>
+    <bean id="starsApplianceService" class="com.cannontech.stars.dr.appliance.service.impl.StarsApplianceServiceImpl"/>
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 

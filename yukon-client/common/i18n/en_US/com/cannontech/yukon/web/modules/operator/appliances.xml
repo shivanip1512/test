@@ -2,6 +2,121 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <entry key="yukon.web.modules.operator.appliances.pageName">Appliances</entry>
+	<!-- Appliance List Page -->
+    <entry key="yukon.web.modules.operator.applianceList.pageName">Appliances</entry>
+    <entry key="yukon.web.modules.operator.applianceList.title">Appliances</entry>
     
+    <entry key="yukon.web.modules.operator.applianceList.appliances">Appliances</entry>
+    <entry key="yukon.web.modules.operator.applianceList.applianceName">Appliance Name</entry>
+    <entry key="yukon.web.modules.operator.applianceList.inventoryName">Inventory Name</entry>
+    <entry key="yukon.web.modules.operator.applianceList.programName">Program Name</entry>
+    <entry key="yukon.web.modules.operator.applianceList.actions">Actions</entry>
+    <entry key="yukon.web.modules.operator.applianceList.noAppliances">No existing appliances</entry>
+    
+    <!-- Appliance Icon Links -->
+   	<entry key="yukon.web.modules.operator.applianceList.editAppliance.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+	<entry key="yukon.web.modules.operator.applianceList.editAppliance.hoverUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
+	<entry key="yukon.web.modules.operator.applianceList.editAppliance.hoverText">Edit appliance</entry>
+    
+    <entry key="yukon.web.modules.operator.applianceList.deleteAppliance.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.modules.operator.applianceList.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.modules.operator.applianceList.deleteAppliance.hoverText">Delete appliance</entry>
+	
+	<entry key="yukon.web.modules.operator.applianceList.create">Create</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceCreationFailed">Appliance creation failed</entry>
+    
+    <!-- Appliance Info Page -->
+    <entry key="yukon.web.modules.operator.applianceEdit.title">Appliance Information</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceInfo">Appliance Information</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceCategory">Appliance Category</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.modelNumber">Model #</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.location">Location</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.manufacturer">Manufacturer</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.yearManufactured">Year Manufactured</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.kwCapacity">KW Capacity</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.efficiencyRating">efficiencyRating</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.notes">Notes</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.tonnage">Year Manufactured</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceType">Appliance Type</entry>
+
+	<!-- Appliance Specific Fields -->
+	<entry key="yukon.web.modules.operator.applianceEdit.ac.tonnage">Tonnage</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.ac.type">Type</entry>
+    
+    <entry key="yukon.web.modules.operator.applianceEdit.chiller.tonnage">Tonnage</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.chiller.type">Type</entry>
+
+	<entry key="yukon.web.modules.operator.applianceEdit.dualAC.stageOneTonnage">Stage One Tonnage</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.dualAC.stageTwoTonnage">Stage Two Tonnage</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.dualAC.type">Type</entry>
+    
+    <entry key="yukon.web.modules.operator.applianceEdit.dualFuel.switchOverType">Switch-over Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.dualFuel.secondaryKWCapacity">Secondary KW Capacity</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.dualFuel.secondaryEnergySource">Secondary Energy Source</entry>
+    
+    <entry key="yukon.web.modules.operator.applianceEdit.generator.transferSwitchType">Transfer Switch Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.generator.transferSwitchManufacturer">Transfer Switch Manufacturer</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.generator.peakKWCapacity">Peak KW Capacity</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.generator.fuelCapacity">Fuel Capacity (gal)</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.generator.startDelay">Start Delay (sec)</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.grainDryer.dryerType">Dryer Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.grainDryer.binSize">Bin Size</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.grainDryer.blowerEnergySource">Blower Energy Source</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.grainDryer.blowerHorsePower">Blower Horse Power</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.grainDryer.blowerHeatSource">Blower Heat Source</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.heatPump.pumpType">Pump Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.heatPump.pumpSize">Pump Size</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.heatPump.standbySource">Stand-by Source</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.heatPump.restartDelaySeconds">Restart Delay (sec)</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.irrigation.irrigationType">Irrigation Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.irrigation.horsePower">Horse Power</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.irrigation.energySource">Energy Source</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.irrigation.soilType">Soil Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.irrigation.meterLocation">Meter Location</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.irrigation.meterVoltage">Meter Voltage</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.storageHeat.storageType">Storage Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.storageHeat.peakKWCapacity">Peak KW Capacity</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.storageHeat.hoursToRecharge">Recharge Time (hr)</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.wh.numOfGallons"># Gallons</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.wh.energySource">Energy Source</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.wh.numOfHeatingCoils"># Heating Coils</entry>
+    
+	<!-- Enrollment -->
+    <entry key="yukon.web.modules.operator.applianceEdit.enrollment">Enrollment</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.program">Program</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.loadGroup">Load Group</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.relay">Relay</entry>
+
+	<!-- Hardware Summary -->
+    <entry key="yukon.web.modules.operator.applianceEdit.hardwareSummary">Hardware Summary</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.category">Category</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.hardwareType">Hardware Type</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.serialNumber">Serial Number</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceCreated">Appliance Created</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceUpdated">Appliance Updated</entry>
+
+    <!-- Validation -->
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be 4 numbers in length.</entry>
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.kwCapacity">KW Capacity must be a number and can only be 14 numbers in length.</entry>
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.efficiencyRating">Efficiency Rating must be a number and can only be 14 numbers in length.</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.dualFuel.secondaryKWCapacity">Secondary KW Capacity must be a number and can only be 14 numbers in length.</entry>
+
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.generator.peakKWCapacity">Peak KW Capacity must be a number and can only be 14 numbers in length.</entry>
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.generator.fuelCapGallons">Fuel Cap Gallons must be a number and can only be 14 numbers in length.</entry>
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.generator.startDelaySeconds">Start Delay must be a number and can only be 14 numbers in length.</entry>
+
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.heatPump.restartDelaySeconds">Restart Delay must be a number and can only be 14 numbers in length.</entry>
+    
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.storageHeat.peakKWCapacity">Peak KW Capacity must be a number and can only be 14 numbers in length.</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.storageHeat.hoursToRecharge">Recharge Time must be a number and can only be 14 numbers in length.</entry>
+
+    <entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.wh.numOfHeatingCoils"># Heating Coils must be a number and can only be 14 numbers in length.</entry>
+
  </properties>

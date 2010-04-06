@@ -3,6 +3,9 @@ package com.cannontech.database.data.lite.stars;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 
 /**
  * @author yao
@@ -579,6 +582,7 @@ public class LiteStarsAppliance extends LiteBase {
 	
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
 	private int applianceCategoryID = com.cannontech.database.db.stars.appliance.ApplianceCategory.NONE_INT;
+	private ApplianceCategory applianceCategory;
 	private int programID = 0;
 	private int yearManufactured = 0;
 	private int manufacturerID = CtiUtilities.NONE_ZERO_ID;
@@ -687,14 +691,24 @@ public class LiteStarsAppliance extends LiteBase {
 	}
 
 	/**
-	 * Sets the applianceCategoryID.
+	 * Sets the applianceCategoryID and also helps in setting the applianceCategory.
 	 * @param applianceCategoryID The applianceCategoryID to set
 	 */
 	public void setApplianceCategoryID(int applianceCategoryID) {
 		this.applianceCategoryID = applianceCategoryID;
+		ApplianceCategoryDao applianceCategoryDao = YukonSpringHook.getBean("applianceCategoryDao", ApplianceCategoryDao.class);
+		ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryID);
+		setApplianceCategory(applianceCategory);
 	}
+	
+	public ApplianceCategory getApplianceCategory() {
+        return applianceCategory;
+    }
+    public void setApplianceCategory(ApplianceCategory applianceCategory) {
+        this.applianceCategory = applianceCategory;
+    }
 
-	/**
+    /**
 	 * Sets the programID.
 	 * @param programID The programID to set
 	 */
@@ -794,7 +808,7 @@ public class LiteStarsAppliance extends LiteBase {
 	 * Returns the kwCapacity.
 	 * @return int
 	 */
-	public double getKWCapacity() {
+	public double getKwCapacity() {
 		return kwCapacity;
 	}
 
@@ -810,7 +824,7 @@ public class LiteStarsAppliance extends LiteBase {
 	 * Sets the kwCapacity.
 	 * @param kwCapacity The kwCapacity to set
 	 */
-	public void setKWCapacity(double kwCapacity) {
+	public void setKwCapacity(double kwCapacity) {
 		this.kwCapacity = kwCapacity;
 	}
 

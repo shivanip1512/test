@@ -864,7 +864,6 @@ public class ProgramSignUpAction implements ActionBase {
 				liteStarsProg.updateProgramStatus( liteAcctInfo.getProgramHistory() );
 			}
     		
-			liteAcctInfo.setAppliances( newAppList );
 			liteAcctInfo.setPrograms( newProgList );
 			
             /* New enrollment, opt out, and control history tracking

@@ -7,21 +7,21 @@ public class StorageHeat {
      //- Class/Member Variables -/
     //--------------------------/
 
-    private StorageType _storageType;
+    private StorageType storageType;
 
-    private int _peakKWCapacity;
+    private int peakKWCapacity;
 
     /**
      * keeps track of state for field: _peakKWCapacity
     **/
-    private boolean _has_peakKWCapacity;
+    private boolean has_peakKWCapacity;
 
-    private int _hoursToRecharge;
+    private int hoursToRecharge;
 
     /**
      * keeps track of state for field: _hoursToRecharge
     **/
-    private boolean _has_hoursToRecharge;
+    private boolean has_hoursToRecharge;
 
 
       //----------------/
@@ -30,6 +30,7 @@ public class StorageHeat {
 
     public StorageHeat() {
         super();
+        this.storageType = new StorageType();
     } //-- com.cannontech.stars.xml.serialize.StorageHeat()
 
 
@@ -41,14 +42,14 @@ public class StorageHeat {
     **/
     public void deleteHoursToRecharge()
     {
-        this._has_hoursToRecharge= false;
+        this.has_hoursToRecharge= false;
     } //-- void deleteHoursToRecharge() 
 
     /**
     **/
     public void deletePeakKWCapacity()
     {
-        this._has_peakKWCapacity= false;
+        this.has_peakKWCapacity= false;
     } //-- void deletePeakKWCapacity() 
 
     /**
@@ -58,7 +59,7 @@ public class StorageHeat {
     **/
     public int getHoursToRecharge()
     {
-        return this._hoursToRecharge;
+        return this.hoursToRecharge;
     } //-- int getHoursToRecharge() 
 
     /**
@@ -68,7 +69,7 @@ public class StorageHeat {
     **/
     public int getPeakKWCapacity()
     {
-        return this._peakKWCapacity;
+        return this.peakKWCapacity;
     } //-- int getPeakKWCapacity() 
 
     /**
@@ -78,21 +79,21 @@ public class StorageHeat {
     **/
     public StorageType getStorageType()
     {
-        return this._storageType;
+        return this.storageType;
     } //-- StorageType getStorageType() 
 
     /**
     **/
     public boolean hasHoursToRecharge()
     {
-        return this._has_hoursToRecharge;
+        return this.has_hoursToRecharge;
     } //-- boolean hasHoursToRecharge() 
 
     /**
     **/
     public boolean hasPeakKWCapacity()
     {
-        return this._has_peakKWCapacity;
+        return this.has_peakKWCapacity;
     } //-- boolean hasPeakKWCapacity() 
 
     /**
@@ -102,8 +103,8 @@ public class StorageHeat {
     **/
     public void setHoursToRecharge(int hoursToRecharge)
     {
-        this._hoursToRecharge = hoursToRecharge;
-        this._has_hoursToRecharge = true;
+        this.hoursToRecharge = hoursToRecharge;
+        this.has_hoursToRecharge = true;
     } //-- void setHoursToRecharge(int) 
 
     /**
@@ -113,8 +114,8 @@ public class StorageHeat {
     **/
     public void setPeakKWCapacity(int peakKWCapacity)
     {
-        this._peakKWCapacity = peakKWCapacity;
-        this._has_peakKWCapacity = true;
+        this.peakKWCapacity = peakKWCapacity;
+        this.has_peakKWCapacity = true;
     } //-- void setPeakKWCapacity(int) 
 
     /**
@@ -124,7 +125,7 @@ public class StorageHeat {
     **/
     public void setStorageType(StorageType storageType)
     {
-        this._storageType = storageType;
+        this.storageType = storageType;
     } //-- void setStorageType(StorageType) 
 
 }

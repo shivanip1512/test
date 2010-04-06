@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
+<%@ attribute name="myFormId" required="false" type="java.lang.String" %>
 <%@ attribute name="width" required="false" type="java.lang.String"%>
 
 <c:if test="${empty pageScope.width}">
@@ -11,4 +12,7 @@
 </c:if>
 
 <cti:msg var="resetButtonText" key="yukon.web.defaults.button.reset.label" />
-<input type="reset" value="${resetButtonText}" style="width:${pageScope.width}">
+<input type="reset" 
+       value="${resetButtonText}" 
+       style="width:${pageScope.width}" 
+       <c:if test="${not empty pageScope.myFormId}"> onclick="$('${pageScope.myFormId}').reset();"</c:if>>

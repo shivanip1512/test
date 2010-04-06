@@ -60,6 +60,25 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         return list;
     }    
     
+    @Override
+    public LiteStarsAppliance getByApplianceIdAndEnergyCompanyId(int applianceId, int energyCompanyId) {
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT AccountID,ApplianceCategoryID,ProgramID,YearManufactured,");
+        sqlBuilder.append(" ManufacturerID,LocationID,KWCapacity,EfficiencyRating,Notes,ModelNumber,");
+        sqlBuilder.append(" InventoryID,ab.ApplianceID,AddressingGroupID,LoadNumber");
+        sqlBuilder.append("FROM ApplianceBase ab");
+        sqlBuilder.append("LEFT JOIN LMHardwareConfiguration LMHC ON ab.ApplianceID = LMHC.ApplianceID");
+        sqlBuilder.append("WHERE ab.ApplianceId = ?");
+        final String sql = sqlBuilder.toString();
+        
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        ParameterizedRowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
+        
+        LiteStarsAppliance liteStarsAppliance = simpleJdbcTemplate.queryForObject(sql, rowMapper, applianceId);
+        return liteStarsAppliance;
+        
+    }
+
     private ParameterizedRowMapper<LiteStarsAppliance> createRowMapper(final LiteStarsEnergyCompany energyCompany) {
         return new ParameterizedRowMapper<LiteStarsAppliance>() {
             @Override

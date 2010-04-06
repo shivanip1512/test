@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.appliance.model;
 
+import java.util.Comparator;
+
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 
 
@@ -27,7 +29,16 @@ public class ApplianceCategory {
         this.webConfiguration = webConfiguration;
     }
 
+    public static Comparator<ApplianceCategory> NAME_COMPARATOR = new Comparator<ApplianceCategory>() {
 
+        @Override
+        public int compare(ApplianceCategory appCat1, ApplianceCategory appCat2) {
+            return appCat1.getName().toLowerCase().compareTo(appCat2.getName().toLowerCase());
+        }
+        
+    };
+
+    
     public int getApplianceCategoryId() {
         return applianceCategoryId;
     }

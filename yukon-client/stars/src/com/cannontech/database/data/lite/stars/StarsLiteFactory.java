@@ -417,7 +417,7 @@ public class StarsLiteFactory {
 		liteApp.setLocationID( app.getApplianceBase().getLocationID().intValue() );
 		liteApp.setNotes( app.getApplianceBase().getNotes() );
 		liteApp.setModelNumber( app.getApplianceBase().getModelNumber() );
-		liteApp.setKWCapacity( app.getApplianceBase().getKWCapacity().doubleValue() );
+		liteApp.setKwCapacity( app.getApplianceBase().getKWCapacity().doubleValue() );
 		liteApp.setEfficiencyRating( app.getApplianceBase().getEfficiencyRating().doubleValue() );
 		
 		if (app.getLMHardwareConfig() != null && app.getLMHardwareConfig().getInventoryID() != null) {
@@ -926,7 +926,7 @@ public class StarsLiteFactory {
 		app.getApplianceBase().setLocationID( new Integer(liteApp.getLocationID()) );
 		app.getApplianceBase().setNotes( liteApp.getNotes() );
 		app.getApplianceBase().setModelNumber( liteApp.getModelNumber() );
-		app.getApplianceBase().setKWCapacity( new Double(liteApp.getKWCapacity()) );
+		app.getApplianceBase().setKWCapacity( new Double(liteApp.getKwCapacity()) );
 		app.getApplianceBase().setEfficiencyRating( new Double(liteApp.getEfficiencyRating()) );
 		
 		if (liteApp.getInventoryID() != CtiUtilities.NONE_ZERO_ID) {
@@ -2089,8 +2089,8 @@ public class StarsLiteFactory {
 		starsApp.setNotes( StarsUtils.forceNotNull(liteApp.getNotes()) );
 		starsApp.setModelNumber( StarsUtils.forceNotNull(liteApp.getModelNumber()) );
         
-		if (liteApp.getKWCapacity() > 0)
-			starsApp.setKWCapacity( liteApp.getKWCapacity() );
+		if (liteApp.getKwCapacity() > 0)
+			starsApp.setKwCapacity( liteApp.getKwCapacity() );
 		if (liteApp.getEfficiencyRating() > 0)
 			starsApp.setEfficiencyRating( liteApp.getEfficiencyRating() );
 		if (liteApp.getYearManufactured() > 0)
@@ -2118,7 +2118,7 @@ public class StarsLiteFactory {
 					DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getTonnageID() ),
 					Tonnage.class)
 			);
-			ac.setACType(
+			ac.setAcType(
 				(ACType) StarsFactory.newStarsCustListEntry(
 					DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getTypeID() ),
 					ACType.class)
@@ -2140,7 +2140,7 @@ public class StarsLiteFactory {
                       DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getStageTwoTonnageID() ),
                       Tonnage.class)
             );
-            ac.setACType(
+            ac.setAcType(
                 (ACType) StarsFactory.newStarsCustListEntry(
                     DaoFactory.getYukonListDao().getYukonListEntry( liteAC.getTypeID() ),
                     ACType.class)
@@ -2157,7 +2157,7 @@ public class StarsLiteFactory {
                     DaoFactory.getYukonListDao().getYukonListEntry( liteChill.getTonnageID() ),
                     Tonnage.class)
             );
-            chill.setACType(
+            chill.setAcType(
                 (ACType) StarsFactory.newStarsCustListEntry(
                     DaoFactory.getYukonListDao().getYukonListEntry( liteChill.getTypeID() ),
                     ACType.class)

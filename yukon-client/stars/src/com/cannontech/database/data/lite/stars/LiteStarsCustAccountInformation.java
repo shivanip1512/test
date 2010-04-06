@@ -32,7 +32,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private LiteSiteInformation siteInformation = null;
 	private LiteCustomerResidence customerResidence = null;
 	private List<LiteStarsLMProgram> programs = null;		// List of LiteStarsLMProgram
-    private List<LiteStarsAppliance> appliances = null; // List of LiteStarsAppliance
     private List<LiteStarsAppliance> unassignedAppliances = null;
 	private List<Integer> inventories = null;	// List of IDs of LiteInventoryBase
 	private List<LiteLMProgramEvent> programHistory = null;	// List of LiteLMProgramEvent
@@ -79,13 +78,11 @@ public class LiteStarsCustAccountInformation extends LiteBase {
      * @return ArrayList
      */
     public synchronized List<LiteStarsAppliance> getAppliances() {
-        if (appliances == null) {
-            if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
-                StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
-                appliances = starsApplianceDao.getByAccountId(getAccountID(), energyCompanyId);
-            }
+        if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+            StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
+            return starsApplianceDao.getByAccountId(getAccountID(), energyCompanyId);
         }
-        return appliances;
+        return null;
     }
 
     /**
@@ -170,14 +167,6 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 		    }
 		}
 		return serviceRequestHistory;
-	}
-
-	/**
-	 * Sets the appliances.
-	 * @param appliances The appliances to set
-	 */
-	public void setAppliances(List<LiteStarsAppliance> appliances) {
-		this.appliances = appliances;
 	}
 
 	/**

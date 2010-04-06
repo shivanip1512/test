@@ -122,8 +122,8 @@ public class StarsFactory {
 			
 			if (app.hasYearManufactured())
 				starsApp.setYearManufactured( app.getYearManufactured() );
-			if (app.hasKWCapacity())
-				starsApp.setKWCapacity( app.getKWCapacity() );
+			if (app.hasKwCapacity())
+				starsApp.setKwCapacity( app.getKwCapacity() );
 			if (app.hasEfficiencyRating())
 				starsApp.setEfficiencyRating( app.getEfficiencyRating() );
 			

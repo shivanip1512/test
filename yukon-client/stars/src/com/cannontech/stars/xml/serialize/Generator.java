@@ -11,7 +11,8 @@ public class Generator {
     private boolean hasStartDelaySeconds;
 
     public Generator() {
-
+        this.transferSwitchType = new TransferSwitchType();
+        this.transferSwitchManufacturer = new TransferSwitchManufacturer();
     }
 
     public void deleteFuelCapGallons() {

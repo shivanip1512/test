@@ -953,8 +953,20 @@
             </page>
             <page name="appliances" type="DETAIL_CHILD_WITH_NAVIGATION">
               <menu>account</menu>
-              <link>/spring/stars/operator/appliances/something?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+              <link>/spring/stars/operator/appliances/applianceList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
               <labelArgument>${accountNumber}</labelArgument>
+              <pages>
+                  <page name="applianceEdit" type="DETAIL_CHILD">
+                      <menu>account</menu>
+                      <link>/spring/stars/operator/appliances/applianceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;applianceId=${applianceId}</link>
+                      <labelArgument>${accountNumber}</labelArgument>
+                  </page>
+                  <page name="applianceNew" type="DETAIL_CHILD">
+                      <menu>account</menu>
+                      <link>/spring/stars/operator/appliances/applianceNew?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;applianceId=${applianceId}</link>
+                      <labelArgument>${accountNumber}</labelArgument>
+                  </page>
+              </pages>
             </page>
             <page name="hardwareList" type="DETAIL_CHILD_WITH_NAVIGATION">
               <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />

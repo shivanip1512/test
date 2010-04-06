@@ -7,35 +7,17 @@ import javax.xml.soap.SOAPMessage;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.database.db.stars.appliance.ApplianceAirConditioner;
-import com.cannontech.database.db.stars.appliance.ApplianceDualFuel;
-import com.cannontech.database.db.stars.appliance.ApplianceGenerator;
-import com.cannontech.database.db.stars.appliance.ApplianceGrainDryer;
-import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
-import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
-import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
-import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
-import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
-import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
-import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
-import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
-import com.cannontech.stars.dr.program.dao.ProgramDao;
-import com.cannontech.stars.dr.program.model.Program;
+import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsDeleteAppliance;
 import com.cannontech.stars.xml.serialize.StarsDeleteApplianceResponse;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -61,7 +43,7 @@ public class DeleteApplianceAction implements ActionBase {
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) return null;
 			
-			StarsDeleteAppliance delApp = new StarsDeleteAppliance();
+			StarsAppliance delApp = new StarsAppliance();
 			delApp.setApplianceID( Integer.parseInt(req.getParameter("AppID")) );
 			
 			StarsOperation operation = new StarsOperation();
@@ -100,113 +82,15 @@ public class DeleteApplianceAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
         	
-			StarsDeleteAppliance delApp = reqOper.getStarsDeleteAppliance();
-        	
-			LiteStarsAppliance liteApp = null;
-			boolean unenrollProgram = false;
-        	
-			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-				LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-				if (lApp.getApplianceID() == delApp.getApplianceID()) {
-					liteApp = lApp;
-					break;
-				}
-			}
-			if (liteApp == null) {
-			    for (LiteStarsAppliance lApp : liteAcctInfo.getUnassignedAppliances()) {
-	                if (lApp.getApplianceID() == delApp.getApplianceID()) {
-                        liteApp = lApp;
-                        break;
-                    }
-			    }
-			}
-			if (liteApp == null) {
-				respOper.setStarsFailure( StarsFactory.newStarsFailure(
-						StarsConstants.FAILURE_CODE_OPERATION_FAILED, "Cannot find the appliance information") );
-				return SOAPUtil.buildSOAPMessage( respOper );
-			}
-        	
-			if (liteApp.getProgramID() > 0) {
-				unenrollProgram = false;
-				for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-					LiteStarsAppliance lApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
-					if (lApp.getApplianceCategoryID() == liteApp.getApplianceCategoryID() &&
-						lApp.getInventoryID() == liteApp.getInventoryID() &&
-						lApp.getProgramID() == liteApp.getProgramID() &&
-						lApp.getAddressingGroupID() == liteApp.getAddressingGroupID()) {
-						
-						unenrollProgram = true;
-						break;
-					}
-				}
-			}
-        	
-			if (liteApp.getAirConditioner() != null) {
-				ApplianceAirConditioner app = new ApplianceAirConditioner();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getWaterHeater() != null) {
-				ApplianceWaterHeater app = new ApplianceWaterHeater();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getDualFuel() != null) {
-				ApplianceDualFuel app = new ApplianceDualFuel();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getGenerator() != null) {
-				ApplianceGenerator app = new ApplianceGenerator();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getGrainDryer() != null) {
-				ApplianceGrainDryer app = new ApplianceGrainDryer();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getStorageHeat() != null) {
-				ApplianceStorageHeat app = new ApplianceStorageHeat();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getHeatPump() != null) {
-				ApplianceHeatPump app = new ApplianceHeatPump();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-			else if (liteApp.getIrrigation() != null) {
-				ApplianceIrrigation app = new ApplianceIrrigation();
-				app.setApplianceID( new Integer(liteApp.getApplianceID()) );
-				Transaction.createTransaction(Transaction.DELETE, app).execute();
-			}
-        	
-    		
-			if (unenrollProgram) {
-				LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-
-                LoadGroupDao loadGroupDao = YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
-                LoadGroup loadGroup = loadGroupDao.getById(liteApp.getAddressingGroupID());
-                String loadGroupName = loadGroup.getLoadGroupName();
-
-                ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
-                Program program = programDao.getByProgramId(liteApp.getProgramID());
-                String programName = program.getProgramName();
-
-                LMHardwareBaseDao lmHardwareBaseDao = YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
-                LMHardwareBase hardwareBase = lmHardwareBaseDao.getById(liteApp.getInventoryID());
-                String serialNumber = hardwareBase.getManufacturerSerialNumber(); 
+			StarsAppliance delApp = reqOper.getStarsDeleteAppliance();
+        	LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(user.getEnergyCompanyID());
+			
+			StarsApplianceService starsApplianceService = YukonSpringHook.getBean("starsApplianceService", StarsApplianceService.class);
+			starsApplianceService.removeStarsAppliance(delApp.getApplianceID(), user.getEnergyCompanyID(), liteAcctInfo.getCustomerAccount().getAccountNumber(), user.getYukonUser());
                 
-                EnrollmentHelper enrollmentHelper = new EnrollmentHelper(liteAcctInfo.getCustomerAccount().getAccountNumber(),
-                                                                         loadGroupName, 
-                                                                         programName, 
-                                                                         serialNumber);
-                
-                
-                EnrollmentHelperService enrollmentHelperService = YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);
-                enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user.getYukonUser());
-				
+            if (delApp.getProgramID() > 0 &&
+                    delApp.getInventoryID() > 0) {
+
 				StarsDeleteApplianceResponse resp = new StarsDeleteApplianceResponse();
 				resp.setStarsLMPrograms( StarsLiteFactory.createStarsLMPrograms(liteAcctInfo, energyCompany) );
 				respOper.setStarsDeleteApplianceResponse( resp );
@@ -221,7 +105,7 @@ public class DeleteApplianceAction implements ActionBase {
 			app.setApplianceID( new Integer(delApp.getApplianceID()) );
 			Transaction.createTransaction(Transaction.DELETE, app).execute();
 			
-			liteAcctInfo.getAppliances().remove( liteApp );
+			liteAcctInfo.getAppliances().remove( delApp );
 			
 			return SOAPUtil.buildSOAPMessage( respOper );
 		}
@@ -260,7 +144,7 @@ public class DeleteApplianceAction implements ActionBase {
 				return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 			
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
-			StarsDeleteAppliance delApp = reqOper.getStarsDeleteAppliance();
+			StarsAppliance delApp = reqOper.getStarsDeleteAppliance();
 			
 			StarsAppliances appliances = accountInfo.getStarsAppliances();
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
