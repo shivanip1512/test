@@ -86,6 +86,27 @@ public class ChunkingSqlTemplate<E> {
             simpleJdbcTemplate.update(sql, args);
         }
     }
+
+    public void update(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input) {
+    	
+    	final List<E> tempInputList = new ArrayList<E>(input);
+    	final List<SqlFragmentSource> sqlFragmentList = new ArrayList<SqlFragmentSource>();
+    	
+    	int inputSize = tempInputList.size();
+    	for (int start = 0; start < inputSize; start += chunkSize ) {
+    		int nextToIndex = start + chunkSize;
+    		int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
+    		
+    		List<E> subList = tempInputList.subList(start, toIndex);
+    		
+    		SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
+    		sqlFragmentList.add(sqlFragmentSource);
+    	}
+    	
+    	for (final SqlFragmentSource sql : sqlFragmentList) {
+    		simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());
+    	}
+    }
     
     public void setChunkSize(final int chunkSize) {
         this.chunkSize = chunkSize;

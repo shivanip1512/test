@@ -9,7 +9,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.RowAndFieldMapper;
@@ -100,13 +101,13 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
      * Sql generator for deleting call reports from CallReportBase, useful for bulk deleteing
      * with chunking sql template.
      */
-    private class CallReportBaseDeleteSqlGenerator implements SqlGenerator<Integer> {
+    private class CallReportBaseDeleteSqlGenerator implements SqlFragmentGenerator<Integer> {
 
         @Override
-        public String generate(List<Integer> callReportIds) {
+        public SqlFragmentSource generate(List<Integer> callReportIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM CallReportBase WHERE CallId IN (", callReportIds, ")");
-            return sql.toString();
+            return sql;
         }
     }
     
