@@ -31,5 +31,6 @@
     <entry key="yukon.web.modules.operator.contactEdit.contactDeleted">Contact Deleted</entry>
     <entry key="yukon.web.modules.operator.contactEdit.notificationDeleted">Notification Deleted</entry>
     <entry key="yukon.web.modules.operator.contactEdit.notificationCreated">Notification Created</entry>
+    <entry key="yukon.web.modules.operator.contactEdit.error.noNotificationMethod">Notification method has not been chosen.</entry>
     
 </properties>
