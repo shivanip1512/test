@@ -303,7 +303,8 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
                 {
                     _klondike.setReadingDeviceQueue(true);
 
-                    OutMessage->Priority = _klondike.getRemoteWorkPriority();
+                    //  read at high priority to ensure we get out ahead of any load queue commands
+                    OutMessage->Priority = MAXPRIORITY - 1;  //  _klondike.getRemoteWorkPriority();
                     OutMessage->Sequence = Klondike::Command_ReadQueue;
 
                     command_built = true;
