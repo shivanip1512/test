@@ -805,6 +805,10 @@ input.error {
 	background: #FFDDDD; /*light red background*/
 }
 
+select.error {
+	background-color: #FFDDDD; /*light red background*/
+}
+
 textarea.error {
 	background: #FFDDDD; /*light red background*/
 }

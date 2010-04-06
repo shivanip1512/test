@@ -53,19 +53,24 @@ public class ContactDtoValidator extends SimpleValidator<ContactDto> {
 		List<ContactNotificationDto> otherNotifications = contactDto.getOtherNotifications();
 		for (int i = 0; i < otherNotifications.size(); i++) {
 			
-			String field = "otherNotifications[" + i + "].notificationValue";
+			String valueField = "otherNotifications[" + i + "].notificationValue";
+			String typeField = "otherNotifications[" + i + "].contactNotificationType";
 			
 			ContactNotificationDto contactNotificationDto = otherNotifications.get(i);
 			String notificationValue = contactNotificationDto.getNotificationValue();
 			ContactNotificationType contactNotificationType = contactNotificationDto.getContactNotificationType();
 			
+			if (contactNotificationType == null && StringUtils.isNotBlank(notificationValue)) {
+				errors.rejectValue(typeField, "yukon.web.modules.operator.contactEdit.error.noNotificationMethod");
+			}
+			
 			if (notificationValue != null && contactNotificationType != null && (contactNotificationType.isPhoneType() || contactNotificationType.isFaxType())) {
 				if (phoneNumberFormattingService.isHasInvalidCharacters(notificationValue)) {
-					errors.rejectValue(field, "yukon.web.modules.operator.accountGeneral.invalidPhoneNumber");
+					errors.rejectValue(valueField, "yukon.web.modules.operator.accountGeneral.invalidPhoneNumber");
 				}
 			}
 			
-			YukonValidationUtils.checkExceedsMaxLength(errors, field, notificationValue, MAX_NOTIFICATION_LENGTH);
+			YukonValidationUtils.checkExceedsMaxLength(errors, valueField, notificationValue, MAX_NOTIFICATION_LENGTH);
 		}
 	}
 
