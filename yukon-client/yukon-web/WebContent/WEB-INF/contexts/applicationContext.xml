@@ -907,6 +907,7 @@
     </bean>
     
     <bean id="msg2TagPrototype" class="com.cannontech.web.i18n.Msg2Tag">
+        <property name="objectFormattingService" ref="objectFormattingService"/>
     </bean>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
@@ -1033,6 +1034,7 @@
         <property name="addressDao" ref="addressDao"/>
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
         <property name="phoneNumberFormattingService" ref="phoneNumberFormattingService"/>
+        <property name="rolePropertyDao" ref="rolePropertyDao"/>
     </bean>     
     
     <bean id="userNameTagPrototype" class="com.cannontech.web.taglib.UserNameTag">
@@ -1267,10 +1269,16 @@
     <bean id="operatorAccountService" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorAccountServiceImpl"/>
     <bean id="operatorThermostatHelperImpl" class="com.cannontech.web.stars.dr.operator.service.impl.OperatorThermostatHelperImpl"/>
     <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
+    <bean id="applianceValidator" class="com.cannontech.web.stars.dr.operator.validator.ApplianceValidator"/>
     <bean id="contactDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
+    <bean id="callReportValidator" class="com.cannontech.web.stars.dr.operator.validator.CallReportValidator"/>
     
   	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.ChangeLoginValidatorFactoryImpl" />
+  	<bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />
+
+    <bean id="displayableApplianceService" class="com.cannontech.web.stars.dr.operator.service.impl.DisplayableApplianceServiceImpl"/>
+    <bean id="starsApplianceService" class="com.cannontech.stars.dr.appliance.service.impl.StarsApplianceServiceImpl"/>
     
     <bean class="com.cannontech.web.layout.PageDetailProducer"/>
 
@@ -1373,7 +1381,17 @@
         </property>
     </bean>
 
-    <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker"/>
+    <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
+        <property name="filters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
+                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
+                </bean>
+                <bean class="com.cannontech.common.search.pao.db.ApplianceCategoryUsableFilter"/>
+            </list>
+        </property>
+    </bean>
+    <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
 
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"
