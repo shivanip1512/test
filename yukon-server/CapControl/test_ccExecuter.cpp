@@ -409,59 +409,71 @@ BOOST_AUTO_TEST_CASE(test_sendLtcKeepAlive)
     {
         delete_container(toDispatch);
         toDispatch.clear();
+        delete_container(requests);
+        requests.clear();
 
         TestAttributeService* attributeService = new TestAttributeService();
         CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 1);//Consumed in exectuor.
         CtiCCCommandExecutor commandExecutor(commandMsg);
         commandExecutor.setAttributeService(attributeService);
 
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch);
+        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
 
-        BOOST_CHECK(toDispatch.size() == 2);
+        BOOST_CHECK(toDispatch.size() == 1);
+        BOOST_CHECK(requests.size() == 1);
     }
 
     //PaoId of 0 Error case. No out messages is the only way to tell... Add error flags?
     {
         delete_container(toDispatch);
         toDispatch.clear();
+        delete_container(requests);
+        requests.clear();
 
         TestAttributeService* attributeService = new TestAttributeService();
         CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 0);//Consumed in exectuor.
         CtiCCCommandExecutor commandExecutor(commandMsg);
         commandExecutor.setAttributeService(attributeService);
 
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch);
+        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
 
         BOOST_CHECK(toDispatch.size() == 0);
+        BOOST_CHECK(requests.size() == 0);
     }
 
     //PaoId of 2 does not exist. No out messages is the only way to tell... Add error flags?
     {
         delete_container(toDispatch);
         toDispatch.clear();
+        delete_container(requests);
+        requests.clear();
 
         TestAttributeService* attributeService = new TestAttributeService();
         CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 2);//Consumed in exectuor.
         CtiCCCommandExecutor commandExecutor(commandMsg);
         commandExecutor.setAttributeService(attributeService);
 
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch);
+        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
 
         BOOST_CHECK(toDispatch.size() == 0);
+        BOOST_CHECK(requests.size() == 0);
     }
 
     //Point Attribute Not Found. No out messages is the only way to tell... Add error flags?
     {
         delete_container(toDispatch);
         toDispatch.clear();
+        delete_container(requests);
+        requests.clear();
 
         TestAttributeService_ErrorCase* attributeService = new TestAttributeService_ErrorCase();
         CtiCCCommand* commandMsg = new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, 1);//Consumed in exectuor.
         CtiCCCommandExecutor commandExecutor(commandMsg);
         commandExecutor.setAttributeService(attributeService);
 
-        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch);
+        commandExecutor.sendLtcKeepAlive(commandMsg->getCommand(),toDispatch,requests);
 
         BOOST_CHECK(toDispatch.size() == 0);
+        BOOST_CHECK(requests.size() == 0);
     }
 }

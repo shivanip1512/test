@@ -11,9 +11,6 @@
 #include "CapControlPao.h"
 #include "UpdatablePao.h"
 
-class LoadTapChanger;
-typedef LoadTapChanger* LoadTapChangerPtr;
-
 class LoadTapChanger : public RWCollectable, public CapControlPao, public UpdatablePao
 {
     private:
@@ -24,6 +21,11 @@ class LoadTapChanger : public RWCollectable, public CapControlPao, public Updata
         LitePoint _tapPositionPoint;
 
         bool _updated;
+        bool _manualLocalMode;
+
+        bool _lowerTap;
+        bool _raiseTap;
+        bool _autoRemote;
 
         PointValueHolder _pointValues;
 
@@ -46,6 +48,9 @@ class LoadTapChanger : public RWCollectable, public CapControlPao, public Updata
         bool isUpdated();
         void setUpdated(bool updated);
 
+        bool isManualLocalMode();
+        void setManualLocalMode(bool manualLocalMode);
+
         void setLtcVoltagePoint(const LitePoint& point);
         const LitePoint& getLtcVoltagePoint();
 
@@ -65,5 +70,9 @@ class LoadTapChanger : public RWCollectable, public CapControlPao, public Updata
 
         void saveGuts(RWvostream& ostrm) const;
 
+        void updateFlags();
+
         LoadTapChanger& operator=(const LoadTapChanger& right);
 };
+
+typedef LoadTapChanger* LoadTapChangerPtr;

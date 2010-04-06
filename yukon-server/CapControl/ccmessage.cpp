@@ -807,7 +807,7 @@ LtcMessage::~LtcMessage()
 {
     if (_ltcList.size() > 0)
     {
-        //Do not delete. The store owns these ltc's
+        delete_container(_ltcList);
         _ltcList.clear();
     }
 }
@@ -843,7 +843,7 @@ LtcMessage& LtcMessage::operator=(const LtcMessage& right)
 
         for each(LoadTapChangerPtr ltcPtr in right._ltcList)
         {
-            _ltcList.push_back(new LoadTapChanger(*ltcPtr));
+            insertLtc(ltcPtr);
         }
     }
 
@@ -852,7 +852,8 @@ LtcMessage& LtcMessage::operator=(const LtcMessage& right)
 
 void LtcMessage::insertLtc(LoadTapChangerPtr ltcPtr)
 {
-    _ltcList.push_back(ltcPtr);
+    LoadTapChangerPtr newLtc = new LoadTapChanger(*ltcPtr);
+    _ltcList.push_back(newLtc);
 }
 
 /*===========================================================================

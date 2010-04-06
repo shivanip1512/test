@@ -29,14 +29,6 @@ class PointValueHolder
         {
             double value;
             CtiTime time;
-
-            ValueTimePair& operator=(const ValueTimePair& right)
-            {
-                value = right.value;
-                time = right.time;
-
-                return *this;
-            }
         };
 
         typedef std::map<int,ValueTimePair> ValueMap;

@@ -35,7 +35,7 @@ class IVVCAlgorithm
         virtual bool isLtcInRemoteMode(const long ltcId);
 
         virtual bool busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection);
-        
+
         PointDataRequestFactoryPtr _requestFactory;
 };
 

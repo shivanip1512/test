@@ -14,6 +14,7 @@ class IVVCState
 
         enum State
         {
+            IVVC_DISABLED,
             IVVC_WAIT,
             IVVC_PRESCAN_LOOP,
             IVVC_ANALYZE_DATA,
@@ -63,16 +64,16 @@ class IVVCState
         unsigned long getCommsRetryCount() const;
 
         void setShowVarCheckMsg(const bool flag);
-        bool getShowVarCheckMsg() const;
+        bool isShowVarCheckMsg() const;
 
         void setShowBusDisableMsg(const bool flag);
-        bool getShowBusDisableMsg() const;
+        bool isShowBusDisableMsg() const;
 
-        void setLtcAutoModeMsg(const bool flag);
-        bool getLtcAutoModeMsg() const;
+        void setShowLtcAutoModeMsg(const bool flag);
+        bool isShowLtcAutoModeMsg() const;
 
-        void setNoLtcAttachedMsg(const bool flag);
-        bool getNoLtcAttachedMsg() const;
+        void setShowNoLtcAttachedMsg(const bool flag);
+        bool isShowNoLtcAttachedMsg() const;
 
         struct EstimatedData
         {

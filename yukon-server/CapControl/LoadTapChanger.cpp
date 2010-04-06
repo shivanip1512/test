@@ -2,21 +2,36 @@
 #include "LoadTapChanger.h"
 #include "ccid.h"
 
+extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
+
 RWDEFINE_COLLECTABLE( LoadTapChanger, CTILTC_ID )
 
 LoadTapChanger::LoadTapChanger() : CapControlPao(),
-                                   _updated(true)
+                                   _updated(true),
+                                   _manualLocalMode(false),
+                                   _lowerTap(false),
+                                   _raiseTap(false),
+                                   _autoRemote(false)
 {
 
 }
 
 LoadTapChanger::LoadTapChanger(RWDBReader& rdr) : CapControlPao(rdr),
-                                                  _updated(true)
+                                                  _updated(true),
+                                                  _manualLocalMode(false),
+                                                  _lowerTap(false),
+                                                  _raiseTap(false),
+                                                  _autoRemote(false)
 {
 
 }
 
-LoadTapChanger::LoadTapChanger(const LoadTapChanger& ltc)
+LoadTapChanger::LoadTapChanger(const LoadTapChanger& ltc) : CapControlPao(),
+                                                            _updated(true),
+                                                            _manualLocalMode(false),
+                                                            _lowerTap(false),
+                                                            _raiseTap(false),
+                                                            _autoRemote(false)
 {
     operator=(ltc);
 }
@@ -40,6 +55,16 @@ bool LoadTapChanger::isUpdated()
 void LoadTapChanger::setUpdated(bool updated)
 {
     _updated = updated;
+}
+
+bool LoadTapChanger::isManualLocalMode()
+{
+    return _manualLocalMode;
+}
+
+void LoadTapChanger::setManualLocalMode(bool manualLocalMode)
+{
+    _manualLocalMode = manualLocalMode;
 }
 
 void LoadTapChanger::setLtcVoltagePoint(const LitePoint& point)
@@ -131,29 +156,19 @@ void LoadTapChanger::getRegistrationPoints(std::set<long>& regPoints)
 
 void LoadTapChanger::saveGuts(RWvostream& ostrm) const
 {
+    RWCollectable::saveGuts(ostrm);
     CapControlPao::saveGuts(ostrm);
 
-    CtiTime lowerTime;
-    CtiTime raiseTime;
-
-    //bool lowerRet = _pointValues.getPointTime(_lowerTapPoint.getPointId(),lowerTime);
-    //bool raiseRet = _pointValues.getPointTime(_raiseTapPoint.getPointId(),raiseTime);
-    //bool autoRet = _pointValues.getPointValue(_autoRemotePoint.getPointId(),autoRemote);
-
-    bool lowerTap = false;
-    bool raiseTap = false;
-    bool autoRemote = false;
-    bool autoRemoteManual = false;
-
     ostrm << 0 //Parent Id.
-          << lowerTap
-          << raiseTap
-          << autoRemote
-          << autoRemoteManual;
+          << _lowerTap
+          << _raiseTap
+          << _autoRemote
+          << _manualLocalMode;
 }
 
 LoadTapChanger& LoadTapChanger::operator=(const LoadTapChanger& right)
 {
+    CapControlPao::operator =(right);
 
     _ltcVoltagePoint = right._ltcVoltagePoint;
     _lowerTapPoint = right._lowerTapPoint;
@@ -161,7 +176,67 @@ LoadTapChanger& LoadTapChanger::operator=(const LoadTapChanger& right)
     _autoRemotePoint = right._autoRemotePoint;
     _tapPositionPoint = right._tapPositionPoint;
 
+    _updated = right._updated;
+    _lowerTap = right._lowerTap;
+    _raiseTap = right._raiseTap;
+    _autoRemote = right._autoRemote;
+    _manualLocalMode = right._manualLocalMode;
+
     _pointValues = right._pointValues;
 
     return *this;
+}
+
+void LoadTapChanger::updateFlags()
+{
+    static int timeToShowOperation = (int)_IVVC_MIN_TAP_PERIOD_MINUTES/2;
+
+    bool updated = false;
+
+    bool lowerTap = false;
+    bool raiseTap = false;
+    bool autoRemote = false;
+
+    CtiTime now;
+    CtiTime pointTime;
+    double pointValue = 0.0;
+
+    bool ret = _pointValues.getPointTime(_lowerTapPoint.getPointId(),pointTime);
+    if (ret)
+    {
+        if ((pointTime + timeToShowOperation) > now)
+        {
+            lowerTap = true;
+        }
+    }
+    if (_lowerTap != lowerTap)
+    {
+        _lowerTap = lowerTap;
+        setUpdated(true);
+    }
+
+    ret = _pointValues.getPointTime(_raiseTapPoint.getPointId(),pointTime);
+    if (ret)
+    {
+        if ((pointTime + timeToShowOperation) > now)
+        {
+            raiseTap = true;
+        }
+    }
+    if (_raiseTap != raiseTap)
+    {
+        _raiseTap = raiseTap;
+        setUpdated(true);
+    }
+
+    ret = _pointValues.getPointValue(_autoRemotePoint.getPointId(),pointValue);
+    if (ret)
+    {
+        autoRemote = (pointValue == 1.0);
+    }
+    if (_autoRemote != autoRemote)
+    {
+        _autoRemote = autoRemote;
+        setUpdated(true);
+    }
 }

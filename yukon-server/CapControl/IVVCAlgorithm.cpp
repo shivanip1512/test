@@ -38,12 +38,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     CtiTime timeNow;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    if ((subbus->getLtcId() == 0) || !store->findLtcById(subbus->getLtcId()))
+    LoadTapChangerPtr ltcPtr = store->findLtcById(subbus->getLtcId());
+
+    if ((subbus->getLtcId() == 0) || !ltcPtr)
     {
-        if ( state->getNoLtcAttachedMsg() )           // show message?
+        if ( state->isShowNoLtcAttachedMsg() )           // show message?
         {
-            state->setNoLtcAttachedMsg(false);        // toggle flag to only show message once.
-            state->setState(IVVCState::IVVC_WAIT);  // reset algorithm
+            state->setShowNoLtcAttachedMsg(false); // toggle flag to only show message once.
+            state->setState(IVVCState::IVVC_WAIT); // reset algorithm
 
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Configuration Error. No Ltc attached to subbus: " << subbus->getPaoName() << endl;
@@ -51,8 +53,13 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
         return;
     }
+
+    //This would be better if we had some method of executing a function at a scheduled time.
+    //Have the Ltc update its flags
+    ltcPtr->updateFlags();
+
     //Show this message again next time it happens
-    state->setNoLtcAttachedMsg(true);
+    state->setShowNoLtcAttachedMsg(true);
 
     if ( ! subbus->getDisableFlag() )
     {
@@ -85,39 +92,76 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
     switch (currentState)
     {
-        case IVVCState::IVVC_WAIT:
+        case IVVCState::IVVC_DISABLED:
         {
-            if ( subbus->getDisableFlag() )     // bail early
+            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
+            bool busDisabled = subbus->getDisableFlag();
+            bool remainDisabled = false;
+
+            if (busDisabled)
             {
-                if ( state->getShowBusDisableMsg() )      // only print once each time through
+                if (state->isShowBusDisableMsg())
                 {
                     state->setShowBusDisableMsg(false);
 
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << endl;
                 }
+                remainDisabled = true;
+            }
+            else
+            {
+                state->setShowBusDisableMsg(true);
+            }
 
+            if (!remoteMode)
+            {
+                if (state->isShowLtcAutoModeMsg())// show message?
+                {
+                    state->setShowLtcAutoModeMsg(false);
+
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". LTC with ID: " << subbus->getLtcId() << " is in Auto mode." << endl;
+                }
+                remainDisabled = true;
+            }
+            else
+            {
+                state->setShowLtcAutoModeMsg(true);
+            }
+
+            //We are disabled. Check if we should enable.
+            if (remainDisabled)
+            {
+                break;
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - IVVC Resuming for bus: " << subbus->getPaoName() << endl;
+
+                //Set state
+                state->setShowLtcAutoModeMsg(true);
+                state->setShowBusDisableMsg(true);
+                state->setState(IVVCState::IVVC_WAIT);
+            }
+        }
+        case IVVCState::IVVC_WAIT:
+        {
+            if (subbus->getDisableFlag())// bail early
+            {
+                state->setState(IVVCState::IVVC_DISABLED);
                 return;
             }
 
-            if ( ! isLtcInRemoteMode( subbus->getLtcId() ) )// If we are in 'Auto' mode we don't want to run the algorithm.
+            if (!isLtcInRemoteMode(subbus->getLtcId()))// If we are in 'Auto' mode we don't want to run the algorithm.
             {
-                if ( state->getLtcAutoModeMsg() )// show message?
-                {
-                    state->setLtcAutoModeMsg(false);// toggle flag to only show message once.
-
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - LTC ID: " << subbus->getLtcId() << " is in Auto mode." << endl;
-                }
-
+                state->setState(IVVCState::IVVC_DISABLED);
                 return;
             }
 
             // toggle these flags so the log message prints again....
-            state->setLtcAutoModeMsg(true);
             state->setShowVarCheckMsg(true);
-            state->setShowBusDisableMsg(true);
-
             state->setNextControlTime(CtiTime() + strategy->getControlInterval());
 
             //Check to make sure the points are setup correctly
@@ -398,7 +442,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
             else
             {
-                if ( state->getShowVarCheckMsg() )      // only print once each time through
+                if ( state->isShowVarCheckMsg() )      // only print once each time through
                 {
                     state->setShowVarCheckMsg(false);
 
@@ -761,23 +805,13 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 {
     const long ltcId = subbus->getLtcId();
 
-    if ( isLtcInRemoteMode(ltcId) )
+    if( _CC_DEBUG & CC_DEBUG_IVVC )
     {
-        if( _CC_DEBUG & CC_DEBUG_IVVC )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
-        }
-        CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, ltcId))->execute();
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - LTC Keep Alive messages sent." << endl;
     }
-    else
-    {
-        if( _CC_DEBUG & CC_DEBUG_IVVC )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - LTC Keep Alive NOT sent. LTC is in Local Mode." << endl;
-        }
-    }
+    CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_KEEP_ALIVE, ltcId))->execute();
+
 }
 
 void IVVCAlgorithm::sendPointChangesAndEvents(DispatchConnectionPtr dispatchConnection, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents)
@@ -809,7 +843,7 @@ bool IVVCAlgorithm::isLtcInRemoteMode(const long ltcId)
 
 
 /**
- * @return bool :   true    - break out of the state machine. 
+ * @return bool :   true    - break out of the state machine.
  *                  false   - fall through to the next case.
  */
 bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy, DispatchConnectionPtr dispatchConnection)
@@ -1036,10 +1070,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-    
+
                             dout << CtiTime() << " IVVC Algorithm: Lowering Tap" << endl;
                         }
-    
+
                         //  send command to lower tap
                         CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_LOWER,subbus->getLtcId()))->execute();
                     }
@@ -1048,10 +1082,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
-    
+
                             dout << CtiTime() << " IVVC Algorithm: Raising Tap" << endl;
                         }
-    
+
                         //  send command to raise tap
                         CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE,subbus->getLtcId()))->execute();
                     }

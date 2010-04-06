@@ -6767,6 +6767,20 @@ void CtiCCCommandExecutor::SendAllData()
     CtiCCExecutorFactory::createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*(store->getCCSubstations(CtiTime().seconds())), CtiCCSubstationsMsg::AllSubsSent))->execute();
+
+    LtcMap* ltcMap = store->getLtcMap();
+
+    if (ltcMap->size() > 0)
+    {
+        LtcMessage* ltcMessage = new LtcMessage();
+        for each (const std::pair<long,LoadTapChangerPtr> ltcPair in *ltcMap)
+        {
+            LoadTapChangerPtr ltc = ltcPair.second;
+            ltc->setUpdated(false);
+            ltcMessage->insertLtc(ltc);
+        }
+        CtiCCExecutorFactory::createExecutor(ltcMessage)->execute();
+    }
 }
 
 /*---------------------------------------------------------------------------
@@ -8012,6 +8026,7 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
         case CTICCSPECIALAREAS_MSG_ID:
         case CTICCSUBSTATION_MSG_ID:
         case CTICCSERVERRESPONSE_ID:
+        case CTILTC_MSG_ID:
             ret_val.reset(new CtiCCClientMsgExecutor((CtiMessage*)message));
             break;
 
@@ -8084,7 +8099,7 @@ void CtiCCCommandExecutor::sendLtcCommands(const LONG command)
         }
         case CtiCCCommand::LTC_KEEP_ALIVE:
         {
-            sendLtcKeepAlive(command, toDispatch);
+            sendLtcKeepAlive(command, toDispatch, requests);
             break;
         }
         default:
@@ -8185,12 +8200,13 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
         return;
     }
 
+    LoadTapChangerPtr ltcPtr = NULL;
     string paoName;
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-        LoadTapChangerPtr ltcPtr = store->findLtcById(paoId);
+        ltcPtr = store->findLtcById(paoId);
         if (ltcPtr == NULL)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -8216,13 +8232,15 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
 
     if (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE)
     {
+        ltcPtr->setManualLocalMode(false);
         text = string("Enable Remote Control");
     }
     else
     {
+        ltcPtr->setManualLocalMode(true);
         text = string("Disable Remote Control");
         //sends a 0 to kill the keep alive
-        ltcKeepAliveHelper(paoId,0,paoName,toDispatch);
+        ltcKeepAliveHelper(paoId,0,paoName,toDispatch,requests);
     }
 
     CtiMessage* msg = new CtiSignalMsg(point.getPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
@@ -8324,7 +8342,8 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
  * @param paoId
  */
 void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
-                                            std::vector<CtiMessage*> &toDispatch)
+                                            std::vector<CtiMessage*> &toDispatch,
+                                            std::vector<CtiRequestMsg*> &requests)
 {
     string commandName = "LTC Keep Alive";
 
@@ -8353,13 +8372,14 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
     }
 
     double time = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
-    ltcKeepAliveHelper(paoId,time,paoName,toDispatch);
+    ltcKeepAliveHelper(paoId,time,paoName,toDispatch,requests);
 }
 
 void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
                                               const int keepAliveTime,
                                               const string& paoName,
-                                              std::vector<CtiMessage*> &toDispatch)
+                                              std::vector<CtiMessage*> &toDispatch,
+                                              std::vector<CtiRequestMsg*> &requests)
 {
     LitePoint point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::KeepAlive);
     if (point.getPointType() == InvalidPointType)
@@ -8369,19 +8389,21 @@ void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,
 
         return;
     }
+    int deviceId = point.getPaoId();
+    int pointOffset = point.getPointOffset();
 
-    int pointId = point.getPointId();
-
-    CtiMessage* msg = new CtiPointDataMsg (pointId,keepAliveTime,NormalQuality,AnalogPointType);
-    msg->setMessagePriority(15);
-    toDispatch.push_back(msg);
+    CtiRequestMsg* reqMsg = NULL;
+    string commandString = "putvalue analog " + CtiNumStr(pointOffset).toString() + " " + CtiNumStr((int)keepAliveTime).toString();
+    reqMsg = createPorterRequestMsg(deviceId,commandString);
+    reqMsg->setSOE(5);
+    requests.push_back(reqMsg);
 
     //Logging Action
     string text = string("LTC Keep Alive");
     string additional = string("LTC Name: ");
     additional += paoName;
 
-    msg = new CtiSignalMsg(pointId,0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
+    CtiMessage* msg = new CtiSignalMsg(pointOffset,0,text,additional,CapControlLogType,SignalEvent,_command->getUser());
     toDispatch.push_back(msg);
 }
 

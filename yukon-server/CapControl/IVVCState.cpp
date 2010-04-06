@@ -148,7 +148,7 @@ void IVVCState::setShowVarCheckMsg(const bool flag)
 }
 
 
-bool IVVCState::getShowVarCheckMsg() const
+bool IVVCState::isShowVarCheckMsg() const
 {
     return _showVarCheckFailMsg;
 }
@@ -160,29 +160,29 @@ void IVVCState::setShowBusDisableMsg(const bool flag)
 }
 
 
-bool IVVCState::getShowBusDisableMsg() const
+bool IVVCState::isShowBusDisableMsg() const
 {
     return _showSubbusDisableMsg;
 }
 
 
-void IVVCState::setLtcAutoModeMsg(const bool flag)
+void IVVCState::setShowLtcAutoModeMsg(const bool flag)
 {
     _showLtcAutoModeMsg = flag;
 }
 
 
-bool IVVCState::getLtcAutoModeMsg() const
+bool IVVCState::isShowLtcAutoModeMsg() const
 {
     return _showLtcAutoModeMsg;
 }
 
-void IVVCState::setNoLtcAttachedMsg(const bool flag)
+void IVVCState::setShowNoLtcAttachedMsg(const bool flag)
 {
     _showNoLtcAttachedMsg = flag;
 }
 
-bool IVVCState::getNoLtcAttachedMsg() const
+bool IVVCState::isShowNoLtcAttachedMsg() const
 {
     return _showNoLtcAttachedMsg;
 }
