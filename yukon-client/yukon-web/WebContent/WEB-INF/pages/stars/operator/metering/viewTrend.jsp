@@ -81,7 +81,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 			</td>
 			</cti:checkRolesAndProperties>
 		
-			<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_CREATE">
 			<td class="trendsListingTd">
 			
 				<tags:sectionContainer2 key="trends">
@@ -98,6 +97,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 								<a href="${trendUrl}">${customerGraphWrapper.name}</a>
 							</td>
 						
+							<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_CREATE">
 							<td class="editCol">
 							<c:choose>
 								<c:when test="${status.count == 1}">
@@ -112,6 +112,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 								</c:otherwise>
 							</c:choose>
 							</td>
+							</cti:checkRolesAndProperties>
 						</tr>
 					</c:forEach>
 					</table>
@@ -119,7 +120,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 				</tags:sectionContainer2>
 			
 			</td>
-			</cti:checkRolesAndProperties>
 			
 		</tr>
 	</table>

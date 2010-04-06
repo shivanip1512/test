@@ -52,8 +52,9 @@ public class OperatorMeteringController {
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
 		List<CustomerGraph> customerGraphs = customerGraphDao.getByCustomerId(customerAccount.getCustomerId());
 		
-		// no trends, go to the select trends page
-		if (customerGraphs.size() <= 0) {
+		// no trends, go to the select trends page (if access allows)
+		boolean createAccess = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE, userContext.getYukonUser());
+		if (customerGraphs.size() <= 0 && createAccess) {
 			return "redirect:selectTrends";
 		}
 		
