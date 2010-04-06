@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -254,33 +255,44 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     }
     
     // chunking cleanup sql
-    private class RemoveNotificationSqlGenerator implements SqlGenerator<Integer> {
+    private class RemoveNotificationSqlGenerator implements SqlFragmentGenerator<Integer> {
     	
     	@Override
-    	public String generate(List<Integer> contactNotificationIds) {
+    	public SqlFragmentSource generate(List<Integer> contactNotificationIds) {
     		
-    		String sql = "DELETE FROM ContactNotification WHERE ContactNotifId IN (" + SqlStatementBuilder.convertToSqlLikeList(contactNotificationIds) + ")";
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("DELETE FROM ContactNotification");
+    		sql.append("WHERE ContactNotifId IN (");
+    		sql.appendList(contactNotificationIds);
+    		sql.append(")");
     		return sql;
     	}
     }
 
-	private class RemoveNotificationDestinationsSqlGenerator implements SqlGenerator<Integer> {
+	private class RemoveNotificationDestinationsSqlGenerator implements SqlFragmentGenerator<Integer> {
     	
     	@Override
-    	public String generate(List<Integer> contactNotificationIds) {
+    	public SqlFragmentSource generate(List<Integer> contactNotificationIds) {
     		
-    		String sql = "DELETE FROM NotificationDestination WHERE RecipientId IN (" + SqlStatementBuilder.convertToSqlLikeList(contactNotificationIds) + ")";
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("DELETE FROM NotificationDestination");
+    		sql.append("WHERE RecipientId IN (");
+    		sql.appendList(contactNotificationIds);
+    		sql.append(")");
     		return sql;
     	}
     }
 
-    private class UpdatePointAlarmingSqlGenerator implements SqlGenerator<Integer> {
+    private class UpdatePointAlarmingSqlGenerator implements SqlFragmentGenerator<Integer> {
 
         @Override
-        public String generate(List<Integer> contactNotificationIds) {
-        	
-        	String sql = "UPDATE PointAlarming pa SET pa.RecipientId = 0 WHERE pa.RecipientId IN (" + SqlStatementBuilder.convertToSqlLikeList(contactNotificationIds) + ")";
-    		return sql;
+        public SqlFragmentSource generate(List<Integer> contactNotificationIds) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("UPDATE PointAlarming pa SET pa.RecipientId = 0");
+            sql.append("WHERE pa.RecipientId IN (");
+            sql.appendList(contactNotificationIds);
+            sql.append(")");
+            return sql;
         }
     }
     
