@@ -259,12 +259,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     	@Override
     	public String generate(List<Integer> contactNotificationIds) {
     		
-    		SqlStatementBuilder sql = new SqlStatementBuilder();
-    		sql.append("DELETE FROM ContactNotification");
-    		sql.append("WHERE ContactNotifId IN (");
-    		sql.appendList(contactNotificationIds);
-    		sql.append(")");
-    		return sql.toString();
+    		String sql = "DELETE FROM ContactNotification WHERE ContactNotifId IN (" + SqlStatementBuilder.convertToSqlLikeList(contactNotificationIds) + ")";
+    		return sql;
     	}
     }
 
@@ -273,12 +269,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     	@Override
     	public String generate(List<Integer> contactNotificationIds) {
     		
-    		SqlStatementBuilder sql = new SqlStatementBuilder();
-    		sql.append("DELETE FROM NotificationDestination");
-    		sql.append("WHERE RecipientId IN (");
-    		sql.appendList(contactNotificationIds);
-    		sql.append(")");
-    		return sql.toString();
+    		String sql = "DELETE FROM NotificationDestination WHERE RecipientId IN (" + SqlStatementBuilder.convertToSqlLikeList(contactNotificationIds) + ")";
+    		return sql;
     	}
     }
 
@@ -286,12 +278,9 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
 
         @Override
         public String generate(List<Integer> contactNotificationIds) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("UPDATE PointAlarming pa SET pa.RecipientId = 0");
-            sql.append("WHERE pa.RecipientId IN (");
-            sql.appendList(contactNotificationIds);
-            sql.append(")");
-            return sql.toString();
+        	
+        	String sql = "UPDATE PointAlarming pa SET pa.RecipientId = 0 WHERE pa.RecipientId IN (" + SqlStatementBuilder.convertToSqlLikeList(contactNotificationIds) + ")";
+    		return sql;
         }
     }
     
