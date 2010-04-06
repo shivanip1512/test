@@ -7,8 +7,7 @@ import com.cannontech.stars.xml.serialize.StarsAppliance;
 public interface StarsApplianceService {
     
     /**
-     * This method creates a Stars appliance including any information for the appliance subtypes 
-     * such as Air Conditioner or Water Heater.
+     * This method creates a Stars appliance including any information in its appliance subtype.  (Ex. Air Condition or Water Heater) 
      * 
      * NOTE: This code was mostly ported from a legacy STARS action.
      * 
@@ -19,9 +18,8 @@ public interface StarsApplianceService {
 
     
     /**
-     * This method deletes a Stars appliance including any information for the appliance subtypes 
-     * such as Air Conditioner or Water Heater.  It also handles enrollment if the selected
-     * appliance is a part of an active enrollment.
+     * This method deletes a Stars appliance including any information in its appliance subtype.  (Ex. Air Condition or Water Heater)
+     * It also handles unenrolling the appliance if the appliance is actively enrolled.
      * 
      * NOTE: This code was mostly ported from a legacy STARS action.
      * 
@@ -33,9 +31,8 @@ public interface StarsApplianceService {
 
     /**
      * 
-     * This method updates a Stars appliance including any information for the appliance subtypes 
-     * such as Air Conditioner or Water Heater.  It will also preserve an enrollment that
-     * is currently attached to the the supplied appliance
+     * This method updates a Stars appliance including any information for its appliance subtype.  (Ex. Air Condition or Water Heater) 
+     * It will also preserve any enrollment that is currently attached to the supplied appliance.
      * 
      * NOTE: This code was mostly ported from a legacy STARS action.
      * 
