@@ -2,7 +2,7 @@ package com.cannontech.common.databaseMigration.bean.config;
 
 public class ConfigurationIncludeTable extends ConfigurationTable{
     
-    String includeReferenceColumnName;
+    private String includeReferenceColumnName;
     
     public String getIncludeReferenceColumnName() {
         return includeReferenceColumnName;
@@ -13,7 +13,7 @@ public class ConfigurationIncludeTable extends ConfigurationTable{
     }
     
     public String toString(){
-        return "includeReferenceColumnName = "+includeReferenceColumnName+"\n"+
+        return "includeReferenceColumnName = " + includeReferenceColumnName + "\n" +
                super.toString();
         
     }

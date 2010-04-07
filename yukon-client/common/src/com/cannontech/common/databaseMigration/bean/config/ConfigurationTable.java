@@ -45,18 +45,18 @@ public class ConfigurationTable{
     public String toString(){
         String results = "";
         
-        results += "tableName = "+tableName+"\n";
-        results += "label = "+label+"\n";
+        results += "tableName = " + tableName + "\n";
+        results += "label = " + label + "\n";
 
         results += "includeElements = [";
         for (ConfigurationIncludeTable includeElement : includeElementList) {
-            results += includeElement.toString()+"\n";
+            results += includeElement.toString() + "\n";
         }
         results += "]\n";
         
         results += "referenceElements = [";
         for (ConfigurationTable referencesTables : this.referencesTables) {
-            results += referencesTables.toString()+"\n";
+            results += referencesTables.toString() + "\n";
         }
         results += "]\n";
 

@@ -12,9 +12,11 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.clientutils.CTILogger;
+
 public class DatabaseDefinition {
     // Table name to def
-    Map<String, TableDefinition> databaseMap = new TreeMap<String, TableDefinition>();
+    private Map<String, TableDefinition> databaseMap = new TreeMap<String, TableDefinition>();
     
     @SuppressWarnings("unchecked")
     public DatabaseDefinition(Resource databaseDefinitionXML){
@@ -42,11 +44,9 @@ public class DatabaseDefinition {
             }
         
         } catch (JDOMException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            CTILogger.error("Error parsing database definition file", e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	CTILogger.error("Error processing database definition file", e);
         }
     }
     

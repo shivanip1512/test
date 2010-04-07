@@ -43,12 +43,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     private ConfigurationParserService configurationParserService;
     private JdbcTemplate jdbcTemplate;
     
-    
     private DatabaseMigrationService databaseMigrationService;
-    @Autowired
-    public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
-        this.databaseMigrationService = databaseMigrationService;
-    }
     
     public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template, 
                                                         List<Integer> primaryKeyList, 
@@ -60,7 +55,10 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         List<DataTable> allData = Lists.newArrayList();
         
         for (int pk : primaryKeyList) {
-        	allData.addAll(buildAndProcessSqlPrimaryKey(template, Collections.singletonList(pk), includedTables, status));
+        	allData.addAll(buildAndProcessSqlPrimaryKey(template, 
+        												Collections.singletonList(pk), 
+        												includedTables, 
+        												status));
         	status.addCurrentCount();
         	
         	List<DatabaseMigrationContainer> databaseMigrationContainers = 
@@ -88,25 +86,23 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     
     private DataTable buildAndProcessSqlPrimaryKey(DataTableTemplate template,
                                                    Integer primaryKey,
-                                                   Map<DataTableTemplate, Map<Integer, DataTable>> includedTables) {
+                                                   Map<DataTableTemplate, 
+                                                   		Map<Integer, DataTable>> includedTables) {
         
         List<Integer> primaryKeyList = Collections.singletonList(primaryKey);
-        List<DataTable> inlineDataTables = buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables, null);
+        List<DataTable> inlineDataTables = 
+        	buildAndProcessSqlPrimaryKey(template, primaryKeyList, includedTables, null);
         return inlineDataTables.get(0);
         
     }
     
     /**
      * Builds and processes the SQL for a DataTable that has the primary key values supplied
-     * 
-     * @param template
-     * @param primaryKeyList
-     * @param includedTables
-     * @return
      */
     private List<DataTable> buildAndProcessSqlPrimaryKey(DataTableTemplate template,
                                                          List<Integer> primaryKeyList,
-                                                         Map<DataTableTemplate, Map<Integer, DataTable>> includedTables,
+                                                         Map<DataTableTemplate, 
+                                                         	Map<Integer, DataTable>> includedTables,
                                                          ExportDatabaseMigrationStatus status) {
 
         // Build up the sql
@@ -125,7 +121,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
             if (tableColumn.getValue() instanceof DataValueTemplate) {
                 DataValueTemplate dataValueTemplate = (DataValueTemplate)tableColumn.getValue();
                 if (dataValueTemplate.getFilterValue() != null) {
-                    sqlHolder.addWhereClause(tableColumn.getKey()+" = ? ");
+                    sqlHolder.addWhereClause(tableColumn.getKey() + " = ? ");
                     whereValues.add(dataValueTemplate.getFilterValue());
                 }
             }
@@ -135,21 +131,23 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
         // Add the primary keys to the query
         if (sqlHolder.getWhereClauses().size() > 0){
-            selectSQL.append("AND "+sqlHolder.getSelectClauses().get(0)+" IN (",primaryKeyList,") ");
+            selectSQL.append("AND " + sqlHolder.getSelectClauses().get(0) + " IN (", primaryKeyList, ") ");
         } else {
-            selectSQL.append("WHERE "+sqlHolder.getSelectClauses().get(0)+" IN (",primaryKeyList,") ");
+            selectSQL.append("WHERE " + sqlHolder.getSelectClauses().get(0) + " IN (", primaryKeyList, ") ");
         }
         
         // execute SQL
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql(), whereValues.toArray());
+        List<Map<String, Object>> sqlResults = 
+        	jdbcTemplate.queryForList(selectSQL.getSql(), whereValues.toArray());
 
         return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults, status);
     }
 
     private List<DataTable> buildAndProcessSqlForeignKey(DataTableTemplate template,
                                                          Integer primaryKey,
-                                                         Map<DataTableTemplate, Map<Integer, DataTable>> includedTables,
+                                                         Map<DataTableTemplate, 
+                                                         	Map<Integer, DataTable>> includedTables,
                                                          String referencesColumnName) {
         
         List<Integer> primaryKeyList = Collections.singletonList(primaryKey);
@@ -158,16 +156,11 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     
     /**
      * Builds and processes the SQL for a DataTable that has the values of a foreign key supplied
-     * 
-     * @param template
-     * @param primaryKey
-     * @param includedTables
-     * @param referencesColumnName
-     * @return
      */
     private List<DataTable> buildAndProcessSqlForeignKey(DataTableTemplate template,
                                                          List<Integer> primaryKeyList,
-                                                         Map<DataTableTemplate, Map<Integer, DataTable>> includedTables,
+                                                         Map<DataTableTemplate, 
+                                                         	Map<Integer, DataTable>> includedTables,
                                                          String referencesColumnName) {
 
         // Build up the sql
@@ -189,7 +182,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
             if (tableColumn.getValue() instanceof DataValueTemplate) {
                 DataValueTemplate dataValueTemplate = (DataValueTemplate)tableColumn.getValue();
                 if (dataValueTemplate.getFilterValue() != null) {
-                    sqlHolder.addWhereClause(tableColumn.getKey()+" = ? ");
+                    sqlHolder.addWhereClause(tableColumn.getKey() + " = ? ");
                     whereValues.add(dataValueTemplate.getFilterValue());
                 }
             }
@@ -200,19 +193,21 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
         // Added the primaryKeys of the referenced table to the where clause
         if (sqlHolder.getWhereClauses().size() > 0){
-            selectSQL.append("AND "+referencesColumnName+" IN (",primaryKeyList,") ");
+            selectSQL.append("AND " + referencesColumnName + " IN (", primaryKeyList, ") ");
         } else {
-            selectSQL.append("WHERE "+referencesColumnName+" IN (",primaryKeyList,") ");
+            selectSQL.append("WHERE " + referencesColumnName + " IN (", primaryKeyList, ") ");
         }
         
         @SuppressWarnings("unchecked")
-        List<Map<String, Object>> sqlResults = jdbcTemplate.queryForList(selectSQL.getSql(), whereValues.toArray());
+        List<Map<String, Object>> sqlResults = 
+        	jdbcTemplate.queryForList(selectSQL.getSql(), whereValues.toArray());
         return processDataTableTemplate(template, primaryKeyList, includedTables, sqlResults, null);
     }
     
     private List<DataTable> processDataTableTemplate(DataTableTemplate template,
                                                      List<Integer> primaryKeyList,
-                                                     Map<DataTableTemplate, Map<Integer, DataTable>> includedTables,
+                                                     Map<DataTableTemplate, 
+                                                     	Map<Integer, DataTable>> includedTables,
                                                      List<Map<String, Object>> sqlResults,
                                                      ExportDatabaseMigrationStatus status) {
         List<DataTable> result = Lists.newArrayList();
@@ -230,14 +225,10 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     /**
      * This method takes the information generated from the buildAndProcessSql calls and uses that
      * data to populate the DataTable object
-     * 
-     * @param template
-     * @param includedTables
-     * @param sqlResult
-     * @return
      */
     private DataTable processDataTableTemplate(DataTableTemplate template,
-                                               Map<DataTableTemplate, Map<Integer, DataTable>> includedTables,
+                                               Map<DataTableTemplate, 
+                                               		Map<Integer, DataTable>> includedTables,
                                                Map<String, Object> sqlResult) {
         DataTable dataForTable = new DataTable();
         dataForTable.setName(template.getName());
@@ -259,16 +250,19 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                 
                 // inline
                 if (thisTemplate.getElementCategory() == null) {
-                    dataTableEntity = buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
+                    dataTableEntity = 
+                    	buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                 
                 // reference
                 } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.REFERENCE)) {
-                    dataTableEntity = buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
+                    dataTableEntity = 
+                    	buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                     
                 // include
                 } else if (thisTemplate.getElementCategory().equals(ElementCategoryEnum.INCLUDE)) {
                     // Generate the item portion of the include
-                    DataTable includeTable = buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
+                    DataTable includeTable = 
+                    	buildAndProcessSqlPrimaryKey(thisTemplate, thisPrimaryKey, includedTables);
                     Map<Integer, DataTable> primaryKeyToDataTableMap = includedTables.get(thisTemplate);
                     if (primaryKeyToDataTableMap == null){
                         primaryKeyToDataTableMap = Maps.newHashMap();
@@ -280,9 +274,13 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     
                     // Generating the reference portion of the include 
                     DataTableTemplate referenceTableTemplate = 
-                        new DataTableTemplate(ElementCategoryEnum.REFERENCE, 0, thisTemplate.getName(), thisTemplate.getTable());
+                        new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
+                        					  0, 
+                        					  thisTemplate.getName(), 
+                        					  thisTemplate.getTable());
                     configurationParserService.buildDatabaseMapReferenceTemplate(referenceTableTemplate);
-                    dataTableEntity = buildAndProcessSqlPrimaryKey(referenceTableTemplate, thisPrimaryKey, includedTables);
+                    dataTableEntity = 
+                    	buildAndProcessSqlPrimaryKey(referenceTableTemplate, thisPrimaryKey, includedTables);
                     
                 }
             } else if (entry.getValue() instanceof DataValueTemplate) {
@@ -330,7 +328,8 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         
         // Create primayKey identifier for the references
         TableDefinition table = database.getTable(template.getName());
-        List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
+        List<String> primaryKeyColumnNames = 
+        	TableDefinition.getColumnNames(table.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         String primaryKey = primaryKeyColumnNames.get(0);
         Integer primaryKeyValue = Integer.parseInt(sqlResult.get(primaryKey).toString());
          
@@ -340,17 +339,14 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     
     /**
      * This method generates the information for the references portion of the DataTable object.
-     * This also handles omitting the reference column that is inherited from the DataTable higher up the structure
-     * 
-     * @param template
-     * @param dataForTable
-     * @param primaryKey
-     * @param includedTables
+     * This also handles omitting the reference column that is inherited from the DataTable higher 
+     * up the structure
      */
     private void generateReferencesDataTables(DataTableTemplate template,
                                               DataTable dataForTable,
                                               Integer primaryKey,
-                                              Map<DataTableTemplate, Map<Integer, DataTable>> includedTables) {
+                                              Map<DataTableTemplate, 
+                                              	Map<Integer, DataTable>> includedTables) {
 
         List<DataTableTemplate> tableReferences = template.getTableReferences();
         for (DataTableTemplate referencesDataTableTemplate : tableReferences) {
@@ -364,7 +360,10 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     String referencesColumnName = column.getName();
                                        
                     List<DataTable> result = 
-                        buildAndProcessSqlForeignKey(referencesDataTableTemplate, primaryKey, includedTables, referencesColumnName);
+                        buildAndProcessSqlForeignKey(referencesDataTableTemplate, 
+                        							 primaryKey, 
+                        							 includedTables, 
+                        							 referencesColumnName);
                     dataForTable.getTableReferences().addAll(result);
 
                 }
@@ -384,5 +383,10 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     @Autowired
     public void setConfigurationParserService(ConfigurationParserService configurationParserService) {
         this.configurationParserService = configurationParserService;
+    }
+
+    @Autowired
+    public void setDatabaseMigrationService(DatabaseMigrationService databaseMigrationService) {
+        this.databaseMigrationService = databaseMigrationService;
     }
 }

@@ -8,11 +8,11 @@ import com.cannontech.common.util.Completable;
 
 public class ExportDatabaseMigrationStatus implements Completable {
 	
-	String id = null;
-    int currentCount = 0;
-    int totalCount = 0;
-    ExportTypeEnum exportTypeEnum;
-    File exportFile = null;
+	private String id = null;
+	private int currentCount = 0;
+	private int totalCount = 0;
+	private ExportTypeEnum exportTypeEnum;
+	private File exportFile = null;
     
     public ExportDatabaseMigrationStatus(int totalCount, File exportFile, ExportTypeEnum exportType) {
         this.id = UUID.randomUUID().toString();

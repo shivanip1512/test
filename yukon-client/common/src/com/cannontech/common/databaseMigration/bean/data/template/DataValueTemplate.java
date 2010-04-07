@@ -2,8 +2,8 @@ package com.cannontech.common.databaseMigration.bean.data.template;
 
 
 public class DataValueTemplate implements DataEntryTemplate {
-    String nullId = null;
-    String filterValue = null;
+    private String nullId = null;
+    private String filterValue = null;
 
     public String getNullId() {
         return nullId;
@@ -23,10 +23,10 @@ public class DataValueTemplate implements DataEntryTemplate {
         String results = " => ";
 
         if (this.nullId != null) {
-            results += "Null Id = "+this.nullId;
+            results += "Null Id = " + this.nullId;
         }
         if (this.filterValue != null) {
-            results += "Filter Value = "+this.filterValue;
+            results += "Filter Value = " + this.filterValue;
         }
         
         return results;		

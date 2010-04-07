@@ -52,24 +52,24 @@ public class DataTable implements DataTableEntity {
     public String toString(){
         String results = "";
         
-        results += "elementCategory = "+this.elementCategory+"\n";
-        results += "name = "+this.name+"\n";
-        results += "table = "+this.table+"\n";
+        results += "elementCategory = " + this.elementCategory+"\n";
+        results += "name = " + this.name + "\n";
+        results += "table = " + this.table + "\n";
 
         results += "tableColumns = {";
         for (String key : this.tableColumns.keySet()) {
             DataTableEntity dataTableEntity = this.tableColumns.get(key);
             if (dataTableEntity instanceof DataTableTemplate) {
-                results += key +" => ("+ dataTableEntity.toString()+")\n";
+                results += key +" => (" + dataTableEntity.toString() + ")\n";
             } else {
-                results += key +" => "+ dataTableEntity.toString()+"\n";
+                results += key +" => " + dataTableEntity.toString() + "\n";
             }
         }
         results += "}\n";
         
         results += "tableReferences = {";
         for (DataTable dataTable : this.tableReferences) {
-            results += "("+ dataTable.toString()+")\n";
+            results += "(" + dataTable.toString() + ")\n";
         }
         results += "}\n";
 

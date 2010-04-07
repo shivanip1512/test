@@ -12,9 +12,9 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
 public class TableDefinition {
-    String name;
-    String table;
-    ListMultimap<String, Column> columns = ArrayListMultimap.create();
+    private String name;
+    private String table;
+    private ListMultimap<String, Column> columns = ArrayListMultimap.create();
     
     public TableDefinition(String name, String table, Element tableElement){
         this.name = name;
@@ -25,8 +25,8 @@ public class TableDefinition {
             addColumns(tableElement, columnType);
     }
     
-    @SuppressWarnings("unchecked")
     private void addColumns(Element tableElement, ColumnTypeEnum columnType){
+    	@SuppressWarnings("unchecked")
         List<Element> columnElements = tableElement.getChildren(columnType.getXMLKey());
         for (Element columnElement : columnElements) {
             Column column = new Column();

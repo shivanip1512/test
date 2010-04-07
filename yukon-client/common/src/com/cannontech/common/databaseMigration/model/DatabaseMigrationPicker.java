@@ -5,8 +5,8 @@ import java.util.Set;
 
 public class DatabaseMigrationPicker {
 
-    int databaseMigrationId;
-    Map<String,Object> identifierColumnValueMap = null;
+	private int databaseMigrationId;
+	private Map<String,Object> identifierColumnValueMap = null;
     
     public DatabaseMigrationPicker(int databaseMigrationId, Map<String, Object> identifierColumnValueMap) {
         this.databaseMigrationId = databaseMigrationId;

@@ -17,10 +17,6 @@ public interface ExportXMLGeneratorService {
      *         <item/>
      *     </configuration>
      * </data>
-     * 
-     * @param data
-     * @param label
-     * @return
      */
     public Element buildXmlElement(Iterable<DataTable> data, String label);
             

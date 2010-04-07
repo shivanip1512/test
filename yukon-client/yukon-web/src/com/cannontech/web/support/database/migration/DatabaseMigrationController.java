@@ -18,13 +18,13 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
@@ -39,7 +39,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -60,15 +59,10 @@ public class DatabaseMigrationController {
 	
     private boolean ALLOW_EXPORT_ALL = false;
     
-    
-	// HOME
 	@RequestMapping
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) {
+    public String home(HttpServletRequest request, ModelMap map, String errorMsg, 
+    		YukonUserContext userContext) {
         
-        ModelAndView mav = new ModelAndView("database/migration/home.jsp");
-        
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
         boolean exportTab = ServletRequestUtils.getBooleanParameter(request, "export", false);
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
         
@@ -77,173 +71,161 @@ public class DatabaseMigrationController {
         
         List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);
         
-        mav.addObject("errorMsg", errorMsg);
-        mav.addObject("export", exportTab);
-        mav.addObject("import", importTab);
-        mav.addObject("exportTypeList", exportTypeList);
-        mav.addObject("serverFiles", exportFilePaths);
-        addDbInfoToMav(mav);
+        map.addAttribute("errorMsg", errorMsg);
+        map.addAttribute("export", exportTab);
+        map.addAttribute("import", importTab);
+        map.addAttribute("exportTypeList", exportTypeList);
+        map.addAttribute("serverFiles", exportFilePaths);
+        addDbInfoToMav(map);
         
         // recent validations
-        List<ImportDatabaseMigrationStatus> allValidationStatuses = databaseMigrationService.getAllValidationStatuses();
-        List<RecentImport> recentValidations = Lists.newArrayListWithCapacity(allValidationStatuses.size());
+        List<ImportDatabaseMigrationStatus> allValidationStatuses = 
+        	databaseMigrationService.getAllValidationStatuses();
+        List<RecentImport> recentValidations = 
+        	Lists.newArrayListWithCapacity(allValidationStatuses.size());
         for (ImportDatabaseMigrationStatus status : allValidationStatuses) {
         	recentValidations.add(new RecentImport(status));
         }
-        mav.addObject("recentValidations", recentValidations);
+        map.addAttribute("recentValidations", recentValidations);
         
         // recent imports
-        List<ImportDatabaseMigrationStatus> allImportStatuses = databaseMigrationService.getAllImportStatuses();
+        List<ImportDatabaseMigrationStatus> allImportStatuses = 
+        	databaseMigrationService.getAllImportStatuses();
         List<RecentImport> recentImports = Lists.newArrayListWithCapacity(allImportStatuses.size());
         for (ImportDatabaseMigrationStatus status : allImportStatuses) {
         	recentImports.add(new RecentImport(status));
         }
-        mav.addObject("recentImports", recentImports);
+        map.addAttribute("recentImports", recentImports);
         
-        mav.addObject("allowExportAll", ALLOW_EXPORT_ALL);
+        map.addAttribute("allowExportAll", ALLOW_EXPORT_ALL);
         
-        return mav;
+        return "database/migration/home.jsp";
     }
 	
-	
-	
-	// EXPORT
 	@RequestMapping
-    public ModelAndView export(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, IOException {
+    public String export(ModelMap map, String exportType, String databaseMigrationIds, 
+    		YukonUserContext userContext) throws ServletRequestBindingException, IOException {
 		
-	    ModelAndView mav = new ModelAndView("redirect:exportProgress");
+        ExportTypeEnum exportTypeValue = ExportTypeEnum.valueOf(exportType);
         
-        String exportTypeString = ServletRequestUtils.getStringParameter(request, "exportType");
-        ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
-        
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
-        String exportIds = ServletRequestUtils.getRequiredStringParameter(request, "databaseMigrationIds");
         List<Integer> exportIdList = Lists.newArrayList();
         
-        if (StringUtils.isBlank(exportIds)) {
-        	
+        if (StringUtils.isBlank(databaseMigrationIds)) {
         	if (!ALLOW_EXPORT_ALL) {
         		throw new IllegalArgumentException("No Items Selected");
         	}
             
-        	exportIdList = databaseMigrationService.getAllSearchIds(exportType);
+        	exportIdList = databaseMigrationService.getAllSearchIds(exportTypeValue);
         	
         } else {
-        	
-        	for (String exportId : exportIds.split(",")){
+        	for (String exportId : databaseMigrationIds.split(",")){
                 exportIdList.add(Integer.valueOf(exportId));
             }
         }
         
         ExportDatabaseMigrationStatus status = 
-            databaseMigrationService.processExportDatabaseMigration(exportType, exportIdList, userContext);
+            databaseMigrationService.processExportDatabaseMigration(exportTypeValue, exportIdList, userContext);
 
         File exportFile = status.getExportFile();
         FileSystemResource resource = new FileSystemResource(exportFile);
         fileStore.put(status.getId(), resource);
 
-        mav.addObject("statusKey", status.getId());
+        map.addAttribute("statusKey", status.getId());
 
-        return mav;
+        return "redirect:exportProgress";
     }
 	
 	@RequestMapping
-    public ModelAndView exportProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+    public String exportProgress(ModelMap map, String statusKey) 
+		throws ServletRequestBindingException {
 	
-		ModelAndView mav = new ModelAndView("database/migration/exportProgress.jsp");
-		
 		ExportDatabaseMigrationStatus migrationStatus = databaseMigrationService.getExportStatus(statusKey);
-        mav.addObject("migrationStatus", migrationStatus);
+        map.addAttribute("migrationStatus", migrationStatus);
         
-        addDbInfoToMav(mav);
+        addDbInfoToMav(map);
         
-        return mav;
+        return "database/migration/exportProgress.jsp";
 	}
 	
 	@RequestMapping
-    public void downloadExportFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
-		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-		downloadFile(fileKey, response);
-	}
-	
-	// SELECT OBJECTS
-	@RequestMapping
-    public ModelAndView viewSelectedItems(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public void downloadExportFile(HttpServletResponse response, String fileKey) 
+		throws ServletException, IOException {
 
-        ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+		FileSystemResource resource = fileStore.get(fileKey);
+		
+		response.setContentType("text/xml");
+        response.setHeader("Content-Type", "application/force-download");
+        String safeName = ServletUtil.makeWindowsSafeFileName(resource.getFilename());
+		response.setHeader("Content-Disposition","attachment; filename=\"" + safeName + "\"");
         
-        String exportTypeString = ServletRequestUtils.getRequiredStringParameter(request, "exportType");
-        ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
+        FileCopyUtils.copy(resource.getInputStream(), response.getOutputStream());
+	}
+	
+	@RequestMapping
+    public String viewSelectedItems(ModelMap map, String exportType, String exportItemIds, 
+    		YukonUserContext userContext) throws ServletException {
+
+        ExportTypeEnum exportTypeValue = ExportTypeEnum.valueOf(exportType);
 
         List<Integer> exportItemIdList = Lists.newArrayList();
-        String exportItemIdsString = ServletRequestUtils.getRequiredStringParameter(request, "exportItemIds");
-        String[] exportItemIdsArray = exportItemIdsString.split(",");
+        String[] exportItemIdsArray = exportItemIds.split(",");
         for(String exportItemId : exportItemIdsArray) {
             exportItemIdList.add(Integer.valueOf(exportItemId));
         }
         List<DatabaseMigrationContainer> exportItems = 
-            databaseMigrationService.getItemsByIds(exportType, exportItemIdList, userContext);
+            databaseMigrationService.getItemsByIds(exportTypeValue, exportItemIdList, userContext);
         
         List<String> itemLabelList = Lists.newArrayList();
         for(DatabaseMigrationContainer container : exportItems) {
             itemLabelList.add(container.getDatabaseMigrationDisplay());
         }
         
-        mav.addObject("itemList", itemLabelList);
-        mav.addObject("objectCount", itemLabelList.size());
+        map.addAttribute("itemList", itemLabelList);
+        map.addAttribute("objectCount", itemLabelList.size());
         
-        return mav;
+        return "database/migration/popup/objectsViewPopup.jsp";
     }
 	
-	
-	
-	// LOAD LOCAL FILE
 	@RequestMapping
-    public ModelAndView loadLocalFile(HttpServletRequest request, HttpServletResponse response) {
+    public String loadLocalFile(HttpServletRequest request, ModelMap map, YukonUserContext userContext) {
 		
-		ModelAndView mav = null;
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 		
 		File importFile = null;
 		String loadError = null;
 		
+		String errorPrefix = "yukon.web.modules.support.databaseMigration.loadImport.loadFile.error"; 
 		if(ServletFileUpload.isMultipartContent(request)) {
 
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
             MultipartFile dataFile = mRequest.getFile("dataFile");
 
             try {
-
                 if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
-                	loadError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile");
+                	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
                 } 
                 else {
                     InputStream inputStream = dataFile.getInputStream();
                     if (inputStream.available() <= 0) {
-                    	loadError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.emptyFile");
+                    	loadError = messageSourceAccessor.getMessage(errorPrefix + ".emptyFile");
                     }
                 }
 
                 importFile = WebFileUtils.convertToTempFile(dataFile, dataFile.getOriginalFilename() + "_", "");
 
             } catch (IOException e) {
-            	loadError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile");
+            	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
             }
         }
         else {
-        	loadError = messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.noFile");
+        	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");
         }
         
 		// error
 		if (loadError != null) {
-			mav = new ModelAndView("redirect:home");
-			mav.addObject("import", true);
-			mav.addObject("errorMsg", loadError);
-			return mav;
+			map.addAttribute("import", true);
+			map.addAttribute("errorMsg", loadError);
+			return "redirect:home";
 		}
 
 		if (importFile == null) {
@@ -251,70 +233,65 @@ public class DatabaseMigrationController {
 		}
 		
 		// run validation
-		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile, userContext);
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+			databaseMigrationService.validateImportFile(importFile, userContext);
 		
 		// store
 		FileSystemResource resource = new FileSystemResource(importFile);
 		fileStore.put(importDatabaseMigrationStatus.getId(), resource);
 		
 		// import progress
-		mav = new ModelAndView("redirect:validationProgress");
-		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
+		map.addAttribute("statusKey", importDatabaseMigrationStatus.getId());
 		
-        return mav;
+        return "redirect:validationProgress";
     }
 	
-	// LOAD SERVER FILE
 	@RequestMapping
-    public ModelAndView loadServerFile(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public String loadServerFile(ModelMap map, String dataFilePath, YukonUserContext userContext) 
+		throws ServletException {
 		
-		ModelAndView mav = null;
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-		
-		String dataFilePath = ServletRequestUtils.getRequiredStringParameter(request, "dataFilePath");
 		
 		// retrieve file
 		File importFile = new File(dataFilePath);
 		if (!importFile.exists()) {
-			mav = new ModelAndView("redirect:home");
-			mav.addObject("import", true);
-			mav.addObject("errorMsg", messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist"));
-			return mav;
+			map.addAttribute("import", true);
+
+			MessageSourceAccessor messageSourceAccessor = 
+				messageSourceResolver.getMessageSourceAccessor(userContext);
+			String errorMessage = 
+				messageSourceAccessor.getMessage("yukon.web.modules.support.databaseMigration.loadImport.loadFile.error.doesNotExist");
+			map.addAttribute("errorMsg", errorMessage);
+			
+			return "redirect:home";
 		}
 		
 		// run validation
-		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.validateImportFile(importFile, userContext);
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+			databaseMigrationService.validateImportFile(importFile, userContext);
 		
 		// store
 		FileSystemResource resource = new FileSystemResource(importFile);
 		fileStore.put(importDatabaseMigrationStatus.getId(), resource);
 		
 		// import progress
-		mav = new ModelAndView("redirect:validationProgress");
-		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
+		map.addAttribute("statusKey", importDatabaseMigrationStatus.getId());
 		
-		return mav;
+		return "redirect:validationProgress";
 	}
 	
-	// VALIDATION PROGRESS
 	@RequestMapping
-    public ModelAndView validationProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+    public String validationProgress(ModelMap map, String statusKey) 
+		throws ServletRequestBindingException {
 	
-		ModelAndView mav = new ModelAndView("database/migration/validationProgress.jsp");
-		
 		ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(statusKey);
-        mav.addObject("status", status);
+        map.addAttribute("status", status);
         
-        return mav;
+        return "database/migration/validationProgress.jsp";
 	}
 	
-	// IMPORT VALIDATE
 	@RequestMapping
-    public ModelAndView importValidate(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+    public String importValidate(ModelMap map, String statusKey) throws ServletRequestBindingException {
 	
-		ModelAndView mav = new ModelAndView("database/migration/importValidate.jsp");
-		
 		ImportDatabaseMigrationStatus status = databaseMigrationService.getValidationStatus(statusKey);
 		FileSystemResource resource = fileStore.get(statusKey);
 		
@@ -322,7 +299,6 @@ public class DatabaseMigrationController {
 		String orgEnvironment = "Not Available";
 		String orgSchemaUser = "Not Available";
 		try {
-			
 			String[] split = StringUtils.split(fileName, "_");
 			orgEnvironment = split[0];
 			orgSchemaUser = split[1];
@@ -330,142 +306,109 @@ public class DatabaseMigrationController {
 			// pass
 		}
 		
-        mav.addObject("status", status);
-        mav.addObject("filePath", resource.getPath());
-        mav.addObject("fileSize", CtiUtilities.formatFileSize(resource.getFile().length(), 1));
-        mav.addObject("orgDbUrl", orgEnvironment);
-        mav.addObject("orgDbUsername", orgSchemaUser);
-        mav.addObject("exportType", status.getExportType());
+		map.addAttribute("status", status);
+		map.addAttribute("filePath", resource.getPath());
+		map.addAttribute("fileSize", CtiUtilities.formatFileSize(resource.getFile().length(), 1));
+		map.addAttribute("orgDbUrl", orgEnvironment);
+		map.addAttribute("orgDbUsername", orgSchemaUser);
+		map.addAttribute("exportType", status.getExportType());
         
-        addDbInfoToMav(mav);
+        addDbInfoToMav(map);
         
-        return mav;
+        return "database/migration/importValidate.jsp";
 	}
 	
-	// IMPORT CONFIRM
 	@RequestMapping
-    public ModelAndView importConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+	public String importConfirm(ModelMap map,
+								String fileKey,
+								String warningProcessingValue,
+								YukonUserContext userContext) throws ServletException {
 		
-	    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
-	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-        String warningProcessingValueStr = ServletRequestUtils.getRequiredStringParameter(request, "warningProcessingValue");
-        WarningProcessingEnum warningProcessingValue = WarningProcessingEnum.valueOf(warningProcessingValueStr);
+        WarningProcessingEnum warningProcessing = 
+        	WarningProcessingEnum.valueOf(warningProcessingValue);
         
         // retrieve file
         FileSystemResource fileSystemResource = fileStore.get(fileKey);
         File importFile = fileSystemResource.getFile();
-        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.processImportDatabaseMigration(importFile, warningProcessingValue, userContext);
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+        	databaseMigrationService.processImportDatabaseMigration(importFile, 
+        															warningProcessing, 
+        															userContext);
         
-		ModelAndView mav = new ModelAndView("redirect:importProgress");
-		mav.addObject("statusKey", importDatabaseMigrationStatus.getId());
+		map.addAttribute("statusKey", importDatabaseMigrationStatus.getId());
         
-		return mav;
+		return "redirect:importProgress";
 	}
 	
-	// IMPORT PROGRESS
 	@RequestMapping
-    public ModelAndView importProgress(HttpServletRequest request, HttpServletResponse response, String statusKey) throws ServletRequestBindingException {
+    public String importProgress(ModelMap map, String statusKey) throws ServletRequestBindingException {
 	
-		ModelAndView mav = new ModelAndView("database/migration/importProgress.jsp");
-		
 		ImportDatabaseMigrationStatus status = databaseMigrationService.getImportStatus(statusKey);
-        mav.addObject("status", status);
+        map.addAttribute("status", status);
         
-        return mav;
+        return "database/migration/importProgress.jsp";
 	}
 	
-	
-	
-	// VIEW OBJECTS
 	@RequestMapping
-    public ModelAndView objectsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	    ModelAndView mav = new ModelAndView("database/migration/popup/objectsViewPopup.jsp");
-	
-		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
+    public String objectsViewPopup(ModelMap map, String fileKey) throws ServletException {
+		ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+			databaseMigrationService.getValidationStatus(fileKey);
 		List<String> labelList = importDatabaseMigrationStatus.getLabelList();
 		
-		mav.addObject("itemList", labelList);
-		mav.addObject("objectCount", labelList.size());
-		return mav;
+		map.addAttribute("itemList", labelList);
+		map.addAttribute("objectCount", labelList.size());
+		return "database/migration/popup/objectsViewPopup.jsp";
 	}
 	
-	// VIEW WARNINGS
 	@RequestMapping
-    public ModelAndView warningsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	    ModelAndView mav = new ModelAndView("database/migration/popup/warningsViewPopup.jsp");
-	
-	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
+    public String warningsViewPopup(ModelMap map, String fileKey) throws ServletException {
+        ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+        	databaseMigrationService.getValidationStatus(fileKey);
         Map<String, Set<String>> warningListMap = importDatabaseMigrationStatus.getWarningsMap();
 
-        mav.addObject("warningListMap", warningListMap);
+        map.addAttribute("warningListMap", warningListMap);
         
         int objectCount = 0;
         for (String key : warningListMap.keySet()) {
         	objectCount += warningListMap.get(key).size();
         }
-        mav.addObject("objectCount", objectCount);
+        map.addAttribute("objectCount", objectCount);
         
-		return mav;
+		return "database/migration/popup/warningsViewPopup.jsp";
 	}
 	
-	// VIEW ERRORS
 	@RequestMapping
-    public ModelAndView errorsViewPopup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-	    ModelAndView mav = new ModelAndView("database/migration/popup/errorsViewPopup.jsp");
-
-	    String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = databaseMigrationService.getValidationStatus(fileKey);
+    public String errorsViewPopup(ModelMap map, String fileKey) throws ServletException {
+	    ImportDatabaseMigrationStatus importDatabaseMigrationStatus = 
+	    	databaseMigrationService.getValidationStatus(fileKey);
 	    Map<String, Set<String>> errorListMap = importDatabaseMigrationStatus.getErrorsMap();
 
-	    mav.addObject("errorListMap", errorListMap);
+	    map.addAttribute("errorListMap", errorListMap);
 	    
 	    int objectCount = 0;
         for (String key : errorListMap.keySet()) {
         	objectCount += errorListMap.get(key).size();
         }
-        mav.addObject("objectCount", objectCount);
+        map.addAttribute("objectCount", objectCount);
         
-	    return mav;
-	}
-	
-	// OPEN FILE
-	@RequestMapping
-    public void openFile(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
-		String fileKey = ServletRequestUtils.getRequiredStringParameter(request, "fileKey");
-		downloadFile(fileKey, response);
+	    return "database/migration/popup/errorsViewPopup.jsp";
 	}
 	
 	// HELPERS
-	private void downloadFile(String fileKey, HttpServletResponse response) throws IOException {
-		
-		FileSystemResource resource = fileStore.get(fileKey);
-		
-		response.setContentType("text/xml");
-        response.setHeader("Content-Type", "application/force-download");
-        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName(resource.getFilename()) + "\"");
-        
-        FileCopyUtils.copy(resource.getInputStream(), response.getOutputStream());
-	}
-	
-	private void addDbInfoToMav(ModelAndView mav) {
-		mav.addObject("dbUrl", poolManager.getPrimaryUrl());
-        mav.addObject("dbUsername", poolManager.getPrimaryUser());
+	private void addDbInfoToMav(ModelMap map) {
+		map.addAttribute("dbUrl", poolManager.getPrimaryUrl());
+		map.addAttribute("dbUsername", poolManager.getPrimaryUser());
 	}
 
 	/**
-	 * gets all the exports on the server and returns all the paths of those files
-	 * 
-	 * @param userContext
-	 * @return
+	 * Helper method to find all of the file exports on the server and return the paths of those files
 	 */
 	private List<String> getExportDirectoryFilePaths(YukonUserContext userContext) {
 	    List<String> exportFilePaths = new ArrayList<String>();
 	    
-	    String rolePropertyPath = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, userContext.getYukonUser());
+	    String rolePropertyPath = 
+	    	rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DATABASE_MIGRATION_FILE_LOCATION, 
+	    										   userContext.getYukonUser());
 	    File exportDir = new File(CtiUtilities.getYukonBase(), rolePropertyPath);
 	    
 	    if (exportDir == null ||

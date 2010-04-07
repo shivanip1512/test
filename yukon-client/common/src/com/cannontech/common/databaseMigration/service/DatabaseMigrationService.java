@@ -19,9 +19,9 @@ public interface DatabaseMigrationService {
     public ImportDatabaseMigrationStatus validateImportFile(File importFile,
                                                             YukonUserContext userContext);
 
-    public ImportDatabaseMigrationStatus processImportDatabaseMigration (File importFile,
-                                                                         WarningProcessingEnum warningProcessingEnum,
-                                                                         YukonUserContext userContext);
+    public ImportDatabaseMigrationStatus processImportDatabaseMigration(File importFile,
+															    		WarningProcessingEnum warningProcessingEnum,
+															    		YukonUserContext userContext);
     
     public ExportDatabaseMigrationStatus processExportDatabaseMigration(ExportTypeEnum exportType, 
                                                                         List<Integer> exportIdList, 
@@ -29,17 +29,12 @@ public interface DatabaseMigrationService {
     
     /**
      * This method retrieves all the database tables associated with a given component.
-     * 
-     * @return
      */
     public Set<DisplayableExportType> getAvailableExportTypes();
     
     /**
      * This method adds a dbTableListener that allows us to process db changes among other things
-     * what a given table is processed by the importer
-     * 
-     * @param tableName
-     * @param tableChangeCallback
+     * while a given table is processed by the importer
      */
     public void addDBTableListener(String tableName, TableChangeCallback tableChangeCallback);
     
@@ -52,17 +47,6 @@ public interface DatabaseMigrationService {
     public ImportDatabaseMigrationStatus getImportStatus(String id);
     public List<ImportDatabaseMigrationStatus> getAllImportStatuses();
     
-    /**
-     * This method is used to get the items shown in the picker.  This also handles the
-     * searching aspect of the picker
-     * 
-     * @param exportType
-     * @param searchText
-     * @param startIndex
-     * @param count
-     * @param userContext
-     * @return
-     */
     public SearchResult<DatabaseMigrationContainer> search(ExportTypeEnum exportType, 
                                                            String searchText, 
                                                            int startIndex, int count, 

@@ -1,6 +1,5 @@
 package com.cannontech.common.databaseMigration;
 
-
 public interface TableChangeCallback {
     
     public void rowInserted(int primaryKey);

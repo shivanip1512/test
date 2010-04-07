@@ -30,7 +30,8 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
         Element baseElement = new Element("data");
         
         // Add configurationElement with a name of the label supplied
-        Element configurationElement = generateConfigurationElement(label);
+        Element configurationElement = new Element("configuration");
+        configurationElement.setAttribute("name", label);
         baseElement.addContent(configurationElement);
         
         buildXmlElement(data, configurationElement);
@@ -42,15 +43,13 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
      * This piece of the buildXmlElement generates the first item tag underneath
      * a configuration element or a references element.  The name field is the
      * name of the table the xml starts at.
-     * 
-     * @param data
-     * @param element
      */
     private void buildXmlElement(Iterable<DataTable> data, Element element){
         for (DataTable dataTable : data) {
-            log.debug("buildingXmlElement - "+dataTable.toString());
+            log.debug("buildingXmlElement - " + dataTable.toString());
             String tableName = dataTable.getName();
-            Element itemElement = generateItemElementName(tableName);
+			Element itemElement = new Element("item");
+			itemElement.setAttribute("name", tableName);
             element.addContent(itemElement);
 
             buildXmlElement(itemElement, dataTable);
@@ -60,9 +59,6 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
     /**
      * This is the heart of the recursion process for this method.  This piece iterates over itself
      * to build the tree of data columns into the corresponding xml element.
-     * 
-     * @param element
-     * @param dataTable
      */
     private void buildXmlElement(Element element,
                               DataTable dataTable) {
@@ -106,124 +102,51 @@ public class ExportXMLGeneratorServiceImpl implements ExportXMLGeneratorService{
                 }
                 
                 DataTableValue dataTableValue = (DataTableValue) columnEntry.getValue();
-                Element valueElement = generateValueElement(columnEntry.getKey());
+				Element valueElement = new Element("value");
+				valueElement.setAttribute("field", columnEntry.getKey());
                 valueElement.addContent(dataTableValue.getValue());
                 element.addContent(valueElement);
 
             } else if (columnEntry.getValue() instanceof DataTable) {
                 DataTable columnDataTable = (DataTable) columnEntry.getValue();
+                Element valueElement = new Element("reference");
+                valueElement.setAttribute("field", columnName);
 
                 // Checks to see if the elementCategory is null.  If this is the case
                 // we want to inherit the type from the element above this element.
                 if (columnDataTable.getElementCategory() == null) {
                     if(element.getName().equals(ElementCategoryEnum.REFERENCE.toString())) {
-                        Element referenceElement = generateReferenceElement(columnName);
-                        element.addContent(referenceElement);
-                        
-                        buildXmlElement(referenceElement, columnDataTable);
+                        element.addContent(valueElement);
+                        buildXmlElement(valueElement, columnDataTable);
                     } else {
-                        Element itemElement = generateItemElementField(columnName);
+                        Element itemElement = new Element("item");
+						itemElement.setAttribute("field", columnName);
                         element.addContent(itemElement);
-                        
                         buildXmlElement(itemElement, columnDataTable);
                     }
 
                 // Processes the Reference Element found in the dataTable
                 } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.REFERENCE)) {
-                    Element referenceElement = generateReferenceElement(columnName);
-                    element.addContent(referenceElement);
-                    
-                    buildXmlElement(referenceElement, columnDataTable);
+                    element.addContent(valueElement);
+                    buildXmlElement(valueElement, columnDataTable);
                     
                 // Processes the Include Element found in the dataTable
                 } else if (columnDataTable.getElementCategory().equals(ElementCategoryEnum.INCLUDE)) {
-                    Element referenceElement = generateReferenceElement(columnName);
-                    element.addContent(referenceElement);
-                    
-                    buildXmlElement(referenceElement, columnDataTable);
+                    element.addContent(valueElement);
+                    buildXmlElement(valueElement, columnDataTable);
                 }
             }
         }
         
-        // Prosses the References Element found in the dataTable
+        // Processes the References Element found in the dataTable
         if (tableReferences.size() > 0 ){
-            Element referencesElement = generateReferencesElement();
+            Element referencesElement = new Element("references");
             element.addContent(referencesElement);
 
             buildXmlElement(tableReferences, referencesElement);
         }        
     }
 
-    /**
-     * Builds a references element (<references>)
-     * 
-     * @param nameField
-     * @return
-     */
-    private Element generateReferencesElement(){
-        return new Element("references");
-    }
-    
-    /**
-     * Builds a reference element (<reference field="${referenceFieldName}">)
-     * 
-     * @param nameField
-     * @return
-     */
-    private Element generateReferenceElement(String referenceFieldName){
-        Element valueElement = new Element("reference");
-        valueElement.setAttribute("field", referenceFieldName);
-        return valueElement;
-    }
-    
-    /**
-     * Builds a value element (<value field="${fieldValue}">)
-     * 
-     * @param nameField
-     * @return
-     */
-    private Element generateValueElement(String fieldValue){
-        Element valueElement = new Element("value");
-        valueElement.setAttribute("field", fieldValue);
-        return valueElement;
-    }
-    
-    /**
-     * Builds an item element with a field attribute (<item field="${fieldValue}">)
-     * 
-     * @param fieldValue
-     * @return
-     */
-    private Element generateItemElementField(String fieldValue){
-        Element itemElement = new Element("item");
-        itemElement.setAttribute("field", fieldValue);
-        return itemElement;
-    }
-    
-    /**
-     * Builds an item element with a name attribute (<item name="${nameField}">)
-     * 
-     * @param nameValue
-     * @return
-     */
-    private Element generateItemElementName(String nameValue){
-        Element itemElement = new Element("item");
-        itemElement.setAttribute("name", nameValue);
-        return itemElement;
-    }
-    
-    /**
-     * Builds a configuration element (<configuration name="${nameField}">)
-     * 
-     * @param nameField
-     * @return
-     */
-    private Element generateConfigurationElement(String nameField){
-        Element configurationElement = new Element("configuration");
-        configurationElement.setAttribute("name", nameField);
-        return configurationElement;
-    }
-    
     public void setDatabaseDefinitionXML(Resource databaseDefinitionXML){
         database = new DatabaseDefinition(databaseDefinitionXML);
     }

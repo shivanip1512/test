@@ -5,8 +5,8 @@ import java.util.List;
 
 public class DatabaseMigrationImportCallback {
     int processed = 0;
-    List<String> warningList;
-    List<String> errorList;
+    private List<String> warningList;
+    private List<String> errorList;
     
     public DatabaseMigrationImportCallback(){
         this.warningList = new ArrayList<String>();

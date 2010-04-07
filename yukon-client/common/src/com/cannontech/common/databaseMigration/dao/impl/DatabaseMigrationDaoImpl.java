@@ -30,15 +30,16 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         
         // Generating the sql statement for the missing primaryKey
         SqlStatementBuilder selectMaxSQL = new SqlStatementBuilder();
-        selectMaxSQL.append("SELECT MAX("+missingPrimaryKeyName+")");
-        selectMaxSQL.append("FROM "+tableDefinition.getTable());
+        selectMaxSQL.append("SELECT MAX(" + missingPrimaryKeyName + ")");
+        selectMaxSQL.append("FROM " + tableDefinition.getTable());
         if (primaryKeyColumnNames.size() > 0) {
-            selectMaxSQL.append("WHERE "+primaryKeyColumnNames.get(0)+" = ?");
+            selectMaxSQL.append("WHERE " + primaryKeyColumnNames.get(0) + " = ?");
             whereClauseValues.add(columnValueMap.get(primaryKeyColumnNames.get(0)));
         }
         
         try {
-            int maxPrimaryKeyValue = jdbcTemplate.queryForInt(selectMaxSQL.getSql(), whereClauseValues.toArray());
+            int maxPrimaryKeyValue = 
+            	jdbcTemplate.queryForInt(selectMaxSQL.getSql(), whereClauseValues.toArray());
             return ++maxPrimaryKeyValue;
         } catch (IncorrectResultSizeDataAccessException e) {
             // A value does not exist for this column.  Using the default of 0.
@@ -57,14 +58,15 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
 
         List<Object> whereClauseArgs = Lists.newArrayList();
         for (Column primaryKeyColumn : tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY)) {
-            primaryKeySelectSqlHolder.addWhereClause(primaryKeyColumn.getName()+" = ?");
+            primaryKeySelectSqlHolder.addWhereClause(primaryKeyColumn.getName() + " = ?");
             whereClauseArgs.add(columnValueMap.get(primaryKeyColumn.getName()));
         }
         SqlStatementBuilder primaryKeySelectSQL = primaryKeySelectSqlHolder.buildSelectSQL();
         
         try {
             @SuppressWarnings("unchecked")
-            Map<String, Object> primaryKeySelectResultMap = jdbcTemplate.queryForMap(primaryKeySelectSQL.getSql(), whereClauseArgs.toArray());
+            Map<String, Object> primaryKeySelectResultMap = 
+            	jdbcTemplate.queryForMap(primaryKeySelectSQL.getSql(), whereClauseArgs.toArray());
             return primaryKeySelectResultMap;
         } catch (IncorrectResultSizeDataAccessException e) {
             // The entry does not exist in the system.
@@ -86,7 +88,7 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         List<Object> whereParameterValues = new ArrayList<Object>();
         for (Column identifyingColumn : tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER)) {
             if (!identifyingColumn.getName().equals(missingPrimaryKey)) {
-                identifierSelectSqlHolder.addWhereClause(identifyingColumn.getName()+" = ? ");
+                identifierSelectSqlHolder.addWhereClause(identifyingColumn.getName() + " = ? ");
                 whereParameterValues.add(columnValueMap.get(identifyingColumn.getName()));
             }
         }
@@ -94,7 +96,8 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         
         try{
             @SuppressWarnings("unchecked")
-            Map<String, Object> primaryKeySelectResultMap = jdbcTemplate.queryForMap(identifierSelectSQL.getSql(), whereParameterValues.toArray());
+            Map<String, Object> primaryKeySelectResultMap = 
+            	jdbcTemplate.queryForMap(identifierSelectSQL.getSql(), whereParameterValues.toArray());
             return primaryKeySelectResultMap;
         } catch (IncorrectResultSizeDataAccessException e) {
             // The entry does not exist in the system.
@@ -111,10 +114,10 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         // that correspond to the table object.
         Object[] columnValueMapKeys  = columnValueMap.keySet().toArray();
         SqlStatementBuilder insertSQL = new SqlStatementBuilder();
-        insertSQL.append("INSERT INTO "+tableDefinition.getTable()+"(");
+        insertSQL.append("INSERT INTO " + tableDefinition.getTable() + "(");
         insertSQL.append(columnValueMapKeys[0].toString());
         for (int i = 1; i < columnValueMapKeys.length; i++) {
-            insertSQL.append(", "+columnValueMapKeys[i].toString());
+            insertSQL.append(", " + columnValueMapKeys[i].toString());
         }
         insertSQL.append(")");
         insertSQL.append("VALUES (?");
@@ -130,11 +133,11 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         // Insert entry into the database
         jdbcTemplate.update(insertSQL.getSql(), insertValues.toArray());
         
-        List<String> primaryKeyColumns = TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY));
+        List<String> primaryKeyColumns = 
+        	TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY));
         return Integer.valueOf(columnValueMap.get(primaryKeyColumns.get(0)));
 
     }
-
     
     public void updateTableEntry(TableDefinition tableDefinition,
                                   Map<String, String> columnValueMap) {
@@ -146,26 +149,25 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         
         // SET
         List<Object> argValues = new ArrayList<Object>();
-        updateSQL.append("SET "+columnValueMapKeys[0].toString()+" = ? ");
+        updateSQL.append("SET "+columnValueMapKeys[0].toString() + " = ? ");
         argValues.add(columnValueMap.get(columnValueMapKeys[0].toString()));
         for (int i = 1; i < columnValueMapKeys.length; i++) {
-            updateSQL.append(", "+columnValueMapKeys[i].toString()+" = ? ");
+            updateSQL.append(", " + columnValueMapKeys[i].toString() + " = ? ");
             argValues.add(columnValueMap.get(columnValueMapKeys[i].toString()));
         }
 
         // WHERE
         List<String> primaryKeyColumnNames = TableDefinition.getColumnNames(tableDefinition.getColumns(ColumnTypeEnum.PRIMARY_KEY));
-        updateSQL.append("WHERE "+primaryKeyColumnNames.get(0)+" = ? ");
+        updateSQL.append("WHERE " + primaryKeyColumnNames.get(0) + " = ? ");
         argValues.add(columnValueMap.get(primaryKeyColumnNames.get(0)));
         for (int i = 1; i < primaryKeyColumnNames.size(); i++) {
-            updateSQL.append("AND "+primaryKeyColumnNames.get(i)+" = ? ");
+            updateSQL.append("AND " + primaryKeyColumnNames.get(i) + " = ? ");
             argValues.add(columnValueMap.get(primaryKeyColumnNames.get(i)));
         }
 
         // Update the given entry in the database
         jdbcTemplate.update(updateSQL.getSql(), argValues.toArray());
     }
-    
     
     @Autowired
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {

@@ -79,25 +79,25 @@ public class DataTableTemplate implements DataEntryTemplate {
     public String toString(){
         String results = "";
         
-        results += "elementCategory = "+elementCategory+"\n";
-        results += "elementMappingKey = "+elementMappingKey+"\n";
-        results += "name = "+name+"\n";
-        results += "table = "+table+"\n";
+        results += "elementCategory = " + elementCategory + "\n";
+        results += "elementMappingKey = " + elementMappingKey + "\n";
+        results += "name = " + name + "\n";
+        results += "table = " + table + "\n";
 
         results += "tableColumns = {";
         for (String key : this.tableColumns.keySet()) {
             DataEntryTemplate dataEntry = this.tableColumns.get(key);
             if (dataEntry instanceof DataTableTemplate) {
-                results += key +" => ("+ dataEntry.toString()+")\n";
+                results += key + " => (" + dataEntry.toString() + ")\n";
             } else {
-                results += key +" => "+ dataEntry.toString()+"\n";
+                results += key + " => " + dataEntry.toString() + "\n";
             }
         }
         results += "}\n";
         
         results += "tableReferences = {";
         for (DataTableTemplate dataTable : this.tableReferences) {
-            results += "("+ dataTable.toString()+")\n";
+            results += "(" + dataTable.toString() + ")\n";
         }
         results += "}\n";
 

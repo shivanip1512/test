@@ -1,15 +1,15 @@
 package com.cannontech.common.databaseMigration.bean.database;
 
 public class Column{
-    String name;
-    ColumnTypeEnum columnType;
-    String defaultValue;
-    String tableRef;
-    ReferenceTypeEnum refType;
-    String nullId;
-    String filterValue;
-    boolean escapingNeeded = false;
-    boolean addToDisplayLabels = false;
+    private String name;
+    private ColumnTypeEnum columnType;
+    private String defaultValue;
+    private String tableRef;
+    private ReferenceTypeEnum refType;
+    private String nullId;
+    private String filterValue;
+    private boolean escapingNeeded = false;
+    private boolean addToDisplayLabels = false;
     
     // Name
     public String getName() {
@@ -84,10 +84,10 @@ public class Column{
     }
 
     public String toString(){
-        return "Name = "+this.name+
-               ", Column Type = "+this.columnType+
-               ", Table Reference = "+this.tableRef+
-               ", Reference Type = "+this.refType+
-               ", Null Id = "+this.nullId;
+        return "Name = " + this.name +
+               ", Column Type = " + this.columnType +
+               ", Table Reference = " + this.tableRef +
+               ", Reference Type = " + this.refType +
+               ", Null Id = " + this.nullId;
     }
 }

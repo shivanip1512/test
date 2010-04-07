@@ -15,18 +15,18 @@ import com.google.common.collect.Sets;
 
 public class ImportDatabaseMigrationStatus implements Completable {
     
-	String id = null;
-	File importFile = null;
-	int currentCount = 0;
-    int totalCount = 0;
-    Date startTime = null;
-    Date stopTime = null;
-    ExportTypeEnum exportType = null;
+	private String id = null;
+	private File importFile = null;
+	private int currentCount = 0;
+	private int totalCount = 0;
+	private Date startTime = null;
+	private Date stopTime = null;
+	private ExportTypeEnum exportType = null;
     
-    List<String> labelList = Lists.newArrayList();
-    WarningProcessingEnum warningProcessing = WarningProcessingEnum.VALIDATE;
-    Map<String, Set<String>> warningsMap = Maps.newLinkedHashMap();
-    Map<String, Set<String>> errorsMap = Maps.newLinkedHashMap();
+	private List<String> labelList = Lists.newArrayList();
+	private WarningProcessingEnum warningProcessing = WarningProcessingEnum.VALIDATE;
+	private Map<String, Set<String>> warningsMap = Maps.newLinkedHashMap();
+	private Map<String, Set<String>> errorsMap = Maps.newLinkedHashMap();
 
     public ImportDatabaseMigrationStatus(int totalCount, File importFile) {
     	this.totalCount = totalCount;
