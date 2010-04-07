@@ -54,11 +54,18 @@
                 </c:forEach>
             </table>
             
-            <br>
-            
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                <form action="/spring/stars/operator/hardware/addSwitch?energyCompany=${energyCompany}&amp;accountId=${accountId}">
-                    <input type="button" value="<cti:msg2 key=".switches.add"/>" class="createAddButton formSubmit">
+                <form action="/spring/stars/operator/hardware/hardwareCreate">
+                    <input type="hidden" name="accountId" value="${accountId}">
+                    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
+                    <input type="hidden" name="hardwareClass" value="${switchClass}">
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                <input type="submit" value="<cti:msg2 key=".switches.add"/>" class="createAddButton formSubmit">
+                            </td>
+                        </tr>
+                    </table>
                 </form>
             </cti:checkRolesAndProperties>
             
@@ -113,8 +120,6 @@
                 </c:forEach>
             </table>
             
-            <br>
-            
             <table style="width:100%;">
                 <tr>
                     <td>
@@ -122,8 +127,12 @@
                     </td>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                            <form action="/spring/stars/operator/hardware/addThermostat?energyCompany=${energyCompany}&amp;accountId=${accountId}">
-                                <input type="button" value="<cti:msg2 key=".thermostats.add"/>" class="createAddButton formSubmit">
+                            <form action="/spring/stars/operator/hardware/hardwareCreate">
+                                <input type="hidden" name="accountId" value="${accountId}">
+                                <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
+                                <input type="hidden" name="hardwareClass" value="${thermostatClass}">
+                            
+                                <input type="submit" value="<cti:msg2 key=".thermostats.add"/>" class="createAddButton formSubmit">
                             </form>
                         </cti:checkRolesAndProperties>
                     </td>
@@ -174,11 +183,18 @@
                 </c:forEach>
             </table>
             
-            <br>
-            
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                <form action="/spring/stars/operator/hardware/addMeter?energyCompany=${energyCompany}&amp;accountId=${accountId}">
-                    <input type="submit" value="<cti:msg2 key=".meters.add"/>" class="createAddButton formSubmit">
+                <form action="/spring/stars/operator/hardware/hardwareCreate">
+                    <input type="hidden" name="accountId" value="${accountId}">
+                    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
+                    <input type="hidden" name="hardwareClass" value="${meterClass}">
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                <input type="submit" value="<cti:msg2 key=".meters.add"/>" class="createAddButton formSubmit">
+                            </td>
+                        </tr>
+                    </table>
                 </form>
             </cti:checkRolesAndProperties>
             

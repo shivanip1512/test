@@ -82,6 +82,7 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareUpdated">Hardware Updated</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareDeleted">Hardware Deleted</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareRemoved">Hardware Removed From Account</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareCreated">Hardware Created</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.deviceInfoSection.title">Device Info</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.displayName">Device Name</entry>
@@ -159,5 +160,11 @@
     <entry key="typeMismatch.fieldInstallDate">Field Install Date must be a valid date.</entry>
     <entry key="typeMismatch.fieldReceiveDate">Field Receive Date must be a valid date.</entry>
     <entry key="typeMismatch.fieldRemoveDate">Field Remove Date must be a valid date.</entry>
+    
+    <!-- Creation specific keys -->
+    <entry key="yukon.web.modules.operator.hardwareEdit.switchTypesLabel">Switch Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.thermostatTypesLabel">Thermostat Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.meterTypesLabel">Meter Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.create.cancelButton">Cancel</entry>
     
 </properties>

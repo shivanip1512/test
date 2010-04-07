@@ -3,10 +3,12 @@ package com.cannontech.web.stars.dr.operator.hardware.model;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.stars.dr.hardware.model.HardwareType;
+import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
 
 public class HardwareDto {
-    private int inventoryId;
+    private Integer inventoryId;
     private Integer deviceId = 0;
     private int energyCompanyId;
     private String displayName;
@@ -28,9 +30,10 @@ public class HardwareDto {
     private Integer originalDeviceStatusEntryId;
     private String twoWayDeviceName;
     private List<HardwareHistory> hardwareHistory;
-    private boolean twoWayLcr = false;
-    private boolean mct = false;
-    private boolean thermostat = false;
+    private LMHardwareClass hardwareClass;
+    private HardwareType hardwareType;
+    private int hardwareTypeEntryId;
+    private String meterNumber;
     
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -164,7 +167,7 @@ public class HardwareDto {
         return deviceId;
     }
     
-    public void setDeviceId(Integer deviceId){
+    public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
 
@@ -176,16 +179,12 @@ public class HardwareDto {
         return hardwareHistory;
     }
 
-    public int getInventoryId() {
+    public Integer getInventoryId() {
         return inventoryId;
     }
 
-    public void setInventoryId(int inventoryId) {
+    public void setInventoryId(Integer inventoryId) {
         this.inventoryId = inventoryId;
-    }
-
-    public boolean hasDevice() {
-        return getDisplayType().startsWith("MCT") || getDisplayType().equalsIgnoreCase("LCR-3102");
     }
 
     public String getDisplayName(){
@@ -212,27 +211,35 @@ public class HardwareDto {
         return energyCompanyId;
     }
 
-    public void setThermostat(boolean thermostat) {
-        this.thermostat = thermostat;
+    public void setHardwareClass(LMHardwareClass lmHardwareClass) {
+        this.hardwareClass = lmHardwareClass;
     }
     
-    public boolean isThermostat() {
-        return thermostat;
-    }
-    
-    public boolean isTwoWayLcr() {
-        return twoWayLcr;
-    }
-    
-    public void setTwoWayLcr(boolean twoWayLcr) {
-        this.twoWayLcr = twoWayLcr;
-    }
-    
-    public boolean isMct() {
-        return mct;
+    public LMHardwareClass getHardwareClass() {
+        return hardwareClass;
     }
 
-    public void setMct(boolean mct) {
-        this.mct = mct;
+    public void setHardwareType(HardwareType hardwareType) {
+        this.hardwareType = hardwareType;
+    }
+    
+    public HardwareType getHardwareType() {
+        return hardwareType;
+    }
+
+    public int getHardwareTypeEntryId() {
+        return hardwareTypeEntryId;
+    }
+
+    public void setHardwareTypeEntryId(int hardwareTypeEntryId) {
+        this.hardwareTypeEntryId = hardwareTypeEntryId;
+    }
+
+    public void setMeterNumber(String meterNumber) {
+        this.meterNumber = meterNumber;
+    }
+    
+    public String getMeterNumber() {
+        return meterNumber;
     }
 }

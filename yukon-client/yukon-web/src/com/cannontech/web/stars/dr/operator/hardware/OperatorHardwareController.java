@@ -13,12 +13,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.View;
 
+import com.cannontech.common.constants.YukonListEntry;
+import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Address;
@@ -41,8 +44,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
+import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -55,6 +60,7 @@ import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValida
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.util.JsonView;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 
 @RequestMapping("/operator/hardware/*")
 @Controller
@@ -70,7 +76,7 @@ public class OperatorHardwareController {
     private HardwareDtoValidator hardwareDtoValidator;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
-    /* HARDWARE LIST */
+    /* HARDWARE LIST PAGE*/
     @RequestMapping
     public String hardwareList(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
@@ -80,24 +86,91 @@ public class OperatorHardwareController {
         modelMap.addAttribute("meters", hardwareMap.get(LMHardwareClass.METER));
         modelMap.addAttribute("thermostats", hardwareMap.get(LMHardwareClass.THERMOSTAT));
         
+        modelMap.addAttribute("switchClass", LMHardwareClass.SWITCH);
+        modelMap.addAttribute("thermostatClass", LMHardwareClass.THERMOSTAT);
+        modelMap.addAttribute("meterClass", LMHardwareClass.METER);
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
-        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         
         return "operator/hardware/hardwareList.jsp";
     }
     
+    /* HARDWARE CREATE PAGE*/
+    @RequestMapping
+    public String hardwareCreate(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment, String hardwareClass) throws ServletRequestBindingException {
+        modelMap.addAttribute("displayName", "Create Hardware");
+        
+        LMHardwareClass lmHardwareClass = LMHardwareClass.valueOf(hardwareClass.toUpperCase());
+        List<DeviceTypeOpiton> deviceTypeOptions = Lists.newArrayList();
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+        
+        List<YukonListEntry> deviceTypeList = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE).getYukonListEntries();
+        for(YukonListEntry deviceTypeEntry : deviceTypeList) {
+            HardwareType type = HardwareType.valueOf(deviceTypeEntry.getYukonDefID());
+            if(type.getLMHardwareClass() == lmHardwareClass) {
+                DeviceTypeOpiton option = new DeviceTypeOpiton();
+                option.setDisplayName(deviceTypeEntry.getEntryText());
+                option.setHardwareTypeEntryId(deviceTypeEntry.getEntryID());
+                deviceTypeOptions.add(option);
+            }
+        }
+        
+        modelMap.addAttribute("deviceTypes", deviceTypeOptions);
+        
+        if(lmHardwareClass == LMHardwareClass.SWITCH) {
+            modelMap.addAttribute("displayTypeKey", ".switchTypesLabel");
+        } else if (lmHardwareClass == LMHardwareClass.THERMOSTAT) {
+            modelMap.addAttribute("displayTypeKey", ".thermostatTypesLabel");
+        } else {
+            modelMap.addAttribute("displayTypeKey", ".meterTypesLabel");
+        }
+        
+        if(lmHardwareClass != LMHardwareClass.METER) {
+            modelMap.addAttribute("showSerialNumber", true);
+            modelMap.addAttribute("serialNumberEditable", true);
+            modelMap.addAttribute("showRoute", true);
+        }
+        
+        HardwareDto hardwareDto = new HardwareDto();
+        hardwareDto.setHardwareClass(lmHardwareClass);
+        hardwareDto.setFieldInstallDate(new Date());
+        modelMap.addAttribute("hardwareDto", hardwareDto);
+        
+        setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
+        
+        return "operator/hardware/hardwareEdit.jsp";
+    }
+    
+    /* HARDWARE EDIT PAGE*/
     @RequestMapping
     public String hardwareEdit(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext,  AccountInfoFragment accountInfoFragment, int inventoryId) {
         
         hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
+        modelMap.addAttribute("editMode", true);
         
         HardwareDto hardwareDto = hardwareService.getHardwareDto(inventoryId, accountInfoFragment.getEnergyCompanyId());
         modelMap.addAttribute("hardwareDto", hardwareDto);
         modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
         
-        /* Setup HardwareInfo ModelMap */
-        setupHardwareInfoModelMap(accountInfoFragment, inventoryId, modelMap, userContext);
+        boolean inventoryChecking = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
+        
+        /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
+        HardwareType hardwareType = hardwareDto.getHardwareType(); 
+        if(!inventoryChecking && hardwareType.getLMHardwareClass() != LMHardwareClass.METER) {
+            modelMap.addAttribute("serialNumberEditable", true);
+        }
+        
+        /* For switches and tstats, show serial number instead of device name and show the route. */
+        if(hardwareType.getLMHardwareClass() != LMHardwareClass.METER) {
+            modelMap.addAttribute("showRoute", true);
+            modelMap.addAttribute("showSerialNumber", true);
+        }
+        
+        if(hardwareType.isSwitch() && hardwareType.isTwoWay()) {
+            modelMap.addAttribute("showTwoWay", true);
+        }
+        
+        setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
         
         return "/operator/hardware/hardwareEdit.jsp";
     }
@@ -127,10 +200,12 @@ public class OperatorHardwareController {
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
         }
         
-        /* Setup HardwareInfo ModelMap */
-        setupHardwareInfoModelMap(accountInfoFragment, inventoryId, modelMap, userContext);
+        setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
+        
         if (bindingResult.hasErrors()) {
             
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
@@ -147,6 +222,47 @@ public class OperatorHardwareController {
         /* Flash hardware updated */
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareUpdated"));
         
+        return "redirect:hardwareEdit";
+    }
+    
+    @RequestMapping
+    public String createHardware(@ModelAttribute("hardwareDto") HardwareDto hardwareDto, BindingResult bindingResult,
+                                 ModelMap modelMap, 
+                                 YukonUserContext userContext,
+                                 HttpServletRequest request,
+                                 FlashScope flashScope,
+                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+        String cancelButton = ServletRequestUtils.getStringParameter(request, "cancel");
+        if (cancelButton != null) { /* Cancel Creation */
+            AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+            return "redirect:hardwareList";
+        }
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, userContext.getYukonUser());
+        int inventoryId = -1;
+        
+        try {
+            hardwareDtoValidator.validate(hardwareDto, bindingResult);
+        
+            if(!bindingResult.hasErrors()) {
+                inventoryId = hardwareService.createHardware(hardwareDto, accountInfoFragment.getAccountId(), userContext);
+            }
+        } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+        } catch (ObjectInOtherEnergyCompanyException e) {
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+        }
+        
+        if (bindingResult.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+            return "/operator/hardware/hardwareEdit.jsp";
+        }
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareCreated"));
+        setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
         return "redirect:hardwareEdit";
     }
     
@@ -212,7 +328,7 @@ public class OperatorHardwareController {
     }
 
     /* HELPERS */
-    private void setupHardwareInfoModelMap(AccountInfoFragment accountInfoFragment, Integer inventoryId, ModelMap modelMap, YukonUserContext userContext){
+    private void setupHardwareEditModelMap(AccountInfoFragment accountInfoFragment, Integer inventoryId, ModelMap modelMap, YukonUserContext userContext, boolean editing){
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
@@ -231,24 +347,46 @@ public class OperatorHardwareController {
         LiteYukonPAObject[] routes = energyCompany.getAllRoutes();
         modelMap.addAttribute("routes", routes);
         
-        modelMap.addAttribute("inventoryId", inventoryId);
         
         modelMap.addAttribute("serviceCompanies", energyCompanyDao.getAllInheritedServiceCompanies(energyCompany.getEnergyCompanyID()));
         
-        List<Warehouse> warehouses = energyCompany.getWarehouses();
-        modelMap.addAttribute("warehouses", warehouses);
         
-        if(inventoryId != null) {
-            /* Device Status History */
-            List<EventInventory> deviceStatusHistory = EventInventory.retrieveEventInventories(inventoryId);
-            modelMap.addAttribute("deviceStatusHistory", deviceStatusHistory);
-            
-            /* Hardware History */
-            modelMap.addAttribute("hardwareHistory", hardwareService.getHardwareHistory(inventoryId));
+        if(editing){
+            if(inventoryId != null) {
+                modelMap.addAttribute("inventoryId", inventoryId);
+                
+                /* Device Status History */
+                List<EventInventory> deviceStatusHistory = EventInventory.retrieveEventInventories(inventoryId);
+                modelMap.addAttribute("deviceStatusHistory", deviceStatusHistory);
+                
+                /* Hardware History */
+                modelMap.addAttribute("hardwareHistory", hardwareService.getHardwareHistory(inventoryId));
+            }
+        
+            List<Warehouse> warehouses = energyCompany.getWarehouses();
+            modelMap.addAttribute("warehouses", warehouses);
+            boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
+            modelMap.addAttribute("inventoryChecking", inventoryChecking);
         }
+    }
+    
+    /* DEVICE TYPE SELECT OPTIONS WRAPPER */
+    public static class DeviceTypeOpiton {
+        private int hardwareTypeEntryId;
+        private String displayName;
         
-        boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
-        modelMap.addAttribute("inventoryChecking", inventoryChecking);
+        public int getHardwareTypeEntryId() {
+            return hardwareTypeEntryId;
+        }
+        public void setHardwareTypeEntryId(int hardwareTypeEntryId) {
+            this.hardwareTypeEntryId = hardwareTypeEntryId;
+        }
+        public String getDisplayName() {
+            return displayName;
+        }
+        public void setDisplayName(String displayName) {
+            this.displayName = displayName;
+        }
     }
     
     @Autowired

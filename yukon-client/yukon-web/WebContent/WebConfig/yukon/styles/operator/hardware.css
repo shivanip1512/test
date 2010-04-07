@@ -5,6 +5,7 @@
 div.historyContainer {
     max-height: 112px;
     overflow: auto;
+    overflow-x: hidden;
 }
 
 .newDevice input {

@@ -4,11 +4,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -50,8 +48,6 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
-
-    private static final Logger log = YukonLogManager.getLogger(StarsInventoryBaseServiceImpl.class);
 
     private StarsSearchDao starsSearchDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
@@ -207,9 +203,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         return liteInv;
     }
 
-    // initializes the default Thermostat Schedule on the account
-    private void initThermostatSchedule(LiteStarsLMHardware lmHw,
-            LiteStarsEnergyCompany energyCompany) {
+    @Override
+    public void initThermostatSchedule(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
 
         // get the default Thermostat Schedule for the energyCompany
         int thermostatDefId = YukonListEntryHelper.getYukonDefinitionId(energyCompany,
@@ -231,9 +226,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
     }
 
-    // maps the static load group, if static load group mapping exists
-    private void initStaticLoadGroup(LiteStarsLMHardware lmHw,
-            LiteStarsEnergyCompany energyCompany) {
+    @Override
+    public void initStaticLoadGroup(LiteStarsLMHardware lmHw, LiteStarsEnergyCompany energyCompany) {
         // get the static load group mapping
         LiteStarsCustAccountInformation liteAcct = starsCustAccountInformationDao.getById(lmHw.getAccountID(),
                                                                                           energyCompany.getEnergyCompanyID());
@@ -246,8 +240,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         }
     }
 
-    // adds the Install hardware event
-    private void addInstallHardwareEvent(LiteInventoryBase liteInv,
+    @Override
+    public void addInstallHardwareEvent(LiteInventoryBase liteInv,
             LiteStarsEnergyCompany energyCompany, LiteYukonUser user) {
 
         int hwEventTypeID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE)

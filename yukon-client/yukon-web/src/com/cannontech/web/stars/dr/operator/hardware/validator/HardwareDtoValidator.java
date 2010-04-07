@@ -6,13 +6,16 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 
@@ -21,6 +24,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     private static final char[] validSerialNumberChars = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
     private InventoryBaseDao inventoryBaseDao;
     private PaoDao paoDao;
+    private YukonListDao yukonListDao;
     
     public HardwareDtoValidator() {
     	super(HardwareDto.class);
@@ -28,14 +32,21 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
 
     @Override
     public void doValidation(HardwareDto hardwareDto, Errors errors) {
+        HardwareType hardwareType = null;
+        if(hardwareDto.getHardwareType() == null) {
+            YukonListEntry hardwareTypeEntry = yukonListDao.getYukonListEntry(hardwareDto.getHardwareTypeEntryId());
+            hardwareType = HardwareType.valueOf(hardwareTypeEntry.getYukonDefID());
+        } else {
+            hardwareType = hardwareDto.getHardwareType();
+        }
         
         /* Serial Number */
-        if(!hardwareDto.isMct()){  /* Check serial numbers for switches and tstats */
+        if(!hardwareType.isMeter()){  /* Check serial numbers for switches and tstats */
             if (StringUtils.isBlank(hardwareDto.getSerialNumber())) {
                 errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.required");
             } else if(hardwareDto.getSerialNumber().length() > 30) {
                 errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.tooLong");
-            } else if (hardwareDto.isTwoWayLcr() && !StringUtils.containsOnly(hardwareDto.getSerialNumber(), validSerialNumberChars)){
+            } else if (hardwareType.isSwitch() && hardwareType.isTwoWay() && !StringUtils.containsOnly(hardwareDto.getSerialNumber(), validSerialNumberChars)){
                 errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.invalid");
             }
         }
@@ -69,7 +80,7 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
         }
         
         /* Two Way LCR's */
-        if(hardwareDto.isTwoWayLcr()){
+        if(hardwareType.isSwitch() && hardwareType.isTwoWay()){
             /* If they have not picked a device for this two way inventory, reject this device id */
             if(!(hardwareDto.getDeviceId() > 0)){
                 errors.rejectValue("deviceId", "yukon.web.modules.operator.hardwareEdit.error.invalid");
@@ -118,5 +129,10 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setYukonListDao(YukonListDao yukonListDao) {
+        this.yukonListDao = yukonListDao;
     }
 }

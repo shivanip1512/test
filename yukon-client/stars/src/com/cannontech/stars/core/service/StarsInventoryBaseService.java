@@ -3,6 +3,7 @@ package com.cannontech.stars.core.service;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 
 public interface StarsInventoryBaseService {
@@ -48,4 +49,26 @@ public interface StarsInventoryBaseService {
     public void removeDeviceFromAccount(LiteInventoryBase liteInv,
             boolean deleteFromInventory, LiteStarsEnergyCompany energyCompany,
             LiteYukonUser user);
+
+    /**
+     * Initializes the default Thermostat Schedule on the account.
+     * @param lmHardware
+     * @param energyCompany
+     */
+    public void initThermostatSchedule(LiteStarsLMHardware lmHardware, LiteStarsEnergyCompany energyCompany);
+
+    /**
+     * Maps the static load group, if static load group mapping exists
+     * @param lmHardware
+     * @param energyCompany
+     */
+    public void initStaticLoadGroup(LiteStarsLMHardware lmHardware, LiteStarsEnergyCompany energyCompany);
+
+    /**
+     * Adds the Install hardware event
+     * @param liteInv
+     * @param energyCompany
+     * @param user
+     */
+    public void addInstallHardwareEvent(LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
 }

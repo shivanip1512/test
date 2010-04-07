@@ -8,6 +8,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
+import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
 import com.google.common.collect.ListMultimap;
@@ -26,8 +28,9 @@ public interface HardwareService {
      * to spawn an event.
      * @param hardwareDto
      * @return boolean
+     * @throws ObjectInOtherEnergyCompanyException 
      */
-    public boolean updateHardware(HardwareDto hardwareDto);
+    public boolean updateHardware(HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * If delete is true: deletes the hardware, otherwise just removes it from the 
@@ -75,5 +78,16 @@ public interface HardwareService {
      * @throws NotAuthorizedException
      */
     void validateInventoryAgainstAccount(List<Integer> inventoryIdList, int accountId) throws NotAuthorizedException;
+
+    /**
+     * Creates hardware based on hardwareDto settings and returns
+     * the resulting inventoryId.
+     * @param hardwareDto
+     * @param accountId
+     * @param userContext
+     * @return int inventoryId
+     * @throws ObjectInOtherEnergyCompanyException 
+     */
+    public int createHardware(HardwareDto hardwareDto, int accountId, YukonUserContext userContext) throws ObjectInOtherEnergyCompanyException;
 
 }

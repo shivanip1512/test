@@ -18,6 +18,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -244,15 +245,15 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
             public InventoryBase mapRow(ResultSet rs, int rowNum) throws SQLException {
                 InventoryBase inventoryBase = new InventoryBase();
                 inventoryBase.setAccountId(rs.getInt("AccountID"));
-                inventoryBase.setAlternateTrackingNumber(rs.getString("AlternateTrackingNumber"));
+                inventoryBase.setAlternateTrackingNumber(SqlUtils.convertDbValueToString(rs.getString("AlternateTrackingNumber")));
                 inventoryBase.setCategoryId(rs.getInt("CategoryID"));
                 inventoryBase.setCurrentStateId(rs.getInt("CurrentStateID"));
                 inventoryBase.setDeviceId(rs.getInt("DeviceID"));
-                inventoryBase.setDeviceLabel(rs.getString("DeviceLabel"));
+                inventoryBase.setDeviceLabel(SqlUtils.convertDbValueToString(rs.getString("DeviceLabel")));
                 inventoryBase.setInstallationCompanyId(rs.getInt("InstallationCompanyID"));
                 inventoryBase.setInstallDate(rs.getTimestamp("InstallDate"));
                 inventoryBase.setInventoryId(rs.getInt("InventoryID"));
-                inventoryBase.setNotes(rs.getString("Notes"));
+                inventoryBase.setNotes(SqlUtils.convertDbValueToString(rs.getString("Notes")));
                 inventoryBase.setReceiveDate(rs.getTimestamp("ReceiveDate"));
                 inventoryBase.setRemoveDate(rs.getTimestamp("RemoveDate"));
                 inventoryBase.setVoltageId(rs.getInt("VoltageID"));
