@@ -1804,6 +1804,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedVarLoadPointValue(DOUBLE est
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }*/
+        _busupdatedflag = TRUE;
         _dirty = TRUE;
     }
     _estimatedvarloadpointvalue = estimatedvarval;
