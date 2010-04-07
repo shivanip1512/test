@@ -2,8 +2,7 @@ package com.cannontech.database;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.sql.DataSource;
 
@@ -37,8 +36,8 @@ public class PoolManager {
 
     static private PoolManager instance;
 
-    private Map<String, DataSource> pools = new HashMap<String, DataSource>();
-    private Map<String, DataSource> wrappedPools = new HashMap<String, DataSource>();
+    private DataSource mainPool = null;
+    private DataSource wrappedPool = null;
 
     private static ConfigurationSource configSource = null;
     private String primaryUrl;
@@ -166,6 +165,7 @@ public class PoolManager {
         bds.setMaxActive(maxActive);
         bds.setMaxIdle(maxIdle);
         bds.setMinIdle(minIdle);
+        bds.setMaxWait(TimeUnit.SECONDS.toMillis(60));
         bds.setValidationQuery(validationQuery);
         bds.setTestOnBorrow(testOnBorrow);
         bds.setTestOnReturn(testOnReturn);
@@ -176,9 +176,9 @@ public class PoolManager {
             actualDs = new LoggingDataSource(bds);
             log.info("DataSource logging has been enabled. DataSource is now: " + actualDs);
         }
-
-        pools.put("yukon", actualDs);
-        wrappedPools.put("yukon", new TransactionAwareDataSourceProxy(actualDs));
+        
+        mainPool = actualDs;
+        wrappedPool = new TransactionAwareDataSourceProxy(actualDs);
     }
 
     private void registerDriver() {
@@ -194,38 +194,21 @@ public class PoolManager {
             log.warn("Unable to force register driver", e);
         }
     }
-
-    public DataSource getDataSource(String name) {
-        return pools.get(name);
-    }
-
-    /**
-     * Returns a DataSoruce that has been wrapped with a 
-     * TransactionAwareDataSourceProxy so that it can transparently
-     * participate in Spring transactions.
-     * @param name
-     * @return
-     */
-    public DataSource getWrappedDataSource(String name) {
-        return wrappedPools.get(name);
+    
+    public DataSource getMainPool() {
+        return mainPool;
     }
     
-    /**
-     * Convenience method for
-     *   PoolManager.getInstance().getDataSource("yukon");
-     * @return
-     */
+    public DataSource getWrappedPool() {
+        return wrappedPool;
+    }
+    
     public static DataSource getYukonDataSource() {
-        return getInstance().getDataSource(CtiUtilities.getDatabaseAlias());
+        return getInstance().getMainPool();
     }
 
-    /**
-     * Convenience method for
-     *   PoolManager.getInstance().getWrappedDataSource("yukon");
-     * @return
-     */
     public static DataSource getWrappedYukonDataSource() {
-        return getInstance().getWrappedDataSource(CtiUtilities.getDatabaseAlias());
+        return getInstance().getWrappedPool();
     }
     
     /**
@@ -252,8 +235,12 @@ public class PoolManager {
      * @return
      */
     public Connection getConnection(String name) {
+        if (!StringUtils.equals(CtiUtilities.getDatabaseAlias(), name)) {
+            // check for historical reasons, name will always equal "yukon"
+            throw new RuntimeException("Connection can only be returned for \"yukon\"");
+        }
         try {
-            Connection connection = wrappedPools.get(name).getConnection();
+            Connection connection = wrappedPool.getConnection();
             return connection;
         } catch (SQLException e) {
             throw new RuntimeException("Unable to get database connection.", e);
