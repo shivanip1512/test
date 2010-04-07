@@ -9,7 +9,6 @@ WHERE RolePropertyId = -20153;
 /* End YUK-8420 */
 
 /* Start YUK-8533 */
-DROP INDEX INDX_YukonUser_Username_FB;
 CREATE INDEX INDX_YukonUser_Username_FB ON YukonUser(
     LOWER(Username)
 );
