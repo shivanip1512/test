@@ -8,7 +8,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.user.UserUtils;
 import com.cannontech.web.stars.dr.operator.model.ChangeLoginBackingBean;
 
 public class ChangeLoginValidator extends SimpleValidator<ChangeLoginBackingBean> {
@@ -31,8 +30,7 @@ public class ChangeLoginValidator extends SimpleValidator<ChangeLoginBackingBean
         YukonValidationUtils.checkExceedsMaxLength(errors, "username", changeLoginBackingBean.getUsername(), 64);
         LiteYukonUser usernameCheckUser = yukonUserDao.getLiteYukonUser(changeLoginBackingBean.getUsername());
         if (usernameCheckUser != null &&
-            (residentialUser.getUserID() != usernameCheckUser.getUserID() ||
-             usernameCheckUser.getUserID() == UserUtils.USER_DEFAULT_ID)) {
+            residentialUser.getUserID() != usernameCheckUser.getUserID()) {
             errors.rejectValue("username", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.usernameAlreadyExists");
         }
         

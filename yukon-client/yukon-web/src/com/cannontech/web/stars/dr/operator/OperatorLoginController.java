@@ -90,7 +90,9 @@ public class OperatorLoginController {
         ChangeLoginBackingBean changeLoginBackingBean = new ChangeLoginBackingBean();
         String userResidentialGroupName = getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
         changeLoginBackingBean.setCustomerLoginGroupName(userResidentialGroupName);
-        changeLoginBackingBean.setUsername(residentialUser.getUsername());
+        if (!(residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID)) {
+            changeLoginBackingBean.setUsername(residentialUser.getUsername());
+        }
         changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
         modelMap.addAttribute("changeLoginBackingBean", changeLoginBackingBean);
         
@@ -193,7 +195,9 @@ public class OperatorLoginController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteYukonUser custYukonUser = getYukonUserByAccountId(accountId);
-        yukonUserDao.deleteUser(custYukonUser.getUserID());
+        if (custYukonUser.getUserID() != UserUtils.USER_DEFAULT_ID) {
+            yukonUserDao.deleteUser(custYukonUser.getUserID());
+        }
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:changeLogin";
@@ -271,12 +275,16 @@ public class OperatorLoginController {
      * @param residentialUser - the residential user we are modifying
      */
     private void createResidentialLogin(final int accountId,final int energyCompanyId,final ChangeLoginBackingBean changeLoginBackingBean,
-                                          final YukonUserContext userContext, LiteYukonUser residentialUser) {
+                                          final YukonUserContext userContext, final LiteYukonUser residentialUser) {
 
 
         transactionTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
         
+                if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
+                    throw new RuntimeException("You cannot edit the the default user.");
+                }
+                
                 // Build up the groups needed to create an account
                 List<LiteYukonGroup> groups = Lists.newArrayList();
                 LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
