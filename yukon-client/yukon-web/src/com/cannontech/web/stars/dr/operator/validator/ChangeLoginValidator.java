@@ -6,29 +6,19 @@ import org.springframework.validation.ValidationUtils;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.UserUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.model.ChangeLoginBackingBean;
 
 public class ChangeLoginValidator extends SimpleValidator<ChangeLoginBackingBean> {
 
-    private AuthenticationService authenticationService;
-    private RolePropertyDao rolePropertyDao;
     private YukonUserDao yukonUserDao;
     private LiteYukonUser residentialUser;
-    private YukonUserContext userContext;
     
-    public ChangeLoginValidator(LiteYukonUser residentialUser, YukonUserContext userContext, AuthenticationService authenticationService, RolePropertyDao rolePropertyDao, YukonUserDao yukonUserDao){
+    public ChangeLoginValidator(LiteYukonUser residentialUser, YukonUserDao yukonUserDao){
     	super(ChangeLoginBackingBean.class);
     	this.residentialUser = residentialUser;
-        this.userContext = userContext;
-        this.authenticationService  = authenticationService;
-        this.rolePropertyDao = rolePropertyDao;
         this.yukonUserDao = yukonUserDao;
     }
 
@@ -37,12 +27,6 @@ public class ChangeLoginValidator extends SimpleValidator<ChangeLoginBackingBean
 
         ChangeLoginBackingBean changeLoginBackingBean = (ChangeLoginBackingBean)target;
 
-        // Username Validation
-        boolean allowsUsernameChange = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
-        if(!allowsUsernameChange) {
-            errors.rejectValue("username", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.invalidUsernameChange");
-        }
-        
         ValidationUtils.rejectIfEmpty(errors, "username", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.usernameRequired");
         YukonValidationUtils.checkExceedsMaxLength(errors, "username", changeLoginBackingBean.getUsername(), 64);
         LiteYukonUser usernameCheckUser = yukonUserDao.getLiteYukonUser(changeLoginBackingBean.getUsername());
@@ -58,18 +42,10 @@ public class ChangeLoginValidator extends SimpleValidator<ChangeLoginBackingBean
         if (!StringUtils.isBlank(changeLoginBackingBean.getPassword1()) ||
             !StringUtils.isBlank(changeLoginBackingBean.getPassword2())) {
             
-            boolean allowsPasswordChange = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
-            boolean passwordSetSupported = authenticationService.supportsPasswordSet(residentialUser.getAuthType());
-            if (!allowsPasswordChange || !passwordSetSupported) {
-                errors.rejectValue("password1", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.invalidPasswordChange");
-                errors.rejectValue("password2", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.invalidPasswordChange");
-            }
-
             if (!changeLoginBackingBean.getPassword1().equals(changeLoginBackingBean.getPassword2())) {
                 errors.rejectValue("password1", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.passwordNoMatch");
                 errors.rejectValue("password2", "yukon.web.modules.operator.changeLogin.changeLoginBackingBean.passwordNoMatch");
             }
-            
         }
     }
 

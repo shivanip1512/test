@@ -126,7 +126,7 @@ public class OperatorLoginController {
         
         // validate/update
         LiteYukonUser residentialUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
-        ChangeLoginValidator changeLoginValidator = changeLoginValidatorFactory.getChangeLoginValidator(residentialUser, userContext);
+        ChangeLoginValidator changeLoginValidator = changeLoginValidatorFactory.getChangeLoginValidator(residentialUser);
         
         try {
 
@@ -206,7 +206,7 @@ public class OperatorLoginController {
      */
     @Transactional
     private void updateResidentialLogin(int accountId,final int energyCompanyId,final ChangeLoginBackingBean changeLoginBackingBean,
-                                         ModelMap modelMap, YukonUserContext userContext, final LiteYukonUser residentialUser) {
+                                         ModelMap modelMap, final YukonUserContext userContext, final LiteYukonUser residentialUser) {
 
 
         transactionTemplate.execute(new TransactionCallback() {
@@ -218,11 +218,22 @@ public class OperatorLoginController {
                 updateLoginStatus(changeLoginBackingBean, residentialUser);
                 
                 if (!changeLoginBackingBean.getUsername().equals(residentialUser.getUsername())) {
+                    // Security check for username change.
+                    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, userContext.getYukonUser());
+
                     yukonUserDao.changeUsername(residentialUser.getUserID(), changeLoginBackingBean.getUsername());
                 }
         
                 if (!StringUtils.isBlank(changeLoginBackingBean.getPassword1()) &&
                     !StringUtils.isBlank(changeLoginBackingBean.getPassword2())) {
+                    
+                    // Security checks for password change.
+                    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD, userContext.getYukonUser());
+                    boolean passwordSetSupported = authenticationService.supportsPasswordSet(residentialUser.getAuthType());
+                    if (!passwordSetSupported) {
+                        throw new IllegalArgumentException("You cannot set the password on this style of account.");
+                    }
+
                     authenticationService.setPassword(residentialUser, changeLoginBackingBean.getPassword1());
                 }
                 
@@ -382,10 +393,6 @@ public class OperatorLoginController {
 
         for (LiteYukonGroup yukonGroup : ecResidentialGroups) {
             results.add(yukonGroup.getGroupName());
-        }
-        
-        if (ecResidentialGroups.size() < 1){
-            results.add("(none)");
         }
         
         return results;

@@ -40,7 +40,7 @@
         
     </script>
     <div style="width: 50%;">
-	    <tags:boxContainer2 key=".changeLogin">
+	    <tags:sectionContainer2 key=".changeLogin" >
 	
 	        <form id="deleteForm" action="/spring/stars/operator/login/deleteLogin" method="post">
 	            <input type="hidden" name="accountId" value="${accountId}">
@@ -64,7 +64,7 @@
 	                    <tags:nameValue2 nameKey=".userName"><tags:input path="username" autocomplete="false"/></tags:nameValue2>
 	                </cti:checkRolesAndProperties>
 	                <cti:checkRolesAndProperties value="!OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME">
-	                    <tags:nameValue2 nameKey=".userName"><tags:input disabled="true" path="username"/></tags:nameValue2>
+	                    <tags:nameValue2 nameKey=".userName"><tags:input readonly="true" path="username"/></tags:nameValue2>
 	                </cti:checkRolesAndProperties>
 	                
 	                <!-- Password Fields -->
@@ -92,7 +92,7 @@
 	            </cti:checkRolesAndProperties>
 	            
 	        </form:form>
-	    </tags:boxContainer2>
+	    </tags:sectionContainer2>
     </div>
 
 </cti:standardPage>
