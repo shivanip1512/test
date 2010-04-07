@@ -357,7 +357,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				
 				ProgramEnrollment enrollment = new ProgramEnrollment();
 				enrollment.setInventoryId(liteHw.getInventoryID());
-				enrollment.setProgramId( starsConfig.getProgramID() );
+				enrollment.setAssignedProgramId( starsConfig.getProgramID() );
 				enrollment.setLmGroupId( starsConfig.getGroupID() );
 				enrollment.setRelay( starsConfig.getLoadNumber() );
 				requests.add( enrollment );

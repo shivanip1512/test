@@ -11,9 +11,10 @@ import com.cannontech.stars.dr.program.model.Program;
 public interface ProgramDao {
 
     public Program getByProgramId(int programId);
-    
+
+    public List<Program> getByApplianceCategory(int applianceCategoryId);
     public Map<ApplianceCategory, List<Program>> getByApplianceCategories(List<ApplianceCategory> applianceCategories);
-    
+
     public List<Program> getByAppliances(List<Appliance> applianceList); 
     
     public List<Program> getByProgramIds(List<Integer> programIdList);

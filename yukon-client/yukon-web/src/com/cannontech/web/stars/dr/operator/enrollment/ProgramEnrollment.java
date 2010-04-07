@@ -1,10 +1,10 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.FactoryUtils;
-import org.apache.commons.collections.list.LazyList;
-
+import com.cannontech.common.util.LazyList;
+import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.google.common.collect.Lists;
@@ -53,11 +53,10 @@ public class ProgramEnrollment {
     private int loadGroupId;
     private List<InventoryEnrollment> inventoryEnrollments;
 
-    @SuppressWarnings("unchecked")
     public ProgramEnrollment() {
         inventoryEnrollments =
-            LazyList.decorate(Lists.newArrayList(),
-                              FactoryUtils.instantiateFactory(InventoryEnrollment.class));
+            new LazyList<InventoryEnrollment>(new ArrayList<InventoryEnrollment>(),
+                    new SimpleSupplier<InventoryEnrollment>(InventoryEnrollment.class));
     }
 
     public ProgramEnrollment(
@@ -85,5 +84,25 @@ public class ProgramEnrollment {
     public void setInventoryEnrollments(
             List<InventoryEnrollment> inventoryEnrollments) {
         this.inventoryEnrollments = inventoryEnrollments;
+    }
+
+    /**
+     * Convert this object into one which can be used by an EnrollmentHelperService.
+     */
+    public List<com.cannontech.stars.dr.program.service.ProgramEnrollment> makeProgramEnrollments(
+            int applianceCategoryId, int assignedProgramId) {
+        List<com.cannontech.stars.dr.program.service.ProgramEnrollment> retVal = Lists.newArrayList();
+        for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
+            com.cannontech.stars.dr.program.service.ProgramEnrollment pe =
+                new com.cannontech.stars.dr.program.service.ProgramEnrollment();
+            pe.setApplianceCategoryId(applianceCategoryId);
+            pe.setAssignedProgramId(assignedProgramId);
+            pe.setLmGroupId(loadGroupId);
+            pe.setRelay(inventoryEnrollment.getRelay());
+            pe.setInventoryId(inventoryEnrollment.getInventoryId());
+            pe.setEnroll(inventoryEnrollment.isEnrolled());
+            retVal.add(pe);
+        }
+        return retVal;
     }
 }

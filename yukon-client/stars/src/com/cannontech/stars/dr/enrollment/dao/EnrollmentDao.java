@@ -13,14 +13,13 @@ public interface EnrollmentDao {
     public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId);
 
     /**
-     * Get an active enrollment if one exists for the given account number and
-     * STARS program id.
-     * @param accountId The account id.
-     * @param assignedProgramId The STARS program id (the primary key in
-     *            lmProgramWebPublishing--programId).
-     * @return
+     * Get a list of currently enrolled programs in the given appliance category
+     * for the given account which can be used to unenroll them. This should be
+     * called when multiple programs per appliance category is not allowed to
+     * get the programs which will need to be unenrolled to complete the given
+     * program enrollment.
      */
-    public List<ProgramEnrollment> findActiveEnrollments(int accountId,
+    public List<ProgramEnrollment> findConflictingEnrollments(int accountId,
             int assignedProgramId);
 
     /**

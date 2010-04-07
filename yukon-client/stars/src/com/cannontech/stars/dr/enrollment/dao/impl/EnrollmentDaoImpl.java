@@ -65,19 +65,23 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProgramEnrollment> findActiveEnrollments(int accountId,
+    public List<ProgramEnrollment> findConflictingEnrollments(int accountId,
             int assignedProgramId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(enrollmentSQLHeader);
         sql.append("WHERE lmhcg.accountId").eq(accountId);
-        sql.append("AND lmhcg.programId").eq(assignedProgramId);
+        sql.append("AND ab.applianceCategoryId");
+        sql.append(    "IN (SELECT applianceCategoryid");
+        sql.append(        "FROM lmProgramWebPublishing");
+        sql.append(        "WHERE programId").eq(assignedProgramId).append(")");
+        sql.append("AND lmhcg.programId").neq(assignedProgramId);
         sql.append("AND lmhcg.groupEnrollStart IS NOT NULL");
         sql.append("AND lmhcg.groupEnrollStop IS NULL");
 
         List<ProgramEnrollment> retVal = null;
         retVal = yukonJdbcTemplate.query(sql, enrollmentRowMapper());
         for (ProgramEnrollment programEnrollment : retVal) {
-            programEnrollment.setEnroll(true);
+            programEnrollment.setEnroll(false);
         }
 
         return retVal;
@@ -268,7 +272,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
             public ProgramEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
                 ProgramEnrollment programEnrollment = new ProgramEnrollment();
                 programEnrollment.setApplianceCategoryId(rs.getInt("applianceCategoryId"));
-                programEnrollment.setProgramId(rs.getInt("programId"));
+                programEnrollment.setAssignedProgramId(rs.getInt("programId"));
                 programEnrollment.setLmGroupId(rs.getInt("lmGroupId"));
                 programEnrollment.setApplianceKW(rs.getFloat("KWCapacity"));
                 programEnrollment.setRelay(rs.getInt("relay"));

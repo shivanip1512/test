@@ -102,7 +102,7 @@ public class EnrollmentController extends AbstractConsumerController {
                    this will be changing. */
                 if (enroll) {
 	                ProgramEnrollment enrollmentRequest = new ProgramEnrollment();
-	                enrollmentRequest.setProgramId(programId);
+	                enrollmentRequest.setAssignedProgramId(programId);
 	                enrollmentRequest.setInventoryId(inventoryId);
 	                enrollmentRequest.setApplianceCategoryId(applianceCategoryId);
 	                enrollmentRequest.setEnroll(enroll);
@@ -140,7 +140,7 @@ public class EnrollmentController extends AbstractConsumerController {
         for (ProgramEnrollment enrollRequest : enrollRequestList) {
             if (enrollRequest.isEnroll()) {
                 for (LMHardwareControlGroup existingEntry : lmHardwareControlGroupList) {
-                    if(existingEntry.getInventoryId() == enrollRequest.getInventoryId() && existingEntry.getProgramId() == enrollRequest.getProgramId()){
+                    if(existingEntry.getInventoryId() == enrollRequest.getInventoryId() && existingEntry.getProgramId() == enrollRequest.getAssignedProgramId()){
                         enrollRequest.setLmGroupId(existingEntry.getLmGroupId());
                         enrollRequest.setRelay(existingEntry.getRelay());
                         break;

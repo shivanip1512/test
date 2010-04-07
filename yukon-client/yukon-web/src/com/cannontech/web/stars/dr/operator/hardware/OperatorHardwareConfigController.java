@@ -2,12 +2,15 @@ package com.cannontech.web.stars.dr.operator.hardware;
 
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
@@ -26,6 +29,7 @@ public class OperatorHardwareConfigController {
     private InventoryDao inventoryDao;
     private LoadGroupDao loadGroupDao;
     private AssignedProgramDao assignedProgramDao;
+    private RolePropertyDao rolePropertyDao;
 
     @RequestMapping
     public String list(ModelMap model, int inventoryId,
@@ -48,6 +52,8 @@ public class OperatorHardwareConfigController {
     public String edit(ModelMap model, int inventoryId, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
+        validateAccountEditing(userContext);
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment,
                                                       model);
         populateModel(model, inventoryId, userContext);
@@ -73,12 +79,18 @@ public class OperatorHardwareConfigController {
         return "operator/hardware/config/edit.jsp";
     }
 
-    public void populateModel(ModelMap model, int inventoryId,
+    private void populateModel(ModelMap model, int inventoryId,
             YukonUserContext userContext) {
         model.addAttribute("inventoryId", inventoryId);
 
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
+    }
+
+    private void validateAccountEditing(YukonUserContext userContext) {
+        Validate.isTrue(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                                      userContext.getYukonUser()),
+                                                      "Account editing not allowed by this user.");
     }
 
     @Autowired
@@ -100,5 +112,10 @@ public class OperatorHardwareConfigController {
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;
+    }
+
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
     }
 }

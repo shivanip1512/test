@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.enrollment.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,9 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
@@ -59,11 +62,65 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private StarsSearchDao starsSearchDao;    
 	private InventoryDao inventoryDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    
+
+    @Override
+    public void updateProgramEnrollments(
+            List<ProgramEnrollment> programEnrollments, int accountId,
+            YukonUserContext userContext) {
+        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        // Get the current enrollments.  This list will be updated to reflect
+        // the desired enrollment data then passed to applyEnrollments which
+        // will make it so.
+        List<ProgramEnrollment> enrollments = 
+            enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
+
+        // Index current enrollments by program id and inventory id.
+        // Map<assignedProgramId, Map<inventoryId, ProgramEnrollment>>
+        Map<Integer, Map<Integer, ProgramEnrollment>> currentEnrollments = Maps.newHashMap();
+        for (ProgramEnrollment enrollment : enrollments) {
+            Map<Integer, ProgramEnrollment> enrollmentsByInventory = currentEnrollments.get(enrollment.getAssignedProgramId());
+            if (enrollmentsByInventory == null) {
+                enrollmentsByInventory = Maps.newHashMap();
+                currentEnrollments.put(enrollment.getAssignedProgramId(), enrollmentsByInventory);
+            }
+            enrollmentsByInventory.put(enrollment.getInventoryId(), enrollment);
+        }
+
+        // Go through the list of enrollments we want to update and make
+        // sure they are in or out of the enrollmentData list as appropriate.
+        for (ProgramEnrollment enrollment : programEnrollments) {
+            int assignedProgramId = enrollment.getAssignedProgramId();
+            int inventoryId = enrollment.getInventoryId();
+            ProgramEnrollment currentEnrollment = currentEnrollments.containsKey(assignedProgramId) ? currentEnrollments.get(assignedProgramId).get(inventoryId) : null;
+            if ((currentEnrollment == null || !currentEnrollment.isEnroll()) && !enrollment.isEnroll()) {
+                // we weren't enrolled and we're not going to be; nothing to change
+                continue;
+            }
+
+            if (enrollment.equals(currentEnrollment)) {
+                // the enrollment hasn't changed
+                continue;
+            }
+
+            if (currentEnrollment != null) {
+                enrollments.remove(currentEnrollment);
+            }
+            if (enrollment.isEnroll()) {
+                enrollments.add(enrollment);
+            }
+        }
+
+        applyEnrollments(enrollments, customerAccount, userContext.getYukonUser());
+    }
+
+    @Override
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user){
 
         CustomerAccount customerAccount = customerAccountDao.getByAccountNumber(enrollmentHelper.getAccountNumber(),
                                                                                 user);
+        // Get the current enrollments.  This list will be updated to reflect
+        // the desired enrollment data then passed to applyEnrollments which
+        // will make it so.
         List<ProgramEnrollment> enrollmentData = 
             enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
         
@@ -79,7 +136,45 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
             removeProgramEnrollment(enrollmentData, programEnrollment);
         }
+        applyEnrollments(enrollmentData, customerAccount, user);
         
+        // Updates the applianceKW if the process was an enrollment.
+        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
+            List<Appliance> appliances = 
+                applianceDao.getByAccountIdAndProgramIdAndInventoryId(customerAccount.getAccountId(),
+                                                                      programEnrollment.getAssignedProgramId(),
+                                                                      programEnrollment.getInventoryId());
+            if (appliances.size() == 1) {
+                if (enrollmentHelper.getApplianceKW() != null){
+                    applianceDao.updateApplianceKW(appliances.get(0).getApplianceId(),
+                                                   enrollmentHelper.getApplianceKW());
+                }
+            } else if (appliances.size() > 1) {
+                throw new DuplicateEnrollmentException("duplicate appliance for account " +
+                                                       customerAccount.getAccountId() +
+                                                       ", assigned program " +
+                                                       programEnrollment.getAssignedProgramId() +
+                                                       ", inventory " + programEnrollment.getInventoryId() +
+                                                       ".  Please fix as soon as possible.");
+            } else {
+                throw new RuntimeException("no appliance for account " +
+                                           customerAccount.getAccountId() +
+                                           ", assigned program " +
+                                           programEnrollment.getAssignedProgramId() +
+                                           ", inventory " + programEnrollment.getInventoryId() +
+                                           ".  Please fix as soon as possible.");
+            }
+        }
+    }
+
+    /**
+     * This method takes a list of enrollment data and makes that list the exact
+     * list of enrollments for the customer. If they are enrolled in something
+     * not in the list, they will be unenrolled. If they are not enrolled in
+     * something in the list, they will be enrolled in it.
+     */
+    private void applyEnrollments(List<ProgramEnrollment> enrollmentData,
+            CustomerAccount customerAccount, LiteYukonUser user) {
         // Processes the enrollment requests
         ProgramEnrollmentResultEnum applyEnrollmentRequests = 
             programEnrollmentService.applyEnrollmentRequests(customerAccount,
@@ -91,22 +186,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
         if (applyEnrollmentRequests.getFormatKey().equals(ProgramEnrollmentResultEnum.NOT_CONFIGURED_CORRECTLY)){
             throw new IllegalArgumentException("Incorrect Configuration.");
-        }
-        
-        // Updates the applianceKW if the process was an enrollment.
-        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            List<Appliance> appliances = 
-                applianceDao.getByAccountIdAndProgramIdAndInventoryId(customerAccount.getAccountId(),
-                                                                      programEnrollment.getProgramId(),
-                                                                      programEnrollment.getInventoryId());
-            if (appliances.size() == 1) {
-                if (enrollmentHelper.getApplianceKW() != null){
-                    applianceDao.updateApplianceKW(appliances.get(0).getApplianceId(),
-                                                   enrollmentHelper.getApplianceKW());
-                }
-            } else {
-                throw new DuplicateEnrollmentException("A duplicate enrollment entry was found in your database.  Please fix as soon as possible.");
-            }
         }
     }
 
@@ -156,7 +235,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
            StringUtils.isEmpty(enrollmentHelper.getProgramName())) {
         	ProgramEnrollment programEnrollment = new ProgramEnrollment();
 	        programEnrollment.setInventoryId(liteInv.getInventoryID());
-	        programEnrollment.setProgramId(0);
+	        programEnrollment.setAssignedProgramId(0);
 	        return programEnrollment;
         } else {
 	        /*
@@ -176,7 +255,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 	         */
 	        ProgramEnrollment programEnrollment = new ProgramEnrollment();
 	        programEnrollment.setInventoryId(liteInv.getInventoryID());
-	        programEnrollment.setProgramId(program.getProgramId());
+	        programEnrollment.setAssignedProgramId(program.getProgramId());
 	        if (enrollmentHelper.getApplianceKW() != null) {
 	        	programEnrollment.setApplianceKW(enrollmentHelper.getApplianceKW());
 	        }
@@ -208,7 +287,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                 if (programEnrollment.getInventoryId() == newProgramEnrollment.getInventoryId()) {
                     if (programEnrollment.getRelay() == newProgramEnrollment.getRelay()) {
                         if (seasonalLoad){
-                            if (programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()) {
+                            if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()) {
                                 programEnrollment.update(newProgramEnrollment);
                                 programEnrollment.setEnroll(true);
                                 isProgramEnrollmentEnrolled = true;
@@ -221,14 +300,14 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                             isProgramEnrollmentEnrolled = true;
                         }
                     } else {
-                        if (programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()){
+                        if (programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()){
                             programEnrollment.update(newProgramEnrollment);
                             programEnrollment.setEnroll(true);
                             isProgramEnrollmentEnrolled = true;
                         }
                     }
                 } else if (!useHardwareAddressing) {
-                    if(programEnrollment.getProgramId() == newProgramEnrollment.getProgramId()){
+                    if(programEnrollment.getAssignedProgramId() == newProgramEnrollment.getAssignedProgramId()){
                         programEnrollment.setLmGroupId(newProgramEnrollment.getLmGroupId());
                         programEnrollment.setEnroll(true);
                     }
@@ -252,7 +331,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	boolean found = false;
     	for (int i = 0;i < programEnrollments.size();i++) {
     		ProgramEnrollment programEnrollment = programEnrollments.get(i);
-    		if (removedProgramEnrollment.getProgramId() == 0){
+    		if (removedProgramEnrollment.getAssignedProgramId() == 0){
     			if(removedProgramEnrollment.getInventoryId() == programEnrollment.getInventoryId()){
     				programEnrollmentResults.remove(programEnrollment);
     				found = true;
@@ -264,8 +343,8 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     			found = true;
     		}
     	}
-        if (!found && removedProgramEnrollment.getProgramId() > 0) {
-            throw new NotFoundException("Enrollment not found for program [" + removedProgramEnrollment.getProgramId() + "]");            
+        if (!found && removedProgramEnrollment.getAssignedProgramId() > 0) {
+            throw new NotFoundException("Enrollment not found for program [" + removedProgramEnrollment.getAssignedProgramId() + "]");            
         }
     	programEnrollments.retainAll(programEnrollmentResults);
     }           

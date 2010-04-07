@@ -9,12 +9,25 @@
 
 <script type="text/javascript">
 enrollmentChanged = function(inventoryId) {
-	var isEnrolled = $('enrolledCB' + inventoryId).checked;
-	if (isEnrolled) {
-		$('relaySelect' + inventoryId).enable();
-	} else {
+    var isEnrolled = $('enrolledCB' + inventoryId).checked;
+    if (isEnrolled) {
+        $('relaySelect' + inventoryId).enable();
+        $('okButton').enable();
+    } else {
         $('relaySelect' + inventoryId).disable();
-	}
+        updateOKButton();
+    }
+}
+
+inventoryIds = [];
+updateOKButton = function() {
+    for (var index = 0; index < inventoryIds.length; index++) {
+        if ($('enrolledCB' + inventoryIds[index]).checked) {
+            $('okButton').enable();
+            return;
+        }
+    }
+    $('okButton').disable();
 }
 </script>
 
@@ -22,26 +35,33 @@ enrollmentChanged = function(inventoryId) {
 
 <h1 class="dialogQuestion"><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></h1>
 
-<cti:url var="submitUrl" value="/spring/stars/operator/enrollment/save"/>
+<cti:url var="submitUrl" value="/spring/stars/operator/enrollment/confirmSave">
+    <cti:param name="isAdd" value="${isAdd}"/>
+</cti:url>
 <form:form id="inputForm" commandName="programEnrollment" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
-    <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/> 
+    <input type="hidden" name="accountId" value="${accountId}"/>
+    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
+    <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
-    <tags:nameValueContainer2 nameColumnWidth="150px">
-        <tags:nameValue2 nameKey=".group">
-            <c:if test="${fn:length(loadGroups) == 0}">
-                <i:inline key=".groupNotApplicable"/>
-            </c:if>
-            <c:if test="${fn:length(loadGroups) > 0}">
-                <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
-                <form:select path="loadGroupId" items="${loadGroups}"
-                    itemLabel="name" itemValue="paoIdentifier.paoId"/>
-            </c:if>
-        </tags:nameValue2>
-    </tags:nameValueContainer2>
+    <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+        <tags:nameValueContainer2 nameColumnWidth="150px">
+            <tags:nameValue2 nameKey=".group">
+                <c:if test="${fn:length(loadGroups) == 0}">
+                    <i:inline key=".groupNotApplicable"/>
+                </c:if>
+                <c:if test="${fn:length(loadGroups) > 0}">
+                    <c:set var="selectedLoadGroupId" value="${programEnrollment.loadGroupId}"/>
+                    <form:select path="loadGroupId" items="${loadGroups}"
+                        itemLabel="name" itemValue="paoIdentifier.paoId"/>
+                </c:if>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+    </cti:checkRolesAndProperties>
 
     <br>
     <tags:boxContainer2 key="hardwareAssigned">
+        <div class="dialogScrollArea">
         <table class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <th></th>
@@ -51,6 +71,7 @@ enrollmentChanged = function(inventoryId) {
             <c:forEach var="item" varStatus="status"
                 items="${programEnrollment.inventoryEnrollments}">
                 <c:set var="inventoryId" value="${item.inventoryId}"/>
+                <script type="text/javascript">inventoryIds.push(${item.inventoryId});</script>
                 <c:set var="displayableInventory" value="${inventoryById[inventoryId]}"/>
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td>
@@ -76,10 +97,11 @@ enrollmentChanged = function(inventoryId) {
                 </script>
             </c:forEach>
         </table>
+        </div>
     </tags:boxContainer2>
 
     <div class="actionArea">
-        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        <input id="okButton" type="submit" value="<cti:msg2 key=".ok"/>"/>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('peDialog').hide()"/>
     </div>

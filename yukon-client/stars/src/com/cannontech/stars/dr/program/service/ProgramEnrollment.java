@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.program.service;
 
 public class ProgramEnrollment {
     private int applianceCategoryId;
-    private int programId;
+    private int assignedProgramId;
     private int lmGroupId;
     private float applianceKW;
     private int relay;
@@ -11,16 +11,17 @@ public class ProgramEnrollment {
     
     
     public ProgramEnrollment() {}
+
     public ProgramEnrollment(int applianceCategoryId, float applianceKW,
-            boolean enroll, int inventoryId, int lmGroupId, int programId,
-            int relay) {
+            boolean enroll, int inventoryId, int lmGroupId,
+            int assignedProgramId, int relay) {
         super();
         this.applianceCategoryId = applianceCategoryId;
         this.applianceKW = applianceKW;
         this.enroll = enroll;
         this.inventoryId = inventoryId;
         this.lmGroupId = lmGroupId;
-        this.programId = programId;
+        this.assignedProgramId = assignedProgramId;
         this.relay = relay;
     }
 
@@ -31,11 +32,20 @@ public class ProgramEnrollment {
         this.applianceCategoryId = categoryId;
     }
 
-    public int getProgramId() {
-        return programId;
+    /**
+     * Get the assigned program id.
+     * @return The assigned program id.
+     */
+    public int getAssignedProgramId() {
+        return assignedProgramId;
     }
-    public void setProgramId(int programId) {
-        this.programId = programId;
+
+    /**
+     * Set the assigned program id.
+     * @param assignedProgramId
+     */
+    public void setAssignedProgramId(int assignedProgramId) {
+        this.assignedProgramId = assignedProgramId;
     }
 
     public int getLmGroupId() {
@@ -89,7 +99,7 @@ public class ProgramEnrollment {
         result = prime * result + (enroll ? 1231 : 1237);
         result = prime * result + inventoryId;
         result = prime * result + lmGroupId;
-        result = prime * result + programId;
+        result = prime * result + assignedProgramId;
         result = prime * result + relay;
         return result;
     }
@@ -113,7 +123,7 @@ public class ProgramEnrollment {
             return false;
         if (lmGroupId != other.lmGroupId)
             return false;
-        if (programId != other.programId)
+        if (assignedProgramId != other.assignedProgramId)
             return false;
         if (relay != other.relay)
             return false;
@@ -127,7 +137,7 @@ public class ProgramEnrollment {
                       enroll +", "+
                       inventoryId +", "+
                       lmGroupId +", "+
-                      programId +", "+
+                      assignedProgramId +", "+
                       relay +"]";
         return temp;
     }
@@ -148,7 +158,7 @@ public class ProgramEnrollment {
         final ProgramEnrollment other = (ProgramEnrollment) obj;
         if (this.inventoryId != other.inventoryId)
             return false;
-        if (this.programId != other.programId)
+        if (this.assignedProgramId != other.assignedProgramId)
             return false;
         if (this.applianceCategoryId != 0 &&
             other.applianceCategoryId != 0 &&
@@ -175,7 +185,7 @@ public class ProgramEnrollment {
         this.enroll = programEnrollment.enroll;
         this.inventoryId = programEnrollment.inventoryId;
         this.lmGroupId = programEnrollment.lmGroupId;
-        this.programId = programEnrollment.programId;
+        this.assignedProgramId = programEnrollment.assignedProgramId;
         this.relay = programEnrollment.relay;
     }
     

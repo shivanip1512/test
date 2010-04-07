@@ -143,7 +143,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
 		int loadGroupId = 0;
 		int relay = 0;
 		for(ProgramEnrollment activeEnrollment : activeEnrollments){
-			int enrollmentProgramId = activeEnrollment.getProgramId();
+			int enrollmentProgramId = activeEnrollment.getAssignedProgramId();
 			int enrollmentInventoryId = activeEnrollment.getInventoryId();
 			
 			if(enrollmentProgramId == programId && enrollmentInventoryId == inventoryId) {

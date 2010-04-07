@@ -23,7 +23,9 @@ var programIdsAlreadyEnrolled = [];
                 <th><i:inline key=".group"/></th>
             </cti:checkRolesAndProperties>
             <th><i:inline key=".relay"/></th>
-            <th><i:inline key=".actions"/></th>
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <th><i:inline key=".actions"/></th>
+            </cti:checkRolesAndProperties>
         </tr>
 
         <c:forEach var="enrollment" items="${enrollments}">
@@ -54,32 +56,34 @@ var programIdsAlreadyEnrolled = [];
                     <cti:msg2 var="relayStr" key=".noRelay"/>
                 </c:if>
                 <td>${relayStr}</td>
-                <td>
-                    <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit">
-                        <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="energyCompanyId"
-                            value="${energyCompanyId}"/>
-                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                        <cti:param name="assignedProgramId" value="${programId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink2 dialogId="hardwareConfigEditDialog" key="edit"
-                        skipLabel="true" actionUrl="${editUrl}"/>
-
-                    <cti:url var="removeUrl" value="/spring/stars/operator/hardware/config/remove">
-                        <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="energyCompanyId"
-                            value="${energyCompanyId}"/>
-                        <cti:param name="inventoryId" value="${inventoryId}"/>
-                        <cti:param name="assignedProgramId" value="${programId}"/>
-                    </cti:url>
-                    <tags:simpleDialogLink2 dialogId="hcDialog" key="remove"
-                        skipLabel="true" actionUrl="${removeUrl}"/>
-                </td>
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                    <td>
+                        <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="energyCompanyId"
+                                value="${energyCompanyId}"/>
+                            <cti:param name="inventoryId" value="${inventoryId}"/>
+                            <cti:param name="assignedProgramId" value="${programId}"/>
+                        </cti:url>
+                        <tags:simpleDialogLink2 dialogId="hardwareConfigEditDialog" key="edit"
+                            skipLabel="true" actionUrl="${editUrl}"/>
+    
+                        <cti:url var="removeUrl" value="/spring/stars/operator/hardware/config/remove">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="energyCompanyId"
+                                value="${energyCompanyId}"/>
+                            <cti:param name="inventoryId" value="${inventoryId}"/>
+                            <cti:param name="assignedProgramId" value="${programId}"/>
+                        </cti:url>
+                        <tags:simpleDialogLink2 dialogId="hcDialog" key="remove"
+                            skipLabel="true" actionUrl="${removeUrl}"/>
+                    </td>
+                </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
     </table>
 
-    <form>
+    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
         <script type="text/javascript">
         function addEnrollment(devices) {
             openSimpleDialog('hardwareConfigEditDialog', $('addEnrollmentForm').action,
@@ -88,27 +92,26 @@ var programIdsAlreadyEnrolled = [];
             return true;
         }
         </script>
-        <input type="hidden" id="programsToAssign" name="programsToAssign"/>
-    </form>
 
-    <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit"/>
-    <form id="addEnrollmentForm" action="${editUrl}">
-        <input type="hidden" name="accountId" value="${accountId}"/>
-        <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
-        <input type="hidden" name="inventoryId" value="${inventoryId}"/>
-        <div class="actionArea">
-            <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
-                memoryGroup="programPicker"
-                destinationFieldName="assignedProgramId"
-                endAction="addEnrollment" styleClass="simpleLink"
-                immediateSelectMode="true" extraArgs="${accountId}">
-                <cti:labeledImg key="add"/>
-            </tags:pickerDialog>
-            <script type="text/javascript">
-                programPicker.excludeIds = programIdsAlreadyEnrolled;
-            </script>
-        </div>
-    </form>
+        <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit"/>
+        <form id="addEnrollmentForm" action="${editUrl}">
+            <input type="hidden" name="accountId" value="${accountId}"/>
+            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
+            <input type="hidden" name="inventoryId" value="${inventoryId}"/>
+            <div class="actionArea">
+                <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
+                    memoryGroup="programPicker"
+                    destinationFieldName="assignedProgramId"
+                    endAction="addEnrollment" styleClass="simpleLink"
+                    immediateSelectMode="true" extraArgs="${accountId}">
+                    <cti:labeledImg key="add"/>
+                </tags:pickerDialog>
+                <script type="text/javascript">
+                    programPicker.excludeIds = programIdsAlreadyEnrolled;
+                </script>
+            </div>
+        </form>
+    </cti:checkRolesAndProperties>
 </tags:boxContainer2>
 
 </cti:standardPage>

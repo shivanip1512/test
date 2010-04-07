@@ -24,6 +24,8 @@ import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.api.loadManagement.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
@@ -88,6 +90,13 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         @Override
         public void doEnrollment(EnrollmentHelper enrollmentHelper,
                 EnrollmentEnum enrollmentEnum, LiteYukonUser user) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void updateProgramEnrollments(
+                List<ProgramEnrollment> programEnrollments, int accountId,
+                YukonUserContext userContext) {
             throw new UnsupportedOperationException();
         }
     }

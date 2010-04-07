@@ -193,7 +193,7 @@ public class ProgramSignUpAction implements ActionBase {
             {
                 SULMProgram program = progSignUp.getStarsSULMPrograms().getSULMProgram(j);
                 ProgramEnrollment enrollment = new ProgramEnrollment();
-                enrollment.setProgramId(program.getProgramID());
+                enrollment.setAssignedProgramId(program.getProgramID());
                 enrollment.setApplianceCategoryId(program.getApplianceCategoryID());
                 enrollment.setInventoryId(program.getInventoryID());
                 enrollment.setLmGroupId(program.getAddressingGroupID());

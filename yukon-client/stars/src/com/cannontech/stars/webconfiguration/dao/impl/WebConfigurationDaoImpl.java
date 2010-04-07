@@ -2,6 +2,7 @@ package com.cannontech.stars.webconfiguration.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -80,6 +83,33 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         WebConfiguration webConfiguration = 
             yukonJdbcTemplate.queryForObject(sql, rowMapper);
         return webConfiguration;
+    }
+
+    @Override
+    public Map<Integer, WebConfiguration> getForAssignedPrograms(
+            Collection<Integer> assignedProgramIds) {
+        ChunkingSqlTemplate<Integer> template =
+            new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append(rowMapper.getBaseQuery());
+                sql.append("WHERE configurationId IN");
+                sql.append(    "(SELECT webSettingsId");
+                sql.append(     "FROM lmProgramWebPublishing");
+                sql.append(     "WHERE programId IN (").appendList(subList).append("))");
+                return sql;
+            }
+        };
+
+        List<WebConfiguration> webConfigurations =
+            template.query(sqlGenerator, assignedProgramIds, rowMapper);
+        Map<Integer, WebConfiguration> retVal = Maps.newHashMap();
+        for (WebConfiguration webConfiguration : webConfigurations) {
+            retVal.put(webConfiguration.getConfigurationId(), webConfiguration);
+        }
+        return retVal;
     }
 
     @Override

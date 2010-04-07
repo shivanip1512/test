@@ -8,11 +8,25 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
+import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.user.YukonUserContext;
 
 public interface EnrollmentHelperService {
+    /**
+     * Update the program enrollments to match the given list for the given
+     * account. This list is considered to be a list of updates so any
+     * enrollments not in this list will be left alone.
+     * <p>
+     * It is acceptable (and common) to have an enrollment in this list which is
+     * already in place and unchanged. For that enrollment, no action will take
+     * place.
+     */
+    public void updateProgramEnrollments(
+            List<ProgramEnrollment> programEnrollments, int accountId,
+            YukonUserContext userContext);
 
     public void doEnrollment(EnrollmentHelper enrollmentHelper, EnrollmentEnum enrollmentEnum, LiteYukonUser user);
-    
+
     /**
      * Return EnrolledDevicePrograms (serial number + list of program names) objects for a given account.
      * Program names are the programs' PAO names.

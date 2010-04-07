@@ -64,7 +64,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         final int customerAccountId = customerAccount.getAccountId();
 
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
+        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccountId);
         LiteStarsCustAccountInformation liteCustomerAccount = 
             starsCustAccountInformationDao.getById(customerAccountId, 
                                                    energyCompany.getEnergyCompanyID());
@@ -146,7 +146,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
         StarsSULMPrograms programs = new StarsSULMPrograms();
         for (final ProgramEnrollment request : requests) {
             SULMProgram program = new SULMProgram();
-            program.setProgramID(request.getProgramId());
+            program.setProgramID(request.getAssignedProgramId());
             if (request.getApplianceCategoryId() > 0) {
                 program.setApplianceCategoryID(request.getApplianceCategoryId());
             }
@@ -183,7 +183,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                 if (!useHardwareAddressing) {
                     List<ProgramEnrollment> activeProgramEnrollments = enrollmentDao.getActiveEnrollmentsByAccountId(customerAccount.getAccountId());
                     for (ProgramEnrollment programEnrollment : activeProgramEnrollments) {
-                        if (programEnrollment.getProgramId() == webProg.getProgramID() && 
+                        if (programEnrollment.getAssignedProgramId() == webProg.getProgramID() && 
                                 programEnrollment.getApplianceCategoryId() == webProg.getApplianceCategoryID()) {
                             grpID = programEnrollment.getLmGroupId();
                         }

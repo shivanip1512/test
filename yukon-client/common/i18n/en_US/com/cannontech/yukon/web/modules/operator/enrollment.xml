@@ -37,6 +37,36 @@
     <entry key="yukon.web.modules.operator.enrollmentList.noRelay">None</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.showAllHistory">Show More</entry>
 
+    <entry key="yukon.web.modules.operator.enrollmentList.confirmEnroll">
+        Are you sure you want to enroll the consumer in {0}.
+    </entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.confirmUpdate">
+        Are you sure you want to update enrollment information for {0}.
+    </entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.willUnenroll">
+        This will unenroll the consumer from {0}.
+    </entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.willUnenrollMultiple">
+        This will unenroll the consumer from the following programs:
+    </entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.confirmUnenroll">
+        Are you sure you want to unenroll the consumer from {0}.
+    </entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.enrollCompleted">
+        Successfully enrolled in {0}.
+    </entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.enrollmentUpdated">
+        Successfully updated {0}.
+    </entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.unenrollCompleted">
+        Successfully unenrolled from {0}.
+    </entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentList.ok">OK</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.cancel">Cancel</entry>
+
     <entry key="yukon.web.modules.operator.enrollmentEdit.headerMessage">
         Select group and hardware for program {0}.
     </entry>
