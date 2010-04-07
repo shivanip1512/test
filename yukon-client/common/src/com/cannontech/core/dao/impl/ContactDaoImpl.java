@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +35,7 @@ import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -61,7 +61,7 @@ public final class ContactDaoImpl implements ContactDao {
     private YukonUserDao yukonUserDao;
     private IDatabaseCache databaseCache;
 
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private final ParameterizedRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
@@ -82,7 +82,7 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append(" FROM Contact");
         sql.append(" WHERE ContactId = ?");
 
-        LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
+        LiteContact contact = yukonJdbcTemplate.queryForObject(sql.toString(),
                                                                 rowMapper,
                                                                 contactId);
         return contact;
@@ -95,13 +95,13 @@ public final class ContactDaoImpl implements ContactDao {
 	    StringBuilder sql = new StringBuilder("SELECT *");
         sql.append(" FROM Contact");
         sql.append(" WHERE LoginId = ?");
-	    final List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(), rowMapper,loginId);
+	    final List<LiteContact> contactList = yukonJdbcTemplate.query(sql.toString(), rowMapper,loginId);
         return contactList;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Map<Integer, LiteContact> getContacts(List<Integer> contactIds) {
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
 
         final List<LiteContact> contactList = template.query(new SqlGenerator<Integer>() {
             @Override
@@ -329,7 +329,7 @@ public final class ContactDaoImpl implements ContactDao {
             + " AND c.CustomerID = ca.CustomerID " 
             + " AND ca.ContactID = ?";
         try {
-            customerId = simpleJdbcTemplate.queryForInt(sql, addtlContactID_);
+            customerId = yukonJdbcTemplate.queryForInt(sql, addtlContactID_);
         } catch (EmptyResultDataAccessException e) {
             // will return null customer
         }
@@ -386,7 +386,7 @@ public final class ContactDaoImpl implements ContactDao {
 	public boolean isPrimaryContact(int contactId) {
 	    String sql = "SELECT PrimaryContactId FROM " + Customer.TABLE_NAME + " WHERE PrimaryContactId = " + contactId;
 	    try {
-	        simpleJdbcTemplate.queryForInt(sql);
+	    	yukonJdbcTemplate.queryForInt(sql);
 	        return true;
 	    } catch(IncorrectResultSizeDataAccessException e) {
 	        return false;
@@ -434,7 +434,7 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append(" AND cu.CustomerId = ca.CustomerId");
         sql.append(" AND ca.AccountId = ?");
 
-        LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
+        LiteContact contact = yukonJdbcTemplate.queryForObject(sql.toString(),
                                                                 rowMapper,
                                                                 accountId);
         return contact;
@@ -451,7 +451,7 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append(" AND cac.CustomerId = ?");
         sql.append(" ORDER BY cac.Ordering");
 
-        List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
+        List<LiteContact> contactList = yukonJdbcTemplate.query(sql.toString(),
                                                                  rowMapper,
                                                                  customerId);
 
@@ -461,7 +461,7 @@ public final class ContactDaoImpl implements ContactDao {
     @Override
     public List<Integer> getAdditionalContactIdsForCustomer(int customerId){
         String sql = "SELECT ContactId FROM CustomerAdditionalContact WHERE Customerid = ?";
-        List<Integer> contactIds = simpleJdbcTemplate.query(sql, new IntegerRowMapper(), customerId);
+        List<Integer> contactIds = yukonJdbcTemplate.query(sql, new IntegerRowMapper(), customerId);
         return contactIds;
     }
 
@@ -477,7 +477,7 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append(" AND ca.AccountId = ?");
         sql.append(" ORDER BY cac.Ordering");
 
-        List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
+        List<LiteContact> contactList = yukonJdbcTemplate.query(sql.toString(),
                                                                  rowMapper,
                                                                  accountId);
 
@@ -487,7 +487,7 @@ public final class ContactDaoImpl implements ContactDao {
     @Override
     public int getAllContactCount() {
         String sql = "select count(*) from Contact";
-        int count = simpleJdbcTemplate.queryForInt(sql);
+        int count = yukonJdbcTemplate.queryForInt(sql);
         return count;
     }
     
@@ -504,7 +504,7 @@ public final class ContactDaoImpl implements ContactDao {
             "order by cnt.ContLastName, cnt.ContFirstName";
 
         final LiteContactNoNotificationsRowMapper liteContactNoNotificationsRowMapper = new LiteContactNoNotificationsRowMapper();
-        simpleJdbcTemplate.getJdbcOperations().query(sqlString, new AbstractRowCallbackHandler() {
+        yukonJdbcTemplate.getJdbcOperations().query(sqlString, new AbstractRowCallbackHandler() {
             public void processRow(ResultSet rs, int rowNum) throws SQLException {
                 LiteContact lc = liteContactNoNotificationsRowMapper.mapRow(rs, rowNum);
                 try {
@@ -564,7 +564,7 @@ public final class ContactDaoImpl implements ContactDao {
         String lastName = SqlUtils.convertStringToDbValue(contact.getContLastName());
         int loginId = contact.getLoginID();
         int addressId = contact.getAddressID();
-        simpleJdbcTemplate.update(sql.toString(),
+        yukonJdbcTemplate.update(sql.toString(),
                                   firstName,
                                   lastName,
                                   loginId,
@@ -588,6 +588,7 @@ public final class ContactDaoImpl implements ContactDao {
     @Transactional
     public void deleteContact(int contactId) {
     	
+    	SqlStatementBuilder sql = null;
     	Integer addressId = getContact(contactId).getAddressID();
 
     	// delete notifications
@@ -595,22 +596,26 @@ public final class ContactDaoImpl implements ContactDao {
     	contactNotificationDao.removeNotifications(notificationIds);
     	
     	// delete ContactNotifGroupMap
-    	String deleteContactNotifGroupMap = "DELETE FROM ContactNotifGroupMap WHERE ContactId = ?";
-        simpleJdbcTemplate.update(deleteContactNotifGroupMap, contactId);
+    	sql = new SqlStatementBuilder();
+    	sql.append("DELETE FROM ContactNotifGroupMap WHERE ContactId").eq(contactId);
+    	yukonJdbcTemplate.update(sql);
         
         // delete CustomerAdditionalContact
-        String sql = "DELETE FROM CustomerAdditionalContact WHERE ContactId = ?";
-        simpleJdbcTemplate.update(sql, contactId);
-        
+    	sql = new SqlStatementBuilder();
+    	sql.append("DELETE FROM CustomerAdditionalContact WHERE ContactId").eq(contactId);
+    	yukonJdbcTemplate.update(sql);
         
         // delete contact
-        String delete = "DELETE FROM Contact WHERE ContactId = ?";
-        simpleJdbcTemplate.update(delete, contactId);
+    	sql = new SqlStatementBuilder();
+    	sql.append("DELETE FROM Contact WHERE ContactId").eq(contactId);
+    	yukonJdbcTemplate.update(sql);
         
         // delete address
         if(addressId != CtiUtilities.NONE_ZERO_ID) {
-        	String deleteAddress = "DELETE FROM Address WHERE AddressId = ?";
-        	simpleJdbcTemplate.update(deleteAddress, addressId);
+        	
+        	sql = new SqlStatementBuilder();
+        	sql.append("DELETE FROM Address WHERE AddressId").eq(addressId);
+        	yukonJdbcTemplate.update(sql);
         }
 
         // db change
@@ -648,9 +653,9 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append(" VALUES (?,?,?)");
         
         StringBuilder orderSql = new StringBuilder("SELECT MAX(Ordering) + 1 FROM CustomerAdditionalContact WHERE CustomerId = ?");
-        int order = simpleJdbcTemplate.queryForInt(orderSql.toString(), customerId);
+        int order = yukonJdbcTemplate.queryForInt(orderSql.toString(), customerId);
         
-        simpleJdbcTemplate.update(sql.toString(), customerId, contactId, order);
+        yukonJdbcTemplate.update(sql.toString(), customerId, contactId, order);
         
         DBChangeMsg changeMsg = new DBChangeMsg(contactId,
                                                 DBChangeMsg.CHANGE_CONTACT_DB,
@@ -726,9 +731,10 @@ public final class ContactDaoImpl implements ContactDao {
         this.yukonUserDao = yukonUserDao;
     }
 
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
     
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;

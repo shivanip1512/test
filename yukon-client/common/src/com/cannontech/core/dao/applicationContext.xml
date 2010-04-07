@@ -44,7 +44,6 @@
   	<property name="contactNotificationDao" ref="contactNotificationDao"/>
   	<property name="yukonUserDao" ref="yukonUserDao"/>
   	<property name="databaseCache" ref="databaseCache"/>
-  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
      <property name="nextValueHelper" ref="nextValueHelper" />
      <property name="dbPersistantDao" ref="dbPersistentDao" />
   </bean>
