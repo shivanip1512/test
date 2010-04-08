@@ -7,10 +7,18 @@
 
 	<h2 class="standardPageHeading">${accountInfoFragment.accountNumber}</h2>
 	
-	<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_SHOW_ALTTRACKING_IN_HEADER">
-		${accountInfoFragment.alternateTrackingNumber}
+	<%-- extra account info --%>
+	<%-- note: when adding additional parameters the Consumer side should be updated to match. See "CustomerAccountInfoTag.java" --%>
+	<cti:msg2 var="extraInfo" 
+	          key="yukon.web.modules.operator.accountInfoFragment.extraInfo"
+	          argumentSeparator="*!*"
+	          arguments="${accountInfoFragment.alternateTrackingNumber}"/>
+	          
+	<c:if test="${not empty extraInfo}">
+		${extraInfo}
 		<br>
-	</cti:checkRolesAndProperties>
+	</c:if>
+	
 	<c:if test="${not empty accountInfoFragment.companyName}">
 		${accountInfoFragment.companyName}
 		<br>

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.ecs.html.Div;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -12,8 +13,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.customer.model.CustomerInformation;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -32,7 +31,6 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     private AccountSiteDao accountSiteDao;
     private AddressDao addressDao;
     private PhoneNumberFormattingService phoneNumberFormattingService;
-    private RolePropertyDao rolePropertyDao;
     
     private CustomerAccount account = null;
     
@@ -43,11 +41,13 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         MessageSourceAccessor messageSource;
 		LiteAddress address;
 		CustomerInformation customer;
+		LiteCustomer liteCustomer;
 		try {
 			messageSource = messageSourceResolver.getMessageSourceAccessor(getUserContext());
 			AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
 			address = addressDao.getByAddressId(accountSite.getStreetAddressId());
 			customer = customerDao.getCustomerInformation(account.getCustomerId());
+			liteCustomer = customerDao.getLiteCustomer(customer.getCustomerId());
 		} catch (Exception e) {
 			CTILogger.warn("Couldn't get customer info", e);
 			throw new JspException(e);
@@ -58,15 +58,11 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         
         addAccountNumberDiv(mainDiv, account, messageSource);
 
-        boolean showAltTracking = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_SHOW_ALTTRACKING_IN_HEADER, getUserContext().getYukonUser());
-        if (showAltTracking) {
-        	try {
-		        LiteCustomer liteCustomer = customerDao.getLiteCustomer(customer.getCustomerId());
-		        addAltTrackingDiv(mainDiv, liteCustomer);
-        	} catch (Exception e) {
-    			CTILogger.warn("Couldn't get customer info", e);
-    			throw new JspException(e);
-    		}
+        // extra info div
+        // note: when adding additional parameters the Operator side should be updated to match. See "accountInfoFragmenet.jsp"
+        String extraInfo = messageSource.getMessage("yukon.web.modules.operator.accountInfoFragment.extraInfo", liteCustomer.getAltTrackingNumber());
+        if (StringUtils.isNotBlank(extraInfo)) {
+        	addExtraInfoDiv(mainDiv, extraInfo);
         }
         
         addNameDiv(mainDiv, customer);
@@ -92,9 +88,9 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         mainDiv.addElement(accountNumberDiv);    
     }
     
-    private void addAltTrackingDiv(final Div mainDiv, final LiteCustomer customer) {
+    private void addExtraInfoDiv(final Div mainDiv, final String extraInfo) {
         Div altTrackingDiv = new Div();
-        altTrackingDiv.addElement(customer.getAltTrackingNumber());
+        altTrackingDiv.addElement(extraInfo);
         mainDiv.addElement(altTrackingDiv);    
     }
     
@@ -163,9 +159,5 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
             PhoneNumberFormattingService phoneNumberFormattingService) {
         this.phoneNumberFormattingService = phoneNumberFormattingService;
     }
-    
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
     
 }

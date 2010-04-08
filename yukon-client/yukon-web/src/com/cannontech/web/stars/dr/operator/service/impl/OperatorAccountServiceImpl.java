@@ -19,7 +19,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.ContactNotificationFormattingService;
 import com.cannontech.database.data.lite.LiteAddress;
-import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -321,36 +320,27 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     @Override
     public AccountInfoFragment getAccountInfoFragment(int accountId, int energyCompanyId) {
     	
-    	CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-    	AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
-    	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
-    	LiteAddress liteAddress = addressDao.getByAddressId(accountSite.getStreetAddressId());
-    	LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
-        
     	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountId, energyCompanyId);
-
-    	// account number / alt tracking
-    	accountInfoFragment.setAccountNumber(customerAccount.getAccountNumber());
-    	accountInfoFragment.setAlternateTrackingNumber(customer.getAltTrackingNumber());
     	
-    	// name
-    	accountInfoFragment.setFirstName(primaryContact.getContFirstName());
-    	accountInfoFragment.setLastName(primaryContact.getContLastName());
+    	// customer objects
+    	CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+    	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
+    	LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
+    	accountInfoFragment.setCustomerAccount(customerAccount);
+    	accountInfoFragment.setCustomer(customer);
+    	accountInfoFragment.setPrimaryContact(primaryContact);
     	
-    	// company name
-    	if(customer instanceof LiteCICustomer) {
-    		accountInfoFragment.setCompanyName(((LiteCICustomer) customer).getCompanyName());
-        }
-    	
-    	// phone
-    	accountInfoFragment.setHomePhoneNotif(homePhoneNotif);
-    	accountInfoFragment.setWorkPhoneNotif(workPhoneNotif);
-    	
-    	// address
+    	// display address
+    	AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
+    	LiteAddress liteAddress = addressDao.getByAddressId(accountSite.getStreetAddressId());
     	Address address = Address.getDisplayableAddress(liteAddress);
     	accountInfoFragment.setAddress(address);
+    	
+    	// notifications
+    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
+        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
+        accountInfoFragment.setHomePhoneNotif(homePhoneNotif);
+    	accountInfoFragment.setWorkPhoneNotif(workPhoneNotif);
     	
     	return accountInfoFragment;
     }
