@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -47,8 +47,8 @@ public class ProgramControllerBase {
         return "common/closePopup.jsp";
     }
 
-    protected <T> void validate(SimpleValidator<? super T> validator,
-            ModelMap model, T backingBean, BindingResult bindingResult) {
+    protected static void validate(Validator validator,
+            ModelMap model, Object backingBean, BindingResult bindingResult) {
         validator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> errors =

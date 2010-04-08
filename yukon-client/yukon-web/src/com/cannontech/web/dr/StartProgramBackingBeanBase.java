@@ -108,10 +108,10 @@ public abstract class StartProgramBackingBeanBase {
         // We keep the "startNow" and "scheduleStop" booleans around so we
         // always know if the user chose those options.
         startNow = true;
-        DateTime now = new DateTime(userContext.getJodaTimeZone());
-        this.now = now.toDate();
-        startDate = now.toDate();
+        DateTime jodaNow = new DateTime(userContext.getJodaTimeZone());
+        now = jodaNow.toDate();
+        startDate = now;
         scheduleStop = true;
-        stopDate = now.plusHours(4).toDate();
+        stopDate = jodaNow.plusHours(4).toDate();
     }
 }
