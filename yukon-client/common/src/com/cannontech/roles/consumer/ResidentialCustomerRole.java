@@ -24,7 +24,6 @@ public interface ResidentialCustomerRole {
 	public static final int CONSUMER_INFO_CHANGE_LOGIN_USERNAME = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 9;
 	public static final int CONSUMER_INFO_THERMOSTATS_ALL = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 10;
 	public static final int CONSUMER_INFO_CHANGE_LOGIN_PASSWORD = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 11;
-	public static final int CONSUMER_SHOW_ALTTRACKING_IN_HEADER = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 12;
     
 	
 	public static final int HIDE_OPT_OUT_BOX = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 51;
