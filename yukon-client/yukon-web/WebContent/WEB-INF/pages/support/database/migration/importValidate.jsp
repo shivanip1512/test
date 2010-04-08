@@ -27,6 +27,11 @@
 <cti:msg var="commitFile" key="yukon.web.modules.support.databaseMigration.importValidate.commitFile"/>
 <cti:msg var="cancel" key="yukon.web.modules.support.databaseMigration.importValidate.cancel"/>
 
+<cti:msg var="ignore" key="yukon.web.modules.support.databaseMigration.importValidate.ignore"/>
+<cti:msg var="overwrite" key="yukon.web.modules.support.databaseMigration.importValidate.overwrite"/>
+<cti:msg var="warningHelpTitle" key="yukon.web.modules.support.databaseMigration.importValidate.warningHelpTitle"/>
+<cti:msg var="warningHelp" key="yukon.web.modules.support.databaseMigration.importValidate.warningHelp"/>
+
 <cti:msg var="magImg" key="yukon.web.modules.support.databaseMigration.importValidate.mag.img"/>
 <cti:msg var="magImgOver" key="yukon.web.modules.support.databaseMigration.importValidate.mag.img.hover"/>
 <cti:msg var="warningImg" key="yukon.web.modules.support.databaseMigration.importValidate.warning.img"/>
@@ -81,17 +86,19 @@
 		<br><br>
 		
 		<%-- FILE INFO --%>
-		<tags:sectionContainer title="${fileInfoSection}" styleClass="migrationSection">
+		<tags:sectionContainer title="${fileInfoSection}">
 		
 			<tags:nameValueContainer>
-				<tags:nameValue name="${orgEnvironment}" nameColumnWidth="180px">${orgDbUrl}</tags:nameValue>
+				<tags:nameValue name="${orgEnvironment}" nameColumnWidth="190px">${orgDbUrl}</tags:nameValue>
 				<tags:nameValue name="${orgSchemaUser}">${orgDbUsername}</tags:nameValue>
 				<tags:nameValueGap gapHeight="15px;"/>
-				<tags:nameValue name="${filePathLabel}" nameColumnWidth="190px">
-					<form id="openFileForm" action="/spring/support/database/migration/downloadExportFile" method="post">
-						<input type="hidden" name="fileKey" value="${status.id}">
-			    	</form>
-					<a href="javascript:void(0);" onclick="$('openFileForm').submit();" title="${fileViewContentsLabel}">${filePath}</a>
+				<tags:nameValue name="${filePathLabel}">
+  					<form id="openFileForm" action="/spring/support/database/migration/downloadExportFile" method="post">
+  						<input type="hidden" name="fileKey" value="${status.id}">
+  			    	</form>
+                    <div>
+                        <a href="javascript:void(0);" onclick="$('openFileForm').submit();" title="${fileViewContentsLabel}">${filePath}</a>
+                    </div>
 				</tags:nameValue>
 				<tags:nameValue name="${fileSizeLabel}">
 					${fileSize}
@@ -102,74 +109,59 @@
 		<br>
 		
 		<%-- COMPONENT INFO --%>
-		<tags:sectionContainer title="${componentsInfoSection}" styleClass="migrationSection">
-		
-			<%-- NOTE --%>
-			<span class="smallBoldLabel">${noteLabel}</span>
-			<span style="font-size:11px;">${noteText}</span>
-			<br><br>
-
-			<table class="compactResultsTable" style="width:50%;">
-			
-				<tr>
-					<th class="component">${componentHeader}</th>
-					<th class="basic">${objects}</th>
-					<th class="warnings">${warnings}</th>
-					<th class="basic">${errors}</th>
-				</tr>
-			
-				<%-- MAIN COMPONENT ROW --%>
-				<tr class="component">
-				
-					<td class="component"><i18n:inline key="${exportType.typeKey}"/></td>
-				
-					<%-- objects --%>
-					<td class="component basic">
-						${status.labelCount}
-						<cti:url var="componentName_1_objects_url" value="/spring/support/database/migration/objectsViewPopup">
-							<cti:param name="fileKey" value="${status.id}"/>
-						</cti:url>
-						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects" 
-                                               dialogId="sharedPopupDialog" 
-                                               actionUrl="${componentName_1_objects_url}" 
-                                               logoKey="yukon.web.modules.support.databaseMigration.importValidate.mag.img"/>
-					</td>
-					
-					<%-- warnings --%>
-					<td class="component warnings">
-						${status.warningCount}
-						<cti:url var="componentName_1_warnings_url" value="/spring/support/database/migration/warningsViewPopup">
-							<cti:param name="fileKey" value="${status.id}"/>
-						</cti:url>
-						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.warnings" 
+		<tags:sectionContainer title="${componentsInfoSection}">
+			<tags:nameValueContainer>
+                <cti:msg var="exportTypeName" key="${exportType.typeKey}"/>
+                <tags:nameValue name="${exportTypeName}" nameColumnWidth="200px">
+        			${status.labelCount}
+        			<cti:url var="componentName_1_objects_url" value="/spring/support/database/migration/objectsViewPopup">
+        				<cti:param name="fileKey" value="${status.id}"/>
+        			</cti:url>
+        			<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.objects" 
+                                                 dialogId="sharedPopupDialog" 
+                                                 actionUrl="${componentName_1_objects_url}" 
+                                                 logoKey="yukon.web.modules.support.databaseMigration.importValidate.mag.img"/>
+                </tags:nameValue>
+                <tags:nameValue name="${warnings}">
+                    <cti:url var="componentName_1_warnings_url" value="/spring/support/database/migration/warningsViewPopup">
+                        <cti:param name="fileKey" value="${status.id}"/>
+                    </cti:url>
+                    ${status.warningCount}
+                    <c:if test="${status.warningCount > 0}">
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.warnings" 
                                                dialogId="sharedPopupDialog" 
                                                actionUrl="${componentName_1_warnings_url}" 
                                                logoKey="yukon.web.modules.support.databaseMigration.importValidate.warning.img"/>
-						&nbsp;
-						<select id="warningProcessing" name="warningProcessing" onchange="setWarningProcessing()" class="warning">
-							<option value="USE_EXISTING">Use Existing</option>
-							<option value="OVERWRITE">Overwrite</option>
-						</select>
-					</td>
-					
-					<%-- errors --%>
-					<td class="component basic">
-						${status.errorCount}
-						<cti:url var="componentName_1_errors_url" value="/spring/support/database/migration/errorsViewPopup">
-							<cti:param name="fileKey" value="${status.id}"/>
-						</cti:url>
-						<tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.errors" 
+                        
+                        <select id="warningProcessing" name="warningProcessing" onchange="setWarningProcessing()" class="warning">
+                            <option value="USE_EXISTING">${ignore}</option>
+                            <option value="OVERWRITE">${overwrite}</option>
+                        </select>
+                        <tags:helpInfoPopup title="${warningHelpTitle}">
+                            ${warningHelp}
+                        </tags:helpInfoPopup>
+                    </c:if>
+                </tags:nameValue>
+                <tags:nameValue name="${errors}">
+                    ${status.errorCount}
+                    <cti:url var="componentName_1_errors_url" value="/spring/support/database/migration/errorsViewPopup">
+                        <cti:param name="fileKey" value="${status.id}"/>
+                    </cti:url>
+                    <c:if test="${status.errorCount > 0}">
+                        <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.importValidate.componentsInfoSection.header.errors" 
                                                dialogId="sharedPopupDialog" 
                                                actionUrl="${componentName_1_errors_url}" 
                                                logoKey="yukon.web.modules.support.databaseMigration.importValidate.error.img"/>
-					</td>
-				</tr>
-				
-			</table>
-			
-		
+                    </c:if>
+                </tags:nameValue>
+            </tags:nameValueContainer>      
+
+			<%-- NOTE --%>
+			<span class="smallBoldLabel">${noteLabel}</span>
+			<span style="font-size:11px;">${noteText}</span>
+
 		</tags:sectionContainer>
-		<br><br>
+        <br><br>
 		
 		<%-- COMMIT --%>
 		<form id="cancelForm" action="/spring/support/database/migration/home" method="post">

@@ -1,14 +1,14 @@
-<%@ attribute name="type" required="true" %>
-<%@ attribute name="id" required="true" %>
-<%@ attribute name="destinationFieldId" %>
-<%@ attribute name="destinationFieldName" %>
-<%@ attribute name="multiSelectMode" type="java.lang.Boolean" %>
-<%@ attribute name="immediateSelectMode" type="java.lang.Boolean" %>
-<%@ attribute name="endAction" %>
-<%@ attribute name="memoryGroup" %>
-<%@ attribute name="asButton" type="java.lang.Boolean" %>
-<%@ attribute name="styleClass" %>
-<%@ attribute name="extraArgs" %>
+<%@ attribute name="type" required="true" description="Spring bean name of the Picker class"%>
+<%@ attribute name="id" required="true" description="Unique id for this picker"%>
+<%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close"%>
+<%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close"%>
+<%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="True if this picker allows selection of multiple items"%>
+<%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>
+<%@ attribute name="endAction" description="Javascript function to call on picker close"%>
+<%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
+<%@ attribute name="asButton" type="java.lang.Boolean" description="If true, picker creates a button instead of a link"%>
+<%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
+<%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>

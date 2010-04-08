@@ -242,7 +242,7 @@
     <table name="LMProgramWebPublishing">
         <primaryKey name="ProgramId" />
         <identifier name="ApplianceCategoryId" tableRef="ApplianceCategory" refType="MANY_TO_ONE"/>
-        <identifier name="DeviceId" tableRef="YukonPAObject" refType="MANY_TO_ONE"/>
+        <identifier name="DeviceId" tableRef="YukonPAObject" refType="MANY_TO_ONE" unique="true"/>
         <data name="WebsettingsId" tableRef="YukonWebConfiguration" refType="ONE_TO_ONE" /> 
         <data name="ChanceOfControlId" tableRef="YukonListEntry" refType="MANY_TO_ONE"/>
         <data name="ProgramOrder" />
@@ -383,7 +383,7 @@
     </table>
 
     <table name="YukonPAObject">
-        <primaryKey name="PAObjectID"/>
+        <primaryKey name="PAObjectID" nullId="0"/>
         <identifier name="Category"/>
         <identifier name="PAOClass"/>
         <identifier name="PAOName"/>

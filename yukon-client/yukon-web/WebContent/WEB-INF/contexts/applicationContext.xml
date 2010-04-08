@@ -1392,6 +1392,71 @@
     </bean>
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
 
+    <bean name="databaseMigrationDIRECT_PROGRAMPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
+        <property name="databaseMigrationService" ref="databaseMigrationService" />
+        <property name="exportType" value="DIRECT_PROGRAM" />
+        <property name="outputColumns">
+            <list>
+                <bean class="com.cannontech.web.picker.v2.OutputColumn">
+                    <constructor-arg index="0" value="databaseMigrationDisplay" />
+                    <constructor-arg index="1" value="yukon.web.picker.databaseMigrationDIRECT_PROGRAMPicker.programName" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="databaseMigrationAPP_CATEGORYPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
+        <property name="databaseMigrationService" ref="databaseMigrationService" />
+        <property name="exportType" value="APP_CATEGORY" />
+        <property name="outputColumns">
+            <list>
+                <bean class="com.cannontech.web.picker.v2.OutputColumn">
+                    <constructor-arg index="0" value="databaseMigrationDisplay" />
+                    <constructor-arg index="1" value="yukon.web.picker.databaseMigrationAPP_CATEGORYPicker.categoryName" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="databaseMigrationEXPRESSCOM_LOAD_GROUPPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
+        <property name="databaseMigrationService" ref="databaseMigrationService" />
+        <property name="exportType" value="EXPRESSCOM_LOAD_GROUP" />
+        <property name="outputColumns">
+            <list>
+                <bean class="com.cannontech.web.picker.v2.OutputColumn">
+                    <constructor-arg index="0" value="databaseMigrationDisplay" />
+                    <constructor-arg index="1" value="yukon.web.picker.databaseMigrationEXPRESSCOM_LOAD_GROUPPicker.groupName" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="databaseMigrationLM_GROUP_PERMISSIONSPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
+        <property name="databaseMigrationService" ref="databaseMigrationService" />
+        <property name="exportType" value="LM_GROUP_PERMISSIONS" />
+        <property name="outputColumns">
+            <list>
+                <bean class="com.cannontech.web.picker.v2.OutputColumn">
+                    <constructor-arg index="0" value="databaseMigrationDisplay" />
+                    <constructor-arg index="1" value="yukon.web.picker.databaseMigrationLM_GROUP_PERMISSIONSPicker.groupName" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="databaseMigrationLOGIN_GROUPPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
+        <property name="databaseMigrationService" ref="databaseMigrationService" />
+        <property name="exportType" value="LOGIN_GROUP" />
+        <property name="outputColumns">
+            <list>
+                <bean class="com.cannontech.web.picker.v2.OutputColumn">
+                    <constructor-arg index="0" value="databaseMigrationDisplay" />
+                    <constructor-arg index="1" value="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.loginGroupName" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"
             value="com.cannontech.web.picker.v2.service.PickerFactory" />

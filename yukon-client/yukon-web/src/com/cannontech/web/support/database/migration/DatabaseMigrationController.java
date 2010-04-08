@@ -67,7 +67,7 @@ public class DatabaseMigrationController {
         boolean importTab = ServletRequestUtils.getBooleanParameter(request, "import", false);
         
         Set<DisplayableExportType> exportTypeList = 
-            databaseMigrationService.getAvailableExportTypes();
+        	databaseMigrationService.getAvailableExportTypes();
         
         List<String> exportFilePaths = getExportDirectoryFilePaths(userContext);
         
@@ -103,14 +103,14 @@ public class DatabaseMigrationController {
     }
 	
 	@RequestMapping
-    public String export(ModelMap map, String exportType, String databaseMigrationIds, 
+    public String export(ModelMap map, String exportType, String exportIds, 
     		YukonUserContext userContext) throws ServletRequestBindingException, IOException {
 		
         ExportTypeEnum exportTypeValue = ExportTypeEnum.valueOf(exportType);
         
         List<Integer> exportIdList = Lists.newArrayList();
         
-        if (StringUtils.isBlank(databaseMigrationIds)) {
+        if (StringUtils.isBlank(exportIds)) {
         	if (!ALLOW_EXPORT_ALL) {
         		throw new IllegalArgumentException("No Items Selected");
         	}
@@ -118,7 +118,7 @@ public class DatabaseMigrationController {
         	exportIdList = databaseMigrationService.getAllSearchIds(exportTypeValue);
         	
         } else {
-        	for (String exportId : databaseMigrationIds.split(",")){
+        	for (String exportId : exportIds.split(",")){
                 exportIdList.add(Integer.valueOf(exportId));
             }
         }

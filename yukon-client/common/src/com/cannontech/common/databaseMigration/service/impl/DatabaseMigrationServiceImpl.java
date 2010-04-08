@@ -645,7 +645,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return primaryKey;
     }
 
-    
     /**
      * Processes the validation for an inline entry
      */

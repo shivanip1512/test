@@ -6,97 +6,60 @@
 <cti:msg var="currentEnvironment" key="yukon.web.modules.support.databaseMigration.currentEnvironment"/>
 <cti:msg var="currentSchemaUsername" key="yukon.web.modules.support.databaseMigration.currentSchemaUser"/>
 <cti:msg var="componentToBeExport" key="yukon.web.modules.support.databaseMigration.export.componentToBeExport"/>
-<cti:msg var="componentsToBeExport" key="yukon.web.modules.support.databaseMigration.export.componentsToBeExport"/>
-<cti:msg var="exportFile" key="yukon.web.modules.support.databaseMigration.export.exportFile"/>
-<cti:msg var="selectObjects" key="yukon.web.modules.support.databaseMigration.export.selectObjects"/>
+<cti:msg var="exportText" key="yukon.web.modules.support.databaseMigration.export.exportText"/>
+<cti:msg var="exportTablesPopupTitle" key="yukon.web.modules.support.databaseMigration.export.exportedTablesPopupTitle"/>
 
 <c:set var="dbPickerIcon" value="/WebConfig/yukon/Icons/database_add.gif"/>
 <c:set var="bookOpenIcon" value="/WebConfig/yukon/Icons/book_open.gif"/>
 <c:set var="dbPickerIconDisabled" value="/WebConfig/yukon/Icons/database_disabled_gray.gif"/>
 <c:set var="mag" value="/WebConfig/yukon/Icons/magnifier.gif"/>
 
-<script type="text/javascript">
-
-    function checkIds() {
-
-		var allowExportAll = ${allowExportAll};
-    	
-        if ($('databaseMigrationIds').value.trim() == '' && !allowExportAll) {
-			alert('No Items Selected');
-			return;
-        } else {
-        	$('exportForm').submit();
+<script type="text/javascript" language="JavaScript">
+    function exportItems(formId) {
+        return function() {
+            $(formId).submit();
+            return true;
         }
     }
-    
 </script>
 
-<%-- CURRENT DB --%>
-<tags:nameValueContainer>
-	<tags:nameValue name="${currentEnvironment}" nameColumnWidth="190px">${dbUrl}</tags:nameValue>
-	<tags:nameValue name="${currentSchemaUsername}">${dbUsername}</tags:nameValue>
-</tags:nameValueContainer>
-<br><br>
+    <%-- CURRENT DB --%>
+    <tags:nameValueContainer>
+    	<tags:nameValue name="${currentEnvironment}" nameColumnWidth="190px">${dbUrl}</tags:nameValue>
+    	<tags:nameValue name="${currentSchemaUsername}">${dbUsername}</tags:nameValue>
+    </tags:nameValueContainer>
+    <br><br>
 
-<%-- ALLOW MULTIPLE? --%>
-<c:set var="allowMultipleComponentSelection" value="false"/>
+	<tags:sectionContainer title="${componentToBeExport}" styleClass="migrationSection">
 
-<form id="exportForm" action="/spring/support/database/migration/export" method="post">
-	<input type="hidden" name="databaseMigrationIds" id="databaseMigrationIds" value="">
+			<c:forEach var="displayableExportType" items="${exportTypeList}">
+      
+                <c:set var="exportType" value="${displayableExportType.exportType}" />
+                <c:set var="exportTypeName" value="${exportType.name}" />
+				<div>
+					<span style="font-weight: bold;"><cti:msg key="${exportType.typeKey}" /></span>
+                    <tags:helpInfoPopup title="${exportTablesPopupTitle}">
+            			<c:forEach var="exportTable" items="${displayableExportType.tableNameSet}">
+            			   <img src="${dbPickerIconDisabled}"><c:out value="${exportTable}" /><br>
+            		    </c:forEach>
+                    </tags:helpInfoPopup>
 
-	<c:set var="sectionTitle" value="${componentToBeExport}"/>
-	<c:if test="${allowMultipleComponentSelection}">
-		<c:set var="sectionTitle" value="${componentsToBeExport}"/>
-	</c:if>
-	
-	<tags:sectionContainer title="${sectionTitle}" styleClass="migrationSection">
-
-		<table cellspacing="4">
-			<c:forEach var="exportType" items="${exportTypeList}">
-                <c:set var="exportTypeName" value="${exportType.exportType.name}" />
-				<tr>
-					<td>
-						<c:choose>
-							<c:when test="${allowMultipleComponentSelection}">
-								<input type="checkbox" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}">
-							</c:when>
-							<c:otherwise>
-								<input type="radio" id="${exportTypeName}_selectedComponent" name="exportType" value="${exportTypeName}" onclick="$('exportButton').enable();">
-							</c:otherwise>
-						</c:choose>
-					</td>
-					<td>
-						<cti:url var="selectObjects_url" value="/spring/support/database/migration/selectObjects">
-							<cti:param name="objectKey" value="${exportTypeName}"/>
-						</cti:url>
-						
-						<b><cti:msg key="${exportType.exportType.typeKey}" /></b>
-						
-			            <cti:databaseMigrationPicker paoIdField="databaseMigrationIds" finalTriggerAction="selectCategory" imgUrl="${bookOpenIcon}" configurationName="${exportTypeName}"> </cti:databaseMigrationPicker>
-						
-                        <cti:url var="selectedItemsUrl" value="/spring/support/database/migration/viewSelectedItems">
-                            <cti:param name="exportType" value="${exportTypeName}"/>
-                        </cti:url>
-                        <tags:simpleDialogLink titleKey="yukon.web.modules.support.databaseMigration.export.componentsInfoSection.header.objects" 
-                                               dialogId="sharedPopupDialog" 
-                                               actionUrl="${selectedItemsUrl}"
-                                               logoKey="yukon.web.modules.support.databaseMigration.export.mag.img"/>
-						
-					</td>
-				</tr>
-				<c:forEach var="exportTable" items="${exportType.tableNameSet}">
-					<tr>
-						<td>&nbsp;</td>
-						<td><img src="${dbPickerIconDisabled}"><c:out value="${exportTable}" /></td>
-					</tr>
-				</c:forEach>
+                    <br>
+          
+                    <form id="${exportTypeName}exportForm" action="/spring/support/database/migration/export" method="post">
+                        <input type="hidden" name="exportIds" id="${exportTypeName}exportIds" value="" />
+                        <input type="hidden" name="exportType" value="${exportTypeName}" />
+                    </form>
+                    <div style="margin-left: 15px; margin-bottom: 10px;">
+                        <tags:pickerDialog id="databaseMigration${exportTypeName}Picker" 
+                                           type="databaseMigration${exportTypeName}Picker" 
+                                           destinationFieldId="${exportTypeName}exportIds" 
+                                           multiSelectMode="true"
+                                           endAction="exportItems('${exportTypeName}exportForm')">
+                                ${exportText}
+                        </tags:pickerDialog>
+                    </div>
+                </div>
 			</c:forEach>
-		</table>
 	
 	</tags:sectionContainer>
-	<br>
-	
-	<input id="exportButton" type="button" value="${exportFile}" style="width:80x;" onclick="checkIds();" disabled/>
-	
-
-</form>

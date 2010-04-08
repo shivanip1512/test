@@ -20,14 +20,6 @@
 
     <h2>${pageTitle}</h2>
     <br>
-    
-
-    <script type="text/javascript">
-
-        function selectCategory(categoryName) {
-        }
-        
-    </script>
 
     <style>
     	div.migrationSection {width:80%;}
@@ -39,8 +31,6 @@
     	<div class="errorRed">${errorMsg}</div>
     	<br>
     </c:if>
-    
-    <cti:includeScript link="/JavaScript/databaseMigration.js"/>
     
     <tags:simpleDialog id="sharedPopupDialog"/>
     
