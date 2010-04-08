@@ -11,6 +11,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.Element;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
+import org.apache.ecs.html.IMG;
+import org.apache.ecs.html.Span;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -108,6 +110,9 @@ public class LeftSideMenuRenderer implements MenuRenderer {
             int level) {
 
         List<Element> menuOptionList = new ArrayList<Element>();
+        
+        String expandImgSrc = messageSource.getMessage("yukon.web.menu.config.consumer.leftMenu.expandIcon");
+        String collapseImgSrc = messageSource.getMessage("yukon.web.menu.config.consumer.leftMenu.collapseIcon");
 
         // Loop over options for this producer - mostly for dynamic option
         // producers which may produce multiple options
@@ -156,24 +161,53 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                 A link = new A();
                 link.addElement(menuText);
 
-                optionDiv.addElement(link);
-
                 // Create a Div which will contain all the sub options of the
                 // current option
                 Div childrenDiv = new Div();
-                String childDivId = null;
+                String hideRevealSetupJs = null;
+                
                 if (level == maxParentDepth) { // why not a > here?
+                	
+                	// Set child div id for hide/show
+                	String expandableOptionSpanId = option.getId() + "_expanderSpan";
+                	String childDivId = option.getId() + "_children";
+                	String expandImgId  = childDivId + "_expandImg";
+                	String collapseImgId  = childDivId + "_collapseImg";
+                	
+                	// stick everything in this expandableOption, which wil itself be put into the optionDiv
+                	Span expandableOption = new Span();
+                	expandableOption.setID(expandableOptionSpanId);
+                	expandableOption.setClass("expandCollapseSpan");
 
-                    // Set child div id for hide/show
-
-                    childDivId = option.getId() + "_children";
-
-                    link.setHref("#");
-                    link.setOnClick("$('" + childDivId + "').toggle()");
+                    hideRevealSetupJs = "<script type=\"text/javascript\">" +
+                    						   "hideRevealSectionSetup('"+expandImgId+"', '"+collapseImgId+"', '"+expandableOptionSpanId+"', '"+childDivId+"', false, '"+expandableOptionSpanId+"');" +
+                    						   "</script>";
+                    
+                    // configure div that holds child divs
                     childrenDiv.setID(childDivId);
                     childrenDiv.setClass("popUpMenuItem");
-                    childrenDiv.setStyle("display: none;");
+                    
+                    // configure expand/collapse icon
+                    IMG expandImg = new IMG(expandImgSrc);
+                    expandImg.setID(expandImgId);
+                    expandImg.setClass("expandCollapseImg");
+
+                    IMG collapseImg = new IMG(collapseImgSrc);
+                    collapseImg.setID(collapseImgId);
+                    collapseImg.setClass("expandCollapseImg");
+                    
+                    // prefix menu option with expand/collapse img
+                    expandableOption.addElement(expandImg);
+                    expandableOption.addElement(collapseImg);
+                    expandableOption.addElement(link);
+
+                    optionDiv.addElement(expandableOption);
+                    
+                }  else {
+                	
+                    optionDiv.addElement(link);
                 }
+                
 
                 // Generate child menu items
                 int childLevel = level + 1;
@@ -182,7 +216,11 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                 for (Element child : childOptions) {
                     childrenDiv.addElement(child);
                 }
+                
                 optionDiv.addElement(childrenDiv);
+                if (hideRevealSetupJs != null) {
+                	optionDiv.addElement(hideRevealSetupJs);
+                }
 
                 if(!childOptions.isEmpty() || !subMenuOption.isCollapseIfEmpty()) {
                 	menuOptionList.add(optionDiv);

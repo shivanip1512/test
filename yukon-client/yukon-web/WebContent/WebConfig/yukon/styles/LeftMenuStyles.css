@@ -49,6 +49,14 @@
 	white-space: nowrap;
 }
 
+.leftMenu .menuOption2 .expandCollapseSpan {
+	cursor:pointer;
+}
+
+.leftMenu .menuOption2 .expandCollapseImg {
+	padding-right:4px;
+}
+
 .leftSelected2 {
     color: #99FFFF !important;	
 }

@@ -450,6 +450,7 @@
       </options>
     </menu>
     <css file="/WebConfig/yukon/styles/StarsConsumerStyles.css" />
+    <script file="/JavaScript/hideReveal.js" />
   </module>
 
   <module name="capcontrol">
