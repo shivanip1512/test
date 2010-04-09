@@ -47,7 +47,7 @@
 <div id="ContentWrapper">
 <div id="Content">
 <c:if test="${not empty pageDetail.pageHeading}">
-    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingFavorites']} ${pageDetail.pageHeading}</h2>
+    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingPrefix']} ${pageDetail.pageHeading} ${requestScope['com.cannontech.web.layout.part.headingSuffix']}</h2>
 </c:if>
 
 <%-- FLASH SCOPE MESSAGES --%>
