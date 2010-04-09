@@ -25,6 +25,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.model.CallReport;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -46,9 +47,13 @@ public class OperatorCallTrackingController {
 	
 	// CALL LIST
 	@RequestMapping
-    public String callList(ModelMap modelMap, AccountInfoFragment accountInfoFragment) {
+    public String callList(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment) {
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+		
+		// pageEditMode
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
 		
 		// callReports
 		List<CallReport> callReports = callReportDao.getAllCallReportByAccountId(accountInfoFragment.getAccountId());
@@ -71,6 +76,7 @@ public class OperatorCallTrackingController {
 							AccountInfoFragment accountInfoFragment) {
 		
 		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", PageEditMode.EDIT);
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		
@@ -97,6 +103,10 @@ public class OperatorCallTrackingController {
 							AccountInfoFragment accountInfoFragment) {
 		
 		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		
+		// pageEditMode
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		

@@ -1043,6 +1043,10 @@
     <bean id="yukonListEntryListTagPrototype" class="com.cannontech.web.taglib.YukonListEntryListTag">
     	<property name="ecMappingDao" ref="ecMappingDao"/>
     </bean>
+
+    <bean id="yukonListEntryValueTagPrototype" class="com.cannontech.web.taglib.YukonListEntryValueTag">
+    	<property name="yukonListDao" ref="yukonListDao"/>
+    </bean>
     
     <!-- Remember to add friendlyExceptionPropertyKey key to friendlyException.properties file -->
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">

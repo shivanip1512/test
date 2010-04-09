@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventAccount;
@@ -33,6 +35,7 @@ import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
 import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -51,6 +54,7 @@ public class OperatorAccountController {
 	private CustomerAccountDao customerAccountDao;
 	private AccountService accountService;
 	private AccountGeneralValidator accountGeneralValidator;
+	private RolePropertyDao rolePropertyDao;
 	
 	// SEARCH
 	@RequestMapping
@@ -219,6 +223,10 @@ public class OperatorAccountController {
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
 		StarsSubstations substations = energyCompany.getStarsSubstations();
 		modelMap.addAttribute("substations", substations);
+		
+		// pageEditMode
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
 	}
 	
 	// ACCOUNT GENERAL WRAPPER
@@ -270,5 +278,10 @@ public class OperatorAccountController {
 	@Autowired
 	public void setAccountGeneralValidator(AccountGeneralValidator accountGeneralValidator) {
 		this.accountGeneralValidator = accountGeneralValidator;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 }

@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="accountEdit">
+<cti:standardPage module="operator" page="accountEdit" mode="${mode}">
 
     <script type="text/javascript">
 
@@ -65,9 +65,7 @@
 	    					<tags:inputNameValue nameKey=".emailLabel" path="accountDto.emailAddress"/>
 	    					<tags:inputNameValue nameKey=".altTrackingNumberLabel" path="accountDto.altTrackingNumber"/>
 	    					<cti:checkRolesAndProperties value="ODDS_FOR_CONTROL">
-	    						<tags:nameValue2 nameKey=".notifyOddsForControlLabel">
-		    						<input type="checkbox" name="notifyOddsForControl" <c:if test="${operatorGeneralUiExtras.notifyOddsForControl}">checked</c:if>>
-		    					</tags:nameValue2>
+	    						<tags:checkboxNameValue nameKey=".notifyOddsForControlLabel" path="operatorGeneralUiExtras.notifyOddsForControl"/>
 	    					</cti:checkRolesAndProperties>
 	    					<tags:textareaNameValue nameKey=".notesLabel" path="operatorGeneralUiExtras.notes" rows="3" cols="28"/>
 	    				
@@ -107,16 +105,9 @@
 	    				<tags:nameValueContainer2 nameColumnWidth="250px">
 	    				
 	    					<tags:yukonListEntrySelectNameValue nameKey=".rateScheduleLabel" path="accountDto.rateScheduleEntryId" accountId="${accountId}" listName="RATE_SCHEDULE" defaultItemValue="0" defaultItemLabel="(none)"/>
-	    					
-	    					<tags:nameValue2 nameKey=".presenceRequiredLabel">
-	    						<form:select path="accountDto.isCustAtHome">
-	    							<form:option value="false"><i:inline key="defaults.no"/></form:option>
-	    							<form:option value="true"><i:inline key="defaults.yes"/></form:option>
-	    						</form:select>
-	    					</tags:nameValue2>
-	    					
+	    					<tags:checkboxNameValue nameKey=".presenceRequiredLabel" path="accountDto.isCustAtHome"/>
 	    					<tags:inputNameValue nameKey=".customerStatusLabel" path="accountDto.customerStatus" size="1" maxlength="1"/>
-	    					<tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations.starsSubstationList}" itemValue="substationName" itemLabel="substationName"/>
+    						<tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations.starsSubstationList}" itemValue="substationName" itemLabel="substationName"/>
 	    					<tags:inputNameValue nameKey=".feederLabel" path="accountDto.siteInfo.feeder"/>
 	    					<tags:inputNameValue nameKey=".poleLabel" path="accountDto.siteInfo.pole"/>
 	    					<tags:inputNameValue nameKey=".transformerSizeLabel" path="accountDto.siteInfo.transformerSize"/>
@@ -135,10 +126,13 @@
 	    			
 	    				<tags:nameValueContainer2 nameColumnWidth="150px">
 	    				
-	    					<tags:nameValue2 nameKey="">
-		    					<tags:checkbox path="operatorGeneralUiExtras.usePrimaryAddressForBilling"/>
-								<i:inline key=".usePrimaryAddressForBillingLabel"/>
-							</tags:nameValue2>
+	    					<cti:displayForPageEditModes modes="EDIT">
+		    					<tags:nameValue2 nameKey="">
+			    					<tags:checkbox path="operatorGeneralUiExtras.usePrimaryAddressForBilling"/>
+									<i:inline key=".usePrimaryAddressForBillingLabel"/>
+								</tags:nameValue2>
+							</cti:displayForPageEditModes>
+							
 	    					<tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1"/>
 	    					<tags:inputNameValue nameKey=".billingAddress2Label" path="accountDto.billingAddress.locationAddress2"/>
 	    					<tags:inputNameValue nameKey=".billingCityLabel" path="accountDto.billingAddress.cityName"/>
@@ -154,10 +148,13 @@
     	
     	</cti:dataGrid>
     	
-    	<br>
-	    <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
-	    <tags:reset/>
-	    <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
+    	<%-- BUTTONS --%>
+    	<cti:displayForPageEditModes modes="EDIT">
+	    	<br>
+		    <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+		    <tags:reset/>
+		    <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
+	    </cti:displayForPageEditModes>
 	    
 	</form:form>
     

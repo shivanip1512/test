@@ -14,6 +14,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.taglib.MessageScopeHelper.MessageScope;
 
 
@@ -26,11 +27,13 @@ public class StandardPageTag extends BodyTagSupport {
     public static final String STANDARD_PAGE_INFO_ATTR = StandardPageTag.class.getName() + ".stdPageInfo";
     public static final String MAIN_CONTENT_ATTR = StandardPageTag.class.getName() + ".mainContent";
     public static final String STANDARD_PAGE_INSTANCE_ATTR = StandardPageTag.class.getName() + ".standardPageInstance";
+    public static final String PAGE_EDIT_MODE_ATTR = StandardPageTag.class.getName() + ".pageEditMode";
     
     private String title = "";
     private HtmlLevel htmlLevel = HtmlLevel.transitional;
     private List<String> cssFiles;
     private List<String> scriptFiles;
+    private String mode = null;
     private String module = "";
     private String page = "";
     private String breadCrumbData = null;
@@ -53,6 +56,14 @@ public class StandardPageTag extends BodyTagSupport {
         model.setHtmlLevel(getHtmlLevel());
         model.setModuleName(getModule());
         model.setPageName(getPage());
+        
+        // PageEditMode
+        PageEditMode pageEditMode = PageEditMode.VIEW;
+        if (this.mode != null) {
+        	pageEditMode = PageEditMode.valueOf(this.mode);
+        }
+        model.setPageEditMode(pageEditMode);
+        pageContext.setAttribute(PAGE_EDIT_MODE_ATTR, pageEditMode, PageContext.REQUEST_SCOPE);
         
         pageContext.setAttribute(STANDARD_PAGE_INFO_ATTR, model, PageContext.REQUEST_SCOPE);
         
@@ -160,6 +171,10 @@ public class StandardPageTag extends BodyTagSupport {
         this.htmlLevel = HtmlLevel.valueOf(htmlLevel);
     }
 
+    public void setMode(String mode) {
+		this.mode = mode;
+	}
+    
     private String getModule() {
         return module;
     }

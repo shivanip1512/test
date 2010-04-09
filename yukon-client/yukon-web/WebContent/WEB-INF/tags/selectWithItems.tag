@@ -11,6 +11,23 @@
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 <%@ attribute name="onchange" required="false" type="java.lang.String"%>
 
+<%-- VIEW MODE --%>
+<cti:displayForPageEditModes modes="VIEW">
+	<spring:bind path="${path}">
+	
+		<c:forEach var="item" items="${items}">
+			<c:if test="${status.value == item[itemValue]}">
+				${status.value}
+			</c:if>
+		
+		</c:forEach>
+	
+	</spring:bind>
+</cti:displayForPageEditModes>
+
+<%-- EDIT/CREATE MODE --%>
+<cti:displayForPageEditModes modes="EDIT,CREATE">
+
 <spring:bind path="${path}">
 
 <c:set var="inputClass" value=""/>
@@ -43,3 +60,5 @@
 </c:if>
 
 </spring:bind>
+
+</cti:displayForPageEditModes>

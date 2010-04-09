@@ -5,7 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 
-<cti:standardPage module="operator" page="changeLogin">
+<cti:standardPage module="operator" page="changeLogin" mode="${mode}">
     
     <script type="text/javascript">
 
@@ -54,11 +54,7 @@
 	            <input type="hidden" name="loginMode" value="${loginMode}">
 	            
 	            <tags:nameValueContainer2>
-	                <tags:nameValue2 nameKey=".customerGroup">
-	                    <form:select path="customerLoginGroupName">
-	                        <form:options items="${ecResidentialGroupNames}" />
-	                    </form:select>
-	                </tags:nameValue2>
+            		<tags:selectNameValue nameKey=".customerGroup" path="customerLoginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
 	                <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginEnabled"/><i:inline key=".allowUserLogin"/></tags:nameValue2>
 	                
 	                <!-- Username Field -->
@@ -70,6 +66,7 @@
 	                </cti:checkRolesAndProperties>
 	                
 	                <!-- Password Fields -->
+	                <cti:displayForPageEditModes modes="EDIT">
 	                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD">
 	                    <c:if test="${supportsPasswordSet}">
 	                        <tags:nameValue2 nameKey=".newPassword">
@@ -82,16 +79,16 @@
 	                        </tags:nameValue2>
 	                    </c:if>
 	                </cti:checkRolesAndProperties>
+	                </cti:displayForPageEditModes>
+	                
 	            </tags:nameValueContainer2>
-	
-	            <br>
-	            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+	            
+	            <cti:displayForPageEditModes modes="EDIT">
+	            	<br>
 	                <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
-	            </cti:checkRolesAndProperties>
-	            <tags:reset/>
-	            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+	            	<tags:reset/>
 	                <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
-	            </cti:checkRolesAndProperties>
+	            </cti:displayForPageEditModes>
 	            
 	        </form:form>
 	    </tags:sectionContainer2>

@@ -49,6 +49,16 @@
   	</attribute>
   </tag>
 
+  <tag>
+  	<name>displayForPageEditModes</name>
+  	<tag-class>com.cannontech.web.taglib.DisplayForPageEditModesTag</tag-class>
+  	<body-content>scriptless</body-content>
+  	<attribute>
+  		<name>modes</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  	</attribute>	
+  </tag>
 
   <tag>
   	<name>checklogin</name>
@@ -297,6 +307,11 @@
     <attribute>
       <name>module</name>
       <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>mode</name>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
@@ -1110,6 +1125,24 @@
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>
   		<description>String. See YukonSelectionListEnum. Example: "YUK_LIST_NAME_LM_CUSTOMER_EVENT".</description>
+	</attribute>
+  </tag>
+
+  <tag>
+  	<name>yukonListEntryValue</name>
+  	<tag-class>com.cannontech.web.taglib.YukonListEntryValueTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>var where List of YukonListEntry EntryText will be placed (optional)</description>
+	</attribute>
+ 	<attribute>
+ 		<name>entryId</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+  		<description>Yukon List Entry Id</description>
 	</attribute>
   </tag>
   

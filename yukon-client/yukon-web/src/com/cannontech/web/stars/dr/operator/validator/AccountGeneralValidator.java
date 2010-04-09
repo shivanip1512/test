@@ -29,11 +29,13 @@ public class AccountGeneralValidator extends SimpleValidator<AccountGeneral> {
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "accountDto.accountNumber", "yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberRequired");
 		
 		// home phone number
+		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.homePhone", accountDto.getHomePhone(), 130);
 		if (phoneNumberFormattingService.isHasInvalidCharacters(accountDto.getHomePhone())) {
 			errors.rejectValue("accountDto.homePhone", "yukon.web.modules.operator.accountGeneral.invalidPhoneNumber");
 		}
 		
 		// work phone number
+		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.workPhone", accountDto.getWorkPhone(), 130);
 		if (phoneNumberFormattingService.isHasInvalidCharacters(accountDto.getWorkPhone())) {
 			errors.rejectValue("accountDto.workPhone", "yukon.web.modules.operator.accountGeneral.invalidPhoneNumber");
 		}
@@ -50,6 +52,8 @@ public class AccountGeneralValidator extends SimpleValidator<AccountGeneral> {
 		errors.popNestedPath();
 		
 		// other
+		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.customerNumber", accountDto.getCustomerNumber(), 64);
+		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.emailAddress", accountDto.getEmailAddress(), 130);
 		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.customerStatus", accountDto.getCustomerStatus(), 1);
 		YukonValidationUtils.checkExceedsMaxLength(errors, "accountDto.mapNumber", accountDto.getMapNumber(), 40);
 		

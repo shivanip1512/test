@@ -34,7 +34,7 @@
     <entry key="yukon.web.modules.operator.accountList.addressHeader">Address</entry>
 	
 	<!-- accountEdit -->
-    <entry key="yukon.web.modules.operator.accountEdit.pageName">Account Edit</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.pageName">Account</entry>
     <entry key="yukon.web.modules.operator.accountEdit.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.accountEdit.customerContactSection.title">Customer Contact</entry>
     <entry key="yukon.web.modules.operator.accountEdit.serviceAddressSection.title">Service Address</entry>

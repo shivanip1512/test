@@ -4,6 +4,7 @@
 
 	<!-- Appliance List Page -->
     <entry key="yukon.web.modules.operator.applianceList.pageName">Appliances</entry>
+    <entry key="yukon.web.modules.operator.applianceList.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.applianceList.title">Appliances</entry>
     
     <entry key="yukon.web.modules.operator.applianceList.appliances">Appliances</entry>
@@ -26,8 +27,9 @@
     <entry key="yukon.web.modules.operator.applianceEdit.applianceCreationFailed">Appliance creation failed</entry>
     
     <!-- Appliance Info Page -->
-    <entry key="yukon.web.modules.operator.applianceEdit.title">Appliance Information</entry>
-    <entry key="yukon.web.modules.operator.applianceEdit.applianceInfo">Appliance Information</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.pageName">Appliance Information</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.applianceInfo.title">Appliance Information</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.applianceCategory">Appliance Category</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.modelNumber">Model #</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.location">Location</entry>
@@ -87,13 +89,13 @@
     <entry key="yukon.web.modules.operator.applianceEdit.wh.numOfHeatingCoils"># Heating Coils</entry>
     
 	<!-- Enrollment -->
-    <entry key="yukon.web.modules.operator.applianceEdit.enrollment">Enrollment</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.enrollment.title">Enrollment</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.program">Program</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.loadGroup">Load Group</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.relay">Relay</entry>
 
 	<!-- Hardware Summary -->
-    <entry key="yukon.web.modules.operator.applianceEdit.hardwareSummary">Hardware Summary</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.hardwareSummary.title">Hardware Summary</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.category">Category</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.hardwareType">Hardware Type</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.serialNumber">Serial Number</entry>

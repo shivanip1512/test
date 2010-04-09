@@ -38,23 +38,31 @@
     <c:when test="${pageScope.springInput}">
         <!-- Spring Input Version -->
         <spring:bind path="${fieldName}">
-
-            <c:set var="inputClass" value=""/>
-            <c:if test="${status.error}">
-                <c:set var="inputClass" value="error"/>
-            </c:if>
-            
-            <form:input  path="${fieldName}" id="${fieldName}" size="10" maxlength="10" cssClass="calendarInput ${inputClass}"/>
-            
-            <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
-            <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
-                <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
-            </span>
-            
-            <c:if test="${status.error}">
-                <br>
-                <form:errors path="${fieldName}" cssClass="errorMessage"/>
-            </c:if>
+        
+        	<cti:displayForPageEditModes modes="VIEW">
+				<spring:escapeBody htmlEscape="true">${status.value}</spring:escapeBody>
+			</cti:displayForPageEditModes>
+			
+			<cti:displayForPageEditModes modes="EDIT,CREATE">
+	
+	            <c:set var="inputClass" value=""/>
+	            <c:if test="${status.error}">
+	                <c:set var="inputClass" value="error"/>
+	            </c:if>
+	            
+	            <form:input  path="${fieldName}" id="${fieldName}" size="10" maxlength="10" cssClass="calendarInput ${inputClass}"/>
+	            
+	            <c:url var="calImgUrl" value="/WebConfig/yukon/Icons/StartCalendar.gif"/>
+	            <span onclick="javascript:showCalendarControl('${uniqueId}', '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
+	                <img id="calImg_${uniqueId}" src="${calImgUrl}" width="20" height="15" border="0" />
+	            </span>
+	            
+	            <c:if test="${status.error}">
+	                <br>
+	                <form:errors path="${fieldName}" cssClass="errorMessage"/>
+	            </c:if>
+	            
+			</cti:displayForPageEditModes>
         
         </spring:bind>
         

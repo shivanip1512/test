@@ -3,11 +3,13 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 	
-<cti:standardPage module="operator" page="callList">
+<cti:standardPage module="operator" page="callList" mode="${mode}">
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
 
@@ -31,40 +33,49 @@
 				<th><i:inline key=".header.takenBy"/></th>
 				
 				<%-- delete header --%>
-				<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+				<cti:displayForPageEditModes modes="EDIT,CREATE">
 					<th class="removeCol"><i:inline key=".header.remove"/></th>
-				</cti:checkRolesAndProperties>
+				</cti:displayForPageEditModes>
 			</tr>
+			
+			<c:if test="${fn:length(callReportsWrappers) <= 0}">
+				<cti:displayForPageEditModes modes="VIEW">
+					<tr><td colspan="5" class="noCalls subtleGray"><i:inline key=".noCalls"/></td></tr>
+				</cti:displayForPageEditModes>
+				<cti:displayForPageEditModes modes="EDIT,CREATE">
+					<tr><td colspan="6" class="noCalls subtleGray"><i:inline key=".noCalls"/></td></tr>
+				</cti:displayForPageEditModes>
+			</c:if>
 			
 			<c:forEach var="callReportWrapper" items="${callReportsWrappers}">
 				<tr>
 					<td>
 						<%-- callNumber with edit link --%>
-						<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+						<cti:displayForPageEditModes modes="EDIT,CREATE">
 							<cti:url var="viewCallUrl" value="/spring/stars/operator/callTracking/viewCall">
 								<cti:param name="accountId">${accountId}</cti:param>
 								<cti:param name="energyCompanyId">${energyCompanyId}</cti:param>
 								<cti:param name="callId">${callReportWrapper.callReport.callId}</cti:param>
 							</cti:url>
-							<a href="${viewCallUrl}">${callReportWrapper.callReport.callNumber}</a>
-						</cti:checkRolesAndProperties>
+							<a href="${viewCallUrl}"><spring:escapeBody htmlEscape="true">${callReportWrapper.callReport.callNumber}</spring:escapeBody></a>
+						</cti:displayForPageEditModes>
 						
 						<%-- callNumber without edit link --%>
-						<cti:checkRolesAndProperties value="!OPERATOR_ALLOW_ACCOUNT_EDITING">
+						<cti:displayForPageEditModes modes="VIEW">
 							${callReportWrapper.callReport.callNumber}
-						</cti:checkRolesAndProperties>
+						</cti:displayForPageEditModes>
 					</td>
 					<td><cti:formatDate value="${callReportWrapper.callReport.dateTaken}" type="BOTH"/></td>
 					<td>${callReportWrapper.type}</td>
-					<td>${callReportWrapper.callReport.description}</td>
-					<td>${callReportWrapper.callReport.takenBy}</td>
+					<td><spring:escapeBody htmlEscape="true">${callReportWrapper.callReport.description}</spring:escapeBody></td>
+					<td><spring:escapeBody htmlEscape="true">${callReportWrapper.callReport.takenBy}</spring:escapeBody> </td>
 					
 					<%-- delete icon --%>
-					<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+					<cti:displayForPageEditModes modes="EDIT,CREATE">
 						<td class="removeCol">
 							<input type="image" src="${delete}" name="callId" value="${callReportWrapper.callReport.callId}" onmouseover="javascript:this.src='${deleteOver}'" onmouseout="javascript:this.src='${delete}'">
 						</td>
-					</cti:checkRolesAndProperties>
+					</cti:displayForPageEditModes>
 				
 				</tr>
 			</c:forEach>
@@ -72,9 +83,9 @@
 	</form>
 	
 	<%-- create button --%>
-	<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+	<cti:displayForPageEditModes modes="CREATE">
 		<br>
 		<tags:slowInput2 myFormId="createCallForm" key="create" width="80px"/>
-	</cti:checkRolesAndProperties>
+	</cti:displayForPageEditModes>
 
 </cti:standardPage>

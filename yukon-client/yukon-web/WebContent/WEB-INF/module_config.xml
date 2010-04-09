@@ -953,7 +953,7 @@
 		           	<link>/spring/stars/operator/program/optOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
-		    	<page name="Appliances" type="DETAIL_CHILD_WITH_NAVIGATION">
+		    	<page name="applianceList" type="DETAIL_CHILD_WITH_NAVIGATION">
                     <menu>account</menu>
                     <link>/spring/stars/operator/appliances/applianceList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>

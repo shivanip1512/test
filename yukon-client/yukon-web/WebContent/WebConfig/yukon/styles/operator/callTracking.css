@@ -8,3 +8,8 @@ table.callListTable th.removeCol {
 table.callListTable td.removeCol {
 	text-align:center;
 }
+
+table.callListTable td.noCalls {
+	text-align:center;
+	font-style:italic;
+}

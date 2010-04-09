@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.operator;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +42,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -102,9 +102,26 @@ public class OperatorLoginController {
         modelMap.addAttribute("changeLoginBackingBean", changeLoginBackingBean);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        
+        // pageEditMode
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
+		
         return "operator/login/login.jsp";
     }
 
+    private List<LiteYukonGroup> setupLoginModelMap(int energyCompanyId, LiteYukonUser residentialUser,
+                                                    ModelMap modelMap) {
+        // Set supported variables
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
+        
+        // Build up residential login group list.
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+        modelMap.addAttribute("ecResidentialGroups", ecResidentialGroups);
+        return ecResidentialGroups;
+    }
+    
     // UPDATE LOGIN
     @RequestMapping
     public String updateLogin(@ModelAttribute("changeLoginBackingBean") ChangeLoginBackingBean changeLoginBackingBean, 
@@ -121,6 +138,7 @@ public class OperatorLoginController {
         
         // Check to see what the user can modify
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        modelMap.addAttribute("mode", PageEditMode.EDIT);
         
         // validate/update
         LiteYukonUser residentialUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
@@ -251,20 +269,6 @@ public class OperatorLoginController {
 
         });
     }
-
-    private List<LiteYukonGroup> setupLoginModelMap(int energyCompanyId, LiteYukonUser residentialUser,
-                                                    ModelMap modelMap) {
-        // Set supported variables
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
-        
-        // Build up residential login group list.
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-        List<String> ecResidentialGroupNames = getECResidentialGroupNames(ecResidentialGroups);
-        modelMap.addAttribute("ecResidentialGroupNames", ecResidentialGroupNames);
-        return ecResidentialGroups;
-    }
-    
 
     /**
      * @param energyCompanyId
@@ -403,28 +407,13 @@ public class OperatorLoginController {
         
         return null;
     }
-
-    /**
-     * Returns all the group names for a given list of liteYukonGroup objects
-     * 
-     */
-    private List<String> getECResidentialGroupNames(List<LiteYukonGroup> ecResidentialGroups) {
-
-        ArrayList<String> results = Lists.newArrayList();
-
-        for (LiteYukonGroup yukonGroup : ecResidentialGroups) {
-            results.add(yukonGroup.getGroupName());
-        }
-        
-        return results;
-    }
-
-    static private enum LoginModeEnum {
-        CREATE(), 
-        EDIT(), 
-        VIEW();
-    }
     
+    static private enum LoginModeEnum {
+        CREATE, 
+        EDIT, 
+        VIEW;
+    }
+
     @Autowired
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;

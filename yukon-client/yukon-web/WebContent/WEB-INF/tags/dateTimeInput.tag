@@ -39,9 +39,15 @@
 		    </tr>
 		    <tr>
 		        <td><cti:msg key="yukon.common.calendarcontrol.time"/></td>
-		        <td><input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text"
-		            maxlength="5" size="10" style="width:70px;"
-		            value="${timePart}"${disabledStr}/></td>
+		        <td>
+		        	<cti:displayForPageEditModes modes="VIEW">
+				        ${timePart}
+		            </cti:displayForPageEditModes>
+		        	<cti:displayForPageEditModes modes="EDIT,CREATE">
+				        <input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" maxlength="5" size="10" style="width:70px;" value="${timePart}"${disabledStr}/>
+		            </cti:displayForPageEditModes>
+		            
+		        </td>
 		    </tr>
 		</table>
 	
@@ -53,9 +59,12 @@
 		            fieldName="${fieldId}DatePart" fieldValue="${datePart}"
 		            disabled="${pageScope.disabled}"/>
 		&nbsp;-&nbsp;
-		<input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text"
-		            maxlength="5" size="10" style="width:70px;"
-		            value="${timePart}"${disabledStr}/>
+		<cti:displayForPageEditModes modes="VIEW">
+      		${timePart}
+        </cti:displayForPageEditModes>
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+			<input id="${fieldId}TimePart" name="${fieldId}TimePart" type="text" maxlength="5" size="10" style="width:70px;" value="${timePart}"${disabledStr}/>
+		</cti:displayForPageEditModes>
 	
 	</c:otherwise>
 

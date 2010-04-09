@@ -3,6 +3,7 @@ package com.cannontech.web.taglib;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.web.PageEditMode;
 import com.google.common.collect.Maps;
 
 public class StandardPageInfo {
@@ -12,6 +13,7 @@ public class StandardPageInfo {
     private String htmlLevel;
     private String menuSelection;
     private String moduleName;
+    private PageEditMode pageEditMode;
     private List<String> scriptFiles;
     private boolean showMenu;
     private String title;
@@ -38,6 +40,10 @@ public class StandardPageInfo {
         return moduleName;
     }
 
+    public PageEditMode getPageEditMode() {
+		return pageEditMode;
+	}
+    
     public List<String> getScriptFiles() {
         return scriptFiles;
     }
@@ -74,6 +80,10 @@ public class StandardPageInfo {
         this.moduleName = moduleName;
     }
 
+    public void setPageEditMode(PageEditMode pageEditMode) {
+		this.pageEditMode = pageEditMode;
+	}
+    
     public void setScriptFiles(List<String> scriptFiles) {
         this.scriptFiles = scriptFiles;
     }

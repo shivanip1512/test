@@ -6,7 +6,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 <%@ taglib tagdir="/WEB-INF/tags/dr/forms" prefix="drForms" %>
 
-<cti:standardPage module="operator" page="applianceEdit">
+<cti:standardPage module="operator" page="applianceEdit" mode="${mode}">
 
     <table>
       <tr>

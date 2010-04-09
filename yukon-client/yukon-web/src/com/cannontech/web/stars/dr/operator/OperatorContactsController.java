@@ -16,6 +16,8 @@ import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -23,6 +25,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -43,6 +46,7 @@ public class OperatorContactsController {
 	private ContactDao contactDao;
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	private ContactDtoValidator contactDtoValidator;
+	private RolePropertyDao rolePropertyDao;
 	
 	// CONTACTS LIST
 	@RequestMapping
@@ -70,6 +74,11 @@ public class OperatorContactsController {
 		modelMap.addAttribute("contacts", contacts);
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
+		
+		// pageEditMode
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
+		
 		return "operator/contacts/contactList.jsp";
 	}
 	
@@ -81,6 +90,8 @@ public class OperatorContactsController {
     						  YukonUserContext userContext,
     						  AccountInfoFragment accountInfoFragment) {
 		
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		
 		// contactDto
 		ContactDto contactDto = operatorAccountService.getContactDto(contactId, userContext);
 		if (contactDto == null) {
@@ -89,6 +100,8 @@ public class OperatorContactsController {
 		modelMap.addAttribute("contactDto", contactDto);
 		
 		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
+		modelMap.addAttribute("mode", PageEditMode.EDIT);
+		
 		return "operator/contacts/contactEdit.jsp";
 	}
 	
@@ -102,6 +115,9 @@ public class OperatorContactsController {
 					    		YukonUserContext userContext,
 					    		FlashScope flashScope,
 					    		AccountInfoFragment accountInfoFragment) {
+		
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", PageEditMode.EDIT);
 		
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
 		LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
@@ -132,6 +148,9 @@ public class OperatorContactsController {
 								    		FlashScope flashScope,
 								    		AccountInfoFragment accountInfoFragment) {
 		
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", PageEditMode.EDIT);
+		
 		contactDto.getOtherNotifications().get(contactDto.getOtherNotifications().size());
 		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
 		
@@ -142,9 +161,12 @@ public class OperatorContactsController {
 	@RequestMapping
     public String deleteAdditionalContact(int deleteAdditionalContactId,
 										  ModelMap modelMap, 
+										  YukonUserContext userContext,
 										  FlashScope flashScope,
 										  AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		
 		contactDao.deleteContact(deleteAdditionalContactId);
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
@@ -208,5 +230,10 @@ public class OperatorContactsController {
 	@Autowired
 	public void setContactDtoValidator(ContactDtoValidator contactDtoValidator) {
 		this.contactDtoValidator = contactDtoValidator;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 }

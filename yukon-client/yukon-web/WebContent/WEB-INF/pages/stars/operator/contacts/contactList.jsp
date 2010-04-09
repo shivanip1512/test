@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="contactList">
+<cti:standardPage module="operator" page="contactList" mode="${mode}">
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/contacts.css"/>
 
@@ -40,22 +40,30 @@
 		<tr>
 			<th><i:inline key=".header.contact"/></th>
 			<th><i:inline key=".header.notifications"/></th>
-			<th class="removeCol"><i:inline key=".header.remove"/></th>
+			<cti:displayForPageEditModes modes="EDIT,CREATE">
+				<th class="removeCol"><i:inline key=".header.remove"/></th>
+			</cti:displayForPageEditModes>
 		</tr>
-	
+		
 		<c:forEach var="contact" items="${contacts}">
 		
 			<tr>
 			
 				<td class="nameCol">
 				
-					<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/contactEdit">
-						<cti:param name="accountId" value="${accountId}"/>
-						<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
-						<cti:param name="contactId" value="${contact.contactId}"/>
-					</cti:url>
+					<cti:displayForPageEditModes modes="VIEW">
+						${contact.lastName}, ${contact.firstName}
+					</cti:displayForPageEditModes>
 				
-					<a href="${contactEditUrl}">${contact.lastName}, ${contact.firstName}</a>
+					<cti:displayForPageEditModes modes="EDIT,CREATE">
+						<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/contactEdit">
+							<cti:param name="accountId" value="${accountId}"/>
+							<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
+							<cti:param name="contactId" value="${contact.contactId}"/>
+						</cti:url>
+					
+						<a href="${contactEditUrl}">${contact.lastName}, ${contact.firstName}</a>
+					</cti:displayForPageEditModes>
 					
 				</td>
 				
@@ -91,6 +99,8 @@
 					
 				</td>
 				
+				<%-- REMOVE COLUMN --%>
+				<cti:displayForPageEditModes modes="EDIT,CREATE">
 				<td class="removeCol">
 				
 					<c:choose>
@@ -103,6 +113,7 @@
 					</c:choose>
 					
 				</td>
+				</cti:displayForPageEditModes>
 			
 			</tr>
 			
@@ -111,7 +122,9 @@
 	</table>
 	
 	<%-- ADD CONTACT --%>
-	<br>
-	<tags:slowInput2 myFormId="addContactForm" key="button.addContact" width="80px"/>
+	<cti:displayForPageEditModes modes="CREATE">
+		<br>
+		<tags:slowInput2 myFormId="addContactForm" key="button.addContact" width="80px"/>
+	</cti:displayForPageEditModes>
 
 </cti:standardPage>

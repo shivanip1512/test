@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.dao.CustomerResidenceDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerResidence;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -35,6 +37,7 @@ public class OperatorResidenceController {
 	private CustomerAccountDao customerAccountDao;
 	private CustomerResidenceDao customerResidenceDao;
 	private CustomerResidenceValidator customerResidenceValidator;
+	private RolePropertyDao rolePropertyDao;
 	
 	// RESIDENCE
 	@RequestMapping
@@ -51,6 +54,11 @@ public class OperatorResidenceController {
         modelMap.addAttribute("customerResidence", customerResidence);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        
+        // pageEditMode
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
+		
 		return "operator/residence/residenceEdit.jsp";
 	}
 	
@@ -63,6 +71,9 @@ public class OperatorResidenceController {
 						    		YukonUserContext userContext,
 						    		FlashScope flashScope,
 						    		AccountInfoFragment accountInfoFragment) {
+		
+		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", PageEditMode.EDIT);
 		
 		// validate/insert/update
 		MessageSourceResolvable okMessage = null;
@@ -106,5 +117,10 @@ public class OperatorResidenceController {
 	@Autowired
 	public void setCustomerResidenceValidator(CustomerResidenceValidator customerResidenceValidator) {
 		this.customerResidenceValidator = customerResidenceValidator;
+	}
+	
+	@Autowired
+	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
 	}
 }

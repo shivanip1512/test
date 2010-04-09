@@ -968,7 +968,7 @@ public class AccountServiceImpl implements AccountService {
         }else {
             retrievedDto.setCompanyName("");
             retrievedDto.setIsCommercial(false);
-            retrievedDto.setCommercialTypeEntryId(CustomerTypes.CUSTOMER_RESIDENTIAL);
+            retrievedDto.setCommercialTypeEntryId(null);
         }
         
         /*

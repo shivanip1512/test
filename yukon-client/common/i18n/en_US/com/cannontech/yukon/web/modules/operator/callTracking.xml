@@ -11,6 +11,7 @@
     <entry key="yukon.web.modules.operator.callList.header.description">Description</entry>
     <entry key="yukon.web.modules.operator.callList.header.takenBy">Taken By</entry>
     <entry key="yukon.web.modules.operator.callList.header.remove">Remove</entry>
+    <entry key="yukon.web.modules.operator.callList.noCalls">No Calls</entry>
 
 	<!-- viewCall.jsp -->
     <entry key="yukon.web.modules.operator.viewCall.pageName">View Call</entry>

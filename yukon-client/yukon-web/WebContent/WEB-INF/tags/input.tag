@@ -1,6 +1,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
@@ -14,6 +15,14 @@
 <%@ attribute name="onblur"%>
 
 <spring:bind path="${path}">
+
+<%-- VIEW MODE --%>
+<cti:displayForPageEditModes modes="VIEW">
+${status.value}
+</cti:displayForPageEditModes>
+
+<%-- EDIT/CREATE MODE --%>
+<cti:displayForPageEditModes modes="EDIT,CREATE">
 
 <c:set var="inputClass" value=""/>
 <c:if test="${status.error}">
@@ -29,5 +38,7 @@
 	<br>
 	<form:errors path="${path}" cssClass="errorMessage"/>
 </c:if>
+
+</cti:displayForPageEditModes>
 
 </spring:bind>

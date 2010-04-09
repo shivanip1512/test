@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="residence">
+<cti:standardPage module="operator" page="residence" mode="${mode}">
 
 	<form:form id="residenceUpdateForm" commandName="customerResidence" action="/spring/stars/operator/residence/residenceUpdate">
 	
@@ -52,11 +52,11 @@
 		</tags:sectionContainer2>
 		
 		<%-- BUTTONS --%>
-		<br>
-		<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+		<cti:displayForPageEditModes modes="EDIT">
+			<br>
 			<tags:slowInput2 myFormId="residenceUpdateForm" key="save" width="80px"/>
-		</cti:checkRolesAndProperties>
-		<tags:reset/>
+			<tags:reset/>
+		</cti:displayForPageEditModes>
 
 	</form:form>
 	

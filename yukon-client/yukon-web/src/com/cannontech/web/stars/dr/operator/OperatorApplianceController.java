@@ -33,6 +33,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -89,6 +90,8 @@ public class OperatorApplianceController {
         modelMap.addAttribute("starsAppliance", starsAppliance);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        modelMap.addAttribute("mode", PageEditMode.CREATE);
+        
         return "operator/appliance/applianceNew.jsp";
     }
     
@@ -121,6 +124,7 @@ public class OperatorApplianceController {
                 
                 List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+                modelMap.addAttribute("mode", PageEditMode.CREATE);
                 
                 return "operator/appliance/applianceNew.jsp";
             } 
@@ -159,6 +163,8 @@ public class OperatorApplianceController {
         }
         
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, applianceId);
+        modelMap.addAttribute("mode", PageEditMode.EDIT);
+        
         return "operator/appliance/applianceEdit.jsp";
     }
     
