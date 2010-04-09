@@ -23,8 +23,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.ImportDatabaseMigrationStatus;
@@ -118,9 +118,7 @@ public class DatabaseMigrationController {
         	exportIdList = databaseMigrationService.getAllSearchIds(exportTypeValue);
         	
         } else {
-        	for (String exportId : exportIds.split(",")){
-                exportIdList.add(Integer.valueOf(exportId));
-            }
+        	exportIdList = ServletUtil.getIntegerListFromString(exportIds);
         }
         
         ExportDatabaseMigrationStatus status = 
@@ -154,7 +152,6 @@ public class DatabaseMigrationController {
 		FileSystemResource resource = fileStore.get(fileKey);
 		
 		response.setContentType("text/xml");
-        response.setHeader("Content-Type", "application/force-download");
         String safeName = ServletUtil.makeWindowsSafeFileName(resource.getFilename());
 		response.setHeader("Content-Disposition","attachment; filename=\"" + safeName + "\"");
         
@@ -167,11 +164,7 @@ public class DatabaseMigrationController {
 
         ExportTypeEnum exportTypeValue = ExportTypeEnum.valueOf(exportType);
 
-        List<Integer> exportItemIdList = Lists.newArrayList();
-        String[] exportItemIdsArray = exportItemIds.split(",");
-        for(String exportItemId : exportItemIdsArray) {
-            exportItemIdList.add(Integer.valueOf(exportItemId));
-        }
+        List<Integer> exportItemIdList = ServletUtil.getIntegerListFromString(exportItemIds);
         List<DatabaseMigrationContainer> exportItems = 
             databaseMigrationService.getItemsByIds(exportTypeValue, exportItemIdList, userContext);
         
@@ -187,7 +180,8 @@ public class DatabaseMigrationController {
     }
 	
 	@RequestMapping
-    public String loadLocalFile(HttpServletRequest request, ModelMap map, YukonUserContext userContext) {
+    public String loadLocalFile(HttpServletRequest request, ModelMap map, 
+    		@RequestParam MultipartFile dataFile, YukonUserContext userContext) {
 		
 		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 		
@@ -196,10 +190,6 @@ public class DatabaseMigrationController {
 		
 		String errorPrefix = "yukon.web.modules.support.databaseMigration.loadImport.loadFile.error"; 
 		if(ServletFileUpload.isMultipartContent(request)) {
-
-            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
-            MultipartFile dataFile = mRequest.getFile("dataFile");
-
             try {
                 if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                 	loadError = messageSourceAccessor.getMessage(errorPrefix + ".noFile");

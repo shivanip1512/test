@@ -2,6 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 
 <cti:msg var="pageTitle" key="yukon.web.modules.support.databaseMigration.pageTitle"/>
 <cti:msg var="exportConfig" key="yukon.web.modules.support.databaseMigration.exportConfig"/>
@@ -28,7 +29,9 @@
     
     <%-- ERROR --%>
     <c:if test="${not empty errorMsg}">
-    	<div class="errorRed">${errorMsg}</div>
+    	<div class="errorRed">
+            <spring:escapeBody htmlEscape="true">${errorMsg}</spring:escapeBody>
+        </div>
     	<br>
     </c:if>
     

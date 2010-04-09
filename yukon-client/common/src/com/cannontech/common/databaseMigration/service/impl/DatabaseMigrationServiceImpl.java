@@ -1,24 +1,19 @@
 package com.cannontech.common.databaseMigration.service.impl;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +25,7 @@ import org.jdom.filter.ElementFilter;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ResourceLoaderAware;
@@ -78,8 +74,6 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -96,6 +90,9 @@ import com.google.common.collect.Sets;
 public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, ResourceLoaderAware, InitializingBean{
     
     private static Logger log = YukonLogManager.getLogger(DatabaseMigrationServiceImpl.class);
+    
+    private static String LOG_FILE_DATE_FORMAT = "yyyyMMddHHmmss";
+    
     private Multimap<String, TableChangeCallback> tableChangeCallbacks = ArrayListMultimap.create();
 
     private DatabaseDefinition databaseDefinition;
@@ -111,7 +108,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private ConfigurationParserService configurationParserService;
     private DatabaseMigrationDao databaseMigrationDao;
     private DatabaseMigrationEventLogService databaseMigrationEventLogService;
-    private DateFormattingService dateFormattingService;
     private ExportXMLGeneratorService exportXMLGeneratorService;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -309,8 +305,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                                                                          YukonUserContext userContext){
 
         databaseMigrationEventLogService.startingImport(userContext.getYukonUser(), importFile.getName());
-        final java.util.logging.Logger logger = 
-        	createLogFile(userContext, importFile, DatabaseMigrationActionEnum.IMPORT);
+        final PrintWriter logFileWriter = 
+        	getLogFileWriter(userContext, importFile, DatabaseMigrationActionEnum.IMPORT);
         final String exportTypeString = getConfigurationNameValue(importFile);
         final ExportTypeEnum exportType = ExportTypeEnum.valueOf(exportTypeString);
         
@@ -325,7 +321,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         scheduledExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                processElementList(importItemList, exportType, importDatabaseMigrationStatus, logger);
+                processElementList(importItemList, exportType, importDatabaseMigrationStatus, logFileWriter);
             }
         });
         
@@ -338,7 +334,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     private void processElementList(final List<Element> importItemList,
                                     ExportTypeEnum exportType,
                                     final ImportDatabaseMigrationStatus importDatabaseMigrationStatus,
-                                    final java.util.logging.Logger logger) {
+                                    final PrintWriter logFileWriter) {
 
         for (final Element element : importItemList) {
             
@@ -365,7 +361,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         log.error(errorMessage, e);
                         
                         // Log to migration specific log
-                        logger.log(Level.SEVERE, errorMessage, e);
+                        logFileWriter.println(errorMessage);
+                        e.printStackTrace(logFileWriter);
+                        logFileWriter.println();
                         
                         status.setRollbackOnly();
                         
@@ -378,7 +376,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         log.error(errorMessage, e);
                         
                         // Log to migration specific log
-                        logger.log(Level.SEVERE, errorMessage, e);
+                        logFileWriter.println(errorMessage);
+                        e.printStackTrace(logFileWriter);
+                        logFileWriter.println();
                         
                         status.setRollbackOnly();
                     }
@@ -389,12 +389,12 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
                         if (warningProcessing.equals(WarningProcessingEnum.USE_EXISTING)) {
                             String warningMessage = "Preserving the entry " + label + ".";
                             log.error(warningMessage);
-                            logger.warning(warningMessage);
+                            logFileWriter.println(warningMessage);
                         } else if (warningProcessing.equals(WarningProcessingEnum.OVERWRITE)) {
                             String warningMessage = 
                             	"Overwriting the entry " + label + " was sucessful.";
                             log.error(warningMessage);
-                            logger.warning(warningMessage);
+                            logFileWriter.println(warningMessage);
                         }
                     } else {
                         String message = "Generating the entry " + label + " was sucessful.";
@@ -407,7 +407,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             importDatabaseMigrationStatus.incrementProcessed();
         }
 
-        closeLogger(logger);
+        logFileWriter.close();
         
         importDatabaseMigrationStatus.complete();
     }
@@ -1015,8 +1015,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 			@Override
 			public void run() {
 				
-			    java.util.logging.Logger logger = 
-			    	createLogFile(userContext, xmlDataFile, DatabaseMigrationActionEnum.EXPORT);
+			     
+				final PrintWriter logFileWriter = 
+					getLogFileWriter(userContext, xmlDataFile, DatabaseMigrationActionEnum.EXPORT);
 			    DataTableTemplate dataTableTemplate = configurationMap.get(exportType);
 		        
 		        // build data
@@ -1024,7 +1025,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		            configurationProcessorService.processDataTableTemplate(dataTableTemplate, 
 		                                                                   exportIdList, 
 		                                                                   exportDatabaseMigrationStatus,
-		                                                                   logger);
+		                                                                   logFileWriter);
 		        Element generatedXMLFile = 
 		            exportXMLGeneratorService.buildXmlElement(data, exportType.name());
 
@@ -1040,7 +1041,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
 		        
 		        exportDatabaseMigrationStatus.addCurrentCount();
 		        
-		        closeLogger(logger);
+		        logFileWriter.close();
 			}
 		});
 
@@ -1352,8 +1353,8 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         String databaseName = MasterConfigHelper.getConfiguration().getRequiredString("DB_SQLSERVER");
         String schemaUsername = PoolManager.getInstance().getPrimaryUser();
         
-        String currentDate = 
-        	dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, new SystemUserContext());
+        String currentDate = new DateTime().toString(LOG_FILE_DATE_FORMAT);
+        
         String defaultDataFileName = 
             databaseName + "_" + schemaUsername + "_" + exportType.getName() + "_" + currentDate + ".xml";
 
@@ -1371,47 +1372,32 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
     /**
      * Creates a new logger which will be used for the export or import process.
      */
-    private java.util.logging.Logger createLogFile(YukonUserContext userContext, 
-    											   File importFile, 
-    											   DatabaseMigrationActionEnum databaseMigrationAction) {
+    private PrintWriter getLogFileWriter(YukonUserContext userContext, 
+								   	     File importFile, 
+								   	     DatabaseMigrationActionEnum databaseMigrationAction) {
         
         String logFilePath = getFileBasePath(userContext);
         
         String databaseName = MasterConfigHelper.getConfiguration().getRequiredString("DB_SQLSERVER");
         String schemaUsername = PoolManager.getInstance().getPrimaryUser();
         
-        String currentDate = 
-        	dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, new SystemUserContext());
+        String currentDate = new DateTime().toString(LOG_FILE_DATE_FORMAT);
         String defaultDataFileName = 
             databaseName + "_" + schemaUsername + "_" + currentDate + "_" + 
             databaseMigrationAction.name() + ".log";
 
-        java.util.logging.Logger logger = 
-        	java.util.logging.Logger.getLogger(DatabaseMigrationServiceImpl.class.getName());
-        try {
-            String loggerFileName = logFilePath + defaultDataFileName;
-            FileHandler handler = new FileHandler(loggerFileName, true);
-            handler.setFormatter(new SeperateLogFileFormatter(){});
-            logger.addHandler(handler);
-            logger.setUseParentHandlers(false);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create log file", e);
-        }
+        PrintWriter printWriter;
+		try {
+			printWriter = new PrintWriter(new File(logFilePath + defaultDataFileName));
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Could not create custom log file: " + 
+					logFilePath + defaultDataFileName, e);
+		}
         
-        logger.info(databaseMigrationAction.getLabel() + " " + importFile.getName() + " by user " + 
-        		userContext.getYukonUser().getUsername() + "\n");
+        printWriter.write(databaseMigrationAction.getLabel() + " " + importFile.getName() + 
+        		" by user " + userContext.getYukonUser().getUsername() + "\n");
         
-        return logger;
-    }
-    
-    /**
-     * Closes all the handlers thus closing the logger.
-     */
-    private void closeLogger(java.util.logging.Logger logger){
-        Handler[] handlers = logger.getHandlers();
-        for (Handler handler : handlers) {
-            handler.close();
-        }
+        return printWriter;
     }
     
     /**
@@ -1452,11 +1438,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         this.configurationProcessorService = configurationProcessorService;
     }
     
-    @Autowired
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
-
     @Autowired
     public void setExportXMLGeneratorService(ExportXMLGeneratorService exportXMLGeneratorService) {
         this.exportXMLGeneratorService = exportXMLGeneratorService;
@@ -1541,22 +1522,6 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         
         String getLabel(){
             return this.label;
-        }
-        
-    }
-    
-    private class SeperateLogFileFormatter extends Formatter {
-
-        @Override
-        public String format(LogRecord record) {
-            SimpleDateFormat simpleDateFormat = 
-                new SimpleDateFormat("yyyy-MM-dd hh:mm:ss mmm aa");
-            
-            String message = simpleDateFormat.format(record.getMillis()) + " " +
-                             record.getSourceClassName() + " [" + 
-                             record.getLevel() + "] " +
-                             record.getMessage() + " \n ";
-            return message;
         }
         
     }

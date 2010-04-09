@@ -173,13 +173,11 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
 
         TableDefinition tableDef = database.getTable(configFileTableElement.getTableName());
         
-        CountHolder countHolder = new CountHolder(1);
         DataTableTemplate baseDataTable = 
             new DataTableTemplate(ElementCategoryEnum.BASE, 
-            					  countHolder.getCount(), 
             					  tableDef.getName(), 
             					  tableDef.getTable());
-        buildDataTableTemplate(baseDataTable, configFileTableElement, countHolder, null);
+        buildDataTableTemplate(baseDataTable, configFileTableElement, null);
         
         return baseDataTable;
     }
@@ -192,7 +190,6 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     private void buildDataTableTemplate(DataTableTemplate dataTable, 
                                         ConfigurationTable configFileTableElement, 
-                                        CountHolder countHolder,
                                         TableDefinition finalTableInDrillDown){
         TableDefinition table = database.getTable(dataTable.getName());
         List<Column> allColumns = table.getAllColumns();
@@ -214,7 +211,6 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                     column.getRefType().equals(ReferenceTypeEnum.ONE_TO_ONE)){
                     processInlineDataTableTemplate(dataTable, 
                                                    configFileTableElement,
-                                                   countHolder, 
                                                    column,
                                                    tableRefTable,
                                                    finalTableInDrillDown);
@@ -230,7 +226,6 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                         if (column.getName().equals(configIncludeElement.getIncludeReferenceColumnName())) {
                             processIncludeDataTableTemplate(dataTable,
                                                             configIncludeElement,
-                                                            countHolder,
                                                             column,
                                                             tableRefTable,
                                                             null);
@@ -244,7 +239,6 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                     if(!isTableInIncludes){
                         processReferenceDataTable(dataTable,
                                                   configFileTableElement,
-                                                  countHolder,
                                                   column,
                                                   tableRefTable,
                                                   finalTableInDrillDown);
@@ -274,7 +268,6 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
                     processReferencesDataTableTemplate(dataTable,
                                                configurationTable,
                                                table,
-                                               countHolder,
                                                referencesTable);
                     break;
                 }
@@ -288,16 +281,14 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     private void processInlineDataTableTemplate(DataTableTemplate dataTable,
                                                 ConfigurationTable configFileTableElement,
-                                                CountHolder countHolder, 
                                                 Column column,
                                                 TableDefinition tableRefTable,
                                                 TableDefinition finalTableInDrillDown) {
         DataTableTemplate inlineTable = 
-            new DataTableTemplate(null, 0, tableRefTable.getName(), tableRefTable.getTable());
+            new DataTableTemplate(null, tableRefTable.getName(), tableRefTable.getTable());
         dataTable.putTableColumn(column.getName(), inlineTable);
         buildDataTableTemplate(inlineTable, 
                                configFileTableElement, 
-                               countHolder,
                                finalTableInDrillDown);
     }
 
@@ -307,21 +298,17 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     private void processIncludeDataTableTemplate(DataTableTemplate dataTable,
                                                  ConfigurationIncludeTable configIncludeElement,
-                                                 CountHolder countHolder, 
                                                  Column column,
                                                  TableDefinition tableRefTable,
                                                  TableDefinition finalTableInDrillDown) {
-        countHolder.add();
         DataTableTemplate includeTable = 
             new DataTableTemplate(ElementCategoryEnum.INCLUDE, 
-                                  countHolder.getCount(),
                                   tableRefTable.getName(),
                                   tableRefTable.getTable());
         dataTable.putTableColumn(column.getName(), includeTable);
         
         buildDataTableTemplate(includeTable, 
                                configIncludeElement,
-                               countHolder,
                                finalTableInDrillDown);
     }
 
@@ -331,18 +318,15 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      */
     private void processReferenceDataTable(DataTableTemplate dataTable,
                                           ConfigurationTable configFileTableElement,
-                                          CountHolder countHolder, 
                                           Column column,
                                           TableDefinition tableRefTable,
                                           TableDefinition finalTableInDrillDown) {
-        countHolder.add();
         DataTableTemplate referenceTable = 
             new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
-            					  countHolder.getCount(), 
             					  tableRefTable.getName(), 
             					  tableRefTable.getTable());
         dataTable.putTableColumn(column.getName(), referenceTable);
-        buildDatabaseMapReferenceTemplate(referenceTable, countHolder);
+        buildDatabaseMapReferenceTemplate(referenceTable);
     }
     
     /**
@@ -352,18 +336,14 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
     private void processReferencesDataTableTemplate(DataTableTemplate dataTable, 
                                                     ConfigurationTable configFileTableElement,
                                                     TableDefinition finalTableInDrillDown,
-                                                    CountHolder countHolder,
                                                     TableDefinition referencesTable) {
-        countHolder.add();
         DataTableTemplate referenceTable = 
             new DataTableTemplate(ElementCategoryEnum.REFERENCES, 
-            					  countHolder.getCount(), 
             					  referencesTable.getName(), 
             					  referencesTable.getTable());
         dataTable.addTableReferences(referenceTable);
         buildDataTableTemplate(referenceTable, 
                                configFileTableElement,
-                               countHolder,
                                finalTableInDrillDown);
     }
 
@@ -371,23 +351,12 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      * This method handles the recursion case of references.
      */
     public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable){
-        CountHolder countHolder = new CountHolder(0);
-        buildDatabaseMapReferenceTemplate(referenceTable, countHolder);
-    }
-    
-    /**
-     * This method handles the recursion case of references.
-     */
-    public void buildDatabaseMapReferenceTemplate(DataTableTemplate referenceTable,
-                                                  CountHolder countHolder){
         TableDefinition table = database.getTable(referenceTable.getName());
         List<Column> identifierColumns = 
         	table.getColumns(ColumnTypeEnum.PRIMARY_KEY, ColumnTypeEnum.IDENTIFIER);
         for (Column identifierColumn : identifierColumns) {
             if (identifierColumn.getTableRef() != null){
-                processReferenceReferenceDataTableTemplate(referenceTable,
-                                                           identifierColumn,
-                                                           countHolder);
+                processReferenceReferenceDataTableTemplate(referenceTable, identifierColumn);
             } else {
                 referenceTable.putTableColumn(identifierColumn.getName(), new DataValueTemplate());
             }
@@ -399,30 +368,18 @@ public class ConfigurationParserServiceImpl implements ConfigurationParserServic
      * configurationTable back into the reference recursive method
      */
     private void processReferenceReferenceDataTableTemplate(DataTableTemplate referenceTable,
-                                                            Column identifierColumn,
-                                                            CountHolder countHolder) {
-        countHolder.add();
+                                                            Column identifierColumn) {
 
         TableDefinition referenceTableDef = database.getTable(identifierColumn.getTableRef());
         DataTableTemplate nextReferenceTable = 
             new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
-            					  countHolder.getCount(), 
             					  referenceTableDef.getName(), 
             					  referenceTableDef.getTable());
         referenceTable.putTableColumn(identifierColumn.getName(), nextReferenceTable);
-        buildDatabaseMapReferenceTemplate(nextReferenceTable, 
-                                          countHolder);
+        buildDatabaseMapReferenceTemplate(nextReferenceTable);
     }
 
     public void setDatabaseDefinitionXML(Resource databaseDefinitionXML){
         database = new DatabaseDefinition(databaseDefinitionXML);
-    }
-    
-    private static class CountHolder {
-    	private int count = 0;
-    	
-    	public CountHolder(int startingValue){this.count = startingValue;}
-    	public int getCount(){return this.count;}
-    	public void add(){this.count++;}
     }
 }

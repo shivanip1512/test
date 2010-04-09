@@ -1,5 +1,6 @@
 package com.cannontech.common.databaseMigration.service.impl;
 
+import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
     public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template, 
                                                         List<Integer> primaryKeyList, 
                                                         ExportDatabaseMigrationStatus status,
-                                                        java.util.logging.Logger logger) {
+                                                        PrintWriter logFileWriter) {
     	
         Map<DataTableTemplate, Map<Integer, DataTable>> includedTables = Maps.newHashMap();
         
@@ -68,7 +69,7 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
         	for (DatabaseMigrationContainer databaseMigrationContainer : databaseMigrationContainers) {
         	    String message = "Exported "+databaseMigrationContainer.getDatabaseMigrationDisplay();
         	    log.debug(message);
-        	    logger.info(message);
+        	    logFileWriter.println(message);
             }
         }
         
@@ -275,7 +276,6 @@ public class ConfigurationProcessorServiceImpl implements ConfigurationProcessor
                     // Generating the reference portion of the include 
                     DataTableTemplate referenceTableTemplate = 
                         new DataTableTemplate(ElementCategoryEnum.REFERENCE, 
-                        					  0, 
                         					  thisTemplate.getName(), 
                         					  thisTemplate.getTable());
                     configurationParserService.buildDatabaseMapReferenceTemplate(referenceTableTemplate);

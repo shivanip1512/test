@@ -1,7 +1,7 @@
 package com.cannontech.common.databaseMigration.service;
 
+import java.io.PrintWriter;
 import java.util.List;
-import java.util.logging.Logger;
 
 import com.cannontech.common.databaseMigration.bean.ExportDatabaseMigrationStatus;
 import com.cannontech.common.databaseMigration.bean.data.DataTable;
@@ -16,7 +16,7 @@ public interface ConfigurationProcessorService {
     public Iterable<DataTable> processDataTableTemplate(DataTableTemplate template,
                                                         List<Integer> primaryKeyList,
                                                         ExportDatabaseMigrationStatus status,
-                                                        Logger logger);
+                                                        PrintWriter logFileWriter);
    
     
 }

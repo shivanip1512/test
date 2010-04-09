@@ -7,7 +7,9 @@ import java.util.Map;
 
 import org.jdom.Element;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
@@ -26,8 +28,9 @@ public class TableDefinition {
     }
     
     private void addColumns(Element tableElement, ColumnTypeEnum columnType){
-    	@SuppressWarnings("unchecked")
-        List<Element> columnElements = tableElement.getChildren(columnType.getXMLKey());
+
+    	Iterable<Element> columnElements = 
+    		Iterables.filter(tableElement.getChildren(columnType.getXMLKey()), Element.class);
         for (Element columnElement : columnElements) {
             Column column = new Column();
             column.setName(columnElement.getAttributeValue("name"));

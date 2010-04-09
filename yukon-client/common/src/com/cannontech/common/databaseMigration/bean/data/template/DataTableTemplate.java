@@ -10,18 +10,15 @@ import com.cannontech.common.databaseMigration.bean.data.ElementCategoryEnum;
 public class DataTableTemplate implements DataEntryTemplate {
 
     private ElementCategoryEnum elementCategory;
-    private int elementMappingKey = 0;
     private String name;
     private String table;
     private Map<String, DataEntryTemplate> tableColumns;
     private List<DataTableTemplate> tableReferences;
   
     public DataTableTemplate(ElementCategoryEnum elementCategory,
-                     int elementMappingKey,
                      String name,
                      String table){
         this.elementCategory = elementCategory;
-        this.elementMappingKey = elementMappingKey;
         this.name = name;
         this.table = table;
         this.tableColumns = new LinkedHashMap<String, DataEntryTemplate>();
@@ -33,13 +30,6 @@ public class DataTableTemplate implements DataEntryTemplate {
     }
     public void setElementCategory(ElementCategoryEnum elementCategory) {
         this.elementCategory = elementCategory;
-    }
-    
-    public int getElementMappingKey() {
-        return elementMappingKey;
-    }
-    public void setElementMappingKey(int elementMappingKey) {
-        this.elementMappingKey = elementMappingKey;
     }
     
     public String getName() {
@@ -80,7 +70,6 @@ public class DataTableTemplate implements DataEntryTemplate {
         String results = "";
         
         results += "elementCategory = " + elementCategory + "\n";
-        results += "elementMappingKey = " + elementMappingKey + "\n";
         results += "name = " + name + "\n";
         results += "table = " + table + "\n";
 
