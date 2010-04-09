@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -63,7 +63,6 @@ import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 
 @Controller
-@SessionAttributes(types=OptOutBackingBean.class)
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 public class OperatorProgramOptOutOperatorController {
     
@@ -74,6 +73,7 @@ public class OperatorProgramOptOutOperatorController {
     private OptOutEventDao optOutEventDao;
     private OptOutService optOutService; 
     private OptOutValidatorFactory optOutValidatorFactory;
+    private RolePropertyDao rolePropertyDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
@@ -88,16 +88,21 @@ public class OperatorProgramOptOutOperatorController {
         modelMap.addAttribute("optOutBackingBean", optOutBackingBean);
         
         //Get the list of current and scheduled opt outs
-        List<OptOutEventDto> currentOptOutList =  optOutEventDao.getCurrentOptOuts(accountInfoFragment.getAccountId());
+        List<OptOutEventDto> currentOptOutList = 
+            optOutEventDao.getCurrentOptOuts(accountInfoFragment.getAccountId());
         modelMap.addAttribute("currentOptOutList", currentOptOutList);
         
         // Get the list of completed and canceled opt outs
-        List<OptOutEventDto> previousOptOutList =  optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId(), 6);
+        List<OptOutEventDto> previousOptOutList = 
+            optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId(), 6);
         modelMap.addAttribute("previousOptOutList", previousOptOutList);
         
         // Get the current counts for used opt outs and remaining allowed opt outs for each device
-        List<DisplayableInventory> displayableInventories = displayableInventoryDao.getDisplayableInventory(accountInfoFragment.getAccountId());
-        Map<Integer, OptOutCountHolder> optOutCounts = getOptOutCountsForInventories(displayableInventories, accountInfoFragment.getAccountId());
+        List<DisplayableInventory> displayableInventories = 
+            displayableInventoryDao.getDisplayableInventory(accountInfoFragment.getAccountId());
+        Map<Integer, OptOutCountHolder> optOutCounts = 
+            getOptOutCountsForInventories(displayableInventories, 
+                                          accountInfoFragment.getAccountId());
 
         boolean allOptedOut = true;
         boolean optOutsAvailable = false;
@@ -117,11 +122,13 @@ public class OperatorProgramOptOutOperatorController {
             // Check the opt out limit from the first device - limits are set by login
             // group and will therefore be the same for every device on an account
             DisplayableInventory inventory = displayableInventories.get(0);
-            noOptOutLimits = optOutCounts.get(inventory.getInventoryId()).getRemainingOptOuts() == OptOutService.NO_OPT_OUT_LIMIT;
+            noOptOutLimits = 
+                optOutCounts.get(inventory.getInventoryId()).getRemainingOptOuts() == OptOutService.NO_OPT_OUT_LIMIT;
         }
         modelMap.addAttribute("noOptOutLimits", noOptOutLimits);
         
-        OptOutLimit currentOptOutLimit = optOutService.getCurrentOptOutLimit(accountInfoFragment.getAccountId());
+        OptOutLimit currentOptOutLimit = 
+            optOutService.getCurrentOptOutLimit(accountInfoFragment.getAccountId());
         int optOutLimit = OptOutService.NO_OPT_OUT_LIMIT;
         if(currentOptOutLimit != null) {
             optOutLimit = currentOptOutLimit.getLimit();
@@ -143,13 +150,23 @@ public class OperatorProgramOptOutOperatorController {
                          FlashScope flashScope,
                          AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
+        // Check to see if the user can only opt out today.  If so set the start date to today.
+        boolean isOptOutTodayOnly = 
+            rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, 
+                                          userContext.getYukonUser());
+        if (isOptOutTodayOnly) {
+            optOutBackingBean.setStartDate(new LocalDate(userContext.getJodaTimeZone()));
+        }
+        
+        // Validate the optOutBackingBean
         OptOutValidator optOutValidator = optOutValidatorFactory.getOptOutValidator(userContext);
         optOutValidator.validate(optOutBackingBean, bindingResult);
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
 
         if (bindingResult.hasErrors()) {
             
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            List<MessageSourceResolvable> messages = 
+                YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return "operator/program/optOut/optOut.jsp";
         } 
@@ -491,8 +508,12 @@ public class OperatorProgramOptOutOperatorController {
     }
     
     @Autowired
-    public void setStarsInventoryBaseDao(
-            StarsInventoryBaseDao starsInventoryBaseDao) {
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
     

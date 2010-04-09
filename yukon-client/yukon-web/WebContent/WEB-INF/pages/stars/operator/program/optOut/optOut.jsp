@@ -85,7 +85,7 @@
             </tr>
             
             <c:forEach var="optOut" items="${currentOptOutList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr class="<tags:alternateRow odd="altRow" even=""/>">
                     <td valign="top"><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
                     <td valign="top">
                         <c:forEach var="program" items="${optOut.programList}" varStatus="status">
@@ -144,6 +144,7 @@
 <br><br>
 
 <!-- Opt Out Limits -->
+<tags:alternateRowReset/>
 <tags:boxContainer2 key="optOutLimits">
 <table id="deviceTable" class="compactResultsTable">
     <tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -161,7 +162,7 @@
     </tr>
     
     <c:forEach var="inventory" items="${displayableInventories}">
-        <tr class="<tags:alternateRow odd="" even="altRow"/>">
+        <tr class="<tags:alternateRow odd="altRow" even=""/>">
             <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
             <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
             <td>
@@ -211,6 +212,7 @@
 <br><br>
 
 <!-- Opt Out History -->
+<tags:alternateRowReset/>
 <tags:boxContainer2 key="optOutHistory">
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
 	

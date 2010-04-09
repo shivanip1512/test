@@ -10,7 +10,7 @@
 <c:choose>
     <c:when test="${fn:length(previousOptOutList) > 0}">
         <table id="deviceTable" class="compactResultsTable">
-            <tr>
+            <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <th class="nonwrapping"><i:inline key=".device"/></th>
                 <th><i:inline key=".program"/></th>
                 <th class="nonwrapping"><i:inline key=".dateScheduled"/></th>
@@ -19,7 +19,7 @@
             </tr>
             
             <c:forEach var="optOut" items="${previousOptOutList}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <tr class="<tags:alternateRow odd="altRow" even=""/>">
                     <td valign="top" class="nonwrapping">
         	            <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
         	        </td>
