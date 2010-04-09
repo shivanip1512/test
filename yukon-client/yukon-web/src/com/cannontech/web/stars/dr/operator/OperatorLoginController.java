@@ -90,13 +90,16 @@ public class OperatorLoginController {
         changeLoginBackingBean.setCustomerLoginGroupName(userResidentialGroupName);
 
         // Checks to see if the account has a login
+        boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
             changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
+            modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
         } else {
             changeLoginBackingBean.setUsername(residentialUser.getUsername());
             changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
             modelMap.addAttribute("loginMode", LoginModeEnum.EDIT);
+            modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
         }
 
         modelMap.addAttribute("changeLoginBackingBean", changeLoginBackingBean);
@@ -104,8 +107,6 @@ public class OperatorLoginController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
         // pageEditMode
-		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
 		
         return "operator/login/login.jsp";
     }

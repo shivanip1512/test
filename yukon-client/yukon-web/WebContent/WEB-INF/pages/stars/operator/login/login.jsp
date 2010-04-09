@@ -27,17 +27,35 @@
                 
         }
 
-        function showPassword() {
-            var showPasswordCheckbox = $('showPasswordCheckbox');
-            if (showPasswordCheckbox.checked) {
-            	$('password1').type = 'text';
-            	$('password2').type = 'text';
-            } else {
-            	$('password1').type = 'password';
-            	$('password2').type = 'password';
+        /**
+         * This function takes in an inputElement and an inputType and changes the
+         * current node over to the desired type.
+         *
+         * String inputElement - The id of the element.
+         * String inputType - The desired input type.
+         */ 
+        function changeInputType(inputElement, inputType){
+            var input = document.getElementById(inputElement);
+            var input2 = document.createElement('input');
+            with (input2){
+                id = input.id;
+                value = input.value;
+                type = inputType;
             }
+            input.parentNode.replaceChild(input2,input);
         }
-        
+
+        function showPassword(){
+        	var showPasswordCheckbox = $('showPasswordCheckbox');
+            if (showPasswordCheckbox.checked) {
+                changeInputType('password1', 'text');
+                changeInputType('password2', 'text');
+            } else {
+                changeInputType('password1', 'password');
+                changeInputType('password2', 'password');
+            }
+        } 
+
     </script>
     <div style="width: 50%;">
 	    <tags:sectionContainer2 key=".changeLogin" >
