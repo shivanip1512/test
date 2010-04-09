@@ -5,6 +5,7 @@ import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -99,6 +100,34 @@ public class DatePropertyEditorFactory {
         }
     }
 
+    private class LocalDatePropertyEditor extends PropertyEditorSupport {
+        private DateFormatEnum dateFormat;
+        private YukonUserContext userContext;
+
+        private LocalDatePropertyEditor(DateFormatEnum dateFormat,
+                                         YukonUserContext userContext) {
+            this.dateFormat = dateFormat;
+            this.userContext = userContext;
+        }
+
+        @Override
+        public void setAsText(String localDateStr) throws IllegalArgumentException {
+            try {
+                setValue(dateFormattingService.parseLocalDate(localDateStr,
+                                                              userContext));
+            } catch (ParseException exception) {
+                throw new IllegalArgumentException("Could not parse date", exception);
+            }
+        }
+
+        @Override
+        public String getAsText() {
+            LocalDate localDate = (LocalDate) getValue();
+            return localDate == null
+                ? "" : dateFormattingService.format(localDate, dateFormat, userContext);
+        }
+    }
+    
     public PropertyEditor getPropertyEditor(DateFormattingService.DateOnlyMode dateOnlyMode,
             YukonUserContext userContext) {
         return new DatePropertyEditor(dateOnlyMode, userContext);
@@ -114,6 +143,11 @@ public class DatePropertyEditorFactory {
         return new LocalTimePropertyEditor(dateFormat, userContext);
     }
 
+    public PropertyEditor getLocalDatePropertyEditor(DateFormatEnum dateFormat,
+                                                      YukonUserContext userContext) {
+        return new LocalDatePropertyEditor(dateFormat, userContext);
+    }
+    
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;

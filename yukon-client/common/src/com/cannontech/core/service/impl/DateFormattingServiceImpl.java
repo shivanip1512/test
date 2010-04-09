@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
@@ -132,6 +133,18 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
         FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
         LocalTime result = flexibleDateParser.parseTimeAsLocalTime(localTimeStr,
+                                                                   userContext.getLocale(),
+                                                                   userContext.getTimeZone());
+        return result;
+    }
+    
+    @Override
+    public LocalDate parseLocalDate(String localDateStr,
+                                    YukonUserContext userContext) throws ParseException {
+        
+        String parserName = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.common.dateFormatting.parserImplementation");
+        FlexibleDateParser flexibleDateParser = dateParserLookup.get(parserName);
+        LocalDate result = flexibleDateParser.parseDateAsLocalDate(localDateStr,
                                                                    userContext.getLocale(),
                                                                    userContext.getTimeZone());
         return result;

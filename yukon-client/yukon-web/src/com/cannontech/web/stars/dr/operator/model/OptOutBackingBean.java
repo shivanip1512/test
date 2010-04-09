@@ -1,17 +1,17 @@
 package com.cannontech.web.stars.dr.operator.model;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
 
 public class OptOutBackingBean {
 
-    private Date startDate;
+    private LocalDate startDate;
     private int durationInDays;
     
     
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
     

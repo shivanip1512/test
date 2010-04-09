@@ -45,38 +45,27 @@
 		<tags:nameValueContainer2 nameColumnWidth="10%;">
 		
             <tags:nameValue2 nameKey=".startDate">
-                <c:choose>
-                    <c:when test="${optOutTodayOnly}">
-                        <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" var="formattedDate"/>
-                        <form:hidden path="startDate"/>
-                        <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
-                    </c:when>
-                    <c:otherwise>
-                        <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" springInput="true" />
-                    </c:otherwise>
-                </c:choose>
+                <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_TODAY_ONLY">
+                    <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" var="formattedDate"/>
+                    <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
+                    <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" springInput="true" />
+                </cti:checkRolesAndProperties>
             </tags:nameValue2>
 		
 			<tags:nameValue2 nameKey=".duration">
 				<select name="durationInDays">
                     <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
                        <option value="${optOutPeriod}">
-                           <spring:escapeBody htmlEscape="true">${optOutPeriod}</spring:escapeBody>
-                           <c:choose>
-                           	   <c:when test="${optOutPeriod == 1}">
-                           	       <i:inline key=".day" />
-                           	   </c:when>
-                           	   <c:otherwise>
-                           	       <i:inline key=".days" />
-                           	   </c:otherwise>
-                           </c:choose>
+                           <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
                        </option>
                     </c:forEach>
                 </select>
 			</tags:nameValue2>
 		</tags:nameValueContainer2>
         <br>
-        <input type="submit" value="<i:inline key=".optOut" />" />
+        <input type="submit" value="<cti:msg2 key=".optOut"/>" />
 	</form:form>
 </c:if>
 </tags:boxContainer2>

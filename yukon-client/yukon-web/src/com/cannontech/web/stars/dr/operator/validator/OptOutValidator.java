@@ -1,22 +1,16 @@
 package com.cannontech.web.stars.dr.operator.validator;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
+import org.joda.time.LocalDate;
 import org.springframework.validation.Errors;
 
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
 
 public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
 
-    private DateFormattingService dateFormattingService;
     private RolePropertyDao rolePropertyDao;
     private YukonUserContext userContext;
     
@@ -25,12 +19,10 @@ public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
     }
     
     public OptOutValidator(YukonUserContext userContext,
-                            DateFormattingService dateFormattingService, 
                             RolePropertyDao rolePropertyDao) {
 
         super(OptOutBackingBean.class);
         this.userContext = userContext;
-        this.dateFormattingService = dateFormattingService;
         this.rolePropertyDao = rolePropertyDao;
     }
 
@@ -38,38 +30,25 @@ public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
     public void doValidation(OptOutBackingBean optOutBackingBean, Errors errors) {
 
         // Opt Out Start Date
-        final Date now = new Date();
-        TimeZone userTimeZone = userContext.getTimeZone();
-        final Date today = TimeUtil.getMidnight(now, userTimeZone);
-        
-        Calendar cal1 = dateFormattingService.getCalendar(userContext);
-        cal1.setTime(today);
-        cal1.add(Calendar.YEAR, 1);
-        final Date yearFromToday = new Date(cal1.getTimeInMillis());
-
-        
-        
+        final LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+        final LocalDate yearFromToday = today.plusYears(1);
         
         if (optOutBackingBean.getStartDate() == null) {
             errors.rejectValue("startDate", "yukon.web.modules.operator.optOutBackingBean.invalidStartDate");
             return;
         }
-        if (optOutBackingBean.getStartDate().before(today)) {
+        if (optOutBackingBean.getStartDate().isBefore(today)) {
             errors.rejectValue("startDate", "yukon.web.modules.operator.optOutBackingBean.startDateTooEarly");
         }
-        if (optOutBackingBean.getStartDate().after(yearFromToday)) {
+        if (optOutBackingBean.getStartDate().isAfter(yearFromToday)) {
             errors.rejectValue("startDate", "yukon.web.modules.operator.optOutBackingBean.startDateTooLate");
         }
 
         boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
         if(optOutTodayOnly) {
-            Calendar cal2 = dateFormattingService.getCalendar(userContext);
-            cal2.setTime(today);
-            cal2.add(Calendar.DAY_OF_YEAR, 1);
-            final Date dayFromToday = new Date(cal2.getTimeInMillis());
+            final LocalDate dayFromToday = today.plusDays(1);
             
-            
-            if (optOutBackingBean.getStartDate().after(dayFromToday)) {
+            if (optOutBackingBean.getStartDate().isAfter(dayFromToday)) {
                 errors.rejectValue("startDate", "yukon.web.modules.operator.optOutBackingBean.startDateToday");
             }
         }

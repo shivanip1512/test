@@ -37,8 +37,7 @@
 	<entry key="yukon.web.modules.operator.optOut.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
 	<entry key="yukon.web.modules.operator.optOut.startDate">Start Date</entry>
 	<entry key="yukon.web.modules.operator.optOut.duration">Duration</entry>
-	<entry key="yukon.web.modules.operator.optOut.day">Day</entry>
-	<entry key="yukon.web.modules.operator.optOut.days">Days</entry>
+	<entry key="yukon.web.modules.operator.optOut.optOutDays">{0} {0,choice,0#Days|1#Day|1>Days}</entry>
 	<entry key="yukon.web.modules.operator.optOut.optOut">Opt Out</entry>
 
 	<entry key="yukon.web.modules.operator.optOut.success">Opt Out Successful</entry>

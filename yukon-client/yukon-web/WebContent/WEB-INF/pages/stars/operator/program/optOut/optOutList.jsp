@@ -63,7 +63,7 @@ function createJSON() {
             <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />"
 
             <div id="controlEventsDiv" style="height: auto;">
-                <table class="compactResultsTable" width="95%">
+                <table class="compactResultsTable">
                     <tr>
                         <th></th>
                         <th><i:inline key=".hardware"/></th>
@@ -116,13 +116,13 @@ function createJSON() {
 
             <br>
             <span style="padding-right: 0.5em;">
-                <input type="submit" width="80px" value="<i:inline key='.save'/>">
+                <input type="submit" width="80px" value="<cti:msg2 key='.save'/>">
             </span>    
             <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
             	<cti:param name="accountId" value="${accountId}" />
             	<cti:param name="energyCompanyId" value="${energyCompanyId}" />
             </cti:url>
-            <input type="button" width="80px" value="<i:inline key='.cancel'/>"
+            <input type="button" width="80px" value="<cti:msg2 key='.cancel'/>"
                    onclick="javascript:location.href='${optOutUrl}';">
             
             <form:hidden path="durationInDays" />

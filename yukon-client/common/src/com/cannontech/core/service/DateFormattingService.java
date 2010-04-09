@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
@@ -121,6 +122,9 @@ public interface DateFormattingService {
     public LocalTime parseLocalTime(String localTimeStr,
             YukonUserContext userContext) throws ParseException;
 
+    public LocalDate parseLocalDate(String localDateStr,
+                                     YukonUserContext userContext) throws ParseException;
+    
     public Calendar getCalendar(YukonUserContext userContext);
 
     /**

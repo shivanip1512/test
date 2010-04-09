@@ -5,11 +5,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -23,11 +24,14 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -49,7 +53,7 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.input.type.DateType;
+import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.OptOutControllerHelper;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
@@ -59,10 +63,12 @@ import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 
 @Controller
+@SessionAttributes(types=OptOutBackingBean.class)
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 public class OperatorProgramOptOutOperatorController {
     
     private CustomerAccountDao customerAccountDao;
+    private DatePropertyEditorFactory datePropertyEditorFactory;
     private DisplayableInventoryDao displayableInventoryDao;
     private OptOutAdditionalDao optOutAdditionalDao;
     private OptOutEventDao optOutEventDao;
@@ -72,12 +78,11 @@ public class OperatorProgramOptOutOperatorController {
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value = "/operator/program/optOut")
-    public String view(Integer eventId, 
-                        YukonUserContext yukonUserContext, 
+    public String view(YukonUserContext yukonUserContext, 
                         ModelMap modelMap,
                         AccountInfoFragment accountInfoFragment) {
         
-        Date today = new Date();
+        LocalDate today = new LocalDate();
         OptOutBackingBean optOutBackingBean = new OptOutBackingBean();
         optOutBackingBean.setStartDate(today);
         modelMap.addAttribute("optOutBackingBean", optOutBackingBean);
@@ -149,9 +154,8 @@ public class OperatorProgramOptOutOperatorController {
             return "operator/program/optOut/optOut.jsp";
         } 
 
-    	TimeZone userTimeZone = userContext.getTimeZone();
-    	final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
-        boolean isSameDay = TimeUtil.isSameDay(optOutBackingBean.getStartDate(), today, userContext.getTimeZone());
+    	final LocalDate today = new LocalDate();
+    	boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
         modelMap.addAttribute("isSameDay", isSameDay);
 
         List<DisplayableInventory> displayableInventories = displayableInventoryDao.getDisplayableInventory(accountInfoFragment.getAccountId());
@@ -166,12 +170,14 @@ public class OperatorProgramOptOutOperatorController {
 
     @RequestMapping(value = "/operator/program/optOut/optOutQuestions")
     public String optOutQuestions(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
+                                   BindingResult bindingResult,
+                                   HttpServletRequest request, 
                                    String jsonInventoryIds, 
                                    ModelMap modelMap,
-                                   YukonUserContext yukonUserContext,
+                                   YukonUserContext userContext,
                                    FlashScope flashScope,
-                                   AccountInfoFragment accountInfoFragment) {
-        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
+                                   AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException, CommandCompletionException {
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
@@ -184,19 +190,21 @@ public class OperatorProgramOptOutOperatorController {
 
         List<String> questions = OptOutControllerHelper.getConfirmQuestions(
                 messageSourceResolver, 
-                yukonUserContext,
+                userContext,
                 "yukon.dr.operator.optOutconfirm.question.");
 
         modelMap.addAttribute("jsonInventoryIds", jsonInventoryIds);
-        modelMap.addAttribute("startDate", optOutBackingBean.getStartDate());
-        modelMap.addAttribute("durationInDays", optOutBackingBean.getDurationInDays());
-
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         if (questions.size() == 0) {
-            return "redirect:/spring/stars/operator/program/optOut/update?accountId="+accountInfoFragment.getAccountId()+"&energyCompanyId="+accountInfoFragment.getEnergyCompanyId()+
-                    "&startDate="+optOutBackingBean.getStartDate()+"&startDateTime=" + optOutBackingBean.getStartDate().getTime() + "&durationInDays=" + optOutBackingBean.getDurationInDays() + "&jsonInventoryIds=" + jsonInventoryIds;
+
+            CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+            processOptOut(optOutBackingBean, bindingResult, request, modelMap,
+                          userContext, flashScope, accountInfoFragment,
+                          inventoryIds, customerAccount);
+
+            return view(userContext, modelMap, accountInfoFragment);
         }
         
-        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "operator/program/optOut/confirm";
     }
     
@@ -243,20 +251,42 @@ public class OperatorProgramOptOutOperatorController {
                           YukonUserContext userContext,
                           FlashScope flashScope,
                           AccountInfoFragment accountInfoFragment) throws Exception {
-        long startDateInt = ServletRequestUtils.getLongParameter(request, "startDateTime");
-        Date startDate = new Date(startDateInt);
-        optOutBackingBean.setStartDate(startDate);
-        Integer durationInDays = ServletRequestUtils.getIntParameter(request, "durationInDays");
-        optOutBackingBean.setDurationInDays(durationInDays);
-        
+
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
 
         bindingResult = new BeanPropertyBindingResult(optOutBackingBean, "optOutBackingBean");
         
-        Integer accountId = ServletRequestUtils.getIntParameter(request, "accountId");
-        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
+        processOptOut(optOutBackingBean, bindingResult, request, modelMap,
+                      userContext, flashScope, accountInfoFragment,
+                      inventoryIds, customerAccount);
+        
+        if (bindingResult.hasErrors()) {
+            
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            
+            return "operator/program/optOut/optOut.jsp";
+        }
+       
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.success"));
+        return "redirect:/spring/stars/operator/program/optOut";
+    }
+
+    /**
+     * This method handles the processing for an opt out and also handles
+     * validation.
+     */
+    private void processOptOut(OptOutBackingBean optOutBackingBean,
+                                BindingResult bindingResult,
+                                HttpServletRequest request, ModelMap modelMap,
+                                YukonUserContext userContext,
+                                FlashScope flashScope,
+                                AccountInfoFragment accountInfoFragment,
+                                List<Integer> inventoryIds,
+                                CustomerAccount customerAccount) throws ServletRequestBindingException, CommandCompletionException {
         this.checkInventoryAgainstAccount(inventoryIds, customerAccount);
         
         // validate/update
@@ -270,28 +300,25 @@ public class OperatorProgramOptOutOperatorController {
             optOutRequest.setInventoryIdList(inventoryIds);
             optOutRequest.setQuestions(questionList);
             
+            LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+            boolean isSameDay = today.isEqual(optOutBackingBean.getStartDate());
             
-            final Date now = new Date();
-            TimeZone userTimeZone = userContext.getTimeZone();
-            final Date today = TimeUtil.getMidnight(now, userTimeZone);
-            boolean isSameDay = TimeUtil.isSameDay(startDate,
-                                                   today,
-                                                   userContext.getTimeZone());
-
             if (isSameDay) {
                 int extraHours = 0;
                 // If durationInDays is 1 that means the rest of today only
-                if (durationInDays > 1) {
+                if (optOutBackingBean.getDurationInDays() > 1) {
                     // Today counts as the first day
-                    extraHours = (durationInDays - 1) * 24;
+                    extraHours = (optOutBackingBean.getDurationInDays() - 1) * 24;
                 }
 
+                Date now = new Date();
                 int hoursRemainingInDay = TimeUtil.getHoursTillMidnight(now, userContext.getTimeZone());
                 optOutRequest.setDurationInHours(hoursRemainingInDay + extraHours);
                 optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
             } else {
-                optOutRequest.setStartDate(startDate);
-                optOutRequest.setDurationInHours(durationInDays * 24);
+                DateTime startDateTime = optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
+                optOutRequest.setStartDate(startDateTime.toDate());
+                optOutRequest.setDurationInHours(optOutBackingBean.getDurationInDays() * 24);
             }
 
             LiteYukonUser user = userContext.getYukonUser();
@@ -305,11 +332,7 @@ public class OperatorProgramOptOutOperatorController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             
-            return "operator/program/optOut/optOut.jsp";
-        } 
-       
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.success"));
-        return "redirect:/spring/stars/operator/program/optOut";
+        }
     }
     
     @RequestMapping(value = "/operator/program/optOut/cancel")
@@ -374,7 +397,7 @@ public class OperatorProgramOptOutOperatorController {
         
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
-        this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
+        checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
         
         optOutService.resetOptOutLimitForInventory(inventoryId, customerAccount.getAccountId());
         
@@ -441,9 +464,10 @@ public class OperatorProgramOptOutOperatorController {
 
     /* INIT BINDER */
     @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        DateType dateValidationType = new DateType();
-        binder.registerCustomEditor(Date.class, "startDate", dateValidationType.getPropertyEditor());
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        binder.registerCustomEditor(LocalDate.class, 
+                                    "startDate", 
+                                    datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
     }
     
     @Autowired
@@ -470,6 +494,11 @@ public class OperatorProgramOptOutOperatorController {
     public void setStarsInventoryBaseDao(
             StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
+    
+    @Autowired
+    public void setDatePropertyEditorFactory(DatePropertyEditorFactory datePropertyEditorFactory) {
+        this.datePropertyEditorFactory = datePropertyEditorFactory;
     }
     
     @Autowired

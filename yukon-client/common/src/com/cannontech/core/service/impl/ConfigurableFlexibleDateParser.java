@@ -12,6 +12,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
@@ -73,8 +74,9 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
     }
 
     @Override
-    public LocalTime parseTimeAsLocalTime(String timeStr, Locale locale,
-            TimeZone timeZone) throws ParseException {
+    public LocalTime parseTimeAsLocalTime(String timeStr, 
+                                           Locale locale,
+                                           TimeZone timeZone) throws ParseException {
         for (String pattern : timeFormats) {
             for (String[] alternativeAmPm : alternativeAmPmList) {
                 DateFormatSymbols dateFormatSymbols = getDateFormatSymbolsWithAlternateAmPm(alternativeAmPm, locale);
@@ -96,6 +98,30 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
         throw new ParseException(timeStr, 0);
     }
 
+
+    @Override
+    public LocalDate parseDateAsLocalDate(String dateStr, 
+                                           Locale locale,
+                                           TimeZone timeZone) throws ParseException {
+        for (String pattern : dateFormats) {
+
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, locale);
+            simpleDateFormat.setTimeZone(timeZone);
+            simpleDateFormat.setLenient(false);
+            Date result = null;
+            try {
+                result = simpleDateFormat.parse(dateStr);
+                    
+            } catch (ParseException pe) {
+                // try next pattern
+                continue;
+            }
+            DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+            return new LocalDate(result, dateTimeZone);
+        }
+        throw new ParseException(dateStr, 0);
+    }
+    
     private DateFormatSymbols getDateFormatSymbolsWithAlternateAmPm(String[] alternativeAmPm, Locale locale) {
         DateFormatSymbols dateFormatSymbols = new DateFormatSymbols(locale);
         if (alternativeAmPm.length == 2) {
@@ -119,4 +145,5 @@ public class ConfigurableFlexibleDateParser implements FlexibleDateParser {
     public void setAlternativeAmPmList(List<String[]> alternativeAmPmList) {
         this.alternativeAmPmList = alternativeAmPmList;
     }
+
 }
