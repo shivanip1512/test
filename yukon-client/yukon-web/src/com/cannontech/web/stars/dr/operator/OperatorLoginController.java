@@ -14,12 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -74,15 +74,13 @@ public class OperatorLoginController {
     
     // CHANGE LOGIN
     @RequestMapping
-    public String changeLogin(int accountId, 
-                              int energyCompanyId, 
-                              HttpServletRequest request, 
-                              ModelMap modelMap,
-                              YukonUserContext userContext,
-                              AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+    public String changeLogin(HttpServletRequest request, 
+                               ModelMap modelMap,
+                               YukonUserContext userContext,
+                               AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
-        LiteYukonUser residentialUser = getYukonUserByAccountId(accountId);
-        List<LiteYukonGroup> ecResidentialGroups = setupLoginModelMap(energyCompanyId,
+        LiteYukonUser residentialUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
+        List<LiteYukonGroup> ecResidentialGroups = setupLoginModelMap(accountInfoFragment.getEnergyCompanyId(),
                                                                       residentialUser,
                                                                       modelMap);
         
@@ -90,38 +88,36 @@ public class OperatorLoginController {
         ChangeLoginBackingBean changeLoginBackingBean = new ChangeLoginBackingBean();
         String userResidentialGroupName = getResidentialGroupNameForUser(residentialUser.getUserID(), ecResidentialGroups);
         changeLoginBackingBean.setCustomerLoginGroupName(userResidentialGroupName);
-        if (!(residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID)) {
+
+        // Checks to see if the account has a login
+        if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
+            modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
+            changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
+        } else {
             changeLoginBackingBean.setUsername(residentialUser.getUsername());
+            changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
+            modelMap.addAttribute("loginMode", LoginModeEnum.EDIT);
         }
-        changeLoginBackingBean.setLoginEnabled(residentialUser.getStatus());
+
         modelMap.addAttribute("changeLoginBackingBean", changeLoginBackingBean);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/login/login.jsp";
     }
 
-    private List<LiteYukonGroup> setupLoginModelMap(int energyCompanyId, LiteYukonUser residentialUser,
-                                                    ModelMap modelMap) {
-        // Set supported variables
-        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
-        
-        // Build up residential login group list.
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
-        List<String> ecResidentialGroupNames = getECResidentialGroupNames(ecResidentialGroups);
-        modelMap.addAttribute("ecResidentialGroupNames", ecResidentialGroupNames);
-        return ecResidentialGroups;
-    }
-    
     // UPDATE LOGIN
     @RequestMapping
     public String updateLogin(@ModelAttribute("changeLoginBackingBean") ChangeLoginBackingBean changeLoginBackingBean, 
                                BindingResult bindingResult,
+                               HttpServletRequest request, 
                                ModelMap modelMap, 
                                YukonUserContext userContext, 
                                HttpSession session,
                                FlashScope flashScope,
-                               AccountInfoFragment accountInfoFragment) {
+                               AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+        
+        String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
+        modelMap.addAttribute("loginMode", loginMode);
         
         // Check to see what the user can modify
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
@@ -136,7 +132,15 @@ public class OperatorLoginController {
 
             if (!bindingResult.hasErrors()) {
 
-                if (residentialUser.getLiteID() == UserUtils.USER_DEFAULT_ID){
+                // Check to see if the user is trying to modify the default user
+                LiteYukonUser defaultUserCheck = yukonUserDao.getLiteYukonUser(changeLoginBackingBean.getUsername());
+                if (defaultUserCheck != null &&
+                    defaultUserCheck.getUserID() == UserUtils.USER_DEFAULT_ID) {
+                    throw new RuntimeException("You cannot edit the the default user.");
+                }
+                
+                LoginModeEnum loginModeEnum = LoginModeEnum.valueOf(loginMode);
+                if (LoginModeEnum.CREATE.equals(loginModeEnum)){
 
                     createResidentialLogin(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId(), changeLoginBackingBean, 
                                            userContext, residentialUser);
@@ -186,16 +190,17 @@ public class OperatorLoginController {
     
     // DELETE LOGIN
     @RequestMapping
-    public String deleteLogin(int accountId, 
-                              int energyCompanyId,
-                              ModelMap modelMap, 
-                              YukonUserContext userContext,
-                              AccountInfoFragment accountInfoFragment) {
+    public String deleteLogin(String loginMode,
+                               ModelMap modelMap, 
+                               YukonUserContext userContext,
+                               AccountInfoFragment accountInfoFragment) {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
-        LiteYukonUser custYukonUser = getYukonUserByAccountId(accountId);
-        if (custYukonUser.getUserID() != UserUtils.USER_DEFAULT_ID) {
+        LiteYukonUser custYukonUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
+
+        LoginModeEnum loginModeEnum = LoginModeEnum.valueOf(loginMode);
+        if (LoginModeEnum.EDIT.equals(loginModeEnum)) {
             yukonUserDao.deleteUser(custYukonUser.getUserID());
         }
 
@@ -208,7 +213,6 @@ public class OperatorLoginController {
      * This method updates an existing residential login
      *
      */
-    @Transactional
     private void updateResidentialLogin(int accountId,final int energyCompanyId,final ChangeLoginBackingBean changeLoginBackingBean,
                                          ModelMap modelMap, final YukonUserContext userContext, final LiteYukonUser residentialUser) {
 
@@ -248,6 +252,19 @@ public class OperatorLoginController {
         });
     }
 
+    private List<LiteYukonGroup> setupLoginModelMap(int energyCompanyId, LiteYukonUser residentialUser,
+                                                    ModelMap modelMap) {
+        // Set supported variables
+        modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(residentialUser.getAuthType()));
+        
+        // Build up residential login group list.
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        List<LiteYukonGroup> ecResidentialGroups = Lists.newArrayList(energyCompany.getResidentialCustomerGroups());
+        List<String> ecResidentialGroupNames = getECResidentialGroupNames(ecResidentialGroups);
+        modelMap.addAttribute("ecResidentialGroupNames", ecResidentialGroupNames);
+        return ecResidentialGroups;
+    }
+    
 
     /**
      * @param energyCompanyId
@@ -280,11 +297,7 @@ public class OperatorLoginController {
 
         transactionTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
-        
-                if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
-                    throw new RuntimeException("You cannot edit the the default user.");
-                }
-                
+
                 // Build up the groups needed to create an account
                 List<LiteYukonGroup> groups = Lists.newArrayList();
                 LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
@@ -404,6 +417,12 @@ public class OperatorLoginController {
         }
         
         return results;
+    }
+
+    static private enum LoginModeEnum {
+        CREATE(), 
+        EDIT(), 
+        VIEW();
     }
     
     @Autowired
