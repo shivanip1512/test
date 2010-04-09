@@ -41,7 +41,8 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
     public void createStarsAppliance(StarsAppliance starsAppliance, int energyCompanyId, int accountId) {
 
         try {
-            com.cannontech.database.data.stars.appliance.ApplianceBase app = new com.cannontech.database.data.stars.appliance.ApplianceBase();
+            com.cannontech.database.data.stars.appliance.ApplianceBase app = 
+                new com.cannontech.database.data.stars.appliance.ApplianceBase();
             ApplianceBase appDB = app.getApplianceBase();
             
             appDB.setAccountID(accountId);
@@ -232,7 +233,8 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                                      String accountNumber, 
                                      LiteYukonUser user){
         try {
-            LiteStarsAppliance liteApp = starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId, energyCompanyId);
+            LiteStarsAppliance liteApp = 
+                starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId, energyCompanyId);
             if (liteApp == null) {
                 throw new IllegalArgumentException("Cannot find the appliance to be updated" );
             }
@@ -250,7 +252,14 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 Transaction.createTransaction(Transaction.DELETE, airConditionerApp).execute();
         
                 break;
+                
+            case CHILLER:
+                ApplianceChiller chillerApp = new ApplianceChiller();
+                chillerApp.setApplianceID( new Integer(liteApp.getApplianceID()));
+                Transaction.createTransaction(Transaction.DELETE, chillerApp).execute();
         
+                break;
+                
             case WATER_HEATER:
                 ApplianceWaterHeater waterHeaterApp = new ApplianceWaterHeater();
                 waterHeaterApp.setApplianceID( new Integer(liteApp.getApplianceID()) );
@@ -298,6 +307,13 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 irrigationApp.setApplianceID( new Integer(liteApp.getApplianceID()) );
                 Transaction.createTransaction(Transaction.DELETE, irrigationApp).execute();
         
+                break;
+                
+            case DUAL_STAGE:
+                ApplianceDualStageAirCond dualStageApp = new ApplianceDualStageAirCond();
+                dualStageApp.setApplianceID( new Integer(liteApp.getApplianceID()));
+                Transaction.createTransaction(Transaction.DELETE, dualStageApp).execute();
+                
                 break;
             }
         
