@@ -11,8 +11,7 @@
 	<%-- note: when adding additional parameters the Consumer side should be updated to match. See "CustomerAccountInfoTag.java" --%>
 	<cti:msg2 var="extraInfo" 
 	          key="yukon.web.modules.operator.accountInfoFragment.extraInfo"
-	          argumentSeparator="*!*"
-	          arguments="${accountInfoFragment.alternateTrackingNumber}"/>
+	          argument="${accountInfoFragment.alternateTrackingNumber}"/>
 	          
 	<c:if test="${not empty extraInfo}">
 		${extraInfo}
