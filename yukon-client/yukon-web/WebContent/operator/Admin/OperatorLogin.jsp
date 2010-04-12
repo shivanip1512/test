@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonGroup" %>
 <%@ page import="com.cannontech.core.dao.YukonGroupDao" %>
 <%@ page import="java.util.Arrays" %>
+<%@page import="com.cannontech.core.dao.impl.LoginStatusEnum"%><html>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%
 	int userID = -1;
@@ -13,11 +14,11 @@
 	if (userID != -1)
 		liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
 	else
-		liteUser = new LiteYukonUser(-1, "", UserUtils.STATUS_ENABLED);
+		liteUser = new LiteYukonUser(-1, "", LoginStatusEnum.ENABLED);
 	
-	String checked = liteUser.getStatus().equalsIgnoreCase(UserUtils.STATUS_ENABLED)? "checked" : "";
+	String checked = liteUser.getLoginStatus().equals(LoginStatusEnum.ENABLED)? "checked" : "";
 %>
-<html>
+
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
