@@ -13,6 +13,7 @@
     <entry key="yukon.web.modules.operator.applianceList.programName">Program Name</entry>
     <entry key="yukon.web.modules.operator.applianceList.actions">Actions</entry>
     <entry key="yukon.web.modules.operator.applianceList.noAppliances">No existing appliances</entry>
+    <entry key="yukon.web.modules.operator.applianceList.applianceNotAssigned">This appliance is not currently attached to an enrollment.</entry>
     
     <!-- Appliance Icon Links -->
    	<entry key="yukon.web.modules.operator.applianceList.editAppliance.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>

@@ -27,8 +27,16 @@
                                  </cti:url>
                                  <a href="${editApplianceUrl}">${displayableApplianceListEntry.applianceName}</a>
                              </td>
-                             <td>${displayableApplianceListEntry.serialNumber}</td>
-                             <td>${displayableApplianceListEntry.assignedProgramName}</td>
+                             <c:choose>
+                                <c:when test="${displayableApplianceListEntry.assignedProgramName eq '(none)' or
+                                         displayableApplianceListEntry.serialNumber eq '(none)'}">
+                                    <td colspan="2"><i:inline key=".applianceNotAssigned"/></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <td>${displayableApplianceListEntry.serialNumber}</td>
+                                    <td>${displayableApplianceListEntry.assignedProgramName}</td>
+                                </c:otherwise>
+                             </c:choose>
                              <td>
                                  <cti:url var="deleteApplianceUrl" value="/spring/stars/operator/appliances/applianceDelete">
                                      <cti:param name="accountId" value="${accountId}"/>
@@ -58,7 +66,7 @@
                                          </select>
                                      </td></tr>
                                      <tr align="right"><td>
-                                         <input type="submit" value="<i:inline key=".create"/>" />
+                                         <input type="submit" value="<cti:msg2 key=".create"/>" />
                                      </td></tr>
                                  </table>
                              </form>
