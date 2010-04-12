@@ -42,4 +42,7 @@ public interface DirectLoadcontrolRole {
     public static final int LOAD_GROUP_CONTROL_STATISTICS = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 36;
     public static final int LOAD_GROUP_REDUCTION = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 37;
     public static final int LOAD_GROUP_LOAD_CAPACITY = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 38;
+
+    public static final int START_NOW_CHECKED_BY_DEFAULT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 39;;
+    public static final int CONTROL_DURATION_DEFAULT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 40;;
 }

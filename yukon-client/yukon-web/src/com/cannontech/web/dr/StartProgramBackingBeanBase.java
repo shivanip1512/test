@@ -11,12 +11,16 @@ import org.apache.commons.collections.list.LazyList;
 import org.joda.time.DateTime;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.dr.program.model.GearAdjustment;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 @SuppressWarnings("unchecked")
 public abstract class StartProgramBackingBeanBase {
+    
     private boolean startNow;
     // This date represents "now" for when "startNow" is checked.
     private Date now;
@@ -107,11 +111,25 @@ public abstract class StartProgramBackingBeanBase {
         // scheduling exactly what we checked for constraints.
         // We keep the "startNow" and "scheduleStop" booleans around so we
         // always know if the user chose those options.
-        startNow = true;
+
+        RolePropertyDao rolePropertyDao = 
+            YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
+        
+        // Set whether start now is checked by default
+        boolean isStartNowChecked = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.START_NOW_CHECKED_BY_DEFAULT,
+                                                    userContext.getYukonUser());
+        startNow = isStartNowChecked;
         DateTime jodaNow = new DateTime(userContext.getJodaTimeZone());
         now = jodaNow.toDate();
         startDate = now;
         scheduleStop = true;
-        stopDate = jodaNow.plusHours(4).toDate();
+        
+        // Sets the default duration
+        int startDuration =
+            rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CONTROL_DURATION_DEFAULT, 
+                                                    userContext.getYukonUser());
+        stopDate = jodaNow.plusMinutes(startDuration).toDate();
     }
+    
 }
