@@ -1395,6 +1395,7 @@
         </property>
     </bean>
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
+    <bean name="lmDirectProgramNamePicker" class="com.cannontech.web.picker.v2.LmDirectProgramNamePicker"/>
 
     <bean name="databaseMigrationDIRECT_PROGRAMPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
         <property name="databaseMigrationService" ref="databaseMigrationService" />

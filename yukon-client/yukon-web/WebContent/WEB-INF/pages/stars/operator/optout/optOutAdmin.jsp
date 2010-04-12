@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:verifyRolesAndProperties value="CONSUMER_INFO"/>
     
@@ -26,6 +26,17 @@
     			txtEl.disable();
     		}
     	}
+
+    	function showSelectedProgramName(picker, hiddenFieldId, displayFieldId) {
+
+			return function() {
+
+				picker.hide();
+	    		$(displayFieldId).innerHTML = $(hiddenFieldId).value;
+			}
+    	}
+
+    	
 
     </script>
 
@@ -54,15 +65,6 @@
     </table>
     <br>
     
-    <c:if test="${not empty emptyProgramName}">
-		<div class="errorRed"><cti:msg key="yukon.web.modules.dr.byProgramName.emptyProgramName"/></div>
-   		<br>
-   	</c:if>
-   	<c:if test="${not empty programNotFound}">
-   		<div class="errorRed"><cti:msg key="yukon.web.modules.dr.byProgramName.programNotFound"/></div>
-   		<br>
-   	</c:if>
-    
     <div style="width: 50%;">
     
 	    <!-- System Information -->
@@ -71,20 +73,20 @@
 		    <cti:msg var="totalAccounts" key="yukon.web.modules.dr.optOut.totalAccounts" />
 		    <cti:msg var="todaysOptOuts" key="yukon.web.modules.dr.optOut.todaysOptOuts" />
 		    <cti:msg var="futureOptOuts" key="yukon.web.modules.dr.optOut.futureOptOuts" />
-		    <ct:boxContainer title="${systemInfo}" hideEnabled="false">
-		        <ct:nameValueContainer>
-		            <ct:nameValue name="${totalAccounts}">
+		    <tags:boxContainer title="${systemInfo}" hideEnabled="false">
+		        <tags:nameValueContainer>
+		            <tags:nameValue name="${totalAccounts}">
 		                ${totalNumberOfAccounts}
-		            </ct:nameValue>
+		            </tags:nameValue>
 		            
-		            <ct:nameValue name="${todaysOptOuts}">
+		            <tags:nameValue name="${todaysOptOuts}">
 		                ${currentOptOuts}
-		            </ct:nameValue>
-		            <ct:nameValue name="${futureOptOuts}">
+		            </tags:nameValue>
+		            <tags:nameValue name="${futureOptOuts}">
 		                ${scheduledOptOuts}
-		            </ct:nameValue>
-		        </ct:nameValueContainer>
-		    </ct:boxContainer>
+		            </tags:nameValue>
+		        </tags:nameValueContainer>
+		    </tags:boxContainer>
 		    
             <br><br>
         </cti:checkProperty>
@@ -92,7 +94,7 @@
 	    <!-- Disable Opt Outs today -->
 	    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE">
 		    <cti:msg var="disableOptOuts" key="yukon.web.modules.dr.optOut.disableOptOutsTitle" />
-		    <ct:boxContainer title="${disableOptOuts}" hideEnabled="false">
+		    <tags:boxContainer title="${disableOptOuts}" hideEnabled="false">
 		        <c:choose>
 		            <c:when test="${optOutsEnabled}">
 				        <cti:msg key="yukon.web.modules.dr.optOut.optOutEnabled" /><br><br>
@@ -107,7 +109,7 @@
 				        </form>
 		            </c:otherwise>
 		        </c:choose>
-		    </ct:boxContainer>
+		    </tags:boxContainer>
 		
 		    <br><br>
 	    </cti:checkProperty>
@@ -115,38 +117,49 @@
 	    <!-- Cancel Current Opt Outs -->
 	    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CANCEL_CURRENT">
 		    <cti:msg var="cancelOptOuts" key="yukon.web.modules.dr.optOut.cancelOptOuts.title" />
-		    <ct:boxContainer title="${cancelOptOuts}" hideEnabled="false">
+		    <tags:boxContainer title="${cancelOptOuts}" hideEnabled="false">
+		    
+		    	<div style="font-size:11px;"><b><cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.note.label"/></b> <cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.note.text"/></div>
+		        <br>
 		        
 		        <cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelOptOutsWarning" />
 		        <br><br>
 		        
 		        <form id="cancelAllOptOutsForm" action="/spring/stars/operator/optOut/admin/cancelAllOptOuts" method="post">
 		        
-		        	<table style="padding:10px;background-color:#EEE;">
+		        	<table style="padding:10px;background-color:#EEE;width:100%;">
 		        		<tr><td>
-		        			<b>Optional:</b>
+		        			<b><cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction.label"/></b> <cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction.text"/>
 		        		</td></tr>
 		        		<tr><td style="padding-top:10px;">
-		        			<label>
-				        		<input type="checkbox" name="onlySingleProgram" onclick="toggleProgramNameEnabled(this, $('cancelAllOptOutsProgramName'));"> 
-				        		<cti:msg key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction"/>
-				        	</label>
-		        		</td></tr>
-		        		<tr><td style="padding-top:10px;">
-		        			<cti:msg key="yukon.web.modules.dr.byProgramName.label"/>:
-		        			<input type="text" id="cancelAllOptOutsProgramName" name="programName" value="" style="width:300px;" disabled>
+		        		
+		        			<%-- PROGRAM PICKER --%>
+		        			<input type="hidden" id="cancelOptOutsProgramName" name="programName" value="">
+		        			
+		        			<tags:pickerDialog  type="lmDirectProgramNamePicker"
+				                                 id="cancelOptOutsProgramPicker" 
+				                                 destinationFieldId="cancelOptOutsProgramName"
+				                                 styleClass="simpleLink"
+				                                 immediateSelectMode="true"
+				                                 endAction="showSelectedProgramName(cancelOptOutsProgramPicker,'cancelOptOutsProgramName', 'cancelOptOutsProgramNameDisplaySpan');"
+				                                 extraArgs="${energyCompanyId}">
+				             	<cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
+                             </tags:pickerDialog>
+                             
+                             <span id="cancelOptOutsProgramNameDisplaySpan" style="font-weight:bold;"></span>
+                             
 		        		</td></tr>
 		        	</table>
 		        	<br>
 		        
 		        	<cti:msg var="cancelAllOptOutsButton" key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelAllOptOutsButton" />
-		        	<ct:slowInput myFormId="cancelAllOptOutsForm" label="${cancelAllOptOutsButton}"/>
+		        	<tags:slowInput myFormId="cancelAllOptOutsForm" label="${cancelAllOptOutsButton}"/>
 		        
 		        </form>
 		        
 		        
 		        
-		    </ct:boxContainer>
+		    </tags:boxContainer>
 		
 		    <br><br>
 	    </cti:checkProperty>
@@ -154,14 +167,17 @@
 	    <!-- Opt Outs Count/Don't Count -->
 	    <cti:checkProperty property="ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS">
 		    <cti:msg var="optOutCountsAgainstLimit" key="yukon.web.modules.dr.optOut.countOptOuts.title" />
-		    <ct:boxContainer title="${optOutCountsAgainstLimit}" hideEnabled="false">
+		    <tags:boxContainer title="${optOutCountsAgainstLimit}" hideEnabled="false">
 		        
-		        <b>Current Limits</b>
+		        <div style="font-size:11px;"><b><cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.note.label"/></b> <cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.note.text"/></div>
+		        <br>
+		        
+		        <b><cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits"/></b>
 		        <br><br>
 	        	<table class="compactResultsTable">
 	        		<tr>
-	        			<th>Program Name</th>
-	        			<th>Counts Against Todays Opt Out Limits</th>
+	        			<th><cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.programName"/></th>
+	        			<th><cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.counts"/></th>
 	        		</tr>
 	        		
 	        		<c:forEach var="program" items="${programNameCountsMap}">
@@ -176,19 +192,27 @@
 	        
 	        	<form action="/spring/stars/operator/optOut/admin/setCounts" method="post">
 		                
-                	<table style="padding:10px;background-color:#EEE;">
+                	<table style="padding:10px;background-color:#EEE;width:100%;">
 		        		<tr><td>
-		        			<b>Optional:</b>
+		        			<b><cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.label"/></b> <cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.instruction"/>
 		        		</td></tr>
 		        		<tr><td style="padding-top:10px;">
-		        			<label>
-				        		<input type="checkbox" name="onlySingleProgram" onclick="toggleProgramNameEnabled(this, $('disabledCountOptOutsProgramName'));"> 
-				        		<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.instruction"/>
-				        	</label>
-		        		</td></tr>
-		        		<tr><td style="padding-top:10px;">
-		        			<cti:msg key="yukon.web.modules.dr.byProgramName.label"/>:
-		        			<input type="text" id="disabledCountOptOutsProgramName" name="programName" value="" style="width:300px;" disabled>
+		        			
+		        			<%-- PROGRAM PICKER --%>
+		        			<input type="hidden" id="disabledCountProgramName" name="programName" value="">
+		        			
+		        			<tags:pickerDialog  type="lmDirectProgramNamePicker"
+				                                 id="disabledCountProgramPicker" 
+				                                 destinationFieldId="disabledCountProgramName"
+				                                 styleClass="simpleLink"
+				                                 immediateSelectMode="true"
+				                                 endAction="showSelectedProgramName(disabledCountProgramPicker, 'disabledCountProgramName', 'disabledCountProgramNameDisplaySpan');"
+				                                 extraArgs="${energyCompanyId}">
+				                <cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
+                             </tags:pickerDialog>
+                             
+                             <span id="disabledCountProgramNameDisplaySpan" style="font-weight:bold;"></span>
+                             
 		        		</td></tr>
 		        	</table>
 		        	<br>
@@ -197,7 +221,7 @@
                     <input type="submit" name="dontCount" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.dontCountOptOutsButton" />">
                 </form>
 			        
-	        </ct:boxContainer>
+	        </tags:boxContainer>
         </cti:checkProperty>
 	</div>
             

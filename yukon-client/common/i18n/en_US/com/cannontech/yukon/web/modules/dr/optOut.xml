@@ -19,18 +19,38 @@
     <entry key="yukon.web.modules.dr.optOut.disableOptOuts">Prohibit Opt Outs</entry>
 
     <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.title">Cancel Current Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.note.label">Note:</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.note.text">All program Opt Outs will be canceled unless a specific program is selected.</entry>
     <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelAllOptOutsButton">Reactivate Opted Out Devices</entry>
     <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.cancelOptOutsWarning"><![CDATA[<span class="errorRed">WARNING:</span> This action will broadcast commands to devices in the field.]]></entry>
-    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction">Only Cancel Opt Outs For A Single Program</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction.label">Optional:</entry>
+    <entry key="yukon.web.modules.dr.optOut.cancelOptOuts.byProgramName.instruction.text">Only Cancel Opt Outs For A Single Program</entry>
     
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.title">Count Today Against Opt Out Limits</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.note.label">Note:</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.note.text">All program limits will be changed unless a specific program is selected.</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits">Current Limits</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.programName">Program Name</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.counts">Counts Against Todays Opt Out Limits</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.countOptOutsButton">Count Today's Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.dontCountOptOutsButton">Don't Count Today's Opt Outs</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.label">Optional:</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.instruction">Only Change For A Single Program</entry>
 
-	<entry key="yukon.web.modules.dr.byProgramName.label">Program Name</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.emptyProgramName">Empty Program Name</entry>
-    <entry key="yukon.web.modules.dr.byProgramName.programNotFound">Program Not Found</entry>
+	<entry key="yukon.web.modules.dr.chooseProgram">Choose Program</entry>
+    
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts">Canceled Current Opt Outs For {0}</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts">Counting Today''s Opt Outs For {0}</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts">Not Counting Today''s Opt Outs For {0}</entry>
+    
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms">Canceled Current Opt Outs For All Programs</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms">Counting Today's Opt Outs For All Programs</entry>
+    <entry key="yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms">Not Counting Today's Opt Outs For Any Programs</entry>
+    
+    <entry key="yukon.web.modules.dr.confirm.enableConsumerOptOuts">Consumer Opt Outs Have Been Enabled</entry>
+    <entry key="yukon.web.modules.dr.confirm.disableConsumerOptOuts">Consumer Opt Outs Have Been Disabled</entry>
+    
+    <entry key="yukon.web.modules.dr.byProgramName.error.programNotFound">Program Not Found: {0}</entry>
     
     <entry key="yukon.web.modules.dr.optOut.optOutCountsEnum.COUNT">Count</entry>
     <entry key="yukon.web.modules.dr.optOut.optOutCountsEnum.DONT_COUNT">Don't Count</entry>

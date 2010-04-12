@@ -25,6 +25,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -38,6 +39,7 @@ import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.collect.Maps;
 
@@ -70,6 +72,7 @@ public class OptOutAdminController {
         		YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT);
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
+    	map.addAttribute("energyCompanyId", energyCompany.getEnergyCompanyID());
 
     	int totalNumberOfAccounts = customerAccountDao.getTotalNumberOfAccounts(energyCompany);
     	map.addAttribute("totalNumberOfAccounts", totalNumberOfAccounts);
@@ -120,54 +123,53 @@ public class OptOutAdminController {
     }
     
     @RequestMapping(value = "/operator/optOut/admin/enable", method = RequestMethod.POST)
-    public String enableOptOutsToday(LiteYukonUser user, ModelMap map) throws Exception {
+    public String enableOptOutsToday(LiteYukonUser user, ModelMap map, FlashScope flashScope) throws Exception {
 
     	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, user);
     	
     	optOutService.changeOptOutEnabledStateForToday(user, true);
+    	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.confirm.enableConsumerOptOuts"));
     	
     	return "redirect:/spring/stars/operator/optOut/admin";
     }
     
     @RequestMapping(value = "/operator/optOut/admin/disable", method = RequestMethod.POST)
-    public String disableOptOutsToday(LiteYukonUser user, ModelMap map) throws Exception {
+    public String disableOptOutsToday(LiteYukonUser user, ModelMap map, FlashScope flashScope) throws Exception {
     	
     	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE, user);
     	
     	optOutService.changeOptOutEnabledStateForToday(user, false);
+    	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.confirm.disableConsumerOptOuts"));
     	
     	return "redirect:/spring/stars/operator/optOut/admin";
     }
     
     @RequestMapping(value = "/operator/optOut/admin/cancelAllOptOuts", method = RequestMethod.POST)
-    public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map, Boolean onlySingleProgram, String programName) throws Exception {
+    public String cancelActiveOptOuts(LiteYukonUser user, ModelMap map, String programName, FlashScope flashScope) throws Exception {
     	
     	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CANCEL_CURRENT, user);
     	
-		if (onlySingleProgram != null && onlySingleProgram) {
-
-			if (StringUtils.isBlank(programName)) {
-				map.addAttribute("emptyProgramName", true);
-			} else {
+		if (StringUtils.isNotBlank(programName)) {
 				
-				try {
-					
-					optOutService.cancelAllOptOutsByProgramName(programName, user);
-					
-				} catch (ProgramNotFoundException e) {
-					map.addAttribute("programNotFound", true);
-				}
+			try {
+				
+				optOutService.cancelAllOptOutsByProgramName(programName, user);
+				flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts", programName));
+				
+			} catch (ProgramNotFoundException e) {
+				flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
 			}
 
 		} else {
 			optOutService.cancelAllOptOuts(user);
+			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.successfullyCanceledCurrentOptOuts.allPrograms"));
 		}
 
     	return "redirect:/spring/stars/operator/optOut/admin";
     }
     
     @RequestMapping(value = "/operator/optOut/admin/setCounts", method = RequestMethod.POST)
-    public String setCounts(LiteYukonUser user, ModelMap map, String count, String dontCount, Boolean onlySingleProgram, String programName) throws Exception {
+    public String setCounts(LiteYukonUser user, ModelMap map, String count, String dontCount, String programName, FlashScope flashScope) throws Exception {
     	
     	rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS, user);
     	
@@ -176,23 +178,26 @@ public class OptOutAdminController {
     		countBool = false;
     	}
     	
-    	if (onlySingleProgram != null && onlySingleProgram) {
+    	if (StringUtils.isNotBlank(programName)) {
 
-			if (StringUtils.isBlank(programName)) {
-				map.addAttribute("emptyProgramName", true);
-			} else {
+			try {
 				
-				try {
-					
-	            	optOutService.changeOptOutCountStateForTodayByProgramName(user, countBool, programName);
-	            	
-				} catch (ProgramNotFoundException e) {
-					map.addAttribute("programNotFound", true);
-				}
+            	optOutService.changeOptOutCountStateForTodayByProgramName(user, countBool, programName);
+            	flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts", programName));
+            	if (!countBool) {
+            		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts", programName));
+            	}
+            	
+			} catch (ProgramNotFoundException e) {
+				flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.error.programNotFound", programName));
 			}
 
 		} else {
 			optOutService.changeOptOutCountStateForToday(user, countBool);
+			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.countingTodaysOptOuts.allPrograms"));
+        	if (!countBool) {
+        		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.byProgramName.confirm.notCountingTodaysOptOuts.allPrograms"));
+        	}
 		}
     	
     	return "redirect:/spring/stars/operator/optOut/admin";
