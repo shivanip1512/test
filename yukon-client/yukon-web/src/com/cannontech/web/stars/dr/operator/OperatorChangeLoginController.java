@@ -220,7 +220,7 @@ public class OperatorChangeLoginController {
     public TextView generatePassword(HttpServletRequest request, 
                                       HttpServletResponse response) throws IOException {
         
-        response.setContentType("application/text");
+        response.setContentType("text/plain");
         
         // Generate password
         String generatedPassword = RandomStringUtils.randomAlphanumeric(6);
