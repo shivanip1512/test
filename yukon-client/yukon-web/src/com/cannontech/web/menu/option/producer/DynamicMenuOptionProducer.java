@@ -33,6 +33,12 @@ public abstract class DynamicMenuOptionProducer implements MenuOptionProducer {
         }
     }
 
+    /**
+     * A helper method to get a list of menu options from a producer
+     * 
+     * @param userContext - UserContext to get menu options for
+     * @return List of user-specific menu options
+     */
     protected abstract List<MenuOption> doGetMenuOptions(YukonUserContext userContext);
     
 }
