@@ -433,8 +433,7 @@
               <link>/spring/stars/consumer/contactus</link>
             </option>
             <dynamicOptions id="faq" bean="consumerFaqMenuOption">
-              <requireRoleProperty
-                value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
+              <requireRoleProperty value="RESIDENTIAL_CONSUMER_INFO_QUESTIONS_FAQ" />
             </dynamicOptions>
           </options>
         </option>

@@ -39,7 +39,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
 	}
 
     @Override
-    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
 
         // Generate one menu option for each of the thermostats associated with
         // the user

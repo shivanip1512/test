@@ -15,9 +15,10 @@ public class OperatorFaqMenuOptionProducer extends FaqMenuOptionProducer {
     private static final String menuTextKey = "yukon.web.menu.config.consumer.questions.faq";
     
     @Override
-    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
-        final LiteYukonUser user = userContext.getYukonUser();
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
         
+        final LiteYukonUser user = userContext.getYukonUser();
+
         String link = 
             rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_WEB_LINK_FAQ, user);
         

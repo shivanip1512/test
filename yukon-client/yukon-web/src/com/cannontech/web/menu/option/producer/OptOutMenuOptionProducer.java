@@ -21,7 +21,7 @@ public class OptOutMenuOptionProducer extends DynamicMenuOptionProducer {
 	}
 
     @Override
-    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
 
     	List<MenuOption> menuOptions = new ArrayList<MenuOption>();
     	

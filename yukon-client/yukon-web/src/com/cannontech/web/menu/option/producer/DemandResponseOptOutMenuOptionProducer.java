@@ -30,7 +30,7 @@ public class DemandResponseOptOutMenuOptionProducer extends DynamicMenuOptionPro
 	}
 
     @Override
-    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
 
         // Generate legal menu options the demand response opt out menu.
 

@@ -15,7 +15,7 @@ public class ConsumerFaqMenuOptionProducer extends FaqMenuOptionProducer {
     private static final String menuTextKey = "yukon.web.menu.config.consumer.questions.faq";
     
     @Override
-    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
         final LiteYukonUser user = userContext.getYukonUser();
         
         String link = 

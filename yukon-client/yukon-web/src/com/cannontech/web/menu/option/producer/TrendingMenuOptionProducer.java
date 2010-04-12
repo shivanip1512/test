@@ -22,7 +22,7 @@ public class TrendingMenuOptionProducer extends DynamicMenuOptionProducer {
     }
 
     @Override
-    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
+    public List<MenuOption> doGetMenuOptions(YukonUserContext userContext) {
 
         // Generate one menu option for each graph definition associated with
         // the user
