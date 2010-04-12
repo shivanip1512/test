@@ -1,6 +1,7 @@
 package com.cannontech.user;
 
 
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -54,20 +55,20 @@ public final class UserUtils
 	/**
 	 * Checks to see if the given YukonUser is disabled
 	 */
-	public static synchronized boolean isUserDisabled( LiteYukonUser liteYukonUser )
-	{
-		if( liteYukonUser == null )
-			return true;
-		else
-			return STATUS_DISABLED.equalsIgnoreCase(liteYukonUser.getStatus());
-	}
+    public static synchronized boolean isUserDisabled(LiteYukonUser liteYukonUser) {
+        if (liteYukonUser == null) {
+            return true;
+        } else {
+            return LoginStatusEnum.DISABLED.equals(liteYukonUser.getLoginStatus());
+        }
+    }
 	
 	public static LiteYukonUser getYukonUser() {
-	    return new LiteYukonUser(USER_YUKON_ID, "yukon", STATUS_ENABLED);
+	    return new LiteYukonUser(USER_YUKON_ID, "yukon", LoginStatusEnum.ENABLED);
 	}
 	
 	public static LiteYukonUser getAdminYukonUser() {
-	    return new LiteYukonUser(USER_ADMIN_ID, "admin", STATUS_ENABLED);
+	    return new LiteYukonUser(USER_ADMIN_ID, "admin", LoginStatusEnum.ENABLED);
 	}
 
 }

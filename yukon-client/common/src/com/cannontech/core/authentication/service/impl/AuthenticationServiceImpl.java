@@ -41,9 +41,9 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         }
 
         // ensure that user is enabled
-        if (CtiUtilities.isDisabled(liteYukonUser.getStatus())) {
+        if (CtiUtilities.isDisabled(liteYukonUser.getLoginStatus())) {
             log.info("Authentication failed (disabled): username=" + username + ", id=" + 
-                     liteYukonUser.getUserID() + ", status=" + liteYukonUser.getStatus());
+                     liteYukonUser.getUserID() + ", status=" + liteYukonUser.getLoginStatus());
             throw new BadAuthenticationException();
         }
 

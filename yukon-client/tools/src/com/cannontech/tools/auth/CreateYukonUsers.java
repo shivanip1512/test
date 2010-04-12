@@ -9,6 +9,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Contact;
@@ -40,8 +41,6 @@ public class CreateYukonUsers {
         }
     }
     
-
-    @SuppressWarnings("unchecked")
     private static YukonUser createYukonUser(Contact contact) {
         YukonUser user = new YukonUser();
         YukonGroup group2 = new YukonGroup( 3 ); // probably want to change this before using again
@@ -54,7 +53,7 @@ public class CreateYukonUsers {
         String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
         user.getYukonUser().setUsername(stupidUserName);
         user.getYukonUser().setAuthType(AuthType.NONE);
-        user.getYukonUser().setStatus("Enabled");
+        user.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
         dbPersistentDao.performDBChange(user, Transaction.INSERT);
         return user;
     }

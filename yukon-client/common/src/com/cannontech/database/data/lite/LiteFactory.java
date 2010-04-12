@@ -414,7 +414,7 @@ public final static LiteBase createLite(com.cannontech.database.db.DBPersistent 
 		returnLite = new LiteYukonUser(
 			((YukonUser)val).getUserID().intValue(),
 			((YukonUser)val).getYukonUser().getUsername(),
-			((YukonUser)val).getYukonUser().getStatus(),
+			((YukonUser)val).getYukonUser().getLoginStatus(),
             ((YukonUser)val).getYukonUser().getAuthType());
 	}
 	else if( val instanceof YukonGroup )

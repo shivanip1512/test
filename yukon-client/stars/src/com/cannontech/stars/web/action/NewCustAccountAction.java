@@ -14,6 +14,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.Contact;
@@ -201,7 +202,7 @@ public class NewCustAccountAction implements ActionBase {
     					login.getYukonUser().setAuthType(AuthType.NONE); 
                         if(custGroups.length > 0)
                             login.getYukonGroups().addElement(((com.cannontech.database.data.user.YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
-    					login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+    					login.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
     					login = Transaction.createTransaction(Transaction.INSERT, login).execute();
     					LiteYukonUser liteUser = new LiteYukonUser( login.getUserID().intValue() );
     					ServerUtils.handleDBChange(liteUser, DBChangeMsg.CHANGE_TYPE_ADD);		

@@ -29,6 +29,7 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.YukonGroupDao;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.PoolManager;
@@ -1062,7 +1063,7 @@ public class StarsAdminUtil {
 		
 		userDB.setUsername( username );
         userDB.setAuthType(defaultAuthType);
-		userDB.setStatus( status );
+		userDB.setLoginStatus( LoginStatusEnum.valueOf(status));
 		
 		for (int i = 0; i < operGroups.length; i++) {
 			com.cannontech.database.db.user.YukonGroup group =
@@ -1085,7 +1086,7 @@ public class StarsAdminUtil {
 		LiteYukonUser liteUser = new LiteYukonUser(
 				userDB.getUserID().intValue(),
 				userDB.getUsername(),
-				userDB.getStatus()
+				userDB.getLoginStatus()
 				);
         liteUser.setAuthType(defaultAuthType);
 		ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
@@ -1123,7 +1124,7 @@ public class StarsAdminUtil {
             dbUser.setAuthType(AuthType.NONE);
         }
         
-		if (status != null) dbUser.setStatus( status );
+		if (status != null) dbUser.setLoginStatus( LoginStatusEnum.valueOf(status));
 		
 		boolean groupChanged = false;
 		if (loginGroup != null) {

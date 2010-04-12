@@ -4,10 +4,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.user.UserUtils;
 
 /**
  * @author alauinger
@@ -18,7 +18,7 @@ public class YukonUser extends DBPersistent
 		
 	private Integer userID = null;
 	private String username = null;
-	private String status = UserUtils.STATUS_DISABLED;
+	private LoginStatusEnum loginStatus = LoginStatusEnum.DISABLED;
     private AuthType authType = AuthType.PLAIN;
 
 	private static final String[] SELECT_COLUMNS = 
@@ -29,18 +29,18 @@ public class YukonUser extends DBPersistent
 	};
 	
 	
-	/**
-	 * @see com.cannontech.database.db.DBPersistent#add()
-	 */
-	public void add() throws SQLException {
+    /**
+     * @see com.cannontech.database.db.DBPersistent#add()
+     */
+    public void add() throws SQLException {
         // Because the addValues must include a value for every column, a blank value
         // for the password is included here even though the rest of this class ignores
         // that column.
-	    String dummyPasswordValue = "";
-		Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue, getStatus(), getAuthType().name() };
-		add(TABLE_NAME, addValues);
-	}
-
+        String dummyPasswordValue = "";
+        Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue,
+                               getLoginStatus(), getAuthType().name() };
+        add(TABLE_NAME, addValues);
+    }
 
 	/**
 	 * This method was created in VisualAge.
@@ -77,7 +77,7 @@ public class YukonUser extends DBPersistent
 					user.setDbConnection(conn);
 					user.setUserID( new Integer(rset.getInt("UserID")) );
 					user.setUsername( rset.getString("UserName") );
-					user.setStatus( rset.getString("Status") );
+					user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rset.getString("Status")));
                     user.setAuthType(AuthType.valueOf(rset.getString("AuthType")));
 				}
 						
@@ -133,7 +133,7 @@ public class YukonUser extends DBPersistent
 		
 		if(results.length == SELECT_COLUMNS.length) {
 			setUsername((String) results[0]);
-			setStatus((String) results[1]);
+			setLoginStatus(LoginStatusEnum.retrieveLoginStatus((String) results[1]));
 			setAuthType(AuthType.valueOf((String) results[2]));
 		}
 	}
@@ -142,7 +142,7 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		Object[] setValues = { getUsername(), getStatus(), getAuthType().name() };
+		Object[] setValues = { getUsername(), getLoginStatus(), getAuthType().name() };
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
@@ -186,16 +186,16 @@ public class YukonUser extends DBPersistent
 	 * Returns the status.
 	 * @return String
 	 */
-	public String getStatus() {
-		return status;
+	public LoginStatusEnum getLoginStatus() {
+		return loginStatus;
 	}
 
 	/**
 	 * Sets the status.
 	 * @param status The status to set
 	 */
-	public void setStatus(String status) {
-		this.status = status;
+	public void setLoginStatus(LoginStatusEnum loginStatus) {
+		this.loginStatus = loginStatus;
 	}
 
 

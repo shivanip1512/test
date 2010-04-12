@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.dr.operator.model;
 
+import com.cannontech.core.dao.impl.LoginStatusEnum;
+
 public class ChangeLoginBackingBean {
     private String customerLoginGroupName;
     private boolean loginEnabled;
@@ -20,15 +22,15 @@ public class ChangeLoginBackingBean {
     public void setLoginEnabled(boolean loginEnabled) {
         this.loginEnabled = loginEnabled;
     }
-    public void setLoginEnabled(String userStatus) {
-        if ("enabled".equalsIgnoreCase(userStatus)) {
+    public void setLoginEnabled(LoginStatusEnum loginStatus) {
+        if (LoginStatusEnum.ENABLED.equals(loginStatus)) {
             this.loginEnabled = true;
             return;
         }
             
         this.loginEnabled = false;
     }
-
+    
     public String getUsername() {
         return username;
     }

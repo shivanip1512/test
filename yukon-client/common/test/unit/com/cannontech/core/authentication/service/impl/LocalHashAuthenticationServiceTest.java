@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class LocalHashAuthenticationServiceTest {
@@ -30,7 +31,7 @@ public class LocalHashAuthenticationServiceTest {
         service.setPasswordHasher(hasher);
         singleUserPasswordDao = new SingleUserPasswordDao(hasher.hashPassword(INITIAL_PASSWORD));
         service.setYukonUserPasswordDao(singleUserPasswordDao);
-        someUser = new LiteYukonUser(100, "testuser", "Enabled");
+        someUser = new LiteYukonUser(100, "testuser", LoginStatusEnum.ENABLED);
     }
 
     @Test

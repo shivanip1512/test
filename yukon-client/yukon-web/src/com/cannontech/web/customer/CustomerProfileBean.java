@@ -11,6 +11,7 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.customer.Customer;
@@ -96,7 +97,6 @@ public class CustomerProfileBean {
         return null;
     }
     
-    @SuppressWarnings("unchecked")
     public String addNotification() {
         Contact contact = getSelectedContact();
         ContactNotification newNotification = new ContactNotification();
@@ -131,7 +131,7 @@ public class CustomerProfileBean {
         String stupidUserName = firstName.toLowerCase().substring(0, 1) + lastName.toLowerCase() + salt;
         user.getYukonUser().setUsername(stupidUserName);
         user.getYukonUser().setAuthType(AuthType.NONE);
-        user.getYukonUser().setStatus("Enabled");
+        user.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
         dbPersistentDao.performDBChange(user, Transaction.INSERT);
         return user;
     }

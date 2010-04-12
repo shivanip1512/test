@@ -20,6 +20,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -458,12 +459,12 @@ public Object getValue(Object o)
         newPasswordValue = dialog.getNewPassword();
     }
 
+    if (getJCheckBoxEnableLogin().isSelected()) {
+        login.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
+    } else {
+        login.getYukonUser().setLoginStatus(LoginStatusEnum.DISABLED);
+    }
 
-	if( getJCheckBoxEnableLogin().isSelected() )
-		login.getYukonUser().setStatus( UserUtils.STATUS_ENABLED );
-	else
-		login.getYukonUser().setStatus( UserUtils.STATUS_DISABLED );
-		
 	if(getJCheckBoxEnableEC().isSelected())
 	{
 		LiteEnergyCompany co = (LiteEnergyCompany)getJComboBoxEnergyCompany().getSelectedItem();
@@ -701,7 +702,7 @@ public void setValue(Object o)
 
 	YukonUser login = (YukonUser)o;
 	
-	if (!login.getYukonUser().getStatus().equalsIgnoreCase(UserUtils.STATUS_DISABLED) ) {
+	if (!login.getYukonUser().getLoginStatus().equals(LoginStatusEnum.DISABLED) ) {
         getJCheckBoxEnableLogin().doClick();
     }
 

@@ -82,7 +82,7 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	    user.setUserID(userId);
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
 	    sql.append("INSERT INTO YukonUser VALUES (?,?,?,?,?)");
-	    yukonJdbcOperations.update(sql.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getStatus(), user.getAuthType().name());
+	    yukonJdbcOperations.update(sql.toString(), user.getUserID(), user.getUsername(), SqlUtils.convertStringToDbValue(password), user.getLoginStatus().getDatabaseRepresentation(), user.getAuthType().name());
 	    
 	    for(LiteYukonGroup group : groups) {
 	        sql = new SqlStatementBuilder();
@@ -98,10 +98,12 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	
 	@Override
     @Transactional
-	public void update(LiteYukonUser user) {
-	    final String sql = "update yukonuser set username = ?, status = ?, AuthType = ? where userid = ?";
-        yukonJdbcOperations.update(sql, user.getUsername(), user.getStatus(), user.getAuthType().name(), user.getUserID());
-	}
+    public void update(LiteYukonUser user) {
+        final String sql = "update yukonuser set username = ?, status = ?, AuthType = ? where userid = ?";
+        yukonJdbcOperations.update(sql, user.getUsername(),
+                                   user.getLoginStatus().getDatabaseRepresentation(),
+                                   user.getAuthType().name(), user.getUserID());
+    }
 
 	
     @Override

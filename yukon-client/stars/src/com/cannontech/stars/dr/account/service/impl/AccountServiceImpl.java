@@ -26,6 +26,7 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PhoneNumberFormattingService;
@@ -163,7 +164,7 @@ public class AccountServiceImpl implements AccountService {
         if(!StringUtils.isBlank(accountDto.getUserName())) {
             user = new LiteYukonUser(); 
             user.setUsername(accountDto.getUserName());
-            user.setStatus(UserUtils.STATUS_ENABLED);
+            user.setLoginStatus(LoginStatusEnum.ENABLED);
             List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
             LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
             groups.add(defaultYukonGroup);
@@ -650,7 +651,7 @@ public class AccountServiceImpl implements AccountService {
                  */
                 LiteYukonUser user = new LiteYukonUser(); 
                 user.setUsername(accountDto.getUserName());
-                user.setStatus(UserUtils.STATUS_ENABLED);
+                user.setLoginStatus(LoginStatusEnum.ENABLED);
                 List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
                 LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
                 groups.add(defaultYukonGroup);

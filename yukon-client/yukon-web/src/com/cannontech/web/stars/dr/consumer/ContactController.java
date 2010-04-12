@@ -25,6 +25,7 @@ import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
@@ -161,7 +162,7 @@ public class ContactController extends AbstractConsumerController {
                         login.getYukonUser().setUsername(newUserName);
                         login.getYukonUser().setAuthType(AuthType.NONE);
                         login.getYukonGroups().addElement(((YukonGroup)LiteFactory.convertLiteToDBPers(custGroups[0])).getYukonGroup());
-                        login.getYukonUser().setStatus(UserUtils.STATUS_ENABLED);
+                        login.getYukonUser().setLoginStatus(LoginStatusEnum.ENABLED);
                         try {
                             login = Transaction.createTransaction(Transaction.INSERT, login).execute();
                         } catch (TransactionException e) {

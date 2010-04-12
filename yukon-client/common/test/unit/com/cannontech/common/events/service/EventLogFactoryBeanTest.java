@@ -17,6 +17,7 @@ import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.TransactionExecutor;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -83,7 +84,7 @@ public class EventLogFactoryBeanTest {
     
     @Test
     public void logUserWithLong() {
-        testEventLog.logUserWithLong(new LiteYukonUser(5,"testUser","ENABLED"), 79);
+        testEventLog.logUserWithLong(new LiteYukonUser(5,"testUser",LoginStatusEnum.ENABLED), 79);
         EventLog eventLog = Iterables.getOnlyElement(insertedEventLogs);
         Assert.assertArrayEquals(new Object[] {"testUser",null,79l,null}, eventLog.getArguments());
     }

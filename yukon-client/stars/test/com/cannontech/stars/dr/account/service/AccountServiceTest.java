@@ -1,10 +1,10 @@
 package com.cannontech.stars.dr.account.service;
 
 import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.createNiceMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.createNiceMock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -61,7 +62,6 @@ import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.user.UserUtils;
 
 public class AccountServiceTest {
     
@@ -247,7 +247,7 @@ public class AccountServiceTest {
         list.add(null);
         LiteYukonUser newuser = new LiteYukonUser(); 
         newuser.setUsername(dto.getUserName());
-        newuser.setStatus(UserUtils.STATUS_ENABLED);
+        newuser.setLoginStatus(LoginStatusEnum.ENABLED);
         newuser.setAuthType(AuthType.NONE);
         yukonUserDaoMock.addLiteYukonUserWithPassword(newuser, dto.getPassword(), 0, list );
         dbPersistantDaoMock.processDBChange(new DBChangeMsg(user.getLiteID(),

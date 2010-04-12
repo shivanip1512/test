@@ -903,7 +903,7 @@ public class StarsLiteFactory {
 	public static void setYukonUser(com.cannontech.database.db.user.YukonUser user, com.cannontech.database.data.lite.LiteYukonUser liteUser) {
 		user.setUserID( new Integer(liteUser.getUserID()) );
 		user.setUsername( liteUser.getUsername() );
-		user.setStatus( liteUser.getStatus() );
+		user.setLoginStatus( liteUser.getLoginStatus() );
 		user.setAuthType( liteUser.getAuthType() );
 	}
 	
@@ -2047,7 +2047,7 @@ public class StarsLiteFactory {
 		starsUser.setUsername( StarsUtils.forceNotNull(liteUser.getUsername()) );
 		//starsUser.setPassword( ServerUtils.forceNotNull(liteUser.getPassword()) );
 		starsUser.setPassword( "" );
-		starsUser.setStatus( StarsMsgUtils.getLoginStatus(liteUser.getStatus()) );
+		starsUser.setStatus( StarsMsgUtils.getLoginStatus(liteUser.getLoginStatus()) );
 		
 		LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 		

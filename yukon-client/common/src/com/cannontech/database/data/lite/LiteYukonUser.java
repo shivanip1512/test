@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authentication.service.AuthType;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.user.YukonUser;
 
@@ -17,7 +18,7 @@ import com.cannontech.database.db.user.YukonUser;
  */
 public class LiteYukonUser extends LiteBase {
     private String username;
-    private String status;
+    private LoginStatusEnum loginStatus;
     private AuthType authType;
 
     public LiteYukonUser() {
@@ -28,15 +29,15 @@ public class LiteYukonUser extends LiteBase {
         this(id,null,null);
     }
 
-    public LiteYukonUser(int id, String username, String status) {
-        this(id, username, status, AuthType.PLAIN);
+    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus) {
+        this(id, username, loginStatus, AuthType.PLAIN);
     }
 
-    public LiteYukonUser(int id, String username, String status, AuthType authType) {
+    public LiteYukonUser(int id, String username, LoginStatusEnum loginStatus, AuthType authType) {
         setLiteType(LiteTypes.YUKON_USER);
         setUserID(id);
         setUsername(username);
-        setStatus(status);
+        setLoginStatus(loginStatus);
         setAuthType(authType);
     }
 
@@ -55,7 +56,7 @@ public class LiteYukonUser extends LiteBase {
             public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
                 rs.next();
                 setUsername(rs.getString("Username").trim() );
-                setStatus(rs.getString("Status") );
+                setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
                 setAuthType(AuthType.valueOf(rs.getString("AuthType")));
                 return null;
             }
@@ -104,20 +105,11 @@ public class LiteYukonUser extends LiteBase {
         return getUsername();
     }
 
-    /**
-     * Returns the status.
-     * @return String
-     */
-    public String getStatus() {
-        return status;
+    public LoginStatusEnum getLoginStatus() {
+        return loginStatus;
     }
-
-    /**
-     * Sets the status.
-     * @param status The status to set
-     */
-    public void setStatus(String status) {
-        this.status = status;
+    public void setLoginStatus(LoginStatusEnum loginStatus) {
+        this.loginStatus = loginStatus;
     }
 
     public AuthType getAuthType() {

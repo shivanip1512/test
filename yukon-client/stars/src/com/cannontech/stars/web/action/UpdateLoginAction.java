@@ -13,6 +13,7 @@ import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.Transaction;
@@ -223,16 +224,17 @@ public class UpdateLoginAction implements ActionBase {
             dbUser.setAuthType(AuthType.NONE);
         else
             dbUser.setAuthType(defaultAuthType);
-		if (login.getStatus() != null)
-			dbUser.setStatus( StarsMsgUtils.getUserStatus(login.getStatus()) );
+
+        if (login.getStatus() != null)
+			dbUser.setLoginStatus( StarsMsgUtils.getUserStatus(login.getStatus()) );
 		else
-			dbUser.setStatus( com.cannontech.user.UserUtils.STATUS_ENABLED );
+			dbUser.setLoginStatus(LoginStatusEnum.ENABLED);
         
 		dataUser = Transaction.createTransaction( Transaction.INSERT, dataUser ).execute();
 		LiteYukonUser liteUser = new LiteYukonUser(
 				dbUser.getUserID().intValue(),
 				dbUser.getUsername(),
-				dbUser.getStatus()
+				dbUser.getLoginStatus()
 				);
         liteUser.setAuthType(dbUser.getAuthType());
 
@@ -305,7 +307,7 @@ public class UpdateLoginAction implements ActionBase {
 		}
 		else {
 			// Update customer login
-			String status = null;
+			LoginStatusEnum status = null;
 			if (updateLogin.getStatus() != null)
 				status = StarsMsgUtils.getUserStatus( updateLogin.getStatus() );
 			
@@ -314,7 +316,7 @@ public class UpdateLoginAction implements ActionBase {
 				loginGroup = DaoFactory.getRoleDao().getGroup( updateLogin.getGroupID() );
 			
 			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
-			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany, authTypeChanged );
+			StarsAdminUtil.updateLogin( liteUser, username, password, status.getDatabaseRepresentation().toString(), loginGroup, energyCompany, authTypeChanged );
 		}
 	}
 	

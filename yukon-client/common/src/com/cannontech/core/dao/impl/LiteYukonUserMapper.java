@@ -16,7 +16,7 @@ public final class LiteYukonUserMapper implements
         user.setUserID(rs.getInt("UserID"));
         user.setUsername(rs.getString("UserName"));
         user.setAuthType(AuthType.valueOf(rs.getString("AuthType")));
-        user.setStatus(rs.getString("Status").intern());
+        user.setLoginStatus(LoginStatusEnum.retrieveLoginStatus(rs.getString("Status")));
         return user;
     }
 }

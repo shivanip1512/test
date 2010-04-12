@@ -9,13 +9,13 @@ package com.cannontech.stars.util;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.types.StarsLoginStatus;
 import com.cannontech.stars.xml.serialize.types.StarsThermoDaySettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoFanSettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermoModeSettings;
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
-import com.cannontech.user.UserUtils;
 
 /**
  * @author yao
@@ -184,21 +184,23 @@ public class StarsMsgUtils {
 			return null;
 	}
 	
-	public static StarsLoginStatus getLoginStatus(String status) {
-		if (status.equalsIgnoreCase( UserUtils.STATUS_ENABLED ))
-			return StarsLoginStatus.ENABLED;
-		else if (status.equalsIgnoreCase( UserUtils.STATUS_DISABLED ))
-			return StarsLoginStatus.DISABLED;
-		else
-			return null;
-	}
+    public static StarsLoginStatus getLoginStatus(LoginStatusEnum loginStatus) {
+        if (LoginStatusEnum.ENABLED.equals(loginStatus)) {
+            return StarsLoginStatus.ENABLED;
+        } else if (LoginStatusEnum.DISABLED.equals(loginStatus)) {
+            return StarsLoginStatus.DISABLED;
+        } else {
+            return null;
+        }
+    }
 	
-	public static String getUserStatus(StarsLoginStatus status) {
-		if (status.getType() == StarsLoginStatus.ENABLED_TYPE)
-			return UserUtils.STATUS_ENABLED;
-		else if (status.getType() == StarsLoginStatus.DISABLED_TYPE)
-			return UserUtils.STATUS_DISABLED;
-		else
-			return null;
-	}
+    public static LoginStatusEnum getUserStatus(StarsLoginStatus status) {
+        if (status.getType() == StarsLoginStatus.ENABLED_TYPE) {
+            return LoginStatusEnum.ENABLED;
+        } else if (status.getType() == StarsLoginStatus.DISABLED_TYPE) {
+            return LoginStatusEnum.DISABLED;
+        } else {
+            return null;
+        }
+    }
 }

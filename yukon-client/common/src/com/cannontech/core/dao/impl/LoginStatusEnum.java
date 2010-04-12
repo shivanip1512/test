@@ -17,4 +17,14 @@ public enum LoginStatusEnum implements DatabaseRepresentationSource {
         return sqlValue;
     }
 
+    public static LoginStatusEnum retrieveLoginStatus(String dbValue) {
+        LoginStatusEnum[] values = values();
+        for (LoginStatusEnum loginStatusEnum : values) {
+            if (loginStatusEnum.sqlValue.equals(dbValue)) {
+                return loginStatusEnum;
+            }
+        }
+
+        return null;
+    }
 }
