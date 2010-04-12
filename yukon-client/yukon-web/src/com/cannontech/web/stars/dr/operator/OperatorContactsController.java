@@ -91,16 +91,17 @@ public class OperatorContactsController {
     						  AccountInfoFragment accountInfoFragment) {
 		
 		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", PageEditMode.EDIT);
 		
 		// contactDto
 		ContactDto contactDto = operatorAccountService.getContactDto(contactId, userContext);
 		if (contactDto == null) {
 			contactDto = operatorAccountService.getBlankContactDto(4);
+			modelMap.addAttribute("mode", PageEditMode.CREATE);
 		}
 		modelMap.addAttribute("contactDto", contactDto);
 		
 		setupContactEditModelMap(contactDto.getContactId(), accountInfoFragment, modelMap, userContext);
-		modelMap.addAttribute("mode", PageEditMode.EDIT);
 		
 		return "operator/contacts/contactEdit.jsp";
 	}

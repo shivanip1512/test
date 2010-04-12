@@ -6,7 +6,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage module="operator" page="contactEdit">
+<cti:standardPage module="operator" page="contactEdit" mode="${mode}">
 
 	<script type="text/javascript">
 
@@ -42,7 +42,6 @@
 		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
 		<input type="hidden" name="hasPendingNewNotification" value="${hasPendingNewNotification == true}"/>
 		
-		<c:set var="newContact" value="${contactDto.contactId <= 0}"/>
 		<c:set var="contactInformationSectionTitleKey" value="contactInformationSection"/>
 		<c:if test="${contactDto.primary}">
 			<c:set var="contactInformationSectionTitleKey" value="contactInformationSection_isPrimary"/>
@@ -66,7 +65,7 @@
 				<tr>
 					<th style="width:160px;"><i:inline key=".notificationTable.notificationMethodHeader"/></th>
 					<th><i:inline key=".notificationTable.valueHeader"/></th>
-					<c:if test="${!newContact}">
+					<c:if test="${mode == 'CREATE'}">
 						<th style="text-align:center;width:100px;"><i:inline key=".notificationTable.removeHeader"/></th>
 					</c:if>
 				</tr>
@@ -78,7 +77,7 @@
 					<c:set var="newNotification" value="${notif.notificationId <= 0}"/>
 					
 					<c:choose>
-						<c:when test="${!newContact && newNotification}">
+						<c:when test="${mode == 'EDIT' && newNotification}">
 							<tr class="additionalNotificationTr" style="vertical-align: top">
 						</c:when>
 						<c:otherwise>
@@ -111,7 +110,7 @@
 				</c:forEach>
 			
 				<%-- ADD NOTIFICATION --%>
-				<c:if test="${!newContact}">
+				<c:if test="${mode == 'EDIT'}">
 					<tr style="background-color:#EEE;">
 						<td colspan="3">
 						
