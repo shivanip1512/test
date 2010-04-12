@@ -195,6 +195,8 @@ public enum YukonRoleProperty {
     SHOW_SCENARIOS(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.SHOW_SCENARIOS, booleanType()),
     START_NOW_CHECKED_BY_DEFAULT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.START_NOW_CHECKED_BY_DEFAULT, booleanType()),
     CONTROL_DURATION_DEFAULT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.CONTROL_DURATION_DEFAULT, integerType()),
+    SCHEDULE_STOP_CHECKED_BY_DEFAULT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.SCHEDULE_STOP_CHECKED_BY_DEFAULT, booleanType()),
+    START_TIME_DEFAULT(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.START_TIME_DEFAULT, stringType()),
     
     CONTROL_AREA_STATE(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.CONTROL_AREA_STATE, booleanType()),
     CONTROL_AREA_VALUE_THRESHOLD(LM_DIRECT_LOADCONTROL, com.cannontech.roles.loadcontrol.DirectLoadcontrolRole.CONTROL_AREA_VALUE_THRESHOLD, booleanType()),

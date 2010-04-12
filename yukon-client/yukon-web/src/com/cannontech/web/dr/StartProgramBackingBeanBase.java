@@ -8,11 +8,15 @@ import java.util.List;
 
 import org.apache.commons.collections.FactoryUtils;
 import org.apache.commons.collections.list.LazyList;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
@@ -115,21 +119,43 @@ public abstract class StartProgramBackingBeanBase {
         RolePropertyDao rolePropertyDao = 
             YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
         
-        // Set whether start now is checked by default
+        DateFormattingService dateFormattingService =
+            YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
+        
+        // Setting whether start now is checked by default
         boolean isStartNowChecked = 
             rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.START_NOW_CHECKED_BY_DEFAULT,
                                                     userContext.getYukonUser());
         startNow = isStartNowChecked;
+        
         DateTime jodaNow = new DateTime(userContext.getJodaTimeZone());
         now = jodaNow.toDate();
-        startDate = now;
-        scheduleStop = true;
+
+        // Setting default start time
+        DateTime jodaStartTime = jodaNow;
+        String startTimeDefault =
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.START_TIME_DEFAULT,
+                                                   userContext.getYukonUser());
         
-        // Sets the default duration
+        if (!StringUtils.isBlank(startTimeDefault)) {
+            DateTimeFormatter dateTimeFormatter = 
+                dateFormattingService.getDateTimeFormatter(DateFormatEnum.TIME24H,
+                                                           userContext);
+            jodaStartTime = dateTimeFormatter.parseDateTime(startTimeDefault);
+        }
+        startDate = jodaStartTime.toDate();
+
+        // Setting whether schedule stop is checked by default
+        boolean isScheduleStopChecked = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT,
+                                                    userContext.getYukonUser());
+        scheduleStop = isScheduleStopChecked;
+        
+        // Setting the default duration
         int startDuration =
             rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CONTROL_DURATION_DEFAULT, 
                                                     userContext.getYukonUser());
-        stopDate = jodaNow.plusMinutes(startDuration).toDate();
+        stopDate = jodaStartTime.plusMinutes(startDuration).toDate();
     }
     
 }
