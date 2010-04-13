@@ -26,7 +26,6 @@ import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.yukon.api.loadManagement.MockRolePropertyDao;
 import com.cannontech.yukon.api.util.SimpleXPathTemplate;
 import com.cannontech.yukon.api.util.XmlUtils;
 import com.cannontech.yukon.api.util.XmlVersionUtils;
@@ -211,40 +210,6 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         assertTrue("Incorrect resultSize",
                    enrolledDevices != null && enrolledDevices.size() == 1);
 
-    }
-
-    @Test
-    public void testInvokeEnrolledDevicesUnauthUser() throws Exception {
-        // init
-        Element reqElement = buildRequest(ACCOUNT_NUM_VALID);
-
-        // verify the reqElement is valid according to schema
-        Resource reqSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/EnrolledDevicesByAccountNumberRequest.xsd",
-                                                           this.getClass());
-        TestUtils.validateAgainstSchema(reqElement, reqSchemaResource);
-
-        // invoke test with authorized user
-        LiteYukonUser user = MockRolePropertyDao.getUnAuthorizedUser();
-        Element respElement = impl.invoke(reqElement, user);
-
-        // verify the respElement is valid according to schema
-        Resource respSchemaResource = new ClassPathResource("/com/cannontech/yukon/api/stars/schemas/EnrolledDevicesByAccountNumberResponse.xsd",
-                                                            this.getClass());
-        TestUtils.validateAgainstSchema(respElement, respSchemaResource);
-
-        // create template and parse response data
-        SimpleXPathTemplate template = XmlUtils.getXPathTemplateForElement(respElement);
-        TestUtils.runVersionAssertion(template,
-                                      enrolledDevicesRespStr,
-                                      XmlVersionUtils.YUKON_MSG_VERSION_1_0);
-
-        Assert.assertTrue("Should have failed with not authorized error",
-                          template.evaluateAsNode(failErrorCodeStr) != null);
-        Assert.assertTrue("Should have failed with not authorized error",
-                          template.evaluateAsNode(failErrorDescStr) != null);
-        Assert.assertTrue("Should have failed with not authorized error",
-                          template.evaluateAsString(failErrorCodeStr)
-                                  .equals("UserNotAuthorized"));
     }
 
     private Element buildRequest(String accountNumber) {
