@@ -84,11 +84,16 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return null;
 	}
 
-   public Ltc getLtc(int id) {
+    public Ltc getLtc(int id) {
         Ltc ltc = cache.getLtc(id);
         return ltc;
     }
-	
+    
+    public SubBus getSubBusByLtcId(int ltcId) {
+        SubBus bus = cache.getSubBusByLtcId(ltcId);
+        return bus;
+    }
+    
 	public CCSpecialArea getCBCSpecialArea(int id) {
 		CCSpecialArea area = cache.getCBCSpecialArea(id);
 		if (filter.valid(area)) return area;

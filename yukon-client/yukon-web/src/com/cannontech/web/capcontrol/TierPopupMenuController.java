@@ -174,6 +174,8 @@ public class TierPopupMenuController extends MultiActionController {
         final ModelAndView mav = new ModelAndView();
         final int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         
+        final SubBus subBus = capControlCache.getSubBusByLtcId(id);
+        
         mav.addObject("paoId", id);
         
         String paoName = paoDao.getYukonPAOName(id);
@@ -184,8 +186,11 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.LTC_SCAN_INTEGRITY);
         list.add(CommandHolder.LTC_REMOTE_ENABLE);
         list.add(CommandHolder.LTC_REMOTE_DISABLE);
-        list.add(CommandHolder.LTC_TAP_POSITION_RAISE);
-        list.add(CommandHolder.LTC_TAP_POSITION_LOWER);
+        
+        if (subBus.getCcDisableFlag() == false) {
+            list.add(CommandHolder.LTC_TAP_POSITION_RAISE);
+            list.add(CommandHolder.LTC_TAP_POSITION_LOWER);
+        }
         
         mav.addObject("list", list);
         

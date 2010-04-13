@@ -865,6 +865,16 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return ltc;
     }
     
+    public synchronized SubBus getSubBusByLtcId(int ltcId) throws NotFoundException {
+        
+        for (SubBus bus : subBusMap.values()) {
+            if(bus.getLtcId() == ltcId) {
+                return bus;
+            }
+        }
+        throw new NotFoundException("Ltc not found with id: " + ltcId);
+    }
+    
     public synchronized CCSpecialArea getCBCSpecialArea(int id) throws NotFoundException {
         CCSpecialArea area = cbcSpecialAreaMap.get(id);
         checkObjectFound(area, id, CCSpecialArea.class);        
