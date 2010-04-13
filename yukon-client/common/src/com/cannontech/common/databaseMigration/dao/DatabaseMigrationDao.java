@@ -49,4 +49,15 @@ public interface DatabaseMigrationDao {
      */
     public void updateTableEntry(TableDefinition tableDefinition, Map<String, String> columnValueMap);
 
+    /**
+     * Checks to see if the destination database table has already an existing value for a unique
+     * column
+     * @param tableName - Table to check
+     * @param columnName - Unique column in question
+     * @param columnValue - Value that we're checking to see if it already exists
+     * @return True if the value already exists in the given table/column
+     */
+    public boolean uniqueColumnHasExistingValues(String tableName, String columnName, 
+    		String columnValue);
+    
 }

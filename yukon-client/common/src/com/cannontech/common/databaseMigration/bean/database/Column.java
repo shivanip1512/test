@@ -10,6 +10,7 @@ public class Column{
     private String filterValue;
     private boolean escapingNeeded = false;
     private boolean addToDisplayLabels = false;
+    private boolean unique = false;
     
     // Name
     public String getName() {
@@ -82,6 +83,14 @@ public class Column{
     public void setAddToDisplayLabels(boolean addToDisplayLabels) {
         this.addToDisplayLabels = addToDisplayLabels;
     }
+    
+    public boolean isUnique() {
+		return unique;
+	}
+    
+    public void setUnique(boolean unique) {
+		this.unique = unique;
+	}
 
     public String toString(){
         return "Name = " + this.name +

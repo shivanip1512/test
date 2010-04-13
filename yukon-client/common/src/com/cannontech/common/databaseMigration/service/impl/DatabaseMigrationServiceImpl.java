@@ -639,7 +639,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             primaryKey = yukonJdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new ConfigurationErrorException("The reference in the import file does not exist" +
-            		" or returns two many entries (" + table.getName() + ")", e);
+            		" or returns two many entries. Table: " + table.getName() + ", column/values: " + columnValueMap.toString(), e);
         }
             
         return primaryKey;
@@ -670,6 +670,9 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
         return buildAndProcessPrimaryKeySQL(columnValueMap, table, importDatabaseMigrationStatus);
     }
 
+    /**
+     * @param columnValueMap Column Name to data value
+     */
     private Integer buildAndProcessPrimaryKeySQL(Map<String, String> columnValueMap,
                                                  TableDefinition table,
                                                  ImportDatabaseMigrationStatus importDatabaseMigrationStatus) 
@@ -776,6 +779,28 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             // The imported item does not exist.  Creating new instance.
             } else {
                 
+            	List<Column> uniqueColumns = table.getUniqueColumns();
+            	for(Column column : uniqueColumns) {
+            		String columnName = column.getName();
+            		String columnValue = columnValueMap.get(columnName);
+            		String nullId = column.getNullId();
+            		String tableName = table.getTable();
+            		String tableAlias = table.getName();
+            		
+            		if(!columnValue.equals(nullId)) {
+            			// If the value is the 'nullId', unique does not apply
+	            		boolean isNotUnique = 
+	            			databaseMigrationDao.uniqueColumnHasExistingValues(tableName, columnName, columnValue);
+	            		
+	            		if(isNotUnique) {
+	            			throw new ConfigurationErrorException("The " + tableAlias + " item, " + 
+	            					columnName + " field value (" + columnValue + ") must be unique " +
+	            					"but is already used in the destination database." );
+	            		}
+            		}
+            		
+            	}
+            	
                 // Finding next primary key for insert and inserting it into the columnValueMap
                 Integer nextPrimaryKeyId = 0;
                 try {

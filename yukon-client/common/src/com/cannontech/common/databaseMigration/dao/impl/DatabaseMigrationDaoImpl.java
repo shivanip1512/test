@@ -14,11 +14,13 @@ import com.cannontech.common.databaseMigration.bean.database.ColumnTypeEnum;
 import com.cannontech.common.databaseMigration.bean.database.TableDefinition;
 import com.cannontech.common.databaseMigration.dao.DatabaseMigrationDao;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.google.common.collect.Lists;
 
 public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
 
     private JdbcTemplate jdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     
     public Integer getNextMissingPrimaryKeyValue(Map<String, String> columnValueMap,
                                                  TableDefinition tableDefinition,
@@ -107,6 +109,19 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
         
     }
     
+    @Override
+    public boolean uniqueColumnHasExistingValues(String tableName, String columnName, String columnValue) {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT count(*) ");
+    	sql.append("FROM " + tableName);
+    	sql.append("WHERE " + columnName).eq(columnValue);
+    	
+    	int count = yukonJdbcTemplate.queryForInt(sql);
+    	
+    	return count > 0;
+    }
+    
     public Integer insertNewTableEntry(TableDefinition tableDefinition,
                                        Map<String, String> columnValueMap) {
         
@@ -173,5 +188,10 @@ public class DatabaseMigrationDaoImpl implements DatabaseMigrationDao {
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+    
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
 
 }

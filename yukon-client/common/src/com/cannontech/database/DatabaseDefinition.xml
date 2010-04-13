@@ -375,7 +375,7 @@
     </table>
     
     <table name="YukonListEntry">
-        <primaryKey name="EntryId"/>
+        <primaryKey name="EntryId" nullId="0"/>
         <identifier name="ListId" tableRef="YukonSelectionList" refType="MANY_TO_ONE" />
         <identifier name="EntryText"/>
         <data name="EntryOrder"/>

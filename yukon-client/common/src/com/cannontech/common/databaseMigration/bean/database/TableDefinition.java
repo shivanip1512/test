@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
@@ -48,16 +48,27 @@ public class TableDefinition {
             column.setFilterValue(columnElement.getAttributeValue("filterValue"));
 
             String escapeNeededStr = columnElement.getAttributeValue("escapingNeeded");
-            if (escapeNeededStr != null &&
-                escapeNeededStr.equalsIgnoreCase("true")) {
-                column.setEscapingNeeded(true);
+            if (!StringUtils.isBlank(escapeNeededStr)) {
+            	Boolean escapeNeeded = Boolean.valueOf(escapeNeededStr);
+                column.setEscapingNeeded(escapeNeeded);
             }
 
             String addToDisplayLabelsStr = columnElement.getAttributeValue("addToDisplayLabels");
-            if (addToDisplayLabelsStr != null &&
-                addToDisplayLabelsStr.equalsIgnoreCase("true")){
-                column.setAddToDisplayLabels(true);
+            if (!StringUtils.isBlank(addToDisplayLabelsStr)){
+            	Boolean addToDisplayLable = Boolean.valueOf(addToDisplayLabelsStr);
+                column.setAddToDisplayLabels(addToDisplayLable);
             }
+            
+            String uniqueStr = columnElement.getAttributeValue("unique");
+            if(!StringUtils.isBlank(uniqueStr)) {
+            	if(!ColumnTypeEnum.IDENTIFIER.equals(columnType)) {
+            		throw new IllegalArgumentException("The unique attribute is only valid for " +
+            				"identifier columns");
+            	}
+            	Boolean unique = Boolean.valueOf(uniqueStr);
+            	column.setUnique(unique);
+            }
+            
             this.columns.put(columnType.toString(), column);
         }
     }
@@ -107,6 +118,16 @@ public class TableDefinition {
         return columns;
     }
     
+    public List<Column> getUniqueColumns() {
+    	List<Column> uniqueColumns = new ArrayList<Column>();
+    	for(Column column : columns.values()) {
+    		if(column.isUnique()) {
+    			uniqueColumns.add(column);
+    		}
+    	}
+    	return uniqueColumns;
+    }
+    
     public Map<String, String> getDefaultColumnValueMap(){
         HashMap<String, String> columnValueMap = Maps.newLinkedHashMap();
 
@@ -128,10 +149,16 @@ public class TableDefinition {
         return columnNames;
     }
     
+    /**
+     * Table alias
+     */
     public String getName() {
         return name;
     }
     
+    /**
+     * Actual database table name (for use in sql queries)
+     */
     public String getTable() {
         return table;
     }
