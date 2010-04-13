@@ -182,6 +182,12 @@ public LiteYukonPAObject removeRow( int rowNumber )
 	
 	return removed;
 }
+
+public LiteYukonPAObject getPAOFromRow(int rowNumber)
+{
+    return getRowAt(rowNumber).getLiteDevice();
+}
+
 /**
  *  What to store when a cell is edited.
  */

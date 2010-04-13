@@ -6,19 +6,25 @@ package com.cannontech.dbeditor.wizard.device.lmcontrolarea;
 import java.awt.Dimension;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.gui.util.TreeFindPanel;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class LMControlAreaProgramPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener {
@@ -957,9 +963,7 @@ public void jButtonAdd_ActionPerformed(java.awt.event.ActionEvent actionEvent)
  	
  	return;
 }
-/**
- * Comment
- */
+
 public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
 	if( getJTableProgram().isEditing() )
@@ -969,24 +973,61 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	{
 		LiteYukonPAObject[] lite = new LiteYukonPAObject[getJTableProgram().getSelectedRows().length];
 		int[] selRows = getJTableProgram().getSelectedRows();
+		for(int i = (selRows.length-1); i >= 0; i--)
+        {
+            lite[i] = getJTableModel().getPAOFromRow(selRows[i]);
+        }
 		
-		for( int i = (selRows.length-1); i >= 0; i-- )
+		//if any of the programs to be removed are in a scenario
+		//they cannot be removed from the control area
+		ScenarioDao scenarioDao = new ScenarioDaoImpl();
+		scenarioDao = YukonSpringHook.getBean("drScenarioDao", ScenarioDao.class);
+		StringBuilder warningMessage = new StringBuilder();
+		boolean error = false;
+		for(LiteYukonPAObject program : lite)
 		{
-			lite[i] = getJTableModel().removeRow( selRows[i] );
-	
-			boolean alreadyFound = false;
-			for( int j = 0; j < getJComboBoxLMProgram().getItemCount(); j++ )
-			{
-				if( getJComboBoxLMProgram().getItemAt(j).equals(lite[i]) )
-				{
-					alreadyFound = true;
-					break;
-				}				
-			}
-				
-			if( !alreadyFound )
-				getJComboBoxLMProgram().addItem( lite[i] );
-		}		
+		    List<DisplayablePao> scenarios = scenarioDao.findScenariosForProgram(program.getYukonID());
+		    if(scenarios.size() > 0)
+		    {
+		        error = true;
+		        warningMessage.append("Program '");
+		        warningMessage.append(program.getPaoName());
+		        warningMessage.append("' is assigned to Scenario '");
+		        warningMessage.append(scenarios.get(0).getName());
+		        warningMessage.append("'");
+		        if(scenarios.size() > 1)
+		        {
+		            warningMessage.append(" (and others)");
+		        }
+		        warningMessage.append(".\n");
+		    }
+		}
+		if(error)
+		{
+		    warningMessage.append("Programs cannot be removed while assigned to a Scenario.");
+		    JOptionPane.showMessageDialog(this, warningMessage, "Unable to Remove Program", JOptionPane.WARNING_MESSAGE);
+		} else 
+		{
+		    //no selected programs are in scenarios
+		    //remove the selected programs from the list
+    		for(int i = (selRows.length-1); i >= 0; i--)
+    		{
+    		    getJTableModel().removeRow( selRows[i] );
+    		    
+    			boolean alreadyFound = false;
+    			for(int j = 0; j < getJComboBoxLMProgram().getItemCount(); j++)
+    			{
+    				if( getJComboBoxLMProgram().getItemAt(j).equals(lite[i]))
+    				{
+    					alreadyFound = true;
+    					break;
+    				}				
+    			}
+    				
+    			if(!alreadyFound)
+    				getJComboBoxLMProgram().addItem( lite[i] );
+    		}
+		}
 	}
 
 	getJTableProgram().clearSelection();
