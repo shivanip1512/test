@@ -88,11 +88,21 @@
 	        			</td>
 	        			<td>
                             <capTags:warningImg paoId="${thisAreaId}" type="${updaterType}"/>
-						    <a id="area_state_${thisAreaId}"
+                            
+                            <a id="area_state_${thisAreaId}"
 		                       name="area_state"
 		                       class=""
-		                       href="javascript:void(0);" 
-							   <c:if test="${!isSpecialArea}">onclick="getAreaMenu('${thisAreaId}', event);" </c:if><c:if test="${isSpecialArea}">onclick="getSpecialAreaMenu('${thisAreaId}', event);" </c:if>>
+		                       href="javascript:void(0);"
+		                       <c:if test="${hasAreaControl}">
+									<c:choose>
+										<c:when test="${isSpecialArea}"> 
+											onclick="getSpecialAreaMenu('${thisAreaId}', event);" 
+										</c:when>
+										<c:otherwise> 
+											onclick="getAreaMenu('${thisAreaId}', event);" 
+										</c:otherwise>
+									</c:choose>
+								</c:if>>
 								<cti:capControlValue paoId="${thisAreaId}" type="${updaterType}" format="STATE" />
 							</a>
 							

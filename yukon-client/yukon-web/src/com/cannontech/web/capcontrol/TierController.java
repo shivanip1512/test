@@ -72,6 +72,9 @@ public class TierController {
 		boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);
         
+        boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
+        mav.addAttribute("hasAreaControl", hasAreaControl);
+        
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
