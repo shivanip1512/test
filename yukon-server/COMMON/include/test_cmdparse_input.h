@@ -1,12 +1,8 @@
-
-#ifndef _TESTCMDPARSE_INPUT_
-#define _TESTCMDPARSE_INPUT_
+#pragma once
 
 #include <string>
 
-#define TEST_SIZE 160
-
-std::string inputString[TEST_SIZE] = {
+std::string inputString[] = {
 "getvalue kwh",
 "getvalue kwh select name \"Test device\"",
 "getvalue kwh select name \" Test  multispace  device     \"",
@@ -164,7 +160,49 @@ std::string inputString[TEST_SIZE] = {
 "putconfig emetcon alarm_mask configbyte=0x07 tamper alarm_mask_meter1=0x11",
 "getvalue daily read detail channel 2 02/02/2000",
 "getvalue daily read detail channel 3",
+"getconfig centron",
+"getconfig centron ratio",
+"getconfig centron parameters",
+"putconfig emetcon centron display 5x1 test 0s errors disable",
+"putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable",
+"putconfig emetcon centron display 4x1 test 1s errors enable",
+"putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable",
+"putconfig emetcon centron display 4x10 test 7s errors enable",
+"putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable",
+"putconfig emetcon centron display 5x3 test 0s errors disable",
+"putconfig emetcon centron ratio 40 display 5x3 test 0s errors disable",
+"putconfig emetcon centron display 5x1 test 3s errors disable",
+"putconfig emetcon centron ratio 40 display 5x1 test 3s errors disable",
+"putconfig emetcon centron ratio 400 display 5x1 test 0s errors disable",
+"putconfig emetcon centron display 5x1 test 0s",
+"putconfig emetcon centron display 5x1 errors enable",
+"putconfig emetcon centron test 0 errors enable",
+"putconfig emetcon centron ratio 40",
+"putconfig emetcon centron ratio 10 display 4x5 test 5 errors disable",
+"putconfig emetcon centron ratio 290 display 5x1 test 7 errors disable",
+"putconfig emetcon centron ratio 25 display 5x1 test 10 errors disable",
+//  duplicates of the above Centron command strings until we remove "Centron" as an option
+"getconfig meter",
+"getconfig meter ratio",
+"getconfig meter parameters",
+"putconfig emetcon parameters display 5x1 test 0s errors disable",
+"putconfig emetcon parameters ratio 40 display 5x1 test 0s errors disable",
+"putconfig emetcon parameters display 4x1 test 1s errors enable",
+"putconfig emetcon parameters ratio 60 display 4x1 test 1s errors enable",
+"putconfig emetcon parameters display 4x10 test 7s errors enable",
+"putconfig emetcon parameters ratio 200 display 4x10 test 7s errors enable",
+"putconfig emetcon parameters display 5x3 test 0s errors disable",
+"putconfig emetcon parameters ratio 40 display 5x3 test 0s errors disable",
+"putconfig emetcon parameters display 5x1 test 3s errors disable",
+"putconfig emetcon parameters ratio 40 display 5x1 test 3s errors disable",
+"putconfig emetcon parameters ratio 400 display 5x1 test 0s errors disable",
+"putconfig emetcon parameters display 5x1 test 0s",
+"putconfig emetcon parameters display 5x1 errors enable",
+"putconfig emetcon parameters test 0 errors enable",
+"putconfig emetcon parameters ratio 40",
+"putconfig emetcon parameters ratio 10 display 4x5 test 5 errors disable",
+"putconfig emetcon parameters ratio 290 display 5x1 test 7 errors disable",
+"putconfig emetcon parameters ratio 25 display 5x1 test 10 errors disable",
+"putconfig emetcon parameters ratio 25 display 6x1 test 10 errors disable",
 };
 
-
-#endif

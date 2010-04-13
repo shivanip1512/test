@@ -30,7 +30,9 @@ using boost::unit_test_framework::test_suite;
 
 BOOST_AUTO_TEST_CASE(testString)
 {
-    for( int i = 0; i < TEST_SIZE; i++ )
+    const size_t test_size = sizeof(inputString) / sizeof(inputString[0]);
+
+    for( int i = 0; i < test_size; i++ )
     {
         CtiCommandParser parse(inputString[i]);
 

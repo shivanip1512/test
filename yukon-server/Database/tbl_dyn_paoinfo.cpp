@@ -131,8 +131,8 @@ const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc2          = "m
 const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc3          = "mct dnp accumulator crc3";
 const string CtiTableDynamicPaoInfo::_key_mct_dnp_accumulator_crc4          = "mct dnp accumulator crc4";
 
-const string CtiTableDynamicPaoInfo::_key_mct_centron_parameters            = "mct centron parameters";
-const string CtiTableDynamicPaoInfo::_key_mct_centron_ratio                 = "mct centron ratio";
+const string CtiTableDynamicPaoInfo::_key_mct_display_parameters            = "mct display parameters";
+const string CtiTableDynamicPaoInfo::_key_mct_transformer_ratio             = "mct transformer ratio";
 
 const string CtiTableDynamicPaoInfo::_key_mct_precanned_table_read_interval = "mct precanned table read interval";
 const string CtiTableDynamicPaoInfo::_key_mct_precanned_meter_number        = "mct precanned meter number";
@@ -233,8 +233,8 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_RelayATimer,                &_key_mct_relay_a_timer));
     retval.insert(make_pair(Key_MCT_RelayBTimer,                &_key_mct_relay_b_timer));
 
-    retval.insert(make_pair(Key_MCT_CentronParameters,          &_key_mct_centron_parameters));
-    retval.insert(make_pair(Key_MCT_CentronRatio,               &_key_mct_centron_ratio));
+    retval.insert(make_pair(Key_MCT_DisplayParameters,          &_key_mct_display_parameters));
+    retval.insert(make_pair(Key_MCT_TransformerRatio,           &_key_mct_transformer_ratio));
 
     retval.insert(make_pair(Key_MCT_PrecannedTableReadInterval, &_key_mct_precanned_table_read_interval));
     retval.insert(make_pair(Key_MCT_PrecannedMeterNumber,       &_key_mct_precanned_meter_number));

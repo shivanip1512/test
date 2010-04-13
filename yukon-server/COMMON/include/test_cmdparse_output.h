@@ -1,9 +1,8 @@
-#ifndef _TESTCMDPARSE_OUTPUT_
-#define _TESTCMDPARSE_OUTPUT_
+#pragma once
 
 #include "test_cmdparse_input.h"
 
-std::string parse_asString[TEST_SIZE] = {
+std::string parse_asString[] = {
 "command=1:flags=32::type=versacom,0,0.000",
 "command=1:flags=32::device=Test device,-1,-1.000:type=versacom,0,0.000",
 "command=1:flags=32::device= Test  multispace  device     ,-1,-1.000:type=versacom,0,0.000",
@@ -161,9 +160,47 @@ std::string parse_asString[TEST_SIZE] = {
 "command=6:flags=0::alarm_mask=(none),2432,2432.000:alarm_mask_meter=(none),17,17.000:config_byte=(none),7,7.000:type=emetcon,7,7.000",
 "command=1:flags=0::channel=(none),2,2.000:daily_read=(none),1,1.000:daily_read_date_begin=02/02/2000,-2147483648,0.000:daily_read_detail=(none),1,1.000:type=versacom,0,0.000",
 "command=1:flags=0::channel=(none),3,3.000:daily_read=(none),1,1.000:daily_read_detail=(none),1,1.000:type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000",
-"command=0:flags=0::type=versacom,0,0.000"
+"command=5:flags=0::meter_parameters=(none),1,1.000:type=versacom,0,0.000",
+"command=5:flags=0::meter_parameters=(none),1,1.000:transformer_ratio=(none),1,1.000:type=versacom,0,0.000",
+"command=5:flags=0::display_parameters=(none),1,1.000:meter_parameters=(none),1,1.000:type=versacom,0,0.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:transformer_ratio=(none),60,60.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:transformer_ratio=(none),200,200.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x3,-2147483648,0.000:display_test_duration=(none),0,0.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x3,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),400,400.000:type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=4x5,-2147483648,0.000:display_test_duration=(none),5,5.000:transformer_ratio=(none),10,10.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),7,7.000:transformer_ratio=(none),290,290.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),10,10.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
+"command=5:flags=0::meter_parameters=(none),1,1.000:type=versacom,0,0.000",
+"command=5:flags=0::meter_parameters=(none),1,1.000:transformer_ratio=(none),1,1.000:type=versacom,0,0.000",
+"command=5:flags=0::display_parameters=(none),1,1.000:meter_parameters=(none),1,1.000:type=versacom,0,0.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x1,-2147483648,0.000:display_test_duration=(none),1,1.000:transformer_ratio=(none),60,60.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_errors=(none),1,1.000:display_resolution=4x10,-2147483648,0.000:display_test_duration=(none),7,7.000:transformer_ratio=(none),200,200.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x3,-2147483648,0.000:display_test_duration=(none),0,0.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x3,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),3,3.000:transformer_ratio=(none),40,40.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),0,0.000:transformer_ratio=(none),400,400.000:type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=4x5,-2147483648,0.000:display_test_duration=(none),5,5.000:transformer_ratio=(none),10,10.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),7,7.000:transformer_ratio=(none),290,290.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),10,10.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
+"command=6:flags=0::display_resolution=6x1,-2147483648,0.000:display_test_duration=(none),10,10.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000"
 };
-
-#endif

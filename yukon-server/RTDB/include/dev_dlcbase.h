@@ -142,7 +142,7 @@ public:
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;
 
-    INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore = false );
+    INT retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore = false ) const;
     INT decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     virtual bool processAdditionalRoutes( INMESS *InMessage ) const;

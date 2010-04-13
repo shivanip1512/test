@@ -151,8 +151,8 @@ const string MCTStrings::TableReadInterval = "table read interval";
 const string MCTStrings::MeterNumber = "meter number";
 const string MCTStrings::TableType = "table type";
 const string MCTStrings::DemandMetersToScan = "demand meters to scan";
-const string MCTStrings::CentronParameters = "parameters";
-const string MCTStrings::CentronTransformerRatio = "transformer ratio";
+const string MCTStrings::DisplayParameters = "display parameters";
+const string MCTStrings::TransformerRatio = "transformer ratio";
 
 const string MCTStrings::DNPCollection1BinaryA = "collection 1 binary a";
 const string MCTStrings::DNPCollection1BinaryB = "collection 1 binary b";

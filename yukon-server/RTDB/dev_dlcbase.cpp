@@ -125,7 +125,7 @@ LONG CtiDeviceDLCBase::getAddress() const   {   return CarrierSettings.getAddres
 LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore )
+INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore ) const
 {
     CtiReturnMsg    *tmpVGRetMsg = NULL;
     CtiPointDataMsg *tmpMsg;

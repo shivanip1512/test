@@ -81,8 +81,8 @@ public:
         Key_MCT_LLPChannel2Len,
         Key_MCT_LLPChannel3Len,
         Key_MCT_LLPChannel4Len,
-        Key_MCT_CentronParameters,
-        Key_MCT_CentronRatio,
+        Key_MCT_DisplayParameters,
+        Key_MCT_TransformerRatio,
         Key_MCT_Holiday1,
         Key_MCT_Holiday2,
         Key_MCT_Holiday3,
@@ -257,8 +257,8 @@ protected:
     static const string _key_mct_relay_a_timer;
     static const string _key_mct_relay_b_timer;
 
-    static const string _key_mct_centron_parameters;
-    static const string _key_mct_centron_ratio;
+    static const string _key_mct_display_parameters;
+    static const string _key_mct_transformer_ratio;
 
     static const string _key_mct_precanned_table_read_interval;
     static const string _key_mct_precanned_meter_number;

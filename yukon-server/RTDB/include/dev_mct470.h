@@ -1,28 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct470
-*
-* Class:  CtiDeviceMCT470
-* Date:   2005-jan-03
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.48.2.1 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT470_H__
-#define __DEV_MCT470_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct4xx.h"
-#include "da_load_profile.h"
-
-#include <map>
 
 class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT4xx
 {
@@ -125,6 +103,30 @@ private:
         PointOffset_DNPCounter_Precanned7 = 541,
         PointOffset_DNPCounter_Precanned8 = 547,
     };
+
+    enum
+    {
+        Memory_ChannelOffset = 0x1a,
+
+        MaxIEDReadAge = 600,  //  in seconds
+
+        MCT430A_Sspec       = 1037,
+        MCT430S_Sspec       = 1046,
+
+        Sspec          = 1030,
+        SspecRev_Min    =    5,  //  rev  0.5
+        SspecRev_Max    =  255,  //  rev 25.5
+        SspecRev_BetaLo =    9,  //  rev  0.9
+        SspecRev_BetaHi =  200,  //  rev 20.0
+
+        SspecRev_IED_ZeroWriteMin    = 13,  //  rev 1.3
+        SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4
+        SspecRev_IED_LPExtendedRange = 26,  //  rev 2.6
+        SspecRev_IED_Precanned11     = 42,  //  rev 4.2
+    };
+
+    virtual bool isSupported(const CtiDeviceMCT4xx::Features feature) const  {  return true;  };
+    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const  {  return true;  };  //  not checking SSPECs yet
 
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, unsigned char *buf, unsigned len );
@@ -458,27 +460,6 @@ protected:
 
     unsigned long convertTimestamp(unsigned long timestamp, const CtiDate &current_date=CtiDate()) const;
 
-    enum
-    {
-        Memory_ChannelOffset = 0x1a,
-
-        MaxIEDReadAge = 600,  //  in seconds
-
-        MCT430A_Sspec       = 1037,
-        MCT430S_Sspec       = 1046,
-
-        Sspec          = 1030,
-        SspecRev_Min    =    5,  //  rev  0.5
-        SspecRev_Max    =  255,  //  rev 25.5
-        SspecRev_BetaLo =    9,  //  rev  0.9
-        SspecRev_BetaHi =  200,  //  rev 20.0
-
-        SspecRev_IED_ZeroWriteMin    = 13,  //  rev 1.3
-        SspecRev_IED_ErrorPadding    = 14,  //  rev 1.4
-        SspecRev_IED_LPExtendedRange = 26,  //  rev 2.6
-        SspecRev_IED_Precanned11     = 42,  //  rev 4.2
-    };
-
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
@@ -511,4 +492,3 @@ public:
     virtual void DecodeDatabaseReader( RWDBReader &rdr );
 };
 
-#endif // #ifndef __DEV_MCT470_H__

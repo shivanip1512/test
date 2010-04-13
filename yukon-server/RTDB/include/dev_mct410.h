@@ -1,26 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_MCT410
-*
-* Class:  CtiDeviceMCT410
-* Date:   4/24/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.71.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:28 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT410_H__
-#define __DEV_MCT410_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct4xx.h"
-#include <map>
 
 class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT4xx
 {
@@ -74,6 +54,26 @@ private:
 
     } _daily_read_info;
 
+    enum SspecInformation
+    {
+        Sspec = 1029,
+
+        SspecRev_NextGen = 40,
+
+        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
+        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
+        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
+        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
+        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
+        SspecRev_DailyRead          =   21,  //  rev  2.1
+
+        SspecRev_BetaLo =    9,  //  rev  0.9
+        SspecRev_BetaHi =  200,  //  rev 20.0
+    };
+
+    virtual bool isSupported(const CtiDeviceMCT4xx::Features f) const;
+    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
+
 protected:
 
     virtual bool getOperation( const UINT &cmd,  BSTRUCT &bst ) const;
@@ -102,14 +102,14 @@ protected:
         Memory_MeterAlarmMaskPos    = 0x0c,
         Memory_MeterAlarmMaskLen    =    2,
 
-        Memory_CentronParametersPos = 0x0f,
-        Memory_CentronParametersLen =    1,
+        Memory_DisplayParametersPos = 0x0f,
+        Memory_DisplayParametersLen =    1,
 
         Memory_CentronConfigPos     = 0x0f,  //  this combines the Parameters and Multiplier read;
         Memory_CentronConfigLen     =   11,  //    it may be less reliable on noisy circuits, since it requires 3 D words
 
-        Memory_CentronMultiplierPos = 0x19,
-        Memory_CentronMultiplierLen =    1,
+        Memory_TransformerRatioPos  = 0x19,
+        Memory_TransformerRatioLen  =    1,
 
         Memory_UniqueAddressPos     = 0x10,
         Memory_UniqueAddressLen     =    3,
@@ -286,8 +286,8 @@ protected:
         FuncWrite_CentronReadingPos    = 0xf2,
         FuncWrite_CentronReadingLen    =    8,
 
-        FuncWrite_CentronParametersPos = 0xf3,
-        FuncWrite_CentronParametersLen =    3,
+        FuncWrite_MeterParametersPos   = 0xf3,
+        FuncWrite_MeterParametersLen   =    3,
 
         FuncWrite_DisconnectConfigPos  = 0xfe,
         FuncWrite_DisconnectConfigLen  =    8,
@@ -354,14 +354,14 @@ protected:
     INT decodeGetStatusInternal    ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusLoadProfile ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetStatusFreeze      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfigCentron     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigMeterParameters( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigIntervals   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigThresholds  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigModel       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigFreeze      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigDisconnect  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigAddress     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfigPhaseDetect (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT decodeGetConfigPhaseDetect ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
@@ -373,23 +373,6 @@ public:
     enum
     {
         ChannelCount = 3,
-    };
-
-    enum SspecInformation
-    {
-        Sspec = 1029,
-
-        SspecRev_NewLLP_Min         =    9,  //  rev  0.9
-        SspecRev_TOUPeak_Min        =   13,  //  rev  1.3
-        SspecRev_NewOutage_Min      =    8,  //  rev  0.8
-        SspecRev_NewOutage_Max      =  250,  //  rev 25.0
-        SspecRev_Disconnect_Min     =    8,  //  rev  0.8
-        SspecRev_Disconnect_Cycle   =   12,  //  rev  1.2
-        SspecRev_Disconnect_ConfigReadEnhanced = 20,  //  rev 2.0
-        SspecRev_DailyRead          =   21,  //  rev  2.1
-
-        SspecRev_BetaLo =    9,  //  rev  0.9
-        SspecRev_BetaHi =  200,  //  rev 20.0
     };
 
     enum Disconnect_Raw
@@ -424,4 +407,3 @@ public:
 
 typedef boost::shared_ptr<CtiDeviceMCT410> CtiDeviceMCT410SPtr;
 
-#endif // #ifndef __DEV_MCT410_H__

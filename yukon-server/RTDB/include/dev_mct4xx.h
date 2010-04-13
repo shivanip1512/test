@@ -1,29 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct4xx
-*
-* Class:  CtiDeviceMCT4xx
-* Date:   10/5/2005
-*
-* Author: Jess M. Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.43.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:28 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT4XX_H__
-#define __DEV_MCT4XX_H__
-#pragma warning( disable : 4786)
-#include "yukon.h"
+#pragma once
 
 #include "dev_mct.h"
-#include <vector>
 #include "config_device.h"
 #include "config_data_mct.h"
 #include "ctidate.h"
+
+#include <vector>
 
 class IM_EX_DEVDB CtiDeviceMCT4xx : public CtiDeviceMCT
 {
@@ -40,8 +22,6 @@ private:
 
     int executePutConfigSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly);
     int executePutConfigMultiple(ConfigPartsList & partsList, CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly);
-
-
 
 protected:
 
@@ -171,6 +151,12 @@ protected:
         FuncRead_TOUSwitchSchedule34Len =   13,
     };
 
+    enum Features
+    {
+        Feature_LoadProfilePeakReport,
+        Feature_TouPeaks
+    };
+
     static const CtiDate DawnOfTime_Date;
 
     enum
@@ -227,6 +213,11 @@ protected:
 
     virtual CtiTime getDeviceDawnOfTime() const      { return DawnOfTime_UtcSeconds; }
     virtual bool is_valid_time(const CtiTime) const;
+
+    bool sspecAtLeast(const int rev_desired) const;
+
+    virtual bool isSupported(const Features feature) const = 0;
+    virtual bool sspecValid(const unsigned sspec, const unsigned rev) const = 0;
 
     static unsigned char crc8(const unsigned char *buf, unsigned int len);
 
@@ -329,4 +320,3 @@ public:
 
 };
 
-#endif // #ifndef __DEV_MCT4xx_H__

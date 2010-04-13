@@ -251,7 +251,6 @@ public:
 
     INT decodeGetStatusDisconnect( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
-    INT  getSSpec() const;
     bool sspecIsValid( int sspec );
     string sspecIsFrom( int sspec );
     bool isLoadProfile( int type );

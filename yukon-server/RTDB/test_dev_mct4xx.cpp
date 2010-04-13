@@ -1,24 +1,21 @@
-/*
- * test CtiDeviceMCT4xx
- *
- */
+#define BOOST_TEST_MAIN "Test dev_mct4xx"
 
 #include "dev_mct4xx.h"
 
-#include <boost/test/floating_point_comparison.hpp>
-
-#define BOOST_TEST_MAIN "Test dev_mct4xx"
 #include <boost/test/unit_test.hpp>
+#include <boost/test/floating_point_comparison.hpp>
 
 class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
 {
-    //  these virtuals should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
-    virtual const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
-    virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const   {  BOOST_CHECK(0);  return point_info();  };
-    virtual point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
-    virtual long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
-    virtual INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  BOOST_CHECK(0);  return 0;};
-    virtual ConfigPartsList getPartsList()  {  BOOST_CHECK(0);  return ConfigPartsList();  };
+    //  these placeholder pure-virtual overrides should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
+    const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
+    point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const   {  BOOST_CHECK(0);  return point_info();  };
+    point_info getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)  {  BOOST_CHECK(0);  return point_info();  };
+    long getLoadProfileInterval(unsigned channel)                                      {  BOOST_CHECK(0);  return 0;  };
+    INT decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList ) {  BOOST_CHECK(0);  return 0;};
+    ConfigPartsList getPartsList()  {  BOOST_CHECK(0);  return ConfigPartsList();  };
+    bool isSupported(const Features feature) const                  {  BOOST_CHECK(0);  return false;  };
+    bool sspecValid(const unsigned sspec, const unsigned rev) const {  BOOST_CHECK(0);  return false;  };
 
 public:
     typedef CtiDeviceMCT4xx Inherited;

@@ -1536,7 +1536,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     static const boost::regex    re_multiplier(CtiString("mult(iplier)?( kyz *") + str_num + CtiString(")?"));
     static const boost::regex    re_address("address (group|uniq)");
     static const boost::regex    re_lp_channel(CtiString(" lp channel ") + str_num);
-    static const boost::regex    re_centron("centron (ratio|parameters)");
+    static const boost::regex    re_meter_parameters("(centron|meter) (ratio|parameters)");
     static const boost::regex    re_tou_schedule("tou schedule [0-9]");
     static const boost::regex    re_dnp( CtiString("dnp ") +  str_num);
 
@@ -1742,26 +1742,26 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["disconnect"] = CtiParseValue("TRUE");
         }
-        if(CmdStr.contains(" centron"))
+        if(CmdStr.contains(" centron") ||
+           CmdStr.contains(" meter"))
         {
-            _cmd["centron"] = CtiParseValue(true);
+            _cmd["meter_parameters"] = CtiParseValue(true);
 
-            if(!(token = CmdStr.match(re_centron)).empty())
+            if(!(token = CmdStr.match(re_meter_parameters)).empty())
             {
                 CtiTokenizer cmdtok(token);
 
-                cmdtok();          //  move past "centron"
+                cmdtok();          //  move past "centron" or "meter"
 
                 temp2 = cmdtok();  //  grab the token we care about
 
-                //  if it's just "interval," get the next token
                 if( !temp2.compareTo("ratio") )
                 {
-                    _cmd["centron_ratio"] = CtiParseValue(true);
+                    _cmd["transformer_ratio"] = CtiParseValue(true);
                 }
                 if( !temp2.compareTo("parameters") )
                 {
-                    _cmd["centron_parameters"] = CtiParseValue(true);
+                    _cmd["display_parameters"] = CtiParseValue(true);
                 }
             }
         }
@@ -2188,7 +2188,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_ied_mask (CtiString(" alarmmask " )+ str_anynum + CtiString(" ") + str_anynum);
     static const boost::regex  re_group_address("group (enable|disable)");
     static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    static const boost::regex  re_centron_config("centron( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
+    static const boost::regex  re_meter_parameters("(centron|parameters)( ratio [0-9]+)?( display( [0-9]x[0-9]+)( test [0-9]+s?)( errors (en|dis)able))");
     static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
     static const boost::regex  re_loadlimit(CtiString("load limit ") + str_floatnum + CtiString(" ") + str_num);
@@ -2402,34 +2402,35 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 }
             }
         }
-        if(CmdStr.contains(" centron"))
+        if(CmdStr.contains(" centron") ||
+           CmdStr.contains(" parameters"))
         {
             CtiString temp;
 
-            if(!(token = CmdStr.match(re_centron_config)).empty())
+            if(!(token = CmdStr.match(re_meter_parameters)).empty())
             {
                 CtiTokenizer cmdtok(token);
 
-                cmdtok();  //  move past "centron"
+                cmdtok();  //  move past "centron" or "parameters"
                 temp = cmdtok();
 
                 if( !temp.compareTo("ratio") )
                 {
-                    _cmd["centron_ratio"] = CtiParseValue(atoi(cmdtok().c_str()));
+                    _cmd["transformer_ratio"] = CtiParseValue(atoi(cmdtok().c_str()));
                     cmdtok();           // move to "display"
                 }
 
                 temp = cmdtok();        // move past "display" to get the display resolution configuration
-                _cmd["centron_display"] = CtiParseValue(temp);
+                _cmd["display_resolution"] = CtiParseValue(temp);
 
                 cmdtok();               // move to "test"
-                _cmd["centron_test_duration"] = CtiParseValue(atoi(cmdtok().c_str()));
+                _cmd["display_test_duration"] = CtiParseValue(atoi(cmdtok().c_str()));
 
                 cmdtok();               // move to "errors"
                 temp = cmdtok();        // "enable" or "disable"
                 if(temp[0] == 'e')
                 {
-                    _cmd["centron_error_display"] = CtiParseValue(true);
+                    _cmd["display_errors"] = CtiParseValue(true);
                 }
             }
             if(!(token = CmdStr.match(re_centron_reading)).empty())

@@ -227,6 +227,15 @@ bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
+bool CtiDeviceMCT4xx::sspecAtLeast(const int rev_desired) const
+{
+    int sspec = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec);
+    int rev   = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
+
+    return sspecValid(sspec, rev) && rev >= rev_desired;
+}
+
+
 unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len )
 {
     const unsigned char llpcrc_poly = 0x07;
@@ -735,15 +744,14 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                     }
                     else
                     {
-                        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
-                            && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
+                        if( !isSupported(Feature_LoadProfilePeakReport) )
                         {
                             CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
 
                             if( ReturnMsg )
                             {
                                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                                ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
+                                ReturnMsg->setResultString(getName() + " / Load profile reporting not supported for this device's SSPEC revision");
 
                                 retMsgHandler( OutMessage->Request.CommandStr, ErrorInvalidSSPEC, ReturnMsg, vgList, retList, false );
 
@@ -831,14 +839,6 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                         OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
                                         OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
                                     }
-
-                                    //  add a bit of a delay so the 410 can calculate...
-                                    //    this delay may need to be increased by other means, depending
-                                    //    on how long the larger peak report calculations take
-                                    //interest_om->MessageFlags |= MessageFlag_AddSilence;
-
-                                    //outList.push_back(interest_om);
-                                    //interest_om = 0;
                                 }
                                 else
                                 {
@@ -3053,10 +3053,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             meter_reading_str = channel_str + meter_reading_str;
         }
 
-        //  NEGATIVE LOGIC - if it's a TOU read and the MCT isn't at least at MCT410::SspecRev_TOUPeak_Min, we omit the data
-        if( !((parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET))
-              && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == CtiDeviceMCT410::Sspec
-              && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <  CtiDeviceMCT410::SspecRev_TOUPeak_Min) )
+        //  If it's a total-rate read OR the MCT supports TOU peaks, include the data
+        if( (parse.getFlags() & CMD_FLAG_GV_RATEMASK == CMD_FLAG_GV_RATET) || isSupported(Feature_TouPeaks) )
         {
             insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
                                   ReturnMsg, pi_kw, peak_demand_str, kw_time);

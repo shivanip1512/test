@@ -98,10 +98,6 @@ bool CtiDeviceMCT::getMCTDebugLevel(int mask)
     return mask & mct_debuglevel;
 }
 
-INT CtiDeviceMCT::getSSpec() const
-{
-    return 0;
-}
 
 bool CtiDeviceMCT::sspecIsValid( int sspec )
 {

@@ -154,8 +154,8 @@ public:
     static const std::string MeterNumber;
     static const std::string TableType;
     static const std::string DemandMetersToScan;
-    static const std::string CentronParameters;
-    static const std::string CentronTransformerRatio;
+    static const std::string DisplayParameters;
+    static const std::string TransformerRatio;
 
     static const std::string DNPCollection1BinaryA;
     static const std::string DNPCollection1BinaryB;

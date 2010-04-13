@@ -127,8 +127,8 @@ CtiDeviceMCT410::read_key_store_t CtiDeviceMCT410::initReadKeyStore()
     readKeyStore.insert(read_key_info_t(-1, Memory_Holiday2Pos,              Memory_Holiday2Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday2));
     readKeyStore.insert(read_key_info_t(-1, Memory_Holiday3Pos,              Memory_Holiday3Len,             CtiTableDynamicPaoInfo::Key_MCT_Holiday3));
 
-    readKeyStore.insert(read_key_info_t(-1, Memory_CentronParametersPos,     Memory_CentronParametersLen,    CtiTableDynamicPaoInfo::Key_MCT_CentronParameters));
-    readKeyStore.insert(read_key_info_t(-1, Memory_CentronMultiplierPos,     Memory_CentronMultiplierLen,    CtiTableDynamicPaoInfo::Key_MCT_CentronRatio));
+    readKeyStore.insert(read_key_info_t(-1, Memory_DisplayParametersPos,     Memory_DisplayParametersLen,    CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters));
+    readKeyStore.insert(read_key_info_t(-1, Memory_TransformerRatioPos,      Memory_TransformerRatioLen,     CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio));
 
 //  function reads
 
@@ -863,7 +863,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::GetConfig_Freeze:             status = decodeGetConfigFreeze(InMessage, TimeNow, vgList, retList, outList);       break;
 
         case Emetcon::GetConfig_Multiplier:
-        case Emetcon::GetConfig_CentronParameters:  status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);      break;
+        case Emetcon::GetConfig_MeterParameters:    status = decodeGetConfigMeterParameters(InMessage, TimeNow, vgList, retList, outList);      break;
         // Intentional fall through
         case Emetcon::GetConfig_PhaseDetectArchive:
         case Emetcon::GetConfig_PhaseDetect:        status = decodeGetConfigPhaseDetect(InMessage, TimeNow, vgList, retList, outList);      break;
@@ -1055,13 +1055,13 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             OutMessage->Buffer.BSt.Message[3] = ( uadd      ) & 0x0000ff;
         }
     }
-    else if( parse.isKeyValid("centron_display") &&
-             parse.isKeyValid("centron_test_duration") )
+    else if( parse.isKeyValid("display_resolution") &&
+             parse.isKeyValid("display_test_duration") )
     {
-        unsigned char centron_config = 0x00;  //  default, see sspec for details
+        unsigned char meter_parameters = 0x00;  //  default, see sspec for details
 
-        OutMessage->Buffer.BSt.Function = FuncWrite_CentronParametersPos;
-        OutMessage->Buffer.BSt.Length   = FuncWrite_CentronParametersLen;
+        OutMessage->Buffer.BSt.Function = FuncWrite_MeterParametersPos;
+        OutMessage->Buffer.BSt.Length   = FuncWrite_MeterParametersLen;
         OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
 
         OutMessage->Sequence            = Emetcon::PutConfig_Multiplier;
@@ -1070,60 +1070,61 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
         OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
 
-        string display = parse.getsValue("centron_display");
+        string display = parse.getsValue("display_resolution");
 
-        if(      !display.compare("5x1")  )     centron_config |= 0x00;
-        else if( !display.compare("4x1")  )     centron_config |= 0x01;
-        else if( !display.compare("4x10") )     centron_config |= 0x02;
+        if(      !display.compare("5x1")  )     meter_parameters |= 0x00;
+        else if( !display.compare("4x1")  )     meter_parameters |= 0x01;
+        else if( !display.compare("4x10") )     meter_parameters |= 0x02;
+        else if( !display.compare("6x1") )      meter_parameters |= 0x03;
         else
         {
             found = false;
             nRet  = ExecutionComplete;
 
             returnErrorMessage(BADPARAM, OutMessage, retList,
-                               "Invalid Centron display configuration \"" + display + "\"");
+                               "Invalid display configuration \"" + display + "\"");
         }
 
         if( nRet != ExecutionComplete )
         {
-            int test = parse.getiValue("centron_test_duration");
-    
-            if(      test == 0 )  centron_config |= 0x00;
-            else if( test == 1 )  centron_config |= 0x04;
-            else if( test == 7 )  centron_config |= 0x0c;
+            int test = parse.getiValue("display_test_duration");
+
+            if(      test == 0 )  meter_parameters |= 0x00;
+            else if( test == 1 )  meter_parameters |= 0x04;
+            else if( test == 7 )  meter_parameters |= 0x0c;
             else
             {
                 found = false;
                 nRet  = ExecutionComplete;
-    
+
                 returnErrorMessage(BADPARAM, OutMessage, retList,
-                                   "Invalid Centron test duration \"" + CtiNumStr(test) + "\"");
+                                   "Invalid test duration \"" + CtiNumStr(test) + "\"");
             }
 
             if( nRet != ExecutionComplete )
             {
-                if( parse.isKeyValid("centron_error_display") )
+                if( parse.isKeyValid("display_errors") )
                 {
-                    centron_config |= 0x10;
+                    meter_parameters |= 0x10;
                 }
-        
-                OutMessage->Buffer.BSt.Message[1] = centron_config;
-        
-                if( parse.isKeyValid("centron_ratio") )
+
+                OutMessage->Buffer.BSt.Message[1] = meter_parameters;
+
+                if( parse.isKeyValid("transformer_ratio") )
                 {
-                    int centron_ratio = parse.getiValue("centron_ratio");
-        
-                    if( centron_ratio > 0 && centron_ratio <= 255 )
+                    int transformer_ratio = parse.getiValue("transformer_ratio");
+
+                    if( transformer_ratio > 0 && transformer_ratio <= 255 )
                     {
-                        OutMessage->Buffer.BSt.Message[2] = (unsigned char)parse.getiValue("centron_ratio");
+                        OutMessage->Buffer.BSt.Message[2] = (unsigned char)parse.getiValue("transformer_ratio");
                     }
                     else
                     {
                         found = false;
                         nRet  = ExecutionComplete;
-        
+
                         returnErrorMessage(BADPARAM, OutMessage, retList,
-                                           "Invalid Centron multiplier (" + CtiNumStr(centron_ratio) + ")");
+                                           "Invalid transformer ratio (" + CtiNumStr(transformer_ratio) + ")");
                     }
                 }
                 else
@@ -1886,25 +1887,25 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 
         OutMessage->Sequence = Emetcon::GetConfig_UniqueAddress;
     }
-    else if( parse.isKeyValid("centron") )
+    else if( parse.isKeyValid("meter_parameters") )
     {
         found = true;
 
-        if( parse.isKeyValid("centron_ratio") )
+        if( parse.isKeyValid("transformer_ratio") )
         {
-            OutMessage->Buffer.BSt.Function = Memory_CentronMultiplierPos;
-            OutMessage->Buffer.BSt.Length   = Memory_CentronMultiplierLen;
+            OutMessage->Buffer.BSt.Function = Memory_TransformerRatioPos;
+            OutMessage->Buffer.BSt.Length   = Memory_TransformerRatioLen;
             OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
 
             OutMessage->Sequence = Emetcon::GetConfig_Multiplier;
         }
-        else if( parse.isKeyValid("centron_parameters") )
+        else if( parse.isKeyValid("display_parameters") )
         {
-            OutMessage->Buffer.BSt.Function = Memory_CentronParametersPos;
-            OutMessage->Buffer.BSt.Length   = Memory_CentronParametersLen;
+            OutMessage->Buffer.BSt.Function = Memory_DisplayParametersPos;
+            OutMessage->Buffer.BSt.Length   = Memory_DisplayParametersLen;
             OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
 
-            OutMessage->Sequence = Emetcon::GetConfig_CentronParameters;
+            OutMessage->Sequence = Emetcon::GetConfig_MeterParameters;
         }
         else
         {
@@ -1912,7 +1913,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
             OutMessage->Buffer.BSt.Length   = Memory_CentronConfigLen;
             OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
 
-            OutMessage->Sequence = Emetcon::GetConfig_CentronParameters;
+            OutMessage->Sequence = Emetcon::GetConfig_MeterParameters;
         }
     }
     else if( parse.isKeyValid("freeze") )
@@ -2162,8 +2163,8 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
             long parameters, ratio, spid;
 
             MCTCentronSPtr config = boost::static_pointer_cast< ConfigurationPart<MCTCentron> >(tempBasePtr);
-            parameters = config->getLongValueFromKey(CentronParameters);
-            ratio = config->getLongValueFromKey(CentronTransformerRatio);
+            parameters = config->getLongValueFromKey(DisplayParameters);
+            ratio = config->getLongValueFromKey(TransformerRatio);
             spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
             if( spid == numeric_limits<long>::min() )
@@ -2187,13 +2188,13 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
             else
             {
                 if(parse.isKeyValid("force")
-                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronParameters) != parameters
-                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_CentronRatio)      != ratio )
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DisplayParameters)  != parameters
+                   || getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TransformerRatio) != ratio )
                 {
                     if( !parse.isKeyValid("verify") )
                     {
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_CentronParametersPos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_CentronParametersLen;
+                        OutMessage->Buffer.BSt.Function   = FuncWrite_MeterParametersPos;
+                        OutMessage->Buffer.BSt.Length     = FuncWrite_MeterParametersLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Function_Write;
                         OutMessage->Buffer.BSt.Message[0] = (spid);
                         OutMessage->Buffer.BSt.Message[1] = (parameters);
@@ -2201,14 +2202,14 @@ int CtiDeviceMCT410::executePutConfigCentron(CtiRequestMsg *pReq,CtiCommandParse
 
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        OutMessage->Buffer.BSt.Function   = Memory_CentronParametersPos;
-                        OutMessage->Buffer.BSt.Length     = Memory_CentronParametersLen;
+                        OutMessage->Buffer.BSt.Function   = Memory_DisplayParametersPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_DisplayParametersLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        OutMessage->Buffer.BSt.Function   = Memory_CentronMultiplierPos;
-                        OutMessage->Buffer.BSt.Length     = Memory_CentronMultiplierLen;
+                        OutMessage->Buffer.BSt.Function   = Memory_TransformerRatioPos;
+                        OutMessage->Buffer.BSt.Length     = Memory_TransformerRatioLen;
                         OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
                         outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
                         OutMessage->Priority             += 1;//return to normal
@@ -2847,8 +2848,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == Sspec &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min )
+                if( sspecAtLeast(SspecRev_NewOutage_Min) )
                 {
                     /*
                     Units of outage:
@@ -3843,7 +3843,7 @@ INT CtiDeviceMCT410::decodeGetConfigFreeze(INMESS *InMessage, CtiTime &TimeNow, 
     return status;
 }
 
-INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT410::decodeGetConfigMeterParameters(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -3856,19 +3856,18 @@ INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow,
 
         CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
         string resultString;
-        int centron_multiplier = -1;
+        int transformer_ratio = -1;
 
-        if( InMessage->Sequence == Emetcon::GetConfig_CentronParameters )
+        if( InMessage->Sequence == Emetcon::GetConfig_MeterParameters )
         {
-            resultString = getName() + " / Centron Parameters:\n";
+            resultString = getName() + " / Meter Parameters:\n";
 
             switch( DSt->Message[0] & 0x03 )
             {
                 case 0x0:   resultString += "5x1 display (5 digits, 1kWHr resolution)\n";   break;
                 case 0x1:   resultString += "4x1 display (4 digits, 1kWHr resolution)\n";   break;
                 case 0x2:   resultString += "4x10 display (4 digits, 10kWHr resolution)\n"; break;
-                case 0x3:
-                default:    resultString += "Unknown display resolution (" + CtiNumStr(DSt->Message[0] & 0x03) + ")\n";
+                case 0x3:   resultString += "6x1 display (6 digits, 1kWHr resolution)\n";   break;
             }
 
             resultString += "LCD segment test ";
@@ -3888,17 +3887,17 @@ INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow,
             //  they did the long read, so assign the multiplier
             if( DSt->Length >= 11 )
             {
-                centron_multiplier = DSt->Message[10];
+                transformer_ratio = DSt->Message[10];
             }
         }
         else if( InMessage->Sequence == Emetcon::GetConfig_Multiplier )
         {
-            centron_multiplier = DSt->Message[0];
+            transformer_ratio = DSt->Message[0];
         }
 
-        if( centron_multiplier >= 0 )
+        if( transformer_ratio >= 0 )
         {
-            resultString += getName() + " / Centron Multiplier: " + CtiNumStr(centron_multiplier);
+            resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
@@ -4316,5 +4315,39 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
     }
 
     return status;
+}
+
+
+bool CtiDeviceMCT410::isSupported(const Features feature) const
+{
+    switch( feature )
+    {
+        case Feature_LoadProfilePeakReport:
+        {
+            return sspecAtLeast(SspecRev_NewLLP_Min);
+        }
+        case Feature_TouPeaks:
+        {
+            return sspecAtLeast(SspecRev_TOUPeak_Min);
+        }
+        default:
+        {
+            return false;
+        }
+    }
+}
+
+
+bool CtiDeviceMCT410::sspecValid(const unsigned sspec, const unsigned rev) const
+{
+    if( rev >= SspecRev_NextGen )
+    {
+        //  next-gen SSPEC is 10290-10299, split per meter type
+        return (sspec / 10) == Sspec;
+    }
+    else
+    {
+        return sspec == Sspec;
+    }
 }
 
