@@ -39,8 +39,6 @@ public final class UserUtils
 		CAT_YUKON
 	};
 	
-	
-	
 	public static final boolean isReadOnlyCategory( String cat_ )
 	{
 		for( int i = 0; i < ALL_CATEGORIES.length; i++ )
@@ -52,17 +50,6 @@ public final class UserUtils
 		return false;
 	}
 
-	/**
-	 * Checks to see if the given YukonUser is disabled
-	 */
-    public static synchronized boolean isUserDisabled(LiteYukonUser liteYukonUser) {
-        if (liteYukonUser == null) {
-            return true;
-        } else {
-            return LoginStatusEnum.DISABLED.equals(liteYukonUser.getLoginStatus());
-        }
-    }
-	
 	public static LiteYukonUser getYukonUser() {
 	    return new LiteYukonUser(USER_YUKON_ID, "yukon", LoginStatusEnum.ENABLED);
 	}
