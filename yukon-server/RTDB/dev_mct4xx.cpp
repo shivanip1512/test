@@ -3045,6 +3045,16 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         string peak_demand_str   = "Peak Demand",
                meter_reading_str = "Meter Reading";
 
+        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  peak_demand_str += " rate A";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  peak_demand_str += " rate B";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  peak_demand_str += " rate C";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  peak_demand_str += " rate D";
+
+        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  meter_reading_str += " rate A";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  meter_reading_str += " rate B";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  meter_reading_str += " rate C";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  meter_reading_str += " rate D";
+
         if( parse.getiValue("channel") > 1 )
         {
             string channel_str = "Channel " + CtiNumStr(parse.getiValue("channel")) + " ";
@@ -3053,8 +3063,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             meter_reading_str = channel_str + meter_reading_str;
         }
 
-        //  If it's a total-rate read OR the MCT supports TOU peaks, include the data
-        if( (parse.getFlags() & CMD_FLAG_GV_RATEMASK == CMD_FLAG_GV_RATET) || isSupported(Feature_TouPeaks) )
+        //  If it's not a TOU read OR the MCT supports TOU peaks, include the peak data
+        if( !(parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) || isSupported(Feature_TouPeaks) )
         {
             insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
                                   ReturnMsg, pi_kw, peak_demand_str, kw_time);
