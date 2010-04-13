@@ -37,7 +37,7 @@
     <entry key="yukon.web.modules.operator.applianceEdit.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.yearManufactured">Year Manufactured</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.kwCapacity">KW Capacity</entry>
-    <entry key="yukon.web.modules.operator.applianceEdit.efficiencyRating">efficiencyRating</entry>
+    <entry key="yukon.web.modules.operator.applianceEdit.efficiencyRating">Efficiency Rating</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.notes">Notes</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.tonnage">Year Manufactured</entry>
     <entry key="yukon.web.modules.operator.applianceEdit.applianceType">Appliance Type</entry>
@@ -105,7 +105,7 @@
     <entry key="yukon.web.modules.operator.applianceEdit.applianceUpdated">Appliance Updated</entry>
 
     <!-- Validation -->
-	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be 4 numbers in length.</entry>
+	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be 4 digits in length.</entry>
 	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.kwCapacity">KW Capacity must be a number and can only be 14 numbers in length.</entry>
 	<entry key="yukon.web.modules.operator.applianceEdit.typeMismatch.efficiencyRating">Efficiency Rating must be a number and can only be 14 numbers in length.</entry>
 

@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -19,7 +19,7 @@ import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
 
 public class StarsApplianceDaoImpl implements StarsApplianceDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private StarsDatabaseCache starsDatabaseCache;
     
     @Override
@@ -37,7 +37,7 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         ParameterizedRowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
         
-        List<LiteStarsAppliance> list = simpleJdbcTemplate.query(sql, rowMapper, accountId);
+        List<LiteStarsAppliance> list = yukonJdbcTemplate.query(sql, rowMapper, accountId);
         return list;
     }
     
@@ -56,25 +56,26 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         ParameterizedRowMapper<LiteStarsAppliance> unassignedAppRowMapper = createUnassignedAppRowMapper(energyCompany);
         
-        List<LiteStarsAppliance> list = simpleJdbcTemplate.query(sql, unassignedAppRowMapper, accountId);
+        List<LiteStarsAppliance> list = yukonJdbcTemplate.query(sql, unassignedAppRowMapper, accountId);
         return list;
     }    
     
     @Override
     public LiteStarsAppliance getByApplianceIdAndEnergyCompanyId(int applianceId, int energyCompanyId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT AccountID,ApplianceCategoryID,ProgramID,YearManufactured,");
-        sqlBuilder.append(" ManufacturerID,LocationID,KWCapacity,EfficiencyRating,Notes,ModelNumber,");
-        sqlBuilder.append(" InventoryID,ab.ApplianceID,AddressingGroupID,LoadNumber");
-        sqlBuilder.append("FROM ApplianceBase ab");
-        sqlBuilder.append("LEFT JOIN LMHardwareConfiguration LMHC ON ab.ApplianceID = LMHC.ApplianceID");
-        sqlBuilder.append("WHERE ab.ApplianceId = ?");
-        final String sql = sqlBuilder.toString();
+        sqlBuilder.append("SELECT AB.AccountId, AB.ApplianceCategoryId, AB.ProgramId,");
+        sqlBuilder.append("       AB.YearManufactured, AB.ManufacturerId, AB.LocationId,");
+        sqlBuilder.append("       AB.KWCapacity, AB.EfficiencyRating, AB.Notes, AB.ModelNumber,");
+        sqlBuilder.append("       LMHC.InventoryId, AB.ApplianceId, LMHC.AddressingGroupId,");
+        sqlBuilder.append("       LMHC.LoadNumber ");
+        sqlBuilder.append("FROM ApplianceBase AB");
+        sqlBuilder.append("LEFT JOIN LMHardwareConfiguration LMHC ON AB.ApplianceId = LMHC.ApplianceId");
+        sqlBuilder.append("WHERE AB.ApplianceId").eq(applianceId);
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         ParameterizedRowMapper<LiteStarsAppliance> rowMapper = createRowMapper(energyCompany);
         
-        LiteStarsAppliance liteStarsAppliance = simpleJdbcTemplate.queryForObject(sql, rowMapper, applianceId);
+        LiteStarsAppliance liteStarsAppliance = yukonJdbcTemplate.queryForObject(sqlBuilder, rowMapper);
         return liteStarsAppliance;
         
     }
@@ -147,8 +148,8 @@ public class StarsApplianceDaoImpl implements StarsApplianceDao {
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Autowired

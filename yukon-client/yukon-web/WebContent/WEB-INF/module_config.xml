@@ -957,15 +957,13 @@
                     <link>/spring/stars/operator/appliances/applianceList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
                     <pages>
-                        <page name="applianceEdit" type="DETAIL_CHILD">
+                        <page name="applianceEdit" type="DETAIL">
                             <menu>account</menu>
-                            <link>/spring/stars/operator/appliances/applianceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;applianceId=${applianceId}</link>
-                            <labelArgument>${accountNumber}</labelArgument>
+                            <labelArgument>${applianceCategoryName}</labelArgument>
                         </page>
-                        <page name="applianceNew" type="DETAIL_CHILD">
+                        <page name="applianceNew" type="DETAIL">
                             <menu>account</menu>
-                            <link>/spring/stars/operator/appliances/applianceNew?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;applianceId=${applianceId}</link>
-                            <labelArgument>${accountNumber}</labelArgument>
+                            <labelArgument>${applianceCategoryName}</labelArgument>
                         </page>
                     </pages>
                 </page>

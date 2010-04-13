@@ -56,175 +56,213 @@ public class OperatorApplianceController {
     private StarsApplianceDao starsApplianceDao;
     private StarsApplianceService starsApplianceService;
     private StarsDatabaseCache starsDatabaseCache;
-    
+
     // APPLIANCE LIST
     @RequestMapping
-    public String applianceList(ModelMap modelMap, 
-                                 YukonUserContext userContext,
-                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+    public String applianceList(ModelMap modelMap,
+                                YukonUserContext userContext,
+                                AccountInfoFragment accountInfoFragment) 
+            throws ServletRequestBindingException {
 
         List<DisplayableApplianceListEntry> displayableApplianceListEntries = 
-            displayableApplianceService.getDisplayableApplianceListEntries(accountInfoFragment.getAccountId());
-        Collections.sort(displayableApplianceListEntries, DisplayableApplianceListEntry.APPLIANCE_NAME_COMPARATOR);
+            displayableApplianceService.getDisplayableApplianceListEntries(
+                                            accountInfoFragment.getAccountId());
+        Collections.sort(displayableApplianceListEntries,
+                         DisplayableApplianceListEntry.APPLIANCE_NAME_COMPARATOR);
         modelMap.addAttribute("displayableApplianceListEntries", displayableApplianceListEntries);
 
-        List<ApplianceCategory> applianceCategories = applianceCategoryDao.findApplianceCategories(accountInfoFragment.getAccountId());
+        List<ApplianceCategory> applianceCategories = 
+            applianceCategoryDao.findApplianceCategories(accountInfoFragment.getAccountId());
         Collections.sort(applianceCategories, ApplianceCategory.NAME_COMPARATOR);
-        modelMap.addAttribute("applianceCategories",applianceCategories);
-        
+        modelMap.addAttribute("applianceCategories", applianceCategories);
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/appliance/applianceList.jsp";
     }
 
-    
     // APPLIANCE NEW
     @RequestMapping
-    public String applianceNew(int applianceCategoryId,
-                                ModelMap modelMap, 
-                                YukonUserContext userContext,
-                                AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        
+    public String applianceNew(int applianceCategoryId, ModelMap modelMap,
+                               YukonUserContext userContext,
+                               AccountInfoFragment accountInfoFragment) 
+            throws ServletRequestBindingException {
+
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         StarsAppliance starsAppliance = new StarsAppliance();
         starsAppliance.setApplianceCategory(applianceCategory);
         modelMap.addAttribute("starsAppliance", starsAppliance);
-        
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         modelMap.addAttribute("mode", PageEditMode.CREATE);
-        
+
+        modelMap.addAttribute("applianceCategoryName", applianceCategory.getName());
+
         return "operator/appliance/applianceNew.jsp";
     }
-    
+
     // APPLIANCE CREATE
     @RequestMapping
     public String applianceCreate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
-                                   BindingResult bindingResult,
-                                   ModelMap modelMap, 
-                                   YukonUserContext userContext,
-                                   HttpSession session,
-                                   FlashScope flashScope,
-                                   AccountInfoFragment accountInfoFragment) {
+                                  BindingResult bindingResult,
+                                  ModelMap modelMap,
+                                  YukonUserContext userContext,
+                                  HttpSession session, FlashScope flashScope,
+                                  AccountInfoFragment accountInfoFragment) {
 
-        ApplianceCategory applianceCategory = applianceCategoryDao.getById(starsAppliance.getApplianceCategory().getApplianceCategoryId());
+        ApplianceCategory applianceCategory = 
+            applianceCategoryDao.getById(starsAppliance.getApplianceCategory().getApplianceCategoryId());
         starsAppliance.setApplianceCategory(applianceCategory);
-        
+
         // validate/create
         try {
-            
+
             applianceValidator.validate(starsAppliance, bindingResult);
-            
+
             if (!bindingResult.hasErrors()) {
-                starsApplianceService.createStarsAppliance(starsAppliance, accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
+                starsApplianceService.createStarsAppliance(starsAppliance,
+                                                           accountInfoFragment.getEnergyCompanyId(),
+                                                           accountInfoFragment.getAccountId());
+                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
+                                         EventUtils.EVENT_CATEGORY_ACCOUNT,
+                                         YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
+                                         accountInfoFragment.getAccountId(),
+                                         session);
             }
         } finally {
-            
-            setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, starsAppliance.getApplianceID());
+
+            setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
+                                       starsAppliance.getApplianceID());
+
             if (bindingResult.hasErrors()) {
-                
-                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                List<MessageSourceResolvable> messages = 
+                    YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                 modelMap.addAttribute("mode", PageEditMode.CREATE);
-                
+
                 return "operator/appliance/applianceNew.jsp";
-            } 
+            }
         }
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.applianceEdit.applianceCreated"));
-        
-        setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, starsAppliance.getApplianceID());
+
+        flashScope.setConfirm(new YukonMessageSourceResolvable(
+                                      "yukon.web.modules.operator.applianceEdit.applianceCreated"));
+
+        setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
+                                   starsAppliance.getApplianceID());
         return "redirect:applianceEdit";
     }
-    
+
     // APPLIANCE EDIT
     @RequestMapping
-    public String applianceEdit(int applianceId,
-                                 ModelMap modelMap,
-                                 YukonUserContext userContext,
-                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        
+    public String applianceEdit(int applianceId, ModelMap modelMap,
+                                YukonUserContext userContext,
+                                AccountInfoFragment accountInfoFragment)
+            throws ServletRequestBindingException {
+
         // Appliance Information
-        LiteStarsAppliance liteStarsAppliance = starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId, accountInfoFragment.getEnergyCompanyId());
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
-        StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteStarsAppliance, energyCompany);
+        LiteStarsAppliance liteStarsAppliance = 
+            starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId,
+                                                                 accountInfoFragment.getEnergyCompanyId());
+        LiteStarsEnergyCompany energyCompany = 
+            starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
+        StarsAppliance starsAppliance = StarsLiteFactory.createStarsAppliance(liteStarsAppliance,
+                                                                              energyCompany);
         modelMap.addAttribute("starsAppliance", starsAppliance);
 
         // Enrollment
-        DisplayableInventoryEnrollment displayableInventoryEnrollment =
+        DisplayableInventoryEnrollment displayableInventoryEnrollment = 
             displayableInventoryEnrollmentDao.find(accountInfoFragment.getAccountId(),
                                                    liteStarsAppliance.getInventoryID(),
                                                    liteStarsAppliance.getProgramID());
-        modelMap.addAttribute("displayableInventoryEnrollment", displayableInventoryEnrollment);
-        
+        modelMap.addAttribute("displayableInventoryEnrollment",
+                              displayableInventoryEnrollment);
+
         // Hardware Summary
-        if (liteStarsAppliance.getInventoryID() > 0){
-            HardwareDto hardwareDto = hardwareService.getHardwareDto(liteStarsAppliance.getInventoryID(), accountInfoFragment.getEnergyCompanyId());
+        if (liteStarsAppliance.getInventoryID() > 0) {
+            HardwareDto hardwareDto = 
+                hardwareService.getHardwareDto(liteStarsAppliance.getInventoryID(),
+                                               accountInfoFragment.getEnergyCompanyId());
             modelMap.addAttribute("hardware", hardwareDto);
         }
-        
+
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, applianceId);
         modelMap.addAttribute("mode", PageEditMode.EDIT);
-        
+        modelMap.addAttribute("applianceCategoryName",
+                              liteStarsAppliance.getApplianceCategory().getName());
+
         return "operator/appliance/applianceEdit.jsp";
     }
-    
+
     // APPLIANCE UPDATE
     @RequestMapping
-    public String applianceUpdate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance, 
+    public String applianceUpdate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
                                    BindingResult bindingResult,
-                                   ModelMap modelMap, 
+                                   ModelMap modelMap,
                                    YukonUserContext userContext,
-                                   HttpSession session,
-                                   FlashScope flashScope,
+                                   HttpSession session, FlashScope flashScope,
                                    AccountInfoFragment accountInfoFragment) {
 
         // validate/update
         try {
-            
-            applianceValidator.validate(starsAppliance, bindingResult);
-            
-            if (!bindingResult.hasErrors()) {
-                ApplianceCategory applianceCategory = applianceCategoryDao.getById(starsAppliance.getApplianceCategory().getApplianceCategoryId());
-                starsAppliance.setApplianceCategory(applianceCategory);
 
-                starsApplianceService.updateStarsAppliance(starsAppliance, accountInfoFragment.getEnergyCompanyId());
-                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
+            applianceValidator.validate(starsAppliance, bindingResult);
+
+            if (!bindingResult.hasErrors()) {
+                ApplianceCategory applianceCategory = 
+                    applianceCategoryDao.getById(starsAppliance.getApplianceCategory().getApplianceCategoryId());
+
+                starsAppliance.setApplianceCategory(applianceCategory);
+                starsApplianceService.updateStarsAppliance(starsAppliance,
+                                                           accountInfoFragment.getEnergyCompanyId());
+                EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
+                                         EventUtils.EVENT_CATEGORY_ACCOUNT,
+                                         YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
+                                         accountInfoFragment.getAccountId(),
+                                         session);
             }
         } finally {
-            
-            setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, starsAppliance.getApplianceID());
+
+            setupApplianceEditModelMap(accountInfoFragment, modelMap,
+                                       userContext,
+                                       starsAppliance.getApplianceID());
             if (bindingResult.hasErrors()) {
-                
-                List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+
+                List<MessageSourceResolvable> messages = 
+                    YukonValidationUtils.errorsForBindingResult(bindingResult);
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-                
+
                 return "operator/appliance/applianceEdit.jsp";
-            } 
+            }
         }
-        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.applianceEdit.applianceUpdated"));
-        
-        setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, starsAppliance.getApplianceID());
+
+        flashScope.setConfirm(new YukonMessageSourceResolvable(
+                                      "yukon.web.modules.operator.applianceEdit.applianceUpdated"));
+
+        setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
+                                   starsAppliance.getApplianceID());
         return "redirect:applianceEdit";
     }
-    
-    
-    
+
     // APPLIANCE DELETE
     @RequestMapping
-    public String applianceDelete(int applianceId,
-                                   ModelMap modelMap,
-                                   AccountInfoFragment accountInfoFragment,
-                                   YukonUserContext userContext,
-                                   HttpSession session) throws ServletRequestBindingException {
+    public String applianceDelete(int applianceId, ModelMap modelMap,
+                                  AccountInfoFragment accountInfoFragment,
+                                  YukonUserContext userContext,
+                                  HttpSession session)
+            throws ServletRequestBindingException {
 
-        starsApplianceService.removeStarsAppliance(applianceId, accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountNumber(), userContext.getYukonUser());
-        EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, accountInfoFragment.getAccountId(), session);
-        
+        starsApplianceService.removeStarsAppliance(applianceId,
+                                                   accountInfoFragment.getEnergyCompanyId(),
+                                                   accountInfoFragment.getAccountNumber(),
+                                                   userContext.getYukonUser());
+        EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
+                                 EventUtils.EVENT_CATEGORY_ACCOUNT,
+                                 YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
+                                 accountInfoFragment.getAccountId(), session);
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:applianceList";
     }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
 
@@ -235,10 +273,13 @@ public class OperatorApplianceController {
         }
 
     }
-    
+
     // MISC MODEL ITEMS FOR APPLIANCE EDIT
-    private void setupApplianceEditModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, YukonUserContext userContext, int applianceId) {
-        
+    private void setupApplianceEditModelMap(AccountInfoFragment accountInfoFragment,
+                                              ModelMap modelMap,
+                                              YukonUserContext userContext,
+                                              int applianceId) {
+
         modelMap.addAttribute("applianceId", applianceId);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
     }
@@ -247,27 +288,29 @@ public class OperatorApplianceController {
     public void setApplianceValidator(ApplianceValidator applianceValidator) {
         this.applianceValidator = applianceValidator;
     }
-    
+
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;
     }
-    
+
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
     }
 
     @Autowired
-    public void setDisplayableApplianceService(DisplayableApplianceService displayableApplianceService) {
+    public void setDisplayableApplianceService(
+                      DisplayableApplianceService displayableApplianceService) {
         this.displayableApplianceService = displayableApplianceService;
     }
 
     @Autowired
-    public void setDisplayableInventoryEnrollmentDao(DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
+    public void setDisplayableInventoryEnrollmentDao(
+                      DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
         this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
     }
-    
+
     @Autowired
     public void setHardwareService(HardwareService hardwareService) {
         this.hardwareService = hardwareService;
@@ -277,7 +320,7 @@ public class OperatorApplianceController {
     public void setStarsApplianceDao(StarsApplianceDao starsApplianceDao) {
         this.starsApplianceDao = starsApplianceDao;
     }
-    
+
     @Autowired
     public void setStarsApplianceService(StarsApplianceService starsApplianceService) {
         this.starsApplianceService = starsApplianceService;

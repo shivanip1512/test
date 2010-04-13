@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
@@ -25,7 +26,11 @@
                                      <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                      <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                  </cti:url>
-                                 <a href="${editApplianceUrl}">${displayableApplianceListEntry.applianceName}</a>
+                                 <a href="${editApplianceUrl}">
+                                     <spring:htmlEscape defaultHtmlEscape="true">
+                                         ${displayableApplianceListEntry.applianceName}
+                                     </spring:htmlEscape>
+                                 </a>
                              </td>
                              <c:choose>
                                 <c:when test="${displayableApplianceListEntry.assignedProgramName eq '(none)' or
@@ -33,8 +38,12 @@
                                     <td colspan="2"><i:inline key=".applianceNotAssigned"/></td>
                                 </c:when>
                                 <c:otherwise>
-                                    <td>${displayableApplianceListEntry.serialNumber}</td>
-                                    <td>${displayableApplianceListEntry.assignedProgramName}</td>
+                                    <td><spring:htmlEscape defaultHtmlEscape="true">
+                                        ${displayableApplianceListEntry.serialNumber}
+                                    </spring:htmlEscape></td>
+                                    <td><spring:htmlEscape defaultHtmlEscape="true">
+                                        ${displayableApplianceListEntry.assignedProgramName}
+                                    </spring:htmlEscape></td>
                                 </c:otherwise>
                              </c:choose>
                              <td>
@@ -61,7 +70,11 @@
                                      <tr align="right"><td>
                                          <select name="applianceCategoryId">
                                              <c:forEach var="applianceCategory" items="${applianceCategories}">
-                                                 <option value="${applianceCategory.applianceCategoryId}">${applianceCategory.name}</option>
+                                                 <option value="${applianceCategory.applianceCategoryId}">
+                                                    <spring:htmlEscape defaultHtmlEscape="true">
+                                                        ${applianceCategory.name}
+                                                    </spring:htmlEscape>
+                                                </option>
                                              </c:forEach>
                                          </select>
                                      </td></tr>
