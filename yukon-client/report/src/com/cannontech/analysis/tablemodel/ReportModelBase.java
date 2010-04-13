@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.report.modules.output.csv.CSVQuoter;
 import org.springframework.dao.DataAccessException;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
@@ -481,6 +483,42 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 
                 //Unload billingGroups
                 setBillingGroups(null);   
+                
+            // SINGLE PAO ID SELECT BY PICKER
+            } else if(getFilterModelType().equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {
+                
+            	Integer paoId = null;
+            	try {
+            		paoId = ServletRequestUtils.getIntParameter(req, ReportModelBase.ATT_FILTER_MODEL_VALUES);
+            	} catch (ServletRequestBindingException e) {
+            		// leave null. param was not a number for some reason.
+            	}
+            	
+            	if (paoId != null) {
+            		setPaoIDs(new int[]{paoId.intValue()});
+            	} else {
+            		setPaoIDs(null);
+            	}
+            	
+            	setBillingGroups(null);
+                
+             // MULTI PAO ID SELECT BY PICKER
+            } else if(getFilterModelType().equals(ReportFilter.PROGRAM) ||
+            		  getFilterModelType().equals(ReportFilter.LMGROUP) ||
+            		  getFilterModelType().equals(ReportFilter.LMCONTROLAREA)) {
+            	
+            	String filterValuesStr = ServletRequestUtils.getStringParameter(req, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
+            	int[] paoIdsArray = com.cannontech.common.util.StringUtils.parseIntString(filterValuesStr);
+            	
+            	if (paoIdsArray.length > 0) {
+            		setPaoIDs(paoIdsArray);
+            	} else {
+            		setPaoIDs(null);
+            	}
+            	
+            	setBillingGroups(null);
+            	
+            // MULTI PAO ID SELECT BY SELECT
             } else { //Load PaobjectID int values
 
             	String[] paramArray = req.getParameterValues(ATT_FILTER_MODEL_VALUES);

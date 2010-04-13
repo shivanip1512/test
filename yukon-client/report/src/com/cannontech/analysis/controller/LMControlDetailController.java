@@ -1,6 +1,6 @@
 package com.cannontech.analysis.controller;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +12,9 @@ import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
 import com.cannontech.analysis.tablemodel.LMControlDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.util.ServletUtil;
+import com.google.common.collect.Sets;
 
 public class LMControlDetailController extends ReportControllerBase {
     
@@ -60,12 +62,10 @@ public class LMControlDetailController extends ReportControllerBase {
         lmControlDetailModel.setLiteUser(ServletUtil.getYukonUser(request));
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
-            int idsArray[] = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
-            HashSet<Integer> programsSet = new HashSet<Integer>();
-            for (int id : idsArray) {
-                programsSet.add(id);
-            }
-            lmControlDetailModel.setProgramIds(programsSet);
+        	
+        	String filterValuesStr = ServletRequestUtils.getStringParameter(request, ReportModelBase.ATT_FILTER_MODEL_VALUES, "");
+        	Set<Integer> paoIdsSet = Sets.newHashSet(StringUtils.parseIntStringForList(filterValuesStr));
+            lmControlDetailModel.setProgramIds(paoIdsSet);
         }
         String ecParam = request.getParameter("ecID");
         if (ecParam != null) {

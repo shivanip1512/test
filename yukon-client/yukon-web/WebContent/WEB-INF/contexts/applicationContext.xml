@@ -1398,8 +1398,8 @@
     </bean>
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
     
-    <bean name="lmDirectProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
-        <property name="filters">
+    <bean name="lmDirectProgramByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramByEnergyCompanyIdPicker">
+    	<property name="filters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
                     <property name="paoType" value="LM_DIRECT_PROGRAM"/>
@@ -1407,12 +1407,19 @@
             </list>
         </property>
     </bean>
-    <bean name="lmDirectProgramByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramByEnergyCompanyIdPicker">
+
+    <bean name="lmGroupPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
     	<property name="filters">
             <list>
-                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
-                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
-                </bean>
+                <bean class="com.cannontech.common.search.pao.db.LmGroupFilter"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean name="lmControlAreaPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
+    	<property name="filters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.LmControlAreaFilter"/>
             </list>
         </property>
     </bean>

@@ -415,6 +415,21 @@ function makeFirstSelectedFilterValueVisible() {
         }
     
         </SCRIPT>
+        
+        <script type="text/javascript">
+
+			function setPickerSelectedPaoNamesFunction(spanId) {
+	              		
+	        	return function(ids) {
+					var selectedNames = $A();
+      				for (var index = 0; index < ids.length; index++) {
+      					selectedNames.push(ids[index].paoName);
+      				}
+      				$(spanId).innerHTML = selectedNames.join(", ");
+      				return true;
+	            }
+			}
+	    </script>
 
 		<table width='100%' border='0' cellspacing='0' cellpadding='0' align='center'>
         	<tr>
@@ -467,7 +482,103 @@ function makeFirstSelectedFilterValueVisible() {
             			<%} else if( filter.equals(ReportFilter.DEVICE)) {%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
 		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
-        		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>                    
+        		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>   
+        		            
+        		        <%-- LM PROGRAM PICKER --%>
+        		        <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
+                    		
+                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
+                    		
+                    		<span style="font-size:16px;">
+	                    		<%
+	                    		if(filter.isMultiSelect()) {
+	                    		%>
+	                    			
+	                   			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
+	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+				                                 	id="programPicker" 
+				                                 	multiSelectMode="true"
+				                                 	destinationFieldId="selectedPickerValues"
+				                                 	styleClass="simpleLink"
+				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');">
+				             	
+				             	<img src="/WebConfig/yukon/Icons/add.gif">
+				             	Choose Programs 
+	                            </tags:pickerDialog>
+	                    			
+	                    		<%	
+	                    		} else {
+	                    		%>
+	                    			
+	                   			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
+	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
+			                                 		id="programPicker" 
+			                                 		multiSelectMode="false"
+			                                 		destinationFieldId="selectedPickerValues"
+			                                 		styleClass="simpleLink"
+			                                 		endAction="setPickerSelectedPaoNamesFunction('selectedProgramNamesSpan');"
+			                                 		immediateSelectMode="true">
+			                                 		
+				             	<img src="/WebConfig/yukon/Icons/add.gif">
+								Choose Program 
+	                            </tags:pickerDialog>
+	                    			
+	                    		<%	
+	                    		}
+	                    		%>
+	                             
+	                            <br>
+	                            <span id="selectedProgramNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                            
+                        <%-- LM GROUP PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.LMGROUP)) {%>
+                    		
+                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
+                    		
+                    		<span style="font-size:16px;">
+	                    			
+	                   			<tags:pickerDialog  type="lmGroupPicker"
+				                                 	id="groupPicker" 
+				                                 	multiSelectMode="true"
+				                                 	destinationFieldId="selectedPickerValues"
+				                                 	styleClass="simpleLink"
+				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedGroupNamesSpan');">
+				             	
+				             	<img src="/WebConfig/yukon/Icons/add.gif">
+				             	Choose Groups 
+	                            </tags:pickerDialog>
+	                             
+	                            <br>
+	                            <span id="selectedGroupNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                            
+                        <%-- LM CONTROL AREA PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.LMCONTROLAREA)) {%>
+                    		
+                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
+                    		
+                    		<span style="font-size:16px;">
+	                    			
+	                   			<tags:pickerDialog  type="lmControlAreaPicker"
+				                                 	id="controlAreaPicker" 
+				                                 	multiSelectMode="true"
+				                                 	destinationFieldId="selectedPickerValues"
+				                                 	styleClass="simpleLink"
+				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedControlAreaNamesSpan');">
+				             	
+				             	<img src="/WebConfig/yukon/Icons/add.gif">
+				             	Choose Control Areas 
+	                            </tags:pickerDialog>
+	                             
+	                            <br>
+	                            <span id="selectedControlAreaNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                    		       
+                    	<%-- ALL OTHER FILTER OBJECT TYPES --%>   
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
             				

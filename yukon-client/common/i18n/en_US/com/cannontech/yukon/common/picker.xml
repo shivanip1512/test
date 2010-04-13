@@ -30,6 +30,8 @@
 <entry key="yukon.web.picker.programForEnrollmentPicker.dialogTitle">Select Program</entry>
 <entry key="yukon.web.picker.lmDirectProgramPicker.dialogTitle">Select Program</entry>
 <entry key="yukon.web.picker.lmDirectProgramByEnergyCompanyIdPicker.dialogTitle">Select Program</entry>
+<entry key="yukon.web.picker.lmGroupPicker.dialogTitle">Select Group</entry>
+<entry key="yukon.web.picker.lmControlAreaPicker.dialogTitle">Select Control Area</entry>
 
 <!-- Point Pickers -->
 <entry key="yukon.web.picker.point.pointName">Point</entry>
