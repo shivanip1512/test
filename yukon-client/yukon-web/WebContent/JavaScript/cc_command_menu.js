@@ -77,23 +77,28 @@ function executeCommandController(paoId, commandId, commandName, controlType, re
     
     if (reason) parameters['reason'] = reason;
     if (opt) parameters['opt'] = opt;
-
+    
+    var msgType = 'Command Message:';
+    if (controlType == 'CBC') {
+    	msgType = 'DB State Change:';
+    }
+    
     new Ajax.Request(executeTierURL, {
         'method': 'POST',
         'parameters': parameters,
         'onSuccess': function (transport, result) {
             if (result) { 
                 if(result.success){
-                    display_status(commandName, "Command Sent Successfully.", "green");
+                    display_status(commandName, msgType, "Queued Successfully", "green");
                 } else {
                     alert(result.errMessage);
                 }
             } else {
-                display_status(commandName, "Command Sent Successfully.", "green");    
+                display_status(commandName, msgType, "Queued Successfully", "green");    
             }    
         },
         'onFailure': function () {
-            display_status(commandName, "Command was not sent.", "red"); 
+            display_status(commandName, msgType, "Queued Successfully", "red"); 
         }
     });
 }
@@ -114,7 +119,7 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
         	setTimeout('window.location.replace(\'' + redirectURL + '\')', 1000);
         },
 		onFailure: function() {
-            display_status('Move Bank', "Failed", "red"); 
+            display_status('Move Bank', "", "Failed", "red"); 
         }
 	});
 } 
@@ -159,11 +164,10 @@ return endTag;
 //function to display wheather the call to serlvlet went through
 //will pop up a div that has a header with 'cmd_name' with gray background
 //'msg' in the body that with 'color' for background
-
-function display_status(cmd_name, msg, color) {
+function display_status(cmd_name, msg_type, result, color) {
     var msg_div = $('cmd_msg_div');
     msg_div.style.color = color;
-    msg_div.innerHTML = cmd_name + " : " + msg;
+    msg_div.innerHTML = msg_type + ' "' + cmd_name + '" ' + result;
     
     var timeout = 0;
     if (color == "red") {
@@ -270,13 +274,13 @@ function submitChangeOpStateMenu() {
     new Ajax.Request(url, {
         method: 'POST',
         onSuccess: function(transport) {
-            display_status("Change Operational State", "Success", "green");       
+            display_status("Change Operational State", "", "Success", "green");       
         },
         onFailure: function(transport) {
-            display_status("Change Operational State", "Failed", "red");   
+            display_status("Change Operational State", "", "Failed", "red");   
         },
         onException: function(transport) {
-            display_status("Change Operational State", "Failed", "red");   
+            display_status("Change Operational State", "", "Failed", "red");   
         },
         parameters:params
     });
