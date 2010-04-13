@@ -24,12 +24,14 @@ import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -675,5 +677,31 @@ public class CBControllerEditor implements ICBControllerModel {
 	public void setDeviceType(int deviceType) {
 		this.deviceType = deviceType;
     }
+	
+	public boolean isTcpPort() {
+        String cbcTypeStr = getPaoCBC().getPAOType();
+        PaoType deviceType = PaoType.getForDbString(cbcTypeStr);
+        
+        if (PAOGroups.isTcpPortEligible(deviceType) && 
+            DeviceTypesFuncs.isCapBankController(deviceType.getDeviceTypeId())) {
+            return isTcpPort((RemoteBase)getPaoCBC());
+        }
+        
+        return false;
+	}
+	
+	public boolean isTcpPort(RemoteBase cbc) {
+	    int portId = cbc.getDeviceDirectCommSettings().getPortID();
+	    return DeviceTypesFuncs.isTcpPort(portId);
+	}
+	
+	public boolean isEditingControllerAndTcpPort() {
+	    if (isEditingController()) {
+	        if (isTcpPort()) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 
 }

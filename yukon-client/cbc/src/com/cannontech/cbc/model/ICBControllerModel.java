@@ -6,6 +6,7 @@ import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
+import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.pao.YukonPAObject;
 
 public interface ICBControllerModel {
@@ -73,4 +74,7 @@ public interface ICBControllerModel {
 
     public abstract void setDeviceType(int deviceType);
 
+    public abstract boolean isTcpPort();
+
+    public abstract boolean isTcpPort(RemoteBase cbc);
 }

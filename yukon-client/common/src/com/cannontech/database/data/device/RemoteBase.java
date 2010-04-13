@@ -1,7 +1,19 @@
 package com.cannontech.database.data.device;
 
+import org.apache.log4j.Logger;
+import org.springframework.dao.EmptyResultDataAccessException;
+
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.model.PaoProperty;
+import com.cannontech.common.model.PaoPropertyName;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.PaoPropertyDao;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceDialupSettings;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -9,6 +21,11 @@ import com.cannontech.database.db.device.DeviceDirectCommSettings;
 public class RemoteBase extends TwoWayDevice {
 	private DeviceDirectCommSettings deviceDirectCommSettings = null;
 	private DeviceDialupSettings deviceDialupSettings = null;
+	
+	transient Logger logger = YukonLogManager.getLogger(RemoteBase.class);
+	
+	private String ipAddress = CtiUtilities.STRING_NONE;
+	private String port = CtiUtilities.STRING_NONE;
 /**
  * RemoteBase constructor comment.
  */
@@ -22,6 +39,7 @@ public void add() throws java.sql.SQLException {
 	super.add();
 	getDeviceDialupSettings().add();
 	getDeviceDirectCommSettings().add();
+	addTcpProperties();
 }
 /**
  * Insert the method's description here.
@@ -31,15 +49,19 @@ public void add() throws java.sql.SQLException {
 public void addPartial() throws java.sql.SQLException
 {
 	super.addPartial();
-
 	getDeviceDialupSettingsDefaults().add();
 	getDeviceDirectCommSettings().add();
+	addTcpProperties();
 }
 /**
  * This method was created in VisualAge.
  */
 public void delete() throws java.sql.SQLException {
-	getDeviceDialupSettings().delete();
+    int deviceId = getPAObjectID();
+    PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao",PaoPropertyDao.class);
+    propertyDao.removeAll(deviceId);
+    
+    getDeviceDialupSettings().delete();
 	getDeviceDirectCommSettings().delete();
 	super.delete();
 }
@@ -96,6 +118,27 @@ public void retrieve() throws java.sql.SQLException {
 	super.retrieve();
 	getDeviceDialupSettings().retrieve();
 	getDeviceDirectCommSettings().retrieve();
+	
+	PaoType paoType = PaoType.getForDbString(getPAOType());
+	int portId = getDeviceDirectCommSettings().getPortID();
+
+	if (PAOGroups.isTcpPortEligible(paoType) && DeviceTypesFuncs.isTcpPort(portId)) {
+	    int deviceId = getPAObjectID();
+	    PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao",PaoPropertyDao.class);
+        try {
+            PaoProperty ipProperty = propertyDao.getByIdAndName(deviceId,PaoPropertyName.TcpIpAddress);
+            ipAddress = ipProperty.getPropertyValue();
+        } catch (EmptyResultDataAccessException e) {
+            logger.error(getPAOName() + " is missing TCP IP Address property.");
+        }
+        
+        try {
+            PaoProperty portProperty = propertyDao.getByIdAndName(deviceId,PaoPropertyName.TcpPort);
+            port = portProperty.getPropertyValue();
+        } catch (EmptyResultDataAccessException e) {
+            logger.error(getPAOName() + " is missing TCP Port property.");
+        }
+	}
 }
 /**
  * Insert the method's description here.
@@ -144,6 +187,7 @@ public void update() throws java.sql.SQLException {
 	super.update();
 	getDeviceDialupSettings().update();
 	getDeviceDirectCommSettings().update();
+	addTcpProperties();
 }
 
 public boolean hasPhoneNumber()
@@ -152,5 +196,35 @@ public boolean hasPhoneNumber()
 		return false;
 	return (!(getDeviceDialupSettings().getPhoneNumber().compareTo("0") == 0 ||getDeviceDialupSettings().getPhoneNumber() == null));
 
+}
+
+public void addTcpProperties() {
+    PaoType paoType = PaoType.getForDbString(getPAOType());
+    if (PAOGroups.isTcpPortEligible(paoType)) {
+        
+        PaoPropertyDao propertyDao = YukonSpringHook.getBean("paoPropertyDao",PaoPropertyDao.class);
+        int deviceId = getPAObjectID();
+        propertyDao.removeAll(deviceId);
+        
+        int portId = getDeviceDirectCommSettings().getPortID();
+        if (DeviceTypesFuncs.isTcpPort(portId)) {
+            PaoIdentifier identifier = new PaoIdentifier(deviceId,PaoType.TCPPORT);
+            propertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpIpAddress,ipAddress));
+            propertyDao.add(new PaoProperty(identifier,PaoPropertyName.TcpPort,port));
+        }
+    }
+}
+
+public String getIpAddress() {
+    return ipAddress;
+}
+public void setIpAddress(String ipAddress) {
+    this.ipAddress = ipAddress;
+}
+public String getPort() {
+    return port;
+}
+public void setPort(String port) {
+    this.port = port;
 }
 }

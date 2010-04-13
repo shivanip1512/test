@@ -85,11 +85,27 @@
 						<x:selectOneMenu
 							disabled="#{!capControlForm.CBControllerEditor.editingController}"
 							id="cntrlComChann"
-							value="#{capControlForm.CBControllerEditor.paoCBC.deviceDirectCommSettings.portID}">
+							value="#{capControlForm.CBControllerEditor.paoCBC.deviceDirectCommSettings.portID}"
+							onchange="submit();">
 							<f:selectItem itemLabel="(none)" itemValue="0" />
 							<f:selectItems value="#{selLists.commChannels}" />
 						</x:selectOneMenu>
-		
+						
+						<x:outputLabel for="cntrlCommIP" value="IP Address: "
+							title="IP Address for Comm. Channel" />
+						<x:inputText id="cntrlCommIP" styleClass="staticLabel"
+							disabled="#{!capControlForm.CBControllerEditor.editingControllerAndTcpPort}"
+							value="#{capControlForm.CBControllerEditor.paoCBC.ipAddress}">
+							
+						</x:inputText>
+						<x:outputLabel for="cntrlCommPort" value="Port: "
+							title="Port for Comm. Channel" />
+						<x:inputText id="cntrlCommPort" styleClass="staticLabel"
+							disabled="#{!capControlForm.CBControllerEditor.editingControllerAndTcpPort}"
+							value="#{capControlForm.CBControllerEditor.paoCBC.port}">
+							
+						</x:inputText>		
+						
 						<x:outputLabel for="cntrlCommW" value="Post Comm. Wait: "
 							title="How long to wait after communications" />
 						<x:inputText id="cntrlCommW" styleClass="staticLabel"
