@@ -236,8 +236,10 @@ Picker.prototype = {
 				var hit = this.selectedItems[0];
 				for (var index = 0; index < this.extraDestinationFields.length; index++) {
 					extraDestinationField = this.extraDestinationFields[index];
-					$(extraDestinationField.fieldId).innerHTML =
-						hit[extraDestinationField.property];
+					
+					// support for both innerHTML and value setting
+					$(extraDestinationField.fieldId).innerHTML = hit[extraDestinationField.property];
+					$(extraDestinationField.fieldId).value = hit[extraDestinationField.property];
 				}
 				this.hide();
 			}

@@ -1383,6 +1383,8 @@
             <bean class="com.cannontech.common.search.criteria.TwoWayLcrCriteria"/>
         </property>
     </bean>
+    
+    <bean id="lmProgramForEnergyCompanyIdFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmProgramForEnergyCompanyIdFilterFactoryImpl"/>
 
     <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
         <property name="filters">
@@ -1395,7 +1397,25 @@
         </property>
     </bean>
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
-    <bean name="lmDirectProgramNamePicker" class="com.cannontech.web.picker.v2.LmDirectProgramNamePicker"/>
+    
+    <bean name="lmDirectProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
+        <property name="filters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
+                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    <bean name="lmDirectProgramByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramByEnergyCompanyIdPicker">
+    	<property name="filters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
+                    <property name="paoType" value="LM_DIRECT_PROGRAM"/>
+                </bean>
+            </list>
+        </property>
+    </bean>
 
     <bean name="databaseMigrationDIRECT_PROGRAMPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
         <property name="databaseMigrationService" ref="databaseMigrationService" />

@@ -9,6 +9,7 @@
 <%@ attribute name="asButton" type="java.lang.Boolean" description="If true, picker creates a button instead of a link"%>
 <%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
 <%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
+<%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -19,7 +20,9 @@
 <cti:includeScript link="/JavaScript/tableCreation.js"/>
 
 <script type="text/javascript">
-    var ${pageScope.id} = new Picker('${pageScope.type}', '${pageScope.destinationFieldName}', '${pageScope.id}');
+
+    var ${pageScope.id} = new Picker('${pageScope.type}', '${pageScope.destinationFieldName}', '${pageScope.id}', '${pageScope.extraDestinationFields}');
+
     <c:if test="${pageScope.multiSelectMode}">
         ${pageScope.id}.multiSelectMode = true;
     </c:if>
@@ -38,6 +41,7 @@
     <c:if test="${!empty pageScope.extraArgs}">
         ${pageScope.id}.extraArgs = '${pageScope.extraArgs}';
     </c:if>
+    
 </script>
 <span id="picker_${pageScope.id}_inputArea"></span>
 

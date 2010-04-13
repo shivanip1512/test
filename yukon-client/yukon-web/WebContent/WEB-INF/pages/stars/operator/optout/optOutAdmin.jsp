@@ -26,18 +26,6 @@
     			txtEl.disable();
     		}
     	}
-
-    	function showSelectedProgramName(picker, hiddenFieldId, displayFieldId) {
-
-			return function() {
-
-				picker.hide();
-	    		$(displayFieldId).innerHTML = $(hiddenFieldId).value;
-			}
-    	}
-
-    	
-
     </script>
 
     <table style="width: 100%">
@@ -134,14 +122,15 @@
 		        		<tr><td style="padding-top:10px;">
 		        		
 		        			<%-- PROGRAM PICKER --%>
+		        			<input type="hidden" id="cancelOptOutsProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
 		        			<input type="hidden" id="cancelOptOutsProgramName" name="programName" value="">
 		        			
-		        			<tags:pickerDialog  type="lmDirectProgramNamePicker"
+		        			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
 				                                 id="cancelOptOutsProgramPicker" 
-				                                 destinationFieldId="cancelOptOutsProgramName"
+				                                 destinationFieldId="cancelOptOutsProgramPaoId"
 				                                 styleClass="simpleLink"
 				                                 immediateSelectMode="true"
-				                                 endAction="showSelectedProgramName(cancelOptOutsProgramPicker,'cancelOptOutsProgramName', 'cancelOptOutsProgramNameDisplaySpan');"
+				                                 extraDestinationFields="paoName:cancelOptOutsProgramName;paoName:cancelOptOutsProgramNameDisplaySpan"
 				                                 extraArgs="${energyCompanyId}">
 				             	<cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
                              </tags:pickerDialog>
@@ -199,14 +188,15 @@
 		        		<tr><td style="padding-top:10px;">
 		        			
 		        			<%-- PROGRAM PICKER --%>
+		        			<input type="hidden" id="disabledCountProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
 		        			<input type="hidden" id="disabledCountProgramName" name="programName" value="">
 		        			
-		        			<tags:pickerDialog  type="lmDirectProgramNamePicker"
+		        			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
 				                                 id="disabledCountProgramPicker" 
-				                                 destinationFieldId="disabledCountProgramName"
+				                                 destinationFieldId="disabledCountProgramPaoId"
 				                                 styleClass="simpleLink"
 				                                 immediateSelectMode="true"
-				                                 endAction="showSelectedProgramName(disabledCountProgramPicker, 'disabledCountProgramName', 'disabledCountProgramNameDisplaySpan');"
+				                                 extraDestinationFields="paoName:disabledCountProgramName;paoName:disabledCountProgramNameDisplaySpan"
 				                                 extraArgs="${energyCompanyId}">
 				                <cti:img key="add"/> <cti:msg key="yukon.web.modules.dr.chooseProgram"/>
                              </tags:pickerDialog>

@@ -6,11 +6,11 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
-public class LmProgramForEnergyCompanyIdsFilter implements SqlFilter {
+public class LmProgramForEnergyCompanyIdFilter implements SqlFilter {
     
 	private Set<Integer> energyCompanyIds;
 	
-	public LmProgramForEnergyCompanyIdsFilter(Set<Integer> energyCompanyIds) {
+	public LmProgramForEnergyCompanyIdFilter(Set<Integer> energyCompanyIds) {
 		this.energyCompanyIds = energyCompanyIds;
 	}
 	
