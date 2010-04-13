@@ -64,7 +64,6 @@ public class EnrolledDevicesByAccountNumberRequestEndpointTest {
         ns = YukonXml.getYukonNamespace();
         impl = new EnrolledDevicesByAccountNumberRequestEndpoint();
         impl.setEnrollmentHelperService(new MockEnrollmentHelperService());
-        impl.setRolePropertyDao(new MockRolePropertyDao());
     }
 
     private class MockEnrollmentHelperService implements

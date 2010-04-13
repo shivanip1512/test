@@ -11,8 +11,6 @@ import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.enrollment.model.EnrolledDevicePrograms;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
@@ -26,7 +24,6 @@ import com.cannontech.yukon.api.util.YukonXml;
 public class EnrolledDevicesByAccountNumberRequestEndpoint {
 
     private Namespace ns = YukonXml.getYukonNamespace();
-	private RolePropertyDao rolePropertyDao;
 	private EnrollmentHelperService enrollmentHelperService;
 	
 	private String accountNumberExpressionStr = "/y:enrolledDevicesByAccountNumberRequest/y:accountNumber";
@@ -50,8 +47,6 @@ public class EnrolledDevicesByAccountNumberRequestEndpoint {
         // run service
         try {
             
-            rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ACCOUNT_GENERAL, user);
-        	
             List<EnrolledDevicePrograms> enrolledDeviceProgramsList = enrollmentHelperService.getEnrolledDeviceProgramsByAccountNumber(accountNumber, startTime, stopTime, user);
             
             Element enrolledDevicesList = new Element("enrolledDevicesList", ns);
@@ -91,11 +86,6 @@ public class EnrolledDevicesByAccountNumberRequestEndpoint {
 
         return resp;
     }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
     
     @Autowired
     public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
