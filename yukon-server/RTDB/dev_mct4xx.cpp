@@ -3043,17 +3043,19 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         }
 
         string peak_demand_str   = "Peak Demand",
-               meter_reading_str = "Meter Reading";
+               meter_reading_str = "Meter Reading",
+               rate_str;
 
-        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  peak_demand_str += " rate A";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  peak_demand_str += " rate B";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  peak_demand_str += " rate C";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  peak_demand_str += " rate D";
+        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  rate_str = " rate A";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  rate_str = " rate B";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  rate_str = " rate C";
+        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  rate_str = " rate D";
 
-        if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  meter_reading_str += " rate A";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  meter_reading_str += " rate B";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  meter_reading_str += " rate C";
-        else if( parse.getFlags() & CMD_FLAG_GV_RATED )  meter_reading_str += " rate D";
+        if( !rate_str.empty() )
+        {
+            peak_demand_str   += rate_str;
+            meter_reading_str += rate_str;
+        }
 
         if( parse.getiValue("channel") > 1 )
         {
