@@ -33,7 +33,7 @@ public class ControlHistoryController extends AbstractConsumerController {
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext userContext, ModelMap map) {
         
-        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
         
         ListMultimap<Integer, ControlHistory> controlHistoryMap = 
@@ -64,7 +64,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkProgram(user, programId);
         
-        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
 
         Program program = programDao.getByProgramId(programId);
         map.addAttribute("program", program);

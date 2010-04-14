@@ -103,7 +103,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
                                               ControlPeriod controlPeriod,
                                               boolean applyFilters) {
                                          
-        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
 
         return doAction(customerAccount, yukonUserContext, controlPeriod, applyFilters, applianceList, programList);
@@ -138,7 +138,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
                                                     Program program,
                                                     ControlPeriod controlPeriod){
 
-        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = Collections.singletonList(program);
 
         List<DisplayableProgram> displayableProgramList = 

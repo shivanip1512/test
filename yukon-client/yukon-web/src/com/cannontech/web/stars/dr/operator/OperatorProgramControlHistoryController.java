@@ -55,7 +55,7 @@ public class OperatorProgramControlHistoryController {
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
                 
-        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
+        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
         
         ListMultimap<Integer, ControlHistory> controlHistoryMap = controlHistoryDao.getControlHistory(customerAccount, applianceList, userContext, ControlPeriod.PAST_DAY);

@@ -14,6 +14,8 @@ public interface ApplianceDao {
     
     public Appliance getById(int applianceId);
     
+    public List<Appliance> getAssignedAppliancesByAccountId(int accountId);
+
     public List<Appliance> getByAccountId(int accountId);
     
     public List<Appliance> getByAccountIdAndProgramIdAndInventoryId(int accountId, int programId, int inventoryId);

@@ -26,7 +26,7 @@ public class DisplayableInventoryDaoImpl extends AbstractDisplayableDao implemen
     @Override
     public List<DisplayableInventory> getDisplayableInventory(int customerAccountId) {
 
-        List<Appliance> applianceList = applianceDao.getByAccountId(customerAccountId);
+        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccountId);
         List<Program> programList = programDao.getByAppliances(applianceList);
         List<HardwareSummary> hardwareList = 
             inventoryDao.getAllHardwareSummaryForAccount(customerAccountId);

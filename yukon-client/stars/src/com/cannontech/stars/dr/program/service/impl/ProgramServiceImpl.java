@@ -24,7 +24,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public boolean hasProgramAccess(final CustomerAccount customerAccount, final Program program) {
-        final List<Appliance> appliances = applianceDao.getByAccountId(customerAccount.getAccountId());
+        final List<Appliance> appliances = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         return hasProgramAccess(customerAccount, appliances, program);
     }
     

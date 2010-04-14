@@ -262,7 +262,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private List<Integer> getProgramIdsByUser(LiteYukonUser user) {
         int customerAccountId = getCustomerAccountId(user);
         
-        final List<Appliance> appliances = applianceDao.getByAccountId(customerAccountId);
+        final List<Appliance> appliances = applianceDao.getAssignedAppliancesByAccountId(customerAccountId);
         final List<Program> programs = programDao.getByAppliances(appliances);
         
         final List<Integer> programsIdList = new ArrayList<Integer>(programs.size());
@@ -278,7 +278,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private List<Integer> getApplianceIdsByUser(LiteYukonUser user) {
         int customerAccountId = getCustomerAccountId(user);
         
-        final List<Appliance> appliances = applianceDao.getByAccountId(customerAccountId);
+        final List<Appliance> appliances = applianceDao.getAssignedAppliancesByAccountId(customerAccountId);
         final List<Integer> applianceIdList = new ArrayList<Integer>(appliances.size());
         
         for (final Appliance appliance : appliances) {
