@@ -208,7 +208,7 @@ public class OperatorProgramOptOutOperatorController {
         List<String> questions = OptOutControllerHelper.getConfirmQuestions(
                 messageSourceResolver, 
                 userContext,
-                "yukon.dr.operator.optOutconfirm.question.");
+                "yukon.dr.operator.optoutconfirm.question.");
 
         modelMap.addAttribute("jsonInventoryIds", jsonInventoryIds);
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
@@ -222,7 +222,8 @@ public class OperatorProgramOptOutOperatorController {
             return view(userContext, modelMap, accountInfoFragment);
         }
         
-        return "operator/program/optOut/confirm";
+        return confirm(optOutBackingBean, jsonInventoryIds, modelMap, 
+                        userContext, accountInfoFragment);
     }
     
     @RequestMapping("/operator/program/optOut/confirm")
@@ -236,7 +237,7 @@ public class OperatorProgramOptOutOperatorController {
             OptOutControllerHelper.getConfirmQuestions(
                     messageSourceResolver, 
                     yukonUserContext,
-                    "yukon.dr.operator.optOutconfirm.question.");
+                    "yukon.dr.operator.optoutconfirm.question.");
         modelMap.addAttribute("questions", questions);
         
         String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);
