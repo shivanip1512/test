@@ -207,7 +207,7 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
         int componentQuality, qualityFlag = 0;
         CtiTime componentTime,
             minTime = CtiTime(YUKONEOT),
-            maxTime(CtiTime::neg_infin);//TS FLAG
+            maxTime(CtiTime::neg_infin);
 
         /*
          *  Iterate this calc's components passing in each succesive result (through retVal).
