@@ -203,7 +203,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
      * Returns the scheduleID of the current pao.
      */
     public Integer getHolidayStrategyId() {
-        if(holidayStrategyId < -1) {
+        if(holidayStrategyId == null || holidayStrategyId < -1) {
             Integer paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
             holidayStrategyId = holidayScheduleDao.getStrategyForPao(paoId);
         }
@@ -507,7 +507,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
 	/**
-	 * Initialize our current DBPersistent object from the databse
+	 * Initialize our current DBPersistent object from the database
 	 */
 	protected void initItem() {
 		if (retrieveDBPersistent() == null) {
@@ -871,7 +871,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             	|| getDbPersistent() instanceof CapControlSpecialArea
             	|| getDbPersistent() instanceof CapControlFeeder){
                 
-                if(dataModelOK) {
+                if(getHolidayScheduleId() != -1 && getHolidayStrategyId() < 1){
+                    //if a holiday schedule is selected, a strategy must also be selected
+                    facesMsg.setDetail("Holiday Strategy: strategy not selected.");
+                    facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                } else if(dataModelOK) {
                 	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
                 	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
                 	holidayScheduleDao.saveHolidayScheduleStrategyAssigment(paoId, getHolidayScheduleId(), getHolidayStrategyId());
