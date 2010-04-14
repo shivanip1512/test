@@ -11,7 +11,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.exception.BadAuthenticationException;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationProvider;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -41,7 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService, Initial
         }
 
         // ensure that user is enabled
-        if (CtiUtilities.isDisabled(liteYukonUser.getLoginStatus())) {
+        if (liteYukonUser.getLoginStatus().isDisabled()) {
             log.info("Authentication failed (disabled): username=" + username + ", id=" + 
                      liteYukonUser.getUserID() + ", status=" + liteYukonUser.getLoginStatus());
             throw new BadAuthenticationException();

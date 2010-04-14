@@ -23,7 +23,7 @@ public class ChangeLoginBackingBean {
         this.loginEnabled = loginEnabled;
     }
     public void setLoginEnabled(LoginStatusEnum loginStatus) {
-        if (LoginStatusEnum.ENABLED.equals(loginStatus)) {
+        if (loginStatus.isEnabled()) {
             this.loginEnabled = true;
             return;
         }

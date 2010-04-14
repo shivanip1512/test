@@ -235,11 +235,11 @@ public class AuthDaoImpl implements AuthDao {
 			
 			LiteYukonUser lYukUser = yukonUserDao.getLiteYukonUser( lContact.getLoginID() );
 			if( lYukUser != null ) {
-				if( lYukUser.getUserID() == UserUtils.USER_DEFAULT_ID )
+				if (lYukUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
 					CTILogger.info("  Failed VOICE login because the YukonUser found was the (none) userid, Contact: " + lContact.toString());
-				else if(LoginStatusEnum.isDisabled(lYukUser))
+				} else if (lYukUser.getLoginStatus().isDisabled()) {
 					CTILogger.info("  Failed VOICE login because the YukonUser found is DISABLED, Contact: " + lContact.toString());			
-				else {
+				} else {
 					LiteContactNotification[] pins = contactDao.getAllPINNotifDestinations( lContact.getContactID() );
 					for( int i = 0; i < pins.length; i++ ) {
 						LiteContactNotification pinNotif = pins[i];

@@ -58,7 +58,6 @@ import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteComparators;
 
 public final class CtiUtilities 
@@ -1165,24 +1164,6 @@ public final static boolean isTrue(String s) {
  */
 public final static boolean isFalse(String s) {
 	return (s == null || FALSE_STRING.equalsIgnoreCase(s));
-}
-
-/**
- * Returns true of the given string represents enabled
- * @param enableStr
- * @return boolean
- */
-public static final boolean isEnabled(String enableStr) {
-	return (ENABLED_STRING.equalsIgnoreCase(enableStr));
-}
-
-/**
- * Returns true of the given string represents disabled
- * @param loginStatus
- * @return boolean
- */
-public static final boolean isDisabled(LoginStatusEnum loginStatus) {
-    return (LoginStatusEnum.DISABLED.equals(loginStatus));
 }
 
 /**

@@ -702,7 +702,7 @@ public void setValue(Object o)
 
 	YukonUser login = (YukonUser)o;
 	
-	if (!login.getYukonUser().getLoginStatus().equals(LoginStatusEnum.DISABLED) ) {
+    if (!login.getYukonUser().getLoginStatus().isDisabled()) {
         getJCheckBoxEnableLogin().doClick();
     }
 

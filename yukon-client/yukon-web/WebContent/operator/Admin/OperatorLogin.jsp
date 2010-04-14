@@ -16,7 +16,7 @@
 	else
 		liteUser = new LiteYukonUser(-1, "", LoginStatusEnum.ENABLED);
 	
-	String checked = liteUser.getLoginStatus().equals(LoginStatusEnum.ENABLED)? "checked" : "";
+	String checked = liteUser.getLoginStatus().isEnabled() ? "checked" : "";
 %>
 
 <head>
