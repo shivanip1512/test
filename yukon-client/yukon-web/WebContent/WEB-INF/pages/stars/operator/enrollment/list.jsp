@@ -110,7 +110,7 @@ var programIdsAlreadyEnrolled = [];
         <script type="text/javascript">
         function addEnrollment(devices) {
             openSimpleDialog('peDialog', $('addEnrollmentForm').action,
-                    '<cti:msg2 key=".addEnrollmentDialogTitle"/>',
+                    '<spring:escapeBody javaScriptEscape="true"><cti:msg2 key=".addEnrollmentDialogTitle"/></spring:escapeBody>',
                      $('addEnrollmentForm').serialize(true));
             return true;
         }
@@ -125,9 +125,8 @@ var programIdsAlreadyEnrolled = [];
                     memoryGroup="programPicker"
                     destinationFieldName="assignedProgramId"
                     endAction="addEnrollment" styleClass="simpleLink"
-                    immediateSelectMode="true" extraArgs="${accountId}">
-                    <cti:labeledImg key="add"/>
-                </tags:pickerDialog>
+                    immediateSelectMode="true" extraArgs="${accountId}"
+                    asButton="true"><cti:msg2 key=".add"/></tags:pickerDialog>
                 <script type="text/javascript">
                     programPicker.excludeIds = programIdsAlreadyEnrolled;
                 </script>
@@ -186,7 +185,7 @@ var programIdsAlreadyEnrolled = [];
                 <cti:param name="energyCompanyId" value="${energyCompanyId}"/>
                 <cti:param name="showAllHistory" value="true"/>
             </cti:url>
-            <a href="${showAllHistoryUrl}"><i:inline key=".showAllHistory"/></a>
+            <input type="button" value="<cti:msg2 key=".showAllHistory"/>" onclick="window.location='${showAllHistoryUrl}'">
         </div>
     </c:if>
 </tags:boxContainer2>

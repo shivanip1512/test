@@ -7,6 +7,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="hardwareConfig">
+<cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 <tags:simpleDialog id="hardwareConfigEditDialog"/>
 <tags:simpleDialog id="hcDialog"/>

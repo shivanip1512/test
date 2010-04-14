@@ -13,7 +13,7 @@
 
 <form:form>
     <input type="hidden" name="" value=""/>
-    <tags:nameValueContainer2 nameColumnWidth="150px">
+    <tags:nameValueContainer2 id="editArea">
         <tags:nameValue2 nameKey=".group">
             <c:if test="${fn:length(loadGroups) == 0}">
                 <i:inline key=".groupNotApplicable"/>

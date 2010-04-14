@@ -177,7 +177,7 @@ public enum YukonRoleProperty {
     RESIDENTIAL_SIGN_OUT_ENABLED(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.SIGN_OUT_ENABLED, booleanType()),
     RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT, booleanType()),
     RESIDENTIAL_OPT_OUT_DEVICE_SELECTION(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.OPT_OUT_DEVICE_SELECTION, booleanType()),
-    RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, stringType()),
+    RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
     RESIDENTIAL_ENROLLMENT_PER_DEVICE(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.ENROLLMENT_PER_DEVICE, booleanType()),
     RESIDENTIAL_THERMOSTAT_SCHEDULE_5_2(RESIDENTIAL_CUSTOMER, com.cannontech.roles.consumer.ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
     

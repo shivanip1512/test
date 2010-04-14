@@ -978,14 +978,6 @@ div.padded {
     height:3000px/*must have for any big value*/;
 }
 
-#hardwareConfigEditDialog {
-    width: 500px;
-}
-
-#hardwareConfigEditDialog .actionArea input {
-    width: 115px;
-}
-
 .i18nInline {
     outline: red dotted thin;
 }

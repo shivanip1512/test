@@ -21,17 +21,16 @@ public class UltraLightAssignedProgramRowMapper extends
     @Override
     public SqlFragmentSource getBaseQuery() {
         SqlStatementBuilder retVal = new SqlStatementBuilder();
-        retVal.append("SELECT p.applianceCategoryId, " +
-                      "ac.description AS applianceCategoryName," +
-                      "p.deviceId AS programId, wc.alternateDisplayName, " +
-                      "p.programId AS assignedProgramId, pao.paoName");
+        retVal.append("SELECT p.applianceCategoryId,");
+        retVal.append(    "ac.description AS applianceCategoryName,");
+        retVal.append(    "p.deviceId AS programId, wc.alternateDisplayName,");
+        retVal.append(    "p.programId AS assignedProgramId, pao.paoName");
         retVal.append("FROM lmProgramWebPublishing p");
-        retVal.append("INNER JOIN yukonPaobject pao");
-        retVal.append("ON pao.paobjectId = p.deviceId");
-        retVal.append("INNER JOIN applianceCategory ac");
-        retVal.append("ON ac.applianceCategoryId = p.applianceCategoryId");
-        retVal.append("INNER JOIN yukonWebConfiguration wc");
-        retVal.append("ON wc.configurationId = p.webSettingsId");
+        retVal.append(    "JOIN yukonPaobject pao ON pao.paobjectId = p.deviceId");
+        retVal.append(    "JOIN applianceCategory ac");
+        retVal.append(        "ON ac.applianceCategoryId = p.applianceCategoryId");
+        retVal.append(    "JOIN yukonWebConfiguration wc");
+        retVal.append(        "ON wc.configurationId = p.webSettingsId");
         return retVal;
     }
 

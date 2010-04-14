@@ -14,7 +14,10 @@
     <div align="center">
         <div><cti:msg key="${enrollmentResult}"/></div>
         <br>
-        <input type="button" value='<cti:msg key="yukon.dr.consumer.enrollment.back"/>' onclick="location.href='${backUrl}';"></input>
+        <cti:url var="okUrl" value="/spring/stars/consumer/enrollment"/>
+        <input type="button"
+            value='<cti:msg key="yukon.dr.consumer.enrollmentResult.ok"/>'
+            onclick="location.href='${okUrl}';"></input>
     </div>    
 
 </cti:standardPage>

@@ -1,14 +1,12 @@
 package com.cannontech.web.stars.dr.consumer;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONObject;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,138 +14,177 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
+import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
+import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.WebSecurityChecker;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-@CheckRole(YukonRole.RESIDENTIAL_CUSTOMER)
+@CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
-    private static final String KEY_PROGRAMID = "programId";
-    private static final String KEY_INVENTORYID = "inventoryId";
-    private static final String KEY_APPLIANCECATEGORYID = "applianceCategoryId";
-    private static final String KEY_ENROLL = "enroll";
     private DisplayableEnrollmentDao displayableEnrollmentDao;
-    private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private WebSecurityChecker webSecurityChecker;
+    private EnrollmentDao enrollmentDao;
+    private EnrollmentHelperService enrollmentHelperService;
     
     @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
-    public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
+    public String view(@ModelAttribute CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
-        webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT);
-        
         List<DisplayableEnrollment> enrollments = 
             displayableEnrollmentDao.find(customerAccount.getAccountId());
         map.addAttribute("enrollments", enrollments);
         
         return "consumer/enrollment/enrollment.jsp";
     }
-    
-    @RequestMapping(value = "/consumer/enrollmentDetail", method = RequestMethod.GET)
-    public String viewDetail(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		YukonUserContext yukonUserContext, ModelMap map) {
-    	webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
-        
-    	List<DisplayableEnrollment> enrollments = 
-    		displayableEnrollmentDao.find(customerAccount.getAccountId());
-    	map.addAttribute("enrollments", enrollments);
-    	
-    	return "consumer/enrollment/enrollmentDetail.jsp";
-    }
-    
-    @RequestMapping(value = "/consumer/enrollmentUpdate", method = RequestMethod.POST)
-    public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            String json, String enrollPage, YukonUserContext yukonUserContext, HttpSession session, 
-            ModelMap map) {
-        webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_ENROLLMENT,
-                                             YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
-        
-        final LiteYukonUser user = yukonUserContext.getYukonUser();
-        
-        JSONObject jsonObj = new JSONObject(json);
-        List<ProgramEnrollment> requestList = new ArrayList<ProgramEnrollment>();
-        List<Integer> reqInventoryIds = new ArrayList<Integer>();
-        List<Integer> reqAppCategoryIds = new ArrayList<Integer>();
-        
-        @SuppressWarnings("unchecked") Iterator<String> iterator = jsonObj.keys();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            JSONObject innerJSONObject = jsonObj.getJSONObject(key);
 
-            @SuppressWarnings("unchecked") Iterator<String> iterator2 = innerJSONObject.keys();
-            while (iterator2.hasNext()) {
-                String key2 = iterator2.next();
-                JSONObject value = innerJSONObject.getJSONObject(key2);
-                int programId = value.getInt(KEY_PROGRAMID);
-                int inventoryId = value.getInt(KEY_INVENTORYID);
-                int applianceCategoryId = value.getInt(KEY_APPLIANCECATEGORYID);
-                boolean enroll = value.getBoolean(KEY_ENROLL);
+    @RequestMapping(value = "/consumer/enrollment/enroll", method=RequestMethod.GET)
+    public String enroll(ModelMap model,
+            @ModelAttribute CustomerAccount customerAccount,
+            int assignedProgramId, HttpSession session,
+            YukonUserContext userContext) {
+        DisplayableEnrollmentProgram displayableEnrollmentProgram =
+            displayableEnrollmentDao.getProgram(
+                customerAccount.getAccountId(), assignedProgramId);
 
-                // Can't check programId's during enrollment.
-                reqInventoryIds.add(inventoryId);
-                reqAppCategoryIds.add(applianceCategoryId);
-                
-                /* ProgramSignUpAction only cares about programs you are enrolling into,
-                   this will be changing. */
-                if (enroll) {
-	                ProgramEnrollment enrollmentRequest = new ProgramEnrollment();
-	                enrollmentRequest.setAssignedProgramId(programId);
-	                enrollmentRequest.setInventoryId(inventoryId);
-	                enrollmentRequest.setApplianceCategoryId(applianceCategoryId);
-	                enrollmentRequest.setEnroll(enroll);
-                    requestList.add(enrollmentRequest);
-                }    
-            }
+        boolean perDeviceEnrollment =
+            rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE,
+                                          userContext.getYukonUser());
+        if (perDeviceEnrollment && displayableEnrollmentProgram.getInventory().size() > 1) {
+            model.addAttribute("displayableEnrollmentProgram", displayableEnrollmentProgram);
+            return "consumer/enrollment/selectHardware.jsp";
         }
-        // set the group, relay at one go
-        setExistingLMGroupAndRelay(requestList, customerAccount.getAccountId());
-        
-        // verify all ids with accountCheckerService in one go
-        accountCheckerService.checkInventory(user, reqInventoryIds.toArray(new Integer[reqInventoryIds.size()]));
-        accountCheckerService.checkApplianceCategory(user, reqAppCategoryIds.toArray(new Integer[reqAppCategoryIds.size()]));
-        
-        ProgramEnrollmentResultEnum enrollmentResultEnum = 
-            programEnrollmentService.applyEnrollmentRequests(customerAccount, requestList, yukonUserContext.getYukonUser());
-        map.addAttribute("enrollmentResult", enrollmentResultEnum);
-        
-        
-        EventUtils.logSTARSEvent(user.getUserID(),
+
+        List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
+        for (DisplayableEnrollmentInventory enrollment : displayableEnrollmentProgram.getInventory()) {
+            ProgramEnrollment programEnrollment =
+                makeProgramEnrollment(displayableEnrollmentProgram, enrollment,
+                                      true);
+            updatedEnrollments.add(programEnrollment);
+        }
+
+        return saveChanges(model, assignedProgramId,
+                           customerAccount.getAccountId(), updatedEnrollments,
+                           session, userContext);
+    }
+
+    @RequestMapping(value = "/consumer/enrollment/enrollSelectedHardware", method=RequestMethod.POST)
+    public String enrollSelectedHardware(ModelMap model,
+            @ModelAttribute CustomerAccount customerAccount,
+            int assignedProgramId, Integer[] inventoryIds, HttpSession session,
+            YukonUserContext userContext) {
+        webSecurityChecker.checkRoleProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_PER_DEVICE);
+
+        DisplayableEnrollmentProgram displayableEnrollmentProgram =
+            displayableEnrollmentDao.getProgram(
+                customerAccount.getAccountId(), assignedProgramId);
+        if (inventoryIds == null || inventoryIds.length == 0) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.dr.consumer.selectHardware.atLeastOneItem");
+            model.addAttribute("errorMessage", errorMessage);
+            model.addAttribute("displayableEnrollmentProgram", displayableEnrollmentProgram);
+            return "consumer/enrollment/selectHardware.jsp";
+        }
+
+        Set<Integer> enrolledInventoryIds = Sets.newHashSet(inventoryIds);
+
+        List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
+        for (DisplayableEnrollmentInventory enrollment : displayableEnrollmentProgram.getInventory()) {
+            ProgramEnrollment programEnrollment =
+                makeProgramEnrollment(displayableEnrollmentProgram, enrollment,
+                                      enrolledInventoryIds.contains(enrollment.getInventoryId()));
+            updatedEnrollments.add(programEnrollment);
+        }
+
+        return saveChanges(model, assignedProgramId,
+                           customerAccount.getAccountId(), updatedEnrollments,
+                           session, userContext);
+    }
+
+    @RequestMapping(value = "/consumer/enrollment/unenroll", method=RequestMethod.GET)
+    public String unenroll(ModelMap model,
+            @ModelAttribute CustomerAccount customerAccount,
+            int assignedProgramId, HttpSession session,
+            YukonUserContext userContext) {
+        DisplayableEnrollmentProgram displayableEnrollmentProgram =
+            displayableEnrollmentDao.getProgram(
+                customerAccount.getAccountId(), assignedProgramId);
+
+        List<ProgramEnrollment> updatedEnrollments = Lists.newArrayList();
+        for (DisplayableEnrollmentInventory enrollment : displayableEnrollmentProgram.getInventory()) {
+            ProgramEnrollment programEnrollment =
+                makeProgramEnrollment(displayableEnrollmentProgram, enrollment,
+                                      false);
+            updatedEnrollments.add(programEnrollment);
+        }
+
+        return saveChanges(model, assignedProgramId,
+                           customerAccount.getAccountId(), updatedEnrollments,
+                           session, userContext);
+    }
+
+    private ProgramEnrollment makeProgramEnrollment(
+            DisplayableEnrollmentProgram displayableEnrollmentProgram,
+            DisplayableEnrollmentInventory enrollment, boolean isEnrolled) {
+        ProgramEnrollment retVal = new ProgramEnrollment();
+        retVal.setApplianceCategoryId(displayableEnrollmentProgram.getApplianceCategory().getApplianceCategoryId());
+        retVal.setAssignedProgramId(displayableEnrollmentProgram.getProgram().getProgramId());
+        retVal.setRelay(enrollment.getRelay());
+        retVal.setInventoryId(enrollment.getInventoryId());
+        retVal.setEnroll(isEnrolled);
+        return retVal;
+    }
+
+    private String saveChanges(ModelMap model, int assignedProgramId,
+            int accountId, List<ProgramEnrollment> updatedEnrollments, HttpSession session,
+            YukonUserContext userContext) {
+        List<ProgramEnrollment> programEnrollments = Lists.newArrayList();
+        programEnrollments.addAll(updatedEnrollments);
+        programEnrollments.addAll(getConflictingEnrollments(model, accountId,
+                                                            assignedProgramId,
+                                                            userContext));
+        enrollmentHelperService.updateProgramEnrollments(programEnrollments,
+                                                         accountId,
+                                                         userContext);
+
+        model.addAttribute("enrollmentResult", ProgramEnrollmentResultEnum.SUCCESS);
+
+        EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
                                  EventUtils.EVENT_CATEGORY_ACCOUNT,
                                  YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
-                                 customerAccount.getAccountId(),
+                                 accountId,
                                  session);
-        
-        map.addAttribute("backUrl", "/spring/stars/consumer/" + enrollPage);
-        
+
         return "consumer/enrollment/enrollmentResult.jsp";
     }
 
-    private void setExistingLMGroupAndRelay(List<ProgramEnrollment> enrollRequestList, int accountId){
-        List<LMHardwareControlGroup> lmHardwareControlGroupList = 
-            lmHardwareControlGroupDao.getCurrentEnrollmentByAccountId(accountId);
+    private List<ProgramEnrollment> getConflictingEnrollments(ModelMap model,
+            int accountId, int assignedProgramId, YukonUserContext userContext) {
+        boolean multiplePerCategory = rolePropertyDao.checkProperty(YukonRoleProperty.RESIDENTIAL_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY,
+                                                                    userContext.getYukonUser());
 
-        for (ProgramEnrollment enrollRequest : enrollRequestList) {
-            if (enrollRequest.isEnroll()) {
-                for (LMHardwareControlGroup existingEntry : lmHardwareControlGroupList) {
-                    if(existingEntry.getInventoryId() == enrollRequest.getInventoryId() && existingEntry.getProgramId() == enrollRequest.getAssignedProgramId()){
-                        enrollRequest.setLmGroupId(existingEntry.getLmGroupId());
-                        enrollRequest.setRelay(existingEntry.getRelay());
-                        break;
-                    }
-                }
-            }
+        List<ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
+        if (!multiplePerCategory) {
+            // Only one program per appliance category is allowed. Find other
+            // programs in the same appliance category and make sure they
+            // aren't enrolled.
+            conflictingEnrollments = enrollmentDao.findConflictingEnrollments(accountId,
+                                                                              assignedProgramId);
         }
+
+        return conflictingEnrollments;
     }
 
     @Autowired
@@ -155,15 +192,20 @@ public class EnrollmentController extends AbstractConsumerController {
             DisplayableEnrollmentDao displayableEnrollmentDao) {
         this.displayableEnrollmentDao = displayableEnrollmentDao;
     }
-    
-    @Autowired
-    public void setLmHardwareControlGroupDao(LMHardwareControlGroupDao lmHardwareControlGroupDao) {
-        this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
 
     @Autowired
     public void setWebSecurityChecker(WebSecurityChecker webSecurityChecker) {
         this.webSecurityChecker = webSecurityChecker;
     }
-    
+
+    @Autowired
+    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+        this.enrollmentDao = enrollmentDao;
+    }
+
+    @Autowired
+    public void setEnrollmentHelperService(
+            EnrollmentHelperService enrollmentHelperService) {
+        this.enrollmentHelperService = enrollmentHelperService;
+    }
 }

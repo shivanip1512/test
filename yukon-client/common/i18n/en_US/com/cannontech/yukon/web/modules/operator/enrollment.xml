@@ -22,8 +22,7 @@
     <entry key="yukon.web.modules.operator.enrollmentList.edit.title">Enroll Enrollment</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.remove.hoverText">Unenroll from this program</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.remove.title">Unenroll</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.add.hoverText">Enroll this customer in a new program</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.add.label">Add Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.add">Add Enrollment</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.addEnrollmentDialogTitle">Add Enrollment</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.history.title">History</entry>

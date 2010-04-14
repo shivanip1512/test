@@ -13,6 +13,7 @@
 <%@ attribute name="buttonStyleClass" description="Class to style the button with" required="false"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -40,7 +41,7 @@
         ${pageScope.id}.memoryGroup = '${pageScope.memoryGroup}';
     </c:if>
     <c:if test="${!empty pageScope.extraArgs}">
-        ${pageScope.id}.extraArgs = '${pageScope.extraArgs}';
+        ${pageScope.id}.extraArgs = '<spring:escapeBody javaScriptEscape="true">${pageScope.extraArgs}</spring:escapeBody>';
     </c:if>
     
 </script>

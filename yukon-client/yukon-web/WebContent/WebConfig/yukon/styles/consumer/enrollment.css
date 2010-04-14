@@ -1,0 +1,94 @@
+#enrollmentNote {
+    text-align: center;
+    background-color: #77ff77;
+    padding:  10px;
+    margin: 0px 50px 20px 50px;
+    border: 2px solid black;
+}
+
+#enrollmentTable tr.applianceCategory td {
+    padding: 20px 5px 0px 5px;
+}
+
+#enrollmentTable tr.enrolled {
+    background-color: #77ff77;
+}
+
+#enrollmentTable tr.notEnrolled {
+}
+
+#enrollmentTable {
+    width: 100%;
+}
+
+#enrollmentTable tr.applianceCategoryDescription td,
+#enrollmentTable tr.programDescription td {
+	padding-left: 25px;
+	padding-bottom: 10px;
+}
+
+#enrollmentTable tr.programDescription td {
+    padding-bottom: 5px;
+}
+
+#enrollmentTable td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#enrollmentTable td.programDescriptionIcon {
+    width: 25px;
+}
+
+#enrollmentTable td.applianceCategoryIcon {
+    width: 64px;
+    max-width: 64px;
+    vertical-align: top;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+#enrollmentTable td.enrollLink {
+    text-align: right;
+}
+
+#enrollmentTable .enrolled td.firstColumn {
+    border-left: 2px solid black;
+}
+
+#enrollmentTable .notEnrolled td.firstColumn {
+    border-left: 2px solid white;
+}
+
+#enrollmentTable .enrolled td.lastColumn {
+    border-right: 2px solid black;
+}
+
+#enrollmentTable .notEnrolled td.lastColumn {
+    border-right: 2px solid white;
+}
+
+#enrollmentTable .firstProgramRow td {
+    padding-top: 10px;
+}
+
+#enrollmentTable .firstProgramRow.enrolled td {
+    border-top: 2px solid black;
+}
+
+#enrollmentTable .firstProgramRow.notEnrolled td {
+    border-top: 2px solid white;
+}
+
+#enrollmentTable .lastProgramRow td,
+#enrollmentTable .lastProgramRow td.firstColumn {
+    padding-bottom: 10px;
+}
+
+#enrollmentTable .lastProgramRow.enrolled td {
+    border-bottom: 2px solid black;
+}
+
+#enrollmentTable .lastProgramRow.notEnrolled td {
+    border-bottom: 2px solid white;
+}

@@ -38,3 +38,15 @@ table.theremostatActionTable {
 table.theremostatActionTable td {
     vertical-align: bottom;
 }
+
+#hardwareConfigEditDialog #editArea {
+    width: auto;
+}
+
+#hardwareConfigEditDialog {
+    width: 500px;
+}
+
+#hardwareConfigEditDialog .actionArea input {
+    width: 115px;
+}

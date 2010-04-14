@@ -242,6 +242,7 @@ span#notEnrolledMessageSpan {
 div.legend {
 	font-size: .7em;
 	border: 1px solid #ccc;
+	margin: 10px 50px 10px 50px;
 }
 
 div.legend h1 {

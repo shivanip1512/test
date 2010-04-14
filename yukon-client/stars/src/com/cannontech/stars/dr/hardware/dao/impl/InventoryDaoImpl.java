@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlStringStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -35,18 +36,18 @@ public class InventoryDaoImpl implements InventoryDao {
 
     // Static list of thermostat device types
     private static List<Integer> THERMOSTAT_TYPES = new ArrayList<Integer>();
-    private static final String selectHardwareSummarySql;
+    private static final SqlStringStatementBuilder selectHardwareSummarySql
+        = new SqlStringStatementBuilder();
     static {
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT);
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT);
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP);
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO);
-        
-        selectHardwareSummarySql =
-            "SELECT ib.InventoryID, ib.DeviceLabel, " +
-            "lmhb.ManufacturerSerialNumber, lmhb.lmHardwareTypeId" + 
-            " FROM InventoryBase ib" + 
-            " JOIN LMHardwareBase lmhb ON ib.inventoryID = lmhb.inventoryID ";        
+
+        selectHardwareSummarySql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        selectHardwareSummarySql.append(    "lmhb.manufacturerSerialNumber, lmhb.lmHardwareTypeId");
+        selectHardwareSummarySql.append("FROM inventoryBase ib");
+        selectHardwareSummarySql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId ");        
     }
 
     private SimpleJdbcTemplate jdbcTemplate;

@@ -339,18 +339,18 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
             actionType == EnrollmentEnum.ENROLL ? "groupEnrollStart" : "groupEnrollStop";
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT hb.manufacturerSerialNumber, hcg.relay, pao.paoName,");
-        sql.append("wc.alternateDisplayName,");
-        sql.append("hcg.lmGroupId, lgPao.paoName as loadGroupName,");
-        sql.append("hcg.").append(dateColumn);
+        sql.append(    "wc.alternateDisplayName,");
+        sql.append(    "hcg.lmGroupId, lgPao.paoName as loadGroupName,");
+        sql.append(    "hcg.").append(dateColumn);
         sql.append("FROM lmHardwareControlGroup hcg");
-        sql.append("LEFT JOIN lmHardwareBase hb on hb.inventoryId = hcg.inventoryId");
-        sql.append("INNER JOIN lmProgramWebPublishing wp on hcg.programId = wp.programId");
-        sql.append("INNER JOIN yukonPAObject pao on wp.deviceId = pao.paobjectId");
-        sql.append("INNER JOIN yukonPAObject lgPao on lgPao.paobjectId = hcg.lmGroupId");
-        sql.append("INNER JOIN yukonWebConfiguration wc on wc.ConfigurationId = wp.websettingsId");
+        sql.append(    "LEFT JOIN lmHardwareBase hb on hb.inventoryId = hcg.inventoryId");
+        sql.append(    "JOIN lmProgramWebPublishing wp on hcg.programId = wp.programId");
+        sql.append(    "JOIN yukonPAObject pao on wp.deviceId = pao.paobjectId");
+        sql.append(    "JOIN yukonPAObject lgPao on lgPao.paobjectId = hcg.lmGroupId");
+        sql.append(    "JOIN yukonWebConfiguration wc on wc.ConfigurationId = wp.websettingsId");
         sql.append("WHERE hcg.accountId").eq(accountId);
-        sql.append("AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
-        sql.append("AND hcg.").append(dateColumn).append("IS NOT NULL");
+        sql.append(    "AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append(    "AND hcg.").append(dateColumn).append("IS NOT NULL");
         ParameterizedRowMapper<HardwareConfigAction> rowMapper =
             new ParameterizedRowMapper<HardwareConfigAction>() {
                 @Override
