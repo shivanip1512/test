@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/14/2010 1:16:11 PM                         */
+/* Created on:     4/14/2010 2:25:12 PM                         */
 /*==============================================================*/
 
 
@@ -9677,6 +9677,8 @@ INSERT INTO YukonRoleProperty VALUES (-90035,-900,'Load Group Last Action','true
 INSERT INTO YukonRoleProperty VALUES (-90036,-900,'Load Group Control Statistics','true', 'Controls access to view Load Group Control Statistics');
 INSERT INTO YukonRoleProperty VALUES (-90037,-900,'Load Group Reduction','true', 'Controls access to view Load Group Reduction');
 INSERT INTO YukonRoleProperty VALUES (-90038,-900,'Load Group Load Capacity','true', 'Controls access to view Load Group Load Capacity'); 
+INSERT INTO YukonRoleProperty VALUES (-90041,-900,'Schedule Stop Checked By Default', 'true', 'Controls whether the schedule stop check box is checked by default in demand response.');
+INSERT INTO YukonRoleProperty VALUES (-90042,-900,'Start Time Default',' ', 'Specifies the default start time for a control event in the format (hh:mm). It will use the current time if no time has been supplied');
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values(-100000, -1000, 'Target', 'true', 'display Target settings');
