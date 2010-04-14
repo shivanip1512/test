@@ -152,10 +152,10 @@ public abstract class StartProgramBackingBeanBase {
         scheduleStop = isScheduleStopChecked;
         
         // Setting the default duration
-        int startDuration =
+        int controlDuration =
             rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CONTROL_DURATION_DEFAULT, 
                                                     userContext.getYukonUser());
-        stopDate = jodaStartTime.plusMinutes(startDuration).toDate();
+        stopDate = jodaStartTime.plusMinutes(controlDuration).toDate();
     }
     
 }
