@@ -6,9 +6,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.SqlFilter;
@@ -20,7 +22,9 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 
 public class FilterServiceImpl implements FilterService {
+	
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private Logger log = YukonLogManager.getLogger(FilterServiceImpl.class);
 
     @Override
     public <T> SearchResult<T> filter(UiFilter<? super T> filter,
@@ -58,11 +62,17 @@ public class FilterServiceImpl implements FilterService {
         List<T> objectsFromDb = simpleJdbcTemplate.query(sql.getSql(),
                                                          rowMapper,
                                                          sql.getArguments());
+        
+        log.debug("Retrieved " + objectsFromDb.size() + "objects from database.");
+        
         List<T> objectsThatPassedFilters = new ArrayList<T>();
         if (filter == null || filter.getPostProcessingFilters() == null
                 || !filter.getPostProcessingFilters().iterator().hasNext()) {
             objectsThatPassedFilters = objectsFromDb;
         } else {
+        	
+        	log.debug("Begin applying post processing filter(s).");
+        	
             for (T obj : objectsFromDb) {
                 boolean useIt = true;
                 for (PostProcessingFilter<? super T> postProcessingFilter
@@ -76,9 +86,12 @@ public class FilterServiceImpl implements FilterService {
                     objectsThatPassedFilters.add(obj);
                 }
             }
+            
+            log.debug("Finished applying post processing filter(s): " + objectsThatPassedFilters.size() + "/" + objectsFromDb.size() + " objects passed filter.");
         }
 
         if (sorter != null) {
+        	log.debug("Sorting objects.");
             Collections.sort(objectsThatPassedFilters, sorter);
         }
 

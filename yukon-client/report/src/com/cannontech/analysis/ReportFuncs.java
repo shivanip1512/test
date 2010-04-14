@@ -306,15 +306,15 @@ public class ReportFuncs
         } else if( filter.equals(ReportFilter.ROUTE)){
             return cache.getAllRoutes();
         } else if( filter.equals(ReportFilter.LMCONTROLAREA)){
-            return cache.getAllLMControlAreas();
+        	
+        	// don't load anything, the pickers handle available control area loading
+        	return new ArrayList<LiteYukonPAObject>();
+        	
         } else if( filter.equals(ReportFilter.LMGROUP)) {
-            List <LiteYukonPAObject> allLMGroups = cache.getAllLMGroups();
-            if(allLMGroups != null && user != null) {
-                List<YukonPao> restrictedLMGroups = getRestrictedLMGroups(user);
-                return restrictedLMGroups;
-            } else { 
-                return new ArrayList<LiteYukonPAObject>();
-            }
+        	
+        	// don't load anything, the pickers handle available group loading
+        	return new ArrayList<LiteYukonPAObject>();
+        	
         } else if( filter.equals(ReportFilter.TRANSMITTER)) {
             List <LiteYukonPAObject> allPaos = cache.getAllYukonPAObjects();
             List <LiteYukonPAObject> trans = new ArrayList<LiteYukonPAObject>();
@@ -398,13 +398,10 @@ public class ReportFuncs
 
         }
         else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {
-            List <LiteYukonPAObject> programs = cache.getAllLMDirectPrograms();
-            if(programs != null && user != null) {
-                List<YukonPao> restrictedPrograms = getRestrictedPrograms(user);
-                return restrictedPrograms;
-            } else { 
-                return new ArrayList<LiteYukonPAObject>();
-            }
+        	
+        	// don't load anything, the pickers handle available program loading
+        	return new ArrayList<LiteYukonPAObject>();
+        	
         } else if (filter.equals(ReportFilter.STRATEGY)) {
         	List<LiteCapControlStrategy> strategyList = CapControlStrategy.getAllLiteCapControlStrategy(); 
         	

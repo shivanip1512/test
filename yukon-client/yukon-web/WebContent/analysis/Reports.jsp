@@ -495,7 +495,7 @@ function makeFirstSelectedFilterValueVisible() {
 	                    		if(filter.isMultiSelect()) {
 	                    		%>
 	                    			
-	                   			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
+	                   			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
 	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
 				                                 	id="programPicker" 
 				                                 	multiSelectMode="true"
@@ -511,7 +511,7 @@ function makeFirstSelectedFilterValueVisible() {
 	                    		} else {
 	                    		%>
 	                    			
-	                   			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
+	                   			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
 	                   								extraArgs="<%=String.valueOf(REPORT_BEAN.getEnergyCompanyID())%>"
 			                                 		id="programPicker" 
 			                                 		multiSelectMode="false"
@@ -540,7 +540,7 @@ function makeFirstSelectedFilterValueVisible() {
                     		
                     		<span style="font-size:16px;">
 	                    			
-	                   			<tags:pickerDialog  type="lmGroupPicker"
+	                   			<tags:pickerDialog  type="lmGroupPaoPermissionCheckingPicker"
 				                                 	id="groupPicker" 
 				                                 	multiSelectMode="true"
 				                                 	destinationFieldId="selectedPickerValues"
@@ -563,7 +563,7 @@ function makeFirstSelectedFilterValueVisible() {
                     		
                     		<span style="font-size:16px;">
 	                    			
-	                   			<tags:pickerDialog  type="lmControlAreaPicker"
+	                   			<tags:pickerDialog  type="lmControlAreaPaoPermissionCheckingPicker"
 				                                 	id="controlAreaPicker" 
 				                                 	multiSelectMode="true"
 				                                 	destinationFieldId="selectedPickerValues"
@@ -586,7 +586,7 @@ function makeFirstSelectedFilterValueVisible() {
                     		
                     		<span style="font-size:16px;">
 	                    			
-	                   			<tags:pickerDialog  type="lmScenarioPicker"
+	                   			<tags:pickerDialog  type="lmScenarioPaoPermissionCheckingPicker"
 				                                 	id="scenarioPicker" 
 				                                 	multiSelectMode="true"
 				                                 	destinationFieldId="selectedPickerValues"

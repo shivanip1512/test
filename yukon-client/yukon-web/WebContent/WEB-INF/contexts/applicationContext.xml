@@ -1385,9 +1385,10 @@
     </bean>
     
     <bean id="lmProgramForEnergyCompanyIdFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmProgramForEnergyCompanyIdFilterFactoryImpl"/>
+    <bean id="lmPaoPermissionCheckingPostProcessingFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmPaoPermissionCheckingPostProcessingFilterFactoryImpl"/>
 
     <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
-        <property name="filters">
+        <property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
                     <property name="paoType" value="LM_DIRECT_PROGRAM"/>
@@ -1398,8 +1399,8 @@
     </bean>
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
     
-    <bean name="lmDirectProgramByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramByEnergyCompanyIdPicker">
-    	<property name="filters">
+    <bean name="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker">
+    	<property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
                     <property name="paoType" value="LM_DIRECT_PROGRAM"/>
@@ -1408,24 +1409,26 @@
         </property>
     </bean>
 
-    <bean name="lmGroupPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
-    	<property name="filters">
+    <bean name="lmGroupPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.LmGroupPaoPermissionCheckingPicker">
+    	<property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.LmGroupFilter"/>
             </list>
         </property>
     </bean>
     
-    <bean name="lmControlAreaPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
-    	<property name="filters">
+    <bean name="lmControlAreaPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.LmControlAreaPaoPermissionCheckingPicker">
+    	<property name="sqlFilters">
             <list>
-                <bean class="com.cannontech.common.search.pao.db.LmControlAreaFilter"/>
+                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
+                    <property name="paoType" value="LM_CONTROL_AREA"/>
+                </bean>
             </list>
         </property>
     </bean>
 
-    <bean name="lmScenarioPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
-    	<property name="filters">
+    <bean name="lmScenarioPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.LmScenarioPaoPermissionCheckingPicker">
+    	<property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
                     <property name="paoType" value="LM_SCENARIO" />

@@ -39,11 +39,11 @@ public class AssignedProgramPicker
     public SearchResult<UltraLightAssignedProgram> search(String ss, int start,
             int count, String extraArgs, YukonUserContext userContext) {
         int accountId = NumberUtils.toInt(extraArgs, 0);
-        List<SqlFilter> extraFilters = Lists.newArrayList();
+        List<SqlFilter> extraSqlFilters = Lists.newArrayList();
         List<Integer> applianceCategoryIds =
             applianceCategoryDao.getApplianceCategoryIds(accountId);
-        extraFilters.add(new UltraLightAssignedProgramApplianceCategoryFilter(applianceCategoryIds));
-        return super.search(ss, start, count, extraFilters, userContext);
+        extraSqlFilters.add(new UltraLightAssignedProgramApplianceCategoryFilter(applianceCategoryIds));
+        return super.search(ss, start, count, extraSqlFilters, null, userContext);
     }
 
     @Override

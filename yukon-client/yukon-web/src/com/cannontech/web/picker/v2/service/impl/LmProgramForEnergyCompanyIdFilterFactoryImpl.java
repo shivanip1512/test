@@ -14,7 +14,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramForEnergyCompanyIdFilterFactory {
@@ -23,7 +22,7 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
 	private StarsDatabaseCache starsDatabaseCache;
 	
 	@Override
-	public List<SqlFilter> getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {
+	public SqlFilter getFilterForEnergyCompanyIdExtraArg(String energyCompanyIdExtraArg) {
 
 		if (energyCompanyIdExtraArg == null) {
 			throw new IllegalArgumentException("extraArgs for energyCompanyId required");
@@ -42,11 +41,9 @@ public class LmProgramForEnergyCompanyIdFilterFactoryImpl implements LmProgramFo
         }
 		
         // use the LmProgramForEnergyCompanyIdsFilter filter
-        List<SqlFilter> extraFilters = Lists.newArrayList();
-        LmProgramForEnergyCompanyIdFilter energyCompanyIdsFilter = new LmProgramForEnergyCompanyIdFilter(energyCompanyIds);
-        extraFilters.add(energyCompanyIdsFilter);
+        LmProgramForEnergyCompanyIdFilter filter = new LmProgramForEnergyCompanyIdFilter(energyCompanyIds);
         
-        return extraFilters;
+        return filter;
 	}
 	
 	@Autowired

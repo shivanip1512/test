@@ -125,7 +125,7 @@
 		        			<input type="hidden" id="cancelOptOutsProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
 		        			<input type="hidden" id="cancelOptOutsProgramName" name="programName" value="">
 		        			
-		        			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
+		        			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
 				                                 id="cancelOptOutsProgramPicker" 
 				                                 destinationFieldId="cancelOptOutsProgramPaoId"
 				                                 styleClass="simpleLink"
@@ -191,7 +191,7 @@
 		        			<input type="hidden" id="disabledCountProgramPaoId"> <%-- dummy destination for selected programId, unused. We actually want to submit the program name to do a lookup for webpublishingProgramId --%>
 		        			<input type="hidden" id="disabledCountProgramName" name="programName" value="">
 		        			
-		        			<tags:pickerDialog  type="lmDirectProgramByEnergyCompanyIdPicker"
+		        			<tags:pickerDialog  type="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker"
 				                                 id="disabledCountProgramPicker" 
 				                                 destinationFieldId="disabledCountProgramPaoId"
 				                                 styleClass="simpleLink"

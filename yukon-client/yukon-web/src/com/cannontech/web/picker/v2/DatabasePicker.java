@@ -17,15 +17,16 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public abstract class DatabasePicker<T> extends BasePicker<T> {
-    private List<SqlFilter> filters;
+
+	private List<SqlFilter> sqlFilters;
+    private List<PostProcessingFilter<T>> postProcessingFilters;
     private RowMapperWithBaseQuery<T> rowMapper;
     private String[] searchColumnNames;
 
     private FilterService filterService;
 
-    protected DatabasePicker(RowMapperWithBaseQuery<T> rowMapper,
-            String[] searchColumnNames) {
-        this.filters = Lists.newArrayList();
+    protected DatabasePicker(RowMapperWithBaseQuery<T> rowMapper, String[] searchColumnNames) {
+    	
         this.rowMapper = rowMapper;
         this.searchColumnNames = searchColumnNames;
     }
@@ -35,19 +36,21 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
      * filters.
      */
     @Override
-    public SearchResult<T> search(final String ss, int start, int count,
-            String extraArgs, YukonUserContext userContext) {
-        List<SqlFilter> extraFilters = Lists.newArrayList();
-        return search(ss, start, count, extraFilters, userContext);
+    public SearchResult<T> search(final String ss, int start, int count, String extraArgs, YukonUserContext userContext) {
+        return search(ss, start, count, null, null, userContext);
     }
     
     public SearchResult<T> search(final String ss, int start, int count,
-            List<SqlFilter> extraFilters, YukonUserContext userContext) {
-        final List<SqlFilter> myFilters = Lists.newArrayList();
-        if (filters != null) {
-            myFilters.addAll(filters);
+            					  List<SqlFilter> extraSqlFilters,
+            					  List<PostProcessingFilter<T>> extraPostProcessingFilters,
+            					  YukonUserContext userContext) {
+    	
+    	// sql filters
+        final List<SqlFilter> mySqlFilters = Lists.newArrayList();
+        if (sqlFilters != null) {
+        	mySqlFilters.addAll(sqlFilters);
         }
-        myFilters.add(new SqlFilter() {
+        mySqlFilters.add(new SqlFilter() {
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
                 SqlFragmentCollection retVal = SqlFragmentCollection.newOrCollection();
@@ -59,31 +62,43 @@ public abstract class DatabasePicker<T> extends BasePicker<T> {
                 return retVal;
             }
         });
-        myFilters.addAll(extraFilters);
+        if (extraSqlFilters != null) {
+        	mySqlFilters.addAll(extraSqlFilters);
+        }
+        
+        // post processing filters
+        final List<PostProcessingFilter<T>> myPostProcessingFilters = Lists.newArrayList();
+        if (postProcessingFilters != null) {
+        	myPostProcessingFilters.addAll(postProcessingFilters);
+        }
+        if (extraPostProcessingFilters != null) {
+        	myPostProcessingFilters.addAll(extraPostProcessingFilters);
+        }
 
+        // combine sql and post processing filter into a single UiFilter
         UiFilter<T> filter = new UiFilter<T>() {
             @Override
             public Iterable<PostProcessingFilter<T>> getPostProcessingFilters() {
-                // Since this is used in a picker we most certainly do NOT
-                // want any post processing filters. We don't want to force
-                // the filter to retrieve all of the results.
-                return null;
+                return myPostProcessingFilters;
             }
 
             @Override
             public Iterable<SqlFilter> getSqlFilters() {
-                return myFilters;
+                return mySqlFilters;
             }
         };
 
-        // We can't use a sorter either or the filter service would need to
-        // get everything from the database.
+        // no sorter support
         return filterService.filter(filter, null, start, count, rowMapper);
     }
 
-    public void setFilters(List<SqlFilter> filters) {
-        this.filters = filters;
+    public void setSqlFilters(List<SqlFilter> sqlFilters) {
+        this.sqlFilters = sqlFilters;
     }
+    
+    public void setPostProcessingFilters(List<PostProcessingFilter<T>> postProcessingFilters) {
+		this.postProcessingFilters = postProcessingFilters;
+	}
 
     @Autowired
     public void setFilterService(FilterService filterService) {
