@@ -500,8 +500,6 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         proposed_stop_from_epoch = proposed_start_from_epoch;
     }
 
-    CtiTime proposedStartTime(proposed_start_from_epoch);
-    CtiTime proposedStopTime(proposed_stop_from_epoch);
     CtiTime controlAreaStartTime = controlArea.getCurrentDailyStartTime(theDate);
     CtiTime controlAreaStopTime = controlArea.getCurrentDailyStopTime(theDate);
 
@@ -511,7 +509,10 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         return true;
     }
 
-    if( proposed_start_from_epoch > proposed_stop_from_epoch )
+    const CtiTime proposedStartTime(proposed_start_from_epoch);
+    const CtiTime proposedStopTime(proposed_stop_from_epoch);
+
+    if( proposedStartTime > proposedStopTime )
     {
         string result = "The proposed start time of ";
         result += proposedStartTime.asString();
@@ -521,6 +522,8 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
 
         return false;
     }
+
+
 
     // If our control area window and target window start on different dates, calculate the difference between them
     //  and slide our control window so it lines up on the same day as our target window.
