@@ -57,6 +57,7 @@
 	
 				<c:forEach var="displayableProgram" items="${displayablePrograms}">
 					<c:set var="program" value="${displayableProgram.program}" />
+                    <c:set var="lastControlHistoryEntry" />
 					<tr>
 						<td class="tdHeader nonwrapping"  width="100%" colspan="3">
 						    <span style="float: left;"><spring:escapeBody htmlEscape="true"><cti:msg key="${program.displayName}" /></spring:escapeBody></span>
