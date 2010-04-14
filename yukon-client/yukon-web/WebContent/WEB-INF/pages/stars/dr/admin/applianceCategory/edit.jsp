@@ -135,7 +135,7 @@
                                 <form id="assignProgramForm" action="${assignProgramUrl}">
                                     <input type="hidden" name="applianceCategoryId"
                                         value="${applianceCategoryId}"/>
-                                    <tags:pickerDialog type="applianceProgramPicker"
+                                    <tags:pickerDialog type="applianceProgramPaoPermissionCheckingPicker"
                                         id="programPicker" multiSelectMode="true"
                                         memoryGroup="programPicker"
                                         destinationFieldName="programsToAssign"

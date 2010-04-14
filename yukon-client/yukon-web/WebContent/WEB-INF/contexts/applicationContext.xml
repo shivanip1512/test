@@ -1387,7 +1387,7 @@
     <bean id="lmProgramForEnergyCompanyIdFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmProgramForEnergyCompanyIdFilterFactoryImpl"/>
     <bean id="lmPaoPermissionCheckingPostProcessingFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmPaoPermissionCheckingPostProcessingFilterFactoryImpl"/>
 
-    <bean name="applianceProgramPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
+    <bean name="applianceProgramPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.ApplianceProgramPaoPermissionCheckingPicker">
         <property name="sqlFilters">
             <list>
                 <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
@@ -1397,6 +1397,7 @@
             </list>
         </property>
     </bean>
+    
     <bean name="assignedProgramPicker" class="com.cannontech.web.picker.v2.AssignedProgramPicker"/>
     
     <bean name="lmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker" class="com.cannontech.web.picker.v2.LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker">
