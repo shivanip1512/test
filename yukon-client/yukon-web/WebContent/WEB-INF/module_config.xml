@@ -951,6 +951,18 @@
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/program/optOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
+                    <pages>
+                        <page name="optOutInventoryList" type="DETAIL">
+                            <menu>account</menu>
+                            <labelArgument>${optOutBackingBean.startDate}</labelArgument>
+                            <pages>
+                                <page name="optOutConfirm" type="DETAIL">
+                                    <menu>account</menu>
+                                    <labelArgument></labelArgument>
+                                </page>
+                            </pages>
+                        </page>
+                    </pages>
 		    	</page>
 		    	<page name="applianceList" type="DETAIL_CHILD_WITH_NAVIGATION">
                     <menu>account</menu>

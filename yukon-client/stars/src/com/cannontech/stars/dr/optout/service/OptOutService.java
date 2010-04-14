@@ -6,7 +6,6 @@ import java.util.List;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;

@@ -6,7 +6,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:standardPage module="operator" page="optOut">
+<cti:standardPage module="operator" page="optOutInventoryList">
 
 <cti:url var="actionUrl" value="/spring/stars/operator/program/optOut/optOutQuestions">
     <cti:param name="accountId" value="${accountId}" />
@@ -48,7 +48,7 @@ function createJSON() {
 			<span class="errorMessage"><cti:msg key="${error}"/></span><br>
 		</c:if>
 
-        <tags:boxContainer2 key="optOuts">
+        <tags:sectionContainer2 key="optOuts">
 
         <i:inline key=".description"/>
         <c:if test="${!empty alreadyOptedOutItems}">
@@ -58,12 +58,14 @@ function createJSON() {
         <br>
         <br>
 
-        <form:form id="form" commandName="optOutBackingBean" action="/spring/stars/operator/program/optOut/optOutQuestions" method="POST" onsubmit="createJSON();">
+        <form:form id="form" commandName="optOutBackingBean" 
+                   action="/spring/stars/operator/program/optOut/optOutQuestions" 
+                   method="POST" onsubmit="createJSON();">
             <input type="hidden" name="accountId" value="${accountId}" />
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />"
+            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
 
             <div id="controlEventsDiv" style="height: auto;">
-                <table class="compactResultsTable">
+                <table class="resultsTable">
                     <tr>
                         <th></th>
                         <th><i:inline key=".hardware"/></th>
@@ -74,7 +76,7 @@ function createJSON() {
                         <c:set var="inventoryId" value="${displayableInventory.inventoryId}"/>
                         <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
 
-                        <tr class="<tags:alternateRow odd="altRow" even=""/>">
+                        <tr class="<tags:alternateRow odd="" even="altRow"/>">
                             <td align="left">
                             	<c:choose>
                             		<c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
@@ -117,7 +119,7 @@ function createJSON() {
             <br>
             <span style="padding-right: 0.5em;">
                 <input type="submit" width="80px" value="<cti:msg2 key='.save'/>">
-            </span>    
+            </span>
             <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
             	<cti:param name="accountId" value="${accountId}" />
             	<cti:param name="energyCompanyId" value="${energyCompanyId}" />
@@ -128,7 +130,7 @@ function createJSON() {
             <form:hidden path="durationInDays" />
             <form:hidden path="startDate"/>
         </form:form>
-        </tags:boxContainer2>
+        </tags:sectionContainer2>
     </div>    
     
 </cti:standardPage>    
