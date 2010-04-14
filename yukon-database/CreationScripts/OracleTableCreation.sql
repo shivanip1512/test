@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/15/2010 10:11:34 AM                        */
+/* Created on:     4/14/2010 1:16:11 PM                         */
 /*==============================================================*/
 
 
@@ -190,8 +190,6 @@ drop index INDX_LMHardContGroup_InvId;
 drop index Indx_LMPDG_DevId_LMGrpDev_UNQ;
 
 drop index INDX_LMProgEvent_AcctId_ProgId;
-
-drop index Indx_LMPWP_DevId_UNQ;
 
 drop index INDX_LMThermSch_AcctId;
 
@@ -6462,13 +6460,6 @@ create table LMProgramWebPublishing  (
 );
 
 insert into LMProgramWebPublishing values (0,0,0,0,0,0);
-
-/*==============================================================*/
-/* Index: Indx_LMPWP_DevId_UNQ                                  */
-/*==============================================================*/
-create unique index Indx_LMPWP_DevId_UNQ on LMProgramWebPublishing (
-   DeviceID ASC
-);
 
 /*==============================================================*/
 /* Table: LMThermoStatGear                                      */

@@ -14,6 +14,12 @@ CREATE INDEX INDX_YukonUser_Username_FB ON YukonUser(
 );
 /* End YUK-8533 */
 
+/* Start YUK-8577 */
+/* @error ignore-begin */
+DROP INDEX Indx_LMPWP_DevId_UNQ;
+/* @error ignore-end */
+/* End YUK-8577 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
