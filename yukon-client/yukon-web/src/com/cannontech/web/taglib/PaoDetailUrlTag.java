@@ -26,7 +26,7 @@ public class PaoDetailUrlTag extends YukonTagSupport {
             getJspBody().invoke(out);
             out.print("</span>");
         } else {
-            out.print("<a title=\"" + yukonPao.getPaoIdentifier() + "\" href=\"");
+            out.print("<a title=\"" + yukonPao.getPaoIdentifier() + "\" class=\"simpleLink\" href=\"");
             out.print(urlForPaoDetailPage);
             out.print("\">");
             getJspBody().invoke(out);

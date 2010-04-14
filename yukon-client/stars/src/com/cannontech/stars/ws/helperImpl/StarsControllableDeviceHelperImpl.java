@@ -4,10 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -35,8 +33,6 @@ import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 public class StarsControllableDeviceHelperImpl implements
         StarsControllableDeviceHelper {
 
-    private static final Logger log = YukonLogManager.getLogger(StarsControllableDeviceHelperImpl.class);
-    
     private StarsSearchDao starsSearchDao;
     private CustomerAccountDao customerAccountDao;    
     private StarsInventoryBaseService starsInventoryBaseService;
@@ -249,7 +245,7 @@ public class StarsControllableDeviceHelperImpl implements
         // call service to add device on the customer account
         liteInv = starsInventoryBaseService.addDeviceToAccount(liteInv,
                                                                energyCompany,
-                                                               user);
+                                                               user, true);
         return liteInv;
     }
 

@@ -31,12 +31,23 @@
     <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverText">Change out this device for a different device.</entry>
     
+    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.serialNumberShort">Serial #</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.altTrackingNumberShort">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.warehouse">Warehouse</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.accountNumber">Account #</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.name">Name</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareList.checkInventoryButton">Check Inventory</entry>
+    
     <!-- Swiches -->
     <entry key="yukon.web.modules.operator.hardwareList.switches.title">Switches</entry>
     <entry key="yukon.web.modules.operator.hardwareList.switches.add">Add</entry>
     <entry key="yukon.web.modules.operator.hardwareList.switches.none">No Switches</entry>
     <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.displayType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.serialNumberShort">Serial #</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.altTrackingNumberShort">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.displayType">Switch Type</entry>
     <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.label">Label</entry>
     <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.actions">Actions</entry>
     
@@ -50,7 +61,7 @@
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.add">Add</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.none">No Thermostats</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.displayType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.displayType">Thermostat Type</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.label">Label</entry>
     <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.actions">Actions</entry>
     
@@ -66,7 +77,8 @@
     <entry key="yukon.web.modules.operator.hardwareList.meters.add">Add</entry>
     <entry key="yukon.web.modules.operator.hardwareList.meters.none">No Meters</entry>
     <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.displayName">Device Name</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.displayType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.displayType">Meter Type</entry>
     <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.label">Label</entry>
     <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.actions">Actions</entry>
     
@@ -83,6 +95,8 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareDeleted">Hardware Deleted</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareRemoved">Hardware Removed From Account</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.hardwareCreated">Hardware Created</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareAdded">Hardware Added</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareChangeOut">Hardware Change Out Successful</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.deviceInfoSection.title">Device Info</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.displayName">Device Name</entry>
@@ -145,6 +159,16 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.error.unavailable.serialNumber">This serial number is already in use.</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.error.invalid.serialNumber">Serial numbers can only contain numeric characters.</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.serialNumber">Serial numbers must be 30 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.notFound.serialNumber">The serial number {0} was not found in the inventory</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.sameAccount.serialNumber">The device with that serial number is already assigned to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.error.anotherEC.serialNumber">The device was found in the inventory list of energy company {0}.</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.notFoundAdd">The serial number {0} was not found in the inventory. Would you like to add it now?</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.foundOnAnotherAccount">The device is currently assigned to another account.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.addToAccount">Would you like to add it to this account?</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.moveToAccount">Would you like to remove it from account {0} and add it to account {1}?</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.inWarehouse">Device found in warehouse.</entry>
+    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.defaultWarehouse">General Inventory</entry>
     
     <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.displayLabel">Label must be 60 characters or less.</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.altTrackingNumber">Alt Tracking # must be 40 characters or less.</entry>
@@ -166,5 +190,25 @@
     <entry key="yukon.web.modules.operator.hardwareEdit.thermostatTypesLabel">Thermostat Type</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.meterTypesLabel">Meter Type</entry>
     <entry key="yukon.web.modules.operator.hardwareEdit.create.cancelButton">Cancel</entry>
+    
+    <!-- meterProfile.jsp -->
+    <entry key="yukon.web.modules.operator.meterProfile.pageName">Meter Profile</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.meterProfile.meterInfoSection.title">Meter Info</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.availableSwitchesSection.title">Switch to Meter Mapping</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.noAvailableSwitches">No Available Switches</entry>
+    
+    <entry key="yukon.web.modules.operator.meterProfile.meterNumberLabel">Meter Number</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.displayLabel">Label</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.altTrackingLabel">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.voltageLabel">Voltage</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.deviceNotesLabel">Notes</entry>
+    
+    <entry key="yukon.web.modules.operator.meterProfile.delete">Delete Meter {0}</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.deleteQuestion">Are you sure you want to delete this meter?</entry>
+    
+    <entry key="yukon.web.modules.operator.meterProfile.tableHeader.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.tableHeader.label">Label</entry>
     
 </properties>

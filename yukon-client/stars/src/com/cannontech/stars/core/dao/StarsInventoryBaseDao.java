@@ -7,8 +7,10 @@ import java.util.Map;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 
 public interface StarsInventoryBaseDao {
 
@@ -107,6 +109,42 @@ public interface StarsInventoryBaseDao {
      * on an account
      * @return List of paos
      */
-    List<PaoIdentifier> getPaosNotOnAnAccount(List<LiteStarsEnergyCompany> energyCompanyList);
+    public List<PaoIdentifier> getPaosNotOnAnAccount(List<LiteStarsEnergyCompany> energyCompanyList);
+
+    /**
+     * Returns a list of switch inventory id's assigned to the meter.
+     * @param meterId
+     * @return List<Integer>
+     */
+    public List<Integer> getSwitchAssignmentsForMeter(int meterId);
+
+    /**
+     * Returns a list of DisplayableLmHardware's of switches on this account.
+     * @param accountId
+     * @return List<DisplayableLmHardware>
+     */
+    public List<DisplayableLmHardware> getSwitchesForAccount(int accountId);
+    
+    /**
+     * Returns the meter id if this switch is assigned to a meter, null if it is not.
+     * @param lmHardwareId
+     * @return the meter id this switch is assigned to or null
+     */
+    public Integer findMeterAssignment(int lmHardwareId);
+
+    /**
+     * Saves a Meter hardware device info on the customer account. Handles both insert/update records.
+     * @param meterHardwareBase
+     * @param energyCompanyId
+     * @return LiteMeterHardwareBase the meter that was inserted or updated.
+     */
+    public LiteMeterHardwareBase saveMeterHardware(LiteMeterHardwareBase meterHardwareBase, int energyCompanyId);
+
+    /**
+     * Saves the switch to meter mappings in LMHardwareToMeterMapping
+     * @param meterId
+     * @param switchIds
+     */
+    public void saveSwitchAssignments(Integer meterId, List<Integer> switchIds);
     
 }

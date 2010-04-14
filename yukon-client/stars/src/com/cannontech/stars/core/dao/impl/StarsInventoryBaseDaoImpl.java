@@ -1,5 +1,7 @@
 package com.cannontech.stars.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,9 +22,11 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
+import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -30,12 +34,15 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.LiteStarsLMHardwareRowMapper;
 import com.cannontech.stars.core.dao.SmartLiteInventoryBaseRowMapper;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.EventInventoryDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.dao.LMConfigurationBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
+import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.util.ServerUtils;
+import com.google.common.collect.Lists;
 
 public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, InitializingBean {
     private static final ParameterizedRowMapper<LiteInventoryBase> smartInventoryRowMapper = new SmartLiteInventoryBaseRowMapper();
@@ -46,7 +53,9 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     private static final String selectInventorySql;
     private static final String insertECToInventorySql;
     private static final String insertLmHardwareSql;
+    private static final String insertMeterHardwareSql;
     private static final String updateLmHardwareSql;
+    private static final String updateMeterHardwareSql;
     private static final String removeInventoryFromAccountSql;
 
     private NextValueHelper nextValueHelper;    
@@ -72,6 +81,10 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
 
         updateLmHardwareSql = "UPDATE LMHardwareBase SET ManufacturerSerialNumber = ?, LMHardwareTypeID = ?, RouteID = ?, " 
             + "ConfigurationID = ? WHERE InventoryID = ?";
+        
+        insertMeterHardwareSql = "INSERT INTO MeterHardwareBase (MeterNumber, MeterTypeID, InventoryID) VALUES (?,?,?)";
+        
+        updateMeterHardwareSql = "UPDATE MeterHardwareBase SET MeterNumber = ?, MeterTypeID = ? WHERE InventoryID = ?";
 
         removeInventoryFromAccountSql = "UPDATE InventoryBase SET AccountID = 0, DeviceLabel = '', RemoveDate = ?  WHERE InventoryID = ?";
     }
@@ -94,6 +107,58 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         return liteInv;
     }
     
+    @Override
+    public Integer findMeterAssignment(int lmHardwareId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select MeterInventoryId");
+        sql.append("from LMHardwareToMeterMapping");
+        sql.append("where lmHardwareInventoryId ").eq(lmHardwareId);
+        
+        try {
+            return yukonJdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public List<DisplayableLmHardware> getSwitchesForAccount(int accountId) {
+        List<HardwareType> hardwareTypes = Lists.newArrayList(HardwareType.values());
+        List<Integer> switchTypeDefIds = Lists.newArrayList();
+        
+        for(HardwareType type : hardwareTypes) {
+            if (type.isSwitch()) {
+                switchTypeDefIds.add(type.getDefinitionId());
+            }
+        }
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select lm.ManufacturerSerialNumber serialNumber, ib.inventoryId inventoryId, ib.deviceLabel label from InventoryBase ib");
+        sql.append("join LMHardwareBase lm on lm.InventoryID = ib.InventoryID");
+        sql.append("join YukonListEntry yle on yle.EntryID = lm.LMHardwareTypeID");
+        sql.append("where AccountID ").eq(accountId);
+        sql.append("AND yle.YukonDefinitionID ").in(switchTypeDefIds);  
+        
+        return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<DisplayableLmHardware>(){
+            @Override
+            public DisplayableLmHardware mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DisplayableLmHardware hw = new DisplayableLmHardware();
+                hw.setInventoryId(rs.getInt("inventoryId"));
+                hw.setSerialNumber(rs.getString("serialNumber"));
+                hw.setLabel(rs.getString("label"));
+                return hw;
+            }});
+    }
+    
+    @Override
+    public List<Integer> getSwitchAssignmentsForMeter(int meterId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select LMHardwareInventoryId");
+        sql.append("from LMHardwareToMeterMapping");
+        sql.append("where MeterInventoryId ").eq(meterId);
+        
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
+    }
     
     @Override
     @Transactional(readOnly = true)
@@ -350,6 +415,53 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         }
 
         return lmHw;
+    }
+    
+    @Override
+    @Transactional
+    public LiteMeterHardwareBase saveMeterHardware(LiteMeterHardwareBase meterHardwareBase, int energyCompanyId) {
+
+        boolean insert = false;
+        if (meterHardwareBase.getInventoryID() <= 0) {
+            meterHardwareBase.setInventoryID(getNextInventoryID());
+            insert = true;
+        }
+        // Insert into ECToInventoryMapping
+        Object[] ecToInvParams = new Object[] { energyCompanyId,
+                meterHardwareBase.getInventoryID() };
+
+        // Insert into MeterHardwareBase
+        Object[] meterHwParams = new Object[] {
+                meterHardwareBase.getMeterNumber(), meterHardwareBase.getMeterTypeID(),
+                meterHardwareBase.getInventoryID() };
+
+        if (insert) {
+            //Insert into InventoryBase
+            liteInventoryTemplate.insert(meterHardwareBase);
+            yukonJdbcTemplate.update(insertECToInventorySql, ecToInvParams);
+            yukonJdbcTemplate.update(insertMeterHardwareSql, meterHwParams);
+        } else {
+            //Update InventoryBase            
+            liteInventoryTemplate.update(meterHardwareBase);
+            yukonJdbcTemplate.update(updateMeterHardwareSql, meterHwParams);
+        }
+
+        return meterHardwareBase;
+    }
+    
+    @Override
+    @Transactional
+    public void saveSwitchAssignments(Integer meterId, List<Integer> switchIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete from LMHardwareToMeterMapping where MeterInventoryId ").eq(meterId);
+        yukonJdbcTemplate.update(sql);
+        
+        for(int switchId : switchIds) {
+            sql = new SqlStatementBuilder();
+            sql.append("insert into LMHardwareToMeterMapping values(").appendArgument(switchId);
+            sql.append(",").appendArgument(meterId).append(")");
+            yukonJdbcTemplate.update(sql);
+        }
     }
 
     @Override

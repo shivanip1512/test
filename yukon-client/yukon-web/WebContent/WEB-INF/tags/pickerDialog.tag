@@ -10,6 +10,7 @@
 <%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
 <%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
+<%@ attribute name="buttonStyleClass" description="Class to style the button with" required="false"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -50,7 +51,9 @@
     <a href="javascript:${pageScope.id}.show()"><jsp:doBody/></a>
     </c:if>
     <c:if test="${pageScope.asButton}">
-        <input type="button" value="<jsp:doBody/>"
-            onclick="javascript:${pageScope.id}.show()"/>
+        <input type="button" 
+        value="<jsp:doBody/>" 
+        onclick="javascript:${pageScope.id}.show()" 
+        <c:if test="${not empty pageScope.buttonStyleClass}">class="${pageScope.buttonStyleClass}"</c:if>>
     </c:if>
 </span>

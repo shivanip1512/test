@@ -49,6 +49,13 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
             } else if (hardwareType.isSwitch() && hardwareType.isTwoWay() && !StringUtils.containsOnly(hardwareDto.getSerialNumber(), validSerialNumberChars)){
                 errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.invalid");
             }
+        } else if (hardwareType == HardwareType.NON_YUKON_METER) {
+            /* Meter Number */
+            if (StringUtils.isBlank(hardwareDto.getMeterNumber())) {
+                errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterProfile.error.required");
+            } else if(hardwareDto.getMeterNumber().length() > 30) {
+                errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterProfile.error.tooLong");
+            }
         }
         
         /* Device Label */

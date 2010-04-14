@@ -12,10 +12,10 @@
 	<%-- VIEW MODE --%>
 	<cti:displayForPageEditModes modes="VIEW">
 		<c:if test="${status.value == true}">
-			<i:inline key="defaults.yes"/>
+            <input type="checkbox" checked="checked" disabled="disabled">
 		</c:if>
 		<c:if test="${status.value == false}">
-			<i:inline key="defaults.no"/>
+			<input type="checkbox" disabled="disabled">
 		</c:if>
 	</cti:displayForPageEditModes>
 	

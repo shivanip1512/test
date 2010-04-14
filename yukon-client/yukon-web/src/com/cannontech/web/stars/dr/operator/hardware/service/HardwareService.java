@@ -5,12 +5,15 @@ import java.util.List;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
+import com.cannontech.web.stars.dr.operator.hardware.model.SwitchAssignment;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
 import com.google.common.collect.ListMultimap;
 
@@ -21,7 +24,7 @@ public interface HardwareService {
      * @param inventoryId
      * @return HardwareDto
      */
-    public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId);
+    public HardwareDto getHardwareDto(int inventoryId, int energyCompanyId, int accountId);
 
     /**
      * Updates hardware and returns true if the state of the hardware changed
@@ -89,5 +92,43 @@ public interface HardwareService {
      * @throws ObjectInOtherEnergyCompanyException 
      */
     public int createHardware(HardwareDto hardwareDto, int accountId, YukonUserContext userContext) throws ObjectInOtherEnergyCompanyException;
+
+    /**
+     * Adds a device to an acccount.  If fromAccount is true, removes it from it's
+     * old account before adding to this account.
+     * @param liteInventoryBase
+     * @param accountId
+     * @param energyCompany
+     * @param fromAccount
+     * @param user
+     */
+    public void addDeviceToAccount(LiteInventoryBase liteInventoryBase, int accountId, boolean fromAccount, LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
+
+    /**
+     * Adds a meter to the account.
+     * @param meterId
+     * @param accountId
+     * @param userContext
+     */
+    public void addYukonMeter(int meterId, int accountId, YukonUserContext userContext);
+
+    /**
+     * Returns a list of SwitchAssignment's for the switches assigned to the meter for this account.
+     * @param assignedIds
+     * @param accountId
+     * @return List<SwitchAssignment>
+     */
+    public List<SwitchAssignment> getSwitchAssignments(List<Integer> assignedIds, int accountId);
+
+    /**
+     * Removes the inventory with id 'oldInventoryId' from the account and adds the 
+     * inventory with id 'changeOutId'.
+     * @param oldInventoryId
+     * @param changeOutId
+     * @param accountId
+     * @param userContext
+     * @param isMeter true if this is a meter change out, the changeOutId will be a pao id
+     */
+    public void changeOutInventory(int oldInventoryId, int changeOutId, YukonUserContext userContext, boolean isMeter);
 
 }

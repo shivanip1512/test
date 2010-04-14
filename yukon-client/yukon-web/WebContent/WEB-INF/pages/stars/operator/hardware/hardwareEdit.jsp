@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="hardwareEdit">
+<cti:standardPage module="operator" page="hardwareEdit" mode="${mode}">
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
     <script type="text/javascript">
@@ -40,7 +40,16 @@
 
         function updateServiceCompanyInfo() {
             var url = '/spring/stars/operator/hardware/serviceCompanyInfo';
-            var serviceCompanyId = $F('serviceCompanyId');
+            var serviceCompanyId = 
+
+            	<cti:displayForPageEditModes modes="EDIT">
+                    $F('serviceCompanyId');
+                </cti:displayForPageEditModes>
+
+            	<cti:displayForPageEditModes modes="VIEW">
+                    ${hardwareDto.serviceCompanyId};
+                </cti:displayForPageEditModes>
+                
             if(serviceCompanyId > 0) {
                 var params = {'serviceCompanyId' : serviceCompanyId};
                 new Ajax.Updater('serviceCompanyContainer', url, {method: 'get', evalScripts: true, parameters: params});
@@ -122,14 +131,12 @@
     
     <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
     
-    <c:choose>
-        <c:when test="${editMode}">
-            <c:set var="action" value="/spring/stars/operator/hardware/updateHardware"/>
-        </c:when>
-        <c:otherwise>
-            <c:set var="action" value="/spring/stars/operator/hardware/createHardware"/>
-        </c:otherwise>
-    </c:choose>
+    <cti:displayForPageEditModes modes="EDIT">
+        <c:set var="action" value="/spring/stars/operator/hardware/updateHardware"/>
+    </cti:displayForPageEditModes>
+    <cti:displayForPageEditModes modes="CREATE">
+        <c:set var="action" value="/spring/stars/operator/hardware/createHardware"/>
+    </cti:displayForPageEditModes>
     
     <form:form id="updateForm" commandName="hardwareDto" action="${action}">
     
@@ -150,14 +157,12 @@
                     
                     <tags:nameValueContainer2>
                     
-                        <c:choose>
-                            <c:when test="${editMode}">
-                                <tags:nameValue2 nameKey=".displayType"><spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody></tags:nameValue2>
-                            </c:when>
-                            <c:otherwise>
-                                <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
-                            </c:otherwise>
-                        </c:choose>
+                        <cti:displayForPageEditModes modes="EDIT,VIEW">
+                            <tags:nameValue2 nameKey=".displayType"><spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody></tags:nameValue2>
+                        </cti:displayForPageEditModes>
+                        <cti:displayForPageEditModes modes="CREATE">
+                            <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
+                        </cti:displayForPageEditModes>
                         
                         <%-- For switchs and tstat's, show serial number, otherwise device name --%>
                         <c:choose>
@@ -178,9 +183,9 @@
                             </c:when>
                             
                             <c:otherwise>
-                                <c:if test="${editMode}">
+                                <cti:displayForPageEditModes modes="EDIT,VIEW">
                                     <tags:nameValue2 nameKey=".displayName"><spring:escapeBody htmlEscape="true">${hardwareDto.displayName}</spring:escapeBody></tags:nameValue2>
-                                </c:if>
+                                </cti:displayForPageEditModes>
                             </c:otherwise>
                             
                         </c:choose>
@@ -209,7 +214,7 @@
                             <tags:selectNameValue nameKey=".routeLabel" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                         </c:if>
                         
-                        <c:if test="${editMode}">
+                        <cti:displayForPageEditModes modes="EDIT,VIEW">
                         
                             <tags:yukonListEntrySelectNameValue nameKey=".deviceStatusLabel" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
                             
@@ -229,11 +234,14 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </span> 
-                                    <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" asButton="true" immediateSelectMode="true"
-                                        destinationFieldId="chosenYukonDeviceId" 
-                                        destinationFieldName="chosenYukonDeviceId"
-                                        endAction="changeTwoWayDeviceName" styleClass="newDevice"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
-                                    <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();">
+                                    
+                                    <cti:displayForPageEditModes modes="EDIT">
+                                        <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" asButton="true" immediateSelectMode="true"
+                                            destinationFieldId="chosenYukonDeviceId" 
+                                            destinationFieldName="chosenYukonDeviceId"
+                                            endAction="changeTwoWayDeviceName" styleClass="newDevice"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
+                                        <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();">
+                                    </cti:displayForPageEditModes>
                                     
                                 </tags:nameValue2>
                             
@@ -241,7 +249,7 @@
                             
                             <tags:hidden path="deviceId" id="chosenYukonDeviceId"/>
                             
-                        </c:if>
+                        </cti:displayForPageEditModes>
                         
                     </tags:nameValueContainer2>
                 
@@ -255,17 +263,19 @@
                 <tags:sectionContainer2 key="serviceAndStorageSection">
                     
                     <tags:nameValueContainer2>
-                    
-                        <tags:selectNameValue nameKey=".serviceCompanyLabel" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
-                            items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
+                        
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <tags:selectNameValue nameKey=".serviceCompanyLabel" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
+                                items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
+                        </cti:displayForPageEditModes>
                         
                         <tags:nameValue2 nameKey=".serviceCompanyInfoLabel">
                             <div id="serviceCompanyContainer"></div>
                         </tags:nameValue2>
                         
-                        <c:if test="${editMode}">
+                        <cti:displayForPageEditModes modes="EDIT,VIEW">
                             <tags:selectNameValue nameKey=".warehouseLabel" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
-                        </c:if>
+                        </cti:displayForPageEditModes>
                         
                         <tags:textareaNameValue nameKey=".installNotesLabel" path="installNotes" rows="4" cols="30" />
                         
@@ -273,7 +283,7 @@
                     
                     <br>
                     
-                    <c:if test="${editMode}">
+                    <cti:displayForPageEditModes modes="EDIT,VIEW">
                     
                         <tags:boxContainer2 key="deviceStatusHistory">
                             <c:choose>
@@ -329,7 +339,7 @@
                             </c:choose>
                         </tags:boxContainer2>
                     
-                    </c:if>
+                    </cti:displayForPageEditModes>
                     
                 </tags:sectionContainer2>
             
@@ -340,20 +350,21 @@
         <br>
         <br>
         
-        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-            <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
-        </cti:checkRolesAndProperties>
-        <tags:reset/>
-        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-            <c:choose>
-                <c:when test="${editMode}">
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+            </cti:checkRolesAndProperties>
+            <tags:reset/>
+            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                <cti:displayForPageEditModes modes="EDIT">
                     <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key=".delete.deleteButton"/>"/>
-                </c:when>
-                <c:otherwise>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="CREATE">
                     <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key=".create.cancelButton"/>">
-                </c:otherwise>
-            </c:choose>
-        </cti:checkRolesAndProperties>
+                </cti:displayForPageEditModes>
+            </cti:checkRolesAndProperties>
+        </cti:displayForPageEditModes>
+        
     </form:form>
     
 </cti:standardPage>

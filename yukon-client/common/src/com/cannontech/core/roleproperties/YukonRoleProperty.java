@@ -333,7 +333,7 @@ public enum YukonRoleProperty {
     OPERATOR_ADDRESS_STATE_LABEL(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ADDRESS_STATE_LABEL, stringType()),
     OPERATOR_ADDRESS_COUNTY_LABEL(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ADDRESS_COUNTY_LABEL, stringType()),
     OPERATOR_ADDRESS_POSTALCODE_LABEL(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL, stringType()),
-    OPERATOR_INVENTORY_CHECKING_CREATE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.INVENTORY_CHECKING_CREATE, stringType()),
+    OPERATOR_INVENTORY_CHECKING_CREATE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.INVENTORY_CHECKING_CREATE, booleanType()),
     OPERATOR_OPT_OUT_TODAY_ONLY(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_TODAY_ONLY, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_STATUS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_STATUS, booleanType()),
     OPERATOR_OPT_OUT_ADMIN_CHANGE_ENABLE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_ENABLE, booleanType()),

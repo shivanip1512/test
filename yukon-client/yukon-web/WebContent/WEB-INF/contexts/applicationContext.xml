@@ -1386,6 +1386,12 @@
     
     <bean id="lmProgramForEnergyCompanyIdFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmProgramForEnergyCompanyIdFilterFactoryImpl"/>
     <bean id="lmPaoPermissionCheckingPostProcessingFilterFactory" class="com.cannontech.web.picker.v2.service.impl.LmPaoPermissionCheckingPostProcessingFilterFactoryImpl"/>
+    
+    <bean name="availableMctPicker" class="com.cannontech.web.picker.v2.AvailableMctPicker"/>
+    
+    <bean name="availableSwitchPicker" class="com.cannontech.web.picker.v2.AvailableSwitchPicker"/>
+    
+    <bean name="availableThermostatPicker" class="com.cannontech.web.picker.v2.AvailableThermostatPicker"/>
 
     <bean name="applianceProgramPaoPermissionCheckingPicker" class="com.cannontech.web.picker.v2.ApplianceProgramPaoPermissionCheckingPicker">
         <property name="sqlFilters">
@@ -1516,5 +1522,6 @@
     
     <bean id="hardwareService" class="com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl"/>
     <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>
+    <bean id="SerialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     
 </beans>

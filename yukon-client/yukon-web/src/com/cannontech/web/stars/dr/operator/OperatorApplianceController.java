@@ -180,7 +180,7 @@ public class OperatorApplianceController {
         if (liteStarsAppliance.getInventoryID() > 0) {
             HardwareDto hardwareDto = 
                 hardwareService.getHardwareDto(liteStarsAppliance.getInventoryID(),
-                                               accountInfoFragment.getEnergyCompanyId());
+                                               accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
             modelMap.addAttribute("hardware", hardwareDto);
         }
 

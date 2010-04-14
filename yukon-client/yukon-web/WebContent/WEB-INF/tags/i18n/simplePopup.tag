@@ -2,6 +2,7 @@
 <%@ attribute name="titleKey" required="true" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="onClose" required="false" type="java.lang.String"%>
+<%@ attribute name="showImmediately" required="false" type="java.lang.String"%>
 <%@ attribute name="arguments" required="false" type="java.lang.Object"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -12,7 +13,7 @@
     <c:set var="onClose" value="$('${id}').hide();"/>
 </c:if>
 
-<div id="${id}" class="popUpDiv simplePopup ${pageScope.styleClass}" style="display:none;">
+<div id="${id}" class="popUpDiv simplePopup ${pageScope.styleClass}" <c:if test="${not pageScope.showImmediately}">style="display:none;"</c:if>>
 <!--  fix for IE6 bug (see YukonGeneralStyles.css ".simplePopup iframe" for more info) -->
 <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
 <div class="titledContainer boxContainer ${pageScope.styleClass}">

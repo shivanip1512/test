@@ -16,13 +16,16 @@ public interface StarsInventoryBaseService {
      * assigned to another account. If replaceAccount is desired, caller needs to remove it 
      * from the previous account and add it to the new account. Handles only LMHardware
      * devices for now, will need to support other device types later.
+     * If allowCreateLcrIfAlreadyHasAssignedDevice is true, for 2 way lcr's, a new 2 way device
+     * will be created and assigned to the inventory even if it already had one before.
      * @param liteInv
      * @param energyCompany
      * @param user
+     * @param allowCreateLcrIfAlreadyHasAssignedDevice
      * @return LiteInventoryBase
      */
     public LiteInventoryBase addDeviceToAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) throws StarsTwoWayLcrYukonDeviceCreationException;
+            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, boolean allowCreateLcrIfAlreadyHasAssignedDevice) throws StarsTwoWayLcrYukonDeviceCreationException;
 
     /**
      * Updates a hardware device info on the customer account. Ex., Field

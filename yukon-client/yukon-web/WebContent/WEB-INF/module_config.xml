@@ -977,6 +977,10 @@
                             <menu>account</menu>
                             <labelArgument>${displayName}</labelArgument>
                         </page>
+                        <page name="meterProfile" type="DETAIL">
+                            <menu>account</menu>
+                            <labelArgument>${displayName}</labelArgument>
+                        </page>
                         <page name="hardwareConfig" type="DETAIL_CHILD">
                             <menu>general</menu>
                             <link>/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>

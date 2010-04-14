@@ -130,7 +130,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Override
     @Transactional
     public LiteInventoryBase addDeviceToAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user) throws StarsTwoWayLcrYukonDeviceCreationException {
+            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, boolean allowCreateLcrIfAlreadyHasAssignedDevice) throws StarsTwoWayLcrYukonDeviceCreationException {
 
         boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
         if (liteInv.getLiteID() <= 0) {
@@ -196,7 +196,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 	    			throw new StarsTwoWayLcrYukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
 	    		}
 	    		
-	        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, true);
+	        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, allowCreateLcrIfAlreadyHasAssignedDevice);
 	        }
         }
         
@@ -386,7 +386,9 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             LiteYukonUser user) {
         
         // Unenroll the inventory from all its programs
-        unenrollHardware(liteInv, user);
+        if(InventoryUtils.isLMHardware(liteInv.getCategoryID())){
+            unenrollHardware(liteInv, user);
+        }
         
         if (deleteFromInventory) {
             starsInventoryBaseDao.deleteInventoryBase(liteInv.getInventoryID());
