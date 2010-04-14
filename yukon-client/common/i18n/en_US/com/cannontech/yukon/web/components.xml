@@ -42,4 +42,8 @@
     <entry key="yukon.web.components.image.remove.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
     <entry key="yukon.web.components.image.remove.hoverText">Remove</entry>
 
+    <entry key="yukon.web.components.image.meterDetail.imageUrl">/WebConfig/yukon/Icons/meter.gif</entry>
+    <entry key="yukon.web.components.image.meterDetail.hoverUrl">/WebConfig/yukon/Icons/meter_over.gif</entry>
+    <entry key="yukon.web.components.image.meterDetail.hoverText">Meter Detail</entry>
+
 </properties>

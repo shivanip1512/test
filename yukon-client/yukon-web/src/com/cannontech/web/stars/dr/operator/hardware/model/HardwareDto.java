@@ -3,6 +3,9 @@ package com.cannontech.web.stars.dr.operator.hardware.model;
 import java.util.Date;
 import java.util.List;
 
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
@@ -241,5 +244,10 @@ public class HardwareDto {
     
     public String getMeterNumber() {
         return meterNumber;
+    }
+    
+    public YukonPao getYukonPao() {
+        PaoType paoType = PaoType.getForDbString(displayType);
+        return new PaoIdentifier(deviceId, paoType);
     }
 }

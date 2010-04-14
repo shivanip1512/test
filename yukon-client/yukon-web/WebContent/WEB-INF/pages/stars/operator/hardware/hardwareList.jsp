@@ -177,6 +177,9 @@
                                 </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                             <cti:img key="editConfig" href="${editConfigUrl}${meter.inventoryId}"/> &nbsp;
+                            <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
+                                <cti:img key="meterDetail" />
+                            </cti:paoDetailUrl>
                             <cti:img key="commander" href="${commanderUrl}${meter.inventoryId}"/>
                         </td>
                     </tr>
