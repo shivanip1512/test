@@ -15,7 +15,7 @@
 			     not (lastControlHistoryEntry eq controlHistory.displayName)}">
 
 		<tags:sectionContainer title="${controlHistory.displayName}">
-			<table width="100%">
+			<table width="95%">
 				<tr>
 					<td valign="top">
 						<dr:controlHistoryEvents controlHistoryEventList="${eventList}" showControlSummary="true" />
