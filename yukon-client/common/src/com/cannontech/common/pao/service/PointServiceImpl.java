@@ -21,6 +21,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
@@ -52,7 +53,7 @@ public class PointServiceImpl implements PointService {
     }
 
     public PointBase createPoint(int type, String name, int paoId, int offset, double multiplier,
-            int unitOfMeasure, int stateGroupId, int decimalPlaces) {
+            int unitOfMeasure, int stateGroupId, int decimalPlaces, ControlType controlType) {
 
         PointBase point = null;
         int pointId = nextValueHelper.getNextValue("point");
@@ -74,7 +75,8 @@ public class PointServiceImpl implements PointService {
             													paoId, 
             													pointId, 
             													offset, 
-            													stateGroupId);
+            													stateGroupId,
+            													controlType);
             break;
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
@@ -116,7 +118,8 @@ public class PointServiceImpl implements PointService {
                                 template.getMultiplier(),
                                 template.getUnitOfMeasure(),
                                 template.getStateGroupId(),
-                                template.getDecimalPlaces());
+                                template.getDecimalPlaces(),
+                                template.getControlType());
     }
 
     public LitePoint getPointForPao(YukonPao pao, PointIdentifier pointIdentifier) throws NotFoundException {

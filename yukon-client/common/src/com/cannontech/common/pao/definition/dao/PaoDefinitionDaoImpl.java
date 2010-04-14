@@ -74,6 +74,7 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -835,6 +836,9 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         template.setUnitOfMeasure(unitOfMeasure);
         template.setDecimalPlaces(decimalPlaces);
 
+        ControlType controlType = ControlType.valueOf(point.getControltype());
+        template.setControlType(controlType);
+        
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
         if (point.getPointChoice().getStategroup() != null) {
 

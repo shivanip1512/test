@@ -352,7 +352,7 @@ public static synchronized void createBankStatusPt(
  * Creates a status point
  */
 public static synchronized PointBase createStatusPoint( String pointName, Integer paoID, 
-	      Integer pointID, int pointOffset, int stateGroupId )
+	      Integer pointID, int pointOffset, int stateGroupId, ControlType controlType )
 {
 	//Create new point
 	PointBase newPoint = PointFactory.createPoint(PointTypes.STATUS_POINT);
@@ -365,8 +365,11 @@ public static synchronized PointBase createStatusPoint( String pointName, Intege
 
 	newPoint.getPoint().setStateGroupID( stateGroupId );
 	
+	
 	//defaults pointStatus
-	((StatusPoint) newPoint).setPointStatus( new PointStatus(pointID) );
+	PointStatus pointStatus = new PointStatus(pointID);
+	pointStatus.setControlType(controlType.getDisplayName());
+	((StatusPoint) newPoint).setPointStatus(pointStatus);
 
 	return newPoint;
 }

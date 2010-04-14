@@ -4,6 +4,7 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointUnit;
@@ -193,7 +194,8 @@ public Object getValue(Object o)
                                                0.0,
                                                0,
                                                StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
-                                               PointUnit.DEFAULT_DECIMAL_PLACES);
+                                               PointUnit.DEFAULT_DECIMAL_PLACES,
+                                               ControlType.NONE);
 
         SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
         persistant.addOwnerDBPersistent(program);

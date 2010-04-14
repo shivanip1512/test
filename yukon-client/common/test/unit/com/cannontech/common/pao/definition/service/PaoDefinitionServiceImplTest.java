@@ -27,6 +27,7 @@ import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTe
 import com.cannontech.common.pao.service.PointServiceImpl;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -81,9 +82,9 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3));
-        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3));
-        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3));
+        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
 
         List<PointBase> actualPoints = service.createDefaultPointsForPao(device);
 
@@ -169,11 +170,11 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointService.createPoint(0, "status1", 1, 1, 1.0, 0, 0, 3));
-        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3));
-        expectedPoints.add(pointService.createPoint(2, "pulse2", 1, 2, 0.1, 1, 0, 3));
-        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3));
-        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3));
+        expectedPoints.add(pointService.createPoint(0, "status1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointService.createPoint(2, "pulse2", 1, 2, 0.1, 1, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
 
         List<PointBase> actualPoints = service.createAllPointsForPao(device);
 

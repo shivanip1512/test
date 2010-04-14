@@ -64,6 +64,11 @@ public class Point implements java.io.Serializable {
     private java.lang.String _description;
 
     /**
+     * Field _controltype
+     */
+    private java.lang.String _controltype = "NONE";
+
+    /**
      * Field _pointChoice
      */
     private com.cannontech.common.pao.definition.model.castor.PointChoice _pointChoice;
@@ -76,12 +81,24 @@ public class Point implements java.io.Serializable {
     public Point() 
      {
         super();
+        setControltype("NONE");
     } //-- com.cannontech.common.pao.definition.model.castor.Point()
 
 
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'controltype'.
+     * 
+     * @return String
+     * @return the value of field 'controltype'.
+     */
+    public java.lang.String getControltype()
+    {
+        return this._controltype;
+    } //-- java.lang.String getControltype() 
 
     /**
      * Returns the value of field 'description'.
@@ -205,6 +222,16 @@ public class Point implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'controltype'.
+     * 
+     * @param controltype the value of field 'controltype'.
+     */
+    public void setControltype(java.lang.String controltype)
+    {
+        this._controltype = controltype;
+    } //-- void setControltype(java.lang.String) 
 
     /**
      * Sets the value of field 'description'.

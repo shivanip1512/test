@@ -2,6 +2,7 @@ package com.cannontech.common.pao.definition.model;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
@@ -18,15 +19,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
     private int stateGroupId = StateGroupUtils.STATEGROUP_ANALOG;
     private int decimalPlaces = PointUnit.DEFAULT_DECIMAL_PLACES;
-
+    private ControlType controlType = ControlType.NONE;
+    
     public PointTemplate(PointType type, int offset) {
         pointIdentifier = new PointIdentifier(type, offset);
     }
     
     /**
      * @deprecated Use PointType version.
-     * @param type
-     * @param offset
      */
     @Deprecated
     public PointTemplate(int type, int offset) {
@@ -55,13 +55,6 @@ public class PointTemplate implements Comparable<PointTemplate> {
 
     /**
      * @deprecated Use the PointType version.
-     * @param name
-     * @param type
-     * @param offset
-     * @param multiplier
-     * @param unitOfMeasure
-     * @param stateGroupId
-     * @param decimalPlaces
      */
     @Deprecated
     public PointTemplate(String name, int type, int offset, double multiplier,
@@ -134,6 +127,14 @@ public class PointTemplate implements Comparable<PointTemplate> {
         this.decimalPlaces = decimalPlaces;
     }
 
+    public ControlType getControlType() {
+        return controlType;
+    }
+
+    public void setControlType(ControlType controlType) {
+        this.controlType = controlType;
+    }
+
     public int compareTo(PointTemplate o) {
 
         if (o == null) {
@@ -186,6 +187,8 @@ public class PointTemplate implements Comparable<PointTemplate> {
         	return false;
         if (stateGroupId != other.stateGroupId)
         	return false;
+        if (controlType != other.controlType)
+            return false;
         return true;
     }
 

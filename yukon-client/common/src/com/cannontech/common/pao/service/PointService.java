@@ -7,6 +7,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointBase;
 
 /**
@@ -27,7 +28,7 @@ public interface PointService {
      * @return A new point of the given type
      */
     public abstract PointBase createPoint(int type, String name, int paoId, int offset,
-            double multiplier, int unitOfMeasure, int stateGroupId, int decimalplaces);
+            double multiplier, int unitOfMeasure, int stateGroupId, int decimalplaces, ControlType controlType);
 
     /**
      * Method to create a point based on a point template

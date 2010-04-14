@@ -4914,6 +4914,7 @@
             <!-- STATUS POINTS -->
             <point type="Status" offset="1">
                 <name>Capacitor bank state</name>
+                <controltype>NORMAL</controltype>
                 <stategroup value="TwoStateStatus"/>
             </point>
             <point type="Status" offset="2">
