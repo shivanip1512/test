@@ -492,9 +492,6 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(ULONG proposed_start_fro
 
 bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlArea &controlArea, ULONG proposed_start_from_epoch, ULONG proposed_stop_from_epoch, const CtiDate &theDate)
 {
-    CtiTime proposedStartTime(proposed_start_from_epoch);   // target window
-    CtiTime proposedStopTime(proposed_stop_from_epoch);
-
     // The stop time could be in the infinate future, in that case
     // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
     // This _could_ be messing up "run forever" manual control .... checkit
@@ -503,6 +500,8 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
         proposed_stop_from_epoch = proposed_start_from_epoch;
     }
 
+    CtiTime proposedStartTime(proposed_start_from_epoch);
+    CtiTime proposedStopTime(proposed_stop_from_epoch);
     CtiTime controlAreaStartTime = controlArea.getCurrentDailyStartTime(theDate);
     CtiTime controlAreaStopTime = controlArea.getCurrentDailyStopTime(theDate);
 

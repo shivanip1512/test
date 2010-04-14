@@ -18,9 +18,10 @@
 #define BOOST_AUTO_TEST_MAIN "Test LM Program"
 #include <boost/test/unit_test.hpp>
 
+extern CtiTime gEndOfCtiTime;
+
 // Nonexistent window
 const CtiLMProgramControlWindow *no_window = 0;
-
 
 /*
 ***  TESTING: GetTimeFromOffsetAndDate()
@@ -583,6 +584,40 @@ BOOST_AUTO_TEST_CASE(test_control_area_constraint_check_no_midnight_overlap_star
                        "The program cannot run outside of its prescribed control windows.  "
                        "The proposed start time of 07/01/2009 18:00:00 is outside the CONTROL AREA control window "
                        "that runs from 07/01/2009 08:00:00 to 07/01/2009 16:00:00");
+}
+
+BOOST_AUTO_TEST_CASE(test_program_control_area_constraint_check_infinite_stop)
+{
+    CtiLMProgramDirect lmProgram;
+    CtiLMControlArea controlArea;
+
+    CtiLMProgramConstraintChecker constraints(lmProgram, CtiTime().seconds());
+
+    // set the date to: July 01, 2009
+    CtiDate today(1, 7, 2009);
+
+    // define control area window from 08:00 to 16:00
+    controlArea.setCurrentDailyStartTime(28800);    // 08:00 == 8 * 3600 == 28800
+    controlArea.setCurrentDailyStopTime(57600);     // 16:00 == 16 * 3600 == 57600
+
+    CtiLMProgramControlWindow *window1 = new CtiLMProgramControlWindow();
+
+    window1->setPAOId(1);
+    window1->setWindowNumber(1);
+    window1->setAvailableStartTime(28800);
+    window1->setAvailableStopTime(57600);
+
+    lmProgram.getLMProgramControlWindows().push_back(window1);
+
+    CtiTime startTime = GetTimeFromOffsetAndDate(30000, today); // Some time inside of window
+    CtiTime stopTime = gEndOfCtiTime;      // LM internal infinity time
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlAreaControlWindows(controlArea, startTime.seconds(), stopTime.seconds(), today));
+    BOOST_CHECK_EQUAL(    0, constraints.getViolations().size() );
+
+    BOOST_CHECK_EQUAL(true, constraints.checkControlWindows(startTime.seconds(), stopTime.seconds()));
+    BOOST_CHECK_EQUAL(    0, constraints.getViolations().size() );
+    
 }
 
 
