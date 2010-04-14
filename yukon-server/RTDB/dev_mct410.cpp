@@ -4343,11 +4343,11 @@ bool CtiDeviceMCT410::sspecValid(const unsigned sspec, const unsigned rev) const
     if( rev >= SspecRev_NextGen )
     {
         //  next-gen SSPEC is 10290-10299, split per meter type
-        return (sspec / 10) == Sspec;
+        return (sspec / 10) == CtiDeviceMCT410::Sspec;
     }
     else
     {
-        return sspec == Sspec;
+        return sspec == CtiDeviceMCT410::Sspec;
     }
 }
 
