@@ -49,6 +49,8 @@ import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
+import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
 
@@ -135,6 +137,7 @@ public class ApplianceCategoryController {
             YukonUserContext userContext) {
         ApplianceCategory applianceCategory = new ApplianceCategory();
 
+        model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.CREATE);
         return editDetails(model, applianceCategory, userContext);
     }
 
@@ -144,6 +147,7 @@ public class ApplianceCategoryController {
         ApplianceCategory applianceCategory =
             applianceCategoryDao.getById(applianceCategoryId);
 
+        model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.EDIT);
         return editDetails(model, applianceCategory, userContext);
     }
 
@@ -263,7 +267,8 @@ public class ApplianceCategoryController {
         
         EnvironmentIcon[] environmentIcons = EnvironmentIcon.values();
         model.addAttribute("environmentIcons", environmentIcons);
-        
+
+        model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.EDIT);
         return "applianceCategory/editAssignedProgram.jsp";
     }
 
