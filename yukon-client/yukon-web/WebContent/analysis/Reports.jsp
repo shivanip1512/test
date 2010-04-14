@@ -487,6 +487,7 @@ function makeFirstSelectedFilterValueVisible() {
         		        <%-- LM PROGRAM PICKER --%>
         		        <%} else if( filter.equals(ReportFilter.PROGRAM) || filter.equals(ReportFilter.PROGRAM_SINGLE_SELECT)) {%>
                     		
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
                     		<input type="hidden" id="selectedPickerValues" name="filterValues">
                     		
                     		<span style="font-size:16px;">
@@ -531,10 +532,10 @@ function makeFirstSelectedFilterValueVisible() {
 	                            <span id="selectedProgramNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
-                            
+                        </div>
                         <%-- LM GROUP PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMGROUP)) {%>
-                    		
+                        <div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
                     		<input type="hidden" id="selectedPickerValues" name="filterValues">
                     		
                     		<span style="font-size:16px;">
@@ -554,10 +555,10 @@ function makeFirstSelectedFilterValueVisible() {
 	                            <span id="selectedGroupNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
-                            
+                        </div>
                         <%-- LM CONTROL AREA PICKER --%>
                         <%} else if( filter.equals(ReportFilter.LMCONTROLAREA)) {%>
-                    		
+                    	<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
                     		<input type="hidden" id="selectedPickerValues" name="filterValues">
                     		
                     		<span style="font-size:16px;">
@@ -577,7 +578,30 @@ function makeFirstSelectedFilterValueVisible() {
 	                            <span id="selectedControlAreaNamesSpan" style="font-weight:bold;font-size:12px;"></span>
                              
                             </span>
-                    		       
+                        </div>
+                        <%-- LM SCENARIO PICKER --%>
+                        <%} else if( filter.equals(ReportFilter.LMSCENARIO)) {%>
+                    	<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">
+                    		<input type="hidden" id="selectedPickerValues" name="filterValues">
+                    		
+                    		<span style="font-size:16px;">
+	                    			
+	                   			<tags:pickerDialog  type="lmScenarioPicker"
+				                                 	id="scenarioPicker" 
+				                                 	multiSelectMode="true"
+				                                 	destinationFieldId="selectedPickerValues"
+				                                 	styleClass="simpleLink"
+				                                 	endAction="setPickerSelectedPaoNamesFunction('selectedScenarioNamesSpan');">
+				             	
+				             	<img src="/WebConfig/yukon/Icons/add.gif">
+				             	Choose Scenarios 
+	                            </tags:pickerDialog>
+	                             
+	                            <br>
+	                            <span id="selectedScenarioNamesSpan" style="font-weight:bold;font-size:12px;"></span>
+                             
+                            </span>
+                        </div>      
                     	<%-- ALL OTHER FILTER OBJECT TYPES --%>   
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=displayStyle%>">

@@ -639,7 +639,7 @@ public class DatabaseMigrationServiceImpl implements DatabaseMigrationService, R
             primaryKey = yukonJdbcTemplate.queryForInt(selectSQL.getSql(), whereParameterValues.toArray());
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new ConfigurationErrorException("The reference in the import file does not exist" +
-            		" or returns two many entries. Table: " + table.getName() + ", column/values: " + columnValueMap.toString(), e);
+            		" or returns too many entries. Table: " + table.getName() + ", column/values: " + columnValueMap.toString(), e);
         }
             
         return primaryKey;

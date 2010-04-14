@@ -66,6 +66,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 			RECEIVER("Receiver"),
 			LMGROUP("LM Group"),
 			LMCONTROLAREA("LM Control Area"),
+			LMSCENARIO("LM Scenario"),
 			TRANSMITTER("Transmitter"),
 			RTU("RTU"),
 			CAPCONTROLSUBBUS("Substation Bus"),

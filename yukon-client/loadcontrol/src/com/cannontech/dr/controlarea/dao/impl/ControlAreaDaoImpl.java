@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -14,10 +15,12 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
+import com.google.common.collect.Sets;
 
 public class ControlAreaDaoImpl implements ControlAreaDao {
     private YukonJdbcOperations yukonJdbcOperations;
@@ -73,6 +76,21 @@ public class ControlAreaDaoImpl implements ControlAreaDao {
         ControlArea controlArea = yukonJdbcOperations.queryForObject(sql, new ControlAreaRowMapper(triggerMap));
 
         return controlArea;
+    }
+    
+    @Override
+    public Set<Integer> getProgramIdsForControlArea(int controlAreaId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT paObjectId");
+        sql.append("FROM yukonPAObject");
+        sql.append("WHERE");
+        sql.append("paObjectId IN ");
+        sql.append("    (SELECT lmProgramDeviceId FROM lmControlAreaProgram ");
+        sql.append("        WHERE deviceId").eq(controlAreaId);
+        sql.append("     )");
+        
+        List<Integer> programIdList = yukonJdbcOperations.query(sql, new IntegerRowMapper());
+        return Sets.newHashSet(programIdList);
     }
 
     private Map<Integer, List<ControlAreaTrigger>> getControlAreaTriggers(int controlAreaId) {

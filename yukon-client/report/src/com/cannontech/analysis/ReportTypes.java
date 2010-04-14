@@ -48,6 +48,7 @@ public enum ReportTypes {
     LM_DAILY_PEAKS("Load Management Daily Peaks", DailyPeaksModel.class, ReportGroup.LOAD_MANAGEMENT),
     LOAD_CONTROL_VERIFICATION("Load Control Verification", LoadControlVerificationModel.class, ReportGroup.LOAD_MANAGEMENT),
     LCR3102Data("LCR 3102 Data", LCR3102DataController.class, ReportGroup.LOAD_MANAGEMENT),
+    PROGRAM_AND_GEAR_CONTROL("Program and Gear Control", ProgramAndGearControlController.class, ReportGroup.LOAD_MANAGEMENT),
     
     /* Cap Control Reports */
 	// Administrative

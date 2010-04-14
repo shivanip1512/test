@@ -1424,6 +1424,16 @@
         </property>
     </bean>
 
+    <bean name="lmScenarioPicker" class="com.cannontech.web.picker.v2.FilterPaoPicker">
+    	<property name="filters">
+            <list>
+                <bean class="com.cannontech.common.search.pao.db.PaoTypeFilter">
+                    <property name="paoType" value="LM_SCENARIO" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+
     <bean name="databaseMigrationDIRECT_PROGRAMPicker" class="com.cannontech.web.picker.v2.DatabaseMigrationPicker">
         <property name="databaseMigrationService" ref="databaseMigrationService" />
         <property name="exportType" value="DIRECT_PROGRAM" />
