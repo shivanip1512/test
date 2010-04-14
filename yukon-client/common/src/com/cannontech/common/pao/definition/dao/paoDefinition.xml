@@ -4021,9 +4021,11 @@
         <displayName>ALPHA A1</displayName>
         <changeGroup>electronic</changeGroup>
 	</pao>
+	<!--
 	<pao id="ALPHA_A3" inherits="ELECTRONIC_METER_BASE">
         <displayName>ALPHA A3</displayName>
-	</pao>
+	</pao>  
+	-->
     <pao id="DR_87" inherits="ELECTRONIC_METER_BASE">
         <displayName>DR-87</displayName>
         <changeGroup>electronic</changeGroup>
@@ -4156,13 +4158,14 @@
     <pao id="ION_8300" inherits="ELECTRONIC_METER_ION_BASE">
         <displayName>ION-8300</displayName>
     </pao>
-	
+	<!--
     <pao id="KV" inherits="ELECTRONIC_METER_BASE">
         <displayName>KV</displayName>
 	</pao>
     <pao id="KVII" inherits="ELECTRONIC_METER_BASE">
         <displayName>KV2</displayName>
 	</pao>
+	-->
 	<pao id="LANDISGYRS4" inherits="ELECTRONIC_METER_BASE">
         <displayName>LANDIS-GYR S4</displayName>
         <changeGroup>electronic</changeGroup>
