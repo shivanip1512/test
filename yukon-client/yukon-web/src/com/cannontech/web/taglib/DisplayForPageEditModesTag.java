@@ -18,14 +18,10 @@ public class DisplayForPageEditModesTag extends YukonTagSupport {
 	@Override
     public void doTag() throws JspException, IOException {
     	
-		PageEditMode currentPageEditMode = null;
-		try {
-			currentPageEditMode = (PageEditMode)this.getJspContext().getAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageContext.REQUEST_SCOPE);
-		} catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Invalid PageEditMode has been set.", e);
-		}
+		String attributeName = StandardPageTag.class.getName() + ".pageEditMode";
+        PageEditMode currentPageEditMode = (PageEditMode) getJspContext().getAttribute(attributeName, PageContext.REQUEST_SCOPE);
 		if (currentPageEditMode == null) {
-			throw new IllegalArgumentException("PageEditMode has not been set.");
+			currentPageEditMode = PageEditMode.EDIT;
 		}
 		
 		if (modes != null) {
