@@ -29,7 +29,7 @@
                 <cti:msg key="yukon.dr.consumer.completecontrolhistory.controlEventsTitle" var="controlEventsTitle" />
                 <cti:msg key="${program.displayName}" var="controlEventsTitle" />
                 <tags:boxContainer title="${controlEventsTitle}" hideEnabled="false">
-                    <div id="controlEventsDiv"></div>
+                    <div id="controlEventsDiv"><cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/></div>
                 </tags:boxContainer>
             </td>
         </tr>

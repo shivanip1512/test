@@ -5,7 +5,7 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="applianceList">
+<cti:standardPage module="operator" page="appliance.list">
 
     <c:choose>
          <c:when test="${fn:length(displayableApplianceListEntries) > 1}">

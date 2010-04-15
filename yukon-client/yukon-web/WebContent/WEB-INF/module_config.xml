@@ -949,10 +949,10 @@
 		           	<link>/spring/stars/operator/program/controlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		           	<pages>
-				   		<page name="completeControlHistory" type="DETAIL_CHILD_WITH_INFO">
+				   		<page name="completeControlHistory" type="DETAIL">
 				    		<menu>account</menu>
 				           	<link>/spring/stars/operator/program/completeControlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
-		           	        <labelArgument>${accountNumber}</labelArgument>
+		           	        <labelArgument>${program.programName}</labelArgument>
 				    	</page>
 			    	</pages>
 		    	</page>
@@ -962,35 +962,35 @@
 		           	<link>/spring/stars/operator/enrollment/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
-		    	<page name="optOut" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+		    	<page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/program/optOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
                     <pages>
-                        <page name="optOutInventoryList" type="DETAIL">
+                        <page name="optOut.inventoryList" type="BASIC">
                             <menu>account</menu>
                             <labelArgument>${optOutBackingBean.startDate}</labelArgument>
-                            <pages>
-                                <page name="optOutConfirm" type="DETAIL">
-                                    <menu>account</menu>
-                                    <labelArgument></labelArgument>
-                                </page>
-                            </pages>
+                        </page>
+                        <page name="optOut.confirm" type="BASIC">
+                            <menu>account</menu>
+                            <labelArgument></labelArgument>
+                        </page>
+                        <page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
+                            <menu>account</menu>
                         </page>
                     </pages>
 		    	</page>
-		    	<page name="applianceList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+		    	<page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                     <menu>account</menu>
                     <link>/spring/stars/operator/appliances/applianceList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
                     <pages>
-                        <page name="applianceEdit" type="DETAIL">
+                        <page name="appliance.edit" type="DETAIL">
                             <menu>account</menu>
                             <labelArgument>${applianceCategoryName}</labelArgument>
                         </page>
-                        <page name="applianceNew" type="DETAIL">
+                        <page name="appliance.new" type="BASIC">
                             <menu>account</menu>
-                            <labelArgument>${applianceCategoryName}</labelArgument>
                         </page>
                     </pages>
                 </page>

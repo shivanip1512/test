@@ -6,7 +6,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:standardPage module="operator" page="optOutInventoryList">
+<cti:standardPage module="operator" page="optOut.inventoryList">
 
 <cti:url var="actionUrl" value="/spring/stars/operator/program/optOut/optOutQuestions">
     <cti:param name="accountId" value="${accountId}" />

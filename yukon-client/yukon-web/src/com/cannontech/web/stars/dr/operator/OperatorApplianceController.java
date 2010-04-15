@@ -144,7 +144,7 @@ public class OperatorApplianceController {
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
-                                      "yukon.web.modules.operator.applianceEdit.applianceCreated"));
+                                      "yukon.web.modules.operator.appliance.applianceCreated"));
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
@@ -235,7 +235,7 @@ public class OperatorApplianceController {
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
-                                      "yukon.web.modules.operator.applianceEdit.applianceUpdated"));
+                                      "yukon.web.modules.operator.appliance.edit.applianceUpdated"));
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
@@ -268,7 +268,7 @@ public class OperatorApplianceController {
 
         if (binder.getTarget() != null) {
             DefaultMessageCodesResolver msgCodesResolver = new DefaultMessageCodesResolver();
-            msgCodesResolver.setPrefix("yukon.web.modules.operator.applianceEdit.");
+            msgCodesResolver.setPrefix("yukon.web.modules.operator.appliance.");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
 

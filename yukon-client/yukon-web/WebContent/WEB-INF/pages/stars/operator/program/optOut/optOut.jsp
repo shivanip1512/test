@@ -7,7 +7,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
-<cti:standardPage module="operator" page="optOut">
+<cti:standardPage module="operator" page="optOut.main">
 
 <!-- Helper Popup -->
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>

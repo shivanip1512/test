@@ -5,7 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
-<cti:standardPage module="operator" page="optOutConfirm">
+<cti:standardPage module="operator" page="optOut.confirm">
 
     <script type="text/javascript">
     function createJSON() {

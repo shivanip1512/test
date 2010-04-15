@@ -200,7 +200,7 @@ public class OperatorProgramOptOutOperatorController {
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
         if (inventoryIds.size() == 0) {
         	
-            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.noInventorySelected"), FlashScopeMessageType.ERROR);
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.noInventorySelected"), FlashScopeMessageType.ERROR);
             return "redirect:/spring/stars/operator/program/optOut";
 
         }
@@ -289,7 +289,7 @@ public class OperatorProgramOptOutOperatorController {
             return "operator/program/optOut/optOut.jsp";
         }
        
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.success"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
         return "redirect:/spring/stars/operator/program/optOut";
     }
 
