@@ -36,8 +36,6 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.PageEditMode;
-import com.cannontech.web.taglib.StandardPageTag;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -56,8 +54,6 @@ public class StartProgramController extends ProgramControllerBase {
     public String details(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext) {
-    	
-    	model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.EDIT);
     	
         if (fromBack == null || !fromBack) {
             backingBean.initDefaults(userContext);
@@ -236,8 +232,6 @@ public class StartProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext) {
 
-    	model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.EDIT);
-    	
         UiFilter<DisplayablePao> filter = null;
 
         String paoName = null;

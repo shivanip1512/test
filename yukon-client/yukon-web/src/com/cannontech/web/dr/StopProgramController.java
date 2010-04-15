@@ -33,8 +33,6 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.PageEditMode;
-import com.cannontech.web.taglib.StandardPageTag;
 
 @Controller
 @RequestMapping("/program/stop/*")
@@ -59,11 +57,7 @@ public class StopProgramController extends ProgramControllerBase {
     @RequestMapping
     public String details(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
-            BindingResult bindingResult,
-            YukonUserContext userContext) {
-    	
-    	model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.EDIT);
-
+            BindingResult bindingResult, YukonUserContext userContext) {
         if (fromBack == null || !fromBack) {
             backingBean.setStopNow(true);
             backingBean.setGearNumber(1);
@@ -159,9 +153,6 @@ public class StopProgramController extends ProgramControllerBase {
     public String multipleDetails(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext) {
-    	
-    	model.addAttribute(StandardPageTag.PAGE_EDIT_MODE_ATTR, PageEditMode.EDIT);
-    	
         UiFilter<DisplayablePao> filter = null;
 
         String paoName = null;
