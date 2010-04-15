@@ -38,7 +38,8 @@ public class YukonUser extends DBPersistent
         // that column.
         String dummyPasswordValue = "";
         Object[] addValues = { getUserID(), getUsername(), dummyPasswordValue,
-                               getLoginStatus(), getAuthType().name() };
+                               getLoginStatus().getDatabaseRepresentation(), 
+                               getAuthType().name() };
         add(TABLE_NAME, addValues);
     }
 
@@ -142,7 +143,9 @@ public class YukonUser extends DBPersistent
 	 * @see com.cannontech.database.db.DBPersistent#update()
 	 */
 	public void update() throws SQLException {
-		Object[] setValues = { getUsername(), getLoginStatus(), getAuthType().name() };
+		Object[] setValues = { getUsername(), 
+		                       getLoginStatus().getDatabaseRepresentation(), 
+		                       getAuthType().name() };
 		
 		String[] constraintColumns = { "UserID" };
 		Object[] constraintValues = { getUserID() };
