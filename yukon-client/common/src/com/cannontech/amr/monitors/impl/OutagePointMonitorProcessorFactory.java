@@ -51,13 +51,10 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
             @Override
             public boolean evaluate(RichPointData richPointValue) {
 
-                YukonDevice yukonDevice = new SimpleDevice(richPointValue.getPaoPointIdentifier()
-                                                                         .getPaoIdentifier());
-
                 PointIdentifier pointIdentifier = richPointValue.getPaoPointIdentifier()
                                                                 .getPointIdentifier();
                 // get the paoPointIdentifier for the attribute
-                PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(yukonDevice,
+                PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointValue.getPaoPointIdentifier().getPaoIdentifier(),
                                                                                                            BuiltInAttribute.BLINK_COUNT);
 
                 // the richPointValue matches the attribute we're looking for

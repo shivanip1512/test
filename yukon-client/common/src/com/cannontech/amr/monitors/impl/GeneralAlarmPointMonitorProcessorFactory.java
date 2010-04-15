@@ -42,11 +42,9 @@ public class GeneralAlarmPointMonitorProcessorFactory extends MonitorProcessorFa
 	        @Override
 	        public boolean evaluate(RichPointData richPointValue) {
 
-	            YukonDevice yukonDevice = new SimpleDevice(richPointValue.getPaoPointIdentifier().getPaoIdentifier());
-
 	            PointIdentifier pointIdentifier = richPointValue.getPaoPointIdentifier().getPointIdentifier();
 	            // get the paoPointIdentifier for the attribute 
-	            PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(yukonDevice, BuiltInAttribute.GENERAL_ALARM_FLAG);
+	            PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointValue.getPaoPointIdentifier().getPaoIdentifier(), BuiltInAttribute.GENERAL_ALARM_FLAG);
 
 	            // the richPointValue matches the attribute we're looking for
 	            if (pointIdentifier.equals(paoPointIdentifier.getPointIdentifier())) {

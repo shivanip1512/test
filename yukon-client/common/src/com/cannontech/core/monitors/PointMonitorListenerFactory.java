@@ -7,6 +7,8 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 
@@ -20,8 +22,12 @@ public class PointMonitorListenerFactory {
 
 	        @Override
 	        public void pointDataReceived(RichPointData pointData) {
-
-	            SimpleDevice simpleDevice = new SimpleDevice(pointData.getPaoPointIdentifier().getPaoIdentifier());
+	            PaoIdentifier paoIdentifier = pointData.getPaoPointIdentifier().getPaoIdentifier();
+                if (paoIdentifier.getPaoType().getPaoCategory() != PaoCategory.DEVICE) {
+	                // non devices can't be in groups
+	                return;
+	            }
+	            SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
 
 	            DeviceGroup groupToMonitor = processor.getGroupToMonitor();
 	            boolean deviceInGroup = deviceGroupProviderDao.isDeviceInGroup(groupToMonitor, simpleDevice);
