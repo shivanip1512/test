@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.web.menu.option.producer.SearchProducer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -17,9 +18,7 @@ import com.google.common.collect.Maps;
  */
 public class ModuleBase {
     private String moduleName;
-    private String searchPath;
-    private String searchFieldName;
-    private String searchMethod;
+    private SearchProducer searchProducer;
     private MenuBase portalLinks;
     private Map<String, PageInfo> pageInfos = Maps.newHashMap();
     private List<String> cssFiles = new ArrayList<String>(2);
@@ -39,13 +38,9 @@ public class ModuleBase {
         this.moduleName = moduleName;
     }
 
-    public String getSearchPath() {
-        return searchPath;
-    }
-
-    public void setSearchPath(String searchPath) {
-        this.searchPath = searchPath;
-    }
+    public SearchProducer getSearchProducer() {
+		return searchProducer;
+	}
     
     public void setPortalLinks(MenuBase portalLinks) {
         this.portalLinks = portalLinks;
@@ -71,21 +66,9 @@ public class ModuleBase {
         this.skin = skin;
     }
 
-    public String getSearchFieldName() {
-        return searchFieldName;
-    }
-
-    public void setSearchFieldName(String searchFieldName) {
-        this.searchFieldName = searchFieldName;
-    }
-
-    public String getSearchMethod() {
-        return searchMethod;
-    }
-
-    public void setSearchMethod(String searchMethod) {
-        this.searchMethod = searchMethod;
-    }
+    public void setSearchProducer(SearchProducer searchProducer) {
+		this.searchProducer = searchProducer;
+	}
 
     public PageInfo getPageInfo(String pageName) {
         return pageInfos.get(pageName);

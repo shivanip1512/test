@@ -13,6 +13,7 @@ import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
 import org.apache.ecs.html.Input;
+import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
@@ -31,6 +32,8 @@ import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
+import com.cannontech.web.menu.option.producer.SearchProducer;
+import com.cannontech.web.menu.option.producer.SearchType;
 
 /**
  * Outputs the HTML to display the menu for a given request and module.
@@ -310,16 +313,45 @@ public class StandardMenuRenderer implements MenuRenderer {
             wrapper.addElement(left);
         }
         
-        if (moduleBase.getSearchPath() != null && features.showSearch) {
+        if (moduleBase.getSearchProducer() != null && features.showSearch) {
+        	
+        	SearchProducer searchProducer = moduleBase.getSearchProducer();
+        	
             Div right = new Div();
             right.setClass("stdhdr_rightSide");
-            Form searchForm = new Form(moduleBase.getSearchPath(), moduleBase.getSearchMethod());
+            Form searchForm = new Form(searchProducer.getFormAction(), searchProducer.getFormMethod());
             searchForm.setAcceptCharset("ISO-8859-1");
             
             Div searchDiv = new Div();
             searchDiv.setID("findForm");
-            searchDiv.addElement("Find: ");
-            searchDiv.addElement(new Input(Input.text, moduleBase.getSearchFieldName()));
+            
+            // search types?
+            if (searchProducer.getTypeOptions() != null) {
+            	
+            	Select select = new Select();
+            	select.setName(searchProducer.getTypeName());
+            	select.setOnChange("$('textInput').value = ''");
+            	
+            	for (SearchType searchType : searchProducer.getTypeOptions()) {
+            		
+            		Option option = new Option();
+            		option.setValue(searchType.getSearchTypeValue());
+            		option.addElement(messageSource.getMessage(searchType.getDisplayKey()));
+            		
+            		select.addElement(option);
+            	}
+            	
+            	searchDiv.addElement(select);
+            } else {
+            	searchDiv.addElement("Find: ");
+            }
+            
+            
+            // search box
+            Input textInput = new Input(Input.text, searchProducer.getFieldName(), "");
+            textInput.setID("textInput");
+            
+			searchDiv.addElement(textInput);
             searchDiv.addElement(new Input(Input.image, "Go")
                                   .setSrc(buildUrl("/WebConfig/yukon/Buttons/GoButtonGray.gif"))
                                   .setAlt("Go")

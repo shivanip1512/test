@@ -28,6 +28,8 @@ import com.cannontech.web.menu.option.SubMenuOption;
 import com.cannontech.web.menu.option.producer.DynamicMenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducerFactory;
+import com.cannontech.web.menu.option.producer.SearchProducer;
+import com.cannontech.web.menu.option.producer.SearchProducerFactory;
 import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
 import com.google.common.collect.Lists;
 
@@ -42,6 +44,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
     private MenuBase portalLinksBase = null;
     private MenuOptionProducerFactory menuOptionProducerFactory;
+    private SearchProducerFactory searchProducerFactory;
     private final Resource moduleConfigFile;
     private final String menuKeyPrefix = "yukon.web.menu.portal";
     private final String menuKeyModPrefix = "yukon.web.menu.config.";
@@ -99,9 +102,9 @@ public class CommonModuleBuilder implements ModuleBuilder {
         
         Element searchElement = moduleElement.getChild("search");
         if (searchElement != null) {
-            moduleBase.setSearchPath(searchElement.getAttributeValue("action"));
-            moduleBase.setSearchFieldName(searchElement.getAttributeValue("fieldname"));
-            moduleBase.setSearchMethod(searchElement.getAttributeValue("method"));
+        	String beanName = searchElement.getAttributeValue("bean");
+        	SearchProducer searchProducer = searchProducerFactory.getSearchProducer(beanName);
+        	moduleBase.setSearchProducer(searchProducer);
         }
         Element skinElement = moduleElement.getChild("skin");
         if (skinElement != null) {
@@ -325,6 +328,10 @@ public class CommonModuleBuilder implements ModuleBuilder {
             MenuOptionProducerFactory menuOptionProducerFactory) {
         this.menuOptionProducerFactory = menuOptionProducerFactory;
     }
+    
+    public void setSearchProducerFactory(SearchProducerFactory searchProducerFactory) {
+		this.searchProducerFactory = searchProducerFactory;
+	}
     
     @Autowired
     public void setRoleAndPropertyDescriptionService(

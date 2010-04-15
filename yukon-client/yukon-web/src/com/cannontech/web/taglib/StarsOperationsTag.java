@@ -12,6 +12,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
@@ -98,6 +99,7 @@ public class StarsOperationsTag extends YukonTagSupport {
 			getJspContext().setAttribute("customerSearchList", customerSearchList);
 			getJspContext().setAttribute("inventorySearchList", inventorySearchList);
 			getJspContext().setAttribute("serviceOrderSearchList", serviceOrderSearchList);
+			getJspContext().setAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
 		}
 
 		String hardwarePage = "Hardware/Inventory.jsp";

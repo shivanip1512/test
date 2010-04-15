@@ -81,6 +81,27 @@
 		<!-- Customer search form -->
 		<c:if test="${showStarsList}">
 			<div class="sectionForm">
+			
+				<form id="accountSearchForm" action="/spring/stars/operator/account/search" method="get">
+				
+					<div class="sectionFormLabel">Search for existing customer:</div>
+					<div>
+					<select name="searchBy" onchange="$('searchForm').value = ''">
+						<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
+							<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
+								<cti:msg key="${operatorAccountSearchBy.formatKey}"/>
+							</option>
+						</c:forEach>
+					</select>
+					<input type="text" name="searchValue" value="" size="15">
+					<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="$('accountSearchForm').submit();"> 
+					</div>
+					
+				</form>
+
+				<!-- HIDE SEARCH BOX INTO OLD STARS OPERATOR PAGES 	-->	
+				<cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
+				<br>
 				<form name="custSearchForm" method="POST" action="<cti:url value="/servlet/SOAPClient"/>">
 					<input type="hidden" name="action" value="SearchCustAccount" />
 					<div class="sectionFormLabel">Search for existing customer:</div>
@@ -95,6 +116,8 @@
 						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
 					</div>
 				</form>
+				</cti:checkRolesAndProperties>
+				
 			</div>
 			
         </c:if>
@@ -212,9 +235,11 @@
 	    </cti:checkProperty>
 	     --%>
 	     
+	     <%-- OPERATOR MODULE HOME PAGE
 	     <tags:sectionLink>
 	        	<a href="/spring/stars/operator/home"><cti:msg key="yukon.web.modules.operator.moduleName"/></a>
         </tags:sectionLink>
+        --%>
         
         <!-- Hardware search form -->
         <c:if test="${showStarsList}">

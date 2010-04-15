@@ -287,8 +287,8 @@
         </option>
       </options>
     </menu>
-    <search action="/spring/meter/search" method="get" fieldname="Quick Search" />
-
+    <search bean="amrSearchProducer" />
+	
   </module>
 
   <module name="monitors">
@@ -338,8 +338,9 @@
         <dynamicOptions bean="drOptOutMenuOption" />
       </options>
     </menu>
-    <search action="/spring/dr/search" method="get" fieldname="name" />
-
+    
+    <search bean="drSearchProducer" />
+ 	
   </module>
 
   <module name="energyCompanyAdmin">
@@ -559,8 +560,9 @@
         </option>
       </options>
     </menu>
-    <search action="/spring/capcontrol/search/searchResults"
-      method="get" fieldname="cbc_lastSearch" />
+    
+    <search bean="capControlSearchProducer" />
+    
     <skin name="STANDARD" />
     <css file="/css/base.css" />
     <css file="/WebConfig/yukon/styles/capcontrollogos.css" />
@@ -852,6 +854,7 @@
   
   <module name="operator">
     <skin name="STANDARD"/>
+    <search bean="operatorAccountSearchProducer"/>
     <menu>
 	   	<options>
 	   		<option name="account">
