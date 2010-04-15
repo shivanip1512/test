@@ -68,8 +68,8 @@ public class StandardPageTag extends BodyTagSupport {
             String[] finalPaths = new String[pageNameParts.length];
 
             for (int i = 0; i < pageNameParts.length; i++) {
-                String searchPath = baseSearchPath + "." + pageNameParts[i];
-                finalPaths[i] = searchPath;
+                baseSearchPath = baseSearchPath + "." + pageNameParts[i];
+                finalPaths[finalPaths.length - i - 1] = baseSearchPath;
             }
             
             messageScope.pushScope(finalPaths);
