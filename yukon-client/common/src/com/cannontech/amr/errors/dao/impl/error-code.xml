@@ -775,7 +775,7 @@
   <category>Bulk Communications</category>
   <porter>Device is not connected</porter>
   <description>Yukon is unable to establish a connection with the device.</description>
-  <troubleshooting>Verify that the device's connection parameters.
+  <troubleshooting>Verify the device's connection parameters.
   	<ul>
       <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
     </ul>

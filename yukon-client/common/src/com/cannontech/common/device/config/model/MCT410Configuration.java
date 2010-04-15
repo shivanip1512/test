@@ -22,7 +22,7 @@ public class MCT410Configuration extends ConfigurationBase {
     private Boolean lcdErrorDisplay = false;
     private Integer transformerRatio = 1;
 
-    public int getParameters() {
+    public int getDisplayParameters() {
 
         // Get the bits and mask them to throw out erroneous values, also shift
         // them to their correct position
@@ -51,7 +51,7 @@ public class MCT410Configuration extends ConfigurationBase {
         return parametersValue;
     }
 
-    public void setParameters(int parameters) {
+    public void setDisplayParameters(int parameters) {
 
         // Unmask and shift the bits and set them to the correct param
 

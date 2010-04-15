@@ -434,7 +434,7 @@
 		<!-- Config field name to database item mapping -->
 		<property name="dbNameMapping">
 			<props>
-				<prop key="Parameters">parameters</prop>
+				<prop key="Display Parameters">displayParameters</prop>
 				<prop key="Transformer Ratio">transformerRatio</prop>
 				<prop key="Bronze Address">bronzeAddress</prop>
 				<prop key="Lead Address">leadAddress</prop>
