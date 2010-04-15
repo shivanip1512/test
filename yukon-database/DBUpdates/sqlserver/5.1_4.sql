@@ -28,3 +28,4 @@ INSERT INTO YukonRoleProperty VALUES (-90040,-900,'Control Duration Default','24
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '14-APR-2010', 'Latest Update', 4);
