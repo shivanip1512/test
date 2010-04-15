@@ -4927,6 +4927,7 @@
             </point>
             <point type="Status" offset="4">
                 <name>Auto Volt Control</name>
+                <controltype>NORMAL</controltype>
                 <stategroup value="TrueFalse"/>
             </point>
             <point type="Status" offset="5">
