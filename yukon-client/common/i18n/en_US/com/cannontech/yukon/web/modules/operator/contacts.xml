@@ -12,25 +12,30 @@
     <entry key="yukon.web.modules.operator.contactList.isPrimary">(Primary)</entry>
     
 	<!-- contactEdit -->
-    <entry key="yukon.web.modules.operator.contactEdit.pageName">Contact Edit</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.pageDescription">{0} {1}</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection.title">Contact Information</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.contactInformationSection_isPrimary.title">Contact Information (Primary)</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.isPrimary">(Primary)</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.firstNameLabel">First Name</entry>
-	<entry key="yukon.web.modules.operator.contactEdit.lastNameLabel">Last Name</entry>
-	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.notificationMethodHeader">Notification Method</entry>
-	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.valueHeader">Value</entry>
-	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.removeHeader">Remove</entry>
-	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.none">Choose Notification Method</entry>
-	<entry key="yukon.web.modules.operator.contactEdit.notificationTable.addNotification">Add Notification</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.newContact">New</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.button.viewAll.label">View All</entry>
-    
-    <entry key="yukon.web.modules.operator.contactEdit.contactUpdated">Contact Updated</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.contactDeleted">Contact Deleted</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.notificationDeleted">Notification Deleted</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.notificationCreated">Notification Created</entry>
-    <entry key="yukon.web.modules.operator.contactEdit.error.noNotificationMethod">Notification method has not been chosen.</entry>
+    <entry key="yukon.web.modules.operator.contact.EDIT.pageName">Contact Edit</entry>
+    <entry key="yukon.web.modules.operator.contact.EDIT.contextualPageName">Edit</entry>
+    <entry key="yukon.web.modules.operator.contact.EDIT.pageDescription">{0} {1}</entry>
+    <entry key="yukon.web.modules.operator.contact.VIEW.pageName">Contact View</entry>
+    <entry key="yukon.web.modules.operator.contact.VIEW.pageDescription">{0} {1}</entry>
+    <entry key="yukon.web.modules.operator.contact.CREATE.pageName">Contact Create</entry>
+    <entry key="yukon.web.modules.operator.contact.CREATE.contextualPageName">Create</entry>
+    <entry key="yukon.web.modules.operator.contact.contactInformationSection.title">Contact Information</entry>
+    <entry key="yukon.web.modules.operator.contact.contactInformationSection_isPrimary.title">Contact Information (Primary)</entry>
+    <entry key="yukon.web.modules.operator.contact.isPrimary">(Primary)</entry>
+    <entry key="yukon.web.modules.operator.contact.firstNameLabel">First Name</entry>
+	<entry key="yukon.web.modules.operator.contact.lastNameLabel">Last Name</entry>
+	<entry key="yukon.web.modules.operator.contact.notificationTable.notificationMethodHeader">Notification Method</entry>
+	<entry key="yukon.web.modules.operator.contact.notificationTable.valueHeader">Value</entry>
+	<entry key="yukon.web.modules.operator.contact.notificationTable.removeHeader">Remove</entry>
+	<entry key="yukon.web.modules.operator.contact.notificationTable.none">Choose Notification Method</entry>
+	<entry key="yukon.web.modules.operator.contact.notificationTable.addNotification">Add Notification</entry>
+    <entry key="yukon.web.modules.operator.contact.newContact">New</entry>
+    <entry key="yukon.web.modules.operator.contact.button.viewAll.label">View All</entry>
+
+    <entry key="yukon.web.modules.operator.contact.contactUpdated">Contact Updated</entry>
+    <entry key="yukon.web.modules.operator.contact.contactDeleted">Contact Deleted</entry>
+    <entry key="yukon.web.modules.operator.contact.notificationDeleted">Notification Deleted</entry>
+    <entry key="yukon.web.modules.operator.contact.notificationCreated">Notification Created</entry>
+    <entry key="yukon.web.modules.operator.contact.error.noNotificationMethod">Notification method has not been chosen.</entry>
     
 </properties>

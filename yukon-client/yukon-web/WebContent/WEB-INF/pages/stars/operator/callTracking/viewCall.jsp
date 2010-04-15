@@ -4,8 +4,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="viewCall" mode="${mode}">
-	
+<cti:standardPage module="operator" page="viewCall">
+<tags:setFormEditMode mode="${mode}"/>
+
 	<script type="text/javascript">
 
 		submitForm = function() {

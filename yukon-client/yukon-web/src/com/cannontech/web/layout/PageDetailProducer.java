@@ -1,5 +1,6 @@
 package com.cannontech.web.layout;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -52,25 +53,24 @@ public class PageDetailProducer {
         
         pageDetail.setBreadCrumbText(buf.toString());
         
-        pageDetail.setContextualNavigationText(renderContextualNavigation(pageContext, request, messageSourceAccessor));
-        
-        PageInfo contextualNavigationRoot = pageInfo.findContextualNavigationRoot();
-        if (contextualNavigationRoot != null) {
-            String infoInclude = contextualNavigationRoot.getDetailInfoIncludePath();
-            pageDetail.setDetailInfoIncludePath(infoInclude);
+        if (pageInfo.isShowContextualNavigation()) {
+            pageDetail.setContextualNavigationText(renderContextualNavigation(pageContext, request, messageSourceAccessor));
+
+            PageInfo contextualNavigationRoot = pageInfo.findContextualNavigationRoot();
+            if (contextualNavigationRoot != null) {
+                String infoInclude = contextualNavigationRoot.getDetailInfoIncludePath();
+                pageDetail.setDetailInfoIncludePath(infoInclude);
+            }
         }
         
         return pageDetail;
     }
     
     private String renderContextualNavigation(PageContext pageContext, HttpServletRequest request, MessageSourceAccessor messageSourceAccessor) {
-        if (!pageContext.pageInfo.isShowContextualNavigation()) return null;
-        
         PageInfo root = pageContext.pageInfo.findContextualNavigationRoot();
         
         List<PageInfo> pageInfosForMenu = Lists.newArrayListWithExpectedSize(15);
-        pageInfosForMenu.add(root);
-        pageInfosForMenu.addAll(root.getChildPages());
+        collectPageInfosForMenu(root, pageInfosForMenu);
         
         LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
         
@@ -109,6 +109,19 @@ public class PageDetailProducer {
         result.append("</ul>\n");
         
         return result.toString();
+    }
+
+    private void collectPageInfosForMenu(PageInfo root, Collection<PageInfo> pageInfosForMenu) {
+        if (root.isContributeToMenu()) {
+            pageInfosForMenu.add(root);
+        }
+        
+        List<PageInfo> childPages = root.getChildPages();
+        for (PageInfo pageInfo : childPages) {
+            if (!pageInfo.isNavigationMenuRoot()) {
+                collectPageInfosForMenu(pageInfo, pageInfosForMenu);
+            }
+        }
     }
 
     private boolean isPageDescendantOf(PageInfo one, PageInfo two) {

@@ -75,10 +75,6 @@ public class OperatorContactsController {
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
 		
-		// pageEditMode
-		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
-		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
-		
 		return "operator/contacts/contactList.jsp";
 	}
 	
@@ -136,7 +132,7 @@ public class OperatorContactsController {
 			return "operator/contacts/contactEdit.jsp";
 		}
 		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactUpdated"));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactUpdated"));
 		
 		return "redirect:contactEdit";
 	}
@@ -171,7 +167,7 @@ public class OperatorContactsController {
 		contactDao.deleteContact(deleteAdditionalContactId);
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contactEdit.contactDeleted"));
+		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
 		return "redirect:contactList";
 	}
 	

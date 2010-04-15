@@ -4,7 +4,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="residence" mode="${mode}">
+<cti:standardPage module="operator" page="residence">
+<tags:setFormEditMode mode="${mode}"/>
 
 	<form:form id="residenceUpdateForm" commandName="customerResidence" action="/spring/stars/operator/residence/residenceUpdate">
 	

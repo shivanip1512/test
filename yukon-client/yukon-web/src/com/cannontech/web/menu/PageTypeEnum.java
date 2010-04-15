@@ -1,28 +1,23 @@
 package com.cannontech.web.menu;
 
 public enum PageTypeEnum {
-    BLANK(true, false),
-    BASIC(true, false),
-    DETAIL(false, false),
-    DETAIL_WITH_NAVIGATION(false, true),
-    DETAIL_CHILD(false, false),
-    DETAIL_CHILD_WITH_NAVIGATION(false, false),
-    LANDING(true, false),
+    BLANK(true),
+    BASIC(true),
+    DETAIL(false),
+    DETAIL_WITH_INFO(false),
+    DETAIL_CHILD(false),
+    DETAIL_CHILD_WITH_INFO(false),
+    LANDING(true),
     ;
     
     private final boolean linkable;
-    private final boolean navigationRoot;
 
-    private PageTypeEnum(boolean linkable, boolean navigationRoot) {
+    private PageTypeEnum(boolean linkable) {
         this.linkable = linkable;
-        this.navigationRoot = navigationRoot;
     }
     
     public boolean isLinkable() {
         return linkable;
     }
     
-    public boolean isNavigationRoot() {
-        return navigationRoot;
-    }
 }

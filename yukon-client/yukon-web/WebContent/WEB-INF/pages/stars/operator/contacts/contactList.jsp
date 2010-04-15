@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
-<cti:standardPage module="operator" page="contactList" mode="${mode}">
+<cti:standardPage module="operator" page="contactList">
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/contacts.css"/>
 
@@ -122,9 +122,9 @@
 	</table>
 	
 	<%-- ADD CONTACT --%>
-	<cti:displayForPageEditModes modes="CREATE">
+	<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
 		<br>
 		<tags:slowInput2 myFormId="addContactForm" key="button.addContact" width="80px"/>
-	</cti:displayForPageEditModes>
+	</cti:checkRolesAndProperties>
 
 </cti:standardPage>

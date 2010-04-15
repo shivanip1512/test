@@ -5,7 +5,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="meterProfile" mode="${mode}">
+<cti:standardPage module="operator" page="meterProfile">
+<tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
     
     <script type="text/javascript">

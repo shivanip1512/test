@@ -4,8 +4,9 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 
-<cti:standardPage module="operator" page="changeLogin" mode="${mode}">
-    
+<cti:standardPage module="operator" page="changeLogin">
+<tags:setFormEditMode mode="${mode}"/>
+
     <script type="text/javascript">
 
         function generatePassword() {

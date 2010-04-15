@@ -1,5 +1,6 @@
 package com.cannontech.web.menu;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -16,9 +17,11 @@ public class PageInfo implements Comparable<PageInfo> {
     private PageTypeEnum pageType;
     private boolean renderMenu;
     private String menuSelection;
-    private List<PageInfo> childPages;
+    private List<PageInfo> childPages = Collections.emptyList();
     private String detailInfoIncludePath;
     private UserChecker userChecker;
+    private boolean navigationMenuRoot;
+    private boolean contributeToMenu;
     
     public String getName() {
         return name;
@@ -94,11 +97,12 @@ public class PageInfo implements Comparable<PageInfo> {
     }
     
     public boolean isShowContextualNavigation() {
-        return pageType.isNavigationRoot() || (parent != null && parent.isShowContextualNavigation());
+        // someday I'd like more control over this, but this works for now
+        return isNavigationMenuRoot() || (parent != null && parent.isShowContextualNavigation());
     }
     
     public PageInfo findContextualNavigationRoot() {
-        if (pageType.isNavigationRoot()) {
+        if (isNavigationMenuRoot()) {
             return this;
         }
         if (parent != null) {
@@ -130,6 +134,22 @@ public class PageInfo implements Comparable<PageInfo> {
         
     public UserChecker getUserChecker() {
         return userChecker;
+    }
+    
+    public void setNavigationMenuRoot(boolean navigationMenuRoot) {
+        this.navigationMenuRoot = navigationMenuRoot;
+    }
+    
+    public boolean isNavigationMenuRoot() {
+        return navigationMenuRoot;
+    }
+    
+    public void setContributeToMenu(boolean contributeToMenu) {
+        this.contributeToMenu = contributeToMenu;
+    }
+    
+    public boolean isContributeToMenu() {
+        return contributeToMenu;
     }
     
     @Override
@@ -169,6 +189,7 @@ public class PageInfo implements Comparable<PageInfo> {
             return false;
         return true;
     }
+
 
     
 }

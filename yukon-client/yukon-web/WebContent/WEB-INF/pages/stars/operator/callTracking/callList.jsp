@@ -9,7 +9,8 @@
 <cti:url var="delete" value="/WebConfig/yukon/Icons/delete.gif"/>
 <cti:url var="deleteOver" value="/WebConfig/yukon/Icons/delete_over.gif"/>
 	
-<cti:standardPage module="operator" page="callList" mode="${mode}">
+<cti:standardPage module="operator" page="callList">
+<tags:setFormEditMode mode="${mode}"/>
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/callTracking.css"/>
 

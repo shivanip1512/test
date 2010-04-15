@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.jdom.Document;
@@ -141,6 +142,12 @@ public class CommonModuleBuilder implements ModuleBuilder {
             
             String idValue = pageElement.getAttributeValue("name");
             pageInfo.setName(idValue);
+            
+            String navigationMenuRoot = pageElement.getAttributeValue("navigationMenuRoot");
+            pageInfo.setNavigationMenuRoot(BooleanUtils.toBoolean(navigationMenuRoot));
+            
+            String contributeToMenu = pageElement.getAttributeValue("contributeToMenu");
+            pageInfo.setContributeToMenu(BooleanUtils.toBoolean(contributeToMenu));
             
             String typeString = pageElement.getAttributeValue("type");
             PageTypeEnum pageType;

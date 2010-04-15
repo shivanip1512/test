@@ -6,10 +6,10 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
-<cti:standardPage module="operator" page="contactEdit" mode="${mode}">
+<cti:standardPage module="operator" page="contact.${mode}">
+<tags:setFormEditMode mode="${mode}"/>
 
 	<script type="text/javascript">
-
 		Event.observe(window, 'load', function() {
 			var additionalNotificationTrs = $$('tr.additionalNotificationTr');
 			additionalNotificationTrs.each(function(el) {
