@@ -10,13 +10,16 @@
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 <tags:simpleDialog id="hardwareConfigEditDialog"/>
-<tags:simpleDialog id="hcDialog"/>
 <script type="text/javascript">
 var programIdsAlreadyEnrolled = [];
 </script>
 
 <h1><i:inline key=".header" arguments="${hardware.deviceLabel}"/></h1>
 <tags:boxContainer2 key="enrolledPrograms">
+    <c:if test="${fn:length(enrollments) == 0}">
+        <i:inline key=".noEnrolledPrograms"/>
+    </c:if>
+    <c:if test="${fn:length(enrollments) > 0}">
     <table class="compactResultsTable rowHighlighting">
         <tr>
             <th><i:inline key=".name"/></th>
@@ -69,20 +72,20 @@ var programIdsAlreadyEnrolled = [];
                         <tags:simpleDialogLink2 dialogId="hardwareConfigEditDialog" key="edit"
                             skipLabel="true" actionUrl="${editUrl}"/>
     
-                        <cti:url var="removeUrl" value="/spring/stars/operator/hardware/config/remove">
+                        <cti:url var="unenrollUrl" value="/spring/stars/operator/hardware/config/unenroll">
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="energyCompanyId"
                                 value="${energyCompanyId}"/>
                             <cti:param name="inventoryId" value="${inventoryId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
-                        <tags:simpleDialogLink2 dialogId="hcDialog" key="remove"
-                            skipLabel="true" actionUrl="${removeUrl}"/>
+                        <a href="${unenrollUrl}"><cti:img key="unenroll"/></a>
                     </td>
                 </cti:checkRolesAndProperties>
             </tr>
         </c:forEach>
     </table>
+    </c:if>
 
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
         <script type="text/javascript">
@@ -104,9 +107,8 @@ var programIdsAlreadyEnrolled = [];
                     memoryGroup="programPicker"
                     destinationFieldName="assignedProgramId"
                     endAction="addEnrollment" styleClass="simpleLink"
-                    immediateSelectMode="true" extraArgs="${accountId}">
-                    <cti:labeledImg key="add"/>
-                </tags:pickerDialog>
+                    immediateSelectMode="true" extraArgs="${accountId}"
+                    asButton="true"><cti:msg2 key=".add"/></tags:pickerDialog>
                 <script type="text/javascript">
                     programPicker.excludeIds = programIdsAlreadyEnrolled;
                 </script>
@@ -114,5 +116,41 @@ var programIdsAlreadyEnrolled = [];
         </form>
     </cti:checkRolesAndProperties>
 </tags:boxContainer2>
+
+<br>
+<br>
+
+<%--
+<tags:boxContainer2 key="otherDeviceActions">
+    <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
+       <cti:param name="accountId" value="${accountId}"/>
+       <cti:param name="energyCompanyId" value="${energyCompanyId}"/>
+       <cti:param name="inventoryId" value="${inventoryId}"/>
+    </cti:url>
+    <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'">
+    <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
+       <cti:param name="accountId" value="${accountId}"/>
+       <cti:param name="energyCompanyId" value="${energyCompanyId}"/>
+       <cti:param name="inventoryId" value="${inventoryId}"/>
+    </cti:url>
+    <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'">
+</tags:boxContainer2>
+
+<br>
+<br>
+
+<c:if test="${fn:length(enrollments) > 0}">
+<tags:boxContainer2 key="applianceSummary">
+    <table class="compactResultsTable rowHighlighting">
+        <tr>
+            <th><i:inline key=".applianceType"/></th>
+            <th><i:inline key=".relay"/></th>
+            <th><i:inline key=".status"/></th>
+            <th><i:inline key=".enrolledPrograms"/></th>
+        </tr>
+    </table>
+</tags:boxContainer2>
+</c:if>
+--%>
 
 </cti:standardPage>

@@ -30,7 +30,7 @@ public class StarsUpdateLMHardwareConfig {
     **/
     private boolean _has_saveConfigOnly;
 
-    private java.util.Vector _starsLMHardwareConfigList;
+    private java.util.Vector<StarsLMHardwareConfig> _starsLMHardwareConfigList;
 
     private StarsLMConfiguration _starsLMConfiguration;
 
@@ -41,7 +41,7 @@ public class StarsUpdateLMHardwareConfig {
 
     public StarsUpdateLMHardwareConfig() {
         super();
-        _starsLMHardwareConfigList = new Vector();
+        _starsLMHardwareConfigList = new Vector<StarsLMHardwareConfig>();
     } //-- com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig()
 
 
@@ -95,7 +95,7 @@ public class StarsUpdateLMHardwareConfig {
 
     /**
     **/
-    public java.util.Enumeration enumerateStarsLMHardwareConfig()
+    public java.util.Enumeration<StarsLMHardwareConfig> enumerateStarsLMHardwareConfig()
     {
         return _starsLMHardwareConfigList.elements();
     } //-- java.util.Enumeration enumerateStarsLMHardwareConfig() 

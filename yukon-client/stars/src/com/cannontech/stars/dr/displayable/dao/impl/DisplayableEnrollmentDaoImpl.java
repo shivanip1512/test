@@ -21,7 +21,6 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
-import com.cannontech.stars.util.InventoryUtils;
 import com.google.common.collect.Lists;
 
 @Repository
@@ -160,9 +159,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
 	            enrollmentDao.isInService(inventoryId);
 		}
 
-        int hwConfigType = InventoryUtils.getHardwareConfigType(hardware.getDeviceTypeId());
-        int numRelays =
-            (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) ? 8 : 4;
+        int numRelays = hardware.getNumRelays();
         return new DisplayableEnrollmentInventory(inventoryId,
                                                   hardware.getDisplayName(),
                                                   enrolled, inService, loadGroupId,

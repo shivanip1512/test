@@ -8,6 +8,7 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.header">Serial #{0}</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.enrolledPrograms.title">Enrolled Programs</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.noEnrolledPrograms">This device is not currently enrolled in any programs.</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.name">Name</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.nameValue">{0}</entry>
@@ -19,17 +20,23 @@
 
     <entry key="yukon.web.modules.operator.hardwareConfig.edit.hoverText">Edit enrollment details</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.edit.title">Enroll Enrollment</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.remove.hoverText">Unenroll from this program</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.remove.title">Unenroll</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.add.hoverText">Enroll this customer in a new program</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.add.label">Add Enrollment</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.hoverText">Unenroll from this program</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.add">Add Enrollment</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.addEnrollmentDialogTitle">Add Enrollment</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.otherDeviceActions.title">Other Device Actions</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.disable">Disable</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.enable">Enable</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.applianceSummary.title">Appliance Summary</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.applianceType">Appliance Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.program">Program</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.status">Status</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.enrolledPrograms">Enrolled Programs</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.inventoryEnrolled">{0} has been enrolled in {1}.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.inventoryUnenrolled">{0} has been unenrolled from {1}.</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.headerMessage">Select group and relay for {0}.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.groupNotApplicable">Not Applicable</entry>

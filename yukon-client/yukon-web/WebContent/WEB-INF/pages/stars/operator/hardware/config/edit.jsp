@@ -11,8 +11,19 @@
 
 <h1 class="dialogQuestion"><i:inline key=".headerMessage" arguments="${enrollment.programName.programName}"/></h1>
 
-<form:form>
-    <input type="hidden" name="" value=""/>
+<cti:url var="submitUrl" value="/spring/stars/operator/hardware/config/enroll"/>
+<script type="text/javascript">
+submitForm = function(action) {
+	$('actionInput').value = action;
+    return submitFormViaAjax('hardwareConfigEditDialog', 'editForm', '${submitUrl}');
+}
+</script>
+<form id="editForm" action="${submitUrl}">
+    <input type="hidden" name="action" id="actionInput" value=""/>
+    <input type="hidden" name="accountId" value="${accountId}"/>
+    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
+    <input type="hidden" name="inventoryId" value="${param.inventoryId}"/>
+    <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
     <tags:nameValueContainer2 id="editArea">
         <tags:nameValue2 nameKey=".group">
             <c:if test="${fn:length(loadGroups) == 0}">
@@ -36,9 +47,9 @@
         <tags:nameValue2 nameKey=".relay">
             <select name="relay">
                 <option value="0"><i:inline key=".noRelay"/></option>
-                <c:forEach var="relayNumber" begin="1" end="${item.numRelays}">
+                <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
                     <c:set var="selected" value=""/>
-                    <c:if test="${relayNumber == item.relay}">
+                    <c:if test="${relayNumber == enrollment.relay}">
                         <c:set var="selected" value=" selected=\"selected\""/>
                     </c:if>
                     <option value="${relayNumber}"${selected}>${relayNumber}</option>
@@ -48,13 +59,16 @@
     </tags:nameValueContainer2>
 
     <div class="actionArea">
-        <input type="button" value="<cti:msg2 key=".config"/>"/>
-        <input type="button" value="<cti:msg2 key=".saveToBatch"/>"/>
-        <input type="button" value="<cti:msg2 key=".saveConfigOnly"/>"/>
+        <input type="button" value="<cti:msg2 key=".config"/>"
+            onclick="submitForm('config')"/>
+        <input type="button" value="<cti:msg2 key=".saveToBatch"/>"
+            onclick="submitForm('saveToBatch')"/>
+        <input type="button" value="<cti:msg2 key=".saveConfigOnly"/>"
+            onclick="submitForm('saveConfigOnly')"/>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('hardwareConfigEditDialog').hide()"/>
     </div>
 
-</form:form>
+</form>
 
 </cti:msgScope>

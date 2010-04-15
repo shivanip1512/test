@@ -64,6 +64,26 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
     }
 
     @Override
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRED)
+    public List<ProgramEnrollment> getActiveEnrollmentsByInventoryId(
+            int accountId, int inventoryId) {
+        SqlStatementBuilder accountEnrollmentSQL = new SqlStatementBuilder();
+        accountEnrollmentSQL.append(enrollmentSQLHeader);
+        accountEnrollmentSQL.append("WHERE lmhcg.accountId").eq(accountId);
+        accountEnrollmentSQL.append("AND lmhcg.inventoryId").eq(inventoryId);
+        accountEnrollmentSQL.append("AND lmhcg.groupEnrollStart IS NOT NULL");
+        accountEnrollmentSQL.append("AND lmhcg.groupEnrollStop IS NULL");
+
+        List<ProgramEnrollment> programEnrollments = 
+            yukonJdbcTemplate.query(accountEnrollmentSQL, enrollmentRowMapper());
+            
+        for (ProgramEnrollment programEnrollment : programEnrollments) {
+            programEnrollment.setEnroll(true);
+        }
+        return programEnrollments;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<ProgramEnrollment> findConflictingEnrollments(int accountId,
             int assignedProgramId) {

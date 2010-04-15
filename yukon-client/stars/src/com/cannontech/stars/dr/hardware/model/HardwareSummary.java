@@ -2,6 +2,8 @@ package com.cannontech.stars.dr.hardware.model;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.stars.util.InventoryUtils;
+
 public class HardwareSummary {
 
     private Integer inventoryId;
@@ -39,5 +41,12 @@ public class HardwareSummary {
 
     public int getDeviceTypeId() {
         return deviceTypeId;
+    }
+
+    public int getNumRelays() {
+        int hwConfigType = InventoryUtils.getHardwareConfigType(deviceTypeId);
+        int numRelays =
+            (hwConfigType == InventoryUtils.HW_CONFIG_TYPE_EXPRESSCOM) ? 8 : 4;
+        return numRelays;
     }
 }

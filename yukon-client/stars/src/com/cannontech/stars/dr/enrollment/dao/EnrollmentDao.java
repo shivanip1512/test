@@ -12,6 +12,8 @@ public interface EnrollmentDao {
 
     public List<ProgramEnrollment> getActiveEnrollmentsByAccountId(int accountId);
 
+    public List<ProgramEnrollment> getActiveEnrollmentsByInventoryId(int accountId, int inventoryId);
+
     /**
      * Get a list of currently enrolled programs in the given appliance category
      * for the given account which can be used to unenroll them. This should be
