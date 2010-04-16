@@ -2109,8 +2109,19 @@ int CtiDeviceMCT4xx::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiC
         }
         else
         {
+
+            long dynamicPaoConfigByte = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+            if (getType() == TYPEMCT470)
+            {
+                dynamicPaoConfigByte = dynamicPaoConfigByte & 0xFF;
+            }
+            else
+            {
+                dynamicPaoConfigByte = dynamicPaoConfigByte & 0x0F;
+            }
+
             if (parse.isKeyValid("force") ||
-                (CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) & 0x0F) != configuration )
+                dynamicPaoConfigByte != configuration )
             {
                 if( !parse.isKeyValid("verify") )
                 {

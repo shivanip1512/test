@@ -2663,11 +2663,14 @@ int CtiDeviceMCT470::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &p
         }
         else
         {
-            dayTable = holidaySchedule << 14 || saturdaySchedule << 12 || fridaySchedule << 10
-                 || thursdaySchedule << 8 || wednesdaySchedule << 6 || tuesdaySchedule << 4
-                 || mondaySchedule << 2 || sundaySchedule;
-
-
+            dayTable = holidaySchedule << 14;
+            dayTable |= saturdaySchedule << 12;
+            dayTable |= fridaySchedule << 10;
+            dayTable |= thursdaySchedule << 8;
+            dayTable |= wednesdaySchedule << 6;
+            dayTable |= tuesdaySchedule << 4;
+            dayTable |= mondaySchedule << 2;
+            dayTable |= sundaySchedule;
 
             createTOUDayScheduleString(daySchedule1, times[0], rates[0]);
             createTOUDayScheduleString(daySchedule2, times[1], rates[1]);
@@ -5473,19 +5476,19 @@ long CtiDeviceMCT470::resolveScheduleName(const string & scheduleName)
 
     if (schedule == "schedule 1")
     {
-        return 1;
+        return 0;
     }
     else if( schedule == "schedule 2" )
     {
-        return 2;
+        return 1;
     }
     else if( schedule == "schedule 3" )
     {
-        return 3;
+        return 2;
     }
     else //schedule 4
     {
-        return 4;
+        return 3;
     }
 }
 
