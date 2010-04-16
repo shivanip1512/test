@@ -5566,8 +5566,8 @@ int CtiDeviceMCT470::setupRatioBytesBasedOnMeterType(int channel, double multipl
         {
             unsigned char resolutionByte = computeResolutionByte(lpResolution,peakKwResolution,lastIntervalDemandResolution);
 
-            ratio = 0;
-            kRatio = (unsigned)resolutionByte;// 0 ok here?
+            ratio = (unsigned)resolutionByte;
+            kRatio = 0;
 
             break;
         }
