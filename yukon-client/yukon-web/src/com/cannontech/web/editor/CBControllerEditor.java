@@ -694,14 +694,4 @@ public class CBControllerEditor implements ICBControllerModel {
 	    int portId = cbc.getDeviceDirectCommSettings().getPortID();
 	    return DeviceTypesFuncs.isTcpPort(portId);
 	}
-	
-	public boolean isEditingControllerAndTcpPort() {
-	    if (isEditingController()) {
-	        if (isTcpPort()) {
-	            return true;
-	        }
-	    }
-	    return false;
-	}
-
 }

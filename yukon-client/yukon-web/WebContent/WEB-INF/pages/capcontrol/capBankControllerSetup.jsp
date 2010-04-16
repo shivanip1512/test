@@ -92,18 +92,21 @@
 						</x:selectOneMenu>
 						
 						<x:outputLabel for="cntrlCommIP" value="IP Address: "
-							title="IP Address for Comm. Channel" />
+							title="IP Address for Comm. Channel" 
+							rendered="#{capControlForm.CBControllerEditor.tcpPort}"/>
 						<x:inputText id="cntrlCommIP" styleClass="staticLabel"
-							disabled="#{!capControlForm.CBControllerEditor.editingControllerAndTcpPort}"
+							disabled="#{!capControlForm.CBControllerEditor.editingController}"
+							rendered="#{capControlForm.CBControllerEditor.tcpPort}"
 							value="#{capControlForm.CBControllerEditor.paoCBC.ipAddress}">
-							
 						</x:inputText>
+						
 						<x:outputLabel for="cntrlCommPort" value="Port: "
-							title="Port for Comm. Channel" />
+							title="Port for Comm. Channel" 
+							rendered="#{capControlForm.CBControllerEditor.tcpPort}"/>
 						<x:inputText id="cntrlCommPort" styleClass="staticLabel"
-							disabled="#{!capControlForm.CBControllerEditor.editingControllerAndTcpPort}"
+							disabled="#{!capControlForm.CBControllerEditor.editingController}"
+							rendered="#{capControlForm.CBControllerEditor.tcpPort}"
 							value="#{capControlForm.CBControllerEditor.paoCBC.port}">
-							
 						</x:inputText>		
 						
 						<x:outputLabel for="cntrlCommW" value="Post Comm. Wait: "
