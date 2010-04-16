@@ -1,6 +1,8 @@
 package com.cannontech.web.stars.dr.operator.hardware;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,7 +22,9 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
@@ -28,6 +32,7 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
+import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
@@ -37,6 +42,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 @Controller
 @RequestMapping("/operator/hardware/config/*")
@@ -49,6 +56,8 @@ public class OperatorHardwareConfigController {
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    private HardwareConfigService hardwareConfigService;
+    private ApplianceCategoryDao applianceCategoryDao;
 
     @RequestMapping
     public String list(ModelMap model, int inventoryId,
@@ -62,6 +71,26 @@ public class OperatorHardwareConfigController {
             displayableInventoryEnrollmentDao.find(accountInfoFragment.getAccountId(),
                                                    inventoryId);
         model.addAttribute("enrollments", enrollments);
+
+        Set<Integer> assignedProgramIds = Sets.newHashSet();
+        for (DisplayableInventoryEnrollment enrollment : enrollments) {
+            assignedProgramIds.add(enrollment.getAssignedProgramId());
+        }
+        List<AssignedProgram> assignedProgramsList =
+            assignedProgramDao.getByIds(assignedProgramIds);
+        Set<Integer> applianceCategoryIds = Sets.newHashSet();
+        Map<Integer, AssignedProgram> assignedPrograms = Maps.newHashMap();
+        for (AssignedProgram assignedProgram : assignedProgramsList) {
+            applianceCategoryIds.add(assignedProgram.getApplianceCategoryId());
+            assignedPrograms.put(assignedProgram.getAssignedProgramId(),
+                                 assignedProgram);
+        }
+        model.addAttribute("assignedPrograms", assignedPrograms);
+
+        Map<Integer, ApplianceCategory> applianceCategories =
+            applianceCategoryDao.getByApplianceCategoryIds(applianceCategoryIds);
+
+        model.addAttribute("applianceCategories", applianceCategories);
 
         return "operator/hardware/config/list.jsp";
     }
@@ -189,6 +218,58 @@ public class OperatorHardwareConfigController {
         return "redirect:/spring/stars/operator/hardware/config/list";
     }
 
+    @RequestMapping
+    public String disable(ModelMap model, int inventoryId,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+        model.addAttribute("inventoryId", inventoryId);
+
+        try {
+            hardwareConfigService.disable(inventoryId,
+                                          accountInfoFragment.getAccountId(),
+                                          accountInfoFragment.getEnergyCompanyId(),
+                                          userContext);
+
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandSent");
+            flashScope.setConfirm(confirmationMessage);
+        } catch (WebClientException wce) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.disableCommandFailed",
+                                                 wce.getMessage());
+            flashScope.setError(errorMessage);
+        }
+
+        return "redirect:/spring/stars/operator/hardware/config/list";
+    }
+    
+    @RequestMapping
+    public String enable(ModelMap model, int inventoryId,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+        model.addAttribute("inventoryId", inventoryId);
+        
+        try {
+            hardwareConfigService.enable(inventoryId,
+                                         accountInfoFragment.getAccountId(),
+                                         accountInfoFragment.getEnergyCompanyId(),
+                                         userContext);
+            
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
+            flashScope.setConfirm(confirmationMessage);
+        } catch (WebClientException wce) {
+            MessageSourceResolvable errorMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandFailed",
+                                                 wce.getMessage());
+            flashScope.setError(errorMessage);
+        }
+        
+        return "redirect:/spring/stars/operator/hardware/config/list";
+    }
+    
     private String closeDialog(ModelMap model) {
         model.addAttribute("popupId", "hardwareConfigEditDialog");
         return "closePopup.jsp";
@@ -248,5 +329,15 @@ public class OperatorHardwareConfigController {
     @Autowired
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
+
+    @Autowired
+    public void setHardwareConfigService(HardwareConfigService hardwareConfigService) {
+        this.hardwareConfigService = hardwareConfigService;
+    }
+
+    @Autowired
+    public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
+        this.applianceCategoryDao = applianceCategoryDao;
     }
 }

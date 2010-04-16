@@ -306,7 +306,7 @@ function changeProgSelection(chkBox) {
                 <tr bgcolor="#FFFFFF" valign="top"> 
                   <td width="25%" class="TableCell"><%= ServletUtils.getApplianceDescription(categories, appliance) %></td>
                   <td width="15%" class="TableCell"><%= loadNo %></td>
-                  <td width="15%" class="TableCell"><%= programStatus %></td>
+                  <td width="15%" class="TableCell"><%= programStatus %> / <%= program.getStatus() %></td>
                   <td width="45%"> 
                     <div align="center"> 
                       <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>

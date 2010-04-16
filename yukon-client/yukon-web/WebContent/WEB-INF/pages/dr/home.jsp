@@ -23,7 +23,7 @@
 
 <table class="widgetColumns">
     <tr>
-        <td class="widgetColumnCell" valign="top" rowspan="2">
+        <td class="widgetColumnCell" valign="top">
             <div class="widgetContainer">
             <c:if test="${empty favorites}">
                 <cti:msg key="yukon.web.modules.dr.home.noFavorites"/>
@@ -97,10 +97,6 @@
                     <a href="${quickLinkUrl}"><cti:msg key="yukon.web.modules.dr.home.activeLoadGroupsQuickSearch"/></a><br>
                 </tags:abstractContainer>
             </div>
-        </td>
-    </tr>
-    <tr>
-        <td class="widgetColumnCell" valign="top">
             <div class="widgetContainer">
             <c:if test="${empty recents}">
                 <cti:msg key="yukon.web.modules.dr.home.noRecents"/>

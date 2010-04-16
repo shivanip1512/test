@@ -104,6 +104,10 @@ public class YukonSwitchCommandAction implements ActionBase {
 				command.setStarsEnableService( service );
 			}
 			else if (action.equalsIgnoreCase("UpdateLMHardwareConfig")) {
+			    // I think this code is effectively unreachable.
+			    // (SOAPClientController creates instances of
+			    // UpdateLMHardwareConfigAction when action is
+			    // UpdateLMHardwareConfig.)
 				if (invID < 0) return null;
 				StarsConfig service = new StarsConfig();
 				service.setInventoryID( invID );

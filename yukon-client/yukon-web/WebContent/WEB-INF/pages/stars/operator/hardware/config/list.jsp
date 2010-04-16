@@ -23,10 +23,12 @@ var programIdsAlreadyEnrolled = [];
     <table class="compactResultsTable rowHighlighting">
         <tr>
             <th><i:inline key=".name"/></th>
+            <th><i:inline key=".applianceCategory"/></th>
             <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
                 <th><i:inline key=".group"/></th>
             </cti:checkRolesAndProperties>
             <th><i:inline key=".relay"/></th>
+            <th><i:inline key=".status"/></th>
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <th><i:inline key=".actions"/></th>
             </cti:checkRolesAndProperties>
@@ -37,14 +39,12 @@ var programIdsAlreadyEnrolled = [];
             <script type="text/javascript">programIdsAlreadyEnrolled.push(${programId});</script>
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <td>
-                <%-- TODO:  name OR name (displayName)
-                    <cti:msg2 var="nameValue" key=""/>
-                    <c:if test="">
-                    </c:if>
-                --%>
                     <spring:escapeBody htmlEscape="true">
                         ${enrollment.programName.programName}
                     </spring:escapeBody>
+                </td>
+                <td>
+                    <spring:escapeBody htmlEscape="true">${applianceCategories[assignedPrograms[enrollment.assignedProgramId].applianceCategoryId].name}</spring:escapeBody>
                 </td>
                 <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
                     <td>
@@ -60,6 +60,9 @@ var programIdsAlreadyEnrolled = [];
                     <cti:msg2 var="relayStr" key=".noRelay"/>
                 </c:if>
                 <td>${relayStr}</td>
+                <td>
+                    <i:inline key=".inService.${enrollment.inService}"/>
+                </td>
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                     <td>
                         <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit">
@@ -120,7 +123,6 @@ var programIdsAlreadyEnrolled = [];
 <br>
 <br>
 
-<%--
 <tags:boxContainer2 key="otherDeviceActions">
     <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
        <cti:param name="accountId" value="${accountId}"/>
@@ -135,22 +137,5 @@ var programIdsAlreadyEnrolled = [];
     </cti:url>
     <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'">
 </tags:boxContainer2>
-
-<br>
-<br>
-
-<c:if test="${fn:length(enrollments) > 0}">
-<tags:boxContainer2 key="applianceSummary">
-    <table class="compactResultsTable rowHighlighting">
-        <tr>
-            <th><i:inline key=".applianceType"/></th>
-            <th><i:inline key=".relay"/></th>
-            <th><i:inline key=".status"/></th>
-            <th><i:inline key=".enrolledPrograms"/></th>
-        </tr>
-    </table>
-</tags:boxContainer2>
-</c:if>
---%>
 
 </cti:standardPage>

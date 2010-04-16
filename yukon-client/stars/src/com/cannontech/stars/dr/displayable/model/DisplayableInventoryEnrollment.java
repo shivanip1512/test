@@ -12,6 +12,7 @@ public class DisplayableInventoryEnrollment {
     private int loadGroupId;
     private String loadGroupName;
     private int relay;
+    private boolean inService;
 
     public DisplayableInventoryEnrollment() {
     }
@@ -25,13 +26,14 @@ public class DisplayableInventoryEnrollment {
 
     public DisplayableInventoryEnrollment(int assignedProgramId, int programId,
             AssignedProgramName programName, int loadGroupId,
-            String loadGroupName, int relay) {
+            String loadGroupName, int relay, boolean inService) {
         this.assignedProgramId = assignedProgramId;
         this.programId = programId;
         this.programName = programName;
         this.loadGroupId = loadGroupId;
         this.loadGroupName = loadGroupName;
         this.relay = relay;
+        this.inService = inService;
     }
 
     public int getAssignedProgramId() {
@@ -80,5 +82,13 @@ public class DisplayableInventoryEnrollment {
 
     public void setRelay(int relay) {
         this.relay = relay;
+    }
+
+    public boolean isInService() {
+        return inService;
+    }
+
+    public void setInService(boolean inService) {
+        this.inService = inService;
     }
 }

@@ -13,8 +13,12 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.name">Name</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.nameValue">{0}</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.nameValueWithDisplayName">{0} ({1})</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.applianceCategory">Appliance Category</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.group">Group</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.relay">Relay</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.status">Status</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.inService.true">In Service</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.inService.false">Out of Service</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.noRelay">None</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.actions">Actions</entry>
 
@@ -30,13 +34,12 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.disable">Disable</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.enable">Enable</entry>
 
-    <entry key="yukon.web.modules.operator.hardwareConfig.applianceSummary.title">Appliance Summary</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.applianceType">Appliance Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.status">Status</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.enrolledPrograms">Enrolled Programs</entry>
-
     <entry key="yukon.web.modules.operator.hardwareConfig.inventoryEnrolled">{0} has been enrolled in {1}.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.inventoryUnenrolled">{0} has been unenrolled from {1}.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.disableCommandSent">Disable command sent.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.disableCommandFailed">Disable command failed with error "{0}".</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.enableCommandSent">Enable command sent.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.enableCommandFailed">Enable command failed with error "{0}".</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.headerMessage">Select group and relay for {0}.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.groupNotApplicable">Not Applicable</entry>

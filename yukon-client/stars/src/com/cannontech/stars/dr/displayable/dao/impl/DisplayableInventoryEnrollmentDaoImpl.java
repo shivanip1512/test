@@ -15,11 +15,13 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
+import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public class DisplayableInventoryEnrollmentDaoImpl implements
         DisplayableInventoryEnrollmentDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
+    private EnrollmentDao enrollmentDao;
 
     private RowMapperWithBaseQuery<DisplayableInventoryEnrollment> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayableInventoryEnrollment>() {
@@ -27,14 +29,20 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT wp.programId AS assignedProgramId, wp.deviceId as programId,");
-            sql.append("pao.paoName AS programPaoName, wc.alternateDisplayName,");
-            sql.append("hcg.lmGroupId, lgPao.paoName as loadGroupName, hcg.relay");
+            sql.append("SELECT wp.programId AS assignedProgramId,");
+            sql.append(    "wp.deviceId as programId,");
+            sql.append(    "pao.paoName AS programPaoName,");
+            sql.append(    "wc.alternateDisplayName,");
+            sql.append(    "hcg.lmGroupId, lgPao.paoName as loadGroupName,");
+            sql.append(    "hcg.relay, hcg.inventoryId");
             sql.append("FROM lmHardwareControlGroup hcg");
-            sql.append("INNER JOIN lmProgramWebPublishing wp ON hcg.programId = wp.programId");
-            sql.append("INNER JOIN yukonPAObject pao ON wp.deviceId = pao.paobjectId");
-            sql.append("INNER JOIN yukonPAObject lgPao ON lgPao.paobjectId = hcg.lmGroupId");
-            sql.append("INNER JOIN yukonWebConfiguration wc ON wc.ConfigurationId = wp.websettingsId");
+            sql.append(    "JOIN lmProgramWebPublishing wp ON hcg.programId = wp.programId");
+            sql.append(    "JOIN yukonPAObject pao ON wp.deviceId = pao.paobjectId");
+            sql.append(    "JOIN yukonPAObject lgPao ON lgPao.paobjectId = hcg.lmGroupId");
+            sql.append(    "JOIN yukonWebConfiguration wc ON wc.ConfigurationId = wp.websettingsId");
+            sql.append("WHERE hcg.groupEnrollStart IS NOT NULL");
+            sql.append(    "AND hcg.groupEnrollStop IS NULL");
+            sql.append(    "AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
             return sql;
         }
 
@@ -46,6 +54,7 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
         @Override
         public DisplayableInventoryEnrollment mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
+            int inventoryId = rs.getInt("inventoryId");
             int assignedProgramId = rs.getInt("assignedProgramId");
             int programId = rs.getInt("programId");
             AssignedProgramName name =
@@ -54,11 +63,12 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
             int loadGroupId = rs.getInt("lmGroupId");
             String loadGroupName = rs.getString("loadGroupName");
             int relay = rs.getInt("relay");
+            boolean inService = enrollmentDao.isInService(inventoryId);
 
             return new DisplayableInventoryEnrollment(assignedProgramId,
                                                       programId, name,
-                                                      loadGroupId,
-                                                      loadGroupName, relay);
+                                                      loadGroupId, loadGroupName,
+                                                      relay, inService);
         }
     };
 
@@ -67,12 +77,9 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
             int assignedProgramId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
-        sql.append("WHERE hcg.inventoryId").eq(inventoryId);
+        sql.append("AND hcg.inventoryId").eq(inventoryId);
         sql.append("AND hcg.programId").eq(assignedProgramId);
         sql.append("AND hcg.accountId").eq(accountId);
-        sql.append("AND hcg.groupEnrollStart IS NOT NULL");
-        sql.append("AND hcg.groupEnrollStop IS NULL");
-        sql.append("AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
 
         try {
             DisplayableInventoryEnrollment retVal =
@@ -89,11 +96,8 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
             int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
-        sql.append("WHERE hcg.inventoryId").eq(inventoryId);
+        sql.append("AND hcg.inventoryId").eq(inventoryId);
         sql.append("AND hcg.accountId").eq(accountId);
-        sql.append("AND hcg.groupEnrollStart IS NOT NULL");
-        sql.append("AND hcg.groupEnrollStop IS NULL");
-        sql.append("AND hcg.type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
 
         List<DisplayableInventoryEnrollment> retVal =
             yukonJdbcTemplate.query(sql, rowMapper);
@@ -103,5 +107,10 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
+
+    @Autowired
+    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
+        this.enrollmentDao = enrollmentDao;
     }
 }

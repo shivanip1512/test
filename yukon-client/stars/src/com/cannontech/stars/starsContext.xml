@@ -114,6 +114,7 @@
     </bean>
 
     <bean id="enrollmentService" class="com.cannontech.stars.dr.enrollment.service.impl.EnrollmentHelperServiceImpl"/>
+    <bean class="com.cannontech.stars.dr.hardwareConfig.service.impl.HardwareConfigServiceImpl"/>
 
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>

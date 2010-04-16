@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.appliance.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +22,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -33,7 +34,7 @@ import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private RolePropertyDao rolePropertyDao;
     private ECMappingDao ecMappingDao;
     private WebConfigurationDao webConfigurationDao;
@@ -52,11 +53,10 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
             retVal.append("SELECT ac.applianceCategoryId,");
-            retVal.append("ac.description, ac.webConfigurationId,");
-            retVal.append("ac.consumerSelectable, yle.yukonDefinitionId");
+            retVal.append(    "ac.description, ac.webConfigurationId,");
+            retVal.append(    "ac.consumerSelectable, yle.yukonDefinitionId");
             retVal.append("FROM applianceCategory ac");
-            retVal.append("INNER JOIN yukonListEntry yle ");
-            retVal.append("ON ac.categoryId = yle.entryId");
+            retVal.append(    "JOIN yukonListEntry yle ON ac.categoryId = yle.entryId");
             return retVal;
         }
 
@@ -107,9 +107,9 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sqlBuilder.append("))");
         String sql = sqlBuilder.toString();
         
-        List<Integer> applianceCategoryIdList = simpleJdbcTemplate.query(sql,
-                                                                         new IntegerRowMapper(),
-                                                                         YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
+        List<Integer> applianceCategoryIdList = yukonJdbcTemplate.query(sql,
+            new IntegerRowMapper(),
+            YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY);
         return applianceCategoryIdList;
     }    
     
@@ -136,8 +136,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("WHERE ac.applianceCategoryId").eq(applianceCategoryId);
 
         ApplianceCategory applianceCategory =
-            simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
-                                              sql.getArguments());
+            yukonJdbcTemplate.queryForObject(sql.getSql(), rowMapper,
+                                             sql.getArguments());
         WebConfiguration webConfiguration =
             webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
         applianceCategory.setWebConfiguration(webConfiguration);
@@ -160,7 +160,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sql.append("AND ectgm.energyCompanyId IN (", energyCompanyIds,")");
 
         List<ApplianceCategory> applianceCategories = 
-            simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
+            yukonJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
         for (ApplianceCategory applianceCategory : applianceCategories) {
             WebConfiguration webConfiguration =
                 webConfigurationDao.getForApplianceCateogry(applianceCategory.getApplianceCategoryId());
@@ -185,7 +185,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         ecIdFromAppCatQuery.append("AND MappingCategory = 'ApplianceCategory'");
         
         List<Integer> energyCompanyIds = 
-            simpleJdbcTemplate.query(ecIdFromAppCatQuery.toString(),
+            yukonJdbcTemplate.query(ecIdFromAppCatQuery.toString(),
                                      new IntegerRowMapper(),
                                      applianceCategoryId);
 
@@ -196,9 +196,34 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Map<Integer, ApplianceCategory> getByApplianceCategoryIds(
+            Collection<Integer> applianceCategoryIds) {
+        RowMapper rowMapper = new RowMapper();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(rowMapper.getBaseQuery());
+        sql.append("AND ac.applianceCategoryId").in(applianceCategoryIds);
+
+        List<ApplianceCategory> applianceCategories =
+            yukonJdbcTemplate.query(sql, rowMapper);
+
+        Map<Integer, ApplianceCategory> retVal = Maps.newHashMap();
+        for (ApplianceCategory applianceCategory : applianceCategories) {
+            int applianceCategoryId = applianceCategory.getApplianceCategoryId();
+            WebConfiguration webConfiguration =
+                webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
+            applianceCategory.setWebConfiguration(webConfiguration);
+            retVal.put(applianceCategoryId, applianceCategory);
+        }
+
+        return retVal;
+    }
+
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Autowired
