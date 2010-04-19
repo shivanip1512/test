@@ -95,7 +95,7 @@ public class OperatorChangeLoginController {
                                           userContext.getYukonUser());
         if (residentialUser.getUserID() == UserUtils.USER_DEFAULT_ID) {
             modelMap.addAttribute("loginMode", LoginModeEnum.CREATE);
-            changeLoginBackingBean.setLoginEnabled(residentialUser.getLoginStatus());
+            changeLoginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
             modelMap.addAttribute("mode", 
                                   allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
         } else {
