@@ -63,7 +63,7 @@ public class FilterServiceImpl implements FilterService {
                                                          rowMapper,
                                                          sql.getArguments());
         
-        log.debug("Retrieved " + objectsFromDb.size() + "objects from database.");
+        log.debug("Retrieved " + objectsFromDb.size() + " objects from database.");
         
         List<T> objectsThatPassedFilters = new ArrayList<T>();
         if (filter == null || filter.getPostProcessingFilters() == null
