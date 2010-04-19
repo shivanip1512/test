@@ -31,7 +31,7 @@
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.note.text">All program limits will be changed unless a specific program is selected.</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits">Current Limits</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.programName">Program Name</entry>
-    <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.counts">Counts Against Todays Opt Out Limits</entry>
+    <entry key="yukon.web.modules.dr.optOut.countOptOuts.currentLimits.header.counts">Counts Against Today's Opt Out Limits</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.countOptOutsButton">Count Today's Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.dontCountOptOutsButton">Don't Count Today's Opt Outs</entry>
     <entry key="yukon.web.modules.dr.optOut.countOptOuts.byProgramName.label">Optional:</entry>
