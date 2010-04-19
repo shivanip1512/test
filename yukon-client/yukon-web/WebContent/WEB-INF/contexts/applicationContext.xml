@@ -1284,6 +1284,7 @@
     <bean id="accountGeneralValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountGeneralValidator"/>
     <bean id="applianceValidator" class="com.cannontech.web.stars.dr.operator.validator.ApplianceValidator"/>
     <bean id="contactDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactDtoValidator"/>
+    <bean id="contactNotificationDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
     <bean id="callReportValidator" class="com.cannontech.web.stars.dr.operator.validator.CallReportValidator"/>
     
