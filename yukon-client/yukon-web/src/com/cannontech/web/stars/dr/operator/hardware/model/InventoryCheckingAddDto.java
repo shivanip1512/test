@@ -3,7 +3,7 @@ package com.cannontech.web.stars.dr.operator.hardware.model;
 import com.cannontech.common.model.Address;
 
 /**
- * This class is dto of inventory information about hardware that might
+ * This class is a dto of inventory information about hardware that might
  * be added to an account in different ways, whether moving it from the 
  * warehouse or stealing it from another account.
  */
