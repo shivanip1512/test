@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="hardwareEdit">
+<cti:standardPage module="operator" page="hardware.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
@@ -43,7 +43,7 @@
             var url = '/spring/stars/operator/hardware/serviceCompanyInfo';
             var serviceCompanyId = 
 
-            	<cti:displayForPageEditModes modes="EDIT">
+            	<cti:displayForPageEditModes modes="EDIT,CREATE">
                     $F('serviceCompanyId');
                 </cti:displayForPageEditModes>
 
@@ -104,7 +104,7 @@
     </i:simplePopup>
     
     <!-- Delete Hardware Popup -->
-    <i:simplePopup titleKey=".delete" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
+    <i:simplePopup titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
         <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -117,26 +117,26 @@
                     <c:set var="deleteMsgKeySuffix" value="SerialNumber"/>
                 </c:otherwise>
             </c:choose>
-            <cti:msg2 key=".delete.deleteMessage${deleteMsgKeySuffix}" argument="${hardwareDto.displayName}"/>
+            <cti:msg2 key=".deleteMessage${deleteMsgKeySuffix}" argument="${hardwareDto.displayName}"/>
             <br><br>
-            <input type="radio" name="deleteOption" value="remove" checked="checked"><span class="radioLabel"><i:inline key=".delete.option1"/></span>
+            <input type="radio" name="deleteOption" value="remove" checked="checked"><span class="radioLabel"><i:inline key=".deleteOption1"/></span>
             <br>
-            <input type="radio" name="deleteOption" value="delete"><span class="radioLabel"><i:inline key=".delete.option2"/></span>
+            <input type="radio" name="deleteOption" value="delete"><span class="radioLabel"><i:inline key=".deleteOption2"/></span>
             <br><br>
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px" />
             </cti:checkRolesAndProperties>
-            <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key=".delete.cancelButton"/>"/>
+            <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
         </form>
     </i:simplePopup>
     
     <cti:msg2 key=".noneSelectOption" var="noneSelectOption"/>
     
     <cti:displayForPageEditModes modes="EDIT">
-        <c:set var="action" value="/spring/stars/operator/hardware/updateHardware"/>
+        <cti:url value="/spring/stars/operator/hardware/updateHardware" var="action"/>
     </cti:displayForPageEditModes>
     <cti:displayForPageEditModes modes="CREATE">
-        <c:set var="action" value="/spring/stars/operator/hardware/createHardware"/>
+        <cti:url value="/spring/stars/operator/hardware/createHardware" var="action"/>
     </cti:displayForPageEditModes>
     
     <form:form id="updateForm" commandName="hardwareDto" action="${action}">
@@ -159,7 +159,7 @@
                     <tags:nameValueContainer2>
                     
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
-                            <tags:nameValue2 nameKey=".displayType"><spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody></tags:nameValue2>
+                            <tags:nameValue2 nameKey=".deviceType"><spring:escapeBody htmlEscape="true">${hardwareDto.displayType}</spring:escapeBody></tags:nameValue2>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="CREATE">
                             <tags:selectNameValue nameKey="${displayTypeKey}" path="hardwareTypeEntryId"  itemLabel="displayName" itemValue="hardwareTypeEntryId" items="${deviceTypes}"/>
@@ -191,40 +191,40 @@
                             
                         </c:choose>
                         
-                        <tags:inputNameValue nameKey=".displayLabel" path="displayLabel"/>
+                        <tags:inputNameValue nameKey=".label" path="displayLabel"/>
                         
-                        <tags:inputNameValue nameKey=".altTrackingLabel" path="altTrackingNumber"/>
+                        <tags:inputNameValue nameKey=".altTrackingNumber" path="altTrackingNumber"/>
                         
-                        <tags:yukonListEntrySelectNameValue nameKey=".voltageLabel" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
+                        <tags:yukonListEntrySelectNameValue nameKey=".voltage" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
                         
-                        <tags:nameValue2 nameKey=".fieldInstallDateLabel">
+                        <tags:nameValue2 nameKey=".fieldInstallDate">
                             <tags:dateInputCalendar fieldName="fieldInstallDate" fieldValue="fieldInstallDate" springInput="true"></tags:dateInputCalendar>
                         </tags:nameValue2>
                         
-                        <tags:nameValue2 nameKey=".fieldReceiveDateLabel">
+                        <tags:nameValue2 nameKey=".fieldReceiveDate">
                             <tags:dateInputCalendar fieldName="fieldReceiveDate" fieldValue="fieldReceiveDate" springInput="true"></tags:dateInputCalendar>
                         </tags:nameValue2>
                         
-                        <tags:nameValue2 nameKey=".fieldRemoveDateLabel">
+                        <tags:nameValue2 nameKey=".fieldRemoveDate">
                             <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="fieldRemoveDate" springInput="true"></tags:dateInputCalendar>
                         </tags:nameValue2>
                         
-                        <tags:textareaNameValue nameKey=".deviceNotesLabel" path="deviceNotes" rows="4" cols="30" />
+                        <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="30" />
                         
                         <c:if test="${showRoute}">
-                            <tags:selectNameValue nameKey=".routeLabel" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
+                            <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                         </c:if>
                         
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
                         
-                            <tags:yukonListEntrySelectNameValue nameKey=".deviceStatusLabel" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
+                            <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
                             
                             <form:hidden path="originalDeviceStatusEntryId"/>
                             
                             <c:if test="${showTwoWay}">
                                 
                                 <%-- Two Way LCR's Yukon Device --%>
-                                <tags:nameValue2 nameKey=".twoWayDeviceLabel">
+                                <tags:nameValue2 nameKey=".twoWayDevice">
                                     <span id="chosenYukonDeviceNameField">
                                         <c:choose>
                                             <c:when test="${hardwareDto.deviceId > 0}">
@@ -266,19 +266,19 @@
                     <tags:nameValueContainer2>
                         
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
-                            <tags:selectNameValue nameKey=".serviceCompanyLabel" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
+                            <tags:selectNameValue nameKey=".serviceCompany" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
                                 items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
                         </cti:displayForPageEditModes>
                         
-                        <tags:nameValue2 nameKey=".serviceCompanyInfoLabel">
+                        <tags:nameValue2 nameKey=".serviceCompanyInfo">
                             <div id="serviceCompanyContainer"></div>
                         </tags:nameValue2>
                         
                         <cti:displayForPageEditModes modes="EDIT,VIEW">
-                            <tags:selectNameValue nameKey=".warehouseLabel" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
+                            <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
                         </cti:displayForPageEditModes>
                         
-                        <tags:textareaNameValue nameKey=".installNotesLabel" path="installNotes" rows="4" cols="30" />
+                        <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="30" />
                         
                     </tags:nameValueContainer2>
                     
@@ -295,9 +295,9 @@
                                     <div class="historyContainer">
                                         <table class="compactResultsTable">
                                             <tr>
-                                                <th><i:inline key=".deviceStatusHistory.tableHeader.event"/></th>
-                                                <th><i:inline key=".deviceStatusHistory.tableHeader.userName"/></th>
-                                                <th><i:inline key=".deviceStatusHistory.tableHeader.timeOfEvent"/></th>
+                                                <th><i:inline key=".deviceStatusHistory.event"/></th>
+                                                <th><i:inline key=".deviceStatusHistory.userName"/></th>
+                                                <th><i:inline key=".deviceStatusHistory.timeOfEvent"/></th>
                                             </tr>
                                             <c:forEach var="event" items="${deviceStatusHistory}">
                                                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
@@ -323,8 +323,8 @@
                                         <tags:alternateRowReset/>
                                         <table class="compactResultsTable">
                                             <tr>
-                                                <th><i:inline key=".hardwareHistory.tableHeader.date"/></th>
-                                                <th><i:inline key=".hardwareHistory.tableHeader.action"/></th>
+                                                <th><i:inline key=".hardwareHistory.date"/></th>
+                                                <th><i:inline key=".hardwareHistory.action"/></th>
                                             </tr>
                                             
                                             <c:forEach var="event" items="${hardwareHistory}">
@@ -358,10 +358,10 @@
             <tags:reset/>
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <cti:displayForPageEditModes modes="EDIT">
-                    <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key=".delete.deleteButton"/>"/>
+                    <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
                 </cti:displayForPageEditModes>
                 <cti:displayForPageEditModes modes="CREATE">
-                    <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key=".create.cancelButton"/>">
+                    <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
                 </cti:displayForPageEditModes>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>

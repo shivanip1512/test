@@ -100,50 +100,39 @@ public interface StarsInventoryBaseDao {
     
     /**
      * Method to get a list of paos that are not associated with an inventory object
-     * @return List of paos
      */
     public List<PaoIdentifier> getPaosNotInInventory();
 
     /**
      * Method to get a list of paos that are associated with an inventory object and are NOT
      * on an account
-     * @return List of paos
      */
     public List<PaoIdentifier> getPaosNotOnAnAccount(List<LiteStarsEnergyCompany> energyCompanyList);
 
     /**
      * Returns a list of switch inventory id's assigned to the meter.
-     * @param meterId
-     * @return List<Integer>
      */
     public List<Integer> getSwitchAssignmentsForMeter(int meterId);
 
     /**
      * Returns a list of DisplayableLmHardware's of switches on this account.
-     * @param accountId
-     * @return List<DisplayableLmHardware>
      */
     public List<DisplayableLmHardware> getSwitchesForAccount(int accountId);
     
     /**
      * Returns the meter id if this switch is assigned to a meter, null if it is not.
-     * @param lmHardwareId
      * @return the meter id this switch is assigned to or null
      */
     public Integer findMeterAssignment(int lmHardwareId);
 
     /**
      * Saves a Meter hardware device info on the customer account. Handles both insert/update records.
-     * @param meterHardwareBase
-     * @param energyCompanyId
      * @return LiteMeterHardwareBase the meter that was inserted or updated.
      */
     public LiteMeterHardwareBase saveMeterHardware(LiteMeterHardwareBase meterHardwareBase, int energyCompanyId);
 
     /**
      * Saves the switch to meter mappings in LMHardwareToMeterMapping
-     * @param meterId
-     * @param switchIds
      */
     public void saveSwitchAssignments(Integer meterId, List<Integer> switchIds);
     

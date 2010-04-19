@@ -5,7 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="meterProfile">
+<cti:standardPage module="operator" page="meterProfile.${mode}">
 <tags:setFormEditMode mode="${mode}"/>
     <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
     
@@ -70,15 +70,15 @@
                 
                     <tags:nameValueContainer2>
                     
-                        <tags:inputNameValue nameKey=".meterNumberLabel" path="meterNumber"/>
+                        <tags:inputNameValue nameKey="yukon.web.modules.operator.hardware.meters.meterNumber" path="meterNumber"/>
                         
-                        <tags:inputNameValue nameKey=".displayLabel" path="displayLabel"/>
+                        <tags:inputNameValue nameKey="yukon.web.modules.operator.hardware.label" path="displayLabel"/>
                             
-                        <tags:inputNameValue nameKey=".altTrackingLabel" path="altTrackingNumber"/>
+                        <tags:inputNameValue nameKey="yukon.web.modules.operator.hardware.altTrackingNumber" path="altTrackingNumber"/>
                             
-                        <tags:yukonListEntrySelectNameValue nameKey=".voltageLabel" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
+                        <tags:yukonListEntrySelectNameValue nameKey="yukon.web.modules.operator.hardware.voltage" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
                         
-                        <tags:textareaNameValue nameKey=".deviceNotesLabel" path="deviceNotes" rows="4" cols="30" />
+                        <tags:textareaNameValue nameKey="yukon.web.modules.operator.hardware.deviceNotes" path="deviceNotes" rows="4" cols="30" />
                     
                     </tags:nameValueContainer2>
                 
@@ -95,8 +95,8 @@
                             
                             <table class="resultsTable">
                                 <tr>
-                                    <th><i:inline key=".tableHeader.serialNumber"/></th>
-                                    <th><i:inline key=".tableHeader.label"/></th>
+                                    <th><i:inline key="yukon.web.modules.operator.hardware.serialNumber"/></th>
+                                    <th><i:inline key="yukon.web.modules.operator.hardware.label"/></th>
                                 </tr>
                                 <c:forEach var="switch" items="${hardwareDto.switchAssignments}" varStatus="switchRow">
                                     <tr>

@@ -994,17 +994,32 @@
                         </page>
                     </pages>
                 </page>
-		    	<page name="hardwareList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+		    	<page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                     <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
                     <menu>account</menu>
                     <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
                     <pages>
-                        <page name="hardwareEdit" type="DETAIL">
+                        <page name="hardware.CREATE" type="BASIC">
                             <menu>account</menu>
                             <labelArgument>${displayName}</labelArgument>
                         </page>
-                        <page name="meterProfile" type="DETAIL">
+                        <page name="hardware.EDIT" type="DETAIL">
+                            <menu>account</menu>
+                            <labelArgument>${displayName}</labelArgument>
+                        </page>
+                        <page name="hardware.VIEW" type="DETAIL">
+                            <menu>account</menu>
+                            <labelArgument>${displayName}</labelArgument>
+                        </page>
+                        <page name="meterProfile.CREATE" type="BASIC">
+                            <menu>account</menu>
+                        </page>
+                        <page name="meterProfile.EDIT" type="DETAIL">
+                            <menu>account</menu>
+                            <labelArgument>${displayName}</labelArgument>
+                        </page>
+                        <page name="meterProfile.VIEW" type="DETAIL">
                             <menu>account</menu>
                             <labelArgument>${displayName}</labelArgument>
                         </page>

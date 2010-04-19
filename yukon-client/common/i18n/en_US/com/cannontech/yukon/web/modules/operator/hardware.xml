@@ -1,214 +1,182 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
+    
+    <!-- hardware.jsp -->
+    <entry key="yukon.web.modules.operator.hardware.EDIT.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardware.EDIT.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.hardware.VIEW.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardware.VIEW.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.hardware.CREATE.pageName">Create Hardware</entry>
 
-    <!-- hardwareList -->
-    <entry key="yukon.web.modules.operator.hardwareList.pageName">Hardware</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.pageDescription">{0}</entry>
+    <!-- hardwareList.jsp -->
+    <entry key="yukon.web.modules.operator.hardware.list.pageName">Hardware</entry>
+    <entry key="yukon.web.modules.operator.hardware.list.pageDescription">{0}</entry>
     
     <!-- Action Images -->
-    <entry key="yukon.web.modules.operator.hardwareList.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.editConfig.hoverUrl">/WebConfig/yukon/Icons/cog_edit_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.editConfig.hoverText">Edit Configuration</entry>
+    <entry key="yukon.web.modules.operator.hardware.editConfig.imageUrl">/WebConfig/yukon/Icons/cog_edit.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.editConfig.hoverUrl">/WebConfig/yukon/Icons/cog_edit_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.editConfig.hoverText">Edit Configuration</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.editSchedule.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.editSchedule.hoverUrl">/WebConfig/yukon/Icons/calendar_edit_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.editSchedule.hoverText">Edit Schedule</entry>
-
-    <entry key="yukon.web.modules.operator.hardwareList.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.manual.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.manual.hoverText">Manual Adjustment</entry>
-
-    <entry key="yukon.web.modules.operator.hardwareList.savedSchedules.imageUrl">/WebConfig/yukon/Icons/clipboard.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.savedSchedules.hoverUrl">/WebConfig/yukon/Icons/clipboard_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.savedSchedules.hoverText">Saved Schedules</entry>
+    <entry key="yukon.web.modules.operator.hardware.editSchedule.imageUrl">/WebConfig/yukon/Icons/calendar_edit.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.editSchedule.hoverUrl">/WebConfig/yukon/Icons/calendar_edit_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.editSchedule.hoverText">Edit Schedule</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.commander.imageUrl">/WebConfig/yukon/Icons/commander.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.commander.hoverUrl">/WebConfig/yukon/Icons/commander_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.commander.hoverText">Commander</entry>
+    <entry key="yukon.web.modules.operator.hardware.manual.imageUrl">/WebConfig/yukon/Icons/wrench.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.manual.hoverUrl">/WebConfig/yukon/Icons/wrench_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.manual.hoverText">Manual Adjustment</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.changeOut.hoverText">Change out this device for a different device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.savedSchedules.imageUrl">/WebConfig/yukon/Icons/clipboard.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverUrl">/WebConfig/yukon/Icons/clipboard_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverText">Saved Schedules</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.serialNumberShort">Serial #</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.altTrackingNumberShort">Alt Tracking #</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.deviceType">Device Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.warehouse">Warehouse</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.accountNumber">Account #</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.tableHeader.name">Name</entry>
+    <entry key="yukon.web.modules.operator.hardware.commander.imageUrl">/WebConfig/yukon/Icons/commander.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.commander.hoverUrl">/WebConfig/yukon/Icons/commander_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.commander.hoverText">Commander</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.checkInventoryButton">Check Inventory</entry>
+    <entry key="yukon.web.modules.operator.hardware.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.changeOut.hoverText">Change out this device for a different device.</entry>
     
-    <!-- Swiches -->
-    <entry key="yukon.web.modules.operator.hardwareList.switches.title">Switches</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.add">Add</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.none">No Switches</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.serialNumberShort">Serial #</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.altTrackingNumberShort">Alt Tracking #</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.displayType">Switch Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.label">Label</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.tableHeader.actions">Actions</entry>
+    <!-- General Hardware Terms -->
+    <entry key="yukon.web.modules.operator.hardware.deviceInfoSection.title">Device Info</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.switches.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.add.hoverText">Add a switch to this account.</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.switches.add.label">Add Switch</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusSection.title">Device Status</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.title">Device Status History</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.event">Event</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.userName">User Name</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.timeOfEvent">Time of Event</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.none">No Device Status Events</entry>
     
-    <!-- Thermostats -->
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.title">Thermostats</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add">Add</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.none">No Thermostats</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.displayType">Thermostat Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.label">Label</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.tableHeader.actions">Actions</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareHistory.title">Hardware History</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareHistory.date">Date</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareHistory.action">Action</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareHistory.none">No Hardware Events</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.hoverText">Add a thermostat to this account.</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.add.label">Add Thermostat</entry>
-
-    <entry key="yukon.web.modules.operator.hardwareList.thermostats.selectMultiple">Select Multiple</entry>
-    
-    <!-- Meters -->
-    <entry key="yukon.web.modules.operator.hardwareList.meters.title">Meters</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.add">Add</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.none">No Meters</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.displayName">Device Name</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.meterNumber">Meter Number</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.displayType">Meter Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.label">Label</entry>
-    <entry key="yukon.web.modules.operator.hardwareList.meters.tableHeader.actions">Actions</entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareList.meters.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-	<entry key="yukon.web.modules.operator.hardwareList.meters.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
-	<entry key="yukon.web.modules.operator.hardwareList.meters.add.hoverText">Add a meter to this account.</entry>
-	<entry key="yukon.web.modules.operator.hardwareList.meters.add.label">Add Meter</entry>
-
-    <!-- hardwareEdit.jsp -->
-    <entry key="yukon.web.modules.operator.hardwareEdit.pageName">Hardware</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.pageDescription">{0}</entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareUpdated">Hardware Updated</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareDeleted">Hardware Deleted</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareRemoved">Hardware Removed From Account</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareCreated">Hardware Created</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareAdded">Hardware Added</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareChangeOut">Hardware Change Out Successful</entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceInfoSection.title">Device Info</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.displayName">Device Name</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.displayLabel">Label</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.displayType">Device Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.altTrackingLabel">Alt Tracking #</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.voltageLabel">Voltage</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.fieldInstallDateLabel">Field Install Date</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.fieldReceiveDateLabel">Field Receive Date</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.fieldRemoveDateLabel">Field Remove Date</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceNotesLabel">Notes</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.twoWayDeviceLabel">Two Way Device</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.routeLabel">Route</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.defaultRouteNoneLabel">Default - (none)</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.defaultRouteLabel">Default - </entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareEdit.serviceAndStorageSection.title">Service And Storage</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serviceCompanyLabel">Service Company</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serviceCompanyInfoLabel">Service Company Info</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.noneSelectOption">(none)</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.warehouseLabel">Warehouse</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.installNotesLabel">Install Notes</entry>
-
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusSection.title">Device Status</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusLabel">Status</entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.title">Device Status History</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.event">Event</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.userName">User Name</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.tableHeader.timeOfEvent">Time of Event</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.deviceStatusHistory.none">No Device Status Events</entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.title">Hardware History</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.tableHeader.date">Date</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.tableHeader.action">Action</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.hardwareHistory.none">No Hardware Events</entry>
-    
-    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay">Create Two-Way LCR</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.twoWayPickerButton">Choose</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.twoWayNewButton">New</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete">Delete Device {0}</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.noTwoWayDeviceName">(none chosen)</entry>
-    
-    <!-- Delete Hardware -->
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete.deleteMessageDeviceName">Device {0} will be removed from the account.  What would you like to do with it?</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete.deleteMessageSerialNumber">Device with serial number {0} will be removed from the account.  What would you like to do with it?</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete.option1">Move it to the warehouse.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete.option2">Delete it from inventory permanently.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete.cancelButton">Cancel</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.delete.deleteButton">Delete</entry>
+    <entry key="yukon.web.modules.operator.hardware.accountNumber">Account #</entry>
+    <entry key="yukon.web.modules.operator.hardware.actions">Actions</entry>
+    <entry key="yukon.web.modules.operator.hardware.add">Add</entry>
+    <entry key="yukon.web.modules.operator.hardware.altTrackingNumber">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.hardware.checkInventoryButton">Check Inventory</entry>
+    <entry key="yukon.web.modules.operator.hardware.createTwoWay">Create Two-Way LCR</entry>
+    <entry key="yukon.web.modules.operator.hardware.defaultRouteNone">Default - (none)</entry>
+    <entry key="yukon.web.modules.operator.hardware.defaultRoute">Default - </entry>
+    <entry key="yukon.web.modules.operator.hardware.deleteDevice">Delete Device {0}</entry>
+    <entry key="yukon.web.modules.operator.hardware.deleteMessageDeviceName">Device {0} will be removed from the account.  What would you like to do with it?</entry>
+    <entry key="yukon.web.modules.operator.hardware.deleteMessageSerialNumber">Device with serial number {0} will be removed from the account.  What would you like to do with it?</entry>
+    <entry key="yukon.web.modules.operator.hardware.deleteOption1">Move it to the warehouse.</entry>
+    <entry key="yukon.web.modules.operator.hardware.deleteOption2">Delete it from inventory permanently.</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceNotes">Notes</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.operator.hardware.displayName">Device Name</entry>
+    <entry key="yukon.web.modules.operator.hardware.fieldInstallDate">Field Install Date</entry>
+    <entry key="yukon.web.modules.operator.hardware.fieldReceiveDate">Field Receive Date</entry>
+    <entry key="yukon.web.modules.operator.hardware.fieldRemoveDate">Field Remove Date</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareUpdated">Hardware Updated</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareDeleted">Hardware Deleted</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareRemoved">Hardware Removed From Account</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareCreated">Hardware Created</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareAdded">Hardware Added</entry>
+    <entry key="yukon.web.modules.operator.hardware.hardwareChangeOut">Hardware Change Out Successful</entry>
+    <entry key="yukon.web.modules.operator.hardware.installNotes">Install Notes</entry>
+    <entry key="yukon.web.modules.operator.hardware.label">Label</entry>
+    <entry key="yukon.web.modules.operator.hardware.name">Name</entry>
+    <entry key="yukon.web.modules.operator.hardware.noneSelectOption">(none)</entry>
+    <entry key="yukon.web.modules.operator.hardware.noTwoWayDeviceName">(none chosen)</entry>
+    <entry key="yukon.web.modules.operator.hardware.route">Route</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumberShort">Serial #</entry>
+    <entry key="yukon.web.modules.operator.hardware.serviceAndStorageSection.title">Service And Storage</entry>
+    <entry key="yukon.web.modules.operator.hardware.serviceCompany">Service Company</entry>
+    <entry key="yukon.web.modules.operator.hardware.serviceCompanyInfo">Service Company Info</entry>
+    <entry key="yukon.web.modules.operator.hardware.status">Status</entry>
+    <entry key="yukon.web.modules.operator.hardware.twoWayDevice">Two Way Device</entry>
+    <entry key="yukon.web.modules.operator.hardware.twoWayPickerButton">Choose</entry>
+    <entry key="yukon.web.modules.operator.hardware.twoWayNewButton">New</entry>
+    <entry key="yukon.web.modules.operator.hardware.voltage">Voltage</entry>
+    <entry key="yukon.web.modules.operator.hardware.warehouse">Warehouse</entry>
     
     <!-- Errors -->
-    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.nameAlreadyExists">Yukon device with that name already exists.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.mustSupplyName">Yukon device name is required.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.nonNumericSerialNumber">Two Way LCR serial number must be numeric.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.createTwoWay.error.unknown">Unable to create new yukon device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.nameAlreadyExists">Yukon device with that name already exists.</entry>
+    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.mustSupplyName">Yukon device name is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.nonNumericSerialNumber">Two Way LCR serial number must be numeric.</entry>
+    <entry key="yukon.web.modules.operator.hardware.createTwoWay.error.unknown">Unable to create new yukon device.</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.required.serialNumber">A serial number is required.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.unavailable.serialNumber">This serial number is already in use.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.invalid.serialNumber">Serial numbers can only contain numeric characters.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.serialNumber">Serial numbers must be 30 characters or less.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.notFound.serialNumber">The serial number {0} was not found in the inventory</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.sameAccount.serialNumber">The device with that serial number is already assigned to this account.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.anotherEC.serialNumber">The device was found in the inventory list of energy company {0}.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.required.serialNumber">A serial number is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.unavailable.serialNumber">This serial number is already in use.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.invalid.serialNumber">Serial numbers can only contain numeric characters.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.tooLong.serialNumber">Serial numbers must be 30 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.notFound.serialNumber">The serial number {0} was not found in the inventory</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.sameAccount.serialNumber">The device with that serial number is already assigned to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.anotherEC.serialNumber">The device was found in the inventory list of energy company {0}.</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.notFoundAdd">The serial number {0} was not found in the inventory. Would you like to add it now?</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.foundOnAnotherAccount">The device is currently assigned to another account.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.addToAccount">Would you like to add it to this account?</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.moveToAccount">Would you like to remove it from account {0} and add it to account {1}?</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.inWarehouse">Device found in warehouse.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.serialNumber.defaultWarehouse">General Inventory</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber.notFoundAdd">The serial number {0} was not found in the inventory. Would you like to add it now?</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber.foundOnAnotherAccount">The device is currently assigned to another account.</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber.addToAccount">Would you like to add it to this account?</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber.moveToAccount">Would you like to remove it from account {0} and add it to account {1}?</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber.inWarehouse">Device found in warehouse.</entry>
+    <entry key="yukon.web.modules.operator.hardware.serialNumber.defaultWarehouse">General Inventory</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.displayLabel">Label must be 60 characters or less.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.altTrackingNumber">Alt Tracking # must be 40 characters or less.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.deviceNotes">Notes must be 500 characters or less.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.tooLong.installNotes">Install Notes must be 500 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.tooLong.displayLabel">Label must be 60 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.tooLong.altTrackingNumber">Alt Tracking # must be 40 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.tooLong.deviceNotes">Notes must be 500 characters or less.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.tooLong.installNotes">Install Notes must be 500 characters or less.</entry>
     
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.invalid.deviceId">A two way device MUST be setup for the two way LCR.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.unavailable.deviceId">Device {0} is already in use.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.addressMismatch.deviceId">The address of the two way device must match the serial number.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.notFound.deviceId">The chosen two way device no longer exists.</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.error.invalidDeviceType.deviceId">The device with id:{0} and name:{1} is not a two way device.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.invalid.deviceId">A two way device MUST be setup for the two way LCR.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.unavailable.deviceId">Device {0} is already in use.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.addressMismatch.deviceId">The address of the two way device must match the serial number.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.notFound.deviceId">The chosen two way device no longer exists.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.invalidDeviceType.deviceId">The device with id:{0} and name:{1} is not a two way device.</entry>
     
     <entry key="typeMismatch.fieldInstallDate">Field Install Date must be a valid date.</entry>
     <entry key="typeMismatch.fieldReceiveDate">Field Receive Date must be a valid date.</entry>
     <entry key="typeMismatch.fieldRemoveDate">Field Remove Date must be a valid date.</entry>
     
-    <!-- Creation specific keys -->
-    <entry key="yukon.web.modules.operator.hardwareEdit.switchTypesLabel">Switch Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.thermostatTypesLabel">Thermostat Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.meterTypesLabel">Meter Type</entry>
-    <entry key="yukon.web.modules.operator.hardwareEdit.create.cancelButton">Cancel</entry>
+    <!-- Swiches -->
+    <entry key="yukon.web.modules.operator.hardware.switches.title">Switches</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.displayType">Switch Type</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.none">No Switches</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.add.hoverText">Add a switch to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardware.switches.add">Add Switch</entry>
+    
+    <!-- Thermostats -->
+    <entry key="yukon.web.modules.operator.hardware.thermostats.title">Thermostats</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.displayType">Thermostat Type</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.none">No Thermostats</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.add.hoverText">Add a thermostat to this account.</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.add">Add Thermostat</entry>
+    <entry key="yukon.web.modules.operator.hardware.thermostats.selectMultiple">Select Multiple</entry>
+    
+    <!-- Meters -->
+    <entry key="yukon.web.modules.operator.hardware.meters.title">Meters</entry>
+    <entry key="yukon.web.modules.operator.hardware.meters.displayType">Meter Type</entry>
+    <entry key="yukon.web.modules.operator.hardware.meters.none">No Meters</entry>
+    <entry key="yukon.web.modules.operator.hardware.meters.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.operator.hardware.meters.add.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
+	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+	<entry key="yukon.web.modules.operator.hardware.meters.add.hoverText">Add a meter to this account.</entry>
+	<entry key="yukon.web.modules.operator.hardware.meters.add">Add Meter</entry>
     
     <!-- meterProfile.jsp -->
-    <entry key="yukon.web.modules.operator.meterProfile.pageName">Meter Profile</entry>
-    <entry key="yukon.web.modules.operator.meterProfile.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.EDIT.pageName">Meter Profile</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.EDIT.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.meterProfile.VIEW.pageName">Meter Profile</entry>
+    <entry key="yukon.web.modules.operator.meterProfile.VIEW.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.meterProfile.CREATE.pageName">Create Meter Profile</entry>
     
     <entry key="yukon.web.modules.operator.meterProfile.meterInfoSection.title">Meter Info</entry>
     <entry key="yukon.web.modules.operator.meterProfile.availableSwitchesSection.title">Switch to Meter Mapping</entry>
     <entry key="yukon.web.modules.operator.meterProfile.noAvailableSwitches">No Available Switches</entry>
     
-    <entry key="yukon.web.modules.operator.meterProfile.meterNumberLabel">Meter Number</entry>
-    <entry key="yukon.web.modules.operator.meterProfile.displayLabel">Label</entry>
-    <entry key="yukon.web.modules.operator.meterProfile.altTrackingLabel">Alt Tracking #</entry>
-    <entry key="yukon.web.modules.operator.meterProfile.voltageLabel">Voltage</entry>
-    <entry key="yukon.web.modules.operator.meterProfile.deviceNotesLabel">Notes</entry>
-    
     <entry key="yukon.web.modules.operator.meterProfile.delete">Delete Meter {0}</entry>
     <entry key="yukon.web.modules.operator.meterProfile.deleteQuestion">Are you sure you want to delete this meter?</entry>
-    
-    <entry key="yukon.web.modules.operator.meterProfile.tableHeader.serialNumber">Serial Number</entry>
-    <entry key="yukon.web.modules.operator.meterProfile.tableHeader.label">Label</entry>
     
 </properties>

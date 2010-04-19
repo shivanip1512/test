@@ -50,3 +50,11 @@ table.theremostatActionTable td {
 #hardwareConfigEditDialog .actionArea input {
     width: 115px;
 }
+
+div.hardwarePopup {
+    padding: 10px;
+}
+
+span.buttonSeperator {
+    padding-right: 5px;
+}

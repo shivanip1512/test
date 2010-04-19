@@ -133,11 +133,12 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select lm.ManufacturerSerialNumber serialNumber, ib.inventoryId inventoryId, ib.deviceLabel label from InventoryBase ib");
-        sql.append("join LMHardwareBase lm on lm.InventoryID = ib.InventoryID");
-        sql.append("join YukonListEntry yle on yle.EntryID = lm.LMHardwareTypeID");
-        sql.append("where AccountID ").eq(accountId);
-        sql.append("AND yle.YukonDefinitionID ").in(switchTypeDefIds);  
+        sql.append("SELECT lm.ManufacturerSerialNumber serialNumber, ib.inventoryId inventoryId, ib.deviceLabel label");
+        sql.append("FROM InventoryBase ib");
+        sql.append("  JOIN LMHardwareBase lm on lm.InventoryID = ib.InventoryID");
+        sql.append("  JOIN YukonListEntry yle on yle.EntryID = lm.LMHardwareTypeID");
+        sql.append("WHERE AccountID ").eq(accountId);
+        sql.append("  AND yle.YukonDefinitionID ").in(switchTypeDefIds);  
         
         return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<DisplayableLmHardware>(){
             @Override

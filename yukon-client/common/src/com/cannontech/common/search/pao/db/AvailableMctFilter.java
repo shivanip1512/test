@@ -20,19 +20,21 @@ public class AvailableMctFilter implements SqlFilter {
     public SqlFragmentSource getWhereClauseFragment() {
         SqlStatementBuilder limiter1 = new SqlStatementBuilder();
         limiter1.append("paobjectId IN (");
-        limiter1.append("   SELECT paobjectId FROM YukonPAObject ypo where ypo.type like 'MCT%' ");
-        limiter1.append("   AND ypo.paobjectId NOT IN (SELECT deviceId FROM inventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId)");
-        limiter1.append("               )");
+        limiter1.append("  SELECT paobjectId");
+        limiter1.append("  FROM YukonPAObject ypo");
+        limiter1.append("  WHERE ypo.type like 'MCT%' ");
+        limiter1.append("    AND ypo.paobjectId NOT IN (SELECT deviceId FROM inventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId) )");
 
         SqlStatementBuilder limiter2 = new SqlStatementBuilder();
         limiter2.append("paobjectId IN (");
-        limiter2.append("   SELECT deviceId FROM inventoryBase ib ");
-        limiter2.append("   JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
-        limiter2.append("   JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
-        limiter2.append("   JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
-        limiter2.append("   WHERE etim.EnergyCompanyId ").in(energyCompanyIds);
-        limiter2.append("   AND ib.accountId = 0 ");
-        limiter2.append("   AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).append(")");
+        limiter2.append("  SELECT deviceId");
+        limiter2.append("  FROM inventoryBase ib ");
+        limiter2.append("    JOIN YukonPAObject ypo ON ypo.PAObjectId = ib.DeviceId");
+        limiter2.append("    JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
+        limiter2.append("    JOIN YukonListEntry yle ON yle.EntryId = ib.CategoryId");
+        limiter2.append("  WHERE etim.EnergyCompanyId ").in(energyCompanyIds);
+        limiter2.append("    AND ib.accountId = 0 ");
+        limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).append(")");
         
         SqlFragmentCollection retVal = new SqlFragmentCollection("OR");
         retVal.add(limiter1);

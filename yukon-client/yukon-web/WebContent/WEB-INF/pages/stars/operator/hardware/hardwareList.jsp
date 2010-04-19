@@ -5,13 +5,14 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
-<cti:standardPage module="operator" page="hardwareList">
+<cti:standardPage module="operator" page="hardware.list">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 <cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatId="/>
+<cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}&amp;energyCompanyId=${energyCompanyId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="commanderUrl" value="/apps/CommandDevice.jsp?deviceID="/>
 <cti:url var="changeOutUrl" value="/spring/stars/operator/hardware/changeOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
@@ -64,25 +65,25 @@
 
 <c:choose>
     <c:when test="${checkingAdd.switch}">
-        <c:set var="titleKey" value=".switches.add.label"/>
+        <c:set var="titleKey" value=".switches.add"/>
     </c:when>
     <c:otherwise>
-        <c:set var="titleKey" value=".thermostats.add.label"/>
+        <c:set var="titleKey" value=".thermostats.add"/>
     </c:otherwise>
 </c:choose>
 
 <%-- INVENTORY CHECKING SWITCH POPUP --%>
-<i:simplePopup titleKey=".switches.add.label" id="inventoryCheckingSwitchPopup" styleClass="smallSimplePopup" showImmediately="${param.showSwitchCheckingPopup}">
+<i:simplePopup titleKey=".switches.add" id="inventoryCheckingSwitchPopup" styleClass="smallSimplePopup" showImmediately="${param.showSwitchCheckingPopup}">
     <tags:errorMessages/>
     <form:form commandName="serialNumber" action="/spring/stars/operator/hardware/checkSerialNumber">
     
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey="yukon.web.modules.operator.hardwareEdit.serialNumber">
+            <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
                 <input type="hidden" name="hardwareClass" value="${switchClass}">
                 <form:input path="serialNumber" size="15"/>
-                <input type="submit" value="<cti:msg2 key="yukon.web.modules.operator.hardwareList.checkInventoryButton"/>">
+                <input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>">
             </tags:nameValue2>
         </tags:nameValueContainer2>
     
@@ -90,16 +91,16 @@
 </i:simplePopup>
 
 <%-- INVENTORY CHECKING THERMOSTAT POPUP --%>
-<i:simplePopup titleKey=".thermostats.add.label" id="inventoryCheckingThermostatPopup" styleClass="smallSimplePopup" showImmediately="${param.showThermostatCheckingPopup}">
+<i:simplePopup titleKey=".thermostats.add" id="inventoryCheckingThermostatPopup" styleClass="smallSimplePopup" showImmediately="${param.showThermostatCheckingPopup}">
     <form:form commandName="serialNumber" action="/spring/stars/operator/hardware/checkSerialNumber">
     
         <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey="yukon.web.modules.operator.hardwareEdit.serialNumber">
+            <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
                 <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
                 <input type="hidden" name="hardwareClass" value="${thermostatClass}">
                 <form:input path="serialNumber" size="15"/>
-                <input type="submit" value="<cti:msg2 key="yukon.web.modules.operator.hardwareList.checkInventoryButton"/>">
+                <input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>">
             </tags:nameValue2>
         </tags:nameValueContainer2>
     
@@ -110,14 +111,14 @@
 <c:if test="${not empty confirmWarehouseSerial}">
     <i:simplePopup titleKey="${titleKey}" id="addFromWarehousePopup" styleClass="mediumSimplePopup" showImmediately="true">
         
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.serialNumber.inWarehouse"/></div>
+        <div style="padding:10px;"><i:inline key=".serialNumber.inWarehouse"/></div>
         
         <table class="miniResultsTable invCheckingTable" align="center">
             <tr>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.serialNumberShort"/></th>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.altTrackingNumberShort"/></th>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.deviceType"/></th>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.warehouse"/></th>
+                <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
+                <th nowrap="nowrap"><i:inline key=".altTrackingNumber"/></th>
+                <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
+                <th nowrap="nowrap"><i:inline key=".warehouse"/></th>
             </tr>
             <tr>
                 <td><spring:escapeBody htmlEscape="true">${checkingAdd.serialNumber}</spring:escapeBody></td>
@@ -127,7 +128,7 @@
             </tr>
         </table>
         
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.serialNumber.addToAccount"/></div>
+        <div style="padding:10px;"><i:inline key=".serialNumber.addToAccount"/></div>
         
         <form action="/spring/stars/operator/hardware/addDeviceToAccount">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -139,7 +140,7 @@
             <table align="right">
                 <tr>
                     <td>
-                        <span style="padding-right:5px;">
+                        <span class="buttonSeperator">
                             <input type="submit" value="<cti:msg2 key="yukon.web.components.slowInput.ok.label" />" class="formSubmit">
                         </span>
                         <span>
@@ -156,14 +157,14 @@
 <c:if test="${not empty confirmAccountSerial}">
     <i:simplePopup titleKey="${titleKey}" id="addFromAccountPopup" styleClass="mediumSimplePopup" showImmediately="true">
         
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.serialNumber.foundOnAnotherAccount"/></div>
+        <div class="hardwarePopup"><i:inline key=".serialNumber.foundOnAnotherAccount"/></div>
         
         <table class="miniResultsTable invCheckingTable" align="center">
             <tr>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.accountNumber"/></th>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.name"/></th>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.serialNumberShort"/></th>
-                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardwareList.tableHeader.deviceType"/></th>
+                <th nowrap="nowrap"><i:inline key=".accountNumber"/></th>
+                <th nowrap="nowrap"><i:inline key=".name"/></th>
+                <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
+                <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
             </tr>
             <tr title="<tags:address address="${checkingAdd.address}"/>">
             
@@ -175,7 +176,7 @@
             </tr>
         </table>
         
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.serialNumber.moveToAccount" argumentSeparator="," arguments="${checkingAdd.accountNumber},${accountNumber}"/></div>
+        <div class="hardwarePopup"><i:inline key=".serialNumber.moveToAccount" argumentSeparator="," arguments="${checkingAdd.accountNumber},${accountNumber}"/></div>
         
         <form action="/spring/stars/operator/hardware/addDeviceToAccount">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -187,7 +188,7 @@
             <table align="right">
                 <tr>
                     <td>
-                        <span style="padding-right:5px;">
+                        <span class="buttonSeperator">
                             <input type="submit" value="<cti:msg2 key="yukon.web.components.slowInput.ok.label" />" class="formSubmit">
                         </span>
                         <span>
@@ -205,7 +206,7 @@
 <c:if test="${not empty confirmCreateSerial}">
     <i:simplePopup titleKey="${titleKey}" id="createSerialPopup" styleClass="smallSimplePopup" showImmediately="true">
 
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.serialNumber.notFoundAdd" arguments="${confirmCreateSerial}"/></div>
+        <div class="hardwarePopup"><i:inline key=".serialNumber.notFoundAdd" arguments="${confirmCreateSerial}"/></div>
         
         <form action="/spring/stars/operator/hardware/hardwareCreate">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -224,7 +225,7 @@
             <table align="right">
                 <tr>
                     <td>
-                        <span style="padding-right:5px;"><input type="submit" value="<cti:msg2 key="yukon.web.components.slowInput.ok.label" />" class="formSubmit"></span>
+                        <span class="buttonSeperator"><input type="submit" value="<cti:msg2 key="yukon.web.components.slowInput.ok.label" />" class="formSubmit"></span>
                         <span><input type="button" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label" />" onclick="javascript:$('createSerialPopup').hide();" class="formSubmit"></span>
                     </td>
                 </tr>
@@ -237,7 +238,7 @@
 <c:if test="${not empty notFoundSerial}">
     <i:simplePopup titleKey="${titleKey}" id="notFoundSerialPopup" styleClass="smallSimplePopup" showImmediately="true">
 
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
+        <div class="hardwarePopup"><i:inline key=".error.notFound.serialNumber" arguments="${notFoundSerial}"/></div>
         
         <table align="right">
             <tr>
@@ -253,7 +254,7 @@
 <c:if test="${not empty sameAccountSerial}">
     <i:simplePopup titleKey="${titleKey}" id="sameAccountPopup" styleClass="smallSimplePopup" showImmediately="true">
 
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.error.sameAccount.serialNumber" arguments="${sameAccountSerial}"/></div>
+        <div class="hardwarePopup"><i:inline key=".error.sameAccount.serialNumber" arguments="${sameAccountSerial}"/></div>
         
         <table align="right">
             <tr>
@@ -269,7 +270,7 @@
 <c:if test="${not empty anotherECSerial}">
     <i:simplePopup titleKey="${titleKey}" id="anotherECPopup" styleClass="smallSimplePopup" showImmediately="true">
 
-        <div style="padding:10px;"><i:inline key="yukon.web.modules.operator.hardwareEdit.error.anotherEC.serialNumber" arguments="${anotherEC}"/></div>
+        <div class="hardwarePopup"><i:inline key=".error.anotherEC.serialNumber" arguments="${anotherEC}"/></div>
         
         <table align="right">
             <tr>
@@ -290,10 +291,10 @@
         <c:otherwise>
             <table class="compactResultsTable hardwareListTable">
                 <tr>
-                    <th class="name"><i:inline key=".switches.tableHeader.serialNumber"/></th>
-                    <th class="type"><i:inline key=".switches.tableHeader.displayType"/></th>
-                    <th class="label"><i:inline key=".switches.tableHeader.label"/></th>
-                    <th class="actions"><i:inline key=".switches.tableHeader.actions"/></th>
+                    <th class="name"><i:inline key=".serialNumber"/></th>
+                    <th class="type"><i:inline key=".switches.displayType"/></th>
+                    <th class="label"><i:inline key=".label"/></th>
+                    <th class="actions"><i:inline key=".actions"/></th>
                 </tr>
                 
                 <c:forEach var="switch" items="${switches}">
@@ -331,10 +332,10 @@
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="!OPERATOR_INVENTORY_CHECKING">
-                            <input type="submit" value="<cti:msg2 key=".switches.add"/>" class="createAddButton formSubmit">
+                            <input type="submit" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit">
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
-                            <input type="button" value="<cti:msg2 key=".switches.add"/>" class="createAddButton formSubmit" onclick="showInvCheckingPopup('switch');">
+                            <input type="button" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit" onclick="showInvCheckingPopup('switch');">
                         </cti:checkRolesAndProperties>
                     </td>
                 </tr>
@@ -356,10 +357,10 @@
             <tags:alternateRowReset/>
             <table class="compactResultsTable hardwareListTable">
                 <tr>
-                    <th class="name"><i:inline key=".thermostats.tableHeader.serialNumber"/></th>
-                    <th class="type"><i:inline key=".thermostats.tableHeader.displayType"/></th>
-                    <th class="label"><i:inline key=".thermostats.tableHeader.label"/></th>
-                    <th class="actions"><i:inline key=".thermostats.tableHeader.actions"/></th>
+                    <th class="name"><i:inline key=".serialNumber"/></th>
+                    <th class="type"><i:inline key=".thermostats.displayType"/></th>
+                    <th class="label"><i:inline key=".label"/></th>
+                    <th class="actions"><i:inline key=".actions"/></th>
                 </tr>
                 
                 <c:forEach var="thermostat" items="${thermostats}">
@@ -398,7 +399,7 @@
     <table class="theremostatActionTable">
         <tr>
             <td>
-                <a href="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}&amp;energyCompanyId=${energyCompanyId}"><i:inline key=".thermostats.selectMultiple"/></a>
+                <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
             </td>
             <td>
                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
@@ -409,10 +410,10 @@
                         <input type="hidden" name="hardwareClass" value="${thermostatClass}">
                     
                         <cti:checkRolesAndProperties value="!OPERATOR_INVENTORY_CHECKING">
-                            <input type="submit" value="<cti:msg2 key=".thermostats.add"/>" class="createAddButton formSubmit">
+                            <input type="submit" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit">
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
-                            <input type="button" value="<cti:msg2 key=".thermostats.add"/>" class="createAddButton formSubmit" onclick="showInvCheckingPopup('thermostat');">
+                            <input type="button" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit" onclick="showInvCheckingPopup('thermostat');">
                         </cti:checkRolesAndProperties>
                     </form>
                 </cti:checkRolesAndProperties>
@@ -437,19 +438,19 @@
                     <th class="name">
                         <c:choose>
                             <c:when test="${starsMeters}">
-                                <i:inline key=".meters.tableHeader.meterNumber"/>
+                                <i:inline key=".meters.meterNumber"/>
                             </c:when>
                             <c:otherwise>
-                                <i:inline key=".meters.tableHeader.displayName"/>
+                                <i:inline key=".displayName"/>
                             </c:otherwise>
                         </c:choose>
                     </th>
                     <c:if test="${not starsMeters}">
-                        <th class="type"><i:inline key=".meters.tableHeader.displayType"/></th>
+                        <th class="type"><i:inline key=".meters.displayType"/></th>
                     </c:if>
-                    <th class="label"><i:inline key=".meters.tableHeader.label"/></th>
+                    <th class="label"><i:inline key=".label"/></th>
                     <c:if test="${not starsMeters}">
-                        <th class="actions"><i:inline key=".meters.tableHeader.actions"/></th>
+                        <th class="actions"><i:inline key=".actions"/></th>
                     </c:if>
                 </tr>
                 
@@ -527,14 +528,14 @@
                     
                             <c:when test="${starsMeters}">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                    <input type="submit" value="<cti:msg2 key=".meters.add"/>" class="createAddButton formSubmit">
+                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit">
                                 </cti:checkRolesAndProperties>
                             </c:when>
                     
                             <c:otherwise>
                                 
                                 <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
-                                    endAction="addMeter" asButton="true" buttonStyleClass="createAddButton formSubmit"><cti:msg2 key=".meters.add"/></tags:pickerDialog>
+                                    endAction="addMeter" asButton="true" buttonStyleClass="createAddButton formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
                             </c:otherwise>
                     
                         </c:choose>

@@ -71,7 +71,7 @@ import com.cannontech.web.input.type.DateType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
-import com.cannontech.web.stars.dr.operator.hardware.model.InventoryCheckingAdd;
+import com.cannontech.web.stars.dr.operator.hardware.model.InventoryCheckingAddDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.SerialNumber;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator;
@@ -141,16 +141,16 @@ public class OperatorHardwareController {
         try {
             LiteStarsLMHardware possibleDuplicate = (LiteStarsLMHardware)starsSearchDao.searchLMHardwareBySerialNumber(serialNumber.getSerialNumber(), accountInfoFragment.getEnergyCompanyId());
 
-            InventoryCheckingAdd inventoryCheckingAdd = new InventoryCheckingAdd(serialNumber.getSerialNumber());
-            inventoryCheckingAdd.setInventoryId(possibleDuplicate.getInventoryID());
+            InventoryCheckingAddDto inventoryCheckingAddDto = new InventoryCheckingAddDto(serialNumber.getSerialNumber());
+            inventoryCheckingAddDto.setIsSwitch(lmHardwareClass.equals(LMHardwareClass.SWITCH));
             
-            inventoryCheckingAdd.setIsSwitch(lmHardwareClass.equals(LMHardwareClass.SWITCH));
             
             if(possibleDuplicate != null) {
+                inventoryCheckingAddDto.setInventoryId(possibleDuplicate.getInventoryID());
+                inventoryCheckingAddDto.setSerialNumber(serialNumber.getSerialNumber());
                 
-                inventoryCheckingAdd.setSerialNumber(serialNumber.getSerialNumber());
                 String type = yukonListDao.getYukonListEntry(possibleDuplicate.getLmHardwareTypeID()).getEntryText();
-                inventoryCheckingAdd.setDeviceType(type);
+                inventoryCheckingAddDto.setDeviceType(type);
 
                 if(possibleDuplicate.getAccountID() > CtiUtilities.NONE_ZERO_ID) {
                     if(possibleDuplicate.getAccountID() == accountInfoFragment.getAccountId()) {
@@ -161,23 +161,23 @@ public class OperatorHardwareController {
                         modelMap.addAttribute("confirmAccountSerial", serialNumber.getSerialNumber());
                         
                         CustomerAccount account = customerAccountDao.getById(possibleDuplicate.getAccountID());
-                        inventoryCheckingAdd.setAccountNumber(account.getAccountNumber());
+                        inventoryCheckingAddDto.setAccountNumber(account.getAccountNumber());
                         
                         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(possibleDuplicate.getAccountID());
-                        inventoryCheckingAdd.setName(primaryContact.getContFirstName() + primaryContact.getContFirstName() == null ? CtiUtilities.STRING_NONE : primaryContact.getContFirstName() + " " + primaryContact.getContLastName());
+                        inventoryCheckingAddDto.setName(primaryContact.getContFirstName() + primaryContact.getContFirstName() == null ? CtiUtilities.STRING_NONE : primaryContact.getContFirstName() + " " + primaryContact.getContLastName());
                         
                         LiteAddress address = addressDao.getByAddressId(primaryContact.getAddressID());
-                        inventoryCheckingAdd.setAddress(new Address(address));
+                        inventoryCheckingAddDto.setAddress(new Address(address));
                     }
                 } else {
                     /* Return to the list page with the confirm add from warehouse popup. */
                     modelMap.addAttribute("confirmWarehouseSerial", serialNumber.getSerialNumber());
-                    inventoryCheckingAdd.setAltTrackingNumber(possibleDuplicate.getAlternateTrackingNumber());
+                    inventoryCheckingAddDto.setAltTrackingNumber(possibleDuplicate.getAlternateTrackingNumber());
                     
                     Warehouse warehouse = warehouseDao.findWarehouseForInventoryId(possibleDuplicate.getInventoryID());
                     MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-                    String defaultWarehouse = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardwareEdit.serialNumber.defaultWarehouse");
-                    inventoryCheckingAdd.setWarehouse(warehouse == null ? defaultWarehouse : warehouse.getWarehouseName());
+                    String defaultWarehouse = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.serialNumber.defaultWarehouse");
+                    inventoryCheckingAddDto.setWarehouse(warehouse == null ? defaultWarehouse : warehouse.getWarehouseName());
                 }
                 
             } else {
@@ -193,7 +193,7 @@ public class OperatorHardwareController {
                 
             }
 
-            modelMap.addAttribute("checkingAdd", inventoryCheckingAdd);
+            modelMap.addAttribute("checkingAdd", inventoryCheckingAddDto);
             
         } catch (ObjectInOtherEnergyCompanyException e) {
             /* Return to the list page with the hardware found in another ec popup. */
@@ -232,11 +232,11 @@ public class OperatorHardwareController {
         modelMap.addAttribute("deviceTypes", deviceTypeOptions);
         
         if(lmHardwareClass == LMHardwareClass.SWITCH) {
-            modelMap.addAttribute("displayTypeKey", ".switchTypesLabel");
+            modelMap.addAttribute("displayTypeKey", ".switches.displayType");
         } else if (lmHardwareClass == LMHardwareClass.THERMOSTAT) {
-            modelMap.addAttribute("displayTypeKey", ".thermostatTypesLabel");
+            modelMap.addAttribute("displayTypeKey", ".thermostats.displayType");
         } else {
-            modelMap.addAttribute("displayTypeKey", ".meterTypesLabel");
+            modelMap.addAttribute("displayTypeKey", ".meters.displayType");
         }
         
         if(lmHardwareClass != LMHardwareClass.METER) {
@@ -257,7 +257,7 @@ public class OperatorHardwareController {
         
         setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
         
-        return "operator/hardware/hardwareEdit.jsp";
+        return "operator/hardware/hardware.jsp";
     }
     
     /* HARDWARE EDIT PAGE*/
@@ -292,7 +292,7 @@ public class OperatorHardwareController {
         
         setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
         
-        return "/operator/hardware/hardwareEdit.jsp";
+        return "/operator/hardware/hardware.jsp";
     }
     
     @RequestMapping
@@ -319,9 +319,9 @@ public class OperatorHardwareController {
                 statusChange = hardwareService.updateHardware(hardwareDto);
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
-            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (ObjectInOtherEnergyCompanyException e) {
-            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         }
         
         setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
@@ -334,7 +334,7 @@ public class OperatorHardwareController {
             if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
                 return "/operator/hardware/meterProfile.jsp";
             } else {
-                return "/operator/hardware/hardwareEdit.jsp";
+                return "/operator/hardware/hardware.jsp";
             }
         } 
         
@@ -344,7 +344,7 @@ public class OperatorHardwareController {
         }
         
         /* Flash hardware updated */
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareUpdated"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareUpdated"));
         
         if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
             return "redirect:meterProfile";
@@ -377,9 +377,9 @@ public class OperatorHardwareController {
                 inventoryId = hardwareService.createHardware(hardwareDto, accountInfoFragment.getAccountId(), userContext);
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
-            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         } catch (ObjectInOtherEnergyCompanyException e) {
-            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardwareEdit.error.unavailable");
+            bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
         }
         
         if (bindingResult.hasErrors()) {
@@ -389,11 +389,11 @@ public class OperatorHardwareController {
             if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
                 return "/operator/hardware/meterProfile.jsp";
             } else {
-                return "/operator/hardware/hardwareEdit.jsp";
+                return "/operator/hardware/hardware.jsp";
             }
         }
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareCreated"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareCreated"));
         setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
         if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
             return "redirect:hardwareList";
@@ -416,9 +416,9 @@ public class OperatorHardwareController {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareDeleted"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareDeleted"));
         } else {
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareRemoved"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareRemoved"));
         }
         return "redirect:hardwareList";
     }
@@ -464,7 +464,7 @@ public class OperatorHardwareController {
         hardwareService.addDeviceToAccount(liteInventoryBase, accountInfoFragment.getAccountId(), fromAccount, energyCompany, userContext.getYukonUser());
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareAdded"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareAdded"));
         
         return "redirect:hardwareList";
     }
@@ -512,7 +512,7 @@ public class OperatorHardwareController {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareAdded"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareAdded"));
         
         return "redirect:hardwareList";
     }
@@ -523,7 +523,7 @@ public class OperatorHardwareController {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareEdit.hardwareChangeOut"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardware.hardwareChangeOut"));
         
         return "redirect:hardwareList";
     }
@@ -570,9 +570,9 @@ public class OperatorHardwareController {
         try {
             /* Apperently 'getDefaultRouteID' is not a simple getter and relies heavily on deep magic. */
             defaultRoute = paoDao.getYukonPAOName(energyCompany.getDefaultRouteID());
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardwareEdit.defaultRouteLabel") + defaultRoute;
+            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRoute") + defaultRoute;
         } catch(NotFoundException e) {
-            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardwareEdit.defaultRouteNoneLabel");
+            defaultRoute = messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.defaultRouteNone");
         }
         modelMap.addAttribute("defaultRoute", defaultRoute);
         

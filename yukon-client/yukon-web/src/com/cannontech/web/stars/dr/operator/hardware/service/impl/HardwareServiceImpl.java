@@ -171,8 +171,6 @@ public class HardwareServiceImpl implements HardwareService {
                 hardwareDto.setDisplayType(mctDeviceType.getEntryText());
                 if(StringUtils.isNotBlank(liteInventoryBase.getDeviceLabel())){
                     hardwareDto.setDisplayName(liteInventoryBase.getDeviceLabel());
-                } else {
-                    hardwareDto.setDisplayName(CtiUtilities.STRING_NONE);
                 }
             }
         } else if(hardwareCategory == InventoryCategory.NON_YUKON_METER) {
@@ -585,7 +583,7 @@ public class HardwareServiceImpl implements HardwareService {
     public void changeOutInventory(int oldInventoryId, int changeOutId, YukonUserContext userContext, boolean isMeter) {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         LiteInventoryBase old = starsInventoryBaseDao.getByInventoryId(oldInventoryId);
-        LiteInventoryBase changeOut;
+        
         
         /* If this is a meter change out the changeOutId will be a pao id */
         if(isMeter) {
@@ -593,8 +591,9 @@ public class HardwareServiceImpl implements HardwareService {
             starsInventoryBaseService.removeDeviceFromAccount(old, false, energyCompany, userContext.getYukonUser());
             addYukonMeter(changeOutId, accountId, userContext);
         } else {
-            changeOut = starsInventoryBaseDao.getByInventoryId(changeOutId);
+            LiteInventoryBase changeOut = starsInventoryBaseDao.getByInventoryId(changeOutId);
             changeOut.setAccountID(old.getAccountID());
+            starsInventoryBaseService.removeDeviceFromAccount(old, false, energyCompany, userContext.getYukonUser());
             starsInventoryBaseService.addDeviceToAccount(changeOut, energyCompany, userContext.getYukonUser(), false);
         }
         
