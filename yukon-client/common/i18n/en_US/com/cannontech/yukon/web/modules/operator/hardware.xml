@@ -32,10 +32,6 @@
     <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverUrl">/WebConfig/yukon/Icons/clipboard_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.savedSchedules.hoverText">Saved Schedules</entry>
     
-    <entry key="yukon.web.modules.operator.hardware.commander.imageUrl">/WebConfig/yukon/Icons/commander.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.commander.hoverUrl">/WebConfig/yukon/Icons/commander_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardware.commander.hoverText">Commander</entry>
-    
     <entry key="yukon.web.modules.operator.hardware.changeOut.imageUrl">/WebConfig/yukon/Icons/changeout.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.hoverUrl">/WebConfig/yukon/Icons/changeout_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardware.changeOut.hoverText">Change out this device for a different device.</entry>

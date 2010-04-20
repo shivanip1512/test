@@ -14,7 +14,6 @@
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatId="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}&amp;energyCompanyId=${energyCompanyId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="commanderUrl" value="/apps/CommandDevice.jsp?deviceID="/>
 <cti:url var="changeOutUrl" value="/spring/stars/operator/hardware/changeOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
 
 <c:choose>
@@ -483,12 +482,8 @@
                                 <cti:img key="editConfig" href="${editConfigUrl}${meter.inventoryId}"/>&nbsp;
                                 
                                 <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                    <cti:img key="meterDetail" />&nbsp;
+                                    <cti:img key="meterDetail" />
                                 </cti:paoDetailUrl>
-                                
-                                <cti:checkRolesAndProperties value="ENABLE_WEB_COMMANDER">
-                                    <cti:img key="commander" href="${commanderUrl}${meter.deviceId}"/>
-                                </cti:checkRolesAndProperties>
                                 
                             </td>
                         </c:if>
