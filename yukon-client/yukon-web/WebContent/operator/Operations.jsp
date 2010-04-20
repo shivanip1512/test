@@ -84,7 +84,7 @@
 			
 				<form id="accountSearchForm" action="/spring/stars/operator/account/search" method="get">
 				
-					<div class="sectionFormLabel">Search for existing customer:</div>
+					<div class="sectionFormLabel"><cti:msg key="yukon.web.modules.operator.search.searchPrompt"/></div>
 					<div>
 					<select name="searchBy" onchange="$('searchForm').value = ''">
 						<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
