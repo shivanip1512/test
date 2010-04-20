@@ -75,11 +75,11 @@
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
 		                        <a class="tierIconLink" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisAreaId}">
-		                            <img class="tierImg" src="${editInfoImage}" alt="">
+		                            <img class="tierImg" src="${editInfoImage}" alt="Edit">
 		                        </a>
 		                        <c:if test="${hasEditingRole}">
 			                        <a class="tierIconLink" href="/editor/deleteBasePAO.jsf?value=${thisAreaId}">
-			                            <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" alt="">
+			                            <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif" alt="Delete">
 			                        </a>
                                 </c:if>
 	        				<a href="/spring/capcontrol/tier/substations?areaId=${thisAreaId}&amp;isSpecialArea=${isSpecialArea}">

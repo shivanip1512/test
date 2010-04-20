@@ -120,15 +120,15 @@
             
                 <td id="anc_${thisSubStationId}">
                     <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${substation.ccId}" class="tierIconLink">
-                        <img alt="" class="tierImg" src="${editInfoImage}">
+                        <img alt="Edit" class="tierImg" src="${editInfoImage}">
                     </a>
                     <c:if test="${hasEditingRole}">
 	                    <a title="Delete" href="/editor/deleteBasePAO.jsf?value=${substation.ccId}" class="tierIconLink">
-	                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
+	                        <img alt="Delete" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
 	                    </a>
                     </c:if>
                 	<a title="Bank Locations" href="/spring/capcontrol/capbank/capBankLocations?value=${substation.ccId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
-                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
+                        <img alt="Location" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
                     </a>
                     ${substation.ccName}
                     <font color="red">
@@ -203,15 +203,15 @@
     					   onclick="showRowElems( 'subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;">
     				
     				    <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisSubBusId}" class="tierIconLink">
-                            <img alt="" class="tierImg" src="${editInfoImage}">
+                            <img alt="Edit" class="tierImg" src="${editInfoImage}">
                         </a>
     	                <c:if test="${hasEditingRole}">
     	                    <a title="Delete" href="/editor/deleteBasePAO.jsf?value=${thisSubBusId}" class="tierIconLink">
-    	                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
+    	                        <img alt="Delete" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
     	                    </a>
     	                </c:if>
                        	<a title="Bank Locations" href="/spring/capcontrol/capbank/capBankLocations?value=${thisSubBusId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
-                            <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
+                            <img alt="Location" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
                         </a>
                         <a 
                             <c:if test="${!hideOneLine}">
@@ -294,13 +294,13 @@
                                 <capTags:ltcTapIndicator paoId="${viewableSubBus.ltcId}" type="LTC"/>
                                 <capTags:ltcModeIndicator paoId="${viewableSubBus.ltcId}" type="LTC"/>
                                 <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableSubBus.ltcId}" class="tierIconLink">
-                                    <img alt="" class="tierImg" src="${editInfoImage}">
+                                    <img alt="Edit" class="tierImg" src="${editInfoImage}">
                                 </a>
                                 <a href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
                                 ${viewableSubBus.ltcName}
                                 </a>
                                 <a href="#" onclick="getLtcPointsList(${viewableSubBus.ltcId})" class="tierIconLink">
-                                    <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
+                                    <img alt="View Points" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
                                         onmouseover="statusMsgAbove(this,'Click here to see the point values for the ltc device.');">
                                </a>
                             </c:when>
@@ -416,15 +416,15 @@
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}" class="tierCheckBox">
 						
 						<a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisFeederId}" class="tierIconLink">
-                            <img alt="" class="tierImg" src="${editInfoImage}">
+                            <img alt="Edit" class="tierImg" src="${editInfoImage}">
                         </a>
 	                    <c:if test="${hasEditingRole}">
 	                        <a title="Delete" href="/editor/deleteBasePAO.jsf?value=${thisFeederId}" class="tierIconLink">
-	                            <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
+	                            <img alt="Delete" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
 	                        </a>
                         </c:if>
                     	<a title="Bank Locations"href="/spring/capcontrol/capbank/capBankLocations?value=${thisFeederId}&amp;specialArea=${isSpecialArea}" class="tierIconLink">
-	                        <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
+	                        <img alt="Locations" class="tierImg" src="/WebConfig/yukon/Icons/interstate.gif">
 	                    </a>
 						<span <c:if test="${viewfeeder.movedFeeder}">class="warningColor"</c:if> >
 							${viewfeeder.feeder.ccName}
@@ -509,11 +509,11 @@
                     CBC Name
                 </th>
                 <th>CB Name (Order) 
-                    <img alt="" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
+                    <img alt="Info" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
                         onmouseover="statusMsgAbove(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" >
                 </th>                    
                 <th>State 
-                    <img alt="" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
+                    <img alt="Info" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
                         onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column. <br>-V : Auto Volt Control (ovUv) is Disabled. <br>-U: CBC reported unsolicited state change. <br>-Q: CapBank state reflects abnormal data quality. <br>-CF: Communications Failure. <br>-P: Partial - phase imbalance. <br>-S: Significant - questionable var response on all phases.');">  
                 </th>
                 <th>Date/Time</th>
@@ -545,11 +545,11 @@
                             <c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
                                 
                                 <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableCapBank.capBankDevice.controlDeviceID}" class="tierIconLink">
-                                    <img alt="" class="tierImg" src="${editInfoImage}">
+                                    <img alt="Edit" class="tierImg" src="${editInfoImage}">
                                 </a>
                                 <c:if test="${hasEditingRole}">
                                     <a href="/editor/copyBase.jsf?itemid=${viewableCapBank.capBankDevice.controlDeviceID}&amp;type=1>" class="tierIconLink">
-                                       <img alt="" src="/WebConfig/yukon/Icons/copy.gif" class="tierImg" border="0" height="15" width="15">
+                                       <img alt="Copy" src="/WebConfig/yukon/Icons/copy.gif" class="tierImg" border="0" height="15" width="15">
                                     </a>
                                 </c:if>
                                 ${viewableCapBank.controlDevice.paoName}
@@ -563,7 +563,7 @@
                             <a href="#" onclick="return GB_show(' ', 
                                 '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&amp;cbcID=${viewableCapBank.controlDevice.liteID}',
                                  500, 600)" class="tierIconLink">
-                                <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
+                                <img alt="Timestamps" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
                                     onmouseover="statusMsgAbove(this,'Click here to see the timestamp information for the cap bank controller device.');">
                            </a>
                         </c:if>
@@ -574,11 +574,11 @@
     	                	<c:when test="${hasCapbankControl}">
     	                        
     	                        <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisCapBankId}" class="tierIconLink">
-    	                            <img alt="" class="tierImg" src="${editInfoImage}">
+    	                            <img alt="Edit" class="tierImg" src="${editInfoImage}">
     	                        </a>
     		                    <c:if test="${hasEditingRole}">
     		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" class="tierIconLink">
-    		                            <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
+    		                            <img alt="Delete" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
     		                        </a>
     	                        </c:if>
     	                        <a href="javascript:void(0);" ${popupEvent}="getCapBankMenu('${thisCapBankId}', event);">
@@ -588,11 +588,11 @@
     						<c:otherwise>
     	                        
     	                        <a href="/editor/cbcBase.jsf?type=2&amp;itemid=${thisCapBankId}" class="tierIconLink">
-    	                            <img alt="" class="tierImg" src="${editInfoImage}">
+    	                            <img alt="Edit" class="tierImg" src="${editInfoImage}">
     	                        </a>
     		                    <c:if test="${hasEditingRole}">
     		                        <a href="/editor/deleteBasePAO.jsf?value=${thisCapBankId}" class="tierIconLink">
-    		                            <img alt="" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
+    		                            <img alt="Delete" class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
     		                        </a>
     	                        </c:if>
     	                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
@@ -600,7 +600,7 @@
     					</c:choose>
     					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
     					   <a href="#" class="tierIconLink" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)">
-    					       <img alt="" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
+    					       <img alt="Additional Info" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
     					   </a>
     					</cti:checkRolesAndProperties>
     				</td>
