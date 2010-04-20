@@ -9,22 +9,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.hardware.dao.AvailableThermostatFilter;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardware> {
     
     private StarsDatabaseCache starsDatabaseCache;
-    private RolePropertyDao rolePropertyDao;
+    private ECMappingDao ecMappingDao;
     
     private final static String[] searchColumnNames = new String[] {"lmhw.manufacturerSerialNumber"};
     private final static List<OutputColumn> outputColumns;
@@ -52,13 +49,7 @@ public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardw
             LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
             
             // gather parents energyCompanyIds
-            Set<Integer> energyCompanyIds = Sets.newHashSet(energyCompanyId);
-            if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
-                List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-                for (LiteStarsEnergyCompany ec : allAscendants) {
-                    energyCompanyIds.add(ec.getEnergyCompanyID());
-                }
-            }
+            Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
             
             extraFilters = Lists.newArrayList();
             AvailableThermostatFilter energyCompanyIdsFilter = new AvailableThermostatFilter(energyCompanyIds);
@@ -80,9 +71,9 @@ public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardw
     }
     
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
+	}
     
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {

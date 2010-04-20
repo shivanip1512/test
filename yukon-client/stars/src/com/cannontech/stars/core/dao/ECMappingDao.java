@@ -1,6 +1,7 @@
 package com.cannontech.stars.core.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -89,4 +90,12 @@ public interface ECMappingDao {
      */
     public void updateECToAccountMapping(int accountId, int energyCompanyId);
 
+    /**
+     * Get a list of all energyCompanyIds that are parent energyComompanys.
+     * There will be no inherited energyCompanys if the user role property INHERIT_PARENT_APP_CATS is not true.
+     * @param energyCompany The base energy company from which to check for parent energy companies.
+     * Note: The set always includes the base energy company id.
+     * @return
+     */
+    public Set<Integer> getInheritedEnergyCompanyIds(LiteStarsEnergyCompany energyCompany);
 }

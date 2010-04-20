@@ -151,7 +151,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true)
     public Program getByProgramName(String programName,
-                                          List<Integer> energyCompanyIds) {
+                                          Set<Integer> energyCompanyIds) {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);
@@ -176,7 +176,7 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true)
     public Program getByAlternateProgramName(String alternateProgramName,
-                                             List<Integer> energyCompanyIds) {
+                                             Set<Integer> energyCompanyIds) {
         
         final SqlStatementBuilder programQuery = new SqlStatementBuilder();
         programQuery.append(selectSQLHeader);

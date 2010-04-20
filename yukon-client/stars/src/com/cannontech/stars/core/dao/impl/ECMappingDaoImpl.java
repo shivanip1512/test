@@ -1,6 +1,7 @@
 package com.cannontech.stars.core.dao.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.ECToAccountMapping;
+import com.cannontech.stars.util.ECUtils;
+import com.google.common.collect.Sets;
 
 public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private StarsDatabaseCache starsDatabaseCache;
+    private RolePropertyDao rolePropertyDao;
     private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
     
     @Override
@@ -172,6 +178,19 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
             return sql.toString();
         }
     }
+    
+    public Set<Integer> getInheritedEnergyCompanyIds(LiteStarsEnergyCompany energyCompany) {
+    	
+    	Set<Integer> energyCompanyIds = Sets.newHashSet(energyCompany.getEnergyCompanyID());
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
+            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
+            for (LiteStarsEnergyCompany ec : allAscendants) {
+                energyCompanyIds.add(ec.getEnergyCompanyID());
+            }
+        }
+        
+        return energyCompanyIds;
+    }
 
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
@@ -182,6 +201,11 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
     }
+    
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+		this.rolePropertyDao = rolePropertyDao;
+	}
     
     @Override
     public void afterPropertiesSet() throws Exception {

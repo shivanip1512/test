@@ -28,7 +28,7 @@ public interface ProgramDao {
      * @return
      */
     public Program getByProgramName(String programName,
-                                    List<Integer> energyCompanyIds);
+                                    Set<Integer> energyCompanyIds);
     
     /**
      * Gets a program by its by its alternate program name.  It will through an exception if it Doesn't
@@ -39,7 +39,7 @@ public interface ProgramDao {
      * @return
      */
     public Program getByAlternateProgramName(String alternateProgramName,
-                                             List<Integer> energyCompanyIds);
+                                             Set<Integer> energyCompanyIds);
     
     public List<Integer> getDistinctGroupIdsByYukonProgramIds(final Set<Integer> programIds);
 

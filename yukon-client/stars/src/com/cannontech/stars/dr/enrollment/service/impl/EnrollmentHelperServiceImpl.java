@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,6 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -23,6 +22,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -42,7 +42,6 @@ import com.cannontech.stars.dr.program.model.ProgramEnrollmentResultEnum;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -52,7 +51,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
     private ApplianceDao applianceDao;
     private ApplianceCategoryDao applianceCategoryDao;
-    private RolePropertyDao rolePropertyDao;
     private CustomerAccountDao customerAccountDao;
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
@@ -62,6 +60,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private StarsSearchDao starsSearchDao;    
 	private InventoryDao inventoryDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    private ECMappingDao ecMappingDao;
 
     @Override
     public void updateProgramEnrollments(
@@ -215,17 +214,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         /* This part of the method will get all the energy company ids that can have 
          * an appliance category this energy company can use.
          */
-        List<Integer> energyCompanyIds = new ArrayList<Integer>();
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS,
-                                          energyCompany.getUser())) {
-            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-            
-            for (LiteStarsEnergyCompany ec : allAscendants) {
-                energyCompanyIds.add(ec.getEnergyCompanyID());
-            }
-        } else {
-            energyCompanyIds.add(energyCompany.getEnergyCompanyID());
-        }
+		Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
         
         /*
          *  This handles an unenrollment with no program given.  In this case we
@@ -349,7 +338,7 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     	programEnrollments.retainAll(programEnrollmentResults);
     }           
 
-    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, List<Integer> energyCompanyIds){
+    private ApplianceCategory getApplianceCategoryByName(String applianceCategoryName, Program program, Set<Integer> energyCompanyIds){
         
         if (!StringUtils.isBlank(applianceCategoryName)){
             List<ApplianceCategory> applianceCategoryList = applianceCategoryDao.getByApplianceCategoryName(applianceCategoryName,
@@ -423,11 +412,6 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     }
 
     @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
-    }
-
-    @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;
     }
@@ -476,5 +460,10 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     @Autowired
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
 		this.starsInventoryBaseDao = starsInventoryBaseDao;
+	}
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
 	}
 }

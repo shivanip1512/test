@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,8 +18,6 @@ import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -28,14 +25,12 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceTypeEnum;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
 import com.google.common.collect.Maps;
 
 public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private RolePropertyDao rolePropertyDao;
     private ECMappingDao ecMappingDao;
     private WebConfigurationDao webConfigurationDao;
 
@@ -87,13 +82,8 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     public List<Integer> getApplianceCategoryIds(int accountId) {
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
-        List<Integer> idList;
-        if (rolePropertyDao.checkProperty(YukonRoleProperty.INHERIT_PARENT_APP_CATS, energyCompany.getUser())) {
-            List<LiteStarsEnergyCompany> allAscendants = ECUtils.getAllAscendants(energyCompany);
-            idList = ECUtils.toIdList(allAscendants);
-        } else {
-            idList = Collections.singletonList(energyCompany.getLiteID());
-        }
+        
+        Set<Integer> idSet = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
         
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
         sqlBuilder.append("SELECT ApplianceCategoryID");
@@ -103,7 +93,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         sqlBuilder.append("     FROM ECToGenericMapping ");
         sqlBuilder.append("     WHERE MappingCategory = ? ");
         sqlBuilder.append("     AND EnergyCompanyID in ( ");
-        sqlBuilder.append(idList);
+        sqlBuilder.append(idSet);
         sqlBuilder.append("))");
         String sql = sqlBuilder.toString();
         
@@ -148,7 +138,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ApplianceCategory> getByApplianceCategoryName(String applianceCategoryName,
-                                                              List<Integer> energyCompanyIds) {
+                                                              Set<Integer> energyCompanyIds) {
         RowMapper rowMapper = new RowMapper();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(rowMapper.getBaseQuery());
@@ -224,11 +214,6 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 
     @Autowired
