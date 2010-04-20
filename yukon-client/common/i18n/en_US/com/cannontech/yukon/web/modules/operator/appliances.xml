@@ -105,8 +105,8 @@
     <entry key="yukon.web.modules.operator.appliance.hardwareType">Hardware Type</entry>
     <entry key="yukon.web.modules.operator.appliance.serialNumber">Serial Number</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.applianceCreated">Appliance Created</entry>
-    <entry key="yukon.web.modules.operator.appliance.applianceUpdated">Appliance Updated</entry>
+    <entry key="yukon.web.modules.operator.appliance.create.applianceCreated">Appliance Created</entry>
+    <entry key="yukon.web.modules.operator.appliance.edit.applianceUpdated">Appliance Updated</entry>
 
     <!-- Validation -->
     <entry key="yukon.web.modules.operator.appliance.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be {0} digits in length.</entry>
