@@ -144,7 +144,7 @@ public class OperatorApplianceController {
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
-                                      "yukon.web.modules.operator.appliance.applianceCreated"));
+                                      "yukon.web.modules.operator.appliance.create.applianceCreated"));
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
