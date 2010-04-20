@@ -31,8 +31,8 @@
 	
 	<!-- optOut -->
 	<!-- Program Opt Out Section -->
-	<entry key="yukon.web.modules.operator.optOut.main.title">OptOut</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.pageName">Override</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.title">Opt Out</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.pageName">Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.main.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allOptedOut">All devices have already been opted out.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
@@ -63,7 +63,7 @@
     <entry key="yukon.web.modules.operator.optOut.inventoryList.information">Information</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.noMoreOptOutsAvailable">No more opt outs are available for this device.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyOptedOut">This device is currently opted out.</entry>
-    <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyScheduledOptedOut">This device is currently scheduled for an opted out.</entry>
+    <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyScheduledOptOut">This device is currently scheduled for an opt out.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.save">Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.cancel">Cancel</entry>
 

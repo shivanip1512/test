@@ -108,7 +108,7 @@ function createJSON() {
                                    <i:inline key=".currentlyOptedOut"/><br>
                                 </c:if>
                                 <c:if test="${not empty displayableInventory.currentlyScheduledOptOut}">
-                                   <i:inline key=".currentlyScheduledOptedOut"/><br>
+                                   <i:inline key=".currentlyScheduledOptOut"/><br>
                                 </c:if>
                             </td>
                         </tr>
