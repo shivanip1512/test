@@ -19,10 +19,10 @@
     <entry key="yukon.web.modules.operator.enrollmentList.actions">Actions</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.edit.hoverText">Edit enrollment details</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.edit.title">Enroll Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.edit.title">Edit Enrollment</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.remove.hoverText">Unenroll from this program</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.remove.title">Unenroll</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.add">Add Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.add">Add</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.addEnrollmentDialogTitle">Add Enrollment</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.history.title">History</entry>

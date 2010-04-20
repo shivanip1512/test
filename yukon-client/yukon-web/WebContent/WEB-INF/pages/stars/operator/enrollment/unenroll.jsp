@@ -16,7 +16,7 @@
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
     <p>
-        <cti:msg2 key=".confirmUnenroll" arguments="${assignedProgram.name.displayName}"/>
+        <i:inline key=".confirmUnenroll" arguments="${assignedProgram.name.displayName}"/>
     </p>
 
     <div class="actionArea">

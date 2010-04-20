@@ -45,9 +45,11 @@ public class InventoryDaoImpl implements InventoryDao {
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO);
 
         selectHardwareSummarySql.append("SELECT ib.inventoryId, ib.deviceLabel,");
-        selectHardwareSummarySql.append(    "lmhb.manufacturerSerialNumber, lmhb.lmHardwareTypeId");
+        selectHardwareSummarySql.append(    "lmhb.manufacturerSerialNumber,");
+        selectHardwareSummarySql.append(    "le.yukonDefinitionId AS hardwareDefinitionId");
         selectHardwareSummarySql.append("FROM inventoryBase ib");
         selectHardwareSummarySql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId ");        
+        selectHardwareSummarySql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId ");        
     }
 
     private SimpleJdbcTemplate jdbcTemplate;
@@ -180,12 +182,13 @@ public class InventoryDaoImpl implements InventoryDao {
             int inventoryId = rs.getInt("InventoryID");
             String deviceLabel = rs.getString("DeviceLabel");
             String manufacturerSerialNumber = rs.getString("ManufacturerSerialNumber");
-            int deviceTypeId = rs.getInt("lmHardwareTypeId");
+            int hwDefinitionId = rs.getInt("hardwareDefinitionId");
+            HardwareType hardwareType = HardwareType.valueOf(hwDefinitionId);
 
             HardwareSummary hardware = new HardwareSummary(inventoryId,
                                                      deviceLabel,
                                                      manufacturerSerialNumber,
-                                                     deviceTypeId);
+                                                     hardwareType);
 
             return hardware;
         }

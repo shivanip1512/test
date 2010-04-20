@@ -118,4 +118,18 @@ public enum HardwareType {
     public boolean isTwoWay() {
         return getInventoryCategory() == InventoryCategory.TWO_WAY_RECEIVER;
     }
+
+    public boolean isExpressCom() {
+        return definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
+            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
+            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
+            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO
+            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO
+            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP
+            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+    }
+
+    public int getNumRelays() {
+        return isExpressCom() ? 8 : 4;
+    }
 }

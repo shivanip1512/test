@@ -32,18 +32,10 @@ public class ProgramEnrollment {
         this.applianceCategoryId = categoryId;
     }
 
-    /**
-     * Get the assigned program id.
-     * @return The assigned program id.
-     */
     public int getAssignedProgramId() {
         return assignedProgramId;
     }
 
-    /**
-     * Set the assigned program id.
-     * @param assignedProgramId
-     */
     public void setAssignedProgramId(int assignedProgramId) {
         this.assignedProgramId = assignedProgramId;
     }

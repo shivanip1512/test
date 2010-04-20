@@ -6,7 +6,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -99,7 +98,8 @@ public class OperatorHardwareConfigController {
     public String edit(ModelMap model, int inventoryId, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
-        validateAccountEditing(userContext);
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         populateModel(model, inventoryId, userContext);
@@ -281,12 +281,6 @@ public class OperatorHardwareConfigController {
 
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
-    }
-
-    private void validateAccountEditing(YukonUserContext userContext) {
-        Validate.isTrue(rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                                      userContext.getYukonUser()),
-                                                      "Account editing not allowed by this user.");
     }
 
     @Autowired

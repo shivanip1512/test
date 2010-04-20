@@ -36,7 +36,7 @@ updateOKButton = function() {
 <h1 class="dialogQuestion"><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></h1>
 
 <cti:url var="submitUrl" value="/spring/stars/operator/enrollment/confirmSave">
-    <cti:param name="isAdd" value="${isAdd}"/>
+    <cti:param name="mode" value="${mode}"/>
 </cti:url>
 <form:form id="inputForm" commandName="programEnrollment" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
@@ -80,7 +80,9 @@ updateOKButton = function() {
                             path="inventoryEnrollments[${status.index}].enrolled"
                             onclick="enrollmentChanged(${inventoryId});"/>
                     </td>
-                    <td><label for="enrolledCB${inventoryId}">${displayableInventory.displayName}</label></td>
+                    <td><label for="enrolledCB${inventoryId}">
+                        <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
+                    </label></td>
                     <td>
                         <form:select id="relaySelect${inventoryId}"
                             path="inventoryEnrollments[${status.index}].relay">
