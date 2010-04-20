@@ -7,10 +7,10 @@
 
 <cti:standardPage module="operator" page="appliance.list">
 
-    <c:choose>
-         <c:when test="${fn:length(displayableApplianceListEntries) > 1}">
-             <ct:boxContainer2 key=".appliances">
-                 <table class="compactResultsTable">
+    <ct:boxContainer2 key=".appliances">
+        <table class="compactResultsTable">
+            <c:choose>
+                <c:when test="${fn:length(displayableApplianceListEntries) > 0}">
                      <tr>
                          <th><i:inline key=".applianceName" /></th>
                          <th><i:inline key=".inventoryName" /></th>
@@ -57,40 +57,38 @@
                              </td>
                          </tr>
                      </c:forEach>
+                 </c:when>
+                 <c:otherwise>
+                     <i:inline key=".noAppliances"/>
+                 </c:otherwise>
+            </c:choose>
                      
-                     
-                     <tr align="right">
-                         <td colspan="4">
-                             <br>
-                             <form action="/spring/stars/operator/appliances/applianceNew">
-                                 <input type="hidden" name="accountId" value="${accountId}"/>
-                                 <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
-                                 
-                                 <table>
-                                     <tr align="right"><td>
-                                         <select name="applianceCategoryId">
-                                             <c:forEach var="applianceCategory" items="${applianceCategories}">
-                                                 <option value="${applianceCategory.applianceCategoryId}">
-                                                    <spring:htmlEscape defaultHtmlEscape="true">
-                                                        ${applianceCategory.name}
-                                                    </spring:htmlEscape>
-                                                </option>
-                                             </c:forEach>
-                                         </select>
-                                     </td></tr>
-                                     <tr align="right"><td>
-                                         <input type="submit" value="<cti:msg2 key=".create"/>" />
-                                     </td></tr>
-                                 </table>
-                             </form>
-                         </td>
-                     </tr>
-                 </table>
-             </ct:boxContainer2>
-         </c:when>
-         <c:otherwise>
-             <i:inline key=".noAppliances"/>
-         </c:otherwise>
-	</c:choose>
-
+            <tr align="right">
+                <td colspan="4">
+                    <br>
+                    <form action="/spring/stars/operator/appliances/applianceNew">
+                        <input type="hidden" name="accountId" value="${accountId}"/>
+                        <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
+                             
+                        <table>
+                            <tr align="right"><td>
+                                <select name="applianceCategoryId">
+                                    <c:forEach var="applianceCategory" items="${applianceCategories}">
+                                        <option value="${applianceCategory.applianceCategoryId}">
+                                            <spring:htmlEscape defaultHtmlEscape="true">
+                                                ${applianceCategory.name}
+                                            </spring:htmlEscape>
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </td></tr>
+                            <tr align="right"><td>
+                                <input type="submit" value="<cti:msg2 key=".create"/>" />
+                            </td></tr>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        </table>
+    </ct:boxContainer2>
 </cti:standardPage>

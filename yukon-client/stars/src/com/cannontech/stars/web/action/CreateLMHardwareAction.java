@@ -348,7 +348,7 @@ public class CreateLMHardwareAction implements ActionBase {
                                 LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
                                 if(liteApp.getInventoryID() < 1) {
                                     appID = liteApp.getApplianceID();
-                                    appCatID = liteApp.getApplianceCategoryID();
+                                    appCatID = liteApp.getApplianceCategory().getApplianceCategoryId();
                                     keeperApp = liteApp;
                                     /*
                                      * Let's keep looping so we get the most recently created appliance since we are sort of 
@@ -364,7 +364,7 @@ public class CreateLMHardwareAction implements ActionBase {
                                     LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(j);
                                     if (liteApp.getApplianceID() == starsConfig.getApplianceID() && liteApp.getAccountID() == liteAcctInfo.getAccountID()) {
                                         appID = liteApp.getApplianceID();
-                                        appCatID = liteApp.getApplianceCategoryID();
+                                        appCatID = liteApp.getApplianceCategory().getApplianceCategoryId();
                                         keeperApp = liteApp;
                                     }
                                 }

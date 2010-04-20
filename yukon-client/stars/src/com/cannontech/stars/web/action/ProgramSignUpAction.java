@@ -366,7 +366,8 @@ public class ProgramSignUpAction implements ActionBase {
 						LiteStarsAppliance liteApp = it.next();
 						
 						if (liteApp.getInventoryID() > 0 &&
-							(liteApp.getProgramID() == program.getProgramID() || liteApp.getApplianceCategoryID() == program.getApplianceCategoryID()))
+							(liteApp.getProgramID() == program.getProgramID() || 
+							 liteApp.getApplianceCategory().getApplianceCategoryId() == program.getApplianceCategoryID()))
 						{
 							if (!program.hasInventoryID()) {
 								if (!program.hasAddressingGroupID() && liteApp.getProgramID() == program.getProgramID())
@@ -548,7 +549,8 @@ public class ProgramSignUpAction implements ActionBase {
 						LiteStarsAppliance lApp = appList.get(j);
 						
 						if ((lApp.getInventoryID() == program.getInventoryID() || lApp.getInventoryID() == 0) && 
-							(lApp.getProgramID() == program.getProgramID() || lApp.getApplianceCategoryID() == program.getApplianceCategoryID()))
+							(lApp.getProgramID() == program.getProgramID() || 
+							 lApp.getApplianceCategory().getApplianceCategoryId() == program.getApplianceCategoryID()))
 						{
 							if (liteApp == null) {
 								liteApp = lApp;
@@ -615,7 +617,7 @@ public class ProgramSignUpAction implements ActionBase {
                             /*
                              * TODO: What about different relays?  Are we handling this correctly?
                              */
-                            if(program.getApplianceCategoryID() == liteApp.getApplianceCategoryID() && 
+                            if(program.getApplianceCategoryID() == liteApp.getApplianceCategory().getApplianceCategoryId() && 
                                     program.getLoadNumber() == oldApplianceRelay &&
                                     oldLoadGroupId != 0) {
                                 int[] currentUnenrollmentInformation = new int[5];

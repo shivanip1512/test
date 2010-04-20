@@ -44,6 +44,8 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -410,7 +412,13 @@ public class StarsLiteFactory {
 	public static void setLiteStarsAppliance(LiteStarsAppliance liteApp, com.cannontech.database.data.stars.appliance.ApplianceBase app) {
 		liteApp.setApplianceID( app.getApplianceBase().getApplianceID().intValue() );
 		liteApp.setAccountID( app.getApplianceBase().getAccountID().intValue() );
-		liteApp.setApplianceCategoryID( app.getApplianceBase().getApplianceCategoryID().intValue() );
+		
+		ApplianceCategoryDao applianceCategoryDao = 
+		    YukonSpringHook.getBean("applianceCategoryDao", ApplianceCategoryDao.class);
+		ApplianceCategory applianceCategory = 
+		    applianceCategoryDao.getById(app.getApplianceBase().getApplianceCategoryID());
+		liteApp.setApplianceCategory(applianceCategory);
+
 		liteApp.setProgramID( app.getApplianceBase().getProgramID().intValue() );
 		liteApp.setYearManufactured( app.getApplianceBase().getYearManufactured().intValue() );
 		liteApp.setManufacturerID( app.getApplianceBase().getManufacturerID().intValue() );
@@ -919,7 +927,8 @@ public class StarsLiteFactory {
 	public static void setApplianceBase(com.cannontech.database.data.stars.appliance.ApplianceBase app, LiteStarsAppliance liteApp) {
 		app.setApplianceID( new Integer(liteApp.getApplianceID()) );
 		app.getApplianceBase().setAccountID( new Integer(liteApp.getAccountID()) );
-		app.getApplianceBase().setApplianceCategoryID( new Integer(liteApp.getApplianceCategoryID()) );
+		app.getApplianceBase().setApplianceCategoryID( 
+		                           new Integer(liteApp.getApplianceCategory().getApplianceCategoryId()) );
 		app.getApplianceBase().setProgramID( new Integer(liteApp.getProgramID()) );
 		app.getApplianceBase().setYearManufactured( new Integer(liteApp.getYearManufactured()) );
 		app.getApplianceBase().setManufacturerID( new Integer(liteApp.getManufacturerID()) );
@@ -2080,7 +2089,7 @@ public class StarsLiteFactory {
 		StarsAppliance starsApp = new StarsAppliance();
         
 		starsApp.setApplianceID( liteApp.getApplianceID() );
-		starsApp.setApplianceCategoryID( liteApp.getApplianceCategoryID() );
+		starsApp.setApplianceCategoryID(liteApp.getApplianceCategory().getApplianceCategoryId());
 		starsApp.setInventoryID( liteApp.getInventoryID() );
 		starsApp.setProgramID( liteApp.getProgramID() );
 		starsApp.setAddressingGroupID( liteApp.getAddressingGroupID() );
@@ -2106,7 +2115,7 @@ public class StarsLiteFactory {
         
 		starsApp.setServiceCompany( new ServiceCompany() );
 	    
-		int appCatDefID = DaoFactory.getYukonListDao().getYukonListEntry( energyCompany.getApplianceCategory(liteApp.getApplianceCategoryID()).getCategoryID() ).getYukonDefID();
+		int appCatDefID = DaoFactory.getYukonListDao().getYukonListEntry( energyCompany.getApplianceCategory(liteApp.getApplianceCategory().getApplianceCategoryId()).getCategoryID() ).getYukonDefID();
 		
 		if (liteApp.getAirConditioner() != null || appCatDefID == YukonListEntryTypes.YUK_DEF_ID_APP_CAT_AIR_CONDITIONER) {
 			LiteStarsAppliance.AirConditioner liteAC = liteApp.getAirConditioner();

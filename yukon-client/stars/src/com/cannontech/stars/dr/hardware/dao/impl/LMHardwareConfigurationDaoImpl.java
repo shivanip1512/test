@@ -61,7 +61,8 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
                                                                                                       energyCompany.getEnergyCompanyID());
             if (unassignedAppliances.size() > 0) {
                 unassignedAppliance = unassignedAppliances.get(0);
-                criteria.setApplianceCategoryID(unassignedAppliance.getApplianceCategoryID());
+                criteria.setApplianceCategoryID(
+                             unassignedAppliance.getApplianceCategory().getApplianceCategoryId());
                 log.debug("criteria, applianceCategoryID=[" + criteria.getApplianceCategoryID() + "]");               
             }
         }
@@ -90,7 +91,7 @@ public class LMHardwareConfigurationDaoImpl implements LMHardwareConfigurationDa
         StarsStaticLoadGroupMapping loadGroup = staticLoadGroupMappingDao.getStaticLoadGroupMapping(criteria);
 
         if (loadGroup == null) {
-            CTILogger.error("A static mapping could not be determined for serial number=[" + lmHw.getManufacturerSerialNumber() + "], applianceCategoryID=[" + unassignedAppliance.getApplianceCategoryID() + "], ZipCode=[" + zip + "], ConsumptionTypeID=[" + consumptionType + "],SwitchTypeID=[" + lmHw.getLmHardwareTypeID() + "]");
+            CTILogger.error("A static mapping could not be determined for serial number=[" + lmHw.getManufacturerSerialNumber() + "], applianceCategoryID=[" + unassignedAppliance.getApplianceCategory().getApplianceCategoryId() + "], ZipCode=[" + zip + "], ConsumptionTypeID=[" + consumptionType + "],SwitchTypeID=[" + lmHw.getLmHardwareTypeID() + "]");
         } else {
             lmHwConfig = new LMHardwareConfiguration();
             lmHwConfig.setInventoryId(lmHw.getInventoryID());

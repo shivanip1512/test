@@ -202,7 +202,8 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             int programId = -1;
             for(int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
                 if(liteAcctInfo.getAppliances().get(j).getApplianceID() == configDB.getApplianceID().intValue()){
-                    applianceCatID = liteAcctInfo.getAppliances().get(j).getApplianceCategoryID();
+                    applianceCatID = 
+                        liteAcctInfo.getAppliances().get(j).getApplianceCategory().getApplianceCategoryId();
                     programId = liteAcctInfo.getAppliances().get(j).getProgramID();
                     break;
                 }
