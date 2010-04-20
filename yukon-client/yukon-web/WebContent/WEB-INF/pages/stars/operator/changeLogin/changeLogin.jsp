@@ -58,7 +58,7 @@
         } 
 
     </script>
-    <div style="width: 50%;">
+    <div>
 	    <tags:sectionContainer2 key=".changeLogin" >
 	
 	        <form id="deleteForm" action="/spring/stars/operator/login/deleteLogin" method="post">
