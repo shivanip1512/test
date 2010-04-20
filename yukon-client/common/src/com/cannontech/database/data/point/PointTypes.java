@@ -85,10 +85,10 @@ public final class PointTypes implements IPointOffsets, TypeBase
 		"CalcStatus",
 		"INVALID",   //9
 		"","","","","","","","","","",  //room for future point types
-		ControlType.NONE.getDisplayName(),  	//20
-		ControlType.LATCH.getDisplayName(),
-		ControlType.NORMAL.getDisplayName(),
-		ControlType.PSEUDO.getDisplayName(),
+		ControlType.NONE.getControlName(),  	//20
+		ControlType.LATCH.getControlName(),
+		ControlType.NORMAL.getControlName(),
+		ControlType.PSEUDO.getControlName(),
 		"Dial Read",
 		"Demand",
 		"Peak Demand",  //26
@@ -108,8 +108,8 @@ public final class PointTypes implements IPointOffsets, TypeBase
 		"Outage 6", //40
 		"LP Peak Report",
 		"LP Archived Data",
-		ControlType.SBOLATCH.getDisplayName(),
-		ControlType.SBOPULSE.getDisplayName()		
+		ControlType.SBOLATCH.getControlName(),
+		ControlType.SBOPULSE.getControlName()		
 	};
 
 	//point archive types

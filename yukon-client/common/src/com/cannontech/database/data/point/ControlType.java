@@ -1,6 +1,8 @@
 package com.cannontech.database.data.point;
 
-public enum ControlType {
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
+public enum ControlType implements DatabaseRepresentationSource {
     NONE("None"),
     NORMAL("Normal"),
     LATCH("Latch"),
@@ -8,19 +10,23 @@ public enum ControlType {
     SBOLATCH("SBO Latch"),
     SBOPULSE("SBO Pulse");
     
-    String displayName;
+    String controlName;
     
-    private ControlType(String displayName) {
-        this.displayName = displayName;
+    private ControlType(String controlName) {
+        this.controlName = controlName;
     }
     
-    public String getDisplayName() {
-        return displayName;
+    public String getControlName() {
+        return controlName;
+    }
+    
+    public Object getDatabaseRepresentation() {
+        return getControlName();
     }
     
     public ControlType getByDisplayName(String name) {
         for (ControlType value : ControlType.values()) {
-            if (value.getDisplayName().equalsIgnoreCase(name)) {
+            if (value.getControlName().equalsIgnoreCase(name)) {
                 return value;
             }
         }

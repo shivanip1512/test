@@ -368,7 +368,7 @@ public static synchronized PointBase createStatusPoint( String pointName, Intege
 	
 	//defaults pointStatus
 	PointStatus pointStatus = new PointStatus(pointID);
-	pointStatus.setControlType(controlType.getDisplayName());
+	pointStatus.setControlType(controlType.getControlName());
 	((StatusPoint) newPoint).setPointStatus(pointStatus);
 
 	return newPoint;
