@@ -7,18 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.user.YukonUserContext;
 
-public class LmPaoPermissionCheckingBasePicker extends FilterPaoPicker {
+public class PaoPermissionCheckingPicker extends FilterPaoPicker {
 
 	private PaoAuthorizationService paoAuthorizationService;
-	private PaoDao paoDao;
-	
+	private Permission permission;
 	
 	@Override
 	public SearchResult<UltraLightPao> search(String ss, int start, int count,
@@ -34,7 +35,9 @@ public class LmPaoPermissionCheckingBasePicker extends FilterPaoPicker {
 			
 			@Override
 			public boolean matches(UltraLightPao object) {
-				return paoAuthorizationService.isAuthorized(userContext.getYukonUser(), Permission.LM_VISIBLE, paoDao.getLiteYukonPAO(object.getPaoId()));
+				
+				YukonPao pao = new PaoIdentifier(object.getPaoId(), PaoType.getForDbString(object.getType()));
+				return paoAuthorizationService.isAuthorized(userContext.getYukonUser(), permission, pao);
 			}
 		};
 		
@@ -43,13 +46,12 @@ public class LmPaoPermissionCheckingBasePicker extends FilterPaoPicker {
 		return super.search(ss, start, count, extraSqlFilters, ppFilters, userContext);
 	}
 	
-	@Autowired
-	public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
-		this.paoAuthorizationService = paoAuthorizationService;
+	public void setPermission(Permission permission) {
+		this.permission = permission;
 	}
 	
 	@Autowired
-	public void setPaoDao(PaoDao paoDao) {
-		this.paoDao = paoDao;
+	public void setPaoAuthorizationService(PaoAuthorizationService paoAuthorizationService) {
+		this.paoAuthorizationService = paoAuthorizationService;
 	}
 }

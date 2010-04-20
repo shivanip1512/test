@@ -11,7 +11,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.picker.v2.service.LmProgramForEnergyCompanyIdFilterFactory;
 import com.google.common.collect.Lists;
 
-public class LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker extends LmPaoPermissionCheckingBasePicker {
+public class LmDirectProgramPaoPermissionCheckingByEnergyCompanyIdPicker extends PaoPermissionCheckingPicker {
 	
 	private LmProgramForEnergyCompanyIdFilterFactory energyCompanyFlterFactory;
 
