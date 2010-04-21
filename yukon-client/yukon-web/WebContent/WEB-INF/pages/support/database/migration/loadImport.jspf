@@ -29,7 +29,7 @@
 	<tags:nameValue name="Local File" nameColumnWidth="100px">
 		<form id="loadLocalFileForm" action="/spring/support/database/migration/loadLocalFile" method="post" enctype="multipart/form-data">
 			<input type="file" name="dataFile" size="30px">
-			<tags:slowInput myFormId="loadLocalFileForm" label="${loadFile}" width="80px"/>
+			<tags:slowInput myFormId="loadLocalFileForm" label="${loadFile}" />
 		</form>
 	</tags:nameValue>
 	
@@ -42,7 +42,7 @@
 					<option value="${serverFile}">${serverFile}</option>
 				</c:forEach>
 			</select> 
-			<tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" width="80px"/>
+			<tags:slowInput myFormId="loadServerFileForm" label="${loadFile}" />
 		</form>
 	</tags:nameValue>
 

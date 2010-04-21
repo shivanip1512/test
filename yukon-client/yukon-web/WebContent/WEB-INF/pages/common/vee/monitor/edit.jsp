@@ -214,22 +214,22 @@
         <br>
         <c:choose>
             <c:when test="${validationMonitorId >= 0}">
-                <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" width="80px" disableOtherButtons="true"/>
+                <tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
                 <c:choose>
 				    <c:when test="${validationMonitor.evaluatorStatus eq 'ENABLED'}">
-				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}" width="80px" disableOtherButtons="true"/>
+				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringDisableText}" label="${validationMonitoringDisableText}" disableOtherButtons="true"/>
 				    </c:when>
 				    <c:when test="${validationMonitor.evaluatorStatus eq 'DISABLED'}">
-				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}" width="80px" disableOtherButtons="true"/>
+				        <tags:slowInput myFormId="toggleEnabledForm" labelBusy="${validationMonitoringEnableText}" label="${validationMonitoringEnableText}" disableOtherButtons="true"/>
 				    </c:when>
 				</c:choose>
-				<input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}" style="width:80px;"/>
+				<input type="button" onclick="validationMonitorEditor_deleteValidationMonitor(${validationMonitorId});" value="${deleteText}" class="formSubmit"/>
             </c:when>
             <c:otherwise>
-                <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px" disableOtherButtons="true"/>
+                <tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
             </c:otherwise>
         </c:choose>
-        <tags:slowInput myFormId="cancelForm" label="${cancelText}" width="80px" disableOtherButtons="true"/>
+        <tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
         
     </form>
         

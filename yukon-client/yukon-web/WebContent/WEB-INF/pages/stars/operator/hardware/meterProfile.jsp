@@ -31,13 +31,13 @@
             <i:inline key=".deleteQuestion"/>
             <br><br>
             
-            <table width="100%">
+            <table class="popupButtonTable">
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <input type="submit" class="createAddButton formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
+                            <input type="submit" class="formSubmit" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
                         </cti:checkRolesAndProperties>
-                        <input type="button" class="createAddButton formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
+                        <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
                     </td>
                 </tr>
             </table>
@@ -64,7 +64,7 @@
             <%-- METER INFO --%>
             <cti:dataGridCell>
             
-                <tags:sectionContainer2 key="meterInfoSection">
+                <tags:formElementContainer key="meterInfoSection">
                 
                     <tags:nameValueContainer2>
                     
@@ -76,18 +76,18 @@
                             
                         <tags:yukonListEntrySelectNameValue nameKey="yukon.web.modules.operator.hardware.voltage" path="voltageEntryId" accountId="${accountId}" listName="DEVICE_VOLTAGE"/>
                         
-                        <tags:textareaNameValue nameKey="yukon.web.modules.operator.hardware.deviceNotes" path="deviceNotes" rows="4" cols="30" />
+                        <tags:textareaNameValue nameKey="yukon.web.modules.operator.hardware.deviceNotes" path="deviceNotes" rows="4" cols="20" />
                     
                     </tags:nameValueContainer2>
                 
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
                 
             </cti:dataGridCell>
             
             <%-- GENERAL INVENTORY INFO --%>
             <cti:dataGridCell>
             
-                <tags:sectionContainer2 key="availableSwitchesSection">
+                <tags:formElementContainer key="availableSwitchesSection">
                     <c:choose>
                         <c:when test="${not empty hardwareDto.switchAssignments}">
                             
@@ -117,7 +117,7 @@
                         </c:otherwise>
                     </c:choose>
                 
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
                 
             </cti:dataGridCell>
             
@@ -126,15 +126,14 @@
         <%-- BUTTONS --%>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <br>
-            <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
-            <tags:reset/>
-            
-            <cti:displayForPageEditModes modes="CREATE">
-                <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
-            </cti:displayForPageEditModes>
+            <tags:slowInput2 myFormId="updateForm" key="save" />
             
             <cti:displayForPageEditModes modes="EDIT">
                 <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
+            </cti:displayForPageEditModes>
+            
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
             </cti:displayForPageEditModes>
             
         </cti:displayForPageEditModes>

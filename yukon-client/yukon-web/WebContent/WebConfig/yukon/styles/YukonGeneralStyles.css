@@ -767,10 +767,6 @@ div.pagedBox table.boxTable {
     font-size: 12px;
 }
 
-.pickerLink input {
-	width: 140px;
-}
-
 .logoImage {
 	vertical-align: middle;
 }
@@ -1097,9 +1093,6 @@ input.calendarInput {
 }
 
 input.formSubmit {
-    width: 80px;
-}
-
-input.createAddButton {
-	float: right;
+    padding-left: 10px;
+    padding-right: 10px;
 }

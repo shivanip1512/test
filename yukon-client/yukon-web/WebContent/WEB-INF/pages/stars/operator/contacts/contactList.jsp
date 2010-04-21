@@ -121,7 +121,7 @@
 	<%-- ADD CONTACT --%>
 	<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
 		<br>
-		<tags:slowInput2 myFormId="addContactForm" key="button.addContact" width="80px"/>
+		<tags:slowInput2 myFormId="addContactForm" key="button.addContact" />
 	</cti:checkRolesAndProperties>
 
 </cti:standardPage>

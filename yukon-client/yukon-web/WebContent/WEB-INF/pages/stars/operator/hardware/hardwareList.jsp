@@ -14,7 +14,6 @@
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="changeOutUrl" value="/spring/stars/operator/hardware/changeOut?accountId=${accountId}&amp;inventoryId="/>
 
 <c:choose>
     <c:when test="${starsMeters}">
@@ -81,7 +80,7 @@
                 <input type="hidden" name="accountId" value="${accountId}">
                 <input type="hidden" name="hardwareClass" value="${switchClass}">
                 <form:input path="serialNumber" size="15"/>
-                <input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>">
+                <input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>" class="formSubmit">
             </tags:nameValue2>
         </tags:nameValueContainer2>
     
@@ -162,7 +161,7 @@
                 <th nowrap="nowrap"><i:inline key=".serialNumberShort"/></th>
                 <th nowrap="nowrap"><i:inline key=".deviceType"/></th>
             </tr>
-            <tr title="<tags:address address="${checkingAdd.address}"/>">
+            <tr title="<tags:address address="${checkingAdd.address}" inLine="true"/>">
             
                 <td><spring:escapeBody htmlEscape="true">${checkingAdd.accountNumber}</spring:escapeBody></td>
                 <td><spring:escapeBody htmlEscape="true">${checkingAdd.name}</spring:escapeBody></td>
@@ -304,7 +303,7 @@
                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                 <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableSwitchPicker${switch.inventoryId}" type="availableSwitchPicker" destinationFieldId="changeOutId" immediateSelectMode="true"
-                                        endAction="function(items) { changeOut(${switch.inventoryId}, false); }"><cti:img key="changeOut"/></tags:pickerDialog>&nbsp;
+                                        endAction="function(items) { changeOut(${switch.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                 </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                             <cti:img key="editConfig" href="${editConfigUrl}${switch.inventoryId}"/>
@@ -321,14 +320,14 @@
         <form action="/spring/stars/operator/hardware/hardwareCreate">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="hardwareClass" value="${switchClass}">
-            <table style="width:100%;">
+            <table class="popupButtonTable">
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="!OPERATOR_INVENTORY_CHECKING">
-                            <input type="submit" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit">
+                            <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
-                            <input type="button" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit" onclick="showInvCheckingPopup('switch');">
+                            <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('switch');">
                         </cti:checkRolesAndProperties>
                     </td>
                 </tr>
@@ -369,15 +368,15 @@
                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                 <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableThermostatPicker${thermostat.inventoryId}" type="availableThermostatPicker" destinationFieldId="changeOutId" immediateSelectMode="true"
-                                        endAction="function(items) { changeOut(${thermostat.inventoryId}, false); }"><cti:img key="changeOut"/></tags:pickerDialog>&nbsp;
+                                        endAction="function(items) { changeOut(${thermostat.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                 </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                                 
-                            <cti:img key="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>  &nbsp;
+                            <cti:img key="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
                             
                             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
-                                <cti:img key="editSchedule" href="${editScheduleUrl}${thermostat.inventoryId}"/>  &nbsp;
-                                <cti:img key="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>  &nbsp;
+                                <cti:img key="editSchedule" href="${editScheduleUrl}${thermostat.inventoryId}"/>
+                                <cti:img key="savedSchedules" href="${savedSchedulesUrl}${thermostat.inventoryId}"/>
                                 <cti:img key="manual" href="${editManualUrl}${thermostat.inventoryId}"/>
                             </cti:checkRolesAndProperties>
                                 
@@ -394,7 +393,7 @@
             <td>
                 <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
             </td>
-            <td>
+            <td class="buttonCell">
                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
                     <br>
                     <form action="/spring/stars/operator/hardware/hardwareCreate">
@@ -402,10 +401,10 @@
                         <input type="hidden" name="hardwareClass" value="${thermostatClass}">
                     
                         <cti:checkRolesAndProperties value="!OPERATOR_INVENTORY_CHECKING">
-                            <input type="submit" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit">
+                            <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
                         </cti:checkRolesAndProperties>
                         <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
-                            <input type="button" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit" onclick="showInvCheckingPopup('thermostat');">
+                            <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('thermostat');">
                         </cti:checkRolesAndProperties>
                     </form>
                 </cti:checkRolesAndProperties>
@@ -465,14 +464,10 @@
                             <td nowrap="nowrap">
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                     <cti:checkRolesAndProperties value="OPERATOR_INVENTORY_CHECKING">
-                                    
                                         <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableMeterPicker${meter.inventoryId}" type="availableMctPicker" destinationFieldId="changeOutId" immediateSelectMode="true"
-                                        endAction="function(items) { changeOut(${meter.inventoryId}, true); }"><cti:img key="changeOut"/></tags:pickerDialog>&nbsp;
-                                        
+                                        endAction="function(items) { changeOut(${meter.inventoryId}, true); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                     </cti:checkRolesAndProperties>
                                 </cti:checkRolesAndProperties>
-                                
-                                <cti:img key="editConfig" href="${editConfigUrl}${meter.inventoryId}"/>&nbsp;
                                 
                                 <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
                                     <cti:img key="meterDetail" />
@@ -505,26 +500,24 @@
         
         <form action="/spring/stars/operator/hardware/meterProfileCreate">
             <input type="hidden" name="accountId" value="${accountId}">
-            <table style="width:100%;">
+            <table class="popupButtonTable">
                 <tr>
                     <td>
-                    
                         <c:choose>
                     
                             <c:when test="${starsMeters}">
                                 <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="createAddButton formSubmit">
+                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
                                 </cti:checkRolesAndProperties>
                             </c:when>
                     
                             <c:otherwise>
                                 
                                 <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
-                                    endAction="addMeter" asButton="true" buttonStyleClass="createAddButton formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
+                                    endAction="addMeter" asButton="true" buttonStyleClass="formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
                             </c:otherwise>
                     
                         </c:choose>
-                        
                     </td>
                 </tr>
             </table>

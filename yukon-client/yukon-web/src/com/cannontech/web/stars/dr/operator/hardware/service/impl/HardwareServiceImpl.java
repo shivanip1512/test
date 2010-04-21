@@ -106,7 +106,8 @@ public class HardwareServiceImpl implements HardwareService {
         hardwareDto.setAltTrackingNumber(liteInventoryBase.getAlternateTrackingNumber());
         hardwareDto.setVoltageEntryId(liteInventoryBase.getVoltageID());
         
-        DateTime beginningOfJavaTime = new DateTime(0);
+        /* For some reason some (not real) dates were saved with a time of 19:00 instead of 18:00. */
+        DateTime beginningOfJavaTime = new DateTime(0).plusDays(1);
         DateTime installDT = new DateTime(liteInventoryBase.getInstallDate());
         if(installDT.isAfter(beginningOfJavaTime)){
             hardwareDto.setFieldInstallDate(installDT.toDate());

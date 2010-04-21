@@ -129,7 +129,7 @@
 	<form id="editMonitorForm" action="/spring/amr/outageProcessing/monitorEditor/edit" method="get">
 		<input type="hidden" name="outageMonitorId" value="${outageMonitor.outageMonitorId}">
 	</form>
-	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" width="100px"/>
+	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" />
 	
 	
 	</tags:sectionContainer>
@@ -158,7 +158,7 @@
 		
 			<%-- remove after read checkbox --%>
 			<span style="white-space:nowrap;">
-			<tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}" width="100px"/>
+			<tags:slowInput myFormId="readOutagesForm" labelBusy="${readOutageLogsButtonText}" label="${readOutageLogsButtonText}" />
 			<input type="checkbox" name="removeFromOutageGroupAfterRead" checked>
 			${readOutageLogsSectionRemoveAfterReadText}
 			</span>

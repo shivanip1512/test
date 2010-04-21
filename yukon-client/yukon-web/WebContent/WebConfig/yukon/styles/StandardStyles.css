@@ -53,6 +53,11 @@ body {
     margin: 0;
 }
 
+#findForm input,
+#findForm select {
+	margin-left: 5px;
+}
+
 #Content {
     font-size: .95em;
 }

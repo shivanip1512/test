@@ -104,7 +104,7 @@
     </i:simplePopup>
     
     <!-- Delete Hardware Popup -->
-    <i:simplePopup titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
+    <i:simplePopup styleClass="mediumSimplePopup" titleKey=".deleteDevice" id="deleteHardwarePopup" arguments="${hardwareDto.displayName}">
         <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
@@ -122,10 +122,16 @@
             <br>
             <input type="radio" name="deleteOption" value="delete"><span class="radioLabel"><i:inline key=".deleteOption2"/></span>
             <br><br>
-            <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px" />
-            </cti:checkRolesAndProperties>
-            <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
+            <table class="popupButtonTable">
+                <tr>
+                    <td>
+                        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                            <tags:slowInput2 myFormId="deleteForm" key="delete"/>
+                        </cti:checkRolesAndProperties>
+                        <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
+                    </td>
+                </tr>
+            </table>
         </form>
     </i:simplePopup>
     
@@ -147,13 +153,17 @@
         <form:hidden path="displayName"/>
         <form:hidden path="twoWayDeviceName"/>
         <form:hidden path="hardwareType"/>
+        <form:hidden path="hardwareClass"/>
+        <c:if test="${not showTwoWay}">
+            <form:hidden path="deviceId"/>
+        </c:if>
         
-        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:50%;" tableClasses="widgetColumns">
+        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
         
             <%-- DEVICE INFO --%>
             <cti:dataGridCell>
             
-                <tags:sectionContainer2 key="deviceInfoSection">
+                <tags:formElementContainer key="deviceInfoSection">
                     
                     <tags:nameValueContainer2>
                     
@@ -208,7 +218,7 @@
                             <tags:dateInputCalendar fieldName="fieldRemoveDate" fieldValue="fieldRemoveDate" springInput="true"></tags:dateInputCalendar>
                         </tags:nameValue2>
                         
-                        <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="30" />
+                        <tags:textareaNameValue nameKey=".deviceNotes" path="deviceNotes" rows="4" cols="20" />
                         
                         <c:if test="${showRoute}">
                             <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
@@ -234,33 +244,32 @@
                                             </c:otherwise>
                                         </c:choose>
                                     </span> 
-                                    
-                                    <cti:displayForPageEditModes modes="EDIT">
-                                        <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" asButton="true" immediateSelectMode="true"
-                                            destinationFieldId="chosenYukonDeviceId" 
-                                            destinationFieldName="chosenYukonDeviceId"
-                                            endAction="changeTwoWayDeviceName" styleClass="newDevice"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
-                                        <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();">
-                                    </cti:displayForPageEditModes>
-                                    
+                                    <div>
+                                        <cti:displayForPageEditModes modes="EDIT">
+                                            <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" asButton="true" immediateSelectMode="true"
+                                                destinationFieldId="chosenYukonDeviceId" 
+                                                destinationFieldName="chosenYukonDeviceId"
+                                                endAction="changeTwoWayDeviceName"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
+                                            <input type="button" value="<cti:msg2 key=".twoWayNewButton"/>" onclick="showDeviceCreationPopup();" class="formSubmit">
+                                        </cti:displayForPageEditModes>
+                                    </div>
+                                    <tags:hidden path="deviceId" id="chosenYukonDeviceId"/>
                                 </tags:nameValue2>
                             
                             </c:if>
-                            
-                            <tags:hidden path="deviceId" id="chosenYukonDeviceId"/>
                             
                         </cti:displayForPageEditModes>
                         
                     </tags:nameValueContainer2>
                 
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
             
             </cti:dataGridCell>
             
             <%--SERVICE AND STORAGE --%>
             <cti:dataGridCell>
             
-                <tags:sectionContainer2 key="serviceAndStorageSection">
+                <tags:formElementContainer key="serviceAndStorageSection">
                     
                     <tags:nameValueContainer2>
                         
@@ -277,7 +286,7 @@
                             <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
                         </cti:displayForPageEditModes>
                         
-                        <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="30" />
+                        <tags:textareaNameValue nameKey=".installNotes" path="installNotes" rows="4" cols="20" />
                         
                     </tags:nameValueContainer2>
                     
@@ -341,7 +350,7 @@
                     
                     </cti:displayForPageEditModes>
                     
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
             
             </cti:dataGridCell>
             
@@ -352,14 +361,13 @@
         
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+                <tags:slowInput2 myFormId="updateForm" key="save" />
             </cti:checkRolesAndProperties>
-            <tags:reset/>
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <cti:displayForPageEditModes modes="EDIT">
                     <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>
                 </cti:displayForPageEditModes>
-                <cti:displayForPageEditModes modes="CREATE">
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
                     <input type="submit" class="formSubmit" id="cancelButton" name="cancel" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>">
                 </cti:displayForPageEditModes>
             </cti:checkRolesAndProperties>

@@ -150,9 +150,9 @@
     	<%-- BUTTONS --%>
     	<cti:displayForPageEditModes modes="EDIT">
 	    	<br>
-		    <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+		    <tags:slowInput2 myFormId="updateForm" key="save" />
 		    <tags:reset/>
-		    <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
+		    <tags:slowInput2 myFormId="deleteForm" key="delete" />
 	    </cti:displayForPageEditModes>
 	    
 	</form:form>

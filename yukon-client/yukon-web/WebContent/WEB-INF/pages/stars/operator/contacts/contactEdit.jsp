@@ -126,8 +126,8 @@
 		
 		<%-- BUTTONS --%>
 		<br>
-		<tags:slowInput2 myFormId="contactListForm" key="button.viewAll" width="80px"/>
-		<tags:slowInput2 myFormId="contactsUpdateForm" key="save" width="80px"/>
+		<tags:slowInput2 myFormId="contactListForm" key="button.viewAll" />
+		<tags:slowInput2 myFormId="contactsUpdateForm" key="save" />
 
 	</form:form>
 	

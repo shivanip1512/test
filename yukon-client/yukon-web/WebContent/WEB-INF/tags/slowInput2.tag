@@ -4,7 +4,6 @@
 
 <%@ attribute name="myFormId" required="true" type="java.lang.String" %>
 <%@ attribute name="key" required="true" type="java.lang.String" description="Base i18n key. Available settings: .label (required), .labelBusy (optional), .description (optional)"%>
-<%@ attribute name="width" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean"%>
 <%@ tag body-content="empty" %>
@@ -19,6 +18,5 @@
 				label="${pageScope.label}" 
 				labelBusy="${pageScope.labelBusy}" 
 				description="${pageScope.desciption}" 
-				width="${pageScope.width}" 
 				id="${pageScope.id}" 
 				disableOtherButtons="${pageScope.disableOtherButtons}"/>

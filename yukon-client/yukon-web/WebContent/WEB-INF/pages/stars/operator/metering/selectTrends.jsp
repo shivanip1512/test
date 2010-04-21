@@ -26,7 +26,7 @@
 			</c:forEach>
 			
 			<br>
-			<tags:slowInput2 myFormId="selectTrendsForm" key="save" width="80px"/>
+			<tags:slowInput2 myFormId="selectTrendsForm" key="save" />
 			<tags:reset/>
 		
 		</form>

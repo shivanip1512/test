@@ -14,6 +14,6 @@
         <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
     </form>
     
-    <tags:slowInput2 myFormId="backForm" key="back" width="80px"/>
+    <tags:slowInput2 myFormId="backForm" key="back" />
 
 </cti:standardPage>

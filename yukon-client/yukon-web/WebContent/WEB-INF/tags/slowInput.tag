@@ -2,7 +2,6 @@
 <%@ attribute name="label" required="true" type="java.lang.String"%>
 <%@ attribute name="labelBusy" required="false" type="java.lang.String"%>
 <%@ attribute name="description" required="false" type="java.lang.String"%>
-<%@ attribute name="width" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -28,7 +27,7 @@
     <input id="${uniqueId}" 
     	   type="button" 
     	   value="${label}" 
-    	   <c:if test="${not empty pageScope.width}">style="min-width:${pageScope.width};"</c:if>
+           class="formSubmit"
     	   onclick="updateButton('slowInputSpan${uniqueId}', '${labelBusy}...', '${myFormId}','slowInputProcessImg${uniqueId}', ${disableOtherButtons});">
     	   
     <span id="slowInputWaitingSpan${uniqueId}" class="slowInput_waiting" style="display:none;"> 

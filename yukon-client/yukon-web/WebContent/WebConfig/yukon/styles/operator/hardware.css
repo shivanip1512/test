@@ -1,15 +1,7 @@
-#chosenYukonDeviceNameField {
-    font-size: 11px;
-}
-
 div.historyContainer {
     max-height: 112px;
     overflow: auto;
     overflow-x: hidden;
-}
-
-.newDevice input {
-    width: 60px;
 }
 
 table.hardwareListTable th.name,
@@ -39,6 +31,10 @@ table.theremostatActionTable td {
     vertical-align: bottom;
 }
 
+table.theremostatActionTable td.buttonCell {
+    text-align: right;
+}
+
 #hardwareConfigEditDialog #editArea {
     width: auto;
 }
@@ -57,4 +53,12 @@ div.hardwarePopup {
 
 span.buttonSeperator {
     padding-right: 5px;
+}
+
+table.popupButtonTable {
+	width: 100%;
+}
+
+table.popupButtonTable td {
+    text-align: right;
 }

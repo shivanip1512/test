@@ -186,8 +186,8 @@ Device Count: 195 <img onclick="javascript:showSelectedDevices(this, 'selectedDe
     	
 	    <%-- BUTTONS --%>
     	<br>
-    	<input type="button" value="Preview" onclick="previewSchedule();" style="width:80px;">
-    	<tags:slowInput myFormId="setupScheduleForm" label="Submit" width="80px"/>
+    	<input type="button" value="Preview" onclick="previewSchedule();" class="formSubmit">
+    	<tags:slowInput myFormId="setupScheduleForm" label="Submit" />
     
     </form>
     

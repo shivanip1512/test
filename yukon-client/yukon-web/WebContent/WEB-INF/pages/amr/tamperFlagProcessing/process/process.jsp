@@ -125,7 +125,7 @@
 	<form id="editMonitorForm" action="/spring/amr/tamperFlagProcessing/edit" method="get">
 		<input type="hidden" name="tamperFlagMonitorId" value="${tamperFlagMonitor.tamperFlagMonitorId}">
 	</form>
-	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" width="100px"/>
+	<tags:slowInput myFormId="editMonitorForm" label="${mainDetailEditText}" />
 	
 	</tags:sectionContainer>
 	<br>
@@ -158,7 +158,7 @@
 	    	
 	    	<%-- read internal flags button --%>
 	    	<span style="white-space:nowrap;">
-			<tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}" width="100px"/>
+			<tags:slowInput myFormId="readInternalFlagsForm" labelBusy="${readInternalFlagsButtonText}" label="${readInternalFlagsButtonText}" />
 			
 			<%-- read ok --%>
 	    	<c:if test="${param.readOk}">
@@ -241,7 +241,7 @@
 	    	<br>
 	    	
 	    	<%-- reset internal flags button --%>
-			<tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}" width="100px"/>
+			<tags:slowInput myFormId="resetInternalFlagsForm" labelBusy="${resetInternalFlagsButtonText}" label="${resetInternalFlagsButtonText}" />
 			
 			<%-- reset ok --%>
 	    	<c:if test="${param.resetOk}">

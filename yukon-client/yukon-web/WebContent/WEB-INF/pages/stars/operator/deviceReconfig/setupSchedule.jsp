@@ -141,7 +141,7 @@
     	
 	    <%-- BUTTONS --%>
     	<br>
-    	<tags:slowInput myFormId="setupScheduleForm" label="Submit" width="80px"/>
+    	<tags:slowInput myFormId="setupScheduleForm" label="Submit" />
     
     </form>
     

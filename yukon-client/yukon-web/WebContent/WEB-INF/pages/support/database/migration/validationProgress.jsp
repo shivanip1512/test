@@ -68,7 +68,7 @@
 	    	<input type="hidden" name="statusKey" value="${status.id}">
 	    </form>
 	    
-	    <tags:slowInput id="validateButton" myFormId="importValidateForm" label="${viewResultButton}" width="140px"/>
+	    <tags:slowInput id="validateButton" myFormId="importValidateForm" label="${viewResultButton}" />
 
    </tags:boxContainer>
    	

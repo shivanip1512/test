@@ -21,9 +21,9 @@
                 <drForms:starsApplianceForm formId="updateForm" formUrl="/spring/stars/operator/appliances/applianceUpdate" />
 
                 <br>
-                <tags:slowInput2 myFormId="updateForm" key="save" width="80px"/>
+                <tags:slowInput2 myFormId="updateForm" key="save" />
                 <tags:reset myFormId="updateForm" />
-                <tags:slowInput2 myFormId="deleteForm" key="delete" width="80px"/>
+                <tags:slowInput2 myFormId="deleteForm" key="delete" />
                         
             </tags:sectionContainer2>
         </td>

@@ -47,7 +47,7 @@ public class PaoPickerTag extends ItemPickerTag {
             
             getJspBody().invoke(null);
             
-            outputTagString = "\" onclick=\"javascript:" + pickerId + ".showPicker()\" style=\"width:140px;\">";
+            outputTagString = "\" onclick=\"javascript:" + pickerId + ".showPicker()\" class=\"formSubmit\">";
             getJspContext().getOut().println(outputTagString);
         }
         else {

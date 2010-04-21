@@ -250,7 +250,7 @@
 	    
 	    <%-- SETUP SCHEDULE BUTTON --%>
     	<br>
-    	<tags:slowInput myFormId="deviceReconfigForm" label="Select" width="80px"/>
+    	<tags:slowInput myFormId="deviceReconfigForm" label="Select" />
     
     </form>
     

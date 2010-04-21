@@ -139,26 +139,26 @@
 		        <c:choose>
 		       	 	<%-- SCHDULE MODE --%>
 					<c:when test="${!editMode}">
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" width="80px"/>
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
 					</c:when>
 					
 					<%-- EDIT MODE --%>
 					<c:otherwise>
 						
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" width="80px"/>
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_attr" labelBusy="${updateButtonText}" label="${updateButtonText}" />
 						
 						<c:if test="${status ne 'RUNNING'}">
 						<c:choose>
 							<c:when test="${disabled}">
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" width="80px"/>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
 							</c:when>
 							<c:otherwise>
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" width="80px"/>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
 							</c:otherwise>
 						</c:choose>
 						</c:if>
 						
-						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" width="80px"/>
+						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
 						
 					</c:otherwise>
 				</c:choose>
@@ -225,26 +225,26 @@
 		        <c:choose>
 		       	 	<%-- SCHDULE MODE --%>
 					<c:when test="${!editMode}">
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" width="80px"/>
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${scheduleButtonText}" label="${scheduleButtonText}" />
 					</c:when>
 					
 					<%-- EDIT MODE --%>
 					<c:otherwise>
 	
-						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" width="80px"/>
+						<tags:slowInput myFormId="scheduledGroupRequestExecutionForm_cmd" labelBusy="${updateButtonText}" label="${updateButtonText}" />
 						
 						<c:if test="${status ne 'RUNNING'}">
 						<c:choose>
 							<c:when test="${disabled}">
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" width="80px"/>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${enableJobButtonText}" label="${enableJobButtonText}" />
 							</c:when>
 							<c:otherwise>
-								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" width="80px"/>
+								<tags:slowInput myFormId="toggleJobEnabledForm" labelBusy="${disableJobButtonText}" label="${disableJobButtonText}" />
 							</c:otherwise>
 						</c:choose>
 						</c:if>
 						
-						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" width="80px"/>
+						<tags:slowInput myFormId="disabledAndDeleteJobForm" labelBusy="${disableAndDeleteJobButtonText}" label="${disableAndDeleteJobButtonText}" />
 	
 					</c:otherwise>
 				</c:choose>

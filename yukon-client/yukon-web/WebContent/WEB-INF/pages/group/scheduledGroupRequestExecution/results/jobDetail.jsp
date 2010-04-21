@@ -219,7 +219,7 @@
 		
 		<%-- edit button --%>
 		<c:if test="${canManage}">
-			<tags:slowInput myFormId="editScheduledGroupRequestExecutionForm" labelBusy="${editScheduleButtonText}" label="${editScheduleButtonText}" width="80px"/>
+			<tags:slowInput myFormId="editScheduledGroupRequestExecutionForm" labelBusy="${editScheduleButtonText}" label="${editScheduleButtonText}" />
 		</c:if>
 		
 	</tags:sectionContainer>

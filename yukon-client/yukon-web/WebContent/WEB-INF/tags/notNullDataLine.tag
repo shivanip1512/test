@@ -1,6 +1,1 @@
-<%@ attribute name="value" required="true" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
-<c:if test='${not empty value}'>
-	${value}<BR>
-</c:if>
+<%@ attribute name="value" required="true" %><%@ attribute name="inLine" required="false" description="If true no line break will be added." type="java.lang.Boolean" %><%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %><c:if test='${not empty value}'>${value}<c:if test="${empty pageScope.inLine || not pageScope.inLine}"><BR></c:if></c:if>

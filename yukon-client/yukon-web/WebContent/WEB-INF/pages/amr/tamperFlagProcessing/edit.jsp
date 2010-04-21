@@ -137,22 +137,22 @@
 			<br>
 			<c:choose>
 				<c:when test="${tamperFlagMonitorId > 0}">
-					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" width="80px" disableOtherButtons="true"/>
+					<tags:slowInput myFormId="updateForm" labelBusy="${updateBusyText}" label="${updateText}" disableOtherButtons="true"/>
 					<c:choose>
 						<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'ENABLED'}">
-							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}" width="80px" disableOtherButtons="true"/>
+							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringDisableText}" label="${tamperFlagMonitoringDisableText}" disableOtherButtons="true"/>
 						</c:when>
 						<c:when test="${tamperFlagMonitor.evaluatorStatus eq 'DISABLED'}">
-							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}" width="80px" disableOtherButtons="true"/>
+							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${tamperFlagMonitoringEnableText}" label="${tamperFlagMonitoringEnableText}" disableOtherButtons="true"/>
 						</c:when>
 					</c:choose>
-					<input type="button" onclick="tamperFlagMonitorEditor_deleteTamperFlagMonitor(${tamperFlagMonitorId});" value="${deleteText}" style="width:80px;"/>
+					<input type="button" onclick="tamperFlagMonitorEditor_deleteTamperFlagMonitor(${tamperFlagMonitorId});" value="${deleteText}" class="formSubmit"/>
 				</c:when>
 				<c:otherwise>
-					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" width="80px" disableOtherButtons="true"/>
+					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
 				</c:otherwise>
 			</c:choose>
-			<tags:slowInput myFormId="cancelForm" label="${cancelText}" width="80px" disableOtherButtons="true"/>
+			<tags:slowInput myFormId="cancelForm" label="${cancelText}" disableOtherButtons="true"/>
 			
 		</form>
 		

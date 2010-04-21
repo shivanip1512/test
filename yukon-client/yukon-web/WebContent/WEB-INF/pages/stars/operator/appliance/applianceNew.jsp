@@ -20,9 +20,9 @@
                     <drForms:starsApplianceForm formId="createForm" formUrl="/spring/stars/operator/appliances/applianceCreate" />
 
                     <br>
-                    <tags:slowInput2 myFormId="createForm" key="create" width="80px"/>
+                    <tags:slowInput2 myFormId="createForm" key="create" />
                     <tags:reset myFormId="createForm" />
-                    <tags:slowInput2 myFormId="cancelForm" key="cancel" width="80px"/>
+                    <tags:slowInput2 myFormId="cancelForm" key="cancel" />
                         
                 </tags:sectionContainer2>
             </td>

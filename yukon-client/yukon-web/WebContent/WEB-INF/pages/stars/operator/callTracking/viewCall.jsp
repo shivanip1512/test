@@ -45,7 +45,7 @@
 		<br>
 		
 		<%-- buttons --%>
-		<tags:slowInput2 myFormId="viewAllForm" key="viewAll" width="80px"/>
+		<tags:slowInput2 myFormId="viewAllForm" key="viewAll" />
 		<cti:msg var="saveButtonText" key="yukon.web.components.slowInput.save.label" />
 		<input type="submit" value="${saveButtonText}" class="formSubmit">
 		

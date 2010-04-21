@@ -83,7 +83,7 @@
 	<%-- create button --%>
 	<cti:displayForPageEditModes modes="CREATE">
 		<br>
-		<tags:slowInput2 myFormId="createCallForm" key="create" width="80px"/>
+		<tags:slowInput2 myFormId="createCallForm" key="create"/>
 	</cti:displayForPageEditModes>
 
 </cti:standardPage>

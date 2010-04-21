@@ -34,7 +34,7 @@ public class AvailableThermostatFilter implements SqlFilter {
         sql.append("  SELECT ib.inventoryId FROM inventoryBase ib ");
         sql.append("    JOIN ECToInventoryMapping etim ON etim.InventoryId = ib.InventoryId");
         sql.append("    JOIN LMHardwareBase lmhb ON lmhb.inventoryId = ib.InventoryId");
-        sql.append("    JOIN YukonListEntry yle on yle.EntryID = lmhw.LMHardwareTypeID");
+        sql.append("    JOIN YukonListEntry yle on yle.EntryID = lmhb.LMHardwareTypeID");
         sql.append("  WHERE etim.EnergyCompanyId ").in(energyCompanyIds);
         sql.append("    AND ib.accountId = 0 ");
         sql.append("    AND yle.YukonDefinitionID ").in(thermostatTypeDefIds).append(")");
