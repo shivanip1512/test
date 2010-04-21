@@ -255,7 +255,7 @@
 							<tags:slowInput myFormId="toggleEnabledForm" labelBusy="${outageMonitoringEnableText}" label="${outageMonitoringEnableText}" disableOtherButtons="true"/>
 						</c:when>
 					</c:choose>
-					<input type="button" onclick="outageMonitorEditor_deleteOutageMonitor(${outageMonitorId});" value="${deleteText}" style="width:80px;"/>
+					<input type="button" onclick="outageMonitorEditor_deleteOutageMonitor(${outageMonitorId});" value="${deleteText}" class="formSubmit"/>
 				</c:when>
 				<c:otherwise>
 					<tags:slowInput myFormId="updateForm" labelBusy="${createBusyText}" label="${createText}" disableOtherButtons="true"/>
