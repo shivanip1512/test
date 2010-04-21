@@ -46,13 +46,11 @@ public class OperatorProgramControlHistoryController {
     private ControlHistoryService controlHistoryService;
     
     @RequestMapping(value = "/operator/program/controlHistory")
-    public String controlHistory(int accountId,
-    							 int energyCompanyId,
-    							 ModelMap modelMap,
+    public String controlHistory(ModelMap modelMap,
     							 YukonUserContext userContext,
     							 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
-        CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
                 
         List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
@@ -79,9 +77,7 @@ public class OperatorProgramControlHistoryController {
     }
     
     @RequestMapping(value = "/operator/program/controlHistory/completeHistoryView")
-    public String completeHistoryView(int accountId, 
-    							      int energyCompanyId,
-    		                          int programId, 
+    public String completeHistoryView(int programId, 
     		                          YukonUserContext yukonUserContext, 
     		                          ModelMap modelMap,
     		                          AccountInfoFragment accountInfoFragment) {
@@ -100,15 +96,13 @@ public class OperatorProgramControlHistoryController {
     }
     
     @RequestMapping(value = "/operator/program/controlHistory/innerCompleteHistoryView")
-    public String innerCompleteHistoryView(int accountId,
-    									   int energyCompanyId,
-    		                               int programId, 
+    public String innerCompleteHistoryView(int programId, 
     		                               String controlPeriod, 
     		                               YukonUserContext yukonUserContext,
                                            ModelMap modelMap,
                                            AccountInfoFragment accountInfoFragment) {
     	
-    	CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+    	CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkProgram(user, programId);

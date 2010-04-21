@@ -18,13 +18,11 @@
 	
 	<form id="viewAllForm" action="/spring/stars/operator/callTracking/callList">
 		<input type="hidden" name="accountId" value="${accountId}">
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 	</form>
 	
 	<form:form id="callReportUpdateForm" commandName="callReport" action="/spring/stars/operator/callTracking/updateCall" onsubmit="return submitForm();">
 	
 		<input type="hidden" name="accountId" value="${accountId}">
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 	
 		<tags:nameValueContainer2 nameColumnWidth="180px">
 		

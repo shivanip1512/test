@@ -23,9 +23,8 @@ public class AccountInfoFragmentArgumentResolver implements WebArgumentResolver 
         	HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
             
         	int accountId = ServletRequestUtils.getRequiredIntParameter(nativeRequest, "accountId");
-        	int energyCompanyId = ServletRequestUtils.getRequiredIntParameter(nativeRequest, "energyCompanyId");
         	
-        	AccountInfoFragment accountInfoFragment = operatorAccountService.getAccountInfoFragment(accountId, energyCompanyId);
+        	AccountInfoFragment accountInfoFragment = operatorAccountService.getAccountInfoFragment(accountId);
         	
             return accountInfoFragment;
         }
@@ -37,5 +36,4 @@ public class AccountInfoFragmentArgumentResolver implements WebArgumentResolver 
 	public void setOperatorAccountService(OperatorAccountService operatorAccountService) {
 		this.operatorAccountService = operatorAccountService;
 	}
-
 }

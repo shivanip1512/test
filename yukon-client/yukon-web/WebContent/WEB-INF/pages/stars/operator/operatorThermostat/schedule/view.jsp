@@ -135,7 +135,6 @@
         <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/stars/operator/thermostatSchedule/confirmOrSave">
             
             <input name="accountId" type="hidden" value="${accountId}" />
-            <input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
             <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
 
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
@@ -209,7 +208,6 @@
                                 <td class="TableCell" style="width: 50%; text-align: center; vertical-align: top;"> 
                                 	<cti:url var="hintsUrl" value="/spring/stars/operator/thermostatSchedule/hints">
                                 		<cti:param name="accountId" value="${accountId}"/>
-                                		<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
                                 		<cti:param name="thermostatIds" value="${thermostatIds}"/>
                                 	</cti:url>
                                     <cti:msg2 key=".hints" arguments="${hintsUrl}" htmlEscape="false"/>
@@ -217,7 +215,6 @@
                                 <td class="TableCell"  style="width: 50%; text-align: center; vertical-align: top;"> 
                                 	<cti:url var="tempUrl" value="/spring/stars/operator/thermostatManual/view">
                                 		<cti:param name="accountId" value="${accountId}"/>
-                                		<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
                                 		<cti:param name="thermostatIds" value="${thermostatIds}"/>
                                 	</cti:url>
                                     <cti:msg2 key=".temporaryAdjustments" arguments="${tempUrl}" htmlEscape="false"/>

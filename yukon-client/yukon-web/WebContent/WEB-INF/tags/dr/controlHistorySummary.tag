@@ -61,7 +61,7 @@
 					<tr>
 						<td class="tdHeader nonwrapping"  width="100%" colspan="3">
 						    <span style="float: left;"><spring:escapeBody htmlEscape="true"><cti:msg key="${program.displayName}" /></spring:escapeBody></span>
-							<span style="float: right; font-weight: normal;"><a href="${completeHistoryUrl}?programId=${program.programId}<c:if test="${not empty accountId}">&accountId=${accountId}</c:if><c:if test="${not empty energyCompanyId}">&energyCompanyId=${energyCompanyId}</c:if>"><i18n:inline key='.details' /></a></span>
+							<span style="float: right; font-weight: normal;"><a href="${completeHistoryUrl}?programId=${program.programId}<c:if test="${not empty accountId}">&accountId=${accountId}</c:if>"><i18n:inline key='.details' /></a></span>
 						</td>
 						<c:if test="${showControlHistorySummary}">
 							<c:set var="programControlHistorySummary" value="${displayableProgram.displayableControlHistoryList[0].controlHistory.programControlHistorySummary}" />

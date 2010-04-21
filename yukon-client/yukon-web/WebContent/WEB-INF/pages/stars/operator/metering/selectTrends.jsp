@@ -12,7 +12,6 @@
 		<form id="selectTrendsForm" action="/spring/stars/operator/metering/saveSelectedTrends">
 		
 			<input type="hidden" name="accountId" value="${accountId}">
-			<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 	
 			<c:forEach var="trend" items="${availablTrendWrappers}">
 			

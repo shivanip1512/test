@@ -32,7 +32,6 @@
 		    		
 		    			<td>
 		    				<cti:url var="accountEditUrl" value="/spring/stars/operator/account/accountEdit">
-		    					<cti:param name="energyCompanyId" value="${accountSearchResult.energyCompanyId}"/>
 		    					<cti:param name="accountId" value="${accountSearchResult.accountId}"/>
 		    				</cti:url>
 		    				<a href="${accountEditUrl}">

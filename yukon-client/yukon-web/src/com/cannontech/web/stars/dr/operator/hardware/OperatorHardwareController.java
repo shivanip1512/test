@@ -111,6 +111,7 @@ public class OperatorHardwareController {
         
         setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/hardware/hardwareList.jsp";
     }
     
@@ -204,6 +205,7 @@ public class OperatorHardwareController {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/hardware/hardwareList.jsp";
     }
     

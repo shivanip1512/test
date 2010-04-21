@@ -63,13 +63,11 @@
 	
 	        <form id="deleteForm" action="/spring/stars/operator/login/deleteLogin" method="post">
 	            <input type="hidden" name="accountId" value="${accountId}">
-	            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 	            <input type="hidden" name="loginMode" value="${loginMode}">
 	        </form>
 	
 	        <form:form id="updateForm" action="/spring/stars/operator/login/updateLogin" commandName="changeLoginBackingBean">
 	            <input type="hidden" name="accountId" value="${accountId}">
-	            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 	            <input type="hidden" name="loginMode" value="${loginMode}">
 	            
 	            <tags:nameValueContainer2>

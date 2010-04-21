@@ -16,13 +16,11 @@
 
 	<form id="createCallForm" action="/spring/stars/operator/callTracking/viewCall" method="get">
 		<input type="hidden" name="accountId" value="${accountId}">
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 	</form>
 	
 	<form action="/spring/stars/operator/callTracking/deleteCall" method="post">
 	
 		<input type="hidden" name="accountId" value="${accountId}">
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 
 		<table class="resultsTable callListTable rowHighlighting">
 		
@@ -55,7 +53,6 @@
 						<cti:displayForPageEditModes modes="EDIT,CREATE">
 							<cti:url var="viewCallUrl" value="/spring/stars/operator/callTracking/viewCall">
 								<cti:param name="accountId">${accountId}</cti:param>
-								<cti:param name="energyCompanyId">${energyCompanyId}</cti:param>
 								<cti:param name="callId">${callReportWrapper.callReport.callId}</cti:param>
 							</cti:url>
 							<a href="${viewCallUrl}"><spring:escapeBody htmlEscape="true">${callReportWrapper.callReport.callNumber}</spring:escapeBody></a>

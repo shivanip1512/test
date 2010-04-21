@@ -12,7 +12,6 @@
 <cti:url var="submitUrl" value="/spring/stars/operator/enrollment/unenroll"/>
 <form id="inputForm" action="${submitUrl}" onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
     <input type="hidden" name="accountId" value="${param.accountId}"/>
-    <input type="hidden" name="energyCompanyId" value="${param.energyCompanyId}"/>
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
     <p>

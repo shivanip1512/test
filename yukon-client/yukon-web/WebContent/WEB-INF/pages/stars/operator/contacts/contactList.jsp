@@ -26,13 +26,11 @@
 	<form id="addContactForm" action="/spring/stars/operator/contacts/contactEdit" method="get">
 		<input type="hidden" name="contactId" value="0"/>
 		<input type="hidden" name="accountId" value="${accountId}"/>
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
 	</form>
 	
 	<form id="deleteAdditionalContactForm" action="/spring/stars/operator/contacts/deleteAdditionalContact" method="post">
 		<input type="hidden" name="deleteAdditionalContactId" id="deleteAdditionalContactId"/>
 		<input type="hidden" name="accountId" value="${accountId}"/>
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
 	</form>
 	
 	<table class="resultsTable contactListTable">
@@ -58,7 +56,6 @@
 					<cti:displayForPageEditModes modes="EDIT,CREATE">
 						<cti:url var="contactEditUrl" value="/spring/stars/operator/contacts/contactEdit">
 							<cti:param name="accountId" value="${accountId}"/>
-							<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
 							<cti:param name="contactId" value="${contact.contactId}"/>
 						</cti:url>
 					

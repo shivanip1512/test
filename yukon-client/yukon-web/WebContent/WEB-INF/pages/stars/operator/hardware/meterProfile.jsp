@@ -26,7 +26,6 @@
         <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
             <input type="hidden" name="inventoryId" value="${hardwareDto.inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" name="deleteOption" value="delete">
             
             <i:inline key=".deleteQuestion"/>
@@ -59,7 +58,6 @@
         <input type="hidden" name="inventoryId" value="${hardwareDto.inventoryId}">
         <form:hidden path="hardwareType"/>
         <form:hidden path="hardwareTypeEntryId"/>
-        <form:hidden path="energyCompanyId"/>
         
         <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:50%;" tableClasses="widgetColumns">
         

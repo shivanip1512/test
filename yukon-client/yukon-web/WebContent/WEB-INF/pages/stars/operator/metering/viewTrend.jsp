@@ -32,7 +32,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	<c:set var="gdefid" value="<%=graphBean.getGdefid()%>"/>
 	<cti:url var="thisUrl" value="/spring/stars/operator/metering/viewTrend">
 		<cti:param name="accountId" value="${accountId}"/>
-		<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
 		<cti:param name="gdefid" value="${gdefid}"/>
 	</cti:url>
 	
@@ -91,7 +90,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 							<td class="nameCol">
 								<cti:url var="trendUrl" value="/spring/stars/operator/metering/viewTrend">
 									<cti:param name="accountId" value="${accountId}"/>
-									<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
 									<cti:param name="gdefid" value="${customerGraphWrapper.customerGraph.graphDefinitionId}"/>
 								</cti:url>
 								<a href="${trendUrl}">${customerGraphWrapper.name}</a>
@@ -103,7 +101,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 								<c:when test="${status.count == 1}">
 									<cti:url var="selectTrendsUrl" value="/spring/stars/operator/metering/selectTrends">
 										<cti:param name="accountId" value="${accountId}"/>
-										<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
 									</cti:url>
 									<a href="${selectTrendsUrl}"><i:inline key=".trends.selectTrends"/></a>
 								</c:when>

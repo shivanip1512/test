@@ -27,6 +27,11 @@ public interface ECMappingDao {
     public LiteStarsEnergyCompany getCustomerAccountEC(int accountId);
 
     /**
+     * Method to get just the energyCompanyId that a given accountId is in.
+     */
+    public int getEnergyCompanyIdForAccountId(int accountId);
+    
+    /**
      * Method to get the energy company for a given inventory id
      * @param inventoryId - Id of inventory to get ec for
      * @return Energy company

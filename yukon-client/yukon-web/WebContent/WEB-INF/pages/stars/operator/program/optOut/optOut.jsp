@@ -40,7 +40,6 @@
     <form:form id="optOutForm" action="/spring/stars/operator/program/optOut/view2" commandName="optOutBackingBean">
 
 		<input type="hidden" name="accountId" value="${accountId}" />
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
 
 		<tags:nameValueContainer2 nameColumnWidth="10%;">
 		
@@ -109,7 +108,6 @@
 
                         <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/cancel">
                             <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                             <cti:param name="eventId" value="${optOut.eventId}" />
                         </cti:url>
                         <i:simpleLink actionUrl="${cancelOptOutUrl}" 
@@ -119,7 +117,6 @@
                             <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
                                 <cti:url var="resendOptOutUrl" value="/spring/stars/operator/program/optOut/repeat">
                                     <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                     <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
                                     <cti:param name="eventId" value="${optOut.eventId}" />
                                 </cti:url>
@@ -181,7 +178,6 @@
             
                     <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
                         <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                         <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                     </cti:url>
 
@@ -194,7 +190,6 @@
 
                             <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
                                 <cti:param name="accountId" value="${accountId}"/>
-                                <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                 <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                             </cti:url>
 
@@ -219,7 +214,6 @@
 	<c:if test="${fn:length(previousOptOutList) > 0}">
         <cti:url var="optOutHistoryUrl" value="/spring/stars/operator/program/optOut/optOutHistory">
             <cti:param name="accountId" value="${accountId}"/>
-            <cti:param name="energyCompanyId" value="${energyCompanyId}" />
         </cti:url>
         <a href="${optOutHistoryUrl}" ><cti:msg key="yukon.dr.operator.optout.viewAll" /></a>
         <br><br>

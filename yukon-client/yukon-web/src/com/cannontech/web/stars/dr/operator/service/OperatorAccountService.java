@@ -21,5 +21,5 @@ public interface OperatorAccountService {
 	 */
 	public void saveContactDto(ContactDto contactDto, LiteCustomer customer);
 	
-	public AccountInfoFragment getAccountInfoFragment(int accountId, int energyCompanyId);
+	public AccountInfoFragment getAccountInfoFragment(int accountId);
 }

@@ -35,10 +35,16 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
 
     @Override
     public LiteStarsEnergyCompany getCustomerAccountEC(final int accountId) {
-        String sql = "SELECT EnergyCompanyID FROM ECToAccountMapping WHERE AccountID = ?";
-        int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, accountId);
+        int energyCompanyId = getEnergyCompanyIdForAccountId(accountId);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
+    }
+    
+    @Override
+    public int getEnergyCompanyIdForAccountId(int accountId) {
+    	
+    	String sql = "SELECT EnergyCompanyID FROM ECToAccountMapping WHERE AccountID = ?";
+        return simpleJdbcTemplate.queryForInt(sql, accountId);
     }
     
     @Override

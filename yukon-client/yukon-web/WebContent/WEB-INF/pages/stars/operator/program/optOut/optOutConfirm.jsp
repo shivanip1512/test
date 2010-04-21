@@ -62,7 +62,6 @@
             <form:hidden path="startDate" />
 
             <input type="hidden" name="accountId" value="${accountId}" />
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
             <input type="hidden" name="jsonInventoryIds" value="${jsonInventoryIds}" />
 
             <c:set var="index" value="0"/> 
@@ -84,7 +83,6 @@
 
             <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
                 <cti:param name="accountId" value="${accountId}" />
-                <cti:param name="energyCompanyId" value="${energyCompanyId}" />
             </cti:url>
             <input type="button" width="80px" value="<cti:msg2 key='.cancel'/>"
                    onclick="javascript:location.href='${optOutUrl}';">

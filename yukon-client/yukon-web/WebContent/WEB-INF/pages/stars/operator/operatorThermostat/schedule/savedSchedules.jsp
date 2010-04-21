@@ -16,7 +16,6 @@
 			<form method="post" action="/spring/stars/operator/thermostatSchedule/viewSavedSchedule">
 		    
 		    	<input name="accountId" type="hidden" value="${accountId}" />
-        		<input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
 		    	<input type="hidden" name="thermostatId" value="${thermostatId}">
 		    
 		    	<cti:msg2 key=".chooseSchedule" />

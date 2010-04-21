@@ -10,7 +10,7 @@
 	<form:form id="residenceUpdateForm" commandName="customerResidence" action="/spring/stars/operator/residence/residenceUpdate">
 	
 		<input type="hidden" name="accountId" value="${accountId}"/>
-		<input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
+		<form:hidden path="accountSiteId"/>
 	
 		<tags:sectionContainer2 key="customerResidenceSection">
 	

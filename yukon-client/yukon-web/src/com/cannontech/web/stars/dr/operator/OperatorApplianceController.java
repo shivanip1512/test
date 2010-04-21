@@ -96,6 +96,7 @@ public class OperatorApplianceController {
         modelMap.addAttribute("mode", PageEditMode.CREATE);
 
         modelMap.addAttribute("applianceCategoryName", applianceCategory.getName());
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
 
         return "operator/appliance/applianceNew.jsp";
     }
@@ -281,6 +282,7 @@ public class OperatorApplianceController {
                                               int applianceId) {
 
         modelMap.addAttribute("applianceId", applianceId);
+        modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
     }
 

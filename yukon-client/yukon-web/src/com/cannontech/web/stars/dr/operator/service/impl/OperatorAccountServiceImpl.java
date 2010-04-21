@@ -22,6 +22,7 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
@@ -48,6 +49,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	private ContactService contactService;
 	private ContactNotificationService contactNotificationService;
 	private ContactNotificationFormattingService contactNotificationFormattingService;
+	private ECMappingDao ecMappingDao;
 	
 	@Override
 	@Transactional
@@ -318,8 +320,9 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     }
     
     @Override
-    public AccountInfoFragment getAccountInfoFragment(int accountId, int energyCompanyId) {
+    public AccountInfoFragment getAccountInfoFragment(int accountId) {
     	
+    	int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
     	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountId, energyCompanyId);
     	
     	// customer objects
@@ -393,5 +396,10 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	@Autowired
 	public void setContactNotificationFormattingService(ContactNotificationFormattingService contactNotificationFormattingService) {
 		this.contactNotificationFormattingService = contactNotificationFormattingService;
+	}
+	
+	@Autowired
+	public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
 	}
 }

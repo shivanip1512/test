@@ -8,20 +8,20 @@
 <cti:standardPage module="operator" page="hardware.list">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
-<cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
-<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
-<cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatId="/>
-<cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}&amp;energyCompanyId=${energyCompanyId}"/>
-<cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;thermostatIds="/>
-<cti:url var="changeOutUrl" value="/spring/stars/operator/hardware/changeOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>
+<cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
+<cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
+<cti:url var="changeOutUrl" value="/spring/stars/operator/hardware/changeOut?accountId=${accountId}&amp;inventoryId="/>
 
 <c:choose>
     <c:when test="${starsMeters}">
-        <cti:url var="meterEditUrl" value="/spring/stars/operator/hardware/meterProfile?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
+        <cti:url var="meterEditUrl" value="/spring/stars/operator/hardware/meterProfile?accountId=${accountId}&amp;inventoryId="/>
     </c:when>
     <c:otherwise>
-        <cti:url var="meterEditUrl" value="/spring/stars/operator/hardware/hardwareEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId="/>
+        <cti:url var="meterEditUrl" value="/spring/stars/operator/hardware/hardwareEdit?accountId=${accountId}&amp;inventoryId="/>
     </c:otherwise>
 </c:choose>
 
@@ -79,7 +79,6 @@
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
-                <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
                 <input type="hidden" name="hardwareClass" value="${switchClass}">
                 <form:input path="serialNumber" size="15"/>
                 <input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>">
@@ -96,7 +95,6 @@
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".serialNumber">
                 <input type="hidden" name="accountId" value="${accountId}">
-                <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
                 <input type="hidden" name="hardwareClass" value="${thermostatClass}">
                 <form:input path="serialNumber" size="15"/>
                 <input type="submit" value="<cti:msg2 key=".checkInventoryButton"/>">
@@ -131,7 +129,6 @@
         
         <form action="/spring/stars/operator/hardware/addDeviceToAccount">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" name="serialNumber" value="${checkingAdd.serialNumber}">
             <input type="hidden" name="inventoryId" value="${checkingAdd.inventoryId}">
             <input type="hidden" name="fromAccount" value="false">
@@ -179,7 +176,6 @@
         
         <form action="/spring/stars/operator/hardware/addDeviceToAccount">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" value="${checkingAdd.serialNumber}">
             <input type="hidden" name="inventoryId" value="${checkingAdd.inventoryId}">
             <input type="hidden" name="fromAccount" value="true">
@@ -209,7 +205,6 @@
         
         <form action="/spring/stars/operator/hardware/hardwareCreate">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" name="serialNumber" value="${checkingAdd.serialNumber}">
             
             <c:choose>
@@ -325,7 +320,6 @@
         <br>
         <form action="/spring/stars/operator/hardware/hardwareCreate">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" name="hardwareClass" value="${switchClass}">
             <table style="width:100%;">
                 <tr>
@@ -405,7 +399,6 @@
                     <br>
                     <form action="/spring/stars/operator/hardware/hardwareCreate">
                         <input type="hidden" name="accountId" value="${accountId}">
-                        <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
                         <input type="hidden" name="hardwareClass" value="${thermostatClass}">
                     
                         <cti:checkRolesAndProperties value="!OPERATOR_INVENTORY_CHECKING">
@@ -500,13 +493,11 @@
         
         <form id="addMeterForm" action="/spring/stars/operator/hardware/addMeter">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" name="meterId" id="meterId">
         </form>
         
         <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <input type="hidden" name="changeOutId" id="changeOutId">
             <input type="hidden" name="oldInventoryId" id="oldInventoryId">
             <input type="hidden" name="isMeter" id="isMeter">
@@ -514,7 +505,6 @@
         
         <form action="/spring/stars/operator/hardware/meterProfileCreate">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <table style="width:100%;">
                 <tr>
                     <td>

@@ -23,6 +23,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventAccount;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -55,6 +56,7 @@ public class OperatorAccountController {
 	private AccountService accountService;
 	private AccountGeneralValidator accountGeneralValidator;
 	private RolePropertyDao rolePropertyDao;
+	private ECMappingDao ecMappingDao;
 	
 	// SEARCH
 	@RequestMapping
@@ -77,6 +79,7 @@ public class OperatorAccountController {
         }
         int startIndex = (page - 1) * itemsPerPage;
 		
+        // it is important for searching to use the energyCompany of the user
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
 		AccountSearchResultHolder accountSearchResultHolder = operatorGeneralSearchService.customerAccountSearch(searchBy, searchValue, startIndex, itemsPerPage, energyCompany, userContext);
 		
@@ -86,7 +89,6 @@ public class OperatorAccountController {
 			AccountSearchResult accountSearchResult = accountSearchResultHolder.getAccountSearchResults().getResultList().get(0);
 			
 			modelMap.addAttribute("accountId", accountSearchResult.getAccountId());
-			modelMap.addAttribute("energyCompanyId", accountSearchResult.getEnergyCompanyId());
 			
 			return "redirect:accountEdit";
 			
@@ -115,12 +117,12 @@ public class OperatorAccountController {
 	// ACCOUNT EDIT
 	@RequestMapping
     public String accountEdit(int accountId,
-    						  int energyCompanyId, 
     						  ModelMap modelMap, 
     						  YukonUserContext userContext,
     						  AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 		
 		// accountGeneral
+		int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
 		AccountDto accountDto = accountService.getAccountDto(accountId, energyCompanyId, userContext);
 		OperatorGeneralUiExtras operatorGeneralUiExtras = operatorAccountService.getOperatorGeneralUiExtras(accountId, userContext);
 		AccountGeneral accountGeneral = new AccountGeneral();
@@ -137,13 +139,13 @@ public class OperatorAccountController {
     public String accountUpdate(@ModelAttribute("accountGeneral") AccountGeneral accountGeneral, 
 								BindingResult bindingResult,
 								int accountId,
-	    						int energyCompanyId, 
 					    		ModelMap modelMap, 
 					    		YukonUserContext userContext,
 					    		FlashScope flashScope,
 					    		AccountInfoFragment accountInfoFragment) {
 		
 		// account
+		int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
 		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
 		String currentAccountNumber = customerAccount.getAccountNumber();
@@ -188,10 +190,11 @@ public class OperatorAccountController {
 	// ACCOUNT DELETE
 	@RequestMapping
     public String accountDelete(int accountId,
-    						  	int energyCompanyId, 
     							ModelMap modelMap, 
     							YukonUserContext userContext,
     							FlashScope flashScope) throws ServletRequestBindingException {
+		
+		int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
 		
 		accountService.deleteAccount(accountId, energyCompanyId);
 		
@@ -201,13 +204,11 @@ public class OperatorAccountController {
 	
 	// ACCOUNT LOG
 	@RequestMapping
-    public String accountLog(int accountId,
-		  					 int energyCompanyId, 
-    						 ModelMap modelMap, 
+    public String accountLog(ModelMap modelMap, 
     						 YukonUserContext userContext,
     						 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
-        ArrayList<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountId);
+        ArrayList<EventAccount> accountEvents = EventAccount.retrieveEventAccounts(accountInfoFragment.getAccountId());
         modelMap.addAttribute("accountEvents",accountEvents);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -283,5 +284,10 @@ public class OperatorAccountController {
 	@Autowired
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
+	}
+	
+	@Autowired
+	public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
 	}
 }

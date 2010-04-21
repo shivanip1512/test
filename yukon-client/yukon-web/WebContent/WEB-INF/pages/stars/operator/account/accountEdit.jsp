@@ -37,13 +37,11 @@
     
     <form id="deleteForm" action="/spring/stars/operator/account/accountDelete" method="post">
     	<input type="hidden" name="accountId" value="${accountId}">
-    	<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
     </form>
     
     <form:form id="updateForm" commandName="accountGeneral" action="/spring/stars/operator/account/accountUpdate">
     
     	<input type="hidden" name="accountId" value="${accountId}">
-    	<input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
     	
     	<cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
     	

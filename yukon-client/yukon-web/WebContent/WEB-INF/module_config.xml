@@ -882,24 +882,24 @@
     	<pages>
     	<page name="accountEdit" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
     		<menu>account</menu>
-           	<link>/spring/stars/operator/account/accountEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+           	<link>/spring/stars/operator/account/accountEdit?accountId=${accountId}</link>
            	<labelArgument>${accountNumber}</labelArgument>
            	<infoInclude>/WEB-INF/pages/stars/operator/accountInfoFragment.jsp</infoInclude>
            	<pages>
 		   		<page name="contactList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/contacts/contactList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/contacts/contactList?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 			        <pages>
                         <page name="contact.EDIT" type="DETAIL">
                             <menu>account</menu>
-                            <link>/spring/stars/operator/contacts/contactEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;contactId=${contactId}</link>
+                            <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=${contactId}</link>
                             <labelArgument>${contactDto.firstName}</labelArgument>
                             <labelArgument>${contactDto.lastName}</labelArgument>
                         </page>
                         <page name="contact.CREATE" type="BASIC">
                             <menu>account</menu>
-                            <link>/spring/stars/operator/contacts/contactEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;contactId=0</link>
+                            <link>/spring/stars/operator/contacts/contactEdit?accountId=${accountId}&amp;contactId=0</link>
                             <labelArgument>${contactDto.firstName}</labelArgument>
                             <labelArgument>${contactDto.lastName}</labelArgument>
                         </page>
@@ -908,25 +908,25 @@
 		    	<page name="residence" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE" />
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/residence/residenceEdit?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/residence/residenceEdit?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
 		    	<page name="callList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/callTracking/callList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/callTracking/callList?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		           	<pages>
 	                <page name="viewCall.EDIT" type="DETAIL">
     	              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
         	          <menu>account</menu>
-            	      <link>/spring/stars/operator/callTracking/viewCall?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+            	      <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
                 	  <labelArgument>${callReport.callNumber}</labelArgument>
 	                </page>
 	                <page name="viewCall.CREATE" type="BASIC">
     	              <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING" />
         	          <menu>account</menu>
-            	      <link>/spring/stars/operator/callTracking/viewCall?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+            	      <link>/spring/stars/operator/callTracking/viewCall?accountId=${accountId}</link>
                 	  <labelArgument>${callReport.callNumber}</labelArgument>
 	                </page>
     	          </pages>
@@ -934,24 +934,24 @@
 		    	<page name="metering" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    	<requireRoleProperty value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, OPERATOR_CONSUMER_INFO_METERING_CREATE" />
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/metering/viewTrend?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/metering/viewTrend?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		           	<pages>
 		           		<page name="selectTrends" type="DETAIL_CHILD_WITH_INFO">
 				    		<menu>account</menu>
-				           	<link>/spring/stars/operator/metering/selectTrends?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;trendId={trendId}</link>
+				           	<link>/spring/stars/operator/metering/selectTrends?accountId=${accountId}&amp;trendId={trendId}</link>
 				           	<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
 		           	</pages>
 		    	</page>
 		    	<page name="controlHistory" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/program/controlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/program/controlHistory?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		           	<pages>
 				   		<page name="completeControlHistory" type="DETAIL">
 				    		<menu>account</menu>
-				           	<link>/spring/stars/operator/program/completeControlHistory?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+				           	<link>/spring/stars/operator/program/completeControlHistory?accountId=${accountId}</link>
 		           	        <labelArgument>${program.programName}</labelArgument>
 				    	</page>
 			    	</pages>
@@ -959,12 +959,12 @@
 		    	<page name="enrollmentList" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    	    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT"/>
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/enrollment/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/enrollment/list?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
 		    	<page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/program/optOut?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/program/optOut?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
                     <pages>
                         <page name="optOut.inventoryList" type="BASIC">
@@ -982,7 +982,7 @@
 		    	</page>
 		    	<page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                     <menu>account</menu>
-                    <link>/spring/stars/operator/appliances/applianceList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+                    <link>/spring/stars/operator/appliances/applianceList?accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
                     <pages>
                         <page name="appliance.edit" type="DETAIL">
@@ -997,7 +997,7 @@
 		    	<page name="hardware.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
                     <requireRoleProperty value="OPERATOR_CONSUMER_INFO_HARDWARES" />
                     <menu>account</menu>
-                    <link>/spring/stars/operator/hardware/hardwareList?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+                    <link>/spring/stars/operator/hardware/hardwareList?accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
                     <pages>
                         <page name="hardware.CREATE" type="BASIC">
@@ -1025,12 +1025,12 @@
                         </page>
                         <page name="hardwareConfig" type="DETAIL_CHILD">
                             <menu>general</menu>
-                            <link>/spring/stars/operator/hardware/config/list?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
+                            <link>/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                             <labelArguments>${accountNumber}</labelArguments>
                         </page>
                         <page name="thermostatSelect" type="DETAIL_CHILD">
 				    		<menu>account</menu>
-				    		<link>/spring/stars/operator/thermostat/select?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+				    		<link>/spring/stars/operator/thermostat/select?accountId=${accountId}</link>
 		           			<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
                         <page name="thermostatManual" type="DETAIL_CHILD">
@@ -1057,12 +1057,12 @@
                 </page>
 		    	<page name="changeLogin" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/login/changeLogin?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/login/changeLogin?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
 		    	<page name="accountLog" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/account/accountLog?energyCompanyId=${energyCompanyId}&amp;accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/account/accountLog?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
            	</pages>

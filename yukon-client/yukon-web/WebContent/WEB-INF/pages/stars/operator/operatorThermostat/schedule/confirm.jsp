@@ -11,18 +11,11 @@
     <%-- THERMOSTAT NAMES --%>
     <jsp:include page="/WEB-INF/pages/stars/operator/operatorThermostat/selectedThermostatsFragment.jsp" />
     
-    <cti:url var="cancelUrl" value="/spring/stars/operator/thermostat/scheduleView">
-	 	<cti:param name="accountId" value="${accountId}"/>
-	 	<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
-	 	<cti:param name="thermostatIds" value="${thermostatIds}"/>
-	 </cti:url>
- 
     <cti:msg2 key=".introText" /><br>
     <br>
     
     <form id="cancelForm" method="post" action="/spring/stars/operator/thermostatSchedule/view">
     	<input name="accountId" type="hidden" value="${accountId}" />
-        <input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
         <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
     </form>
     
@@ -30,7 +23,6 @@
     <form id="scheduleForm" name="scheduleForm" method="post" action="/spring/stars/operator/thermostatSchedule/save">
         
         <input name="accountId" type="hidden" value="${accountId}" />
-        <input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
         <input type="hidden" name="schedules" value="<spring:escapeBody htmlEscape="true">${schedules}</spring:escapeBody>"/>
         <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
         <input type="hidden" name="timeOfWeek" value="${timeOfWeek}"/>

@@ -14,7 +14,6 @@
     onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
     <input type="hidden" name="isAdd" value="${isAdd}"/>
     <input type="hidden" name="accountId" value="${accountId}"/>
-    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
     <form:hidden path="loadGroupId"/>
     <c:forEach var="item" varStatus="status" items="${programEnrollment.inventoryEnrollments}">

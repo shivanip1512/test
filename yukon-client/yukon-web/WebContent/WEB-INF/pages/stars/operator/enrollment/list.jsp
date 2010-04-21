@@ -85,8 +85,6 @@ var programIdsAlreadyEnrolled = [];
                     <td>
                         <cti:url var="editUrl" value="/spring/stars/operator/enrollment/edit">
                             <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="energyCompanyId"
-                                value="${energyCompanyId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
                         <tags:simpleDialogLink2 dialogId="peDialog" key="edit"
@@ -94,8 +92,6 @@ var programIdsAlreadyEnrolled = [];
 
                         <cti:url var="unenrollUrl" value="/spring/stars/operator/enrollment/confirmUnenroll">
                             <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="energyCompanyId"
-                                value="${energyCompanyId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
                         <tags:simpleDialogLink2 dialogId="peDialog" key="remove"
@@ -119,7 +115,6 @@ var programIdsAlreadyEnrolled = [];
         <cti:url var="editUrl" value="/spring/stars/operator/enrollment/add"/>
         <form id="addEnrollmentForm" action="${editUrl}">
             <input type="hidden" name="accountId" value="${accountId}"/>
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
             <div class="actionArea">
                 <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
                     memoryGroup="programPicker"
@@ -182,7 +177,6 @@ var programIdsAlreadyEnrolled = [];
         <div class="actionArea">
             <cti:url var="showAllHistoryUrl" value="/spring/stars/operator/enrollment/list">
                 <cti:param name="accountId" value="${accountId}"/>
-                <cti:param name="energyCompanyId" value="${energyCompanyId}"/>
                 <cti:param name="showAllHistory" value="true"/>
             </cti:url>
             <input type="button" value="<cti:msg2 key=".showAllHistory"/>" onclick="window.location='${showAllHistoryUrl}'">

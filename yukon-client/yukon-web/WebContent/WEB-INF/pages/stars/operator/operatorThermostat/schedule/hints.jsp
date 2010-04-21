@@ -11,7 +11,6 @@
     
     <form id="backForm" method="post" action="/spring/stars/operator/thermostatSchedule/view">
     	<input name="accountId" type="hidden" value="${accountId}" />
-        <input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
         <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
     </form>
     

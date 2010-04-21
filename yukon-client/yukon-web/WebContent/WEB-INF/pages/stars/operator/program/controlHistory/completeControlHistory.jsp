@@ -44,7 +44,6 @@ function updateControlEvents(controlPeriod) {
         'parameters': { 
             'programId': '${program.programId}',
             'accountId': '${accountId}',
-            'energyCompanyId': '${energyCompanyId}',
             'controlPeriod': controlPeriod
         }
     });    

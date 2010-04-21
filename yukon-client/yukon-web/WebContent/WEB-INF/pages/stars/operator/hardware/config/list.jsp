@@ -67,8 +67,6 @@ var programIdsAlreadyEnrolled = [];
                     <td>
                         <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit">
                             <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="energyCompanyId"
-                                value="${energyCompanyId}"/>
                             <cti:param name="inventoryId" value="${inventoryId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
@@ -77,8 +75,6 @@ var programIdsAlreadyEnrolled = [];
     
                         <cti:url var="unenrollUrl" value="/spring/stars/operator/hardware/config/unenroll">
                             <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="energyCompanyId"
-                                value="${energyCompanyId}"/>
                             <cti:param name="inventoryId" value="${inventoryId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>
                         </cti:url>
@@ -103,7 +99,6 @@ var programIdsAlreadyEnrolled = [];
         <cti:url var="editUrl" value="/spring/stars/operator/hardware/config/edit"/>
         <form id="addEnrollmentForm" action="${editUrl}">
             <input type="hidden" name="accountId" value="${accountId}"/>
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}"/>
             <input type="hidden" name="inventoryId" value="${inventoryId}"/>
             <div class="actionArea">
                 <tags:pickerDialog type="assignedProgramPicker" id="programPicker"
@@ -126,13 +121,11 @@ var programIdsAlreadyEnrolled = [];
 <tags:boxContainer2 key="otherDeviceActions">
     <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
        <cti:param name="accountId" value="${accountId}"/>
-       <cti:param name="energyCompanyId" value="${energyCompanyId}"/>
        <cti:param name="inventoryId" value="${inventoryId}"/>
     </cti:url>
     <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'">
     <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
        <cti:param name="accountId" value="${accountId}"/>
-       <cti:param name="energyCompanyId" value="${energyCompanyId}"/>
        <cti:param name="inventoryId" value="${inventoryId}"/>
     </cti:url>
     <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'">

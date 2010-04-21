@@ -10,7 +10,6 @@ public class AccountInfoFragmentHelper {
 		
 		modelMap.addAttribute("accountInfoFragment", accountInfoFragment);
 		modelMap.addAttribute("accountId", accountInfoFragment.getAccountId());
-		modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
 		modelMap.addAttribute("accountNumber", accountInfoFragment.getAccountNumber());
 	}
 }

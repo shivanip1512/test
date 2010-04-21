@@ -108,7 +108,6 @@
         <form id="deleteForm" action="/spring/stars/operator/hardware/deleteHardware" method="post">
             <input type="hidden" name="inventoryId" value="${inventoryId}">
             <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
             <c:choose>
                 <c:when test="${hardwareDto.hardwareClass == 'METER'}">
                     <c:set var="deleteMsgKeySuffix" value="DeviceName"/>

@@ -15,7 +15,6 @@
                 <tags:sectionContainer2 key="applianceInfo">
                     <form id="cancelForm" action="/spring/stars/operator/appliances/applianceList" method="get">
                         <input type="hidden" name="accountId" value="${accountId}">
-                        <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
                     </form>
 
                     <drForms:starsApplianceForm formId="createForm" formUrl="/spring/stars/operator/appliances/applianceCreate" />

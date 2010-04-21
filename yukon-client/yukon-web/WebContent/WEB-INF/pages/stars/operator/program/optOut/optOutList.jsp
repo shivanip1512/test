@@ -10,7 +10,6 @@
 
 <cti:url var="actionUrl" value="/spring/stars/operator/program/optOut/optOutQuestions">
     <cti:param name="accountId" value="${accountId}" />
-    <cti:param name="energyCompanyId" value="${energyCompanyId}" />
 </cti:url>
 
 <script type="text/javascript">
@@ -62,7 +61,6 @@ function createJSON() {
                    action="/spring/stars/operator/program/optOut/optOutQuestions" 
                    method="POST" onsubmit="createJSON();">
             <input type="hidden" name="accountId" value="${accountId}" />
-            <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
 
             <div id="controlEventsDiv" style="height: auto;">
                 <table class="resultsTable">
@@ -122,7 +120,6 @@ function createJSON() {
             </span>
             <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
             	<cti:param name="accountId" value="${accountId}" />
-            	<cti:param name="energyCompanyId" value="${energyCompanyId}" />
             </cti:url>
             <input type="button" width="80px" value="<cti:msg2 key='.cancel'/>"
                    onclick="javascript:location.href='${optOutUrl}';">

@@ -6,7 +6,6 @@
 <%-- THERMOSTAT SELECT PAGE URL --%>
 <cti:url var="changeSelectedUrl" value="/spring/stars/operator/thermostatSelect/select">
  	<cti:param name="accountId" value="${accountId}"/>
- 	<cti:param name="energyCompanyId" value="${energyCompanyId}"/>
  </cti:url>
      
 <%-- THERMOSTAT NAMES --%>

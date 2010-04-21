@@ -60,7 +60,6 @@
                         <td class="boxContainer_content">
                             <form action="/spring/stars/operator/thermostatManual/save" method="post" >
                                 <input name="accountId" type="hidden" value="${accountId}" />
-                                <input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
                                 <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                                 <table width="100%" cellpadding="0" cellspacing="0">
                                     <tr>
@@ -223,7 +222,6 @@
                 <br><br>
                 <form action="/spring/stars/operator/thermostatManual/save" method="post" >
                 	<input name="accountId" type="hidden" value="${accountId}" />
-                    <input name="energyCompanyId" type="hidden" value="${energyCompanyId}" />
                     <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
                     <cti:msg var="runProgramText" key="yukon.web.modules.operator.thermostatManual.runProgram" />
                     <input id="temperatureUnitRun" type="hidden" name="temperatureUnit" value="F">

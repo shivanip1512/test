@@ -23,7 +23,6 @@
                              <td>
                                  <cti:url var="editApplianceUrl" value="/spring/stars/operator/appliances/applianceEdit">
                                      <cti:param name="accountId" value="${accountId}"/>
-                                     <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                      <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                  </cti:url>
                                  <a href="${editApplianceUrl}">
@@ -49,7 +48,6 @@
                              <td>
                                  <cti:url var="deleteApplianceUrl" value="/spring/stars/operator/appliances/applianceDelete">
                                      <cti:param name="accountId" value="${accountId}"/>
-                                     <cti:param name="energyCompanyId" value="${energyCompanyId}" />
                                      <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                  </cti:url>
                                  <i:simpleLink actionUrl="${deleteApplianceUrl}" logoKey="deleteAppliance"/>
@@ -68,7 +66,6 @@
                     <br>
                     <form action="/spring/stars/operator/appliances/applianceNew">
                         <input type="hidden" name="accountId" value="${accountId}"/>
-                        <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
                              
                         <table>
                             <tr align="right"><td>
