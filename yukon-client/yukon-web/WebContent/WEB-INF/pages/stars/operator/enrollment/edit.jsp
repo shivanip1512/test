@@ -36,7 +36,7 @@ updateOKButton = function() {
 <h1 class="dialogQuestion"><i:inline key=".headerMessage" arguments="${assignedProgram.displayName}"/></h1>
 
 <cti:url var="submitUrl" value="/spring/stars/operator/enrollment/confirmSave">
-    <cti:param name="mode" value="${mode}"/>
+    <cti:param name="isAdd" value="${isAdd}"/>
 </cti:url>
 <form:form id="inputForm" commandName="programEnrollment" action="${submitUrl}"
     onsubmit="return submitFormViaAjax('peDialog', 'inputForm')">
