@@ -3,8 +3,6 @@
  */
 package com.cannontech.web.dr;
 
-import com.cannontech.user.YukonUserContext;
-
 public class StartProgramBackingBean extends StartProgramBackingBeanBase {
     private int programId;
     private int gearNumber;
@@ -25,8 +23,4 @@ public class StartProgramBackingBean extends StartProgramBackingBeanBase {
         this.gearNumber = gearNumber;
     }
 
-    public void initDefaults(YukonUserContext userContext) {
-        super.initDefaults(userContext);
-        gearNumber = 1;
-    }
 }

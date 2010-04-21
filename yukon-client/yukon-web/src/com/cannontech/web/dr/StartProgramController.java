@@ -1,13 +1,17 @@
 package com.cannontech.web.dr;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.LocalTime;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -23,6 +27,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
@@ -56,7 +61,7 @@ public class StartProgramController extends ProgramControllerBase {
             BindingResult bindingResult, YukonUserContext userContext) {
     	
         if (fromBack == null || !fromBack) {
-            backingBean.initDefaults(userContext);
+            setStartProgramBackingBeanDefaults(backingBean, userContext);
         }
 
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
@@ -281,7 +286,10 @@ public class StartProgramController extends ProgramControllerBase {
         model.addAttribute("programs", programs);
 
         if (fromBack == null || !fromBack) {
-            backingBean.initDefaults(userContext, programs, scenarioPrograms);
+            setStartMultipleProgramBackingBeanBaseDefaults(backingBean, 
+                                                               userContext, 
+                                                               programs, 
+                                                               scenarioPrograms);
         }
 
         addConstraintsInfoToModel(model, fromBack, userContext, backingBean);
@@ -645,4 +653,76 @@ public class StartProgramController extends ProgramControllerBase {
         }
         return programIndexTargetGearMap;
     }
+    
+    private void setStartProgramBackingBeanBaseDefaults(StartProgramBackingBeanBase backingBean,
+                                                          YukonUserContext userContext) {
+        // With start and stop, it's important that we get the values
+        // squared away up front and don't change them after checking
+        // constraints so when we actually schedule the controlArea, we are
+        // scheduling exactly what we checked for constraints.
+        // We keep the "startNow" and "scheduleStop" booleans around so we
+        // always know if the user chose those options.
+
+        // Setting whether start now is checked by default
+        boolean isStartNowChecked = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.START_NOW_CHECKED_BY_DEFAULT,
+                                                    userContext.getYukonUser());
+        backingBean.setStartNow(isStartNowChecked);
+        
+        DateTime jodaNow = new DateTime(userContext.getJodaTimeZone());
+        backingBean.setNow(jodaNow.toDate());
+
+        // Setting default start time
+        DateTime jodaStartTime = jodaNow;
+        String startTimeDefault =
+            rolePropertyDao.getPropertyStringValue(YukonRoleProperty.START_TIME_DEFAULT,
+                                                   userContext.getYukonUser());
+        if (!StringUtils.isBlank(startTimeDefault)) {
+            LocalTime defaultStartLocalTime = RolePropertyTypeHelper.asLocalTime(startTimeDefault);
+            jodaStartTime = defaultStartLocalTime.toDateTimeToday(userContext.getJodaTimeZone());
+        }
+        backingBean.setStartDate(jodaStartTime.toDate());
+
+        // Setting whether schedule stop is checked by default
+        boolean isScheduleStopChecked = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SCHEDULE_STOP_CHECKED_BY_DEFAULT,
+                                                    userContext.getYukonUser());
+        backingBean.setScheduleStop(isScheduleStopChecked);
+        
+        // Setting the default duration
+        int controlDuration =
+            rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.CONTROL_DURATION_DEFAULT, 
+                                                    userContext.getYukonUser());
+        backingBean.setStopDate(jodaStartTime.plusMinutes(controlDuration).toDate());
+    }
+    
+    private void setStartProgramBackingBeanDefaults(StartProgramBackingBean backingBean,
+                                                      YukonUserContext userContext) {
+
+        setStartProgramBackingBeanBaseDefaults(backingBean, userContext);
+        backingBean.setGearNumber(1);
+    }
+
+    private void setStartMultipleProgramBackingBeanBaseDefaults(
+                       StartMultipleProgramsBackingBean backingBean,
+                       YukonUserContext userContext,
+                       List<DisplayablePao> programs,
+                       Map<Integer, ScenarioProgram> scenarioPrograms) {
+
+        setStartProgramBackingBeanBaseDefaults(backingBean, userContext);
+        List<ProgramStartInfo> programStartInfo = new ArrayList<ProgramStartInfo>(programs.size());
+        for (DisplayablePao program : programs) {
+            int programId = program.getPaoIdentifier().getPaoId();
+            int gearNumber = 1;
+            if (scenarioPrograms != null) {
+                ScenarioProgram scenarioProgram = scenarioPrograms.get(programId);
+                if (scenarioProgram != null) {
+                    gearNumber = scenarioProgram.getStartGear();
+                }
+            }
+            programStartInfo.add(new ProgramStartInfo(programId, gearNumber, true));
+        }
+        backingBean.setProgramStartInfo(programStartInfo);
+    }
+
 }
