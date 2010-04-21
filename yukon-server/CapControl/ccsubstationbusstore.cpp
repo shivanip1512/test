@@ -11974,7 +11974,7 @@ void CtiCCSubstationBusStore::cascadeStrategySettingsToChildren(LONG spAreaId, L
                         CtiCCSubstationBus* currentCCSubstationBus = findSubBusByPAObjectID(subBusId);
                         if (currentCCSubstationBus != NULL)
                         {
-                            if (station->getSaEnabledFlag())
+                            if (station->getSaEnabledFlag() && station->getSaEnabledId() == spAreaId)
                             {
                                 currentCCSubstationBus->setStrategy(strategyID);
 
