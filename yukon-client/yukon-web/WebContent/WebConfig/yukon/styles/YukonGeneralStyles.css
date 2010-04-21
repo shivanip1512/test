@@ -640,6 +640,26 @@ div.sectionContainer .sectionContainer_content {
    border-top:1px #CCCCCC solid;
 }
 
+
+
+/* FORM ELEMENT CONTAINER */
+div.formElementContainer .formElementContainer_titleBar {
+  padding-bottom:5px;
+}
+
+div.formElementContainer .formElementContainer_titleBar .formElementContainer_title {
+   color:#0066CC;
+   font-size:14px;
+   font-weight:bold;
+}
+
+div.formElementContainer .formElementContainer_content {
+   padding: .5em;
+   border-top:1px #DDD solid;
+}
+
+
+
 div.pagedBox table {
     width: 100%;
     vertical-align: bottom;
