@@ -29,6 +29,7 @@ import com.cannontech.web.menu.CommonMenuException;
 import com.cannontech.web.menu.MenuBase;
 import com.cannontech.web.menu.MenuFeatureSet;
 import com.cannontech.web.menu.ModuleBase;
+import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
@@ -60,6 +61,7 @@ public class StandardMenuRenderer implements MenuRenderer {
     private MenuFeatureSet features = new MenuFeatureSet();
     private String[] selections = new String[2];
     private final MessageSourceAccessor messageSource;
+    private PageInfo currentPage;
     
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.
@@ -69,11 +71,12 @@ public class StandardMenuRenderer implements MenuRenderer {
      * @param moduleBase the menu base of the current module
      * @param messageSource 
      */
-    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase,  YukonUserContextMessageSourceResolver messageSourceResolver) {
+    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase, PageInfo currentPage, YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.httpServletRequest = request;
         this.moduleBase = moduleBase;
         this.userContext = YukonUserContextUtils.getYukonUserContext(request);
         this.messageSource = messageSourceResolver.getMessageSourceAccessor(userContext);
+        this.currentPage = currentPage;
     }
     
     public String renderMenu() {
@@ -313,7 +316,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             wrapper.addElement(left);
         }
         
-        if (moduleBase.getSearchProducer() != null && features.showSearch) {
+        if (moduleBase.getSearchProducer() != null && features.showSearch && !currentPage.isHideSearch()) {
         	
         	SearchProducer searchProducer = moduleBase.getSearchProducer();
         	

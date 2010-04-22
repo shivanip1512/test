@@ -872,11 +872,11 @@
     </menu>
 
     <pages>
-    	<page name="home" type="LANDING">
+    	<page name="home" type="LANDING" hideSearch="true">
     		<menu>account</menu>
            	<link>/spring/stars/operator/home</link>
     	</page>
-    	<page name="accountList" type="BASIC">
+    	<page name="accountList" type="BASIC" hideSearch="true">
     		<menu>account</menu>
     		<link>/spring/stars/operator/account/accountList</link>
     	<pages>

@@ -164,7 +164,7 @@ public class LayoutController {
             if (skin.isLeftSideMenu()) {
                 menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
             } else {
-                menuRenderer = new StandardMenuRenderer(request, moduleBase, messageSourceResolver);
+                menuRenderer = new StandardMenuRenderer(request, moduleBase, pageInfo, messageSourceResolver);
             }
             menuRenderer.setMenuSelection(menuSelection);
             // if bread crumbs were specified within the JSP, use them (old style)

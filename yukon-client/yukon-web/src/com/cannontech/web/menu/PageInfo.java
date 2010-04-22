@@ -22,6 +22,7 @@ public class PageInfo implements Comparable<PageInfo> {
     private UserChecker userChecker;
     private boolean navigationMenuRoot;
     private boolean contributeToMenu;
+    private boolean hideSearch;
     
     public String getName() {
         return name;
@@ -151,6 +152,14 @@ public class PageInfo implements Comparable<PageInfo> {
     public boolean isContributeToMenu() {
         return contributeToMenu;
     }
+    
+    public void setHideSearch(boolean hideSearch) {
+		this.hideSearch = hideSearch;
+	}
+    
+    public boolean isHideSearch() {
+		return hideSearch;
+	}
     
     @Override
     public int hashCode() {
