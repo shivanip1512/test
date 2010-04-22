@@ -64,7 +64,7 @@
             <%-- METER INFO --%>
             <cti:dataGridCell>
             
-                <tags:formElementContainer key="meterInfoSection">
+                <tags:formElementContainer nameKey="meterInfoSection">
                 
                     <tags:nameValueContainer2>
                     

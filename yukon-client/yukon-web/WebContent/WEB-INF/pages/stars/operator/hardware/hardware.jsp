@@ -163,7 +163,7 @@
             <%-- DEVICE INFO --%>
             <cti:dataGridCell>
             
-                <tags:formElementContainer key="deviceInfoSection">
+                <tags:formElementContainer nameKey="deviceInfoSection">
                     
                     <tags:nameValueContainer2>
                     
@@ -269,7 +269,7 @@
             <%--SERVICE AND STORAGE --%>
             <cti:dataGridCell>
             
-                <tags:formElementContainer key="serviceAndStorageSection">
+                <tags:formElementContainer nameKey="serviceAndStorageSection">
                     
                     <tags:nameValueContainer2>
                         
