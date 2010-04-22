@@ -9,19 +9,15 @@
     
     <entry key="yukon.web.modules.operator.appliance.list.appliances">Appliances</entry>
     <entry key="yukon.web.modules.operator.appliance.list.applianceName">Appliance Name</entry>
-    <entry key="yukon.web.modules.operator.appliance.list.inventoryName">Inventory Name</entry>
+    <entry key="yukon.web.modules.operator.appliance.list.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.operator.appliance.list.programName">Program Name</entry>
     <entry key="yukon.web.modules.operator.appliance.list.actions">Actions</entry>
     <entry key="yukon.web.modules.operator.appliance.list.noAppliances">No existing appliances</entry>
-    <entry key="yukon.web.modules.operator.appliance.list.applianceNotAssigned">This appliance is not currently attached to an enrollment.</entry>
+    <entry key="yukon.web.modules.operator.appliance.list.notApplicable">N/A</entry>
     
     <!-- Appliance Icon Links -->
-   	<entry key="yukon.web.modules.operator.appliance.list.editAppliance.imageUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-	<entry key="yukon.web.modules.operator.appliance.list.editAppliance.hoverUrl">/WebConfig/yukon/Icons/pencil.gif</entry>
-	<entry key="yukon.web.modules.operator.appliance.list.editAppliance.hoverText">Edit appliance</entry>
-    
     <entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
 	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverText">Delete appliance</entry>
 	
 	<entry key="yukon.web.modules.operator.appliance.list.create">Create</entry>
@@ -34,7 +30,7 @@
     <entry key="yukon.web.modules.operator.appliance.edit.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.appliance.applianceInfo.title">Appliance Information</entry>
     <entry key="yukon.web.modules.operator.appliance.applianceCategory">Appliance Category</entry>
-    <entry key="yukon.web.modules.operator.appliance.modelNumber">Model #</entry>
+    <entry key="yukon.web.modules.operator.appliance.modelNumber">Model Number</entry>
     <entry key="yukon.web.modules.operator.appliance.location">Location</entry>
     <entry key="yukon.web.modules.operator.appliance.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.modules.operator.appliance.yearManufactured">Year Manufactured</entry>
@@ -109,21 +105,21 @@
     <entry key="yukon.web.modules.operator.appliance.edit.applianceUpdated">Appliance Updated</entry>
 
     <!-- Validation -->
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be {0} digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.kwCapacity">kW Capacity must be a number and cannot be more than {0} digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.efficiencyRating">Efficiency Rating must be a number and cannot be more than {0} digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be 4 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.kwCapacity">kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.efficiencyRating">Efficiency Rating must be a number and cannot be more than 14 digits in length.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.dualFuel.secondaryKWCapacity">Secondary kW Capacity must be a number and cannot be more than {0} digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.dualFuel.secondaryKWCapacity">Secondary kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.peakKWCapacity">Peak kW Capacity must be a number and cannot be more than {0} digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.fuelCapGallons">Fuel Cap Gallons must be a number and cannot be more than {0} digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.startDelaySeconds">Start Delay must be a number and cannot be more than {0} digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.peakKWCapacity">Peak kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.fuelCapGallons">Fuel Cap Gallons must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.startDelaySeconds">Start Delay must be a number and cannot be more than 14 digits in length.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.heatPump.restartDelaySeconds">Restart Delay must be a number and cannot be more than {0} digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.heatPump.restartDelaySeconds">Restart Delay must be a number and cannot be more than 14 digits in length.</entry>
     
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.peakKWCapacity">Peak kW Capacity must be a number and cannot be more than {0} digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.hoursToRecharge">Recharge Time must be a number and cannot be more than {0} digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.peakKWCapacity">Peak kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.hoursToRecharge">Recharge Time must be a number and cannot be more than 14 digits in length.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.wh.numOfHeatingCoils"># Heating Coils must be a number and cannot be more than {0} numbers in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.wh.numOfHeatingCoils"># Heating Coils must be a number and cannot be more than 14 digits in length.</entry>
 
  </properties>

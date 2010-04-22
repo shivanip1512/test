@@ -25,7 +25,7 @@
         <tags:inputNameValue nameKey=".yearManufactured" path="yearManufactured"/>
         <tags:inputNameValue nameKey=".kwCapacity" path="kwCapacity"/>
         <tags:inputNameValue nameKey=".efficiencyRating" path="efficiencyRating"/>
-        <tags:textareaNameValue cols="12" rows="3" nameKey=".notes" path="notes"/>
+        <tags:textareaNameValue cols="20" rows="4" nameKey=".notes" path="notes"/>
         
         <!-- Appliance Specific Fields -->
         <c:choose>

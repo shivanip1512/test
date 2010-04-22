@@ -12,7 +12,7 @@
     <table>
         <tr>
             <td rowspan="3" valign="top">
-                <tags:sectionContainer2 key="applianceInfo">
+                <tags:formElementContainer nameKey="applianceInfo">
                     <form id="cancelForm" action="/spring/stars/operator/appliances/applianceList" method="get">
                         <input type="hidden" name="accountId" value="${accountId}">
                     </form>
@@ -20,11 +20,11 @@
                     <drForms:starsApplianceForm formId="createForm" formUrl="/spring/stars/operator/appliances/applianceCreate" />
 
                     <br>
+                    
                     <tags:slowInput2 myFormId="createForm" key="create" />
-                    <tags:reset myFormId="createForm" />
                     <tags:slowInput2 myFormId="cancelForm" key="cancel" />
                         
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
             </td>
         </tr>
  	</table>

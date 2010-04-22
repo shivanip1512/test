@@ -12,25 +12,33 @@
     <table>
       <tr>
         <td rowspan="3" valign="top">
-            <tags:sectionContainer2 key="applianceInfo">
+            <tags:formElementContainer nameKey="applianceInfo">
                 <form id="deleteForm" action="/spring/stars/operator/appliances/applianceDelete" method="post">
                     <input type="hidden" name="accountId" value="${accountId}">
                     <input type="hidden" name="applianceId" value="${starsAppliance.applianceID}" >
                 </form>
                 
+                <form id="cancelForm" action="/spring/stars/operator/appliances/applianceList" method="post">
+                    <input type="hidden" name="accountId" value="${accountId}">
+                    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
+                </form>
+                
                 <drForms:starsApplianceForm formId="updateForm" formUrl="/spring/stars/operator/appliances/applianceUpdate" />
 
                 <br>
-                <tags:slowInput2 myFormId="updateForm" key="save" />
-                <tags:reset myFormId="updateForm" />
-                <tags:slowInput2 myFormId="deleteForm" key="delete" />
+
+                <cti:displayForPageEditModes modes="EDIT">
+                    <tags:slowInput2 myFormId="updateForm" key="save"/>
+                    <tags:slowInput2 myFormId="deleteForm" key="delete"/>
+                </cti:displayForPageEditModes>
+                <tags:slowInput2 myFormId="cancelForm" key="cancel"/>
                         
-            </tags:sectionContainer2>
+            </tags:formElementContainer>
         </td>
 		<td rowspan="3" width="50px"></td>
         <td valign="top">
             <c:if test="${not empty displayableInventoryEnrollment}">
-                <tags:sectionContainer2 key="enrollment">
+                <tags:formElementContainer nameKey="enrollment">
                     <tags:nameValueContainer2 nameColumnWidth="125px">
                         <tags:nameValue2 nameKey=".program">
                             <spring:escapeBody htmlEscape="true">${displayableInventoryEnrollment.programName.displayName}</spring:escapeBody>
@@ -42,15 +50,15 @@
                             <spring:escapeBody htmlEscape="true">${displayableInventoryEnrollment.relay}</spring:escapeBody>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
             </c:if>
-        </td>  
+        </td>
       </tr>
       <tr><td></td></tr>
       <tr>
-          <td valign="top">
+        <td valign="top">
             <c:if test="${not empty hardware}">
-                <tags:sectionContainer2 key="hardwareSummary">
+                <tags:formElementContainer nameKey="hardwareSummary">
                     <tags:nameValueContainer2 nameColumnWidth="125px">
                         <tags:nameValue2 nameKey=".category">
                             <spring:escapeBody htmlEscape="true">${hardware.categoryName}</spring:escapeBody>
@@ -62,9 +70,9 @@
                             <spring:escapeBody htmlEscape="true">${hardware.serialNumber}</spring:escapeBody>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                </tags:sectionContainer2>
+                </tags:formElementContainer>
             </c:if>          
-          </td>
+        </td>
       </tr>
  	</table>
 </cti:standardPage>

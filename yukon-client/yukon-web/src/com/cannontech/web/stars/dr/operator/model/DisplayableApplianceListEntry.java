@@ -5,15 +5,15 @@ import java.util.Comparator;
 public class DisplayableApplianceListEntry {
     protected int applianceId;
     protected String applianceName;
-    protected String serialNumber;
+    protected String deviceLabel;
     protected String assignedProgramName;
     
     public DisplayableApplianceListEntry(){}
     
-    public DisplayableApplianceListEntry(int applianceId, String applianceName, String serialNumber, String assignedProgramName) {
+    public DisplayableApplianceListEntry(int applianceId, String applianceName, String deviceLabel, String assignedProgramName) {
         this.applianceId = applianceId;
         this.applianceName = applianceName;
-        this.serialNumber = serialNumber;
+        this.deviceLabel = deviceLabel;
         this.assignedProgramName = assignedProgramName;
     }
 
@@ -41,13 +41,14 @@ public class DisplayableApplianceListEntry {
         this.applianceName = applianceName;
     }
     
-    public String getSerialNumber() {
-        return serialNumber;
+    public String getDeviceLabel() {
+        return deviceLabel;
     }
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
+
+    public void setDeviceLabel(String deviceLabel) {
+        this.deviceLabel = deviceLabel;
     }
-    
+
     public String getAssignedProgramName() {
         return assignedProgramName;
     }

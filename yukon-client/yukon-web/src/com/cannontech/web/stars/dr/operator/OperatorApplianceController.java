@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -36,6 +38,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
@@ -45,6 +48,7 @@ import com.cannontech.web.stars.dr.operator.service.DisplayableApplianceService;
 import com.cannontech.web.stars.dr.operator.validator.ApplianceValidator;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES)
 @RequestMapping(value = "/operator/appliances/*")
 public class OperatorApplianceController {
 
@@ -53,6 +57,7 @@ public class OperatorApplianceController {
     private DisplayableApplianceService displayableApplianceService;
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
     private HardwareService hardwareService;
+    private RolePropertyDao rolePropertyDao;
     private StarsApplianceDao starsApplianceDao;
     private StarsApplianceService starsApplianceService;
     private StarsDatabaseCache starsDatabaseCache;
@@ -87,13 +92,21 @@ public class OperatorApplianceController {
                                AccountInfoFragment accountInfoFragment) 
             throws ServletRequestBindingException {
 
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE, 
+                                       userContext.getYukonUser());
+        boolean allowAccountEditing = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                                    userContext.getYukonUser());
+        
+        // Builds up modelMap
         ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
         StarsAppliance starsAppliance = new StarsAppliance();
         starsAppliance.setApplianceCategory(applianceCategory);
         modelMap.addAttribute("starsAppliance", starsAppliance);
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
-        modelMap.addAttribute("mode", PageEditMode.CREATE);
+        modelMap.addAttribute("mode", 
+                              allowAccountEditing ? PageEditMode.CREATE : PageEditMode.VIEW);
 
         modelMap.addAttribute("applianceCategoryName", applianceCategory.getName());
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
@@ -109,6 +122,12 @@ public class OperatorApplianceController {
                                   YukonUserContext userContext,
                                   HttpSession session, FlashScope flashScope,
                                   AccountInfoFragment accountInfoFragment) {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
+                                       userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE, 
+                                       userContext.getYukonUser());
+
 
         ApplianceCategory applianceCategory = 
             applianceCategoryDao.getById(starsAppliance.getApplianceCategory().getApplianceCategoryId());
@@ -149,7 +168,7 @@ public class OperatorApplianceController {
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
-        return "redirect:applianceEdit";
+        return "redirect:applianceList";
     }
 
     // APPLIANCE EDIT
@@ -159,6 +178,10 @@ public class OperatorApplianceController {
                                 AccountInfoFragment accountInfoFragment)
             throws ServletRequestBindingException {
 
+        boolean allowAccountEditing = 
+            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                                    userContext.getYukonUser());
+        
         // Appliance Information
         LiteStarsAppliance liteStarsAppliance = 
             starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId,
@@ -181,12 +204,14 @@ public class OperatorApplianceController {
         if (liteStarsAppliance.getInventoryID() > 0) {
             HardwareDto hardwareDto = 
                 hardwareService.getHardwareDto(liteStarsAppliance.getInventoryID(),
-                                               accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
+                                               accountInfoFragment.getEnergyCompanyId(), 
+                                               accountInfoFragment.getAccountId());
             modelMap.addAttribute("hardware", hardwareDto);
         }
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext, applianceId);
-        modelMap.addAttribute("mode", PageEditMode.EDIT);
+        modelMap.addAttribute("mode", 
+                              allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
         modelMap.addAttribute("applianceCategoryName",
                               liteStarsAppliance.getApplianceCategory().getName());
 
@@ -202,6 +227,9 @@ public class OperatorApplianceController {
                                    HttpSession session, FlashScope flashScope,
                                    AccountInfoFragment accountInfoFragment) {
 
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
+                                       userContext.getYukonUser());
+        
         // validate/update
         try {
 
@@ -240,7 +268,7 @@ public class OperatorApplianceController {
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
-        return "redirect:applianceEdit";
+        return "redirect:applianceList";
     }
 
     // APPLIANCE DELETE
@@ -250,6 +278,9 @@ public class OperatorApplianceController {
                                   YukonUserContext userContext,
                                   HttpSession session)
             throws ServletRequestBindingException {
+
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
+                                       userContext.getYukonUser());
 
         starsApplianceService.removeStarsAppliance(applianceId,
                                                    accountInfoFragment.getEnergyCompanyId(),
@@ -313,6 +344,11 @@ public class OperatorApplianceController {
         this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
     }
 
+    @Autowired
+    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
+        this.rolePropertyDao = rolePropertyDao;
+    }
+    
     @Autowired
     public void setHardwareService(HardwareService hardwareService) {
         this.hardwareService = hardwareService;

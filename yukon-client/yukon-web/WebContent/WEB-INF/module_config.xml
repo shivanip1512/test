@@ -981,6 +981,7 @@
                     </pages>
 		    	</page>
 		    	<page name="appliance.list" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
+                    <requireRoleProperty value="OPERATOR_CONSUMER_INFO_APPLIANCES"/>
                     <menu>account</menu>
                     <link>/spring/stars/operator/appliances/applianceList?accountId=${accountId}</link>
                     <labelArgument>${accountNumber}</labelArgument>
@@ -1056,7 +1057,9 @@
                     </pages>
                 </page>
 		    	<page name="changeLogin" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
-		    		<menu>account</menu>
+		    		<requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME,
+		    		                            OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD"/>
+                    <menu>account</menu>
 		           	<link>/spring/stars/operator/login/changeLogin?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
