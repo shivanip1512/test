@@ -189,7 +189,7 @@ LoadTapChanger& LoadTapChanger::operator=(const LoadTapChanger& right)
 
 void LoadTapChanger::updateFlags()
 {
-    static int timeToShowOperation = (int)_IVVC_MIN_TAP_PERIOD_MINUTES/2;
+    static int timeToShowOperation = (int)(_IVVC_MIN_TAP_PERIOD_MINUTES * 60) / 2;
 
     bool updated = false;
 
@@ -232,7 +232,7 @@ void LoadTapChanger::updateFlags()
     ret = _pointValues.getPointValue(_autoRemotePoint.getPointId(),pointValue);
     if (ret)
     {
-        autoRemote = (pointValue == 1.0);
+        autoRemote = (pointValue == 0.0);
     }
     if (_autoRemote != autoRemote)
     {

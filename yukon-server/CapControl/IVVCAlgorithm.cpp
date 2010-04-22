@@ -67,7 +67,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         if ((_IVVC_KEEPALIVE != 0) && (timeNow > state->getNextHeartbeatTime()))
         {
             sendKeepAlive(subbus);
-            state->setNextHeartbeatTime(timeNow + _IVVC_KEEPALIVE);
+            state->setNextHeartbeatTime(timeNow + (60 *_IVVC_KEEPALIVE) );  // _IVVC_KEEPALIVE is in minutes!
         }
 
         //If we reloaded or first run. Make sure we don't have a bank pending. If we do attempt to update it's status
@@ -143,6 +143,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 //Set state
                 state->setShowLtcAutoModeMsg(true);
                 state->setShowBusDisableMsg(true);
+                state->setRemoteMode(true);
                 state->setState(IVVCState::IVVC_WAIT);
             }
         }
@@ -838,7 +839,7 @@ bool IVVCAlgorithm::isLtcInRemoteMode(const long ltcId)
     double value = -1.0;
     ltc->getPointValue(remotePoint.getPointId(), value);
 
-    return (value == 0.0);  // Remote Mode
+    return (value != 0.0);  // Remote Mode
 }
 
 
@@ -978,7 +979,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 double estVarValue = varValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() );
 
                 state->_estimated[currentBank->getPaoId()].powerFactor =
-                    subbus->calculatePowerFactor(estVarValue, wattValue);
+                    calculatePowerFactor(estVarValue, wattValue);
 
                 //calculate estimated weight of the bus if current bank switches state
 

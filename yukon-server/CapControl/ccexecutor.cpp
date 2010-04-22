@@ -8247,7 +8247,7 @@ void CtiCCCommandExecutor::sendLtcRemoteControl(const LONG                     c
     toDispatch.push_back(msg);
 
     //Command Action
-    string enableString = (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE) ? string(" 1") : string(" 0");
+    string enableString = (commandType == CtiCCCommand::LTC_REMOTE_CONTROL_ENABLE) ? string(" 0") : string(" 1");
     string commandString = "putvalue analog " + CtiNumStr(point.getPointOffset()).toString() + enableString;
 
     CtiRequestMsg* reqMsg = createPorterRequestMsg(point.getPointId(),commandString);

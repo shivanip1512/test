@@ -9,7 +9,10 @@ IVVCState::IVVCState() :
     _commsRetryCount(0),
     _showVarCheckFailMsg(true),
     _showSubbusDisableMsg(true),
-    _showLtcAutoModeMsg(true)
+    _showLtcAutoModeMsg(true),
+    _showNoLtcAttachedMsg(true),
+    _remoteMode(false),
+    _firstPass(true)
 {
 }
 
