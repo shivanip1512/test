@@ -33,7 +33,6 @@ import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
-import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
 import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
@@ -955,18 +954,20 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     /**
      * Creates a cap control object, strategy, or schedule.
-     * @throws PAODoesntHaveNameException 
      * @Return String the url to go when done.
      */
     @Transactional
-    public String create() throws PAODoesntHaveNameException {
+    public String create() {
         FacesMessage facesMsg = new FacesMessage();
         FacesContext facesContext = FacesContext.getCurrentInstance();
         
         CBCWizardModel wizard = (CBCWizardModel) getWizData();
         String name = wizard.getName();
         if(org.apache.commons.lang.StringUtils.isBlank(name)) {
-            throw new PAODoesntHaveNameException();
+            facesMsg.setDetail("A name must be specified for this object.");
+            facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+            facesContext.addMessage("cti_db_add", facesMsg);
+            return "";
         }
         int type = wizard.getSelectedType();
         boolean disabled = wizard.getDisabled();
