@@ -51,7 +51,7 @@
     <entry key="yukon.web.modules.operator.accountEdit.homePhoneLabel">Home Phone</entry>
     <entry key="yukon.web.modules.operator.accountEdit.workPhoneLabel">Work Phone</entry>
     <entry key="yukon.web.modules.operator.accountEdit.emailLabel">Email</entry>
-    <entry key="yukon.web.modules.operator.accountEdit.altTrackingNumberLabel">Alt Tracking #</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.altTrackingNumberLabel">Alt Tracking Number</entry>
     <entry key="yukon.web.modules.operator.accountEdit.notifyOddsForControlLabel">Notify Odds For Control</entry>
     <entry key="yukon.web.modules.operator.accountEdit.notesLabel">Notes</entry>
 

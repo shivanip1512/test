@@ -17,8 +17,11 @@
     
     	Event.observe(window, 'load', function() {
 
-    		var isCommercial = ${cti:jsonString(accountGeneral.accountDto.isCommercial)};
-    	    toggleCommercialInputs(isCommercial);
+    		var viewMode = ${cti:jsonString(mode) == 'VIEW'};
+    		if (!viewMode) {
+	    		var isCommercial = ${cti:jsonString(accountGeneral.accountDto.isCommercial)};
+	    	    toggleCommercialInputs(isCommercial);
+    		}
     	});
 
     	function toggleCommercialInputs(isCommercial) {
@@ -30,6 +33,20 @@
 				$('accountDto.companyName').disabled = true;
 				$('accountDto.commercialTypeEntryId').disabled = true;
     		}
+    	}
+
+    	function toggleBillingAddress() {
+
+			var sameAsAbove = $('usePrimaryAddressForBillingCheckBox').checked;
+			$$('input[id^="accountDto.billingAddress."]').each(function(el) {
+
+				if (sameAsAbove) {
+					el.value = '';
+					el.disabled = true;
+				} else {
+					el.disabled = false;
+				}					
+			});
     	}
 	
     </script>
@@ -59,9 +76,13 @@
 	    				<tags:nameValueContainer2 id="customerContactTable">
 	    				
 	    					<tags:inputNameValue nameKey=".accountNumberLabel" path="accountDto.accountNumber"/>
-	    					<tags:checkboxNameValue nameKey=".commercialLabel" path="accountDto.isCommercial" onclick="toggleCommercialInputs(this.checked);" id="isCommercialCheckbox"/>
-	    					<tags:inputNameValue nameKey=".companyLabel" path="accountDto.companyName"/>
-	    					<tags:yukonListEntrySelectNameValue nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" accountId="${accountId}" listName="CI_CUST_TYPE"/>
+	    					
+	    					<c:if test="${mode == 'EDIT' || accountGeneral.accountDto.isCommercial}">
+		    					<tags:checkboxNameValue nameKey=".commercialLabel" path="accountDto.isCommercial" onclick="toggleCommercialInputs(this.checked);" id="isCommercialCheckbox"/>
+		    					<tags:inputNameValue nameKey=".companyLabel" path="accountDto.companyName"/>
+		    					<tags:yukonListEntrySelectNameValue nameKey=".commercialTypeLabel" path="accountDto.commercialTypeEntryId" accountId="${accountId}" listName="CI_CUST_TYPE"/>
+	    					</c:if>
+	    					
 	    					<tags:inputNameValue nameKey=".customerNumberLabel" path="accountDto.customerNumber"/>
 	    					<tags:inputNameValue nameKey=".lastNameLabel" path="accountDto.lastName"/>
 	    					<tags:inputNameValue nameKey=".firstNameLabel" path="accountDto.firstName"/>
@@ -132,10 +153,8 @@
 	    				<tags:nameValueContainer2 id="billingAddressTable">
 	    				
 	    					<cti:displayForPageEditModes modes="EDIT">
-		    					<tags:nameValue2 nameKey="defaults.blank">
-			    					<tags:checkbox path="operatorGeneralUiExtras.usePrimaryAddressForBilling" id="usePrimaryAddressForBillingCheckBox"/>
-									<label for="usePrimaryAddressForBillingCheckBox"><i:inline key=".usePrimaryAddressForBillingLabel"/></label>
-								</tags:nameValue2>
+	    						<tags:checkboxNameValue nameKey="defaults.blank" path="operatorGeneralUiExtras.usePrimaryAddressForBilling" id="usePrimaryAddressForBillingCheckBox" 
+	    						                        onclick="toggleBillingAddress();" checkBoxDescriptionNameKey=".usePrimaryAddressForBillingLabel"/>
 							</cti:displayForPageEditModes>
 							
 	    					<tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1"/>

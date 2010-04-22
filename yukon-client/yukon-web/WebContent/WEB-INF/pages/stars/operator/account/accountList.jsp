@@ -6,9 +6,25 @@
 <cti:standardPage module="operator" page="accountList">
 
 	<%-- SEACRH WIDGET --%>
-	<div style="width:100%;">
-		<tags:widget bean="operatorAccountSearchWidget" searchValue="${accountSearchResultHolder.searchValue}" searchBy="${accountSearchResultHolder.searchBy}" hideEnabled="false"/>
-	</div>
+	<form id="searchForm" action="/spring/stars/operator/account/search" method="get">
+		
+		<div style="padding-top:8px;padding-bottom:8px;">
+			
+			<select name="searchBy" onchange="$('searchForm').value = ''">
+				<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
+					<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
+						<i:inline key="${operatorAccountSearchBy.formatKey}"/>
+					</option>
+				</c:forEach>
+			</select>
+			
+			<input type="text" name="searchValue" value="${accountSearchResultHolder.searchValue}">
+			
+			<tags:slowInput2 myFormId="searchForm" key="search"/>
+		
+		</div>
+		
+	</form>
 	<br>
 
 	<%-- RESULTS --%>

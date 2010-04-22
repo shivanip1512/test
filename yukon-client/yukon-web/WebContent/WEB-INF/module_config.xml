@@ -861,7 +861,7 @@
 	          <link>/spring/stars/operator/home</link>
 	   		  <options>
 		          <option name="accounts">
-		   		    <link>/spring/stars/operator/account/accountList</link>
+		   		    <link>/spring/stars/operator/account/search</link>
 		          </option>
 	          </options>
 	   		</option>
@@ -878,7 +878,7 @@
     	</page>
     	<page name="accountList" type="BASIC" hideSearch="true">
     		<menu>account</menu>
-    		<link>/spring/stars/operator/account/accountList</link>
+    		<link>/spring/stars/operator/account/search</link>
     	<pages>
     	<page name="accountEdit" type="DETAIL_WITH_INFO" navigationMenuRoot="true" contributeToMenu="true">
     		<menu>account</menu>

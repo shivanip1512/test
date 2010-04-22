@@ -7,6 +7,7 @@
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="onclick" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
+<%@ attribute name="descriptionNameKey" required="false" type="java.lang.String"%>
 
 <spring:bind path="${path}">
 
@@ -51,5 +52,17 @@
 			</c:otherwise>
 		</c:choose>
 	</cti:displayForPageEditModes>
+	
+	<c:if test="${not empty descriptionNameKey}">
+		<c:choose>
+			<c:when test="${not empty pageScope.id}">
+				<label for="${pageScope.id}"><i:inline key="${pageScope.descriptionNameKey}"/></label>
+			</c:when>
+			<c:otherwise>
+				<i:inline key="${pageScope.descriptionNameKey}"/>
+			</c:otherwise>
+		</c:choose>
+		
+	</c:if>
 
 </spring:bind>

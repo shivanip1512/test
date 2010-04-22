@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -67,8 +68,18 @@ public class OperatorAccountController {
     					YukonUserContext userContext,
     					FlashScope flashScope) throws ServletRequestBindingException {
 		
-		OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(ServletRequestUtils.getStringParameter(request, "searchBy", OperatorAccountSearchBy.ACCOUNT_NUMBER.name()));
-		String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", "");
+		String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
+		
+		// no search
+		if (StringUtils.isBlank(searchByStr)) {
+			modelMap.addAttribute("accountSearchResultHolder", AccountSearchResultHolder.emptyAccountSearchResultHolder());
+			modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
+			return "operator/account/accountList.jsp";
+		}
+		
+		// searchBy, searchValue
+		OperatorAccountSearchBy searchBy = OperatorAccountSearchBy.valueOf(searchByStr);
+		String searchValue = ServletRequestUtils.getStringParameter(request, "searchValue", null);
 		
 		// paging
 		if(page == null){
@@ -101,17 +112,9 @@ public class OperatorAccountController {
 			Object[] searchResultTitleArguments = new Object[]{new YukonMessageSourceResolvable(searchBy.getFormatKey()), searchValue};
 			modelMap.addAttribute("searchResultTitleArguments", searchResultTitleArguments);
 			modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
+			modelMap.addAttribute("operatorAccountSearchBys", OperatorAccountSearchBy.values());
 			return "operator/account/accountList.jsp";
 		}
-	}
-	
-	// ACCOUNT LIST
-	@RequestMapping
-    public String accountList(HttpServletRequest request, ModelMap modelMap, YukonUserContext userContext) throws ServletRequestBindingException {
-		
-		AccountSearchResultHolder accountSearchResultHolder = AccountSearchResultHolder.emptyAccountSearchResultHolder();
-		modelMap.addAttribute("accountSearchResultHolder", accountSearchResultHolder);
-		return "operator/account/accountList.jsp";
 	}
 	
 	// ACCOUNT EDIT

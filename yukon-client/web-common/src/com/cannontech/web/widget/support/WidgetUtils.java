@@ -10,6 +10,8 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.cannontech.web.PageEditMode;
+
 public class WidgetUtils {
     
     public static Map<String,String> combineParameters(Map<String,String> outer, Map<String,? extends Object> inner) {
@@ -39,6 +41,9 @@ public class WidgetUtils {
         } else if (obj instanceof Boolean) {
         	Boolean boolObj = (Boolean)obj;
         	return boolObj.toString();
+        } else if (obj instanceof PageEditMode) {
+        	PageEditMode pageEditModeObj = (PageEditMode)obj;
+        	return pageEditModeObj.name();
         } else {
             return JSONObject.fromObject(obj).toString();
         }
