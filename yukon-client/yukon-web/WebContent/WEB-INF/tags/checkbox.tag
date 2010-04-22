@@ -6,22 +6,50 @@
 
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="onclick" required="false" type="java.lang.String"%>
+<%@ attribute name="id" required="false" type="java.lang.String"%>
 
 <spring:bind path="${path}">
 
 	<%-- VIEW MODE --%>
 	<cti:displayForPageEditModes modes="VIEW">
-		<c:if test="${status.value == true}">
-            <input type="checkbox" checked="checked" disabled="disabled">
-		</c:if>
-		<c:if test="${status.value == false}">
-			<input type="checkbox" disabled="disabled">
-		</c:if>
+		<c:choose>
+			<c:when test="${status.value == true && not empty pageScope.id}">
+				<input type="checkbox" checked="checked" disabled="disabled" id="${pageScope.id}">
+			</c:when>
+			<c:when test="${status.value == true && empty pageScope.id}">
+				<input type="checkbox" checked="checked" disabled="disabled">
+			</c:when>
+			<c:when test="${status.value == false && not empty pageScope.id}">
+				<input type="checkbox" disabled="disabled" id="${pageScope.id}">
+			</c:when>
+			<c:when test="${status.value == false && not empty pageScope.id}">
+				<input type="checkbox" disabled="disabled">
+			</c:when>
+			<c:otherwise>
+				<%-- BAD STATE!? --%>
+			</c:otherwise>
+		</c:choose>
 	</cti:displayForPageEditModes>
 	
 	<%-- EDIT/CREATE MODE --%>
 	<cti:displayForPageEditModes modes="EDIT,CREATE">
-		<form:checkbox path="${path}" onclick="${pageScope.onclick}"/>
+		<c:choose>
+			<c:when test="${not empty pageScope.onclick && not empty pageScope.id}">
+				<form:checkbox path="${path}" onclick="${pageScope.onclick}" id="${pageScope.id}"/>
+			</c:when>
+			<c:when test="${not empty pageScope.onclick && empty pageScope.id}">
+				<form:checkbox path="${path}" onclick="${pageScope.onclick}"/>
+			</c:when>
+			<c:when test="${empty pageScope.onclick && not empty pageScope.id}">
+				<form:checkbox path="${path}" id="${pageScope.id}"/>
+			</c:when>
+			<c:when test="${empty pageScope.onclick && empty pageScope.id}">
+				<form:checkbox path="${path}"/>
+			</c:when>
+			<c:otherwise>
+				<%-- BAD STATE!? --%>
+			</c:otherwise>
+		</c:choose>
 	</cti:displayForPageEditModes>
 
 </spring:bind>

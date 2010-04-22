@@ -106,7 +106,6 @@
 	            <cti:displayForPageEditModes modes="CREATE">
 	            	<br>
 	                <tags:slowInput2 myFormId="updateForm" key="create" />
-	            	<tags:reset/>
 	            </cti:displayForPageEditModes>
 
                 <cti:displayForPageEditModes modes="EDIT">

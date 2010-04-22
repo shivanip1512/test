@@ -24,7 +24,7 @@
 	
 		<input type="hidden" name="accountId" value="${accountId}">
 	
-		<tags:nameValueContainer2 nameColumnWidth="180px">
+		<tags:nameValueContainer2>
 		
 			<form:hidden path="callId"/>
 		

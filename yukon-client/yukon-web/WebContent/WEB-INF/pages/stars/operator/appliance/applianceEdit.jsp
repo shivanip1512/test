@@ -7,8 +7,17 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr/forms" prefix="drForms" %>
 
 <cti:standardPage module="operator" page="appliance.edit">
-<tags:setFormEditMode mode="${mode}"/>
+	
+	<tags:setFormEditMode mode="${mode}"/>
 
+	<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
+
+    <script type="text/javascript">
+
+    	alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
+	
+    </script>
+    
     <table>
       <tr>
         <td rowspan="3" valign="top">
@@ -39,7 +48,7 @@
         <td valign="top">
             <c:if test="${not empty displayableInventoryEnrollment}">
                 <tags:formElementContainer nameKey="enrollment">
-                    <tags:nameValueContainer2 nameColumnWidth="125px">
+                    <tags:nameValueContainer2 id="enrollmentTable">
                         <tags:nameValue2 nameKey=".program">
                             <spring:escapeBody htmlEscape="true">${displayableInventoryEnrollment.programName.displayName}</spring:escapeBody>
                         </tags:nameValue2>
@@ -59,7 +68,7 @@
         <td valign="top">
             <c:if test="${not empty hardware}">
                 <tags:formElementContainer nameKey="hardwareSummary">
-                    <tags:nameValueContainer2 nameColumnWidth="125px">
+                    <tags:nameValueContainer2 id="hardwareSummaryTable">
                         <tags:nameValue2 nameKey=".category">
                             <spring:escapeBody htmlEscape="true">${hardware.categoryName}</spring:escapeBody>
                         </tags:nameValue2>

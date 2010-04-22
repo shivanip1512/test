@@ -9,7 +9,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i18n"%>
 
 <form:form id="${formId}" commandName="starsAppliance" action="${formUrl}">
-    <tags:nameValueContainer2 nameColumnWidth="150px">
+    <tags:nameValueContainer2>
         <input type="hidden" name="accountId" value="${accountId}">
         <input type="hidden" name="energyCompanyId" value="${energyCompanyId}">
 

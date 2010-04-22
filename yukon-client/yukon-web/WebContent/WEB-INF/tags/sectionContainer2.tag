@@ -1,11 +1,11 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="key" required="true" description="Base i18n key. Available settings: .title (required), .helpText (optional)"%>
+<%@ attribute name="nameKey" required="true" description="Base i18n key. Available settings: .title (required), .helpText (optional)"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 
-<cti:msgScope paths=".${key},">
+<cti:msgScope paths=".${nameKey},">
 	<cti:msg2 var="title" key=".title"/>
 	<cti:msg2 var="helpText" key=".helpText" blankIfMissing="true"/>
 </cti:msgScope>

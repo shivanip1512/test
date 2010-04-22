@@ -44,7 +44,7 @@ updateOKButton = function() {
     <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
 
     <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-        <tags:nameValueContainer2 nameColumnWidth="150px">
+        <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".group">
                 <c:if test="${fn:length(loadGroups) == 0}">
                     <i:inline key=".groupNotApplicable"/>

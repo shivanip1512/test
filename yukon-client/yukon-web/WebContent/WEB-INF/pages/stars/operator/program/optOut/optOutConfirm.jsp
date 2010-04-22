@@ -49,7 +49,7 @@
     </script>
 
 
-    <tags:sectionContainer2 key="optOuts">
+    <tags:formElementContainer nameKey="optOuts">
         <i:inline key=".description"/>
             
         <br><br>
@@ -88,5 +88,5 @@
                    onclick="javascript:location.href='${optOutUrl}';">
 
         </form:form>
-    </tags:sectionContainer2>
+    </tags:formElementContainer>
 </cti:standardPage>

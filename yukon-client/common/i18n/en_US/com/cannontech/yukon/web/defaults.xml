@@ -4,7 +4,7 @@
 
 <entry key="yukon.web.defaults.pageTitle">Energy Services Operations Center</entry>
 
-<entry key="yukon.web.defaults.button.reset.label">Reset</entry>
+<entry key="yukon.web.defaults.blank"></entry>
 
 <entry key="yukon.web.defaults.yes">Yes</entry>
 <entry key="yukon.web.defaults.no">No</entry>

@@ -44,9 +44,9 @@
 		<c:if test="${contactDto.primary}">
 			<c:set var="contactInformationSectionTitleKey" value="contactInformationSection_isPrimary"/>
 		</c:if>
-		<tags:sectionContainer2 key="${contactInformationSectionTitleKey}">
+		<tags:formElementContainer nameKey="${contactInformationSectionTitleKey}">
 		
-			<tags:nameValueContainer2 nameColumnWidth="150px">
+			<tags:nameValueContainer2>
 			
 				<tags:inputNameValue nameKey=".firstNameLabel" path="firstName"/>
 				<tags:inputNameValue nameKey=".lastNameLabel" path="lastName"/>
@@ -122,7 +122,7 @@
 				
 			</table>
 			
-		</tags:sectionContainer2>
+		</tags:formElementContainer>
 		
 		<%-- BUTTONS --%>
 		<br>

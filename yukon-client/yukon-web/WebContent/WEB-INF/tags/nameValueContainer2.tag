@@ -1,22 +1,24 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<%@ attribute name="nameColumnWidth" required="false" %>
 <%@ attribute name="tableClass" required="false" %>
 <%@ attribute name="style" required="false" %>
 <%@ attribute name="id" required="false" %>
+<%@ attribute name="naturalWidth" required="false" type="java.lang.Boolean" description="Default is true. Causes table have a width:auto style (as opposed to 100%)."%>
 
 <c:if test="${empty pageScope.tableClass}">
     <c:set var="tableClass" value="nameValueTable" />
 </c:if>
 
-<c:set var="nameColumnWidth" value="${pageScope.nameColumnWidth}" scope="request"/>
-<c:set var="idAttribute" value=""/>
-<c:if test="${!empty pageScope.id}">
-    <c:set var="idAttribute" value=" id=\"${pageScope.id}\""/>
+<c:if test="${empty pageScope.naturalWidth || pageScope.naturalWidth == true}">
+    <c:set var="tableClass" value="${tableClass} naturalWidth" />
 </c:if>
 
 <c:set var="nameValueContainter2" value="true" scope="request"/>
-<table class="${pageScope.tableClass}" style="${pageScope.style}"${idAttribute}>
+<table class="${pageScope.tableClass}" 
+       <c:if test="${!empty pageScope.style}">style="${pageScope.style}"</c:if>
+       <c:if test="${!empty pageScope.id}">id="${pageScope.id}"</c:if>>
+       
 	<jsp:doBody/>
+	
 </table>
 <c:set var="nameValueContainter2" value="false" scope="request"/>

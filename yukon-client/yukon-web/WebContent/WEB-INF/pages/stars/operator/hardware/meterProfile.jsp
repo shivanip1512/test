@@ -87,7 +87,7 @@
             <%-- GENERAL INVENTORY INFO --%>
             <cti:dataGridCell>
             
-                <tags:formElementContainer key="availableSwitchesSection">
+                <tags:formElementContainer nameKey="availableSwitchesSection">
                     <c:choose>
                         <c:when test="${not empty hardwareDto.switchAssignments}">
                             

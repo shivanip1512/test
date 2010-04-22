@@ -82,7 +82,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 		
 			<td class="trendsListingTd">
 			
-				<tags:sectionContainer2 key="trends">
+				<tags:formElementContainer nameKey="trends">
 				
 					<table class="trendList">
 					<c:forEach var="customerGraphWrapper" items="${customerGraphWrappers}" varStatus="status">
@@ -114,7 +114,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 					</c:forEach>
 					</table>
 				
-				</tags:sectionContainer2>
+				</tags:formElementContainer>
 			
 			</td>
 			

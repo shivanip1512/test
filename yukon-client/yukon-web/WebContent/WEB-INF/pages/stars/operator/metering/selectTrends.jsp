@@ -7,7 +7,7 @@
 
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/metering.css"/>
 
-	<tags:sectionContainer2 key="availableTrends">
+	<tags:formElementContainer nameKey="availableTrends">
 	
 		<form id="selectTrendsForm" action="/spring/stars/operator/metering/saveSelectedTrends">
 		
@@ -27,10 +27,9 @@
 			
 			<br>
 			<tags:slowInput2 myFormId="selectTrendsForm" key="save" />
-			<tags:reset/>
 		
 		</form>
 	
-	</tags:sectionContainer2>
+	</tags:formElementContainer>
 
 </cti:standardPage>

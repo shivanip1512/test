@@ -8,7 +8,7 @@
 
 <cti:standardPage module="operator" page="completeControlHistory">
     
-    <tags:sectionContainer2 key="header">
+    <tags:sectionContainer2 nameKey="header">
     <table width="100%">
         <tr>
             <td style="text-align: right">

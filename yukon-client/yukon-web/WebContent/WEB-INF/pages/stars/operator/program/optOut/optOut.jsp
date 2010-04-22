@@ -41,7 +41,7 @@
 
 		<input type="hidden" name="accountId" value="${accountId}" />
 
-		<tags:nameValueContainer2 nameColumnWidth="10%;">
+		<tags:nameValueContainer2>
 		
             <tags:nameValue2 nameKey=".startDate">
                 <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_TODAY_ONLY">

@@ -47,7 +47,7 @@ function createJSON() {
 			<span class="errorMessage"><cti:msg key="${error}"/></span><br>
 		</c:if>
 
-        <tags:sectionContainer2 key="optOuts">
+        <tags:formElementContainer nameKey="optOuts">
 
         <i:inline key=".description"/>
         <c:if test="${!empty alreadyOptedOutItems}">
@@ -127,7 +127,7 @@ function createJSON() {
             <form:hidden path="durationInDays" />
             <form:hidden path="startDate"/>
         </form:form>
-        </tags:sectionContainer2>
+        </tags:formElementContainer>
     </div>    
     
 </cti:standardPage>    

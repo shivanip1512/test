@@ -227,3 +227,46 @@ function getViewportDimensions() {
 	}
 	return { 'width' : viewportwidth, 'height' : viewportheight };
 }
+
+// pass table css selectors
+// columns in each table will be made to have the same width as the widest element in that column across all tables
+function alignTableColumnsByTable() {
+	
+	var tableSelectors = $A(arguments);
+    
+    Event.observe(window, "load", function() {
+    	
+    	var tablesToAlign = $$(tableSelectors);
+    	
+    	var columnSizes = $A();
+    	tablesToAlign.each(function(table) {
+    		
+    		var rowsToAlign = table.getElementsBySelector("tr");
+    		rowsToAlign.each(function(tr) {
+        		
+        		var cells = tr.getElementsBySelector("td");
+        		for (var index = 0; index < cells.length - 1; ++index) {
+        			var cell = cells[index];
+        			if (!columnSizes[index] || cell.getWidth() > columnSizes[index]) {
+        				columnSizes[index] = cell.getWidth();
+        			}
+        		}
+        	});
+    	});
+    	
+    	
+    	tablesToAlign.each(function(table) {
+    		
+    		var rowsToAlign = table.getElementsBySelector("tr");
+    		rowsToAlign.each(function(tr) {
+        		
+        		var cells = tr.getElementsBySelector("td");
+        		for (var index = 0; index < cells.length - 1; ++index) {
+        			var cell = cells[index];
+        			cell.setStyle({'width': columnSizes[index]+'px'});
+        		}
+        	});
+    	});
+    	
+	});
+}

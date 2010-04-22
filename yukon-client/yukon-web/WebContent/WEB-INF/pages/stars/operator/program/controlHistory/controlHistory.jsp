@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="controlHistory">
     
-    <tags:sectionContainer2 key="header" >
+    <tags:sectionContainer2 nameKey="header" >
 	    <div id="programs">
 			<dr:controlHistorySummary displayableProgramList="${displayablePrograms}"
 			                          showControlHistorySummary="${true}" 
