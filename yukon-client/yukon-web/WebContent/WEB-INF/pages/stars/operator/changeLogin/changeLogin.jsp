@@ -12,19 +12,22 @@
         function generatePassword() {
             var generatedPasswordCheckBox = $('generatePasswordCheckBox');
 
-                new Ajax.Request('/spring/stars/operator/login/generatePassword', 
-                    {onSuccess: function(response) 
-                        {
-                         var generatedPassword = response.responseText;
+            new Ajax.Request('/spring/stars/operator/login/generatePassword', 
+                {onSuccess: function(response) {
+                     var generatedPassword = response.responseText;
 
-                         var password1 = $('password1');
-                         password1.value = generatedPassword;
+                     var password1 = $('password1');
+                     password1.value = generatedPassword;
 
-                         var password2 = $('password2');
-                         password2.value = generatedPassword;
-                        }
-                    });
-                
+                     var password2 = $('password2');
+                     password2.value = generatedPassword;
+                    }
+                });
+
+            // Check and show the password fields
+            var showPasswordCheckbox = $('showPasswordCheckbox');
+            showPasswordCheckbox.checked = true;
+            showPassword();
         }
 
         /**
@@ -59,7 +62,7 @@
 
     </script>
     <div>
-	    <tags:sectionContainer2 key=".changeLogin" >
+	    <tags:formElementContainer nameKey=".changeLogin" >
 	
 	        <form id="deleteForm" action="/spring/stars/operator/login/deleteLogin" method="post">
 	            <input type="hidden" name="accountId" value="${accountId}">
@@ -72,7 +75,7 @@
 	            
 	            <tags:nameValueContainer2>
             		<tags:selectNameValue nameKey=".customerGroup" path="customerLoginGroupName" items="${ecResidentialGroups}" itemValue="groupName" itemLabel="groupName"/>
-	                <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginEnabled"/><i:inline key=".allowUserLogin"/></tags:nameValue2>
+	                <tags:nameValue2 nameKey=".loginEnabled"><tags:checkbox path="loginEnabled"/></tags:nameValue2>
 	                
 	                <!-- Username Field -->
 	                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME">
@@ -109,13 +112,12 @@
                 <cti:displayForPageEditModes modes="EDIT">
                     <br>
                     <tags:slowInput2 myFormId="updateForm" key="save" />
-                    <tags:reset/>
                     <tags:slowInput2 myFormId="deleteForm" key="delete" />
                 </cti:displayForPageEditModes>
 
 	            
 	        </form:form>
-	    </tags:sectionContainer2>
+	    </tags:formElementContainer>
     </div>
 
 </cti:standardPage>
