@@ -22,7 +22,7 @@ public class RemoteBase extends TwoWayDevice {
 	private DeviceDirectCommSettings deviceDirectCommSettings = null;
 	private DeviceDialupSettings deviceDialupSettings = null;
 	
-	transient Logger logger = YukonLogManager.getLogger(RemoteBase.class);
+	private transient Logger logger = YukonLogManager.getLogger(RemoteBase.class);
 	
 	private String ipAddress = CtiUtilities.STRING_NONE;
 	private String port = CtiUtilities.STRING_NONE;

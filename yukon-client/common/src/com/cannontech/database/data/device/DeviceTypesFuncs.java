@@ -8,9 +8,9 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
@@ -18,7 +18,6 @@ import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointFactory;
@@ -29,6 +28,7 @@ import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceMCT400Series;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -1563,18 +1563,7 @@ public static Object changeType (String newType,
     }
     
     public static boolean isTcpPort(int portId) {
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-        synchronized(cache) {
-            List<LiteYukonPAObject> ports = cache.getAllPorts();
-
-            for( int i = 0; i < ports.size(); i++ ) {
-                LiteYukonPAObject litePort = ports.get(i);
-                if (litePort.getLiteID() == portId) {
-                    return PaoType.TCPPORT.getDeviceTypeId() ==  litePort.getType();
-                }
-            }
-        }
-        
-        return false;
+        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+        return paoDao.getYukonPao(portId).getPaoIdentifier().getPaoType() == PaoType.TCPPORT;
     }
 }
