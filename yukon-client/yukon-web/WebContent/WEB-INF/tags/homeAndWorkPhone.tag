@@ -8,17 +8,19 @@
 <cti:formatNotification var="workPhone" value="${pageScope.workPhoneNotif}" htmlEscape="true" />
 
 <c:if test="${not empty homePhone}">
-	<c:set var="homePhone" value="${pageScope.homePhone} (H)"/>
+	<cti:msg var="homePhoneSymbol" key="yukon.web.modules.operator.accountInfoFragment.homePhoneSymbol"/>
+	<c:set var="homePhone" value="${pageScope.homePhone} ${homePhoneSymbol}"/>
 </c:if>
 
 <c:if test="${not empty workPhone}">
-	<c:set var="workPhone" value="${pageScope.workPhone} (W)"/>
+	<cti:msg var="workPhoneSymbol" key="yukon.web.modules.operator.accountInfoFragment.workPhoneSymbol"/>
+	<c:set var="workPhone" value="${pageScope.workPhone} ${workPhoneSymbol}"/>
 </c:if>
 
 <c:choose>
 
 	<c:when test="${not empty pageScope.homePhone && not empty pageScope.workPhone}">
-		${pageScope.homePhone},
+		${pageScope.homePhone}
 		<br>
 		${pageScope.workPhone}
 	</c:when>

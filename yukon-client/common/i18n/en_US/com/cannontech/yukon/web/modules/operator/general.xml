@@ -3,6 +3,8 @@
 <properties>
 
 	<!-- accountInfoFragment -->
+    <entry key="yukon.web.modules.operator.accountInfoFragment.homePhoneSymbol">(H)</entry>
+    <entry key="yukon.web.modules.operator.accountInfoFragment.workPhoneSymbol">(W)</entry>
     <entry key="yukon.web.modules.operator.accountInfoFragment.extraInfo"></entry>
 	<!-- 
 		Leave blank to exclude any extra info. The following place holders may be used to display various extra info:
@@ -13,7 +15,7 @@
 		<entry key="yukon.web.modules.operator.accountInfoFragment.extraInfo">{0)</entry>
 	 -->
 	 
-	 <!-- accountInfoFragment -->
+	 <!-- search -->
     <entry key="yukon.web.modules.operator.search.searchPrompt">Search for existing customer:</entry>
 	 
 	<!-- accountLog -->
