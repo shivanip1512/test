@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -13,6 +12,7 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
@@ -22,7 +22,7 @@ import com.cannontech.stars.util.ECUtils;
 import com.google.common.collect.Sets;
 
 public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;;
     private StarsDatabaseCache starsDatabaseCache;
     private RolePropertyDao rolePropertyDao;
     private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
@@ -43,14 +43,18 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     @Override
     public int getEnergyCompanyIdForAccountId(int accountId) {
     	
-    	String sql = "SELECT EnergyCompanyID FROM ECToAccountMapping WHERE AccountID = ?";
-        return simpleJdbcTemplate.queryForInt(sql, accountId);
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT EnergyCompanyID FROM ECToAccountMapping WHERE AccountID").eq(accountId);
+        return yukonJdbcTemplate.queryForInt(sql);
     }
     
     @Override
     public LiteStarsEnergyCompany getInventoryEC(int inventoryId) {
-        String sql = "SELECT EnergyCompanyID FROM ECToInventoryMapping WHERE InventoryID = ?";
-        int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, inventoryId);
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT EnergyCompanyID FROM ECToInventoryMapping WHERE InventoryID").eq(inventoryId);
+        int energyCompanyId = yukonJdbcTemplate.queryForInt(sql);
+        
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
@@ -74,7 +78,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
         sql.append("             WHERE ContactId = ?)))");
         
         
-        int energyCompanyId = simpleJdbcTemplate.queryForInt(sql.toString(), contactId, contactId);
+        int energyCompanyId = yukonJdbcTemplate.queryForInt(sql.toString(), contactId, contactId);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
@@ -83,21 +87,21 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     @Transactional    
     public void updateECToAccountMapping(int accountId, int energyCompanyId) {
         String sql = "UPDATE ECToAccountMapping SET EnergyCompanyId = ? WHERE AccountId = ?";
-        simpleJdbcTemplate.update(sql, energyCompanyId, accountId);
+        yukonJdbcTemplate.update(sql, energyCompanyId, accountId);
     }
     
     @Override
     @Transactional    
     public void addECToAccountMapping(ECToAccountMapping ecToAccountMapping) {
         String sql = "INSERT INTO ECToAccountMapping VALUES (?,?)";
-        simpleJdbcTemplate.update(sql, ecToAccountMapping.getEnergyCompanyId(), ecToAccountMapping.getAccountId());
+        yukonJdbcTemplate.update(sql, ecToAccountMapping.getEnergyCompanyId(), ecToAccountMapping.getAccountId());
     }
     
     @Override
     @Transactional    
     public void deleteECToAccountMapping(Integer accountId) {
         String sql = "DELETE FROM ECToAccountMapping WHERE AccountId = ?";
-        simpleJdbcTemplate.update(sql, accountId);
+        yukonJdbcTemplate.update(sql, accountId);
     }
     
 
@@ -109,7 +113,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     @Transactional    
     public void deleteECToInventoryMapping(int inventoryId) {
         String sql = "DELETE FROM ECToInventoryMapping WHERE InventoryID = ?";
-        simpleJdbcTemplate.update(sql, inventoryId);
+        yukonJdbcTemplate.update(sql, inventoryId);
     }
     
     @Override
@@ -160,7 +164,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     @Transactional    
     public void addECToCallReportMapping(int energyCompanyId, int callId) {
         String sql = "INSERT INTO ECToCallReportMapping VALUES (?,?)";
-        simpleJdbcTemplate.update(sql, energyCompanyId, callId);
+        yukonJdbcTemplate.update(sql, energyCompanyId, callId);
     }
     
     @Override
@@ -199,9 +203,9 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     }
 
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
     
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
@@ -215,6 +219,6 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
     }
 }
