@@ -158,7 +158,7 @@
             <form:hidden path="deviceId"/>
         </c:if>
         
-        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:40px;">
+        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
         
             <%-- DEVICE INFO --%>
             <cti:dataGridCell>
