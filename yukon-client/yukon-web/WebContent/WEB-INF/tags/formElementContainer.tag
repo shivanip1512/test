@@ -32,7 +32,7 @@
     </div>
     
     <%-- BODY --%>
-    <div id="${thisId}_content" class="content formElementContainer formElementContainer_content">
+    <div id="${thisId}_content" class="content formElementContainer formElementContainer_content" style="overflow:visible;">
         <jsp:doBody/>
     </div>    
 
