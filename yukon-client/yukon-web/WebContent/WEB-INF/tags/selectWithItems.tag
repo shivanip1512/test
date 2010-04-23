@@ -15,12 +15,17 @@
 <cti:displayForPageEditModes modes="VIEW">
 	<spring:bind path="${path}">
 	
+		<c:set var="labelFound" value="false"/>
 		<c:forEach var="item" items="${items}">
 			<c:if test="${status.value == item[itemValue]}">
 				${item[itemLabel]}
+				<c:set var="labelFound" value="false"/>
 			</c:if>
-		
 		</c:forEach>
+		
+		<c:if test="${!labelFound}">
+			${defaultItemLabel}
+		</c:if>
 	
 	</spring:bind>
 </cti:displayForPageEditModes>

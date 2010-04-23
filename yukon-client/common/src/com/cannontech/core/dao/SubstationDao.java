@@ -19,5 +19,9 @@ public interface SubstationDao {
     public Substation getById(int id) throws DataAccessException;
     
 	public List<Substation> getAll();
-    
+	
+	/**
+	 * Get all Substations that are mapped to this energyCompany through the ECToGenericMapping table by the Substation mapping category.
+	 */
+	public List<Substation> getAllSubstationsByEnergyCompanyId(int energyCompanyId);
 }

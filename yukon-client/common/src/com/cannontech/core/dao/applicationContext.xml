@@ -204,14 +204,7 @@
   
   <bean id="extraPaoPointAssignmentDao" class="com.cannontech.core.dao.impl.ExtraPaoPointAssignmentDaoImpl"/>
 
-  <bean id="substationDao" class="com.cannontech.core.dao.impl.SubstationDaoImpl">
-    <property name="simpleJdbcTemplate">
-      <ref bean="simpleJdbcTemplate" />
-    </property>
-    <property name="nextValueHelper">
-      <ref bean="nextValueHelper" />
-    </property>
-  </bean>
+  <bean id="substationDao" class="com.cannontech.core.dao.impl.SubstationDaoImpl"/>
 
   <bean id="substationToRouteMappingDao"
       class="com.cannontech.core.dao.impl.SubstationToRouteMappingDaoImpl">

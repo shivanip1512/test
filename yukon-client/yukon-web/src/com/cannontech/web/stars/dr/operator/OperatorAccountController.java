@@ -17,7 +17,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.model.Substation;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.SubstationDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -35,7 +37,6 @@ import com.cannontech.stars.dr.general.model.OperatorAccountSearchBy;
 import com.cannontech.stars.dr.general.service.AccountSearchResultHolder;
 import com.cannontech.stars.dr.general.service.OperatorGeneralSearchService;
 import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
-import com.cannontech.stars.xml.serialize.StarsSubstations;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -58,6 +59,7 @@ public class OperatorAccountController {
 	private AccountGeneralValidator accountGeneralValidator;
 	private RolePropertyDao rolePropertyDao;
 	private ECMappingDao ecMappingDao;
+	private SubstationDao substationDao;
 	
 	// SEARCH
 	@RequestMapping
@@ -224,8 +226,7 @@ public class OperatorAccountController {
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		
 		// substations
-		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
-		StarsSubstations substations = energyCompany.getStarsSubstations();
+		List<Substation> substations = substationDao.getAllSubstationsByEnergyCompanyId(accountInfoFragment.getEnergyCompanyId());
 		modelMap.addAttribute("substations", substations);
 		
 		// pageEditMode
@@ -292,5 +293,10 @@ public class OperatorAccountController {
 	@Autowired
 	public void setEcMappingDao(ECMappingDao ecMappingDao) {
 		this.ecMappingDao = ecMappingDao;
+	}
+	
+	@Autowired
+	public void setSubstationDao(SubstationDao substationDao) {
+		this.substationDao = substationDao;
 	}
 }

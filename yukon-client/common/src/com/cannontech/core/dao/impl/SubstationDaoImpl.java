@@ -2,14 +2,15 @@ package com.cannontech.core.dao.impl;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.SubstationDao;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class SubstationDaoImpl implements SubstationDao {
@@ -20,7 +21,8 @@ public class SubstationDaoImpl implements SubstationDao {
     private static final SqlStatementBuilder selectAllSql;
     private static final SqlStatementBuilder selectByIdSql;
     private static final SqlStatementBuilder selectByNameSql;
-    private SimpleJdbcTemplate template;
+    
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
     static {
@@ -61,7 +63,7 @@ public class SubstationDaoImpl implements SubstationDao {
         final int id = nextValueHelper.getNextValue("Substation");
         substation.setId(id);
         
-        int result = template.update(insertSql.toString(), 
+        int result = yukonJdbcTemplate.update(insertSql.toString(), 
                                      substation.getId(),
                                      substation.getName(), 
                                      substation.getRouteId());
@@ -69,12 +71,12 @@ public class SubstationDaoImpl implements SubstationDao {
     }
 
     public boolean remove(final Substation substation) {
-        int result = template.update(deleteSql.toString(), substation.getId());
+        int result = yukonJdbcTemplate.update(deleteSql.toString(), substation.getId());
         return (result == 1);
     }
 
     public boolean update(final Substation substation) {
-        int result = template.update(updateSql.toString(), 
+        int result = yukonJdbcTemplate.update(updateSql.toString(), 
                                      substation.getName(),
                                      substation.getRouteId(),
                                      substation.getId());
@@ -83,7 +85,7 @@ public class SubstationDaoImpl implements SubstationDao {
     
     public Substation getByName(final String name) {
     	try {
-    		return template.queryForObject(selectByNameSql.toString(), rowMapper, name);
+    		return yukonJdbcTemplate.queryForObject(selectByNameSql.toString(), rowMapper, name);
     	} catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A Substation with name " + name + " cannot be found.");
         }
@@ -91,20 +93,35 @@ public class SubstationDaoImpl implements SubstationDao {
     
     public Substation getById(final int id) {
     	try {
-    		return template.queryForObject(selectByIdSql.toString(), rowMapper, id);
+    		return yukonJdbcTemplate.queryForObject(selectByIdSql.toString(), rowMapper, id);
     	} catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A Substation with id " + id + " cannot be found.");
         }
     }
+    
+    @Override
+    public List<Substation> getAllSubstationsByEnergyCompanyId(int energyCompanyId) {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ss.*");
+    	sql.append("FROM ECToGenericMapping ectgm");
+    	sql.append("JOIN Substation ss ON (ectgm.ItemId = ss.SubstationId)");
+    	sql.append("WHERE ectgm.EnergyCompanyID").eq(energyCompanyId);
+    	sql.append("AND ectgm.MappingCategory = 'Substation'");
+    	
+    	return yukonJdbcTemplate.query(sql, rowMapper);
+    }
 
     public List<Substation> getAll() {
-        return template.query(selectAllSql.toString(), rowMapper);
+        return yukonJdbcTemplate.query(selectAllSql.toString(), rowMapper);
     }
 
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate template) {
-        this.template = template;
-    }
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
+	}
     
+    @Autowired
     public void setNextValueHelper(final NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }

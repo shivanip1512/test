@@ -10,19 +10,7 @@
 <%@ attribute name="defaultItemValue" required="false" type="java.lang.String"%>
 <%@ attribute name="defaultItemLabel" required="false" type="java.lang.String"%>
 
+<cti:yukonListEntryList var="entryList" listName="${listName}" accountId="${accountId}"/>
 
-<%-- VIEW MODE --%>
-<cti:displayForPageEditModes modes="VIEW">
-	<spring:bind path="${path}">
-		<cti:yukonListEntryValue entryId="${status.value}"/>
-	</spring:bind>
-</cti:displayForPageEditModes>
+<tags:selectWithItems path="${path}" items="${entryList}" itemValue="entryID" itemLabel="entryText" defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}"/>
 
-<%-- EDIT/CREATE MODE --%>
-<cti:displayForPageEditModes modes="EDIT,CREATE">
-
-	<cti:yukonListEntryList var="entryList" listName="${listName}" accountId="${accountId}"/>
-	
-	<tags:selectWithItems path="${path}" items="${entryList}" itemValue="entryID" itemLabel="entryText" defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}"/>
-
-</cti:displayForPageEditModes>

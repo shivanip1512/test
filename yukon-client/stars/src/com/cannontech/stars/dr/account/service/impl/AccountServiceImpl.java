@@ -349,7 +349,7 @@ public class AccountServiceImpl implements AccountService {
         } else {
         	accountSite.setCustomerStatus("A");
         }
-        accountSite.setSiteNumber(StringUtils.isBlank(accountDto.getMapNumber()) ? " " : accountDto.getMapNumber());
+        accountSite.setSiteNumber(accountDto.getMapNumber());
         accountSite.setPropertyNotes(CtiUtilities.STRING_NONE);
         accountSiteDao.add(accountSite);
         
@@ -875,7 +875,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Update account site
          */
-        accountSite.setSiteNumber(StringUtils.isBlank(accountDto.getMapNumber()) ? CtiUtilities.STRING_NONE : accountDto.getMapNumber());
+        accountSite.setSiteNumber(accountDto.getMapNumber());
         if (accountDto.getCustomerStatus() != null) {
         	accountSite.setCustomerStatus(accountDto.getCustomerStatus());
         }

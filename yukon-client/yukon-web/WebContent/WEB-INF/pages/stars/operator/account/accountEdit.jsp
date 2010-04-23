@@ -17,11 +17,21 @@
     
     	Event.observe(window, 'load', function() {
 
+    		// commercial setup
+    		// when in VIEW mode, don't show commercial values unless the account is commercial
     		var viewMode = ${cti:jsonString(mode) == 'VIEW'};
     		if (!viewMode) {
 	    		var isCommercial = ${cti:jsonString(accountGeneral.accountDto.isCommercial)};
 	    	    toggleCommercialInputs(isCommercial);
     		}
+
+    		// billing setup
+    		// if sameAsAbove is checked on page load, we know the address fields all match, set them to disabled
+    		var sameAsAbove = $('usePrimaryAddressForBillingCheckBox').checked;
+    		if (sameAsAbove) {
+    			setBillingFieldsDisabled(true);
+    		}
+    		
     	});
 
     	function toggleCommercialInputs(isCommercial) {
@@ -35,28 +45,50 @@
     		}
     	}
 
+    	// when "same as above" is checked, it really does not matter what the billing fields contain, the controller will figure that out.
+    	// this game is just to make the user feel warm and fuzzy
     	function toggleBillingAddress() {
 
 			var sameAsAbove = $('usePrimaryAddressForBillingCheckBox').checked;
-			$$('input[id^="accountDto.billingAddress."]').each(function(el) {
 
-				if (sameAsAbove) {
-					el.value = '';
-					el.disabled = true;
-				} else {
-					el.disabled = false;
-				}					
+			if (sameAsAbove) {
+
+				$('temp_accountDto.billingAddress.locationAddress1').value = $('accountDto.billingAddress.locationAddress1').value;
+				$('temp_accountDto.billingAddress.locationAddress2').value = $('accountDto.billingAddress.locationAddress2').value;
+				$('temp_accountDto.billingAddress.cityName').value = $('accountDto.billingAddress.cityName').value;
+				$('temp_accountDto.billingAddress.stateCode').value = $('accountDto.billingAddress.stateCode').value;
+				$('temp_accountDto.billingAddress.zipCode').value = $('accountDto.billingAddress.zipCode').value;
+				
+				$('accountDto.billingAddress.locationAddress1').value = $('accountDto.streetAddress.locationAddress1').value;
+				$('accountDto.billingAddress.locationAddress2').value = $('accountDto.streetAddress.locationAddress2').value;
+				$('accountDto.billingAddress.cityName').value = $('accountDto.streetAddress.cityName').value;
+				$('accountDto.billingAddress.stateCode').value = $('accountDto.streetAddress.stateCode').value;
+				$('accountDto.billingAddress.zipCode').value = $('accountDto.streetAddress.zipCode').value;
+
+				setBillingFieldsDisabled(true);
+				
+			} else {
+
+				$('accountDto.billingAddress.locationAddress1').value = $('temp_accountDto.billingAddress.locationAddress1').value;
+				$('accountDto.billingAddress.locationAddress2').value = $('temp_accountDto.billingAddress.locationAddress2').value;
+				$('accountDto.billingAddress.cityName').value = $('temp_accountDto.billingAddress.cityName').value;
+				$('accountDto.billingAddress.stateCode').value = $('temp_accountDto.billingAddress.stateCode').value;
+				$('accountDto.billingAddress.zipCode').value = $('temp_accountDto.billingAddress.zipCode').value;
+
+				setBillingFieldsDisabled(false);
+			}
+    	}
+
+    	function setBillingFieldsDisabled(disabled) {
+
+    		$$('input[id^="accountDto.billingAddress."]').each(function(el) {
+				el.disabled = disabled;
 			});
     	}
-	
+    	
     </script>
     
-    
-	
-    <c:if test="${not empty errorMsg}">
-            <div class="errorRed">${errorMsg}</div>
-        <br>
-    </c:if>
+	<cti:msg2 var="naLabel" key="defaults.na"/>
     
     <form id="deleteForm" action="/spring/stars/operator/account/accountDelete" method="post">
     	<input type="hidden" name="accountId" value="${accountId}">
@@ -130,10 +162,10 @@
 	    			
 	    				<tags:nameValueContainer2 id="serviceInformationTable">
 	    				
-	    					<tags:yukonListEntrySelectNameValue nameKey=".rateScheduleLabel" path="accountDto.rateScheduleEntryId" accountId="${accountId}" listName="RATE_SCHEDULE" defaultItemValue="0" defaultItemLabel="(none)"/>
+	    					<tags:yukonListEntrySelectNameValue nameKey=".rateScheduleLabel" path="accountDto.rateScheduleEntryId" accountId="${accountId}" listName="RATE_SCHEDULE" defaultItemValue="0" defaultItemLabel="${naLabel}"/>
 	    					<tags:checkboxNameValue nameKey=".presenceRequiredLabel" path="accountDto.isCustAtHome" id="isCustAtHomeCheckbox"/>
 	    					<tags:inputNameValue nameKey=".customerStatusLabel" path="accountDto.customerStatus" size="1" maxlength="1"/>
-	   						<tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations.starsSubstationList}" itemValue="substationName" itemLabel="substationName"/>
+	   						<tags:selectNameValue nameKey=".substationLabel" path="accountDto.siteInfo.substationName" items="${substations}" itemValue="name" itemLabel="name" defaultItemValue="(none)" defaultItemLabel="${naLabel}"/>
 	    					<tags:inputNameValue nameKey=".feederLabel" path="accountDto.siteInfo.feeder"/>
 	    					<tags:inputNameValue nameKey=".poleLabel" path="accountDto.siteInfo.pole"/>
 	    					<tags:inputNameValue nameKey=".transformerSizeLabel" path="accountDto.siteInfo.transformerSize"/>
@@ -163,6 +195,13 @@
 	    					<tags:inputNameValue nameKey=".billingStateLabel" path="accountDto.billingAddress.stateCode" size="2" maxlength="2"/>
 	    					<tags:inputNameValue nameKey=".billingZipLabel" path="accountDto.billingAddress.zipCode"/>
 	    					<form:hidden path="accountDto.billingAddress.county"/>
+	    					
+	    					<%-- for temporary storage of billing previous values, has no impact on actual form processing --%>
+	    					<input type="hidden" id="temp_accountDto.billingAddress.locationAddress1" value="${accountGeneral.accountDto.billingAddress.locationAddress1}"> 
+	    					<input type="hidden" id="temp_accountDto.billingAddress.locationAddress2" value="${accountGeneral.accountDto.billingAddress.locationAddress2}"> 
+	    					<input type="hidden" id="temp_accountDto.billingAddress.cityName" value="${accountGeneral.accountDto.billingAddress.cityName}"> 
+	    					<input type="hidden" id="temp_accountDto.billingAddress.stateCode" value="${accountGeneral.accountDto.billingAddress.stateCode}"> 
+	    					<input type="hidden" id="temp_accountDto.billingAddress.zipCode" value="${accountGeneral.accountDto.billingAddress.zipCode}"> 
 	    					
 	    				</tags:nameValueContainer2>
 	    			
