@@ -4,21 +4,20 @@ setlocal
 
 rem Set the path to the directory where the build tools live.
 
-if not exist ..\Makefile (
+if exist ..\Makefile (
         pushd ..
 ) else (
-        pushd ..\..
+        pushd .
 )
 
+set SOURCEBASE=%cd%
+cd ..
 set YUKONBASE=%cd%
 popd
 
 set PATH=%YUKONBASE%\yukon-build\server-build;%PATH%
 
 set COMPILEBASE=%cd%
-pushd ..
-set SOURCEBASE=%cd%
-popd
 
 rem Build it.
 
@@ -48,7 +47,8 @@ if "%~1" == "clean" goto cleanup
 
 rem Run Unit Tests on Success
 
-pushd %YUKONBASE%\yukon-server
+echo SOURCEBASE %SOURCEBASE%
+pushd %SOURCEBASE%
 call runalltests.cmd
 popd
 
