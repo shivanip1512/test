@@ -73,6 +73,7 @@ import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.InventoryCheckingAddDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.SerialNumber;
+import com.cannontech.web.stars.dr.operator.hardware.model.SwitchAssignment;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareService;
 import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator;
@@ -109,7 +110,7 @@ public class OperatorHardwareController {
         SerialNumber serialNumber = new SerialNumber();
         modelMap.addAttribute("serialNumber", serialNumber);
         
-        setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany);
+        setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/hardware/hardwareList.jsp";
@@ -205,7 +206,7 @@ public class OperatorHardwareController {
         }
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany);
+        setupHardwareListModelMap(accountInfoFragment, modelMap, energyCompany, userContext);
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
         return "operator/hardware/hardwareList.jsp";
@@ -465,8 +466,11 @@ public class OperatorHardwareController {
         }
         hardwareDto.setHardwareTypeEntryId(typeEntry.getEntryID());
         hardwareDto.setFieldInstallDate(new Date());
-        hardwareDto.setSwitchAssignments(hardwareService.getSwitchAssignments(new ArrayList<Integer>(), accountInfoFragment.getAccountId()));
         
+        for(SwitchAssignment assignement : hardwareService.getSwitchAssignments(new ArrayList<Integer>(), accountInfoFragment.getAccountId())) {
+            hardwareDto.getSwitchAssignments().add(assignement);
+        }
+
         modelMap.addAttribute("hardwareDto", hardwareDto);
         
         setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
@@ -568,7 +572,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
     }
     
-    private void setupHardwareListModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, LiteStarsEnergyCompany energyCompany) {
+    private void setupHardwareListModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, LiteStarsEnergyCompany energyCompany, YukonUserContext userContext) {
         ListMultimap<LMHardwareClass, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId());
         
         modelMap.addAttribute("switches", hardwareMap.get(LMHardwareClass.SWITCH));
@@ -581,6 +585,9 @@ public class OperatorHardwareController {
         
         boolean starsMeters = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, energyCompany.getUser()).equalsIgnoreCase(StarsUtils.METER_BASE_DESIGNATION);
         modelMap.addAttribute("starsMeters", starsMeters);
+        
+        boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
+        modelMap.addAttribute("inventoryChecking", inventoryChecking);
     }
     
     private void setupHardwareEditModelMap(AccountInfoFragment accountInfoFragment, Integer inventoryId, ModelMap modelMap, YukonUserContext userContext, boolean editing){

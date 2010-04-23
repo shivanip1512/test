@@ -8,10 +8,10 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.LazyList;
+import com.cannontech.common.util.SimpleSupplier;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.web.stars.dr.operator.hardware.service.impl.HardwareServiceImpl.HardwareHistory;
-import com.cannontech.web.stars.dr.operator.model.SwitchAssignmentSupplier;
 
 public class HardwareDto {
     private Integer inventoryId;
@@ -40,7 +40,7 @@ public class HardwareDto {
     private HardwareType hardwareType;
     private int hardwareTypeEntryId;
     private String meterNumber;
-    private List<SwitchAssignment> switchAssignments = new LazyList<SwitchAssignment>(new ArrayList<SwitchAssignment>(), new SwitchAssignmentSupplier());
+    private List<SwitchAssignment> switchAssignments = new LazyList<SwitchAssignment>(new ArrayList<SwitchAssignment>(), new SimpleSupplier<SwitchAssignment>(SwitchAssignment.class));
     
     public Integer getDeviceStatusEntryId() {
         return deviceStatusEntryId;
@@ -248,10 +248,6 @@ public class HardwareDto {
     
     public String getMeterNumber() {
         return meterNumber;
-    }
-
-    public void setSwitchAssignments(List<SwitchAssignment> switchAssignments) {
-        this.switchAssignments = switchAssignments;
     }
 
     public List<SwitchAssignment> getSwitchAssignments() {

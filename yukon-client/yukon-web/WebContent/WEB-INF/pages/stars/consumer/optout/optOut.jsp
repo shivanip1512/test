@@ -69,7 +69,7 @@
 		            <tr>
 		                <td align="center" colspan="2">
 		                    <br>
-		                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optout.apply'/>"></input>
+		                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optout.apply'/>" class="formSubmit">
 		                </td>
 		            </tr>
 		        </table>
@@ -107,7 +107,7 @@
                                 <c:if test="${optOut.state == 'SCHEDULED'}">
 			                        <form action="/spring/stars/consumer/optout/cancel" method="post">
 				        				<input type="hidden" name="eventId" value="${optOut.eventId}">
-				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>">
+				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>" class="formSubmit">
 				        			</form>
 			        			</c:if>
 			        		</td>

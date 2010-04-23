@@ -87,6 +87,9 @@
             <tag name="METER_DETAIL_DISPLAYABLE">
                 <value>true</value>
             </tag>
+            <tag name="STARS_ACCOUNT_ATTACHABLE_METER">
+                <value>true</value>
+            </tag>
         </tags>
 	</pao>
     

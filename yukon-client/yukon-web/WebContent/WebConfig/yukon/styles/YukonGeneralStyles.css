@@ -892,10 +892,6 @@ h3.indentedElementHeading + * {
 	text-align: right;
 }
 
-.actionArea input {
-    width: 100px;
-}
-
 .actionArea input.notButton {
 	width: auto;
 }
@@ -1100,7 +1096,8 @@ input.calendarInput {
     width: 70px;
 }
 
-input.formSubmit {
+input.formSubmit,
+.actionArea input {
     padding-left: 10px;
     padding-right: 10px;
 }

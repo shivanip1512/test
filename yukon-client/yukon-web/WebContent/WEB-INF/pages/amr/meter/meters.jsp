@@ -75,8 +75,8 @@
         <div style="clear:both"></div>
         
         <br>
-        <input type="submit" value="Filter"></input>
-        <input type="button" value="Show All" onclick="javascript:clearFilter()"></input>
+        <input type="submit" value="Filter" class="formSubmit">
+        <input type="button" value="Show All" onclick="javascript:clearFilter()" class="formSubmit">
     </form>
     </tags:hideReveal>
     <br>

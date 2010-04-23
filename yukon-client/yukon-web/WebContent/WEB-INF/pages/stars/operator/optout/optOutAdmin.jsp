@@ -87,13 +87,13 @@
 		            <c:when test="${optOutsEnabled}">
 				        <cti:msg key="yukon.web.modules.dr.optOut.optOutEnabled" /><br><br>
 				        <form action="/spring/stars/operator/optOut/admin/disable" method="post">
-		                    <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts" />">
+		                    <input type="submit" name="enable" value="<cti:msg key="yukon.web.modules.dr.optOut.disableOptOuts" />" class="formSubmit">
 				        </form>
 		            </c:when>
 		            <c:otherwise>
 				        <cti:msg key="yukon.web.modules.dr.optOut.optOutDisabled" /><br><br>
 				        <form action="/spring/stars/operator/optOut/admin/enable" method="post">
-		                    <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.enableOptOuts" />">
+		                    <input type="submit" name="disable" value="<cti:msg key="yukon.web.modules.dr.optOut.enableOptOuts" />" class="formSubmit">
 				        </form>
 		            </c:otherwise>
 		        </c:choose>
@@ -207,8 +207,8 @@
 		        	</table>
 		        	<br>
 		        	
-                    <input type="submit" name="count" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.countOptOutsButton" />">
-                    <input type="submit" name="dontCount" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.dontCountOptOutsButton" />">
+                    <input type="submit" name="count" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.countOptOutsButton" />" class="formSubmit">
+                    <input type="submit" name="dontCount" value="<cti:msg key="yukon.web.modules.dr.optOut.countOptOuts.dontCountOptOutsButton" />" class="formSubmit">
                 </form>
 			        
 	        </tags:boxContainer>

@@ -19,7 +19,7 @@
 	</script>
 	
 	<span id="${thisId}">
-	<input type="button" value="${label}" id="${buttonId}" >
+	<input type="button" value="${label}" id="${buttonId}" class="formSubmit">
 	<script type="text/javascript">
 		
 		$("${buttonId}").observe("click", function() {

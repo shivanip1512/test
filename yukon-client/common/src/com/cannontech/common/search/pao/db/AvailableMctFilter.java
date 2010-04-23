@@ -1,28 +1,49 @@
 package com.cannontech.common.search.pao.db;
 
+import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.google.common.collect.Lists;
 
 public class AvailableMctFilter implements SqlFilter {
     
     private Set<Integer> energyCompanyIds;
+    private PaoDefinitionDao paoDefinitionDao;
     
-    public AvailableMctFilter(Set<Integer> energyCompanyIds) {
+    public AvailableMctFilter(Set<Integer> energyCompanyIds, PaoDefinitionDao paoDefinitionDao) {
         this.energyCompanyIds = energyCompanyIds;
+        this.paoDefinitionDao = paoDefinitionDao;
     }
     
     @Override
     public SqlFragmentSource getWhereClauseFragment() {
+        
+        Set<PaoDefinition> mcts = paoDefinitionDao.getPaosThatSupportTag(PaoTag.STARS_ACCOUNT_ATTACHABLE_METER);
+        ObjectMapper<PaoDefinition, PaoType> objectMapper = new ObjectMapper<PaoDefinition, PaoType>() {
+            public PaoType map(PaoDefinition from) throws ObjectMappingException {
+                PaoType paoType = from.getType();
+                return paoType;
+            }
+        };
+        List<PaoType> paoTypes = new MappingList<PaoDefinition, PaoType>(Lists.newArrayList(mcts), objectMapper);
+        
         SqlStatementBuilder limiter1 = new SqlStatementBuilder();
         limiter1.append("paobjectId IN (");
         limiter1.append("  SELECT paobjectId");
         limiter1.append("  FROM YukonPAObject ypo");
-        limiter1.append("  WHERE ypo.type like 'MCT%' ");
+        limiter1.append("  WHERE ypo.type ").in(paoTypes);
         limiter1.append("    AND ypo.paobjectId NOT IN (SELECT deviceId FROM inventoryBase ib WHERE ib.DeviceId = ypo.PAObjectId) )");
 
         SqlStatementBuilder limiter2 = new SqlStatementBuilder();
@@ -36,7 +57,7 @@ public class AvailableMctFilter implements SqlFilter {
         limiter2.append("    AND ib.accountId = 0 ");
         limiter2.append("    AND yle.YukonDefinitionId = ").append(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT).append(")");
         
-        SqlFragmentCollection retVal = new SqlFragmentCollection("OR");
+        SqlFragmentCollection retVal = SqlFragmentCollection.newOrCollection();
         retVal.add(limiter1);
         retVal.add(limiter2);
 

@@ -2,7 +2,7 @@
 <%@ attribute name="titleKey" required="true" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="onClose" required="false" type="java.lang.String"%>
-<%@ attribute name="showImmediately" required="false" type="java.lang.String"%>
+<%@ attribute name="showImmediately" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="arguments" required="false" type="java.lang.Object"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>

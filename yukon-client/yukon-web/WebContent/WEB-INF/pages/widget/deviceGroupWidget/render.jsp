@@ -27,7 +27,7 @@
     <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
 
     <br>
-    <input type="button" id="showPopupButton" value="${addDeviceTitle}"/>
+    <input type="button" id="showPopupButton" value="${addDeviceTitle}" class="formSubmit"/>
     
     <ext:multiNodeValueSelectingPopupTree    fieldId="groupIds"
                                         fieldName="groupIds"

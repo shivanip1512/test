@@ -20,7 +20,7 @@
 	
 	
 	<span id="${thisId}">
-	<input type="button" value="${label}" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusy}...', '${uniqueId}')">
+	<input class="formSubmit" type="button" value="${label}" onclick="${widgetParameters.jsWidget}.doActionUpdate('${method}', '${container}', '${thisId}', '${labelBusy}...', '${uniqueId}')">
 	<span class="widgetAction_waiting" style="display:none">
 	<img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" alt="waiting" >
 	</span>

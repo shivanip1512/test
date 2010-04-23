@@ -1,12 +1,17 @@
 package com.cannontech.stars.dr.hardware.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.DatabaseRepresentationSource;
+import com.google.common.collect.Sets;
 
 /**
  * Enum which represents load management hardware types
  */
-public enum HardwareType {
+public enum HardwareType implements DatabaseRepresentationSource{
     /* These are real MCTs that exist as yukon paos. Because they are paos ie. MCT-470, MCT-410 ect.  they do not
      * have a yukon definition so it is defined as zero.*/
     YUKON_METER(CtiUtilities.NONE_ZERO_ID, InventoryCategory.MCT, LMHardwareClass.METER),
@@ -79,6 +84,13 @@ public enum HardwareType {
 
     }
     
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getDefinitionId();
+    }
+    
+    /* HELPERS */
+    
     /**
      * I18N key for the display text for this action
      * @return Display key
@@ -131,5 +143,21 @@ public enum HardwareType {
 
     public int getNumRelays() {
         return isExpressCom() ? 8 : 4;
+    }
+
+    /**
+     * Returns a new HashSet<HardwareType> of hardware types that
+     * have the lm hardware class specified.
+     * @param lmHardwareClass the class to filter by.
+     * @return Set<HardwareType> The filtered set of hardware types.
+     */
+    public static Set<HardwareType> getForClass(LMHardwareClass lmHardwareClass) {
+        HashSet<HardwareType> classSet = Sets.newHashSet();
+        for(HardwareType type : values()) {
+            if(type.getLMHardwareClass() == lmHardwareClass) {
+                classSet.add(type);
+            }
+        }
+        return classSet;
     }
 }

@@ -7,6 +7,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPao;
 import com.cannontech.common.search.pao.db.AvailableMctFilter;
@@ -20,6 +21,7 @@ public class AvailableMctPicker extends FilterPaoPicker {
     
     private StarsDatabaseCache starsDatabaseCache;
     private ECMappingDao ecMappingDao;
+    private PaoDefinitionDao paoDefinitionDao;
 
     @Override
     public SearchResult<UltraLightPao> search(String ss, int start, int count, String energyCompanyIdExtraArg, YukonUserContext userContext) {
@@ -34,7 +36,7 @@ public class AvailableMctPicker extends FilterPaoPicker {
             Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
             
             extraFilters = Lists.newArrayList();
-            AvailableMctFilter energyCompanyIdsFilter = new AvailableMctFilter(energyCompanyIds);
+            AvailableMctFilter energyCompanyIdsFilter = new AvailableMctFilter(energyCompanyIds, paoDefinitionDao);
             extraFilters.add(energyCompanyIdsFilter);
             
         }
@@ -51,4 +53,9 @@ public class AvailableMctPicker extends FilterPaoPicker {
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
 		this.ecMappingDao = ecMappingDao;
 	}
+    
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
 }

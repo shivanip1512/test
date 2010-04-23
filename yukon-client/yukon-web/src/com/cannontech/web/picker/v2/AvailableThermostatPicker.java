@@ -13,8 +13,9 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
-import com.cannontech.stars.dr.hardware.dao.AvailableThermostatFilter;
+import com.cannontech.stars.dr.hardware.dao.AvailableLmHardwareFilter;
 import com.cannontech.stars.dr.hardware.dao.DisplayableLmHardwareRowMapper;
+import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -52,7 +53,7 @@ public class AvailableThermostatPicker extends DatabasePicker<DisplayableLmHardw
             Set<Integer> energyCompanyIds = ecMappingDao.getInheritedEnergyCompanyIds(energyCompany);
             
             extraFilters = Lists.newArrayList();
-            AvailableThermostatFilter energyCompanyIdsFilter = new AvailableThermostatFilter(energyCompanyIds);
+            AvailableLmHardwareFilter energyCompanyIdsFilter = new AvailableLmHardwareFilter(energyCompanyIds, LMHardwareClass.THERMOSTAT);
             extraFilters.add(energyCompanyIdsFilter);
             
         }

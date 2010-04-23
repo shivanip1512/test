@@ -11,6 +11,7 @@ import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
+import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 
 public interface StarsInventoryBaseDao {
 
@@ -115,9 +116,9 @@ public interface StarsInventoryBaseDao {
     public List<Integer> getSwitchAssignmentsForMeter(int meterId);
 
     /**
-     * Returns a list of DisplayableLmHardware's of switches on this account.
+     * Returns a list of DisplayableLmHardware's of the specified LMHardwareClass on this account.
      */
-    public List<DisplayableLmHardware> getSwitchesForAccount(int accountId);
+    public List<DisplayableLmHardware> getLmHardwareForAccount(int accountId,LMHardwareClass lmHardwareClass);
     
     /**
      * Returns the meter id if this switch is assigned to a meter, null if it is not.
@@ -135,5 +136,5 @@ public interface StarsInventoryBaseDao {
      * Saves the switch to meter mappings in LMHardwareToMeterMapping
      */
     public void saveSwitchAssignments(Integer meterId, List<Integer> switchIds);
-    
+
 }

@@ -1,33 +1,27 @@
 package com.cannontech.stars.dr.hardware.dao;
 
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
-import com.google.common.collect.Lists;
+import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 
-public class AvailableThermostatFilter implements SqlFilter {
+public class AvailableLmHardwareFilter implements SqlFilter {
     
     private Set<Integer> energyCompanyIds;
+    private LMHardwareClass lmHardwareClass;
     
-    public AvailableThermostatFilter(Set<Integer> energyCompanyIds) {
+    public AvailableLmHardwareFilter(Set<Integer> energyCompanyIds, LMHardwareClass lmHardwareClass) {
         this.energyCompanyIds = energyCompanyIds;
+        this.lmHardwareClass = lmHardwareClass;
     }
     
     @Override
     public SqlFragmentSource getWhereClauseFragment() {
         
-        List<HardwareType> hardwareTypes = Lists.newArrayList(HardwareType.values());
-        List<Integer> thermostatTypeDefIds = Lists.newArrayList();
-        
-        for(HardwareType type : hardwareTypes) {
-            if (type.isThermostat()) {
-                thermostatTypeDefIds.add(type.getDefinitionId());
-            }
-        }
+        Set<HardwareType> lmHardwareTypes = HardwareType.getForClass(lmHardwareClass);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("lmhw.inventoryId IN (");
@@ -37,7 +31,7 @@ public class AvailableThermostatFilter implements SqlFilter {
         sql.append("    JOIN YukonListEntry yle on yle.EntryID = lmhb.LMHardwareTypeID");
         sql.append("  WHERE etim.EnergyCompanyId ").in(energyCompanyIds);
         sql.append("    AND ib.accountId = 0 ");
-        sql.append("    AND yle.YukonDefinitionID ").in(thermostatTypeDefIds).append(")");
+        sql.append("    AND yle.YukonDefinitionID ").in(lmHardwareTypes).append(")");
 
         return sql;
     }

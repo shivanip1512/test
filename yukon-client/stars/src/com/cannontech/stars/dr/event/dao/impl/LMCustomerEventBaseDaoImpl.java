@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.model.LMCustomerEventBase;
@@ -52,7 +53,7 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, Initi
     public void updateNotesForEvent(int eventId, Date date, String notes){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("update LMCustomerEventBase");
-        sql.append("set Notes ").eq(notes);
+        sql.append("set Notes ").eq(SqlUtils.convertStringToDbValue(notes));
         sql.append(", EventDateTime ").eq(date);
         sql.append("where EventId ").eq(eventId);
         simpleJdbcTemplate.update(sql.getSql(), sql.getArguments());

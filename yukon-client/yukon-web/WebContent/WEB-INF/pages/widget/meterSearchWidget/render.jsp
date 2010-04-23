@@ -17,5 +17,5 @@
 	        </c:forEach>
         </tags:nameValueContainer>
         
-        <div style="text-align: right"><input type="submit" value="Search"></div>
+        <div style="text-align: right"><input type="submit" value="Search" class="formSubmit"></div>
     </form>

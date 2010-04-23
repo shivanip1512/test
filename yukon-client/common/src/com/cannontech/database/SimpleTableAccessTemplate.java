@@ -15,13 +15,14 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class SimpleTableAccessTemplate<T> {
+public final class SimpleTableAccessTemplate<T> {
 
     private String tableName;
     private final SimpleJdbcOperations jdbcTemplate;
     private FieldMapper<T> fieldMapper;
     private final NextValueHelper nextValueHelper;
     private String primaryKeyField;
+    private Integer primaryKeyValidOver = null;
 
     public SimpleTableAccessTemplate(final SimpleJdbcOperations jdbcTemplate, final NextValueHelper nextValueHelper) {
         this.jdbcTemplate = jdbcTemplate;
@@ -43,16 +44,33 @@ public class SimpleTableAccessTemplate<T> {
         return this;
     }
     
-    public void save(T object) {
-        if (fieldMapper.getPrimaryKey(object) == null) {
+    public SimpleTableAccessTemplate<T> withPrimaryKeyValidOver(int i) {
+        this.primaryKeyValidOver  = i;
+        return this;
+    }
+    
+    public final void save(T object) {
+        if (needsPrimaryKey(object)) {
             insert(object);
         } else {
             update(object);
         }
     }
+
+    protected boolean needsPrimaryKey(T object) {
+        if (primaryKeyValidOver == null) {
+            return fieldMapper.getPrimaryKey(object) == null;
+        } else {
+            if (fieldMapper.getPrimaryKey(object) == null) {
+                return true;
+            } else {
+                return fieldMapper.getPrimaryKey(object).longValue() <= primaryKeyValidOver;
+            }
+        }
+    }
     
     @SuppressWarnings("unchecked")
-    public void insert(T object) {
+    public final void insert(T object) {
         final MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         fieldMapper.extractValues(parameterSource, object);
 
@@ -62,7 +80,7 @@ public class SimpleTableAccessTemplate<T> {
         }
         
         int nextId;
-        if (fieldMapper.getPrimaryKey(object) == null) {
+        if (needsPrimaryKey(object)) {
             nextId = nextValueHelper.getNextValue(tableName);
         } else {
             nextId = fieldMapper.getPrimaryKey(object).intValue();
@@ -95,7 +113,7 @@ public class SimpleTableAccessTemplate<T> {
     }
     
     @SuppressWarnings("unchecked")
-    public void update(T object) {
+    public final void update(T object) {
         final MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         fieldMapper.extractValues(parameterSource, object);
         

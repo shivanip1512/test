@@ -64,7 +64,7 @@
 			</tags:nameValue2>
 		</tags:nameValueContainer2>
         <br>
-        <input type="submit" value="<cti:msg2 key=".optOut"/>" />
+        <input type="submit" value="<cti:msg2 key=".optOut"/>" class="formSubmit">
 	</form:form>
 </c:if>
 </tags:boxContainer2>

@@ -124,7 +124,7 @@
                 <cti:url var="getReportUrl" value="/spring/meter/highBill/getReport"/>
                 <cti:url var="hbcRedirectUrl" value="/spring/meter/highBill/view"/>
                 
-                <input type="button" id="getReportButton" value="Get Report" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" value="click me">
+                <input type="button" id="getReportButton" value="Get Report" onclick="getReport('${getReportUrl}', '${hbcRedirectUrl}');" value="click me" class="formSubmit">
                 <img id="getReportProcessImg" style="display:none;" src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
             </c:if>
                     
@@ -352,7 +352,7 @@
                 <cti:param name="createLPPoint" value="true" />
             </cti:url>
             <cti:deviceName deviceId="${deviceId}"></cti:deviceName> is not configured for 
-            High Bill Processing. <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')"></input>
+            High Bill Processing. <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')" class="formSubmit">
             
         </c:otherwise>
         </c:choose>

@@ -189,7 +189,10 @@ public class HardwareServiceImpl implements HardwareService {
             hardwareDto.setDisplayType(mctDeviceType.getEntryText());
             
             List<Integer> assignedIds = starsInventoryBaseDao.getSwitchAssignmentsForMeter(inventoryId);
-            hardwareDto.setSwitchAssignments(getSwitchAssignments(assignedIds, accountId));
+            
+            for(SwitchAssignment assignement : getSwitchAssignments(assignedIds, accountId)) {
+                hardwareDto.getSwitchAssignments().add(assignement);
+            }
             
         } else if(hardwareCategory == InventoryCategory.ONE_WAY_RECEIVER || hardwareCategory == InventoryCategory.TWO_WAY_RECEIVER) {
             /* Must be a switch or thermostat. */
@@ -525,7 +528,7 @@ public class HardwareServiceImpl implements HardwareService {
         try {
             LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByDeviceId(meterId);
             liteInventoryBase.setAccountID(accountId);
-            liteInventoryBase.setRemoveDate(new DateTime(0).toDate().getTime());
+            liteInventoryBase.setRemoveDate(0);
             Date now = new Date();
             liteInventoryBase.setInstallDate(now.getTime());
             
@@ -538,7 +541,7 @@ public class HardwareServiceImpl implements HardwareService {
                 if(entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL) {
                     /* The list of events is retrieved newest to oldest 
                      * so the first install in the list will be the most recent */
-                    lmCustomerEventBaseDao.updateNotesForEvent(event.getEventID(), now, " ");
+                    lmCustomerEventBaseDao.updateNotesForEvent(event.getEventID(), now, "");
                 }
             }
             
@@ -557,7 +560,7 @@ public class HardwareServiceImpl implements HardwareService {
     
     @Override
     public List<SwitchAssignment> getSwitchAssignments(List<Integer> assignedIds, int accountId) {
-        List<DisplayableLmHardware> switchesOnAccount = starsInventoryBaseDao.getSwitchesForAccount(accountId);
+        List<DisplayableLmHardware> switchesOnAccount = starsInventoryBaseDao.getLmHardwareForAccount(accountId, LMHardwareClass.SWITCH);
         List<SwitchAssignment> switchAssignments = Lists.newArrayList();
         for(DisplayableLmHardware dhw : switchesOnAccount) {
             

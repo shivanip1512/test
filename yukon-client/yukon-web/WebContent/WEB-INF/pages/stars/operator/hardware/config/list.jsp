@@ -123,12 +123,12 @@ var programIdsAlreadyEnrolled = [];
        <cti:param name="accountId" value="${accountId}"/>
        <cti:param name="inventoryId" value="${inventoryId}"/>
     </cti:url>
-    <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'">
+    <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'" class="formSubmit">
     <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
        <cti:param name="accountId" value="${accountId}"/>
        <cti:param name="inventoryId" value="${inventoryId}"/>
     </cti:url>
-    <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'">
+    <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'" class="formSubmit">
 </tags:boxContainer2>
 
 </cti:standardPage>
