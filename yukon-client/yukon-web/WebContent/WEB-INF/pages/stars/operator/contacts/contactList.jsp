@@ -6,6 +6,8 @@
 
 <cti:standardPage module="operator" page="contactList">
 
+	<tags:setFormEditMode mode="${mode}"/>
+	
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/contacts.css"/>
 
 	<script type="text/javascript">
@@ -119,9 +121,9 @@
 	</table>
 	
 	<%-- ADD CONTACT --%>
-	<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+	<cti:displayForPageEditModes modes="EDIT,CREATE">
 		<br>
 		<tags:slowInput2 myFormId="addContactForm" key="button.addContact" />
-	</cti:checkRolesAndProperties>
+	</cti:displayForPageEditModes>
 
 </cti:standardPage>

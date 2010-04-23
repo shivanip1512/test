@@ -55,6 +55,9 @@ public class OperatorContactsController {
     						  ModelMap modelMap,
     						  AccountInfoFragment accountInfoFragment) {
 		
+		boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+		modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
+		
 		// contacts
 		List<ContactDto> contacts = Lists.newArrayList();
 		
@@ -107,7 +110,6 @@ public class OperatorContactsController {
     public String contactUpdate(@ModelAttribute("contactDto") ContactDto contactDto, 
     							BindingResult bindingResult,
 					    		Integer additionalBlankNotifications,
-					    		boolean hasPendingNewNotification,
 					    		ModelMap modelMap, 
 					    		YukonUserContext userContext,
 					    		FlashScope flashScope,
@@ -120,6 +122,7 @@ public class OperatorContactsController {
 		LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
 		
 		// validate/save
+		boolean newContact = contactDto.getContactId() <= 0;
 		contactDtoValidator.validate(contactDto, bindingResult);
 		if (!bindingResult.hasErrors()) {
 			operatorAccountService.saveContactDto(contactDto, customer);
@@ -133,8 +136,11 @@ public class OperatorContactsController {
 		}
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactUpdated"));
+		if (newContact) {
+			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
+		}
 		
-		return "redirect:contactEdit";
+		return "redirect:contactList";
 	}
 	
 	// ADD NOTIFICATION

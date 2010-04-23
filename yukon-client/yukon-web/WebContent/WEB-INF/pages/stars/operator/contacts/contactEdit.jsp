@@ -7,7 +7,8 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage module="operator" page="contact.${mode}">
-<tags:setFormEditMode mode="${mode}"/>
+	
+	<tags:setFormEditMode mode="${mode}"/>
 
 	<script type="text/javascript">
 		Event.observe(window, 'load', function() {
@@ -38,7 +39,6 @@
 	
 		<input type="hidden" name="contactId" value="${contactDto.contactId}">
 		<input type="hidden" name="accountId" value="${accountId}"/>
-		<input type="hidden" name="hasPendingNewNotification" value="${hasPendingNewNotification == true}"/>
 		
 		<c:set var="contactInformationSectionTitleKey" value="contactInformationSection"/>
 		<c:if test="${contactDto.primary}">
@@ -63,9 +63,9 @@
 				<tr>
 					<th style="width:160px;"><i:inline key=".notificationTable.notificationMethodHeader"/></th>
 					<th><i:inline key=".notificationTable.valueHeader"/></th>
-					<c:if test="${mode == 'CREATE'}">
+					<cti:displayForPageEditModes modes="EDIT">
 						<th style="text-align:center;width:100px;"><i:inline key=".notificationTable.removeHeader"/></th>
-					</c:if>
+					</cti:displayForPageEditModes>
 				</tr>
 			
 				<%-- EXISTING NOTIFICATIONS --%>
@@ -108,17 +108,20 @@
 				</c:forEach>
 			
 				<%-- ADD NOTIFICATION --%>
-				<c:if test="${mode == 'EDIT'}">
+				<cti:displayForPageEditModes modes="EDIT">
 					<tr style="background-color:#EEE;">
 						<td colspan="3">
 						
-							<input type="image" src="${add}" name="newNotification" value="true" onmouseover="javascript:this.src='${addOver}'" onmouseout="javascript:this.src='${add}'">
-						
-							<i:inline key=".notificationTable.addNotification"/>
+							<%-- replicates look and feel of LabeledImgTag but since this action won't work as an href it is done as a <input type="image"/> --%>
+							<cti:msg2 var="addNotificationhoverText" key=".addNotification.hoverText"/>
+							<span title="${addNotificationhoverText}" class="pointer" onmouseover="javascript:$('addNotificationImgInput').src='${addOver}'" onmouseout="javascript:$('addNotificationImgInput').src='${add}'">
+								<input id="addNotificationImgInput" type="image" src="${add}" name="newNotification" value="true" class="logoImage">
+								<label for="addNotificationImgInput" class="logoImage pointer"><cti:msg2 key=".addNotification.label"/></label>
+							</span>
 							 
 						</td>
 					</tr>
-				</c:if>
+				</cti:displayForPageEditModes>
 				
 			</table>
 			
@@ -126,8 +129,8 @@
 		
 		<%-- BUTTONS --%>
 		<br>
-		<tags:slowInput2 myFormId="contactListForm" key="button.viewAll" />
 		<tags:slowInput2 myFormId="contactsUpdateForm" key="save" />
+		<tags:slowInput2 myFormId="contactListForm" key="cancel" />
 
 	</form:form>
 	
