@@ -31,14 +31,6 @@ public class ApplianceDaoImpl implements ApplianceDao {
     private ApplianceCategoryDao applianceCategoryDao;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
 
-    private String assignedApplianceSQLHeader = 
-        "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, "+
-        "       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, "+
-        "       LMHC.loadNumber, AB.kwCapacity, AB.ManufacturerId, "+
-        "       AB.YearManufactured, AB.LocationId, AB.EfficiencyRating, "+
-        "       AB.Notes, AB.ModelNumber " +
-        "FROM ApplianceBase AB " +
-        "INNER JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ";
     
     private String applianceSQLHeader = 
         "SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, "+
@@ -79,7 +71,13 @@ public class ApplianceDaoImpl implements ApplianceDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Appliance> getAssignedAppliancesByAccountId(final int accountId) {
         SqlStatementBuilder applianceSQL = new SqlStatementBuilder();
-        applianceSQL.append(assignedApplianceSQLHeader);
+        applianceSQL.append("SELECT AB.applianceId, AB.applianceCategoryId, AB.accountId, ");
+        applianceSQL.append("       AB.programId, LMHC.inventoryId, LMHC.addressingGroupId, ");
+        applianceSQL.append("       LMHC.loadNumber, AB.kwCapacity, AB.ManufacturerId, ");
+        applianceSQL.append("       AB.YearManufactured, AB.LocationId, AB.EfficiencyRating, ");
+        applianceSQL.append("       AB.Notes, AB.ModelNumber ");
+        applianceSQL.append("FROM ApplianceBase AB ");
+        applianceSQL.append("INNER JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ");
         applianceSQL.append("WHERE AB.accountId ").eq(accountId);
 
         List<Appliance> list = yukonJdbcTemplate.query(applianceSQL, rowMapper);

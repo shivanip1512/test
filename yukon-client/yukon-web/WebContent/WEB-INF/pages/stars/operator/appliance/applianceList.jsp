@@ -66,9 +66,9 @@
                                      <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
                                  </cti:url>
                                  <a href="${editApplianceUrl}">
-                                     <spring:htmlEscape defaultHtmlEscape="true">
+                                     <spring:escapeBody htmlEscape="true">
                                          ${displayableApplianceListEntry.applianceName}
-                                     </spring:htmlEscape>
+                                     </spring:escapeBody>
                                  </a>
                              </td>
                              <td>
@@ -77,9 +77,9 @@
                                          <i:inline key=".notApplicable"/>
                                      </c:when>
                                      <c:otherwise>
-                                         <spring:htmlEscape defaultHtmlEscape="true">
+                                         <spring:escapeBody htmlEscape="true">
                                              ${displayableApplianceListEntry.deviceLabel}
-                                         </spring:htmlEscape>
+                                         </spring:escapeBody>
                                      </c:otherwise>
                                  </c:choose>
                              </td>
@@ -89,9 +89,9 @@
                                          <i:inline key=".notApplicable"/>
                                      </c:when>
                                      <c:otherwise>
-                                         <spring:htmlEscape defaultHtmlEscape="true">
+                                         <spring:escapeBody htmlEscape="true">
                                              ${displayableApplianceListEntry.assignedProgramName}
-                                         </spring:htmlEscape>
+                                         </spring:escapeBody>
                                      </c:otherwise>
                                  </c:choose>
                              </td>
