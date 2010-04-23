@@ -335,8 +335,6 @@ table.compactResultsTable td.label {
 	display:inline;
 }
 
-
-
 /* Name value pair styles */
 table.nameValueTable {
 	border: none;
@@ -357,10 +355,6 @@ table.nameValueTable td.name {
 	font-weight: bold;
 	padding-right:10px;
 	font-size: .9em;
-}
-
-table.nameValueTable td.value {
-	padding-left:30px;
 }
 
 table.nameValueTable tr {
