@@ -1101,3 +1101,9 @@ input.formSubmit,
     padding-left: 10px;
     padding-right: 10px;
 }
+
+#logOutput { 
+	font-family: Courier, Courier, monospace; 
+	font-size: 12px;
+	white-space: pre; 
+}
