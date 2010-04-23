@@ -45,11 +45,11 @@ function initiateCannonLogUpdate(url, periodSecs) {
     };
     
     var appendLogEntry = function(text) {
-		var logLineSpan = document.createElement('span');
+    	var logLineDiv = document.createElement('div');
 		var textNode = document.createTextNode(text + "\n");
-		logLineSpan.appendChild(textNode);
-		$$('#logOutput span').shift().remove();
-		$('logOutput').appendChild(logLineSpan);
+		logLineDiv.appendChild(textNode);
+		$$('#logOutput div').shift().remove();
+		$('logOutput').appendChild(logLineDiv);
     };
     
     var doUpdate = function() {

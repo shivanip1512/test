@@ -34,7 +34,7 @@ initiateCannonLogUpdate("${updateUrl}" ,2);
 
 
 <div id="logContents">
-<pre id="logOutput"><c:forEach var="line" items="${logContents}"><span>${line}
-</span></c:forEach></pre>
+<pre id="logOutput"><c:forEach var="line" items="${logContents}"><div>${line}
+</div></c:forEach></pre>
 </div>
 </cti:standardPage>
