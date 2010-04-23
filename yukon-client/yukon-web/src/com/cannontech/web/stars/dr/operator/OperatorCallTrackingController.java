@@ -129,8 +129,7 @@ public class OperatorCallTrackingController {
 			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.viewCall.callCreated"));
 		}
 		
-		modelMap.addAttribute("callId", callReport.getCallId());
-		return "redirect:viewCall";
+		return "redirect:callList";
 	}
 	
 	// DELETE CALL

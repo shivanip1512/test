@@ -6,7 +6,7 @@
 
 <cti:standardPage module="operator" page="accountLog">
 
-    <tags:boxContainer2 key="accountActionLog">
+    <tags:boxContainer2 nameKey="accountActionLog">
         <table class="compactResultsTable">
             <tr>
                 <th><i:inline key=".event" /></th>

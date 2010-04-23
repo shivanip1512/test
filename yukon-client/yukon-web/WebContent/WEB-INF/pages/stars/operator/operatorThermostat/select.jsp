@@ -51,7 +51,7 @@
 	</script>
 
    	<form id="themostatSelectForm" method="post" action="/spring/stars/operator/thermostatSelect/selectRedirect">
-    <tags:boxContainer2 key="chooseThermostats" hideEnabled="false">
+    <tags:boxContainer2 nameKey="chooseThermostats" hideEnabled="false">
     	
     	
     		<input type="hidden" name="accountId" value="${accountId}">

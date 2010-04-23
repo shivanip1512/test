@@ -13,7 +13,7 @@
 var programIdsAlreadyEnrolled = [];
 </script>
 
-<tags:boxContainer2 key="enrolledPrograms">
+<tags:boxContainer2 nameKey="enrolledPrograms">
     <table class="compactResultsTable rowHighlighting">
         <tr>
             <th><i:inline key=".name"/></th>
@@ -133,7 +133,7 @@ var programIdsAlreadyEnrolled = [];
 <br>
 <br>
 
-<tags:boxContainer2 key="history">
+<tags:boxContainer2 nameKey="history">
     <table class="compactResultsTable rowHighlighting">
         <tr>
             <th><i:inline key=".date"/></th>

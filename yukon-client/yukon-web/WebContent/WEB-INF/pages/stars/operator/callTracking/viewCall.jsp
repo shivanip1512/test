@@ -24,30 +24,33 @@
 	
 		<input type="hidden" name="accountId" value="${accountId}">
 	
-		<tags:nameValueContainer2>
-		
-			<form:hidden path="callId"/>
-		
-			<tags:inputNameValue nameKey=".callNumber" path="callNumber"/>
-		
-			<tags:nameValue2 nameKey=".date">
-				<tags:dateTimeInput path="dateTaken" inline="true" fieldValue="${callReport.dateTaken}"/>
-			</tags:nameValue2>
+		<tags:formElementContainer nameKey="callContainer">
+	
+			<tags:nameValueContainer2>
 			
-			<tags:yukonListEntrySelectNameValue nameKey=".type" path="callTypeId" accountId="${accountId}" listName="CALL_TYPE"/>
+				<form:hidden path="callId"/>
 			
-			<tags:inputNameValue nameKey=".takenBy" path="takenBy"/>
+				<tags:inputNameValue nameKey=".callNumber" path="callNumber"/>
 			
-			<tags:textareaNameValue nameKey=".description" path="description" rows="4" cols="35"/>
+				<tags:nameValue2 nameKey=".date">
+					<tags:dateTimeInput path="dateTaken" inline="true" fieldValue="${callReport.dateTaken}"/>
+				</tags:nameValue2>
+				
+				<tags:yukonListEntrySelectNameValue nameKey=".type" path="callTypeId" accountId="${accountId}" listName="CALL_TYPE"/>
+				
+				<tags:inputNameValue nameKey=".takenBy" path="takenBy"/>
+				
+				<tags:textareaNameValue nameKey=".description" path="description" rows="4" cols="35"/>
+			
+			</tags:nameValueContainer2>
 		
-		</tags:nameValueContainer2>
+		</tags:formElementContainer>
 		
 		<br>
 		
 		<%-- buttons --%>
-		<tags:slowInput2 myFormId="viewAllForm" key="viewAll" />
-		<cti:msg var="saveButtonText" key="yukon.web.components.slowInput.save.label" />
-		<input type="submit" value="${saveButtonText}" class="formSubmit">
+		<tags:slowInput2 myFormId="callReportUpdateForm" key="save" />
+		<tags:slowInput2 myFormId="viewAllForm" key="cancel" />
 		
 	</form:form>
     

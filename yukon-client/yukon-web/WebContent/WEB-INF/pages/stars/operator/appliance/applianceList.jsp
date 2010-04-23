@@ -45,7 +45,7 @@
         </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
 
-    <ct:boxContainer2 key=".appliances">
+    <ct:boxContainer2 nameKey=".appliances">
         <table class="compactResultsTable">
             <c:choose>
                 <c:when test="${fn:length(displayableApplianceListEntries) > 0}">

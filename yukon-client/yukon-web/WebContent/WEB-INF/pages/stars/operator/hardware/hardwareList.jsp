@@ -290,7 +290,7 @@
 </c:if>
 
 <%-- SWITCHES TABLE --%>
-<tags:boxContainer2 key="switches">
+<tags:boxContainer2 nameKey="switches">
     <c:choose>
         <c:when test="${empty switches}">
             <i:inline key=".switches.none"/>
@@ -356,7 +356,7 @@
 <br><br>
 
 <%-- THERMOSTATS TABLE --%>
-<tags:boxContainer2 key="thermostats">
+<tags:boxContainer2 nameKey="thermostats">
     <c:choose>
         <c:when test="${empty thermostats}">
             <i:inline key=".thermostats.none"/>
@@ -435,7 +435,7 @@
 <br><br>
 
 <%-- METERS TABLE --%>
-<tags:boxContainer2 key="meters">
+<tags:boxContainer2 nameKey="meters">
     <c:choose>
         <c:when test="${empty meters}">
             <i:inline key=".meters.none"/>

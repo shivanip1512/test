@@ -25,7 +25,7 @@
         <tr>
             <td>
                 <cti:msg key="${program.displayName}" var="controlEventsTitle" />
-                <tags:boxContainer2 key="controlEventsTitle" hideEnabled="false">
+                <tags:boxContainer2 nameKey="controlEventsTitle" hideEnabled="false">
                     <div id="controlEventsDiv"><i:inline key=".loading"/></div>
                 </tags:boxContainer2>
             </td>

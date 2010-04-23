@@ -294,7 +294,7 @@
                     
                     <cti:displayForPageEditModes modes="EDIT,VIEW">
                     
-                        <tags:boxContainer2 key="deviceStatusHistory">
+                        <tags:boxContainer2 nameKey="deviceStatusHistory">
                             <c:choose>
                                 <c:when test="${empty deviceStatusHistory}">
                                     <i:inline key=".deviceStatusHistory.none"/>
@@ -321,7 +321,7 @@
                         </tags:boxContainer2>
                         
                         <br>
-                        <tags:boxContainer2 key="hardwareHistory">
+                        <tags:boxContainer2 nameKey="hardwareHistory">
                             <c:choose>
                                 <c:when test="${empty hardwareHistory}">
                                     <i:inline key=".hardwareHistory.none"/>

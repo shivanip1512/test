@@ -94,7 +94,7 @@
         <tr>
             <td class="widgetColumnCell" valign="top">
                 <div class="widgetContainer">
-                    <tags:boxContainer2 key="info">
+                    <tags:boxContainer2 nameKey="info">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".type">
                                 <i:inline key="${applianceCategory.applianceType.formatKey}"/>
@@ -120,7 +120,7 @@
             </td>
             <td class="widgetColumnCell" valign="top">
                 <div class="widgetContainer">
-                    <tags:boxContainer2 key="actions">
+                    <tags:boxContainer2 nameKey="actions">
                         <ul>
                             <cti:url var="detailUrl" value="/spring/stars/dr/admin/applianceCategory/editDetails">
                                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>

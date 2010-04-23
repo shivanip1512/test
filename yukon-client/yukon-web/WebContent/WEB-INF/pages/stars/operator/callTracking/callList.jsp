@@ -22,7 +22,8 @@
 	
 		<input type="hidden" name="accountId" value="${accountId}">
 
-		<table class="resultsTable callListTable rowHighlighting">
+		<tags:boxContainer2 nameKey="callsBox">
+		<table class="compactResultsTable callListTable rowHighlighting">
 		
 			<tr>
 				<th><i:inline key=".header.callNumber"/></th>
@@ -78,6 +79,8 @@
 				</tr>
 			</c:forEach>
 		</table>
+		</tags:boxContainer2>
+		
 	</form>
 	
 	<%-- create button --%>

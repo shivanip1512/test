@@ -59,7 +59,7 @@ updateOKButton = function() {
     </cti:checkRolesAndProperties>
 
     <br>
-    <tags:boxContainer2 key="hardwareAssigned">
+    <tags:boxContainer2 nameKey="hardwareAssigned">
         <div class="dialogScrollArea">
         <table class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">

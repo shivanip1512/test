@@ -15,7 +15,7 @@ var programIdsAlreadyEnrolled = [];
 </script>
 
 <h1><i:inline key=".header" arguments="${hardware.deviceLabel}"/></h1>
-<tags:boxContainer2 key="enrolledPrograms">
+<tags:boxContainer2 nameKey="enrolledPrograms">
     <c:if test="${fn:length(enrollments) == 0}">
         <i:inline key=".noEnrolledPrograms"/>
     </c:if>
@@ -118,7 +118,7 @@ var programIdsAlreadyEnrolled = [];
 <br>
 <br>
 
-<tags:boxContainer2 key="otherDeviceActions">
+<tags:boxContainer2 nameKey="otherDeviceActions">
     <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
        <cti:param name="accountId" value="${accountId}"/>
        <cti:param name="inventoryId" value="${inventoryId}"/>
