@@ -907,7 +907,7 @@ INT CtiProtocolExpresscom::temporaryService(USHORT hoursout, bool cancel, bool d
 }
 
 
-INT CtiProtocolExpresscom::data(string str)
+INT CtiProtocolExpresscom::data(string str, BYTE configByte)
 {
     int i = 0;
     BYTE raw[256];
@@ -923,10 +923,10 @@ INT CtiProtocolExpresscom::data(string str)
         raw[i++] = (BYTE)strtol(tempStr.c_str(), &p, 16);
     }
 
-    return data(raw, i);
+    return data(raw, i, configByte>>4, configByte & 0x0F);
 }
 
-INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, string str)
+INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, string str)
 {
     INT status = NoError;
     BYTE flags = 0;
@@ -946,7 +946,7 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
         i++;
     }
 
-    status = data(msgBlock, i+3, 0x02, 0x00 );
+    status = data(msgBlock, i+3, 0x02, port );
     return status;
 
 }
@@ -1459,11 +1459,12 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
                              parse.isKeyValid("xcdeletable"),
                              parse.isKeyValid("xcclear"),
                              parse.getiValue("xcdatatimeout", -1),
+                             parse.getiValue("xcdataport", 0),
                              parse.getsValue("xcdata"));
         }
         else
         {
-            status = data(parse.getsValue("xcdata"));
+            status = data(parse.getsValue("xcdata"), parse.getiValue("xcdatacfgbyte", 0));
         }
     }
 

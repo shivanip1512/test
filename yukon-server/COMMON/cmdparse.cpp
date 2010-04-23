@@ -4935,6 +4935,15 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         {
             _cmd["xcdata"] = CtiParseValue( str );
         }
+        
+        if(!(temp = CmdStr.match((const boost::regex) ( CtiString("configbyte ") + str_anynum) ) ).empty())
+        {
+            if(!(valStr = temp.match(str_anynum)).empty())
+            {
+                iValue = strtoul(valStr.match(re_anynum).c_str(), &p, 0);
+                _cmd["xcdatacfgbyte"] = CtiParseValue( iValue );
+            }
+        }
     }
     if(!(token = CmdStr.match( (const boost::regex)  ( CtiString("data ") + str_quoted_token ) )).empty())
     {

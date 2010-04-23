@@ -253,7 +253,7 @@ private:
     INT compareRSSI();
     INT commandInitiator(BYTE commandId);
     INT configurePriceTierCommand(BYTE priceTier);
-    INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, string str);
+    INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, BYTE port, string str);
     INT disableContractorMode(bool enableFlag);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);
     INT rawconfiguration(string str);
@@ -262,7 +262,7 @@ private:
     INT service(BYTE action);
     INT service(UINT loadMask, bool activate = true);
     INT temporaryService(USHORT hoursout, bool cancel = false, bool deactiveColdLoad = false, bool deactiveLights = false);
-    INT data(string str);
+    INT data(string str, BYTE configByte);
     INT data(PBYTE data, BYTE length, BYTE dataTransmitType = 0, BYTE targetPort = 0);
     INT capControl(BYTE action, BYTE subAction, BYTE data1 = 0x00, BYTE data2 = 0x00);
 

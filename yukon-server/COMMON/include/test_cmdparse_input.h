@@ -126,6 +126,8 @@ std::string inputString[] = {
 "putconfig xcom setstate run timeout 40 heattemp 43 cooltemp 33 fan circulate system emheat",
 "control xcom backlight cycles 23 duty 34 bperiod 45",
 "putconfig xcom data 'Julie rocks!' port 2 deletable msgpriority 7 timeout 30 hour clear",
+"putconfig xcom data 0x01 0x02 03 0x04 0x05 0xF1 0xFF 0xF3 configbyte 0x21",
+"putconfig xcom data 0x01 0x02 0x03 0x04 0x05 0xF1 0xFF 0xF3 configbyte 21",
 "putconfig xcom coldl r=10",
 "putconfig xcom coldl r1=10",
 "putconfig xcom coldl r1=10 r2=2h r14=10m",
