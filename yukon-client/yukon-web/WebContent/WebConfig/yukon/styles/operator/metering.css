@@ -4,7 +4,7 @@ table.trendPageContent td.trendsListingTd {
 	padding-left:30px;
 }
 
-table.trendPageContent td.graphArea {
+.graphArea {
 	text-align:center;
 }
 

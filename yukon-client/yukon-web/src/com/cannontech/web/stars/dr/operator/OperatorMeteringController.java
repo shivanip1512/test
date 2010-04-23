@@ -41,8 +41,15 @@ public class OperatorMeteringController {
 		rolePropertyDao.verifyAnyProperties(userContext.getYukonUser(), 
 											YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, 
 											YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE);
-		
+
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+		
+		// can't view any graphs, this page is pointless. just stay on the selectTrends page
+		boolean canViewTrend = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, userContext.getYukonUser());
+		if (!canViewTrend) {
+			return "redirect:selectTrends";
+		}
+		
 		
 		// disclaimer
 		String disclaimer = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.TRENDING_DISCLAIMER, userContext.getYukonUser());
@@ -132,7 +139,7 @@ public class OperatorMeteringController {
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.selectTrends.availableTrends.trendsUpdated"));
 		
-		return "redirect:selectTrends";
+		return "redirect:viewTrend";
 	}
 	
 	public class CustomerGraphWrapper {

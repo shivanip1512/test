@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ page import="com.cannontech.graph.GraphBean" %>
@@ -44,42 +45,76 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 	    });
 	    
 	</script>
+	
+	<c:set var="hasTrends" value="${fn:length(customerGraphWrappers) > 0}"/>
+	
 
 	<table class="trendPageContent">
 		<tr>
 		
-			<cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA">
-			<td class="graphArea">
+			<td>
 			
-				<%@include file="/include/trending_options.jspf"%>
-				<br><br>
-			
-				<% if(graphBean.getGdefid() <= 0) {%>
-					<i:inline key=".trends.noDataSelected"/>
-				<%} else if( graphBean.getViewType() == GraphRenderers.SUMMARY ) {
-					graphBean.updateCurrentPane();
-					out.println(graphBean.getHtmlString());
-				} else if( graphBean.getViewType() == GraphRenderers.TABULAR) {%>
-					<%@ include file="/include/trending_tabular.jspf" %>					
-					
-				<%}	else { // "graph" is default %>
-					<cti:url var="graphGeneratorUrl" value="/servlet/GraphGenerator">
-						<cti:param name="action" value="EncodeGraph"/>
-					</cti:url>
-					<img id="theGraph" src="${graphGeneratorUrl}"> 
-				<%}
-				%>
+				<%-- graph header --%>
+				<c:set var="selectedTrendName" value=""/>
+				<c:forEach var="customerGraphWrapper" items="${customerGraphWrappers}">
+					<c:if test="${gdefid == customerGraphWrapper.customerGraph.graphDefinitionId}">
+						<c:set var="selectedTrendName" value="${customerGraphWrapper.name}"/>
+					</c:if>
+				</c:forEach>
 				
-				<c:if test="${not empty disclaimer}">
-					<br>
-					<font size="-1">
-						<spring:escapeBody htmlEscape="true">${disclaimer}</spring:escapeBody>
-					</font>
-				</c:if>
+				<c:choose> <%-- tag can't have scriptlet as body, so these empty containers are a hack to make it look very much like a header --%>
+					<c:when test="${not empty selectedTrendName}">
+						<tags:sectionContainer title="${selectedTrendName}"/>
+					</c:when>
+					<c:otherwise> <%-- there is some weirdness in the graphbean caching the selected trend so it is possible the graph shown after an available trends change wont match, this is a default header --%>
+						<tags:formElementContainer nameKey="trend"/> 
+					</c:otherwise>
+				</c:choose>
+				
+				<c:choose>
+				
+					<c:when test="${!hasTrends}">
+						<cti:msg2 key=".noTrends" htmlEscape="false"/>
+					</c:when>
+					
+					<c:otherwise>
+					
+						<div class="graphArea">
+			
+							<%@include file="/include/trending_options.jspf"%>
+							<br><br>
+						
+							<% if(graphBean.getGdefid() <= 0) {%>
+								<i:inline key=".trends.noDataSelected"/>
+							<%} else if( graphBean.getViewType() == GraphRenderers.SUMMARY ) {
+								graphBean.updateCurrentPane();
+								out.println(graphBean.getHtmlString());
+							} else if( graphBean.getViewType() == GraphRenderers.TABULAR) {%>
+								<%@ include file="/include/trending_tabular.jspf" %>					
+								
+							<%}	else { // "graph" is default %>
+								<cti:url var="graphGeneratorUrl" value="/servlet/GraphGenerator">
+									<cti:param name="action" value="EncodeGraph"/>
+								</cti:url>
+								<img id="theGraph" src="${graphGeneratorUrl}"> 
+							<%}
+							%>
+							
+							<c:if test="${not empty disclaimer}">
+								<br>
+								<font size="-1">
+									<spring:escapeBody htmlEscape="true">${disclaimer}</spring:escapeBody>
+								</font>
+							</c:if>
+						</div>
+					
+					</c:otherwise>
+				
+				</c:choose>
 				
 			</td>
-			</cti:checkRolesAndProperties>
 		
+			<c:if test="${hasTrends}">
 			<td class="trendsListingTd">
 			
 				<tags:formElementContainer nameKey="trends">
@@ -117,6 +152,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 				</tags:formElementContainer>
 			
 			</td>
+			</c:if>
 			
 		</tr>
 	</table>

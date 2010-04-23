@@ -5,14 +5,24 @@
 	<!-- viewTrend.jsp -->
     <entry key="yukon.web.modules.operator.metering.pageName">Metering</entry>
     <entry key="yukon.web.modules.operator.metering.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.metering.trend.title">Metering</entry>
+    <entry key="yukon.web.modules.operator.metering.trends.title">Trends</entry>
     <entry key="yukon.web.modules.operator.metering.trends.title">Trends</entry>
     <entry key="yukon.web.modules.operator.metering.trends.selectTrends">Edit</entry>
     <entry key="yukon.web.modules.operator.metering.trends.noDataSelected">No Data Set Selected </entry>
+    <entry key="yukon.web.modules.operator.metering.noTrends"><![CDATA[
+	    No Trends Defined<br><br>
+	    Trends can be created using the Trending client application.
+    ]]></entry>
 
 	<!-- selectTrends.jsp -->
     <entry key="yukon.web.modules.operator.selectTrends.pageName">Select Trends</entry>
     <entry key="yukon.web.modules.operator.selectTrends.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.selectTrends.availableTrends.title">Available Trends</entry>
     <entry key="yukon.web.modules.operator.selectTrends.availableTrends.trendsUpdated">Trends Updated</entry>
+    <entry key="yukon.web.modules.operator.selectTrends.noTrends"><![CDATA[
+	    No Trends Defined<br><br>
+	    Trends can be created using the Trending client application.
+    ]]></entry>
     
  </properties>
