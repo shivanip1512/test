@@ -76,7 +76,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         this.moduleBase = moduleBase;
         this.userContext = YukonUserContextUtils.getYukonUserContext(request);
         this.messageSource = messageSourceResolver.getMessageSourceAccessor(userContext);
-        this.currentPage = currentPage;
+        this.currentPage = currentPage; // may null for non "new" <pages> setup in module_config
     }
     
     public String renderMenu() {
@@ -316,7 +316,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             wrapper.addElement(left);
         }
         
-        if (moduleBase.getSearchProducer() != null && features.showSearch && !currentPage.isHideSearch()) {
+        if (moduleBase.getSearchProducer() != null && features.showSearch && (currentPage == null || !currentPage.isHideSearch())) {
         	
         	SearchProducer searchProducer = moduleBase.getSearchProducer();
         	
