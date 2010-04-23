@@ -22,12 +22,103 @@
 #include "rwutil.h"
 #include "numstr.h"
 #include "Mct410.h"
+#include "EmetconWords.h"
 
 #include "types.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
 using namespace Cti::Simulator;
+
+struct memoryAccess_info
+{
+    memoryAccess_info() :
+        memoryRead(true),
+        type(0),
+        startAddress(0),
+        numBytes(0)
+    { };
+
+    bool memoryRead;
+    int type;
+    unsigned startAddress;
+    unsigned numBytes;
+    bytes data;
+
+};
+
+error_t extractRequestInfo_WriteMem(const bytes &command_data, memoryAccess_info &info)
+{
+    if( command_data.empty() )
+    {
+        return "No data in write memory request";
+    }
+
+    int index = 0, memType;
+
+    memType = command_data[index];
+    if( memType )
+    {
+        return error_t("Invalid memory type specified in write memory request.", memType);
+    }
+
+    info.memoryRead = false;
+    info.type = memType;
+    info.startAddress = (command_data[1] << 8) | command_data[index + 2];
+    info.numBytes = command_data[index + 3];
+
+    info.data.assign(command_data.begin() + 4, command_data.end());
+
+    if( info.data.size() != info.numBytes )
+    {
+        return "Amount of data to write does not match specified size.";
+    }
+
+    return error_t::success;
+}
+
+BOOST_AUTO_TEST_CASE( test_JORDAN )
+{
+    memoryAccess_info info, known;
+
+    bytes command_data;
+
+    command_data.push_back(0x00);
+    command_data.push_back(0x34);
+    command_data.push_back(0x56);
+    command_data.push_back(0x06);
+    command_data.push_back(0x04);
+    command_data.push_back(0x08);
+    command_data.push_back(0x0f);
+    command_data.push_back(0x10);
+    command_data.push_back(0x17);
+    command_data.push_back(0x2a);
+
+    known.memoryRead = false;
+    known.type = 0;
+    known.startAddress = 13398;
+    known.numBytes = 6;
+    known.data.push_back(4);
+    known.data.push_back(8);
+    known.data.push_back(15);
+    known.data.push_back(16);
+    known.data.push_back(23);
+    known.data.push_back(42);
+
+    extractRequestInfo_WriteMem(command_data, info);
+
+    BOOST_CHECK_EQUAL(known.memoryRead, info.memoryRead);
+    BOOST_CHECK_EQUAL(known.type, info.type);
+    BOOST_CHECK_EQUAL(known.startAddress, info.startAddress);
+    BOOST_CHECK_EQUAL(known.numBytes, info.numBytes);
+    BOOST_CHECK_EQUAL(known.data[0], info.data[0]);
+    BOOST_CHECK_EQUAL(known.data[1], info.data[1]);
+    BOOST_CHECK_EQUAL(known.data[2], info.data[2]);
+    BOOST_CHECK_EQUAL(known.data[3], info.data[3]);
+    BOOST_CHECK_EQUAL(known.data[4], info.data[4]);
+    BOOST_CHECK_EQUAL(known.data[5], info.data[5]);
+
+}
 
 BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
 {
@@ -263,6 +354,75 @@ BOOST_AUTO_TEST_CASE( test_makevalue_consumption )
 
     outFile.close();
 
+} 
+ 
+BOOST_AUTO_TEST_CASE( test_Extract_Queue_Entry_721 )
+{
+    bytes command_data;
+
+    command_data.push_back(0x0f);
+    command_data.push_back(0x10);
+    command_data.push_back(0x00);
+    command_data.push_back(0x15);
+    command_data.push_back(0xa0);
+    command_data.push_back(0x0f);
+    command_data.push_back(0xff);
+    command_data.push_back(0xb7);
+    command_data.push_back(0x2f);
+    command_data.push_back(0x0b);
+    command_data.push_back(0xc0);
+    command_data.push_back(0xcf);
+    command_data.push_back(0xf0);
+    command_data.push_back(0x00);
+    command_data.push_back(0x00);
+    command_data.push_back(0x00);
+    command_data.push_back(0x00);
+    command_data.push_back(0x10);
+    command_data.push_back(0xc0);
+    command_data.push_back(0x10);
+    command_data.push_back(0x00);
+    command_data.push_back(0x00);
+    command_data.push_back(0x00);
+    command_data.push_back(0x17);
+    command_data.push_back(0xf0);
+
+    queue_entry entry;
+
+    extractQueueEntry(command_data, 0, 0, entry);
+    
+    EmetconWordB bword(0,0,4194012,2,240,true,true,0x3c);
+    
+    bytes cword1_data, cword2_data;
+
+    cword1_data.push_back(0xff);
+    cword1_data.push_back(0x00);
+    cword1_data.push_back(0x00);
+    cword1_data.push_back(0x00);
+    cword1_data.push_back(0x00);
+
+    cword2_data.push_back(0x01);
+
+    EmetconWordC cword1(cword1_data,false,0x01);
+    EmetconWordC cword2(cword2_data,true, 0x3f);
+
+    BOOST_CHECK_EQUAL(bword.repeater_fixed, entry.request.b_word.repeater_fixed);
+    BOOST_CHECK_EQUAL(bword.repeater_variable, entry.request.b_word.repeater_variable);
+    BOOST_CHECK_EQUAL(bword.dlc_address, entry.request.b_word.dlc_address);
+    BOOST_CHECK_EQUAL(bword.words_to_follow, entry.request.b_word.words_to_follow);
+    BOOST_CHECK_EQUAL(bword.function_code, entry.request.b_word.function_code);
+    BOOST_CHECK_EQUAL(bword.function, entry.request.b_word.function);
+    BOOST_CHECK_EQUAL(bword.write, entry.request.b_word.write);
+    BOOST_CHECK_EQUAL(bword.bch, entry.request.b_word.bch);
+
+    BOOST_CHECK_EQUAL(cword1.data[0], entry.request.c_words[0].data[0]);
+    BOOST_CHECK_EQUAL(cword1.data[1], entry.request.c_words[0].data[1]);
+    BOOST_CHECK_EQUAL(cword1.data[2], entry.request.c_words[0].data[2]);
+    BOOST_CHECK_EQUAL(cword1.data[3], entry.request.c_words[0].data[3]);
+    BOOST_CHECK_EQUAL(cword1.data[4], entry.request.c_words[0].data[4]);
+    BOOST_CHECK_EQUAL(cword1.bch,     entry.request.c_words[0].bch);
+
+    BOOST_CHECK_EQUAL(cword2.data[0], entry.request.c_words[1].data[0]);
+    BOOST_CHECK_EQUAL(cword2.bch,     entry.request.c_words[1].bch);
 }
 
 */

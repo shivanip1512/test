@@ -46,6 +46,7 @@ EmetconWords.obj \
 PlcTransmitter.obj \
 Ccu710.obj \
 Ccu711.obj \
+Ccu721.obj \
 Mct410.obj \
 DelayBehavior.obj \
 simulator_main.obj \

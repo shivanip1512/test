@@ -12,6 +12,7 @@
 #include "PlcInfrastructure.h"
 #include "Ccu710.h"
 #include "Ccu711.h"
+#include "Ccu721.h"
 #include "PortLogger.h"
 #include "CommInterface.h"
 #include "BehaviorCollection.h"
@@ -52,6 +53,8 @@ void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
 template<class CcuType>
 void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger);
+template<class CcuType>
+bool validRequest(SocketComms &socket_interface);
 
 int SimulatorMainFunction(int argc, char **argv)
 {
@@ -281,7 +284,15 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
             //    port as CCU-711s, though.
             if( peek_buf[0] == Ccu711::Hdlc_FramingFlag )
             {
-                handleRequests<Ccu711>(socket_interface, strategy, logger);
+                // We need to decide whether or not the request fits for a 711 or a 721.
+                if( validRequest<Ccu721>(socket_interface) )
+                {
+                    handleRequests<Ccu721>(socket_interface, strategy, logger);
+                }
+                else
+                {    
+                    handleRequests<Ccu711>(socket_interface, strategy, logger);
+                }
             }
             else
             {
@@ -336,6 +347,27 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
     }
 }
 
+template<class CcuType>
+bool validRequest(SocketComms &socket_interface)
+{
+    bytes peek_buf;
+
+    socket_interface.peek(byte_appender(peek_buf), 5);
+
+    if( peek_buf[2] & 0x01 )
+    {
+        // Could be valid for either type. Since it's not a general request,
+        // it's hard to say whether or not it is for the 711 or 721 decisively.
+        return false;
+    }
+    else
+    {
+        // It's a general request. We will need to see whether or not the command
+        // fits this specific device.
+
+        return (CcuType::validateCommand(socket_interface));
+    }
+}
 
 }
 }
