@@ -387,7 +387,7 @@ int ApplicationLayer::generate( CtiXfer &xfer )
 
             case OutputAck:
             {
-                generateAck(&_acknowledge, _response.ctrl.seq);
+                generateAck(&_acknowledge, _response.ctrl);
 
                 _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge), _dstAddr, _srcAddr);
 
@@ -530,19 +530,19 @@ int ApplicationLayer::decode( CtiXfer &xfer, int status )
 }
 
 
-void ApplicationLayer::generateAck( acknowledge_t *ack_packet, unsigned char seq )
+void ApplicationLayer::generateAck( acknowledge_t *ack_packet, const control_header ctrl )
 {
     memset( ack_packet, 0, sizeof(*ack_packet) );
 
     ack_packet->func_code = RequestConfirm;
 
-    ack_packet->ctrl.seq         = seq;
+    ack_packet->ctrl.seq         = ctrl.seq;
 
     ack_packet->ctrl.first       = 1;
     ack_packet->ctrl.final       = 1;
 
     ack_packet->ctrl.app_confirm = 0;
-    ack_packet->ctrl.unsolicited = 0;
+    ack_packet->ctrl.unsolicited = ctrl.unsolicited;
 }
 
 }

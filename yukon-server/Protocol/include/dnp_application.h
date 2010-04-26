@@ -132,7 +132,7 @@ private:
                        _in_object_blocks;
 
     void reset( void );
-    void generateAck( acknowledge_t *app_packet, unsigned char seq);
+    void generateAck( acknowledge_t *app_packet, const control_header ctrl );
 
     void processInput( void );
     void eraseOutboundObjectBlocks( void );
