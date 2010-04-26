@@ -23,7 +23,7 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.actions">Actions</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.edit.hoverText">Edit enrollment details</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.edit.title">Enroll Enrollment</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.edit.title">Edit Enrollment</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.hoverText">Unenroll from this program</entry>

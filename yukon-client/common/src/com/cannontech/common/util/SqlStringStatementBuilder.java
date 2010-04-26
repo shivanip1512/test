@@ -91,7 +91,7 @@ public class SqlStringStatementBuilder {
             } else if (object.getClass().isArray()) {
                 // is this the right assumption?
                 appendList((Object[]) object);
-            } else if (object instanceof Collection) {
+            } else if (object instanceof Collection<?>) {
                 // is this the right assumption?
                 appendList((Collection<?>)object);            
             } else {
@@ -149,14 +149,9 @@ public class SqlStringStatementBuilder {
         }
         return groupIdStr;
     }
-    
-    /** 
-     * Prefer getSql() over this method.
-     * 
-     */
+
     @Override
     public String toString() {
         return statement.toString();
     }
-    
 }

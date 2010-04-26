@@ -36,20 +36,22 @@ public class InventoryDaoImpl implements InventoryDao {
 
     // Static list of thermostat device types
     private static List<Integer> THERMOSTAT_TYPES = new ArrayList<Integer>();
-    private static final SqlStringStatementBuilder selectHardwareSummarySql
-        = new SqlStringStatementBuilder();
+    private static final String selectHardwareSummarySql;
     static {
+        
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT);
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT);
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP);
         THERMOSTAT_TYPES.add(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO);
 
-        selectHardwareSummarySql.append("SELECT ib.inventoryId, ib.deviceLabel,");
-        selectHardwareSummarySql.append(    "lmhb.manufacturerSerialNumber,");
-        selectHardwareSummarySql.append(    "le.yukonDefinitionId AS hardwareDefinitionId");
-        selectHardwareSummarySql.append("FROM inventoryBase ib");
-        selectHardwareSummarySql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId ");        
-        selectHardwareSummarySql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId ");        
+        SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
+        sql.append("SELECT ib.inventoryId, ib.deviceLabel,");
+        sql.append(    "lmhb.manufacturerSerialNumber,");
+        sql.append(    "le.yukonDefinitionId AS hardwareDefinitionId");
+        sql.append("FROM inventoryBase ib");
+        sql.append(    "JOIN lmHardwareBase lmhb ON ib.inventoryId = lmhb.inventoryId ");
+        sql.append(    "JOIN yukonListEntry le ON lmhb.lmHardwareTypeId = le.entryId ");
+        selectHardwareSummarySql = sql.toString();
     }
 
     private SimpleJdbcTemplate jdbcTemplate;

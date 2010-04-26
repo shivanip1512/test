@@ -53,10 +53,9 @@ public class SearchResult<T> {
     }
 
     /**
-     * This is the total number of "hits" that the query would have generated
-     * if the count were ignored. This number will always be greater than or
-     * equal to the resultCount.
-     * @return
+     * @return the total number of "hits" that the query would have generated if
+     *         the count were ignored. This number will always be greater than
+     *         or equal to resultCount (size of the resultList).
      */
     public int getHitCount() {
         return this.hitCount;
@@ -111,6 +110,9 @@ public class SearchResult<T> {
         return previousStartIndex;
     }
 
+    /**
+     * @return the maximum number of results per page
+     */
     public int getCount(){
         return count;
     }
@@ -118,7 +120,7 @@ public class SearchResult<T> {
     public int getLastStartIndex(){
         return lastStartIndex;
     }
-    
+
     public int getNumberOfPages(){
         return numberOfPages;
     }

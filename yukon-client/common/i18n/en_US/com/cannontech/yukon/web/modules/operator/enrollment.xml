@@ -7,12 +7,14 @@
     <entry key="yukon.web.modules.operator.enrollmentList.pageDescription">Enrollment</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.enrolledPrograms.title">Enrolled Programs</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.noEnrolledPrograms">This account is not enrolled in any programs.</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.name">Name</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.applianceCategory">Appliance Category</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.group">Group</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.hardware">Hardware</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.relay">Relay</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.noRelay">None</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.status">Status</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.inService.true">In Service</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.inService.false">Out of Service</entry>
@@ -24,17 +26,6 @@
     <entry key="yukon.web.modules.operator.enrollmentList.remove.title">Unenroll</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.add">Add</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.addEnrollmentDialogTitle">Add Enrollment</entry>
-
-    <entry key="yukon.web.modules.operator.enrollmentList.history.title">History</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.date">Date</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.action">Action</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.program">Program</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.group">Group</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.hardware">Hardware</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.deviceRemoved">Device Removed</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.relay">Relay</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.noRelay">None</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.showAllHistory">Show More</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.confirmEnroll">
         Are you sure you want to enroll the consumer in {0}.
@@ -77,5 +68,20 @@
 
     <entry key="yukon.web.modules.operator.enrollmentEdit.ok">OK</entry>
     <entry key="yukon.web.modules.operator.enrollmentEdit.cancel">Cancel</entry>
+
+    <!-- enrollmentHistory -->
+    <entry key="yukon.web.modules.operator.enrollmentHistory.pageName">Enrollment History</entry>
+
+    <entry key="yukon.web.modules.operator.enrollmentHistory.history.title">Enrollment History</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.noHistory">There have not been any enrollment changes for this account.</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.date">Date</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.action">Action</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.program">Program</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.group">Group</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.hardware">Hardware</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.deviceRemoved">Device Removed</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.relay">Relay</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.noRelay">None</entry>
+    <entry key="yukon.web.modules.operator.enrollmentHistory.showCompleteHistory">View Complete History</entry>
 
 </properties>

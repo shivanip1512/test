@@ -49,6 +49,10 @@ public class OperatorEnrollmentController {
     private EnrollmentHelperService enrollmentHelperService;
     private RolePropertyDao rolePropertyDao;
 
+    /**
+     * The main operator "enrollment" page. Lists all current enrollments and
+     * has icons for adding, removing and editing these enrollments.
+     */
     @RequestMapping
     public String list(ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
@@ -74,13 +78,33 @@ public class OperatorEnrollmentController {
     }
 
     @RequestMapping
+    public String history(ModelMap model, YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) {
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+        int accountId = accountInfoFragment.getAccountId();
+        List<HardwareConfigAction> hardwareConfigActions =
+            lmHardwareControlGroupDao.getHardwareConfigActions(accountId);
+        model.addAttribute("hardwareConfigActions", hardwareConfigActions);
+        return "operator/enrollment/history.jsp";
+    }
+
+    /**
+     * Initiate a new enrollment. This is called after the program has been
+     * chosen via a picker. Does the same thing as editing an enrollment with
+     * different wording ("Add Enrollment" instead of "Edit Enrollment").
+     */
+    @RequestMapping
     public String add(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
         return edit(model, assignedProgramId, userContext, accountInfoFragment,
                     true, flashScope);
     }
-    
+
+    /**
+     * Edit a program enrollment.  Displays a dialog to the user allowing them
+     * to change load group used and hardware used for the selected program.
+     */
     @RequestMapping
     public String edit(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
@@ -88,7 +112,7 @@ public class OperatorEnrollmentController {
         return edit(model, assignedProgramId, userContext, accountInfoFragment,
                     false, flashScope);
     }
-    
+
     private String edit(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, boolean isAdd,
@@ -203,7 +227,7 @@ public class OperatorEnrollmentController {
 
         return "operator/enrollment/unenroll.jsp";
     }
-    
+
     @RequestMapping
     public String unenroll(ModelMap model, int assignedProgramId,
             YukonUserContext userContext,

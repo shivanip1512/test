@@ -39,12 +39,14 @@ import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 @Controller
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 @RequestMapping("/operator/hardware/config/*")
 public class OperatorHardwareConfigController {
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;

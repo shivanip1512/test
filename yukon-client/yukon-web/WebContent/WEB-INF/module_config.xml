@@ -961,6 +961,12 @@
 		    		<menu>account</menu>
 		           	<link>/spring/stars/operator/enrollment/list?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
+                    <pages>
+                        <page name="enrollmentHistory" type="DETAIL_CHILD_WITH_INFO">
+                            <menu>account</menu>
+                            <link>/spring/stars/operator/enrollment/history?accountId=${accountId}</link>
+                        </page>
+                    </pages>
 		    	</page>
 		    	<page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
@@ -1024,7 +1030,7 @@
                             <menu>account</menu>
                             <labelArgument>${displayName}</labelArgument>
                         </page>
-                        <page name="hardwareConfig" type="DETAIL_CHILD">
+                        <page name="hardwareConfig" type="DETAIL">
                             <menu>general</menu>
                             <link>/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                             <labelArguments>${accountNumber}</labelArguments>

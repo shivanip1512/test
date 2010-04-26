@@ -4,6 +4,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="enrollmentList">
@@ -14,6 +15,10 @@ var programIdsAlreadyEnrolled = [];
 </script>
 
 <tags:boxContainer2 nameKey="enrolledPrograms">
+    <c:if test="${empty enrollmentPrograms}">
+        <i:inline key=".noEnrolledPrograms"/>
+    </c:if>
+    <c:if test="${!empty enrollmentPrograms}">
     <table class="compactResultsTable rowHighlighting">
         <tr>
             <th><i:inline key=".name"/></th>
@@ -101,6 +106,7 @@ var programIdsAlreadyEnrolled = [];
             </tr>
         </c:forEach>
     </table>
+    </c:if>
 
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
         <script type="text/javascript">
@@ -133,55 +139,6 @@ var programIdsAlreadyEnrolled = [];
 <br>
 <br>
 
-<tags:boxContainer2 nameKey="history">
-    <table class="compactResultsTable rowHighlighting">
-        <tr>
-            <th><i:inline key=".date"/></th>
-            <th><i:inline key=".action"/></th>
-            <th><i:inline key=".program"/></th>
-            <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-                <th><i:inline key=".group"/></th>
-            </cti:checkRolesAndProperties>
-            <th><i:inline key=".hardware"/></th>
-            <th><i:inline key=".relay"/></th>
-        </tr>
-        <c:set var="maxActions" value="2"/>
-        <c:if test="${param.showAllHistory}">
-            <c:set var="maxActions" value="${fn:length(hardwareConfigActions) - 1}"/>
-        </c:if>
-        <c:forEach var="action" items="${hardwareConfigActions}" end="${maxActions}">
-            <tr>
-                <td><cti:formatDate value="${action.date}" type="BOTH"/></td>
-                <td><cti:msg key="${action.actionType}"/></td>
-                <td><spring:escapeBody htmlEscape="true">${action.programName}</spring:escapeBody></td>
-                <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-                    <td><spring:escapeBody htmlEscape="true">${action.loadGroupName}</spring:escapeBody></td>
-                </cti:checkRolesAndProperties>
-                <c:if test="${empty action.hardwareSerialNumber}">
-                    <td><i:inline key=".deviceRemoved"/></td>
-                    <td>&nbsp;</td>
-                </c:if>
-                <c:if test="${!empty action.hardwareSerialNumber}">
-                    <td>
-                        <spring:escapeBody htmlEscape="true">${action.hardwareSerialNumber}</spring:escapeBody>
-                    </td>
-                    <td>
-                        <c:if test="${action.relay != 0}">${action.relay}</c:if>
-                        <c:if test="${action.relay == 0}"><i:inline key=".noRelay"/></c:if>
-                    </td>
-                </c:if>
-            </tr>
-        </c:forEach>
-    </table>
-    <c:if test="${!param.showAllHistory && fn:length(hardwareConfigActions) > 3}">
-        <div class="actionArea">
-            <cti:url var="showAllHistoryUrl" value="/spring/stars/operator/enrollment/list">
-                <cti:param name="accountId" value="${accountId}"/>
-                <cti:param name="showAllHistory" value="true"/>
-            </cti:url>
-            <input type="button" value="<cti:msg2 key=".showAllHistory"/>" onclick="window.location='${showAllHistoryUrl}'">
-        </div>
-    </c:if>
-</tags:boxContainer2>
+<dr:enrollmentHistory hardwareConfigActions="${hardwareConfigActions}"/>
 
 </cti:standardPage>

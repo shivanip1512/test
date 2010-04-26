@@ -19,7 +19,9 @@ public class AssignedProgramPicker
     extends DatabasePicker<UltraLightAssignedProgram> {
     private ApplianceCategoryDao applianceCategoryDao;
 
-    private final static String[] searchColumnNames = new String[] {"pao.paoName"};
+    private final static String[] searchColumnNames = new String[] {
+        "pao.paoName", "ac.description", "wc.alternateDisplayName"
+        };
     private final static List<OutputColumn> outputColumns;
     static {
         List<OutputColumn> columns = Lists.newArrayList();
