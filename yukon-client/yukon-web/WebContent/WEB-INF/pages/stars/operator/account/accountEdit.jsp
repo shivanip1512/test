@@ -186,7 +186,7 @@
 	    				
 	    					<cti:displayForPageEditModes modes="EDIT">
 	    						<tags:checkboxNameValue nameKey="defaults.blank" path="operatorGeneralUiExtras.usePrimaryAddressForBilling" id="usePrimaryAddressForBillingCheckBox" 
-	    						                        onclick="toggleBillingAddress();" checkBoxDescriptionNameKey=".usePrimaryAddressForBillingLabel"/>
+	    						                        onclick="toggleBillingAddress();" checkBoxDescriptionNameKey=".usePrimaryAddressForBillingLabel" excludeColon="true"/>
 							</cti:displayForPageEditModes>
 							
 	    					<tags:inputNameValue nameKey=".billingAddress1Label" path="accountDto.billingAddress.locationAddress1"/>

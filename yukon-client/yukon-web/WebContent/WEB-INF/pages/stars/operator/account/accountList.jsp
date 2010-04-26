@@ -10,7 +10,7 @@
 		
 		<div style="padding-top:8px;padding-bottom:8px;">
 			
-			<select name="searchBy" onchange="$('searchForm').value = ''">
+			<select name="searchBy" onchange="$('accountSearchValue').value = ''">
 				<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
 					<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
 						<i:inline key="${operatorAccountSearchBy.formatKey}"/>
@@ -18,7 +18,7 @@
 				</c:forEach>
 			</select>
 			
-			<input type="text" name="searchValue" value="${accountSearchResultHolder.searchValue}">
+			<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
 			
 			<tags:slowInput2 myFormId="searchForm" key="search"/>
 		

@@ -1,25 +1,27 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="labelForId" required="false" %>
-
-<cti:msg2 var="name" key="${nameKey}" blankIfMissing="true"/>
+<%@ attribute name="excludeColon" required="false" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
         <tr class="${trClass}" id="${trId}">
 			<td class="name" style="white-space:nowrap;">
 			
-				<c:set var="nameContent" value="${name}${(not empty name)? ':':'&nbsp;'}"/>
+				<c:set var="colonSuffix" value=":"/>
+				<c:if test="${excludeColon == true}">
+					<c:set var="colonSuffix" value=""/>
+				</c:if>
 				
 				<c:choose>
 					<c:when test="${not empty pageScope.labelForId}">
-						<label for="${pageScope.labelForId}">${nameContent}</label>
+						<label for="${pageScope.labelForId}"><i:inline key="${nameKey}"/>${colonSuffix}</label>
 					</c:when>
 					<c:otherwise>
-						${nameContent}
+						<i:inline key="${nameKey}"/>${colonSuffix}
 					</c:otherwise>
 				</c:choose>
 				
