@@ -15,6 +15,18 @@
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
 <cti:url var="editManualUrl" value="/spring/stars/operator/thermostatManual/view?accountId=${accountId}&amp;thermostatIds="/>
 
+<form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
+    <input type="hidden" name="accountId" value="${accountId}">
+    <input type="hidden" name="changeOutId" id="changeOutId">
+    <input type="hidden" name="oldInventoryId" id="oldInventoryId">
+    <input type="hidden" name="isMeter" id="isMeter">
+</form>
+
+<form id="addMeterForm" action="/spring/stars/operator/hardware/addMeter">
+    <input type="hidden" name="accountId" value="${accountId}">
+    <input type="hidden" name="meterId" id="meterId">
+</form>
+
 <c:choose>
     <c:when test="${starsMeters}">
         <cti:url var="meterEditUrl" value="/spring/stars/operator/hardware/meterProfile?accountId=${accountId}&amp;inventoryId="/>
@@ -44,6 +56,7 @@
     function addMeter() {
         var form = $('addMeterForm');
     	form.submit();
+        return true;
     }
 
     function changeOut(oldId, isMeter) {
@@ -57,6 +70,7 @@
         
     	var form = $('changeOutForm');
         form.submit();
+        return true;
     }
 
 </script>
@@ -317,7 +331,7 @@
                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                 <c:if test="${inventoryChecking}">
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableSwitchPicker${switch.inventoryId}" type="availableSwitchPicker" destinationFieldId="changeOutId" immediateSelectMode="true"
-                                        endAction="function(items) { changeOut(${switch.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
+                                        endAction="function(items) { return changeOut(${switch.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                 </c:if>
                             </cti:checkRolesAndProperties>
                             <cti:img key="editConfig" href="${editConfigUrl}${switch.inventoryId}"/>
@@ -388,7 +402,7 @@
                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                 <c:if test="${inventoryChecking}">
                                     <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableThermostatPicker${thermostat.inventoryId}" type="availableThermostatPicker" destinationFieldId="changeOutId" immediateSelectMode="true"
-                                        endAction="function(items) { changeOut(${thermostat.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
+                                        endAction="function(items) { return changeOut(${thermostat.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                 </c:if>
                             </cti:checkRolesAndProperties>
                             
@@ -492,14 +506,8 @@
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                     
                                     <c:if test="${inventoryChecking}">
-                                        <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
-                                            <input type="hidden" name="accountId" value="${accountId}">
-                                            <input type="hidden" name="changeOutId" id="changeOutId">
-                                            <input type="hidden" name="oldInventoryId" id="oldInventoryId">
-                                            <input type="hidden" name="isMeter" id="isMeter">
-                                        </form>
                                         <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableMeterPicker${meter.inventoryId}" type="availableMctPicker" 
-                                            destinationFieldId="changeOutId" immediateSelectMode="true" endAction="function(items) { changeOut(${meter.inventoryId}, true); }" 
+                                            destinationFieldId="changeOutId" immediateSelectMode="true" endAction="function(items) { return changeOut(${meter.inventoryId}, true); }" 
                                             anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                     </c:if>
                                     
@@ -523,11 +531,6 @@
         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
         
             <br>
-            
-            <form id="addMeterForm" action="/spring/stars/operator/hardware/addMeter">
-                <input type="hidden" name="accountId" value="${accountId}">
-                <input type="hidden" name="meterId" id="meterId">
-            </form>
             
             <form action="/spring/stars/operator/hardware/meterProfileCreate">
                 <input type="hidden" name="accountId" value="${accountId}">
