@@ -35,7 +35,7 @@ extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
 extern BOOL _LOG_MAPID_INFO;
-extern ULONG _IVVC_KEEPALIVE;
+extern ULONG _IVVC_HEARTBEAT_CONFIG;
 
 /*===========================================================================
     CtiCCCommandExecutor
@@ -8371,8 +8371,7 @@ void CtiCCCommandExecutor::sendLtcKeepAlive(const LONG commandType,
         paoName = ltcPtr->getPaoName();
     }
 
-    double time = _IVVC_KEEPALIVE*2;//This is the time til remote mode expires.
-    ltcKeepAliveHelper(paoId,time,paoName,toDispatch,requests);
+    ltcKeepAliveHelper(paoId, _IVVC_HEARTBEAT_CONFIG, paoName, toDispatch, requests);
 }
 
 void CtiCCCommandExecutor::ltcKeepAliveHelper(const int paoId,

@@ -67,7 +67,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         if ((_IVVC_KEEPALIVE != 0) && (timeNow > state->getNextHeartbeatTime()))
         {
             sendKeepAlive(subbus);
-            state->setNextHeartbeatTime(timeNow + (60 *_IVVC_KEEPALIVE) );  // _IVVC_KEEPALIVE is in minutes!
+            state->setNextHeartbeatTime(timeNow + _IVVC_KEEPALIVE);  // _IVVC_KEEPALIVE is in seconds!
         }
 
         //If we reloaded or first run. Make sure we don't have a bank pending. If we do attempt to update it's status

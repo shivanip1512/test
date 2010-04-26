@@ -86,6 +86,7 @@ extern ULONG _REFUSAL_TIMEOUT;
 extern BOOL _USE_PHASE_INDICATORS;
 extern ULONG _MSG_PRIORITY;
 extern ULONG _IVVC_KEEPALIVE;
+extern ULONG _IVVC_HEARTBEAT_CONFIG;
 extern BOOL CC_TERMINATE_THREAD_TEST;
 extern ULONG _POST_CONTROL_WAIT;
 extern BOOL _ENABLE_IVVC;
@@ -4867,6 +4868,13 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_IVVC_KEEPALIVE: " << _IVVC_KEEPALIVE << endl;
+        }
+
+        _IVVC_HEARTBEAT_CONFIG = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_HEARTBEAT_CONFIG", 0);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_IVVC_HEARTBEAT_CONFIG: " << _IVVC_HEARTBEAT_CONFIG << endl;
         }
 
         _IVVC_MIN_TAP_PERIOD_MINUTES = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES", 15);
