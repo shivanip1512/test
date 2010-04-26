@@ -8,7 +8,6 @@
 
 <cti:standardPage module="operator" page="completeControlHistory">
     
-    <tags:sectionContainer2 nameKey="header">
     <table width="100%">
         <tr>
             <td style="text-align: right">
@@ -31,8 +30,7 @@
             </td>
         </tr>
     </table>
-    </tags:sectionContainer2>
-    
+
 <script type="text/javascript">
 Event.observe(window, 'load', function() {
     updateControlEvents('PAST_DAY');

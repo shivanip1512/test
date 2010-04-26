@@ -5,10 +5,10 @@ import java.util.List;
 import com.cannontech.stars.dr.program.model.Program;
 
 public class DisplayableProgram {
-    private final Program program;
-    private final List<DisplayableControlHistory> displayableControlHistoryList;
+    private Program program;
+    private List<DisplayableControlHistory> displayableControlHistoryList;
 
-    public DisplayableProgram(final Program program, final List<DisplayableControlHistory> controlHistoryDisplayList) {
+    public DisplayableProgram(Program program, List<DisplayableControlHistory> controlHistoryDisplayList) {
         this.program = program;
         this.displayableControlHistoryList = controlHistoryDisplayList;
     }
@@ -16,9 +16,15 @@ public class DisplayableProgram {
     public Program getProgram() {
         return program;
     }
+    public void setProgram(Program program) {
+        this.program = program;
+    }
 
     public List<DisplayableControlHistory> getDisplayableControlHistoryList() {
         return displayableControlHistoryList;
     }
-    
+    public void setDisplayableControlHistoryList(
+                     List<DisplayableControlHistory> displayableControlHistoryList) {
+        this.displayableControlHistoryList = displayableControlHistoryList;
+    }
 }

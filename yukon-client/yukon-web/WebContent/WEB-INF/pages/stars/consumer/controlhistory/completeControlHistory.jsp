@@ -8,6 +8,7 @@
 
 <cti:standardPage module="consumer" page="completeControlHistory">
     <cti:standardMenu />
+    <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
     
     <h3><i:inline key="yukon.dr.consumer.completecontrolhistory.header" /></h3>
     <table width="100%">
@@ -28,7 +29,7 @@
             <td>
                 <cti:msg key="yukon.dr.consumer.completecontrolhistory.controlEventsTitle" var="controlEventsTitle" />
                 <cti:msg key="${program.displayName}" var="controlEventsTitle" />
-                <tags:boxContainer title="${controlEventsTitle}" hideEnabled="false">
+                <tags:boxContainer title="${controlEventsTitle}" escapeTitle="true" hideEnabled="false">
                     <div id="controlEventsDiv"><cti:msg key="yukon.dr.consumer.completecontrolhistory.loading"/></div>
                 </tags:boxContainer>
             </td>

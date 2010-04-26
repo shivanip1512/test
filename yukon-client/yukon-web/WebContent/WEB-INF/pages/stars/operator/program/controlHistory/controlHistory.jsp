@@ -5,13 +5,12 @@
 <cti:url var="completeHistoryUrl" value="/spring/stars/operator/program/controlHistory/completeHistoryView"/>
 
 <cti:standardPage module="operator" page="controlHistory">
+    <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
     
-    <tags:sectionContainer2 nameKey="header" >
-	    <div id="programs">
-			<dr:controlHistorySummary displayableProgramList="${displayablePrograms}"
-			                          showControlHistorySummary="${true}" 
-			                          completeHistoryUrl="${completeHistoryUrl}" />
-	    </div>
-    </tags:sectionContainer2>
+    <div id="programs">
+        <dr:controlHistorySummary displayableProgramList="${displayablePrograms}"
+                                  showControlHistorySummary="${true}" 
+                                  completeHistoryUrl="${completeHistoryUrl}" />
+    </div>
                             
 </cti:standardPage>

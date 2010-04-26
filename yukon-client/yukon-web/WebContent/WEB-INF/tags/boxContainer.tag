@@ -4,10 +4,13 @@
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="helpText" required="false" type="java.lang.String"%>
+<%@ attribute name="escapeTitle" required="false" type="java.lang.Boolean" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+
 
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -35,8 +38,15 @@
 		      </div>
 			</c:if>
 		<div class="title boxContainer_title">
-			${pageScope.title}
-			
+            <c:choose>
+              <c:when test="${pageScope.escapeTitle}">
+                <spring:escapeBody htmlEscape="true">${pageScope.title}</spring:escapeBody>
+              </c:when>
+              <c:otherwise>
+                ${pageScope.title} 
+              </c:otherwise>
+            </c:choose>
+
 			<c:if test="${not empty pageScope.helpText}">
 				<a href="javascript:void(0);" onclick="$('boxContainerInfoPopup_${thisId}').toggle();" >
             	<img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">

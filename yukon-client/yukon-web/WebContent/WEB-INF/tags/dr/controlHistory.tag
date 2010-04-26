@@ -6,25 +6,20 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
 <c:forEach var="displayableControlHistory" items="${displayableControlHistoryMap}">
-	<c:set var="controlHistory" value="${displayableControlHistory.controlHistory}" />
-	<c:set var="eventList" value="${controlHistory.currentHistory}" />
-	<c:set var="eventListSize" value="${fn:length(eventList)}" />
-	<c:set var="rowspan" value="${eventListSize > 0 ? eventListSize : 1}" />
+    <c:set var="controlHistory" value="${displayableControlHistory.controlHistory}" />
+    <c:set var="eventList" value="${controlHistory.currentHistory}" />
+    <c:set var="eventListSize" value="${fn:length(eventList)}" />
+    <c:set var="rowspan" value="${eventListSize > 0 ? eventListSize : 1}" />
 	
-	<c:if test="${empty lastControlHistoryEntry or 
-			     not (lastControlHistoryEntry eq controlHistory.displayName)}">
+    <c:if test="${empty lastControlHistoryEntry or 
+               not (lastControlHistoryEntry eq controlHistory.displayName)}">
 
-		<tags:sectionContainer title="${controlHistory.displayName}">
-			<table width="95%">
-				<tr>
-					<td valign="top">
-						<dr:controlHistoryEvents controlHistoryEventList="${eventList}" showControlSummary="true" />
-					</td>
-				</tr>
-			</table>
-		</tags:sectionContainer>
-		<br />
-		
+        <tags:sectionContainer title="${controlHistory.displayName}" escapeTitle="true">
+            <dr:controlHistoryEvents controlHistoryEventList="${eventList}" 
+                                     showControlSummary="true" />
+        </tags:sectionContainer>
+        <br />
+
         <c:set var="lastControlHistoryEntry" value="${controlHistory.displayName}" />
-	</c:if>
+    </c:if>
 </c:forEach>

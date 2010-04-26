@@ -66,9 +66,6 @@
                                         <c:forEach var="displayableControlHistory" items="${displayableProgram.displayableControlHistoryList}">
                                             <c:set var="controlHistory" value="${displayableControlHistory.controlHistory}" />
                                             
-                                            <c:if test="${empty lastControlHistoryEntry or 
-                                                  not (lastControlHistoryEntry eq controlHistory.displayName)}">
-                                            
                                             <tr>
                                                 <td></td>
                                                 <c:choose>
@@ -91,8 +88,6 @@
                                                     
                                                 </c:choose>
                                             </tr>
-                                            <c:set var="lastControlHistoryEntry" value="${controlHistory.displayName}" />
-                                            </c:if>
                                         </c:forEach>
                                     </table>
                                 </td>

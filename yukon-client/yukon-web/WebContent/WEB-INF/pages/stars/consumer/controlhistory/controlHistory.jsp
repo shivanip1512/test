@@ -6,7 +6,8 @@
 
 <cti:standardPage module="consumer" page="controlHistory">
     <cti:standardMenu />
-    
+    <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
+
     <h3><i:inline key=".header" /></h3>
     <br>
     <div id="programs">

@@ -70,12 +70,14 @@ public class OperatorProgramControlHistoryController {
         Map<Integer, Integer> totalDurationMap = controlHistoryService.calculateTotalDuration(controlHistoryMap);
         modelMap.addAttribute("totalDurationMap", totalDurationMap);
         
-        List<DisplayableProgram> displayablePrograms = displayableProgramDao.getAllDisplayablePrograms(customerAccount, userContext, ControlPeriod.PAST_DAY);
+        List<DisplayableProgram> displayablePrograms = 
+            displayableProgramDao.getAllDisplayablePrograms(customerAccount, 
+                                                            userContext, 
+                                                            ControlPeriod.PAST_DAY);
         modelMap.addAttribute("displayablePrograms", displayablePrograms);
-        
         return viewName;
     }
-    
+
     @RequestMapping(value = "/operator/program/controlHistory/completeHistoryView")
     public String completeHistoryView(int programId, 
     		                          YukonUserContext yukonUserContext, 
