@@ -328,9 +328,9 @@
             
         </c:otherwise>
     </c:choose>
-            
-    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-        <br>
+    
+    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+        
         <form action="/spring/stars/operator/hardware/hardwareCreate">
             <input type="hidden" name="accountId" value="${accountId}">
             <input type="hidden" name="hardwareClass" value="${switchClass}">
@@ -339,9 +339,13 @@
                     <td>
                         <c:choose>
                             <c:when test="${not inventoryChecking}">
-                                <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+                                    <br>
+                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                </cti:checkRolesAndProperties>
                             </c:when>
-                            <c:otherwise>                        
+                            <c:otherwise>
+                                <br>
                                 <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('switch');">
                             </c:otherwise>
                         </c:choose>
@@ -387,7 +391,7 @@
                                         endAction="function(items) { changeOut(${thermostat.inventoryId}, false); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                 </c:if>
                             </cti:checkRolesAndProperties>
-                                
+                            
                             <cti:img key="editConfig" href="${editConfigUrl}${thermostat.inventoryId}"/>
                             
                             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
@@ -404,27 +408,32 @@
         </c:otherwise>
     </c:choose>
     
+    <br>
+    
     <table class="theremostatActionTable">
         <tr>
-            <td>
-                <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
-            </td>
+            <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">
+                <td>
+                    <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
+                </td>
+            </cti:checkRolesAndProperties>
             <td class="buttonCell">
-                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                    <br>
-                    <form action="/spring/stars/operator/hardware/hardwareCreate">
-                        <input type="hidden" name="accountId" value="${accountId}">
-                        <input type="hidden" name="hardwareClass" value="${thermostatClass}">
-                    
-                        <c:choose>
-                            <c:when test="${not inventoryChecking}">
-                                <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
-                            </c:when>
-                            <c:otherwise>
-                                <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('thermostat');">
-                            </c:otherwise>
-                        </c:choose>
-                    </form>
+                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                        <form action="/spring/stars/operator/hardware/hardwareCreate">
+                            <input type="hidden" name="accountId" value="${accountId}">
+                            <input type="hidden" name="hardwareClass" value="${thermostatClass}">
+                        
+                            <c:choose>
+                                <c:when test="${not inventoryChecking}">
+                                    <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
+                                        <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                    </cti:checkRolesAndProperties>
+                                </c:when>
+                                <c:otherwise>
+                                    <input type="button" value="<cti:msg2 key=".add"/>" class="formSubmit" onclick="showInvCheckingPopup('thermostat');">
+                                </c:otherwise>
+                            </c:choose>
+                        </form>
                 </cti:checkRolesAndProperties>
             </td>
         </tr>
@@ -481,10 +490,19 @@
                         <c:if test="${not starsMeters}">
                             <td nowrap="nowrap">
                                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                    
                                     <c:if test="${inventoryChecking}">
-                                        <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableMeterPicker${meter.inventoryId}" type="availableMctPicker" destinationFieldId="changeOutId" immediateSelectMode="true"
-                                        endAction="function(items) { changeOut(${meter.inventoryId}, true); }" anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
+                                        <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
+                                            <input type="hidden" name="accountId" value="${accountId}">
+                                            <input type="hidden" name="changeOutId" id="changeOutId">
+                                            <input type="hidden" name="oldInventoryId" id="oldInventoryId">
+                                            <input type="hidden" name="isMeter" id="isMeter">
+                                        </form>
+                                        <tags:pickerDialog extraArgs="${energyCompanyId}" id="availableMeterPicker${meter.inventoryId}" type="availableMctPicker" 
+                                            destinationFieldId="changeOutId" immediateSelectMode="true" endAction="function(items) { changeOut(${meter.inventoryId}, true); }" 
+                                            anchorStyleClass="imgLink"><cti:img key="changeOut"/></tags:pickerDialog>
                                     </c:if>
+                                    
                                 </cti:checkRolesAndProperties>
                                 
                                 <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
@@ -502,46 +520,38 @@
     </c:choose>
         
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-        <br>
+        <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
         
-        <form id="addMeterForm" action="/spring/stars/operator/hardware/addMeter">
-            <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="meterId" id="meterId">
-        </form>
-        
-        <form id="changeOutForm" action="/spring/stars/operator/hardware/changeOut">
-            <input type="hidden" name="accountId" value="${accountId}">
-            <input type="hidden" name="changeOutId" id="changeOutId">
-            <input type="hidden" name="oldInventoryId" id="oldInventoryId">
-            <input type="hidden" name="isMeter" id="isMeter">
-        </form>
-        
-        <form action="/spring/stars/operator/hardware/meterProfileCreate">
-            <input type="hidden" name="accountId" value="${accountId}">
-            <table class="popupButtonTable">
-                <tr>
-                    <td>
-                        <c:choose>
-                    
-                            <c:when test="${starsMeters}">
-                                <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_CREATE">
-                                    <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
-                                </cti:checkRolesAndProperties>
-                            </c:when>
-                    
-                            <c:otherwise>
-                                
-                                <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
-                                    endAction="addMeter" asButton="true" buttonStyleClass="formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
-                            </c:otherwise>
-                    
-                        </c:choose>
-                    </td>
-                </tr>
-            </table>
-        </form>
+            <br>
+            
+            <form id="addMeterForm" action="/spring/stars/operator/hardware/addMeter">
+                <input type="hidden" name="accountId" value="${accountId}">
+                <input type="hidden" name="meterId" id="meterId">
+            </form>
+            
+            <form action="/spring/stars/operator/hardware/meterProfileCreate">
+                <input type="hidden" name="accountId" value="${accountId}">
+                <table class="popupButtonTable">
+                    <tr>
+                        <td>
+                            <c:choose>
+                        
+                                <c:when test="${starsMeters}">
+                                        <input type="submit" value="<cti:msg2 key=".add"/>" class="formSubmit">
+                                </c:when>
+                        
+                                <c:otherwise>
+                                    <tags:pickerDialog extraArgs="${energyCompanyId}" id="meterPicker" type="availableMctPicker" destinationFieldId="meterId" immediateSelectMode="true"
+                                        endAction="addMeter" asButton="true" buttonStyleClass="formSubmit"><cti:msg2 key=".add"/></tags:pickerDialog>
+                                </c:otherwise>
+                        
+                            </c:choose>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </cti:checkRolesAndProperties>
     </cti:checkRolesAndProperties>
-    
     
 </tags:boxContainer2>
 </cti:standardPage>

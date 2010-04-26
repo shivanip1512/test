@@ -215,6 +215,9 @@ public class OperatorHardwareController {
     /* HARDWARE CREATE PAGE*/
     @RequestMapping
     public String hardwareCreate(YukonUserContext userContext, ModelMap modelMap, AccountInfoFragment accountInfoFragment, String hardwareClass, String serialNumber) throws ServletRequestBindingException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, userContext.getYukonUser());
+        
         LMHardwareClass lmHardwareClass = LMHardwareClass.valueOf(hardwareClass.toUpperCase());
         setupHardwareCreateModelMap(modelMap, lmHardwareClass, userContext);
         
@@ -387,7 +390,9 @@ public class OperatorHardwareController {
     
 
     @RequestMapping
-    public View createYukonDevice(ModelMap modelMap, String deviceName, int inventoryId, HttpServletResponse response) throws ServletRequestBindingException {
+    public View createYukonDevice(ModelMap modelMap, String deviceName, HttpServletResponse response, YukonUserContext userContext,
+                                  int inventoryId) throws ServletRequestBindingException {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         int deviceId = -1;
         try {
             SimpleDevice yukonDevice = hardwareService.createTwoWayDevice(inventoryId, deviceName);
@@ -420,6 +425,8 @@ public class OperatorHardwareController {
     public String addDeviceToAccount(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope, 
                                      boolean fromAccount, 
                                      int inventoryId) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         
@@ -450,6 +457,9 @@ public class OperatorHardwareController {
     
     @RequestMapping
     public String meterProfileCreate(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, userContext.getYukonUser());
+        
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         modelMap.addAttribute("displayName", "Create Meter");
         
@@ -479,6 +489,7 @@ public class OperatorHardwareController {
     
     @RequestMapping
     public String addMeter(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope, int meterId) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         hardwareService.addYukonMeter(meterId, accountInfoFragment.getAccountId(), userContext);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -490,6 +501,7 @@ public class OperatorHardwareController {
 
     @RequestMapping
     public String changeOut(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope, int changeOutId, int oldInventoryId, boolean isMeter) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         hardwareService.changeOutInventory(oldInventoryId, changeOutId, userContext, isMeter);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
@@ -546,7 +558,7 @@ public class OperatorHardwareController {
         }
     }
     
-    private void setupHardwareShowHideElements(HardwareDto hardwareDto, ModelMap modelMap, YukonUserContext userContext){
+    private void setupHardwareShowHideElements(HardwareDto hardwareDto, ModelMap modelMap, YukonUserContext userContext) {
         boolean inventoryChecking = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
         
         /* For switches and tstats, if they have inventory checking turned off they can edit the serial number. */
@@ -566,14 +578,17 @@ public class OperatorHardwareController {
         }
     }
     
-    private void setPageMode(ModelMap modelMap, YukonUserContext userContext){
+    private void setPageMode(ModelMap modelMap, YukonUserContext userContext) {
      // pageEditMode
         boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
     }
     
-    private void setupHardwareListModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, LiteStarsEnergyCompany energyCompany, YukonUserContext userContext) {
-        ListMultimap<LMHardwareClass, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), accountInfoFragment.getEnergyCompanyId());
+    private void setupHardwareListModelMap(AccountInfoFragment accountInfoFragment, ModelMap modelMap, 
+                                           LiteStarsEnergyCompany energyCompany, 
+                                           YukonUserContext userContext) {
+        ListMultimap<LMHardwareClass, HardwareDto> hardwareMap = hardwareService.getHardwareMapForAccount(accountInfoFragment.getAccountId(), 
+                                                                                                          accountInfoFragment.getEnergyCompanyId());
         
         modelMap.addAttribute("switches", hardwareMap.get(LMHardwareClass.SWITCH));
         modelMap.addAttribute("meters", hardwareMap.get(LMHardwareClass.METER));
@@ -583,14 +598,17 @@ public class OperatorHardwareController {
         modelMap.addAttribute("thermostatClass", LMHardwareClass.THERMOSTAT);
         modelMap.addAttribute("meterClass", LMHardwareClass.METER);
         
-        boolean starsMeters = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, energyCompany.getUser()).equalsIgnoreCase(StarsUtils.METER_BASE_DESIGNATION);
+        String meterDesignation= rolePropertyDao.getPropertyStringValue(YukonRoleProperty.METER_MCT_BASE_DESIGNATION, energyCompany.getUser());
+        boolean starsMeters = meterDesignation.equalsIgnoreCase(StarsUtils.METER_BASE_DESIGNATION); 
         modelMap.addAttribute("starsMeters", starsMeters);
         
         boolean inventoryChecking = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_INVENTORY_CHECKING, userContext.getYukonUser());
         modelMap.addAttribute("inventoryChecking", inventoryChecking);
     }
     
-    private void setupHardwareEditModelMap(AccountInfoFragment accountInfoFragment, Integer inventoryId, ModelMap modelMap, YukonUserContext userContext, boolean editing){
+    private void setupHardwareEditModelMap(AccountInfoFragment accountInfoFragment, Integer inventoryId, ModelMap modelMap, 
+                                           YukonUserContext userContext, 
+                                           boolean editing){
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());

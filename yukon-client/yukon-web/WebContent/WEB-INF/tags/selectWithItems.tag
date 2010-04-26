@@ -19,7 +19,7 @@
 		<c:forEach var="item" items="${items}">
 			<c:if test="${status.value == item[itemValue]}">
 				${item[itemLabel]}
-				<c:set var="labelFound" value="false"/>
+				<c:set var="labelFound" value="true"/>
 			</c:if>
 		</c:forEach>
 		
