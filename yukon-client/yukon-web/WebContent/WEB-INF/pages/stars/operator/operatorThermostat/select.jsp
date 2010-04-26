@@ -7,6 +7,8 @@
 
 <cti:standardPage module="operator" page="thermostatSelect">
 
+	<cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
+	
 	<script>
 
 	    function checkboxChanged(this_cb) {
@@ -57,11 +59,10 @@
     		<input type="hidden" name="accountId" value="${accountId}">
     		<input type="hidden" id="thermostatIds" name="thermostatIds" value="${thermostatIds}">
     		
-    		<table class="compactResultsTable">
+    		<table class="compactResultsTable selectThermostatsTable">
     		
     			<tr>
-                    <th style="width:20px;">&nbsp;</th>
-                    <th style="width:250px;">
+                    <th class="name">
                     	<i:inline key="yukon.web.modules.operator.thermostatSelect.name"/>
                     </th>
                     <th><i:inline key="yukon.web.modules.operator.thermostatSelect.type"/></th>
@@ -70,11 +71,11 @@
     			<c:forEach var="thermostat" items="${thermostats}">
     				
     				 <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                        <td>
+                        <td  class="name">
                             <input type="checkbox" id="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}" onclick="checkboxChanged(this)">
-                        </td>
-                        <td class="nonwrapping">
-                            <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
+                            <label for="THERMOSTATCHECKBOX-${thermostat.id}-${thermostat.type}">
+                            	<spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
+                            </label>
                         </td>
                         <td>
                             <cti:msg key="${thermostat.type.displayKey}"/>

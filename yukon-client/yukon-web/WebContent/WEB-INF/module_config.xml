@@ -1034,23 +1034,23 @@
 				    		<link>/spring/stars/operator/thermostat/select?accountId=${accountId}</link>
 		           			<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
-                        <page name="thermostatManual" type="DETAIL_CHILD">
+                        <page name="thermostatManual" type="DETAIL_CHILD_WITH_INFO">
 				    		<menu>account</menu>
 				    		<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
-                        <page name="thermostatSchedule" type="DETAIL_CHILD">
+                        <page name="thermostatSchedule" type="DETAIL_CHILD_WITH_INFO">
 				    		<menu>account</menu>
 				    		<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
-                        <page name="thermostatScheduleConfirm" type="DETAIL_CHILD">
+                        <page name="thermostatScheduleConfirm" type="DETAIL_CHILD_WITH_INFO">
 				    		<menu>account</menu>
 				    		<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
-                        <page name="thermostatScheduleHints" type="DETAIL_CHILD">
+                        <page name="thermostatScheduleHints" type="DETAIL_CHILD_WITH_INFO">
 				    		<menu>account</menu>
 				    		<labelArgument>${accountNumber}</labelArgument>
 				    	</page>
-                        <page name="thermostatSavedSchedules" type="DETAIL_CHILD">
+                        <page name="thermostatSavedSchedules" type="DETAIL_CHILD_WITH_INFO">
 				    		<menu>account</menu>
 				    		<labelArgument>${accountNumber}</labelArgument>
 				    	</page>

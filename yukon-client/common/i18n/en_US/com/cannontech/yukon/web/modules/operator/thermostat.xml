@@ -18,15 +18,16 @@
     <entry key="yukon.web.modules.operator.thermostatSelect.type">Type</entry>
     
     <!--  operatorThermostat/thermostatNamesFragment.jsp -->
-	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.header">Thermostat</entry>
-	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.header.multiple">Thermostats</entry>
+	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.edit">Edit</entry>
 	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.linkTitle">Change Thermostats</entry>
+	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.selectedThermostatsHeader.title">Selected Thermostat</entry>
+	<entry key="yukon.web.modules.operator.selectedThermostatsFragment.selectedThermostatsHeaderMultiple.title">Selected Thermostats</entry>
 	
     <!--  operatorThermostat/manual/view.jsp -->
     <entry key="yukon.web.modules.operator.thermostatManual.pageName">Thermostat Manual</entry>
 	<entry key="yukon.web.modules.operator.thermostatManual.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.operator.thermostatManual.thermostatNamesHeader">Thermostats</entry>
-	<entry key="yukon.web.modules.operator.thermostatManual.thermostatChangeLinkTitle">Change Thermostats</entry>
+	<entry key="yukon.web.modules.operator.thermostatManual.manualUiContainerHeader.title">Thermostat Manual</entry>
 	
     <entry key="yukon.web.modules.operator.thermostatManual.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.edit">edit</entry>
@@ -74,8 +75,7 @@
     <!--  operatorThermostat/schedule/view.jsp -->
     <entry key="yukon.web.modules.operator.thermostatSchedule.pageName">Thermostat Schedule</entry>
 	<entry key="yukon.web.modules.operator.thermostatSchedule.pageDescription">{0}</entry>
-	<entry key="yukon.web.modules.operator.thermostatSchedule.thermostatNamesHeader">Thermostats</entry>
-	<entry key="yukon.web.modules.operator.thermostatSchedule.thermostatChangeLinkTitle">Change Thermostats</entry>
+	<entry key="yukon.web.modules.operator.thermostatSchedule.scheduleUiContainerHeader.title">Thermostat Schedule</entry>
     
     <entry key="yukon.web.modules.operator.thermostatSchedule.thermostatScheduleBackground">/WebConfig/yukon/ThermImages/TempBG2.gif</entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.grayLeftArrow">/WebConfig/yukon/ThermImages/GrayArrowL.gif</entry>
@@ -132,7 +132,7 @@
     <!--  operatorThermostat/schedule/confirm.jsp -->
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.pageName">Thermostat Schedule Confirm</entry>
 	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.header">Thermostat - Schedule Confirm</entry>
+	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmUiContainerHeader.title">Thermostat Schedule Confirm</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText">The following schedule options will be sent to your thermostat:</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.scheduleText"><![CDATA[
         <b>{0}:</b> <br><br>
@@ -161,7 +161,8 @@
         Simply use the following procedures.<br><br>
            
         <b>1)</b> Select the schedule mode: Click <b>Same schedule all days of week</b>, 
-        <b>Weekday, Saturday and Sunday schedules</b>, or <b>Weekday and Weekend schedules</b> if available.
+        <b>Weekday, Saturday and Sunday schedules</b>, or <b>Weekday and Weekend schedules</b> if available.<br><br>
+        
         <b>2)</b> Click <b>Weekday</b>, <b>Saturday</b>, <b>Sunday</b> or <b>Weekend</b> for
         the day(s) you would like to set.<br><br>
            
@@ -191,6 +192,7 @@
     <!-- operatorThermostat/schedule/savedSchedules.jsp -->
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageName">Thermostat Saved Schedules</entry>
 	<entry key="yukon.web.modules.operator.thermostatSavedSchedules.pageDescription">{0}</entry>
+	<entry key="yukon.web.modules.operator.thermostatSavedSchedules.savedSchedulesUiContainerHeader.title">Saved Schedules</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.chooseSchedule">Select a schedule to view:</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.viewSchedule">View Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteSchedule">Delete Schedule</entry>
