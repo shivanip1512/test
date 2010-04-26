@@ -85,9 +85,9 @@
     <entry key="yukon.web.modules.operator.appliance.storageHeat.peakKWCapacity">Peak kW Capacity</entry>
     <entry key="yukon.web.modules.operator.appliance.storageHeat.hoursToRecharge">Recharge Time (hr)</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.wh.numOfGallons"># Gallons</entry>
+    <entry key="yukon.web.modules.operator.appliance.wh.numOfGallons">Number of Gallons</entry>
     <entry key="yukon.web.modules.operator.appliance.wh.energySource">Energy Source</entry>
-    <entry key="yukon.web.modules.operator.appliance.wh.numOfHeatingCoils"># Heating Coils</entry>
+    <entry key="yukon.web.modules.operator.appliance.wh.numOfHeatingCoils">Number of Heating Coils</entry>
     
 	<!-- Enrollment -->
     <entry key="yukon.web.modules.operator.appliance.enrollment.title">Enrollment</entry>
@@ -105,21 +105,21 @@
     <entry key="yukon.web.modules.operator.appliance.edit.applianceUpdated">Appliance Updated</entry>
 
     <!-- Validation -->
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.yearManufactured">Year Manufactured must be a number and can only be 4 digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.kwCapacity">kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.efficiencyRating">Efficiency Rating must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.yearManufactured">Year Manufactured must be a number.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.kwCapacity">kW Capacity must be a number.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.efficiencyRating">Efficiency Rating must be a number.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.dualFuel.secondaryKWCapacity">Secondary kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.dualFuel.secondaryKWCapacity">Secondary kW Capacity must be a number.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.peakKWCapacity">Peak kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.fuelCapGallons">Fuel Cap Gallons must be a number and cannot be more than 14 digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.startDelaySeconds">Start Delay must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.peakKWCapacity">Peak kW Capacity must be a number.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.fuelCapGallons">Fuel Cap Gallons must be a number.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.generator.startDelaySeconds">Start Delay must be a number.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.heatPump.restartDelaySeconds">Restart Delay must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.heatPump.restartDelaySeconds">Restart Delay must be a number.</entry>
     
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.peakKWCapacity">Peak kW Capacity must be a number and cannot be more than 14 digits in length.</entry>
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.hoursToRecharge">Recharge Time must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.peakKWCapacity">Peak kW Capacity must be a number.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.storageHeat.hoursToRecharge">Recharge Time must be a number.</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.typeMismatch.wh.numOfHeatingCoils"># Heating Coils must be a number and cannot be more than 14 digits in length.</entry>
+    <entry key="yukon.web.modules.operator.appliance.typeMismatch.wh.numOfHeatingCoils">Number of Heating Coils must be a number.</entry>
 
  </properties>
