@@ -86,14 +86,14 @@
 				
 					<div class="sectionFormLabel"><cti:msg key="yukon.web.modules.operator.search.searchPrompt"/></div>
 					<div>
-					<select name="searchBy" onchange="$('searchForm').value = ''">
+					<select name="searchBy" onchange="$('accountSearchValue').value = ''">
 						<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
 							<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
 								<cti:msg key="${operatorAccountSearchBy.formatKey}"/>
 							</option>
 						</c:forEach>
 					</select>
-					<input type="text" name="searchValue" value="" size="15">
+					<input type="text" name="searchValue" id="accountSearchValue" value="" size="15">
 					<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="$('accountSearchForm').submit();"> 
 					</div>
 					
