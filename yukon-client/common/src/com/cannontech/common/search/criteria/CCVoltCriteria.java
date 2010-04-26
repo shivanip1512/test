@@ -10,6 +10,9 @@ public class CCVoltCriteria extends YukonObjectCriteriaHelper {
     public CCVoltCriteria() {
         super();
         //create all the rules for this criteria
+        addCriteria("pointtype", "Status", BooleanClause.Occur.MUST_NOT);
+        addCriteria("pointtype", "StatusOutput", BooleanClause.Occur.MUST_NOT);
+        addCriteria("pointtype", "CalcStatus", BooleanClause.Occur.MUST_NOT);
         for (int i = 0; i < UNITS.length; i++) {
             addCriteria("uomid", UNITS[i], BooleanClause.Occur.SHOULD);
         }

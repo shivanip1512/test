@@ -15,6 +15,7 @@ public class PointPicker extends LucenePicker<UltraLightPoint> {
         columns.add(new OutputColumn("pointName", titleKeyPrefix + "pointName"));
         columns.add(new OutputColumn("pointId", titleKeyPrefix + "pointId"));
         columns.add(new OutputColumn("deviceName", titleKeyPrefix + "deviceName"));
+        columns.add(new OutputColumn("pointType", titleKeyPrefix + "pointType"));
 
         outputColumns = Collections.unmodifiableList(columns);
     }

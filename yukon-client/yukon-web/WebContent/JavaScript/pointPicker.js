@@ -76,6 +76,7 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	    this.outputCols = [
 	        {"title": "Device", "field": "deviceName", "link": null},
 	        {"title": "Point Id", "field": "pointId", "link": null},
+	        {"title": "Point Type", "field": "pointType", "link": null},
 	        {"title": "Point", "field": "pointName", "link": createItemLink}
 	      ];
 	    

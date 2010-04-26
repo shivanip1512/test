@@ -70,15 +70,15 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         String pointName = rs.getString("pointname");
         String paoName = rs.getString("paoname");
         int uomidInt = rs.getInt("uomid");
+        if (rs.wasNull()) {
+            uomidInt = PointUnits.UOMID_INVALID;
+        }
         // additional fields for point types and point states
         int stateGrpID = rs.getInt("stategroupid");
         String pointType = rs.getString("pointtype");
         String paoType = rs.getString("type");
         int pointOffset = rs.getInt("pointoffset");
         
-        if (rs.wasNull()) {
-            uomidInt = PointUnits.UOMID_INVALID;
-        }
         String uomid = Integer.toString(uomidInt);
         String pointid = Integer.toString(rs.getInt("pointid"));
         String deviceid = Integer.toString(rs.getInt("paobjectid"));
@@ -92,7 +92,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         doc.add(new Field("pointid", pointid, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("deviceid", deviceid, Field.Store.YES, Field.Index.UN_TOKENIZED));
 
-        doc.add(new Field("pointtype", pointType, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("pointtype", pointType, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("stategroupid", stateGroupID, Field.Store.NO, Field.Index.UN_TOKENIZED));
         doc.add(new Field("paotype", paoType, Field.Store.NO, Field.Index.UN_TOKENIZED));
         doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.UN_TOKENIZED)); // an untokenized version

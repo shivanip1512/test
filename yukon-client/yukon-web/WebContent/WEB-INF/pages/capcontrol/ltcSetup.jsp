@@ -27,7 +27,7 @@
             }            
 
             mappingPointPicker = new PointPicker(pointId
-                    , 'com.cannontech.common.search.criteria.' + pointType + 'PointCriteria'
+                    , null
                     , 'pointName:'+ pointNameId + ';deviceName:'+ paoNameId
                     , 'mappingPointPicker'
                     , ''
