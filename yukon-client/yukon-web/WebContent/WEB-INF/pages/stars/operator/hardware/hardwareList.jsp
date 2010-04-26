@@ -427,9 +427,11 @@
     <table class="theremostatActionTable">
         <tr>
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">
-                <td>
-                    <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
-                </td>
+                <c:if test="${not empty thermostats}">
+                    <td>
+                        <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
+                    </td>
+                </c:if>
             </cti:checkRolesAndProperties>
             <td class="buttonCell">
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
