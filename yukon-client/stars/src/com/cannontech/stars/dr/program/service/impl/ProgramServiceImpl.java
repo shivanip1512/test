@@ -71,4 +71,9 @@ public class ProgramServiceImpl implements ProgramService {
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
     }
+    
+    @Autowired
+    public void setEcMappingDao(ECMappingDao ecMappingDao) {
+		this.ecMappingDao = ecMappingDao;
+	}
 }
