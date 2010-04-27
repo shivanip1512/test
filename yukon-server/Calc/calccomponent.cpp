@@ -463,7 +463,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             }
 
             double NaNDefenseDouble = (LoadWatts*LoadWatts)+(LoadVARs*LoadVARs);
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 Load = 0.0;
             }
@@ -503,7 +503,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             double kva = 0.0;
 
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 validCalc = false;
                 kva = 0.0;
@@ -532,7 +532,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             double kva = 0.0;
 
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 validCalc = false;
                 kva = 0.0;
@@ -589,7 +589,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
             double kva = 0.0;
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 validCalc = false;
                 kva = 0.0;
@@ -609,7 +609,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             double kva = 0.0;
             double NaNDefenseDouble = (kw*kw)+(kvar*kvar);
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 validCalc = false;
                 kva = 0.0;
@@ -628,7 +628,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             double kw = 0.0;
             double NaNDefenseDouble = (kva*kva)-(kvar*kvar);
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 validCalc = false;
                 kw = 0.0;
@@ -647,7 +647,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             double kvar = 0.0;
             double NaNDefenseDouble = (kva*kva)-(kw*kw);
-            if( NaNDefenseDouble <= 0.0 )
+            if( NaNDefenseDouble < 0.0 )
             {
                 validCalc = false;
                 kvar = 0.0;
@@ -669,7 +669,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
         {
             double componentPointValue = _calcpoint->pop( );;
 
-            if( componentPointValue <= 0.0 )
+            if( componentPointValue < 0.0 )
             {
                 validCalc = false;
                 retVal = 0.0;
