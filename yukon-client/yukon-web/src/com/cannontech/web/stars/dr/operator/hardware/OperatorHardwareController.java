@@ -252,7 +252,7 @@ public class OperatorHardwareController {
         
         setupHardwareEditModelMap(accountInfoFragment, inventoryId, modelMap, userContext, true);
         
-        return "/operator/hardware/hardware.jsp";
+        return "operator/hardware/hardware.jsp";
     }
     
     @RequestMapping
@@ -301,10 +301,10 @@ public class OperatorHardwareController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             
             if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
-                return "/operator/hardware/meterProfile.jsp";
+                return "operator/hardware/meterProfile.jsp";
             } else {
                 setupHardwareShowHideElements(hardwareDto, modelMap, userContext);
-                return "/operator/hardware/hardware.jsp";
+                return "operator/hardware/hardware.jsp";
             }
         } 
         
@@ -353,11 +353,11 @@ public class OperatorHardwareController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
             if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
-                return "/operator/hardware/meterProfile.jsp";
+                return "operator/hardware/meterProfile.jsp";
             } else {
                 setupHardwareCreateModelMap(modelMap, hardwareDto.getHardwareClass(), userContext);
                 setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
-                return "/operator/hardware/hardware.jsp";
+                return "operator/hardware/hardware.jsp";
             }
         }
         
@@ -418,7 +418,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("address", address);
         modelMap.addAttribute("mainPhoneNumber", serviceCompanyDto.getMainPhoneNumber());
         
-        return "/operator/hardware/serviceCompanyInfo.jsp";
+        return "operator/hardware/serviceCompanyInfo.jsp";
     }
     
     @RequestMapping
@@ -452,7 +452,7 @@ public class OperatorHardwareController {
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
-        return "/operator/hardware/meterProfile.jsp";
+        return "operator/hardware/meterProfile.jsp";
     }
     
     @RequestMapping
@@ -484,7 +484,7 @@ public class OperatorHardwareController {
         modelMap.addAttribute("hardwareDto", hardwareDto);
         
         setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
-        return "/operator/hardware/meterProfile.jsp";
+        return "operator/hardware/meterProfile.jsp";
     }
     
     @RequestMapping
