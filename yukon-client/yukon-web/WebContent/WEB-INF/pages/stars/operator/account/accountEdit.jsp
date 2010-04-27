@@ -27,6 +27,8 @@
 
     		// billing setup
     		// if sameAsAbove is checked on page load, we know the address fields all match, set them to disabled
+    		toggleBillingAddress();
+    		saveBillingToTempFields();
     		var sameAsAbove = $('usePrimaryAddressForBillingCheckBox').checked;
     		if (sameAsAbove) {
     			setBillingFieldsDisabled(true);
@@ -53,11 +55,7 @@
 
 			if (sameAsAbove) {
 
-				$('temp_accountDto.billingAddress.locationAddress1').value = $('accountDto.billingAddress.locationAddress1').value;
-				$('temp_accountDto.billingAddress.locationAddress2').value = $('accountDto.billingAddress.locationAddress2').value;
-				$('temp_accountDto.billingAddress.cityName').value = $('accountDto.billingAddress.cityName').value;
-				$('temp_accountDto.billingAddress.stateCode').value = $('accountDto.billingAddress.stateCode').value;
-				$('temp_accountDto.billingAddress.zipCode').value = $('accountDto.billingAddress.zipCode').value;
+				saveBillingToTempFields();
 				
 				$('accountDto.billingAddress.locationAddress1').value = $('accountDto.streetAddress.locationAddress1').value;
 				$('accountDto.billingAddress.locationAddress2').value = $('accountDto.streetAddress.locationAddress2').value;
@@ -77,6 +75,15 @@
 
 				setBillingFieldsDisabled(false);
 			}
+    	}
+
+    	function saveBillingToTempFields() {
+
+    		$('temp_accountDto.billingAddress.locationAddress1').value = $('accountDto.billingAddress.locationAddress1').value;
+			$('temp_accountDto.billingAddress.locationAddress2').value = $('accountDto.billingAddress.locationAddress2').value;
+			$('temp_accountDto.billingAddress.cityName').value = $('accountDto.billingAddress.cityName').value;
+			$('temp_accountDto.billingAddress.stateCode').value = $('accountDto.billingAddress.stateCode').value;
+			$('temp_accountDto.billingAddress.zipCode').value = $('accountDto.billingAddress.zipCode').value;
     	}
 
     	function setBillingFieldsDisabled(disabled) {

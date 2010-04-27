@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -79,7 +80,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                                                      account.getAccountNumber(),
                                                      account.getCustomerId(),
                                                      account.getBillingAddressId(),
-                                                     account.getAccountNotes());
+                                                     SqlUtils.convertStringToDbValue(account.getAccountNotes()));
         boolean result = (rowsAffected == 1);
         return result;
     }
@@ -98,7 +99,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
                                                      account.getAccountNumber(),
                                                      account.getCustomerId(),
                                                      account.getBillingAddressId(),
-                                                     account.getAccountNotes(),
+                                                     SqlUtils.convertStringToDbValue(account.getAccountNotes()),
                                                      account.getAccountId());
         boolean result = (rowsAffected == 1);
         return result;
@@ -308,8 +309,8 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             public CustomerAccount mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final CustomerAccount account = new CustomerAccount();
                 account.setAccountId(rs.getInt("AccountId"));
-                account.setAccountNotes(rs.getString("AccountNotes"));
-                account.setAccountNumber(rs.getString("AccountNumber"));
+                account.setAccountNotes(SqlUtils.convertDbValueToString(rs, "AccountNotes"));
+                account.setAccountNumber(SqlUtils.convertDbValueToString(rs, "AccountNumber"));
                 account.setAccountSiteId(rs.getInt("AccountSiteId"));
                 account.setBillingAddressId(rs.getInt("BillingAddressId"));
                 account.setCustomerId(rs.getInt("CustomerId"));
@@ -324,9 +325,9 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             public CustomerAccountWithNames mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final CustomerAccountWithNames account = new CustomerAccountWithNames();
                 account.setAccountId(rs.getInt("AccountId"));
-                account.setAccountNumber(rs.getString("AccountNumber"));
-                account.setLastName(rs.getString("ContLastName"));
-                account.setFirstName(rs.getString("ContFirstName"));
+                account.setAccountNumber(SqlUtils.convertDbValueToString(rs.getString("AccountNumber")));
+                account.setLastName(SqlUtils.convertDbValueToString(rs.getString("ContLastName")));
+                account.setFirstName(SqlUtils.convertDbValueToString(rs.getString("ContFirstName")));
                 return account;
             }
         };

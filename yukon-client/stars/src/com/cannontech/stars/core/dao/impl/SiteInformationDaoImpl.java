@@ -16,6 +16,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.SiteInformationDao;
@@ -36,10 +37,10 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
 
         @Override
         public void extractValues(MapSqlParameterSource p, LiteSiteInformation o) {
-            p.addValue("Feeder", o.getFeeder());
-            p.addValue("Pole", o.getPole());
-            p.addValue("TransformerSize", o.getTransformerSize());
-            p.addValue("ServiceVoltage", o.getServiceVoltage());
+            p.addValue("Feeder", SqlUtils.convertStringToDbValue(o.getFeeder()));
+            p.addValue("Pole", SqlUtils.convertStringToDbValue(o.getPole()));
+            p.addValue("TransformerSize", SqlUtils.convertStringToDbValue(o.getTransformerSize()));
+            p.addValue("ServiceVoltage", SqlUtils.convertStringToDbValue(o.getServiceVoltage()));
             p.addValue("SubstationId", o.getSubstationID());
         }
 
@@ -69,10 +70,10 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
             public LiteSiteInformation mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final LiteSiteInformation siteInfo = new LiteSiteInformation();
                 siteInfo.setSiteID(rs.getInt("SiteId"));
-                siteInfo.setFeeder(rs.getString("Feeder"));
-                siteInfo.setPole(rs.getString("Pole"));
-                siteInfo.setTransformerSize(rs.getString("TransformerSize"));
-                siteInfo.setServiceVoltage(rs.getString("ServiceVoltage"));
+                siteInfo.setFeeder(SqlUtils.convertDbValueToString(rs, "Feeder"));
+                siteInfo.setPole(SqlUtils.convertDbValueToString(rs, "Pole"));
+                siteInfo.setTransformerSize(SqlUtils.convertDbValueToString(rs, "TransformerSize"));
+                siteInfo.setServiceVoltage(SqlUtils.convertDbValueToString(rs, "ServiceVoltage"));
                 siteInfo.setSubstationID(rs.getInt("SubstationId"));
                 return siteInfo;
             }

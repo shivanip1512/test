@@ -45,7 +45,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
                                                   accountSite.getSiteInformationId(),
                                                   SqlUtils.convertStringToDbValue(accountSite.getSiteNumber()),
                                                   accountSite.getStreetAddressId(),
-                                                  accountSite.getPropertyNotes(),
+                                                  SqlUtils.convertStringToDbValue(accountSite.getPropertyNotes()),
                                                   SqlUtils.convertStringToDbValue(accountSite.getCustomerStatus()),
                                                   SqlUtils.convertStringToDbValue(accountSite.getCustAtHome()));
         boolean result = (rows == 1);
@@ -62,7 +62,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         int rows = simpleJdbcTemplate.update(sql, accountSite.getSiteInformationId(),
         										  SqlUtils.convertStringToDbValue(accountSite.getSiteNumber()),
                                                   accountSite.getStreetAddressId(),
-                                                  accountSite.getPropertyNotes(),
+                                                  SqlUtils.convertStringToDbValue(accountSite.getPropertyNotes()),
                                                   SqlUtils.convertStringToDbValue(accountSite.getCustomerStatus()),
                                                   SqlUtils.convertStringToDbValue(accountSite.getCustAtHome()),
                                                   accountSite.getAccountSiteId());
@@ -122,7 +122,7 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
                 accountSite.setAccountSiteId(rs.getInt("AccountSiteID"));
                 accountSite.setCustAtHome(SqlUtils.convertDbValueToString(rs, "CustAtHome"));
                 accountSite.setCustomerStatus(SqlUtils.convertDbValueToString(rs, "CustomerStatus"));
-                accountSite.setPropertyNotes(rs.getString("PropertyNotes"));
+                accountSite.setPropertyNotes(SqlUtils.convertDbValueToString(rs, "PropertyNotes"));
                 accountSite.setSiteInformationId(rs.getInt("SiteInformationID"));
                 accountSite.setSiteNumber(SqlUtils.convertDbValueToString(rs, "SiteNumber"));
                 accountSite.setStreetAddressId(rs.getInt("StreetAddressID"));
