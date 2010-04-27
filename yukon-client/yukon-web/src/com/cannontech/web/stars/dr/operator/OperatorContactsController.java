@@ -186,6 +186,12 @@ public class OperatorContactsController {
 		// basics
 		setupContactBasicModelMap(contactId, accountInfoFragment, modelMap);
 		
+		ContactDto currentContactDto = operatorAccountService.getContactDto(contactId, userContext);
+		if (currentContactDto != null) {
+			modelMap.addAttribute("firstName", currentContactDto.getFirstName());
+			modelMap.addAttribute("lastName", currentContactDto.getLastName());
+		}
+		
 		// notification types
 		MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 		List<DisplayableContactNotificationType> notificationTypes = Lists.newArrayListWithCapacity(ContactNotificationType.values().length);

@@ -22,10 +22,15 @@ public class ContactDtoValidator extends SimpleValidator<ContactDto> {
 	@Override
 	public void doValidation(ContactDto contactDto, Errors errors) {
 
-		// first name on create
+		// first name
 		if (contactDto.getContactId() <= 0 && StringUtils.isBlank(contactDto.getFirstName())) {
 			errors.rejectValue("firstName", "yukon.web.modules.operator.contactEdit.firstNameRequired");
 		}
+		
+		YukonValidationUtils.checkExceedsMaxLength(errors, "firstName", contactDto.getFirstName(), 120);
+		
+		// last name
+		YukonValidationUtils.checkExceedsMaxLength(errors, "lastName", contactDto.getLastName(), 120);
 		
 		// home phone number
 		String homePhone = contactDto.getHomePhone();
