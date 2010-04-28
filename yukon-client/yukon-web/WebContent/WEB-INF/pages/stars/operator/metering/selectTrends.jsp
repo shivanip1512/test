@@ -39,7 +39,7 @@
 					</c:forEach>
 					
 					<br>
-					<tags:slowInput2 myFormId="selectTrendsForm" key="save" />
+					<tags:slowInput2 formId="selectTrendsForm" key="save" />
 				
 				</form>
 			

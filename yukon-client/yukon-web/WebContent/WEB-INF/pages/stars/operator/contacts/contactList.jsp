@@ -123,7 +123,7 @@
 	<%-- ADD CONTACT --%>
 	<cti:displayForPageEditModes modes="EDIT,CREATE">
 		<br>
-		<tags:slowInput2 myFormId="addContactForm" key="button.addContact" />
+		<tags:slowInput2 formId="addContactForm" key="button.addContact"/>
 	</cti:displayForPageEditModes>
 
 </cti:standardPage>

@@ -20,7 +20,7 @@
 			
 			<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
 			
-			<tags:slowInput2 myFormId="searchForm" key="search"/>
+			<tags:slowInput2 formId="searchForm" key="search"/>
 		
 		</div>
 		

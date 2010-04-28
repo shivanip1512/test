@@ -129,8 +129,8 @@
 		
 		<%-- BUTTONS --%>
 		<br>
-		<tags:slowInput2 myFormId="contactsUpdateForm" key="save" />
-		<tags:slowInput2 myFormId="contactListForm" key="cancel" />
+		<tags:slowInput2 formId="contactsUpdateForm" key="save"/>
+		<tags:slowInput2 formId="contactListForm" key="cancel"/>
 
 	</form:form>
 	

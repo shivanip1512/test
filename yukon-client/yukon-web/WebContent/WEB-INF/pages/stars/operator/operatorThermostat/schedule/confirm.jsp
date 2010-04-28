@@ -43,8 +43,8 @@
 						    
 						    <cti:msg2 key=".confirmText" /><br><br>
 						    
-						    <tags:slowInput2 myFormId="scheduleForm" key="ok" />
-						    <tags:slowInput2 myFormId="cancelForm" key="cancel" />
+						    <tags:slowInput2 formId="scheduleForm" key="ok" />
+						    <tags:slowInput2 formId="cancelForm" key="cancel" />
 						    
 					    </div>
 					    

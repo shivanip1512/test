@@ -119,7 +119,7 @@
                         <td colspan="4">
                             <br>
                             <input type="submit" value="<cti:msg2 key=".create"/>"
-                                   onclick="showCreateAppliancePopup();" />
+                                   onclick="showCreateAppliancePopup();" class="formSubmit" />
                         </td>
                     </tr>
                 </cti:checkRolesAndProperties>

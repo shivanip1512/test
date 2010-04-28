@@ -55,7 +55,7 @@
 		<%-- BUTTONS --%>
 		<cti:displayForPageEditModes modes="EDIT">
 			<br>
-			<tags:slowInput2 myFormId="residenceUpdateForm" key="save"/>
+			<tags:slowInput2 formId="residenceUpdateForm" key="save"/>
 		</cti:displayForPageEditModes>
 
 	</form:form>

@@ -21,8 +21,8 @@
 
                     <br>
                     
-                    <tags:slowInput2 myFormId="createForm" key="create" />
-                    <tags:slowInput2 myFormId="cancelForm" key="cancel" />
+                    <tags:slowInput2 formId="createForm" key="create"/>
+                    <tags:slowInput2 formId="cancelForm" key="cancel"/>
                         
                 </tags:formElementContainer>
             </td>

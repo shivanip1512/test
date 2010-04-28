@@ -49,8 +49,8 @@
 		<br>
 		
 		<%-- buttons --%>
-		<tags:slowInput2 myFormId="callReportUpdateForm" key="save" />
-		<tags:slowInput2 myFormId="viewAllForm" key="cancel" />
+		<tags:slowInput2 formId="callReportUpdateForm" key="save"/>
+		<tags:slowInput2 formId="viewAllForm" key="cancel"/>
 		
 	</form:form>
     

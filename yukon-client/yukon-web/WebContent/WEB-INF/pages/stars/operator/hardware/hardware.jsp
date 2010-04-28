@@ -126,7 +126,7 @@
                 <tr>
                     <td>
                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                            <tags:slowInput2 myFormId="deleteForm" key="delete"/>
+                            <tags:slowInput2 formId="deleteForm" key="delete"/>
                         </cti:checkRolesAndProperties>
                         <input type="button" class="formSubmit" onclick="hideDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.cancel.label"/>"/>
                     </td>
@@ -361,7 +361,7 @@
         
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <tags:slowInput2 myFormId="updateForm" key="save" />
+                <tags:slowInput2 formId="updateForm" key="save" />
             </cti:checkRolesAndProperties>
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <cti:displayForPageEditModes modes="EDIT">

@@ -126,7 +126,7 @@
         <%-- BUTTONS --%>
         <cti:displayForPageEditModes modes="EDIT,CREATE">
             <br>
-            <tags:slowInput2 myFormId="updateForm" key="save" />
+            <tags:slowInput2 formId="updateForm" key="save" />
             
             <cti:displayForPageEditModes modes="EDIT">
                 <input type="button" class="formSubmit" onclick="showDeletePopup()" value="<cti:msg2 key="yukon.web.components.slowInput.delete.label"/>"/>

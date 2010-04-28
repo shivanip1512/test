@@ -105,13 +105,13 @@
 	            
 	            <cti:displayForPageEditModes modes="CREATE">
 	            	<br>
-	                <tags:slowInput2 myFormId="updateForm" key="create" />
+	                <tags:slowInput2 formId="updateForm" key="create"/>
 	            </cti:displayForPageEditModes>
 
                 <cti:displayForPageEditModes modes="EDIT">
                     <br>
-                    <tags:slowInput2 myFormId="updateForm" key="save" />
-                    <tags:slowInput2 myFormId="deleteForm" key="delete" />
+                    <tags:slowInput2 formId="updateForm" key="save"/>
+                    <tags:slowInput2 formId="deleteForm" key="delete"/>
                 </cti:displayForPageEditModes>
 
 	            

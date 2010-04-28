@@ -37,10 +37,10 @@
                 <br>
 
                 <cti:displayForPageEditModes modes="EDIT">
-                    <tags:slowInput2 myFormId="updateForm" key="save"/>
-                    <tags:slowInput2 myFormId="deleteForm" key="delete"/>
+                    <tags:slowInput2 formId="updateForm" key="save"/>
+                    <tags:slowInput2 formId="deleteForm" key="delete"/>
                 </cti:displayForPageEditModes>
-                <tags:slowInput2 myFormId="cancelForm" key="cancel"/>
+                <tags:slowInput2 formId="cancelForm" key="cancel"/>
                         
             </tags:formElementContainer>
         </td>
