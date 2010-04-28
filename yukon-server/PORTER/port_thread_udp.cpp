@@ -663,11 +663,9 @@ void UdpPortHandler::handleGpuffPacket(packet *&p)
             {
                 updateDeviceIpAndPort(*dr, *p);
 
-                addInboundWork(dr, p);
-
                 traceInbound(p->ip, p->port, 0, p->data, p->len);
 
-                p = 0;
+                addInboundWork(dr, p);
             }
         }
         else
