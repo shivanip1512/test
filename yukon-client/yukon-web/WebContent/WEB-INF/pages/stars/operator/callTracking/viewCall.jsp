@@ -12,7 +12,7 @@
 		var combineDateAndTimeFieldsOnSubmit = function() {
 			
 		    combineDateAndTimeFields('dateTaken');
-		    return false;
+		    return true;
 		}
 
 	</script>
