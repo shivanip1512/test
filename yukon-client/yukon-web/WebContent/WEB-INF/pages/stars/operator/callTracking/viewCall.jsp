@@ -9,9 +9,10 @@
 
 	<script type="text/javascript">
 
-		submitForm = function() {
+		var combineDateAndTimeFieldsOnSubmit = function() {
+			
 		    combineDateAndTimeFields('dateTaken');
-		    return true;
+		    return false;
 		}
 
 	</script>
@@ -56,7 +57,7 @@
 		<br>
 		
 		<%-- buttons --%>
-		<tags:slowInput2 formId="callReportUpdateForm" key="save"/>
+		<tags:slowInput2 formId="callReportUpdateForm" key="save" onsubmit="combineDateAndTimeFieldsOnSubmit"/>
 		<tags:slowInput2 formId="viewAllForm" key="cancel"/>
 		
 	</form:form>
