@@ -146,18 +146,18 @@ inline RWvistream& operator>>(RWvistream &strm, bool& b)
 
 /* --Overload to put Vectors on stream for saveguts in capcontrol. used when Replacing RWOrdered */
 template <class T> 
-RWvostream& operator<< ( RWvostream& strm, std::vector<T> v )
+RWvostream& operator<< ( RWvostream& strm, const std::vector<T> &v )
 {
-    std::vector<T>::iterator iter;
+    std::vector<T>::const_iterator iter;
     strm << v.size();
     for(iter = v.begin();iter != v.end();iter++)
         strm << *iter;
     return strm;
 }
 template <class T> 
-RWvostream& operator<< ( RWvostream& strm, std::vector<T>* v )
+RWvostream& operator<< ( RWvostream& strm, const std::vector<T>* v )
 {
-    std::vector<T>::iterator iter;
+    std::vector<T>::const_iterator iter;
     strm << v->size();
     for(iter = v->begin();iter != v->end();iter++)
         strm << *iter;
