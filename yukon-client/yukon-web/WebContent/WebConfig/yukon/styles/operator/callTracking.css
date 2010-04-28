@@ -5,6 +5,10 @@ table.callListTable th.removeCol {
 	width:100px;
 }
 
+table.callListTable .description {
+	padding-left:10px;
+}
+
 table.callListTable td.removeCol {
 	text-align:center;
 }

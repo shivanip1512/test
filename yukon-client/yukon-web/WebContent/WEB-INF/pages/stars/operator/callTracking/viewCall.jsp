@@ -30,7 +30,14 @@
 			
 				<form:hidden path="callId"/>
 			
-				<tags:inputNameValue nameKey=".callNumber" path="callNumber"/>
+				<c:choose>
+					<c:when test="${shouldAutoGenerateCallNumber}">
+						<form:hidden path="callNumber"/>
+					</c:when>
+					<c:otherwise>
+						<tags:inputNameValue nameKey=".callNumber" path="callNumber"/>
+					</c:otherwise>
+				</c:choose>
 			
 				<tags:nameValue2 nameKey=".date">
 					<tags:dateTimeInput path="dateTaken" inline="true" fieldValue="${callReport.dateTaken}"/>

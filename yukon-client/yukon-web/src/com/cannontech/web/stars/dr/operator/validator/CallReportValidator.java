@@ -11,6 +11,7 @@ public class CallReportValidator extends SimpleValidator<CallReport> {
 	
 	private CallReportDao callReportDao;
 	private int energyCompanyId;
+	private boolean hasDuplicateCallNumberError = false;
 
 	public CallReportValidator(){
     	super(CallReport.class);
@@ -35,6 +36,13 @@ public class CallReportValidator extends SimpleValidator<CallReport> {
         Integer foundCallId = callReportDao.findCallIdByCallNumber(callReport.getCallNumber(), energyCompanyId);
         if (foundCallId != null && (callReport.getCallId() == null || foundCallId.intValue() != callReport.getCallId())) {
         	errors.rejectValue("callNumber", "callNumberExists");
+        	hasDuplicateCallNumberError = true;
+        } else {
+        	hasDuplicateCallNumberError = false;
         }
     }
+	
+	public boolean isHasDuplicateCallNumberError() {
+		return hasDuplicateCallNumberError;
+	}
 }

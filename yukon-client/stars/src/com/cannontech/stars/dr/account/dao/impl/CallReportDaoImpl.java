@@ -55,6 +55,7 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
     	sql.append("SELECT crb.*");
     	sql.append("FROM CallReportBase crb");
     	sql.append("WHERE crb.AccountId").eq(accountId);
+    	sql.append("ORDER BY crb.DateTaken DESC");
     	
     	return yukonJdbcTemplate.query(sql, rowAndFieldMapper);
     }
