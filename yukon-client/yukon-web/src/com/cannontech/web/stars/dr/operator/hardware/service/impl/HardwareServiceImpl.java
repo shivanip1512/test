@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,22 +108,22 @@ public class HardwareServiceImpl implements HardwareService {
         hardwareDto.setVoltageEntryId(liteInventoryBase.getVoltageID());
         
         /* For some reason some (not real) dates were saved with a time of 19:00 instead of 18:00. */
-        DateTime beginningOfJavaTime = new DateTime(0).plusDays(1);
-        DateTime installDT = new DateTime(liteInventoryBase.getInstallDate());
+        Instant beginningOfJavaTime = new Instant(0).plus(Duration.standardDays(1));
+        Instant installDT = new Instant(liteInventoryBase.getInstallDate());
         if(installDT.isAfter(beginningOfJavaTime)){
             hardwareDto.setFieldInstallDate(installDT.toDate());
         } else {
             hardwareDto.setFieldInstallDate(null);
         }
         
-        DateTime receiveDT = new DateTime(liteInventoryBase.getReceiveDate());
+        Instant receiveDT = new Instant(liteInventoryBase.getReceiveDate());
         if(receiveDT.isAfter(beginningOfJavaTime)){
             hardwareDto.setFieldReceiveDate(receiveDT.toDate());
         } else {
             hardwareDto.setFieldReceiveDate(null);
         }
         
-        DateTime removeDT = new DateTime(liteInventoryBase.getRemoveDate());
+        Instant removeDT = new Instant(liteInventoryBase.getRemoveDate());
         if(removeDT.isAfter(beginningOfJavaTime)){
             hardwareDto.setFieldRemoveDate(removeDT.toDate());
         } else {
@@ -516,7 +517,7 @@ public class HardwareServiceImpl implements HardwareService {
         }
         
         liteInventoryBase.setAccountID(accountId);
-        liteInventoryBase.setRemoveDate(new DateTime(0).toDate().getTime());
+        liteInventoryBase.setRemoveDate(new Instant(0).toDate().getTime());
         liteInventoryBase.setInstallDate(new Date().getTime());
         
         starsInventoryBaseService.addDeviceToAccount(liteInventoryBase, energyCompany, user, false);
