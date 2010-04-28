@@ -23,8 +23,9 @@ public:
 
     static bool    addressAvailable(Comms &comms);
     static error_t peekAddress     (Comms &comms, unsigned &address);
+    static bool validateCommand(SocketComms &socket_interface);
 
-    bool handleRequest(Comms &comms, PortLogger &logger);
+    virtual bool handleRequest(Comms &comms, PortLogger &logger);
 
     template<class T>
     class holder

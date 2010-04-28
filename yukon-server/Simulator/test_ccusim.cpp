@@ -18,6 +18,7 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "CCU711.h"
+#include "Ccu721.h"
 #include "yukon.h"
 #include "rwutil.h"
 #include "numstr.h"
@@ -29,96 +30,6 @@
 using boost::unit_test_framework::test_suite;
 using namespace std;
 using namespace Cti::Simulator;
-
-struct memoryAccess_info
-{
-    memoryAccess_info() :
-        memoryRead(true),
-        type(0),
-        startAddress(0),
-        numBytes(0)
-    { };
-
-    bool memoryRead;
-    int type;
-    unsigned startAddress;
-    unsigned numBytes;
-    bytes data;
-
-};
-
-error_t extractRequestInfo_WriteMem(const bytes &command_data, memoryAccess_info &info)
-{
-    if( command_data.empty() )
-    {
-        return "No data in write memory request";
-    }
-
-    int index = 0, memType;
-
-    memType = command_data[index];
-    if( memType )
-    {
-        return error_t("Invalid memory type specified in write memory request.", memType);
-    }
-
-    info.memoryRead = false;
-    info.type = memType;
-    info.startAddress = (command_data[1] << 8) | command_data[index + 2];
-    info.numBytes = command_data[index + 3];
-
-    info.data.assign(command_data.begin() + 4, command_data.end());
-
-    if( info.data.size() != info.numBytes )
-    {
-        return "Amount of data to write does not match specified size.";
-    }
-
-    return error_t::success;
-}
-
-BOOST_AUTO_TEST_CASE( test_JORDAN )
-{
-    memoryAccess_info info, known;
-
-    bytes command_data;
-
-    command_data.push_back(0x00);
-    command_data.push_back(0x34);
-    command_data.push_back(0x56);
-    command_data.push_back(0x06);
-    command_data.push_back(0x04);
-    command_data.push_back(0x08);
-    command_data.push_back(0x0f);
-    command_data.push_back(0x10);
-    command_data.push_back(0x17);
-    command_data.push_back(0x2a);
-
-    known.memoryRead = false;
-    known.type = 0;
-    known.startAddress = 13398;
-    known.numBytes = 6;
-    known.data.push_back(4);
-    known.data.push_back(8);
-    known.data.push_back(15);
-    known.data.push_back(16);
-    known.data.push_back(23);
-    known.data.push_back(42);
-
-    extractRequestInfo_WriteMem(command_data, info);
-
-    BOOST_CHECK_EQUAL(known.memoryRead, info.memoryRead);
-    BOOST_CHECK_EQUAL(known.type, info.type);
-    BOOST_CHECK_EQUAL(known.startAddress, info.startAddress);
-    BOOST_CHECK_EQUAL(known.numBytes, info.numBytes);
-    BOOST_CHECK_EQUAL(known.data[0], info.data[0]);
-    BOOST_CHECK_EQUAL(known.data[1], info.data[1]);
-    BOOST_CHECK_EQUAL(known.data[2], info.data[2]);
-    BOOST_CHECK_EQUAL(known.data[3], info.data[3]);
-    BOOST_CHECK_EQUAL(known.data[4], info.data[4]);
-    BOOST_CHECK_EQUAL(known.data[5], info.data[5]);
-
-}
 
 BOOST_AUTO_TEST_CASE( test_EmetconWords_extract_bits )
 {
@@ -425,4 +336,46 @@ BOOST_AUTO_TEST_CASE( test_Extract_Queue_Entry_721 )
     BOOST_CHECK_EQUAL(cword2.bch,     entry.request.c_words[1].bch);
 }
 
+BOOST_AUTO_TEST_CASE( test_WriteMem_extract )
+{
+    memoryAccess_info info, known;
+
+    bytes command_data;
+
+    command_data.push_back(0x00);
+    command_data.push_back(0x34);
+    command_data.push_back(0x56);
+    command_data.push_back(0x06);
+    command_data.push_back(0x04);
+    command_data.push_back(0x08);
+    command_data.push_back(0x0f);
+    command_data.push_back(0x10);
+    command_data.push_back(0x17);
+    command_data.push_back(0x2a);
+
+    known.memoryRead = false;
+    known.type = 0;
+    known.startAddress = 13398;
+    known.numBytes = 6;
+    known.data.push_back(4);
+    known.data.push_back(8);
+    known.data.push_back(15);
+    known.data.push_back(16);
+    known.data.push_back(23);
+    known.data.push_back(42);
+
+    extractRequestInfo_WriteMem(command_data, info);
+
+    BOOST_CHECK_EQUAL(known.memoryRead, info.memoryRead);
+    BOOST_CHECK_EQUAL(known.type, info.type);
+    BOOST_CHECK_EQUAL(known.startAddress, info.startAddress);
+    BOOST_CHECK_EQUAL(known.numBytes, info.numBytes);
+    BOOST_CHECK_EQUAL(known.data[0], info.data[0]);
+    BOOST_CHECK_EQUAL(known.data[1], info.data[1]);
+    BOOST_CHECK_EQUAL(known.data[2], info.data[2]);
+    BOOST_CHECK_EQUAL(known.data[3], info.data[3]);
+    BOOST_CHECK_EQUAL(known.data[4], info.data[4]);
+    BOOST_CHECK_EQUAL(known.data[5], info.data[5]);
+
+}
 */

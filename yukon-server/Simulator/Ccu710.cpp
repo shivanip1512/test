@@ -656,6 +656,10 @@ unsigned char Ccu710::makeReplyControl(unsigned address, ReplyControls reply_con
     }
 }
 
+bool Ccu710::validateCommand(SocketComms &socket_interface)
+{
+    return true;
+}
 
 }
 }

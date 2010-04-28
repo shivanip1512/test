@@ -8,6 +8,7 @@
 
 #include "CommInterface.h"
 #include "portlogger.h"
+#include "CcuIDLC.h"
 
 #include <boost/scoped_ptr.hpp>
 
@@ -17,21 +18,14 @@
 namespace Cti {
 namespace Simulator {
 
-class Ccu711 : public PlcTransmitter
+class Ccu711 : public CcuIDLC
 {
 public:
 
     Ccu711(unsigned char address, int strategy);
 
-    static bool    addressAvailable(Comms &comms);
-    static error_t peekAddress     (Comms &comms, unsigned &address);
-
-    enum
-    {
-        Hdlc_FramingFlag = 0x7e
-    };
-
-    bool handleRequest(Comms &comms, PortLogger &logger);
+    virtual bool handleRequest(Comms &comms, PortLogger &logger);
+    static bool validateCommand(SocketComms &socket_interface);
 
 private:
 

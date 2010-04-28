@@ -51,7 +51,6 @@ bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
-template<class CcuType>
 void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger);
 template<class CcuType>
 bool validRequest(SocketComms &socket_interface);
@@ -274,30 +273,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
     {
         try
         {
-            //  This cheat is possible because we know that the 711 has the HDLC flag at the start.
-            //
-            //  Ideally, before we commit to a type, we should keep looping through the types until
-            //    one of them recognizes a valid request on the socket.
-            //  That would require anonymous request parsing, which sounds a bit unwieldly compared
-            //    to a simple framing flag check.
-            //  Life will get more interesting once we have to deal with CCU-721s on the same
-            //    port as CCU-711s, though.
-            if( peek_buf[0] == Ccu711::Hdlc_FramingFlag )
-            {
-                // We need to decide whether or not the request fits for a 711 or a 721.
-                if( validRequest<Ccu721>(socket_interface) )
-                {
-                    handleRequests<Ccu721>(socket_interface, strategy, logger);
-                }
-                else
-                {    
-                    handleRequests<Ccu711>(socket_interface, strategy, logger);
-                }
-            }
-            else
-            {
-                handleRequests<Ccu710>(socket_interface, strategy, logger);
-            }
+            handleRequests(socket_interface, strategy, logger);
         }
         catch(...)
         {
@@ -306,43 +282,128 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
     }
 }
 
-
-template<class CcuType>
 void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger)
 {
-    std::map<int, CcuType *> ccu_list;
+    std::map<int, PlcTransmitter *> ccu_list;
+    bytes peek_buf;
+    error_t error;
+    unsigned ccu_address;
 
     while( !gQuit )
     {
-        if( !CcuType::addressAvailable(socket_interface) )
+        socket_interface.peek(byte_appender(peek_buf), 2);
+
+        if( peek_buf[0] == CcuIDLC::Hdlc_FramingFlag )
         {
-            Sleep(500);
-            continue;
+            // Device is either a 721 or a 711.
+            if( !CcuIDLC::addressAvailable(socket_interface) )
+            {
+                Sleep(500);
+                continue;
+            }
+
+            if( error = CcuIDLC::peekAddress(socket_interface, ccu_address) )
+            {
+                logger.log("Invalid message received, clearing socket / " + error);
+    
+                socket_interface.clear();
+            }
+
+            if( ccu_list.find(ccu_address) == ccu_list.end() )
+            {
+                stringstream ss;
+                ss << ccu_address;
+                // Device is either a 711 or 721, but isn't yet in the ccu_list.
+                // We need to find from the database (if possible) what type of device
+                // this is and create it, then add it to the map.
+                const string sql_Ccu721 =   "SELECT DISTINCT Y.TYPE "
+                                            "FROM YukonPAObject Y, DEVICE V, DeviceAddress A "
+                                            "WHERE A.DeviceID = V.DEVICEID AND "
+                                            "V.DEVICEID = Y.PAObjectID AND "
+                                            "A.SlaveAddress = " + ss.str();
+
+                const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
+                                            "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, DeviceAddress A "
+                                            "WHERE D.DEVICEID = V.DEVICEID AND "
+                                            "V.DEVICEID = Y.PAObjectID AND "
+                                            "D.ADDRESS = " + ss.str();
+    
+                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+                RWDBConnection conn = getConnection();
+            
+                RWDBReader  rdr = ExecuteQuery(conn, sql_Ccu721);
+            
+                if( rdr() )
+                {
+                    // The database query result wasn't empty, so the device is a 721.
+                    ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                }
+                else
+                {
+                    rdr = ExecuteQuery(conn, sql_Ccu711);
+
+                    if( rdr() )
+                    {
+                        string str;
+                        rdr["TYPE"] >> str;
+                        if( strcmp(str.c_str(), "CCU-711") == 0 )
+                        {
+                            ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                        }
+                    }
+                    else
+                    {
+                        // There was a problem in the connection to the database, or the device isn't
+                        // in the database. Determine which device to use based on the validateCommand
+                        // function.
+                        if( validRequest<Ccu721>(socket_interface) )
+                        {
+                            ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                        }
+                        else 
+                        {
+                            ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                        }
+                    }
+                }
+            }
+
+            if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
+            {
+                logger.log("Error while processing message, clearing socket");
+    
+                socket_interface.clear();
+            }
         }
-
-        unsigned ccu_address;
-
-        error_t error;
-
-        if( error = CcuType::peekAddress(socket_interface, ccu_address) )
+        else
         {
-            logger.log("Invalid message received, clearing socket / " + error);
+            // Device is a 710.
+            if( !Ccu710::addressAvailable(socket_interface) )
+            {
+                Sleep(500);
+                continue;
+            }
 
-            socket_interface.clear();
-        }
+            if( error = Ccu710::peekAddress(socket_interface, ccu_address) )
+            {
+                logger.log("Invalid message received, clearing socket / " + error);
+    
+                socket_interface.clear();
+            }
 
-        if( ccu_list.find(ccu_address) == ccu_list.end() )
-        {
-            logger.log("New CCU address received", ccu_address);
+            if( ccu_list.find(ccu_address) == ccu_list.end() )
+            {
+                logger.log("New CCU address received", ccu_address);
 
-            ccu_list.insert(make_pair(ccu_address, new CcuType(ccu_address, strategy)));
-        }
+                ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
+            }
 
-        if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
-        {
-            logger.log("Error while processing message, clearing socket");
-
-            socket_interface.clear();
+            if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
+            {
+                logger.log("Error while processing message, clearing socket");
+    
+                socket_interface.clear();
+            }
         }
     }
 }

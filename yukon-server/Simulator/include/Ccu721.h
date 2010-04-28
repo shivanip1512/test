@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CcuIDLC.h"
 #include "types.h"
 #include "ctitime.h"
 #include "fifo_multiset.h"
@@ -19,25 +20,24 @@
 namespace Cti {
 namespace Simulator {
 
-class Ccu721 : public PlcTransmitter
+class Ccu721 : public CcuIDLC
 {
 public:
 
     Ccu721(unsigned char address, int strategy);
 
-    static bool    addressAvailable(Comms &comms);
-    static error_t peekAddress     (Comms &comms, unsigned &address);
-
-    enum 
-    {
-        command_byte     = 5, 
-        Hdlc_FramingFlag = 0x7e
-    };
-
-    bool handleRequest(Comms &comms, PortLogger &logger);
+    virtual bool handleRequest(Comms &comms, PortLogger &logger);
     static bool validateCommand(SocketComms &socket_interface);
 
 private:
+
+    int _address;
+    int _strategy;
+    int _expected_sequence;
+    unsigned _next_seq;
+    bool _bufferFrozen;
+
+    CtiTime _timesynced_at, _timesynced_to;
 
     enum IDLCSizes
     {
@@ -52,24 +52,24 @@ private:
 
     enum KlondikeCommandCodes
     {
-        Klondike_Dtran =           0x01,
-        Klondike_CheckStatus =     0x11,
-        Klondike_ClrBuffers =      0x12,
-        Klondike_LoadBuffer =      0x13,
-        Klondike_FreezeBuffer =    0x14,
-        Klondike_ThawBuffer =      0x15,
-        Klondike_SpyBuffer =       0x16,
-        Klondike_ReadBuffer =      0x17,
-        Klondike_TimeSync =        0x21,
-        Klondike_WriteRtTable =    0x31,
-        Klondike_ReadRtTable =     0x32,
-        Klondike_ReadRtTableOpen = 0x33,
-        Klondike_ClrRtTable =      0x34,
-        Klondike_ReadMem =         0x41,
-        Klondike_WriteMem =        0x42,
-        Klondike_AckNoData =       0x80,
-        Klondike_AckData =         0x81,
-        Klondike_NAK =             0xc1,
+        Klondike_Dtran =              0x01,
+        Klondike_CheckStatus =        0x11,
+        Klondike_ClearBuffers =       0x12,
+        Klondike_LoadBuffer =         0x13,
+        Klondike_FreezeBuffer =       0x14,
+        Klondike_ThawBuffer =         0x15,
+        Klondike_SpyBuffer =          0x16,
+        Klondike_ReadBuffer =         0x17,
+        Klondike_TimeSync =           0x21,
+        Klondike_WriteRouteTable =    0x31,
+        Klondike_ReadRouteTable =     0x32,
+        Klondike_ReadRouteTableOpen = 0x33,
+        Klondike_ClearRouteTable =    0x34,
+        Klondike_ReadMemory =         0x41,
+        Klondike_WriteMemory =        0x42,
+        Klondike_AckNoData =          0x80,
+        Klondike_AckData =            0x81,
+        Klondike_NAK =                0xc1,
 
         Klondike_CommandInvalid =  0xff
     };
@@ -132,12 +132,13 @@ private:
                 bus(0),
                 repeater_fixed(0),
                 repeater_variable(0),
-                repeater_count(0),
                 function_code(0),
                 length(0),
                 write(false),
                 function(false),
-                broadcast(false)
+                broadcast(false),
+                dlcType(0),
+                stagesToFollow(0)
             {};
     
             CtiTime arrival;
@@ -148,7 +149,6 @@ private:
             unsigned bus;
             unsigned repeater_fixed;
             unsigned repeater_variable;
-            unsigned repeater_count;
             unsigned function_code;
             unsigned length;
             unsigned stagesToFollow;
@@ -166,8 +166,6 @@ private:
             vector<EmetconWordC> c_words;
     
         } request;
-    
-        unsigned xmit_duration;
     
         struct result_info
         {
@@ -324,6 +322,7 @@ private:
 
         struct dtran_info
         {
+            queue_entry data;
             bytes message;
 
         } dtran;
@@ -349,14 +348,20 @@ private:
 
         struct memory_info
         {
+            unsigned startAddress;
+            unsigned numBytes;
+            int type;
             bytes data;
 
         } memoryAccess;
 
-        struct routeTable_info
-        {
-            std::vector<routeTable_entry> entries;
-        };
+        // For future use. When the Read Routing Table command is actually implemented,
+        // this will be used to store the entries that are being requested.
+        //  struct routeTable_info
+        //  {
+        //      std::vector<routeTable_entry> entries;
+        //
+        //  } routeTable;
 
         struct loadBuffer_info
         {
@@ -414,28 +419,15 @@ private:
         status_info() :
             status_bytes(0),
             completed(0),
-            available(0),
-            replyBytes(0)
+            available(0)
         { };
 
         unsigned short status_bytes;
 
         unsigned completed;
         unsigned available;
-        unsigned replyBytes; // Necessary?
 
     } _status;
-
-    int _address;
-    int _strategy;
-    int _expected_sequence;
-    unsigned _next_seq;
-    bool _bufferFrozen;
-
-    static const CtiTime DawnOfTime;
-    static const CtiTime EndOfTime;
-
-    CtiTime _timesynced_at, _timesynced_to;
 
     void processQueue(PortLogger &logger);
 
@@ -468,6 +460,7 @@ private:
 
     error_t processRequest        (const idlc_request &request, idlc_reply &reply);
     error_t processGeneralRequest (const idlc_request &request, idlc_reply &reply);
+    error_t processDtranRequest   (const idlc_request &request, idlc_reply &reply);
 
     string describeReply         (const idlc_reply   &reply)      const;
     string describeGeneralReply  (const reply_info   &reply_info) const;

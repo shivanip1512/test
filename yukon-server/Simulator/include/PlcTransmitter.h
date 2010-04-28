@@ -1,5 +1,8 @@
 #pragma once
 
+#include "CommInterface.h"
+#include "portlogger.h"
+
 namespace Cti {
 namespace Simulator {
 
@@ -18,6 +21,8 @@ protected:
 
     static unsigned dlc_time(unsigned bits);
     static unsigned dlc_time(unsigned bits_out, unsigned bits_in);
+public:
+    virtual bool handleRequest   (Comms & comms, PortLogger &logger) = 0;
 };
 
 }

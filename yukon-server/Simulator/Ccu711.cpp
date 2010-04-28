@@ -29,49 +29,6 @@ Ccu711::Ccu711(unsigned char address, int strategy) :
 {
 }
 
-bool Ccu711::addressAvailable(Comms &comms)
-{
-    bytes address_buf;
-    byte_appender address_appender = byte_appender(address_buf);
-
-    unsigned long bytes_available = 0;
-
-    //  read until we find the HDLC framing flag OR there's nothing left
-    while( comms.peek(address_appender, 1) && address_buf[0] != Hdlc_FramingFlag )
-    {
-        comms.read(address_appender, 1);
-        address_buf.clear();
-    }
-
-    return comms.available(2);
-}
-
-
-error_t Ccu711::peekAddress(Comms &comms, unsigned &address)
-{
-    bytes address_buf;
-
-    unsigned long bytes_available = 0;
-
-    if( !comms.peek(byte_appender(address_buf), 2) )
-    {
-        return "Timeout reading address";
-    }
-
-    //  second byte should be an address, not the IDLC framing flag...
-    //    however, the framing flag would compute to an address of 63, which is valid,
-    //    so this check will give us trouble for that address
-    if( address_buf[0] != Hdlc_FramingFlag || address_buf[1] == Hdlc_FramingFlag )
-    {
-        return "HDLC framing error";
-    }
-
-    address = address_buf[1] >> 1;
-
-    return error_t::success;
-}
-
-
 bool Ccu711::handleRequest(Comms &comms, PortLogger &logger)
 {
     idlc_request request;
@@ -1513,6 +1470,59 @@ error_t Ccu711::writeIdlcCrc(const bytes &message, byte_appender &out_itr) const
     *out_itr++ = LOBYTE(crc);
 
     return error_t::success;
+}
+
+bool Ccu711::validateCommand(SocketComms &socket_interface)
+{
+    bytes peek_buf;
+    socket_interface.peek(byte_appender(peek_buf), 6);
+    unsigned char command = peek_buf[5];
+    unsigned numEntries = 0, numBytes = 0;
+
+    switch( command )
+    {
+        case Command_DTran:
+            if( peek_buf[3] < 3 )
+            {
+                return false;
+            }
+            return true;
+        case Command_Actin:
+            if (peek_buf[3] < 3 )
+            {
+                return false;
+            }
+            return true;
+        case Command_WSets:
+            if (peek_buf[3] < 3 )
+            {
+                return false;
+            }
+            return true;
+        case Command_LGrpQ:
+            if (peek_buf[3] < 3 )
+            {
+                return false;
+            }
+            return true;
+        case Command_RColQ:
+            if (peek_buf[3] < 3 )
+            {
+                return false;
+            }
+            return true;
+        case Command_Xtime:
+            if (peek_buf[3] < 3 )
+            {
+                return false;
+            }
+            return true;
+        default:
+        {
+            // Command is either non-existent or doesn't make sense.
+            return false;
+        }
+    }
 }
 
 
