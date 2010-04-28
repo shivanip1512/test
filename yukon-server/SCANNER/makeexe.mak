@@ -47,6 +47,7 @@ mgr_device_scannable.obj \
 
 SCANNERLIBS=\
 advapi32.lib \
+winmm.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib \

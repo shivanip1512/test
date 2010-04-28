@@ -67,6 +67,8 @@
 #include "dllyukon.h"
 #include "thread_monitor.h"
 
+#include "mmsystem.h"
+
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
 #define DLC_LP_SCAN     2
@@ -465,6 +467,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
     {
+        DWORD loop_start_time = timeGetTime();
+
         if(pointID!=0)
         {
             CtiThreadMonitor::State next;
@@ -698,6 +702,14 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
             // I haven't heard from porter in a long long time...  Let's make sure he's init ok.
             PorterNexus.CTINexusClose();
+        }
+
+        DWORD loop_elapsed_time = timeGetTime() - loop_start_time;
+
+        //  don't loop any faster than twice per second
+        if( loop_elapsed_time < 500 )
+        {
+            Sleep(500 - loop_elapsed_time);
         }
     }  /* and do it all again */
 
