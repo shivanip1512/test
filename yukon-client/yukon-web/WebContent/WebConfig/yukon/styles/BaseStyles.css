@@ -67,7 +67,6 @@ BR:before       { content: "\A" }
 
 ABBR, ACRONYM   { font-variant: small-caps; letter-spacing: 0.1em }
 A[href]         { text-decoration: underline }
-:focus          { outline: thin dotted invert }
 
 
 /* Begin bidirectionality settings (do not change) */
