@@ -39,5 +39,6 @@
     <entry key="yukon.web.modules.operator.contact.notificationCreated">Notification Created</entry>
     <entry key="yukon.web.modules.operator.contact.error.noNotificationMethod">Notification method has not been chosen.</entry>
     <entry key="yukon.web.modules.operator.contact.error.firstNameRequired">First Name Required.</entry>
+    <entry key="yukon.web.modules.operator.contact.error.notificationValueBlank">Notification Value Required</entry>
     
 </properties>

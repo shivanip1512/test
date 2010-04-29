@@ -36,6 +36,10 @@ public class ContactNotificationDtoValidator extends SimpleValidator<ContactNoti
 			}
 		}
 		
+		if (contactNotificationType != null && StringUtils.isBlank(notificationValue)) {
+			errors.rejectValue("notificationValue", "yukon.web.modules.operator.contact.error.notificationValueBlank");
+		}
+		
 		YukonValidationUtils.checkExceedsMaxLength(errors, "notificationValue", notificationValue, MAX_NOTIFICATION_LENGTH);
 	}
 	
