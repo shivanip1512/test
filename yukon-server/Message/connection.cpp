@@ -319,39 +319,49 @@ void CtiConnection::InThread()
 
                 NowTime = NowTime.now();
 
-                // If we fail, we need to take care of business. If c exists, it must be deleted.
-                // If c does not exist, we are likely trying to read bad data off the stream.
-                // fail() means it should be recoverable. Do what we need and try again.
-                if( _exchange->In().fail() )
+                try
                 {
-                    _exchange->In().clear(); // resets all flags
-                    failCount++;
-
-                    string whoStr = who();
-                    if( c != rwnil )
+                    // If we fail, we need to take care of business. If c exists, it must be deleted.
+                    // If c does not exist, we are likely trying to read bad data off the stream.
+                    // fail() means it should be recoverable. Do what we need and try again.
+                    if( _exchange->In().fail() )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << NowTime << " Message fail indicator received for " << whoStr << endl;
-                        }
-                        delete c;
-                        c = rwnil;
-                    }
-
-                    // This is expected to let RW read bytes off one at a time with In >> c.
-                    // After FailCountLimit bytes we give up.
-                    if( failCount > FailCountLimit )
-                    {
+                        _exchange->In().clear(); // resets all flags
+                        failCount++;
+    
                         string whoStr = who();
+                        if( c != rwnil )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Fail limit of " << FailCountLimit << " reached " << whoStr <<", shutting down the InThread." << endl;
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << NowTime << " Message fail indicator received for " << whoStr << endl;
+                            }
+                            delete c;
+                            c = rwnil;
                         }
-
-                        _bQuit = TRUE;
+    
+                        // This is expected to let RW read bytes off one at a time with In >> c.
+                        // After FailCountLimit bytes we give up.
+                        if( failCount > FailCountLimit )
+                        {
+                            string whoStr = who();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Fail limit of " << FailCountLimit << " reached " << whoStr <<", shutting down the InThread." << endl;
+                            }
+    
+                            _bQuit = TRUE;
+                        }
+    
+                        continue; // We deleted the incoming message, no reason to keep going
                     }
-
-                    continue; // We deleted the incoming message, no reason to keep going
+                }
+                catch( RWxmsg )
+                {
+                    // This is here because exchange->In() throws and when it does, we need to
+                    // set ourselves invalid and reconnect later.
+                    _valid = false;
+                    continue;
                 }
 
                 if( c == rwnil )                 // What happened here? No exception, but no message either....
