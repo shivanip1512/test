@@ -30,6 +30,7 @@
 #include "mc_server.h"
 #include "numstr.h"
 #include "thread_monitor.h"
+#include "msg_cmd.h"
 #include "msg_pdata.h"
 #include "msg_reg.h"
 #include "connection.h"
@@ -135,6 +136,23 @@ void CtiMCServer::run()
                     }
 
                     continue;
+                }
+
+                while( (msg =VanGoghConnection.ReadConnQue(0)) != NULL )
+                {
+                    if( msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg)->getOperation() == CtiCommandMsg::AreYouThere )
+                    {
+                        VanGoghConnection.WriteConnQue(msg->replicateMessage());
+
+                        if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - MCServer Replied to Are You There message." << endl;
+                        }
+                    }
+
+                    delete msg;
+                    msg = NULL;
                 }
 
                 // Release any outstanding interpreters we can
