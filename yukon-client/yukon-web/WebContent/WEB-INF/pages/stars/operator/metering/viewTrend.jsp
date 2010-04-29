@@ -73,9 +73,10 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 				
 				<c:choose>
 				
-					<c:when test="${!hasTrends}">
+					<c:when test="${!hasTrends && createTrendAccess}">
 						<cti:msg2 key=".noTrends" htmlEscape="false"/>
 					</c:when>
+					
 					
 					<c:otherwise>
 					

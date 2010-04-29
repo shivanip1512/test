@@ -45,8 +45,8 @@ public class OperatorMeteringController {
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 		
 		// can't view any graphs, this page is pointless. just stay on the selectTrends page
-		boolean canViewTrend = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, userContext.getYukonUser());
-		if (!canViewTrend) {
+		boolean meteringIntervalDataAccess = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA, userContext.getYukonUser());
+		if (!meteringIntervalDataAccess) {
 			return "redirect:selectTrends";
 		}
 		
@@ -60,8 +60,8 @@ public class OperatorMeteringController {
 		List<CustomerGraph> customerGraphs = customerGraphDao.getByCustomerId(customerAccount.getCustomerId());
 		
 		// no trends, go to the select trends page (if access allows)
-		boolean createAccess = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE, userContext.getYukonUser());
-		if (customerGraphs.size() <= 0 && createAccess) {
+		boolean createTrendAccess = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_METERING_CREATE, userContext.getYukonUser());
+		if (customerGraphs.size() <= 0 && createTrendAccess) {
 			return "redirect:selectTrends";
 		}
 		
@@ -71,6 +71,9 @@ public class OperatorMeteringController {
 			customerGraphWrappers.add(new CustomerGraphWrapper(customerGraph, graphName));
 		}
 		modelMap.addAttribute("customerGraphWrappers", customerGraphWrappers);
+		
+		modelMap.addAttribute("meteringIntervalDataAccess", meteringIntervalDataAccess);
+		modelMap.addAttribute("createTrendAccess", createTrendAccess);
 		
 		return "operator/metering/viewTrend.jsp";
 	}
