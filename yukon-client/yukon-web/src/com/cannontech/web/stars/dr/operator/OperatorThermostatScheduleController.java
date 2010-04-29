@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -45,12 +45,12 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 
-@CheckRole(YukonRole.CONSUMER_INFO)
+@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT)
 @Controller
 @RequestMapping(value = "/operator/thermostatSchedule/*")
 public class OperatorThermostatScheduleController {

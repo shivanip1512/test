@@ -19,7 +19,7 @@ import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 
-@CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL)
+@CheckRoleProperty({YukonRoleProperty.OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL, YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT})
 @Controller
 @RequestMapping(value = "/operator/thermostatSelect/*")
 public class OperatorThermostatSelectController {
