@@ -50,6 +50,7 @@ function createJSON() {
         <br>
         <br>
 
+        <c:set var="showNextButton" value="false" />
         <form id="form" action="${actionUrl}" method="POST" onsubmit="createJSON();">
             <table class="resultsTable" align="center" width="99%">
                 <tr>
@@ -68,6 +69,7 @@ function createJSON() {
                                     <input id="unused_${inventoryId}" checked="checked" disabled="disabled" type="checkbox"></input>
                                 </c:when>
                                 <c:otherwise>
+                                    <c:set var="showNextButton" value="true" />
                                     <input type="hidden" name="inventoryId" value="${inventoryId}"/>
                                     <input id="check_${inventoryId}" type="checkbox"></input>
                                 </c:otherwise>
@@ -82,7 +84,10 @@ function createJSON() {
 
                             <c:forEach var="program" items="${programsList}">
                                 <c:set var="count" value="${count + 1}"/>
-                                <cti:msg key="${program.displayName}"/><c:if test="${fn:length(programsList) != count}">,</c:if>
+                                <spring:escapeBody htmlEscape="true">
+                                    <cti:msg key="${program.displayName}"/>
+                                </spring:escapeBody>
+                                <c:if test="${fn:length(programsList) != count}">,</c:if>
                             </c:forEach>    
                         </td>
                     </tr>
@@ -102,13 +107,14 @@ function createJSON() {
                 </c:forEach>    
             </table>
             <br>
-            <span style="padding-right: 0.5em;">
-                <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutlist.save'/>"></input>
-            </span>
+            <c:if test="${showNextButton}">
+                <span style="padding-right: 0.5em;">
+                    <input type="submit" value="<cti:msg key='yukon.dr.consumer.optoutlist.save'/>"></input>
+                </span>
+            </c:if>
             <cti:url var="optOutUrl" value="/spring/stars/consumer/optout" />
-            <input type="button"
-                value="<cti:msg key='yukon.dr.consumer.optoutlist.cancel'/>"
-                onclick="javascript:location.href='${optOutUrl}';"></input>
+            <input type="button" value="<cti:msg key='yukon.dr.consumer.optoutlist.cancel'/>"
+                   onclick="javascript:location.href='${optOutUrl}';"></input>
             
             <input type="hidden" name="durationInDays" value="${durationInDays}"></input>
             <input type="hidden" name="startDate" value="${startDate}"></input>

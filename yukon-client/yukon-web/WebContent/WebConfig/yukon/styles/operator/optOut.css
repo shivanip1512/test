@@ -1,0 +1,15 @@
+div.optOutQuestion {
+    padding-bottom: 0.3em;
+    text-align: left;
+    font-weight: bold;
+}
+
+div.optOutAnswer {
+    style="padding-bottom: 0.5em;
+}    
+
+
+table.selectDeviceTable td {
+    vertical-align: top !important;
+    text-align: left;
+}

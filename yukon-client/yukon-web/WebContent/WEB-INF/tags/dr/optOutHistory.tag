@@ -9,7 +9,7 @@
 
 <c:choose>
     <c:when test="${fn:length(previousOptOutList) > 0}">
-        <table id="deviceTable" class="compactResultsTable">
+        <table id="deviceTable" class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <th class="nonwrapping"><i:inline key=".device"/></th>
                 <th><i:inline key=".program"/></th>
@@ -25,7 +25,7 @@
         	        </td>
                     <td valign="top">
                         <c:forEach var="program" items="${optOut.programList}" varStatus="status">
-                            <c:if test="${status.count != 1}">, </c:if>
+                            <c:if test="${status.count != 1}"><br></c:if>
                             <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>  
                         </c:forEach>
                     </td>
@@ -50,6 +50,6 @@
         </table>
     </c:when>
     <c:otherwise>
-        <br><i:inline key=".noPreviousOptOuts"/>
+        <i:inline key=".noPreviousOptOuts"/>
     </c:otherwise>
 </c:choose>

@@ -6,6 +6,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i"%>
 
 <cti:standardPage module="operator" page="optOut.confirm">
+    <cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
 
     <script type="text/javascript">
     function createJSON() {
@@ -50,10 +51,6 @@
 
 
     <tags:formElementContainer nameKey="optOuts">
-        <i:inline key=".description"/>
-            
-        <br><br>
-        
         <form:form id="form" commandName="optOutBackingBean" 
                    action="/spring/stars/operator/program/optOut/update" 
                    method="POST" onsubmit="createJSON();">
@@ -70,7 +67,7 @@
                     <c:set var="index" value="${index + 1}"/>
                     <tr>
                         <td>
-                            <div style="padding-bottom: 0.3em; text-align: left;">${question}</div>
+                            <div class="optOutQuestion">${question}</div>
                             <input type="hidden" id="question_${index}" value="${question}"/>
                             <input type="text" id="answer_${index}" size="80"></input>
                         </td>

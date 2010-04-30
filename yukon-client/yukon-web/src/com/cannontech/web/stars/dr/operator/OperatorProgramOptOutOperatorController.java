@@ -168,7 +168,7 @@ public class OperatorProgramOptOutOperatorController {
             List<MessageSourceResolvable> messages = 
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            return "operator/program/optOut/optOut.jsp";
+            return view(userContext, modelMap, accountInfoFragment);
         } 
 
     	final LocalDate today = new LocalDate();
@@ -180,6 +180,12 @@ public class OperatorProgramOptOutOperatorController {
 
         modelMap.addAttribute("displayableInventories", displayableInventories);
         modelMap.addAttribute("optOutCounts", optOutCounts);
+        
+        List<String> questions = 
+            OptOutControllerHelper.getConfirmQuestions(messageSourceResolver, 
+                                                       userContext,
+                                                       "yukon.dr.operator.optoutconfirm.question.");
+        modelMap.addAttribute("optOutQuestionsExist", !questions.isEmpty());
         
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return "operator/program/optOut/optOutList.jsp";
@@ -219,7 +225,8 @@ public class OperatorProgramOptOutOperatorController {
                           userContext, flashScope, accountInfoFragment,
                           inventoryIds, customerAccount);
 
-            return view(userContext, modelMap, accountInfoFragment);
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
+            return "redirect:/spring/stars/operator/program/optOut";
         }
         
         return confirm(optOutBackingBean, jsonInventoryIds, modelMap, 
@@ -352,9 +359,10 @@ public class OperatorProgramOptOutOperatorController {
             
         }
     }
-    
+
     @RequestMapping(value = "/operator/program/optOut/cancel")
-    public String cancel(Integer eventId, 
+    public String cancel(Integer eventId,
+                          FlashScope flashScope,
                           ModelMap modelMap,
                           YukonUserContext yukonUserContext,
                           AccountInfoFragment accountInfoFragment) throws Exception {
@@ -366,12 +374,17 @@ public class OperatorProgramOptOutOperatorController {
         LiteYukonUser user = yukonUserContext.getYukonUser();
         optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                              "yukon.web.modules.operator.optOut.main.cancelOptOut.successText"));
+        
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "redirect:/spring/stars/operator/program/optOut";
     }
 
     @RequestMapping(value = "/operator/program/optOut/allowAnother")
     public String allowAnother(Integer inventoryId,  
+                                FlashScope flashScope,
                                 ModelMap modelMap,
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
@@ -382,12 +395,17 @@ public class OperatorProgramOptOutOperatorController {
         
         optOutAdditionalDao.addAdditonalOptOuts(inventoryId, customerAccount.getAccountId(), 1);
         
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                               "yukon.web.modules.operator.optOut.main.allowOne.successText"));
+               
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return "redirect:/spring/stars/operator/program/optOut";
     }
     
     @RequestMapping(value = "/operator/program/optOut/repeat")
-    public String repeat(Integer inventoryId, 
+    public String repeat(Integer inventoryId,
+                          FlashScope flashScope,
                           ModelMap modelMap,
                           YukonUserContext yukonUserContext,
                           AccountInfoFragment accountInfoFragment) throws Exception {
@@ -402,12 +420,17 @@ public class OperatorProgramOptOutOperatorController {
                 customerAccount.getAccountId(), 
                 yukonUserContext.getYukonUser());
         
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                               "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
+               
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "redirect:/spring/stars/operator/program/optOut";
     }
     
     @RequestMapping(value = "/operator/program/optOut/resetToLimit")
     public String resetToLimit(Integer inventoryId, 
+                                FlashScope flashScope,
                                 ModelMap modelMap,
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) {
@@ -419,6 +442,10 @@ public class OperatorProgramOptOutOperatorController {
         
         optOutService.resetOptOutLimitForInventory(inventoryId, customerAccount.getAccountId());
         
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                               "yukon.web.modules.operator.optOut.main.resetToLimit.successText"));
+               
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return "redirect:/spring/stars/operator/program/optOut";
     }

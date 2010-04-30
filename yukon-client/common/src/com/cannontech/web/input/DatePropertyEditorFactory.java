@@ -5,6 +5,7 @@ import java.beans.PropertyEditorSupport;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,11 @@ public class DatePropertyEditorFactory {
 
         @Override
         public void setAsText(String localDateStr) throws IllegalArgumentException {
+            if (StringUtils.isBlank(localDateStr)) {
+                setValue(null);
+                return;
+            }
+            
             try {
                 setValue(dateFormattingService.parseLocalDate(localDateStr,
                                                               userContext));

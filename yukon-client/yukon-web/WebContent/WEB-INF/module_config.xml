@@ -865,7 +865,7 @@
 		          </option>
 	          </options>
 	   		</option>
-            <dynamicOptions id="operatorFaq" bean="operatorFaqMenuOption">
+            <dynamicOptions id="faq" bean="operatorFaqMenuOption">
               <requireRoleProperty value="OPERATOR_CONSUMER_INFO_ADMIN_FAQ" />
             </dynamicOptions>
 	  	</options>  
@@ -973,13 +973,12 @@
 		           	<link>/spring/stars/operator/program/optOut?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
                     <pages>
-                        <page name="optOut.inventoryList" type="BASIC">
+                        <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">
                             <menu>account</menu>
                             <labelArgument>${optOutBackingBean.startDate}</labelArgument>
                         </page>
-                        <page name="optOut.confirm" type="BASIC">
+                        <page name="optOut.confirm" type="DETAIL_CHILD_WITH_INFO">
                             <menu>account</menu>
-                            <labelArgument></labelArgument>
                         </page>
                         <page name="optOut.history" type="DETAIL_CHILD_WITH_INFO">
                             <menu>account</menu>
@@ -1075,9 +1074,13 @@
 		           	<labelArgument>${accountNumber}</labelArgument>
 		    	</page>
            	</pages>
-        </page>
-      </pages>
-    </page>
+          </page>
+        </pages>
+      </page>
+      <page name="faq" type="BASIC">
+        <menu>operatorFaq</menu>
+        <link>/spring/stars/operator/faq</link>
+      </page>
     </pages>
   </module>
   

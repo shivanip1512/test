@@ -33,18 +33,17 @@
 	<!-- Program Opt Out Section -->
 	<entry key="yukon.web.modules.operator.optOut.main.title">Opt Out</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.pageName">Opt Out</entry>
-    <entry key="yukon.web.modules.operator.optOut.main.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.description">Select the time frame to temporarily opt out.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allOptedOut">All devices have already been opted out.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.noOptOutsAvailable">All opt outs for all devices have been used.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.header">Programs - Opt Out</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.startDate">Start Date</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.duration">Duration</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.optOutDays">{0} {0,choice,0#Days|1#Day|1>Days}</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.optOut">Opt Out</entry>
 
 	<entry key="yukon.web.modules.operator.optOut.main.success">Opt Out Successful</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.noInventorySelected">No inventory selected</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.noInventorySelected">No device selected</entry>
 
     <!-- Validation -->
     <entry key="yukon.web.modules.operator.optOutBackingBean.invalidStartDate">Invalid start date.</entry>
@@ -56,22 +55,23 @@
     <!-- Opt Out Inventory Selection -->
     <entry key="yukon.web.modules.operator.optOut.inventoryList.pageName">Hardware Selection</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.title">Programs - Opt Out</entry>
-    <entry key="yukon.web.modules.operator.optOut.inventoryList.description">Please select the hardware you want to opt out of.</entry>
+    <entry key="yukon.web.modules.operator.optOut.inventoryList.selectDevice.title">Select Device</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.someAlreadyOptedOut">Days</entry>
-    <entry key="yukon.web.modules.operator.optOut.inventoryList.hardware">Hardware</entry>
+    <entry key="yukon.web.modules.operator.optOut.inventoryList.device">Device</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.programAssigned">Program(s) Assigned</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.information">Information</entry>
-    <entry key="yukon.web.modules.operator.optOut.inventoryList.noMoreOptOutsAvailable">No more opt outs are available for this device.</entry>
+    <entry key="yukon.web.modules.operator.optOut.inventoryList.noMoreOptOutsAvailable">No more consumer opt outs are available for this device.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyOptedOut">This device is currently opted out.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.currentlyScheduledOptOut">This device is currently scheduled for an opt out.</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.save">Opt Out</entry>
+    <entry key="yukon.web.modules.operator.optOut.inventoryList.next">Next</entry>
     <entry key="yukon.web.modules.operator.optOut.inventoryList.cancel">Cancel</entry>
 
     <!-- Opt Out Confirmation -->
-    <entry key="yukon.web.modules.operator.optOut.confirm.pageName">Confirmation</entry>
+    <entry key="yukon.web.modules.operator.optOut.confirm.pageName">Opt Out Questions</entry>
     <entry key="yukon.web.modules.operator.optOut.confirm.title">Programs - Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.confirm.description">Please complete the following form to opt out of your program:</entry>
-    <entry key="yukon.web.modules.operator.optOut.confirm.save">Save</entry>
+    <entry key="yukon.web.modules.operator.optOut.confirm.save">Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.confirm.cancel">Cancel</entry>
     
 	<!-- Current Opt Outs -->
@@ -79,33 +79,40 @@
 	<entry key="yukon.web.modules.operator.optOut.program">Program(s)</entry>
 	<entry key="yukon.web.modules.operator.optOut.status">Status</entry>
 	<entry key="yukon.web.modules.operator.optOut.dateActive">Active Date</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.currentOptOuts">Current Opt Outs</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.currentOptOuts.title">Current Opt Outs</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.actions">Actions</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.helpInfoTitle">Opt Out Actions</entry>
                                                  
 	<entry key="yukon.web.modules.operator.optOut.main.allowOne.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverUrl">/WebConfig/yukon/Icons/add.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverText">Adds an extra opt out to the device.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOneIconText">Adds an extra opt out to the device. This is not restricted by the system opt out limit.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.allowOne.successText">Opt Out Added</entry>
                                                  
 	<entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.hoverText">Cancels an existing or scheduled opt out.</entry>
-                                                 
+    <entry key="yukon.web.modules.operator.optOut.main.cancelOptOut.successText">Opt Out Canceled </entry>
+    
 	<entry key="yukon.web.modules.operator.optOut.main.resendOptOut.imageUrl">/WebConfig/yukon/Icons/control_repeat_blue.gif</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.resendOptOut.hoverUrl">/WebConfig/yukon/Icons/control_repeat_blue_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resendOptOut.hoverText">Resends an opt out command to a given device.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resendOptOutDisabled.imageUrl">/WebConfig/yukon/Icons/control_repeat_blue_disabled.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resendOptOutDisabled.hoverText">The device cannot resend the command because the initial command has not been sent.  This is most likely because the opt out is scheduled into the future.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.resendOptOut.successText">Opt Out Command Resent</entry>
                                                  
 	<entry key="yukon.web.modules.operator.optOut.main.resetToLimit.imageUrl">/WebConfig/yukon/Icons/arrow_undo.gif</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.resetToLimit.hoverUrl">/WebConfig/yukon/Icons/arrow_undo_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resetToLimit.hoverText">Resets a device's opt out limit.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resetToLimitDisabled.imageUrl">/WebConfig/yukon/Icons/arrow_undo_disabled.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.resetToLimitDisabled.hoverText">The device is already at or above its opt out limit.</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.resetToLimitIconText">Resets a device's opt out limit. This action is disabled if the [device/inventory] is already at or above the system opt out limit.</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.resetToLimitIconText">Resets a device's opt out limit. This action is disabled if the device is already at or above the opt out limit.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.resetToLimit.successText">Opt Out Limit Reset</entry>
 	                                             
-	<entry key="yukon.web.modules.operator.optOut.main.noCurrentOptOuts">There are no Active or Scheduled Opt Outs.</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.noCurrentOptOuts">There are no active or scheduled opt outs.</entry>
 	                                             
-    <!-- Opt Out Limits -->                      
-    <entry key="yukon.web.modules.operator.optOut.main.optOutLimits">Opt Out Limits</entry>
+    <!-- Opt Out Limits -->
+    <entry key="yukon.web.modules.operator.optOut.main.optOutLimits.title">Opt Out Limits</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.used">Used</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowAdditional">Allow Another Opt Out</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.remaining">Consumer Opt Outs Remaining</entry>
@@ -114,13 +121,15 @@
 	<entry key="yukon.web.modules.operator.optOut.main.unlimitedRemaining">unlimited</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.atLimit">Remaining opt outs at opt out limit</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.clear">Clear</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.noInventoryAttached">There are no devices currently attached to this account.</entry>
     
     <!-- Opt Out History -->
-	<entry key="yukon.web.modules.operator.optOut.optOutHistory">Opt Out History</entry>
+	<entry key="yukon.web.modules.operator.optOut.optOutHistory.title">Opt Out History</entry>
 	<entry key="yukon.web.modules.operator.optOut.dateScheduled">Scheduled Date</entry>
 	<entry key="yukon.web.modules.operator.optOut.durationHeader">Duration</entry>
-    <entry key="yukon.web.modules.operator.optOut.canceled">Cancel</entry>
+    <entry key="yukon.web.modules.operator.optOut.canceled">Canceled</entry>
     <entry key="yukon.web.modules.operator.optOut.noPreviousOptOuts">There are no previous Opt Outs.</entry>
+    <entry key="yukon.web.modules.operator.optOut.viewCompleteHistory">View Complete History</entry>
     
     <entry key="yukon.web.modules.operator.optOut.history.title">Opt Out History</entry>
     <entry key="yukon.web.modules.operator.optOut.history.pageName">Opt Out History</entry>

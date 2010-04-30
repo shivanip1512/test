@@ -7,7 +7,8 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <cti:standardPage module="operator" page="optOut.inventoryList">
-
+    <cti:includeCss link="/WebConfig/yukon/styles/operator/optOut.css"/>
+    
 <cti:url var="actionUrl" value="/spring/stars/operator/program/optOut/optOutQuestions">
     <cti:param name="accountId" value="${accountId}" />
 </cti:url>
@@ -47,9 +48,6 @@ function createJSON() {
 			<span class="errorMessage"><cti:msg key="${error}"/></span><br>
 		</c:if>
 
-        <tags:formElementContainer nameKey="optOuts">
-
-        <i:inline key=".description"/>
         <c:if test="${!empty alreadyOptedOutItems}">
             <br><i:inline key=".someAlreadyOptedOut"/>
         </c:if>
@@ -57,16 +55,17 @@ function createJSON() {
         <br>
         <br>
 
+        <c:set var="showNextButton" value="false" />
         <form:form id="form" commandName="optOutBackingBean" 
                    action="/spring/stars/operator/program/optOut/optOutQuestions" 
                    method="POST" onsubmit="createJSON();">
             <input type="hidden" name="accountId" value="${accountId}" />
 
+        <tags:boxContainer2 nameKey="selectDevice">
             <div id="controlEventsDiv" style="height: auto;">
-                <table class="resultsTable">
+                <table class="resultsTable rowHighlighting selectDeviceTable">
                     <tr>
-                        <th></th>
-                        <th><i:inline key=".hardware"/></th>
+                        <th><i:inline key=".device"/></th>
                         <th><i:inline key=".programAssigned"/></th>
                         <th><i:inline key=".information"/></th>
                     </tr>
@@ -75,30 +74,34 @@ function createJSON() {
                         <c:set var="optOutCount" value="${optOutCounts[inventoryId]}"/>
 
                         <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                            <td align="left">
-                            	<c:choose>
-                            		<c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
-                            		    <input id="unused_${inventoryId}" disabled="disabled" type="checkbox"></input>
-                            		</c:when>
-                            		<c:otherwise>
-                                        <input type="hidden" name="inventoryId" value="${inventoryId}"/>
-                                        <input id="check_${inventoryId}" type="checkbox"></input>
-                            		</c:otherwise>
-                            	</c:choose>
+                            <td title="${displayableInventory.serialNumber}">
+                                <label for="check_${inventoryId}">
+                                    <c:choose>
+                                        <c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
+                                            <input id="unused_${inventoryId}" disabled="disabled" type="checkbox"></input>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="showNextButton" value="true" />
+                                            <input type="hidden" name="inventoryId" value="${inventoryId}"/>
+                                            <input id="check_${inventoryId}" type="checkbox"></input>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
+                                </label>
                             </td>
-                            <td align="left" title="${displayableInventory.serialNumber}">
-                                <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
-                            </td>
-                            <td align="left">
+                            <td>
                                 <c:set var="programsList" value="${displayableInventory.programs}"/>
                                 <c:set var="count" value="0"/>
                                 
                                 <c:forEach var="program" items="${programsList}">
                                     <c:set var="count" value="${count + 1}"/>
-                                    <cti:msg key="${program.displayName}"/><c:if test="${fn:length(programsList) != count}">,</c:if>
+                                    <spring:escapeBody htmlEscape="true">
+                                        <cti:msg key="${program.displayName}"/>
+                                    </spring:escapeBody>
+                                    <c:if test="${fn:length(programsList) != count}"><br></c:if>
                                 </c:forEach>    
                             </td>
-                            <td align="left">
+                            <td>
  								<c:if test="${!optOutCount.optOutsRemaining}">
                                     <i:inline key=".noMoreOptOutsAvailable"/><br>
                                 </c:if>
@@ -113,21 +116,30 @@ function createJSON() {
                     </c:forEach>    
                 </table>
             </div>
+        </tags:boxContainer2>
 
-            <br>
-            <span style="padding-right: 0.5em;">
-                <input type="submit" width="80px" value="<cti:msg2 key='.save'/>">
-            </span>
-            <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
-            	<cti:param name="accountId" value="${accountId}" />
-            </cti:url>
-            <input type="button" width="80px" value="<cti:msg2 key='.cancel'/>"
-                   onclick="javascript:location.href='${optOutUrl}';">
+        <br>
+        <span style="padding-right: 0.5em;">
+            <c:if test="${showNextButton}">
+                <c:choose>
+                    <c:when test="${optOutQuestionsExist}">
+                        <input type="submit" value="<cti:msg2 key='.next'/>">
+                    </c:when>
+                    <c:otherwise>
+                        <input type="submit" value="<cti:msg2 key='.save'/>">
+                    </c:otherwise>
+                </c:choose>
+            </c:if>
+        </span>
+        <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
+        	<cti:param name="accountId" value="${accountId}" />
+        </cti:url>
+        <input type="button" value="<cti:msg2 key='.cancel'/>"
+               onclick="javascript:location.href='${optOutUrl}';">
             
-            <form:hidden path="durationInDays" />
-            <form:hidden path="startDate"/>
+        <form:hidden path="durationInDays" />
+        <form:hidden path="startDate"/>
         </form:form>
-        </tags:formElementContainer>
     </div>    
     
-</cti:standardPage>    
+</cti:standardPage>

@@ -16,57 +16,73 @@
 <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
     <table >
         <tr><td>
-            <cti:img key="allowOne"/><i:inline key=".allowOneIconText" />
+            <cti:img key="allowOne"/>
+        </td><td>
+            <i:inline key=".allowOneIconText" />
         </td></tr>
         <tr height="6px"></tr>
         <tr><td>
-            <cti:img key="resetToLimit"/><i:inline key=".resetToLimitIconText" />
+            <cti:img key="resetToLimit"/>
+        </td><td>
+            <i:inline key=".resetToLimitIconText" />
         </td></tr>
     </table>
 </i:simplePopup>
 
 <!-- Create an opt out -->
 <tags:boxContainer2 nameKey="optOuts">
-<c:if test="${!empty currentOptOutList && allOptedOut}">
-    <i:inline key=".allOptedOut"/>
-</c:if>
-<c:if test="${!empty currentOptOutList && !optOutsAvailable}">
-    <i:inline key=".noOptOutsAvailable"/>
-</c:if>
-
-<c:if test="${!allOptedOut}">
-	<i:inline key=".description"/><br><br>
-
-    <form:form id="optOutForm" action="/spring/stars/operator/program/optOut/view2" commandName="optOutBackingBean">
-
-		<input type="hidden" name="accountId" value="${accountId}" />
-
-		<tags:nameValueContainer2>
-		
+    <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
+        <i:inline key=".noOptOutsAvailable"/>
+        <br/>
+    </c:if>
+    
+    <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
+        <i:inline key=".description"/><br><br>
+    </cti:checkRolesAndProperties>
+    
+    <form:form id="optOutForm" action="/spring/stars/operator/program/optOut/view2" 
+               commandName="optOutBackingBean">
+    
+    	<input type="hidden" name="accountId" value="${accountId}" />
+    
+    	<tags:nameValueContainer2>
+    	
             <tags:nameValue2 nameKey=".startDate">
                 <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_TODAY_ONLY">
-                    <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" var="formattedDate"/>
+                    <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" 
+                                     var="formattedDate"/>
                     <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
                 </cti:checkRolesAndProperties>
                 <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
-                    <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" springInput="true" />
+                    <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" 
+                                            springInput="true" />
                 </cti:checkRolesAndProperties>
             </tags:nameValue2>
-		
-			<tags:nameValue2 nameKey=".duration">
-				<select name="durationInDays">
-                    <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
-                       <option value="${optOutPeriod}">
-                           <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
-                       </option>
-                    </c:forEach>
-                </select>
-			</tags:nameValue2>
-		</tags:nameValueContainer2>
+    	
+    		<tags:nameValue2 nameKey=".duration">
+                <c:choose>
+                    <c:when test="${fn:length(optOutPeriodList) > 1}">
+        				<select name="durationInDays">
+                            <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
+                               <option value="${optOutPeriod}">
+                                   <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
+                               </option>
+                            </c:forEach>
+                        </select>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
+                            <input type="hidden" name="durationInDays" value="${optOutPeriod}" />
+                            <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            
+            </tags:nameValue2>
+    	</tags:nameValueContainer2>
         <br>
         <input type="submit" value="<cti:msg2 key=".optOut"/>" class="formSubmit">
-	</form:form>
-</c:if>
+    </form:form>
 </tags:boxContainer2>
 <br><br>
 
@@ -74,7 +90,7 @@
 <tags:boxContainer2 nameKey="currentOptOuts">
 <c:choose>
     <c:when test="${fn:length(currentOptOutList) > 0}">
-        <table id="deviceTable" class="compactResultsTable">
+        <table id="deviceTable" class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <th><i:inline key=".device"/></th>
                 <th><i:inline key=".program"/></th>
@@ -85,10 +101,12 @@
             
             <c:forEach var="optOut" items="${currentOptOutList}">
                 <tr class="<tags:alternateRow odd="altRow" even=""/>">
-                    <td valign="top"><spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody></td>
+                    <td valign="top">
+                        <spring:escapeBody htmlEscape="true">${optOut.inventory.displayName}</spring:escapeBody>
+                    </td>
                     <td valign="top">
                         <c:forEach var="program" items="${optOut.programList}" varStatus="status">
-                            <c:if test="${status.count != 1}">, </c:if>
+                            <c:if test="${status.count != 1}"><br></c:if>
                             <spring:escapeBody htmlEscape="true">${program.programName}</spring:escapeBody>
                         </c:forEach>
                     </td>
@@ -134,7 +152,7 @@
         </table>
     </c:when>
     <c:otherwise>
-        <br><i:inline key=".noCurrentOptOuts"/>
+        <i:inline key=".noCurrentOptOuts"/>
     </c:otherwise>
 </c:choose>
 </tags:boxContainer2>
@@ -143,66 +161,74 @@
 <!-- Opt Out Limits -->
 <tags:alternateRowReset/>
 <tags:boxContainer2 nameKey="optOutLimits">
-<table id="deviceTable" class="compactResultsTable">
-    <tr class="<tags:alternateRow odd="" even="altRow"/>">
-        <th><i:inline key=".device"/></th>
-        <th><i:inline key=".used"/></th>
-        <th><i:inline key=".remaining"/></th>
-        <c:if test="${!noOptOutLimits}">
-            <th><i:inline key=".actions"/>
-                <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
-                    <img src="${help}" onmouseover="javascript:this.src='${helpOver}'" onmouseout="javascript:this.src='${help}'">
-                </a>
-            </th>
-        </c:if>
-        
-    </tr>
-    
-    <c:forEach var="inventory" items="${displayableInventories}">
-        <tr class="<tags:alternateRow odd="altRow" even=""/>">
-            <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
-            <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
-            <td>
-                <c:choose>
-                    <c:when test="${noOptOutLimits}">
-                        <i:inline key=".unlimitedRemaining"/>
-                    </c:when>
-                    <c:otherwise>
-                        ${optOutCounts[inventory.inventoryId].remainingOptOuts}
-                    </c:otherwise>
-                </c:choose>
-            </td>
-	        
-            <td>
+<c:choose>
+    <c:when test="${fn:length(currentOptOutList) > 0}">
+        <table id="deviceTable" class="compactResultsTable rowHighlighting">
+            <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                <th><i:inline key=".device"/></th>
+                <th><i:inline key=".used"/></th>
+                <th><i:inline key=".remaining"/></th>
                 <c:if test="${!noOptOutLimits}">
+                    <th><i:inline key=".actions"/>
+                        <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
+                            <img src="${help}" onmouseover="javascript:this.src='${helpOver}'" 
+                                               onmouseout="javascript:this.src='${help}'">
+                        </a>
+                    </th>
+                </c:if>
+                
+            </tr>
             
-                    <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
-                        <cti:param name="accountId" value="${accountId}"/>
-                        <cti:param name="inventoryId" value="${inventory.inventoryId}" />
-                    </cti:url>
-
-                    <i:simpleLink actionUrl="${allowAnotherUrl}" logoKey="allowOne"/>
-                    <c:choose>
-	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-                            <cti:img key="resetToLimitDisabled"/>
-	                    </c:when>
-	                    <c:otherwise> 
-
-                            <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
+            <c:forEach var="inventory" items="${displayableInventories}">
+                <tr class="<tags:alternateRow odd="altRow" even=""/>">
+                    <td><spring:escapeBody htmlEscape="true">${inventory.displayName}</spring:escapeBody></td>
+                    <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${noOptOutLimits}">
+                                <i:inline key=".unlimitedRemaining"/>
+                            </c:when>
+                            <c:otherwise>
+                                ${optOutCounts[inventory.inventoryId].remainingOptOuts}
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+        	        
+                    <td>
+                        <c:if test="${!noOptOutLimits}">
+                    
+                            <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                             </cti:url>
-
-                            <i:simpleLink actionUrl="${resetToLimitUrl}" logoKey="resetToLimit"/>
-  	                   </c:otherwise>
-	                </c:choose>
-                                     
-                </c:if>
-            </td>
-	        
-        </tr>
-    </c:forEach>
-</table>
+        
+                            <i:simpleLink actionUrl="${allowAnotherUrl}" logoKey="allowOne"/>
+                            <c:choose>
+        	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
+                                    <cti:img key="resetToLimitDisabled"/>
+        	                    </c:when>
+        	                    <c:otherwise> 
+        
+                                    <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
+                                        <cti:param name="accountId" value="${accountId}"/>
+                                        <cti:param name="inventoryId" value="${inventory.inventoryId}" />
+                                    </cti:url>
+        
+                                    <i:simpleLink actionUrl="${resetToLimitUrl}" logoKey="resetToLimit"/>
+          	                   </c:otherwise>
+        	                </c:choose>
+                                             
+                        </c:if>
+                    </td>
+        	        
+                </tr>
+            </c:forEach>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <i:inline key=".noInventoryAttached" />
+    </c:otherwise>
+</c:choose>
 </tags:boxContainer2>
 <br><br>
 
@@ -210,13 +236,19 @@
 <tags:alternateRowReset/>
 <tags:boxContainer2 nameKey="optOutHistory">
 	<dr:optOutHistory previousOptOutList="${previousOptOutList}" />
-	
+
 	<c:if test="${fn:length(previousOptOutList) > 0}">
-        <cti:url var="optOutHistoryUrl" value="/spring/stars/operator/program/optOut/optOutHistory">
-            <cti:param name="accountId" value="${accountId}"/>
-        </cti:url>
-        <a href="${optOutHistoryUrl}" ><cti:msg key="yukon.dr.operator.optout.viewAll" /></a>
-        <br><br>
+        <table class="actionArea">
+            <tr>
+                <td class="leftActions">
+                    <cti:url var="optOutHistoryUrl" value="/spring/stars/operator/program/optOut/optOutHistory">
+                        <cti:param name="accountId" value="${accountId}"/>
+                    </cti:url>
+                    <a href="${optOutHistoryUrl}" ><i:inline key=".viewCompleteHistory" /></a>
+                </td>
+            </tr>
+        </table>
     </c:if>
+    
 </tags:boxContainer2>
 </cti:standardPage>

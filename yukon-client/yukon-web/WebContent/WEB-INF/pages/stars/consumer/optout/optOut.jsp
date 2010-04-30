@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+
 
 <c:set var="actionUrl" value="/spring/stars/consumer/optout/view2"/>
 
@@ -10,13 +12,10 @@
     
     <h3><cti:msg key="yukon.dr.consumer.optout.header"/></h3>
     <div align="center">
-        <c:if test="${!empty currentOptOutList && allOptedOut}">
-            <cti:msg key="yukon.dr.consumer.optout.allOptedOut"/>
-        </c:if>
         <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
             <cti:msg key="yukon.dr.consumer.optout.noOptOutsAvailable"/>
         </c:if>
-       	<c:if test="${!allOptedOut && optOutsAvailable}">
+       	<c:if test="${optOutsAvailable}">
 	        <cti:msg key="yukon.dr.consumer.optout.description"/>
 
     	    <br>
@@ -93,10 +92,17 @@
 		        	
 		        	<c:forEach var="optOut" items="${currentOptOutList}">
 			        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
-			        		<td>${optOut.inventory.displayName}</td>
+			        		<td>
+                                <spring:escapeBody htmlEscape="true">
+                                    ${optOut.inventory.displayName}
+                                </spring:escapeBody>
+                            </td>
+                                    
 			        		<td>
 		                        <c:forEach var="program" items="${optOut.programList}">
-		                            ${program.programName} 
+		                            <spring:escapeBody htmlEscape="true">
+                                        ${program.programName}
+                                    </spring:escapeBody> 
 		                        </c:forEach>
 		                    </td>
 			        		<td><cti:msg key="${optOut.state.formatKey}"/></td>
@@ -133,7 +139,11 @@
             
             <c:forEach var="inventory" items="${displayableInventories}">
                 <tr class="<ct:alternateRow odd="" even="altRow"/>">
-                    <td>${inventory.displayName}</td>
+                    <td>
+                        <spring:escapeBody htmlEscape="true">
+                            ${inventory.displayName}
+                        </spring:escapeBody>
+                    </td>
                     <td>${optOutCounts[inventory.inventoryId].usedOptOuts}</td>
                     <td>
                         <c:choose>
@@ -165,10 +175,16 @@
 		        	
 		        	<c:forEach var="optOut" items="${previousOptOutList}">
 			        	<tr class="<ct:alternateRow odd="" even="altRow"/>">
-			        		<td>${optOut.inventory.displayName}</td>
+			        		<td>
+                                <spring:escapeBody htmlEscape="true">
+                                    ${optOut.inventory.displayName}
+                                </spring:escapeBody>
+                            </td>
 			        		<td>
 		                        <c:forEach var="program" items="${optOut.programList}">
-		                            ${program.programName} 
+		                            <spring:escapeBody htmlEscape="true">
+                                        ${program.programName}
+                                    </spring:escapeBody> 
 		                        </c:forEach>
 		                    </td>
 			        		<td>
