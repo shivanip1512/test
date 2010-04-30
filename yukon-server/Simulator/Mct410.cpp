@@ -144,8 +144,6 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         return false;
     }
 
-    const bytes response_bytes = processRead(b_word.function, b_word.function_code);
-
     // Potentially set zero usage flag or reverse-power flag...
     double chance = gConfigParms.getValueAsDouble("SIMULATOR_ALARM_FLAG_CHANCE_PERCENT");
     double dist = (rand() / double(RAND_MAX + 1)) * 100;
@@ -193,6 +191,8 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
             }
         }
     }
+
+    const bytes response_bytes = processRead(b_word.function, b_word.function_code);
 
     if( response_bytes.size() < EmetconWordD1::PayloadLength +
                                 EmetconWordD2::PayloadLength +
