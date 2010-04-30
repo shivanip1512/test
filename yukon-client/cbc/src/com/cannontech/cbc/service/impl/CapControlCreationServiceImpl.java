@@ -23,7 +23,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.core.dao.StrategyDao;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.CapControlTypes;

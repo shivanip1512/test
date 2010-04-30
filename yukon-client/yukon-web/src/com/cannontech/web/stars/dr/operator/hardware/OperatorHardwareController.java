@@ -245,6 +245,13 @@ public class OperatorHardwareController {
         hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
         
         HardwareDto hardwareDto = hardwareService.getHardwareDto(inventoryId, accountInfoFragment.getEnergyCompanyId(), accountInfoFragment.getAccountId());
+        
+        /* Set two way device name when none is choosen yet for two way switches */
+        if(hardwareDto.getHardwareType().isSwitch() && hardwareDto.getHardwareType().isTwoWay() &&hardwareDto.getDeviceId() <= 0) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext); 
+            hardwareDto.setTwoWayDeviceName(messageSourceAccessor.getMessage("yukon.web.modules.operator.hardware.noTwoWayDeviceName"));
+        }
+        
         modelMap.addAttribute("hardwareDto", hardwareDto);
         modelMap.addAttribute("displayName", hardwareDto.getDisplayName());
         
@@ -353,6 +360,9 @@ public class OperatorHardwareController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
             if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
+                modelMap.addAttribute("displayName", "Create Meter");
+                modelMap.addAttribute("mode", PageEditMode.CREATE);
+                AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
                 return "operator/hardware/meterProfile.jsp";
             } else {
                 setupHardwareCreateModelMap(modelMap, hardwareDto.getHardwareClass(), userContext);
@@ -482,8 +492,8 @@ public class OperatorHardwareController {
         }
 
         modelMap.addAttribute("hardwareDto", hardwareDto);
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         
-        setupHardwareEditModelMap(accountInfoFragment, null, modelMap, userContext, false);
         return "operator/hardware/meterProfile.jsp";
     }
     
@@ -593,6 +603,9 @@ public class OperatorHardwareController {
         modelMap.addAttribute("switches", hardwareMap.get(LMHardwareClass.SWITCH));
         modelMap.addAttribute("meters", hardwareMap.get(LMHardwareClass.METER));
         modelMap.addAttribute("thermostats", hardwareMap.get(LMHardwareClass.THERMOSTAT));
+        if(hardwareMap.get(LMHardwareClass.THERMOSTAT).size() > 1) {
+            modelMap.addAttribute("showSelectAll", Boolean.TRUE);
+        }
         
         modelMap.addAttribute("switchClass", LMHardwareClass.SWITCH);
         modelMap.addAttribute("thermostatClass", LMHardwareClass.THERMOSTAT);

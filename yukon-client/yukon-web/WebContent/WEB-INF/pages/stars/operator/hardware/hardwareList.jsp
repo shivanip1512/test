@@ -427,7 +427,7 @@
     <table class="theremostatActionTable">
         <tr>
             <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_THERMOSTATS_ALL">
-                <c:if test="${not empty thermostats}">
+                <c:if test="${showSelectAll}">
                     <td>
                         <a href="${selectMultipleUrl}"><i:inline key=".thermostats.selectMultiple"/></a>
                     </td>

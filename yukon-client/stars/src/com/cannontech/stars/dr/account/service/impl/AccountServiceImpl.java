@@ -349,7 +349,8 @@ public class AccountServiceImpl implements AccountService {
         } else {
         	accountSite.setCustomerStatus("A");
         }
-        accountSite.setSiteNumber(accountDto.getMapNumber());
+        String siteNumber = SqlUtils.convertStringToDbValue(accountDto.getMapNumber());
+        accountSite.setSiteNumber(siteNumber == null ? " " : siteNumber);
         accountSite.setPropertyNotes(CtiUtilities.STRING_NONE);
         accountSiteDao.add(accountSite);
         

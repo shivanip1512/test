@@ -43,19 +43,26 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
         if(!hardwareType.isMeter()){  /* Check serial numbers for switches and tstats */
             if (StringUtils.isBlank(hardwareDto.getSerialNumber())) {
                 errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.required");
-            } else if(hardwareDto.getSerialNumber().length() > 30) {
-                errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.tooLong");
             } else {
                 if (hardwareType.isSwitch() && hardwareType.isTwoWay()) {
-                    /* This is a two way lcr so the serial number can only have numeric chars. */
+                    /* This is a two way lcr so the serial number can only have numeric chars and must be a valid integer. */
                     if(!StringUtils.isNumeric(hardwareDto.getSerialNumber())){
                         errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.invalid.numeric");
+                    } else {
+                       try {
+                           Integer.parseInt(hardwareDto.getSerialNumber());
+                       } catch(NumberFormatException e) {
+                           errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.tooLong.twoWay");
+                       }
                     }
                 } else {
-                    /* Not a two way device so serial number should only contain alpha numeric chars. */
+                    /* Not a two way device so serial number should only contain alpha numeric characters and
+                     * be less than 30 characters long. */
                     if (!StringUtils.isAlphanumeric(hardwareDto.getSerialNumber())) {
                         errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
-                    }
+                    } else if(hardwareDto.getSerialNumber().length() > 30) {
+                        errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.tooLong");
+                    } 
                 }
             }
         } else if (hardwareType == HardwareType.NON_YUKON_METER) {

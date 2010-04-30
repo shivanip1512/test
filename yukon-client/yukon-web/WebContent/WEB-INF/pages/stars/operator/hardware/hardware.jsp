@@ -235,14 +235,7 @@
                                 <%-- Two Way LCR's Yukon Device --%>
                                 <tags:nameValue2 nameKey=".twoWayDevice">
                                     <span id="chosenYukonDeviceNameField">
-                                        <c:choose>
-                                            <c:when test="${hardwareDto.deviceId > 0}">
-                                                <spring:escapeBody htmlEscape="true">${hardwareDto.twoWayDeviceName}</spring:escapeBody>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <i:inline key=".noTwoWayDeviceName"/>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <spring:escapeBody htmlEscape="true">${hardwareDto.twoWayDeviceName}</spring:escapeBody>
                                     </span> 
                                     <div>
                                         <cti:displayForPageEditModes modes="EDIT">
