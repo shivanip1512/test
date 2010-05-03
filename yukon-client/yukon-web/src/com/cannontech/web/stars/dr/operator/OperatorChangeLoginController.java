@@ -182,6 +182,10 @@ public class OperatorChangeLoginController {
                                              YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, 
                                              accountInfoFragment.getAccountId(), session);
 
+                    flashScope.setConfirm(
+                                   new YukonMessageSourceResolvable(
+                                           "yukon.web.modules.operator.changeLogin.loginCreated"));
+
                 } else {
 
                     updateResidentialLogin(changeLoginBackingBean, modelMap, userContext, 
@@ -192,6 +196,10 @@ public class OperatorChangeLoginController {
                                              EventUtils.EVENT_CATEGORY_ACCOUNT, 
                                              YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, 
                                              accountInfoFragment.getAccountId(), session);
+
+                    flashScope.setConfirm(
+                                   new YukonMessageSourceResolvable(
+                                           "yukon.web.modules.operator.changeLogin.loginUpdated"));
                 }
 
             }
@@ -209,8 +217,6 @@ public class OperatorChangeLoginController {
             } 
         }
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.changeLogin.loginUpdated"));
-
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:changeLogin";
     }
@@ -233,6 +239,7 @@ public class OperatorChangeLoginController {
     public String deleteLogin(String loginMode,
                                ModelMap modelMap, 
                                YukonUserContext userContext,
+                               FlashScope flashScope,
                                AccountInfoFragment accountInfoFragment) {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
@@ -245,6 +252,10 @@ public class OperatorChangeLoginController {
             yukonUserDao.deleteUser(custYukonUser.getUserID());
         }
 
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                               "yukon.web.modules.operator.changeLogin.loginDeleted"));
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:changeLogin";
     }
