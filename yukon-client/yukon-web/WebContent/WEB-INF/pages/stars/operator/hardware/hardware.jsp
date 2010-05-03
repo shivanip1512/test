@@ -13,7 +13,7 @@
         function changeTwoWayDeviceName(selectedItems) {
             var selectedPao = selectedItems[0];
             var nameField = $('chosenYukonDeviceNameField');
-            nameField.innerHTML = selectedPao.paoName;
+            nameField.innerHTML = selectedPao.paoName.escapeHTML();
             new Effect.Highlight(nameField , {'duration': 3.5, 'startcolor': '#FFE900'});
             return true;
         }
