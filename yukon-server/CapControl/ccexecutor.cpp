@@ -8269,12 +8269,14 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
         return;
     }
 
+    LoadTapChangerPtr ltcPtr = NULL;
     string paoName;
+
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-        LoadTapChangerPtr ltcPtr = store->findLtcById(paoId);
+        ltcPtr = store->findLtcById(paoId);
         if (ltcPtr == NULL)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -8296,12 +8298,14 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
     {
         case CtiCCCommand::LTC_TAP_POSITION_RAISE:
         {
+            ltcPtr->notifyTapOperation(LoadTapChanger::RaiseTap,CtiTime());
             point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapUp);
             text = string("Raise Tap Position");
             break;
         }
         case CtiCCCommand::LTC_TAP_POSITION_LOWER:
         {
+            ltcPtr->notifyTapOperation(LoadTapChanger::LowerTap,CtiTime());
             point = _attributeService->getPointByPaoAndAttribute(paoId,PointAttribute::TapDown);
             text = string("Lower Tap Position");
             break;
@@ -8326,8 +8330,8 @@ void CtiCCCommandExecutor::sendLtcTapPosition(const LONG                  comman
 
     //Command Action
     CtiRequestMsg* reqMsg = NULL;
-    string commandString = "control close offset " + CtiNumStr(point.getPointOffset()).toString();
-    reqMsg = createPorterRequestMsg(point.getPointId(),commandString);
+    string commandString = "control close select pointid " + CtiNumStr(point.getPointId()).toString();
+    reqMsg = createPorterRequestMsg(point.getPaoId(),commandString);
     reqMsg->setSOE(5);
     requests.push_back(reqMsg);
 }

@@ -37,7 +37,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 {
     CtiTime timeNow;
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-
     LoadTapChangerPtr ltcPtr = store->findLtcById(subbus->getLtcId());
 
     if ((subbus->getLtcId() == 0) || !ltcPtr)
@@ -54,7 +53,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         return;
     }
 
-    //This would be better if we had some method of executing a function at a scheduled time.
+	bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
+
+	//This would be better if we had some method of executing a function at a scheduled time.
     //Have the Ltc update its flags
     ltcPtr->updateFlags();
 
@@ -94,7 +95,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         case IVVCState::IVVC_DISABLED:
         {
-            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
             bool busDisabled = subbus->getDisableFlag();
             bool remainDisabled = false;
 
@@ -143,7 +143,6 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 //Set state
                 state->setShowLtcAutoModeMsg(true);
                 state->setShowBusDisableMsg(true);
-                state->setRemoteMode(true);
                 state->setState(IVVCState::IVVC_WAIT);
             }
         }
@@ -155,7 +154,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 return;
             }
 
-            if (!isLtcInRemoteMode(subbus->getLtcId()))// If we are in 'Auto' mode we don't want to run the algorithm.
+            if (!remoteMode)// If we are in 'Auto' mode we don't want to run the algorithm.
             {
                 state->setState(IVVCState::IVVC_DISABLED);
                 return;
@@ -535,7 +534,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             //Switch to LTC to automode.
             //save state so we know to re-enable remote when we start up again.
-            if (state->isRemoteMode())
+            if (remoteMode)
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
@@ -543,9 +542,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     dout << CtiTime() << " IVVC Algorithm: Comms lost, sending remote control disable. " << endl;
                 }
                 CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE,subbus->getLtcId()))->execute();
-                state->setRemoteMode(false);
+
             }
-            state->setState(IVVCState::IVVC_WAIT);
+            state->setState(IVVCState::IVVC_DISABLED);
             break;
         }
         default:
@@ -1062,7 +1061,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             {
                 state->setLastTapOpTime(now);
 
-                if ( state->isRemoteMode() )    // only move the tap if we are in 'remote' mode
+                if ( isLtcInRemoteMode(subbus->getLtcId()) )    // only move the tap if we are in 'remote' mode
                 {
                     if ( tapOp == -1 )
                     {
@@ -1089,7 +1088,31 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                         CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_TAP_POSITION_RAISE,subbus->getLtcId()))->execute();
                     }
                 }
+                else
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Not Operating LTC due to remote mode." << endl;
+                    }
+                }
             }
+            else
+            {
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " IVVC Algorithm: Not Operating LTC due to No Op period." << endl;
+                }
+            }
+        }
+        else
+        {
+                if (_CC_DEBUG & CC_DEBUG_IVVC)
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " IVVC Algorithm: No LTC Operation needed." << endl;
+                }
         }
         state->setState(IVVCState::IVVC_WAIT);
     }

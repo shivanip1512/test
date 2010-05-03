@@ -13,6 +13,14 @@
 
 class LoadTapChanger : public RWCollectable, public CapControlPao, public UpdatablePao
 {
+    public:
+        enum TapOperation
+        {
+            None,
+            LowerTap,
+            RaiseTap
+        };
+
     private:
         LitePoint _ltcVoltagePoint;
         LitePoint _lowerTapPoint;
@@ -26,6 +34,9 @@ class LoadTapChanger : public RWCollectable, public CapControlPao, public Updata
         bool _lowerTap;
         bool _raiseTap;
         bool _autoRemote;
+
+        CtiTime _lastTapOperationTime;
+        TapOperation _lastTapOperation;
 
         PointValueHolder _pointValues;
 
@@ -70,6 +81,7 @@ class LoadTapChanger : public RWCollectable, public CapControlPao, public Updata
 
         void saveGuts(RWvostream& ostrm) const;
 
+        void notifyTapOperation(TapOperation operation, CtiTime timeStamp);
         void updateFlags();
 
         LoadTapChanger& operator=(const LoadTapChanger& right);

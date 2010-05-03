@@ -11,7 +11,8 @@ LoadTapChanger::LoadTapChanger() : CapControlPao(),
                                    _manualLocalMode(false),
                                    _lowerTap(false),
                                    _raiseTap(false),
-                                   _autoRemote(false)
+                                   _autoRemote(false),
+                                   _lastTapOperation(LoadTapChanger::None)
 {
 
 }
@@ -21,7 +22,8 @@ LoadTapChanger::LoadTapChanger(RWDBReader& rdr) : CapControlPao(rdr),
                                                   _manualLocalMode(false),
                                                   _lowerTap(false),
                                                   _raiseTap(false),
-                                                  _autoRemote(false)
+                                                  _autoRemote(false),
+                                                  _lastTapOperation(LoadTapChanger::None)
 {
 
 }
@@ -31,7 +33,8 @@ LoadTapChanger::LoadTapChanger(const LoadTapChanger& ltc) : CapControlPao(),
                                                             _manualLocalMode(false),
                                                             _lowerTap(false),
                                                             _raiseTap(false),
-                                                            _autoRemote(false)
+                                                            _autoRemote(false),
+                                                            _lastTapOperation(LoadTapChanger::None)
 {
     operator=(ltc);
 }
@@ -184,52 +187,56 @@ LoadTapChanger& LoadTapChanger::operator=(const LoadTapChanger& right)
 
     _pointValues = right._pointValues;
 
+    _lastTapOperation = right._lastTapOperation;
+    _lastTapOperationTime = right._lastTapOperationTime;
+
     return *this;
+}
+
+void LoadTapChanger::notifyTapOperation(TapOperation operation, CtiTime timeStamp)
+{
+    _lastTapOperation = operation;
+    _lastTapOperationTime = timeStamp;
 }
 
 void LoadTapChanger::updateFlags()
 {
     static int timeToShowOperation = (int)(_IVVC_MIN_TAP_PERIOD_MINUTES * 60) / 2;
 
-    bool updated = false;
-
-    bool lowerTap = false;
     bool raiseTap = false;
+    bool lowerTap = false;
     bool autoRemote = false;
 
     CtiTime now;
     CtiTime pointTime;
     double pointValue = 0.0;
 
-    bool ret = _pointValues.getPointTime(_lowerTapPoint.getPointId(),pointTime);
-    if (ret)
+    if ((_lastTapOperationTime + timeToShowOperation) > now)
     {
-        if ((pointTime + timeToShowOperation) > now)
-        {
-            lowerTap = true;
-        }
-    }
-    if (_lowerTap != lowerTap)
-    {
-        _lowerTap = lowerTap;
-        setUpdated(true);
-    }
-
-    ret = _pointValues.getPointTime(_raiseTapPoint.getPointId(),pointTime);
-    if (ret)
-    {
-        if ((pointTime + timeToShowOperation) > now)
+        if (_lastTapOperation == RaiseTap)
         {
             raiseTap = true;
         }
+        else if (_lastTapOperation == LowerTap)
+        {
+            lowerTap = true;
+        }
+        //else none
     }
+
     if (_raiseTap != raiseTap)
     {
         _raiseTap = raiseTap;
         setUpdated(true);
     }
 
-    ret = _pointValues.getPointValue(_autoRemotePoint.getPointId(),pointValue);
+    if (_lowerTap != lowerTap)
+    {
+        _lowerTap = lowerTap;
+        setUpdated(true);
+    }
+
+    bool ret = _pointValues.getPointValue(_autoRemotePoint.getPointId(),pointValue);
     if (ret)
     {
         autoRemote = (pointValue == 0.0);
