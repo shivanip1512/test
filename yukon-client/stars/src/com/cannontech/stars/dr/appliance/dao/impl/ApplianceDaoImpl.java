@@ -77,7 +77,7 @@ public class ApplianceDaoImpl implements ApplianceDao {
         applianceSQL.append("       AB.YearManufactured, AB.LocationId, AB.EfficiencyRating, ");
         applianceSQL.append("       AB.Notes, AB.ModelNumber ");
         applianceSQL.append("FROM ApplianceBase AB ");
-        applianceSQL.append("INNER JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ");
+        applianceSQL.append("JOIN LMHardwareConfiguration LMHC ON AB.applianceId = LMHC.applianceId ");
         applianceSQL.append("WHERE AB.accountId ").eq(accountId);
 
         List<Appliance> list = yukonJdbcTemplate.query(applianceSQL, rowMapper);

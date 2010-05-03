@@ -20,11 +20,11 @@
 
             <%-- CREATE APPLIANCE POPUP --%>
             <i:simplePopup titleKey=".create" id="createAppliancePopup" 
-                           styleClass="smallSimplePopup" 
+                           styleClass="mediumSimplePopup" 
                            showImmediately="${param.showSwitchCheckingPopup}">
                 <form action="/spring/stars/operator/appliances/applianceNew">
                     <input type="hidden" name="accountId" value="${accountId}"/>
-                    <input type="hidden" name="energyCompanyId" value="${energyCompanyId}" />
+                    <input type="hidden" name="new" />
 
                     <ct:nameValueContainer2>
                         <ct:nameValue2 nameKey=".applianceName">
@@ -37,7 +37,7 @@
                                     </option>
                                 </c:forEach>
                             </select>
-                            <input type="submit" value="<cti:msg2 key=".create"/>" />
+                            <button type="submit"><i:inline key=".create"/></button>
                         </ct:nameValue2>
                     </ct:nameValueContainer2>
                 </form>
@@ -97,11 +97,12 @@
                              </td>
                              <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
                                  <td>
-                                     <cti:url var="deleteApplianceUrl" value="/spring/stars/operator/appliances/applianceDelete">
-                                         <cti:param name="accountId" value="${accountId}"/>
-                                         <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
-                                     </cti:url>
-                                     <i:simpleLink actionUrl="${deleteApplianceUrl}" logoKey="deleteAppliance"/>
+                                    <cti:url var="deleteApplianceUrl" value="/spring/stars/operator/appliances/applianceDelete">
+                                        <cti:param name="accountId" value="${accountId}" />
+                                        <cti:param name="applianceId" value="${displayableApplianceListEntry.applianceId}" />
+                                        <cti:param name="delete" />
+                                    </cti:url>
+                                    <i:simpleLink actionUrl="${deleteApplianceUrl}" logoKey="deleteAppliance"/>
 
                                  </td>
                              </cti:checkRolesAndProperties>
@@ -118,8 +119,10 @@
                     <tr align="right">
                         <td colspan="4">
                             <br>
-                            <input type="submit" value="<cti:msg2 key=".create"/>"
-                                   onclick="showCreateAppliancePopup();" class="formSubmit" />
+                            <button type="submit" onclick="showCreateAppliancePopup();" 
+                                    class="formSubmit">
+                                <i:inline key=".create"/>
+                            </button>
                         </td>
                     </tr>
                 </cti:checkRolesAndProperties>

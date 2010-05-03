@@ -20,7 +20,10 @@
 	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
 	<entry key="yukon.web.modules.operator.appliance.list.deleteAppliance.hoverText">Delete appliance</entry>
 	
-	<entry key="yukon.web.modules.operator.appliance.list.create">Create</entry>
+	<entry key="yukon.web.modules.operator.appliance.create">Create</entry>
+    <entry key="yukon.web.modules.operator.appliance.save">Save</entry>
+    <entry key="yukon.web.modules.operator.appliance.delete">Delete</entry>
+    <entry key="yukon.web.modules.operator.appliance.cancel">Cancel</entry>
     
     <!-- Appliance New Page -->
     <entry key="yukon.web.modules.operator.appliance.new.pageName">Create Appliance</entry>
@@ -101,8 +104,9 @@
     <entry key="yukon.web.modules.operator.appliance.hardwareType">Hardware Type</entry>
     <entry key="yukon.web.modules.operator.appliance.serialNumber">Serial Number</entry>
 
-    <entry key="yukon.web.modules.operator.appliance.create.applianceCreated">Appliance Created</entry>
-    <entry key="yukon.web.modules.operator.appliance.edit.applianceUpdated">Appliance Updated</entry>
+    <entry key="yukon.web.modules.operator.appliance.applianceCreated">Appliance Created</entry>
+    <entry key="yukon.web.modules.operator.appliance.applianceUpdated">Appliance Updated</entry>
+    <entry key="yukon.web.modules.operator.appliance.applianceDeleted">Appliance Deleted</entry>
 
     <!-- Validation -->
     <entry key="yukon.web.modules.operator.appliance.typeMismatch.yearManufactured">Year Manufactured must be a number.</entry>

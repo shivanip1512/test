@@ -86,7 +86,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE NEW
-    @RequestMapping
+    @RequestMapping(params="new")
     public String applianceNew(int applianceCategoryId, ModelMap modelMap,
                                YukonUserContext userContext,
                                AccountInfoFragment accountInfoFragment) 
@@ -111,11 +111,11 @@ public class OperatorApplianceController {
         modelMap.addAttribute("applianceCategoryName", applianceCategory.getName());
         modelMap.addAttribute("energyCompanyId", accountInfoFragment.getEnergyCompanyId());
 
-        return "operator/appliance/applianceNew.jsp";
+        return "operator/appliance/applianceEdit.jsp";
     }
 
     // APPLIANCE CREATE
-    @RequestMapping
+    @RequestMapping(params="create")
     public String applianceCreate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
                                   BindingResult bindingResult,
                                   ModelMap modelMap,
@@ -159,12 +159,12 @@ public class OperatorApplianceController {
                 flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                 modelMap.addAttribute("mode", PageEditMode.CREATE);
 
-                return "operator/appliance/applianceNew.jsp";
+                return "operator/appliance/applianceEdit.jsp";
             }
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
-                                      "yukon.web.modules.operator.appliance.create.applianceCreated"));
+                                      "yukon.web.modules.operator.appliance.applianceCreated"));
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
@@ -219,7 +219,7 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE UPDATE
-    @RequestMapping
+    @RequestMapping(params="update")
     public String applianceUpdate(@ModelAttribute("starsAppliance") StarsAppliance starsAppliance,
                                    BindingResult bindingResult,
                                    ModelMap modelMap,
@@ -264,7 +264,7 @@ public class OperatorApplianceController {
         }
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
-                                      "yukon.web.modules.operator.appliance.edit.applianceUpdated"));
+                                      "yukon.web.modules.operator.appliance.applianceUpdated"));
 
         setupApplianceEditModelMap(accountInfoFragment, modelMap, userContext,
                                    starsAppliance.getApplianceID());
@@ -272,11 +272,13 @@ public class OperatorApplianceController {
     }
 
     // APPLIANCE DELETE
-    @RequestMapping
-    public String applianceDelete(int applianceId, ModelMap modelMap,
-                                  AccountInfoFragment accountInfoFragment,
-                                  YukonUserContext userContext,
-                                  HttpSession session)
+    @RequestMapping(params="delete")
+    public String applianceDelete(int applianceId, 
+                                   ModelMap modelMap,
+                                   AccountInfoFragment accountInfoFragment,
+                                   YukonUserContext userContext,
+                                   FlashScope flashScope,
+                                   HttpSession session)
             throws ServletRequestBindingException {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
@@ -291,10 +293,23 @@ public class OperatorApplianceController {
                                  YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
                                  accountInfoFragment.getAccountId(), session);
 
+        flashScope.setConfirm(new YukonMessageSourceResolvable(
+                                      "yukon.web.modules.operator.appliance.applianceDeleted"));
+        
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:applianceList";
     }
 
+    @RequestMapping(params="cancel")
+    public String applianceDelete(ModelMap modelMap,
+                                   AccountInfoFragment accountInfoFragment,
+                                   YukonUserContext userContext,
+                                   HttpSession session) {
+
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        return "redirect:applianceList";
+    }
+    
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
 
