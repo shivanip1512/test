@@ -367,6 +367,7 @@ void CtiCapController::messageSender()
                 {
                     if( currentSubstationBus->getBusUpdatedFlag())
                     {
+
                         if (currentStation->getStationUpdatedFlag())
                         {
                             store->updateSubstationObjectSet(currentStation->getPaoId(), (CtiMultiMsg_set&)stationChanges);
@@ -2672,9 +2673,9 @@ void CtiCapController::handleAlternateBusModeValues(long pointID, double value, 
                                     altSub->setIWCount( 0 );
                                     altSub->updateIntegrationWPoint(CtiTime());
                                     currentSubstationBus->setIVCount( 0 );
-                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());  
+                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());
                                     currentSubstationBus->setIWCount( 0 );
-                                    currentSubstationBus->updateIntegrationWPoint(CtiTime());                             
+                                    currentSubstationBus->updateIntegrationWPoint(CtiTime());
                                 }
                             }
                         }

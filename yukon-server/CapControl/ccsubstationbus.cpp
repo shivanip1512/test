@@ -497,6 +497,37 @@ LONG CtiCCSubstationBus::getCurrentVarLoadPointId() const
     return _currentvarloadpointid;
 }
 
+/**
+ * Returns var point id if totalized or the point ids to phase
+ * A, B, and C if not.
+ *
+ * @return list<long>
+ */
+std::list<long> CtiCCSubstationBus::getCurrentVarLoadPoints() const
+{
+    list<long> points;
+    int pointId = 0;
+
+    if (getUsePhaseData())
+    {
+        pointId = getCurrentVarLoadPointId();
+        points.push_back(pointId);
+
+        pointId = getPhaseBId();
+        points.push_back(pointId);
+
+        pointId = getPhaseCId();
+        points.push_back(pointId);
+    }
+    else
+    {
+        pointId = getCurrentVarLoadPointId();
+        points.push_back(pointId);
+    }
+
+    return points;
+}
+
 /*---------------------------------------------------------------------------
     getCurrentVarLoadPointValue
 
@@ -2706,7 +2737,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                                 {
                                     dout << " Var PointId: " <<getCurrentVarLoadPointId()  <<" (" << getCurrentVarPointQuality()
-                                        <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality() 
+                                        <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality()
                                         <<")  Volt PointId: "<<getCurrentVoltLoadPointId() <<" (" << getCurrentVoltPointQuality() <<")"<< endl;
                                 }
                             }
@@ -2727,7 +2758,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                        {
                            dout << " Var PointId: " <<getCurrentVarLoadPointId()  <<" (" << getCurrentVarPointQuality()
-                               <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality() 
+                               <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality()
                                <<")  Volt PointId: "<<getCurrentVoltLoadPointId() <<" (" << getCurrentVoltPointQuality() <<")"<< endl;
                        }
                    }

@@ -78,6 +78,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     LONG getParentId() const;
 
+    std::list<long> getCurrentVarLoadPoints() const;
     LONG getCurrentVarLoadPointId() const;
     DOUBLE getCurrentVarLoadPointValue() const;
     DOUBLE getRawCurrentVarLoadPointValue() const;
