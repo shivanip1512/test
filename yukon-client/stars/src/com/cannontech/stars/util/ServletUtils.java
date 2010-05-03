@@ -24,13 +24,10 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -264,7 +261,14 @@ public class ServletUtils {
 		return dateCal.getTime();
 	}
 	
-	public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
+
+    /**
+     * @Deprecated
+     * This method does not correctly represent enrollment and opt out periods.
+     *   
+     */
+     @Deprecated
+     public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
 		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser, int accountId)
 	{
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
@@ -289,8 +293,12 @@ public class ServletUtils {
 			lmCtrlHist.setControlSummary( new ControlSummary() );
             
 			for (int i = 0; i < groupIDs.size(); i++) {
-				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
-						groupIDs.get(i).intValue(), accountId, period, energyCompany.getDefaultTimeZone(), currentUser );
+				StarsLMControlHistory ctrlHist = 
+				    LMControlHistoryUtil.getStarsLMControlHistory(groupIDs.get(i).intValue(), 
+				                                                  accountId, 
+				                                                  period, 
+				                                                  energyCompany.getDefaultTimeZone(), 
+				                                                  currentUser );
 				
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()

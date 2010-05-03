@@ -70,14 +70,18 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         return getEventsByGroup(customerAccountId, holder, period, yukonUserContext);
     }
     
-    private StarsLMControlHistory getEventsByGroup(final int customerAccountId,  Holder holder,
-                                                   final ControlPeriod period, final YukonUserContext yukonUserContext) {
+    private StarsLMControlHistory getEventsByGroup(final int customerAccountId, 
+                                                    Holder holder, 
+                                                    final ControlPeriod period, 
+                                                    final YukonUserContext yukonUserContext) {
         StarsCtrlHistPeriod starsControlPeriod = StarsCtrlHistPeriod.valueOf(period.starsName());
-        StarsLMControlHistory controlHistory = LMControlHistoryUtil.getStarsLMControlHistory(holder.groupId,
-                                                                                             customerAccountId,
-                                                                                             starsControlPeriod,
-                                                                                             yukonUserContext.getTimeZone(),
-                                                                                             yukonUserContext.getYukonUser());
+        StarsLMControlHistory controlHistory = 
+            LMControlHistoryUtil.getStarsLMControlHistory(holder.groupId,
+                                                          holder.inventoryId,
+                                                          customerAccountId,
+                                                          starsControlPeriod,
+                                                          yukonUserContext.getTimeZone(),
+                                                          yukonUserContext.getYukonUser());
         
         removeInvalidEnrollmentControlHistory(controlHistory, holder);
 

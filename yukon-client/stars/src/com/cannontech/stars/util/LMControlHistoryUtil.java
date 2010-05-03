@@ -479,6 +479,112 @@ public class LMControlHistoryUtil {
 		return ids;
 	}
 	
+	
+    public static StarsLMControlHistory getStarsLMControlHistory(int groupID, 
+                                                                   int inventoryId,
+                                                                   int accountId, 
+                                                                   StarsCtrlHistPeriod period, 
+                                                                   TimeZone tz, 
+                                                                   LiteYukonUser currentUser) {
+        /*
+         * Don't forget that startDate is simply based on whether it was an ALL, WEEKLY, 
+         * or MONTHLY choice on the UI page.  It isn't a true control period start date of any kind.
+         * 
+         * Example:  ALL means a startDate value of new Date() Now that the summary is calculated 
+         * by looking at all control history entries for a group and account each time we need to do
+         * away with passing in this startDate, we need to override this every time with a value of ALL.
+         */ 
+        Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, tz );
+        Date oneYearAgoDate = 
+            LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
+
+        LiteStarsLMControlHistory liteCtrlHist;
+        if (period.getType() == StarsCtrlHistPeriod.ALL_TYPE) {
+            liteCtrlHist = 
+                StarsDatabaseCache.getInstance().getLMControlHistory( groupID, new Date(0) );
+        /* Try to help performance a little bit here if we can.  
+         * loading a year is better than loading all entries if we don't need to.*/
+        } else {
+            liteCtrlHist = 
+                StarsDatabaseCache.getInstance().getLMControlHistory( groupID, oneYearAgoDate );
+        }
+        addActiveControlHistory( liteCtrlHist );
+        
+        //New enrollment, opt out, and control history tracking
+        //-------------------------------------------------------------------------------
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = 
+            (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
+        List<LMHardwareControlGroup> enrollments = 
+            lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(
+                                          inventoryId, 
+                                          groupID, 
+                                          accountId, 
+                                          LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        List<LMHardwareControlGroup> optOuts = 
+            lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(
+                                          inventoryId, 
+                                          groupID, 
+                                          accountId, 
+                                          LMHardwareControlGroup.OPT_OUT_ENTRY);
+        
+        StarsLMControlHistory starsCtrlHist = 
+            buildStarsControlHistoryForPeriod(liteCtrlHist, period, tz);
+        /*
+         * Wait until now to iterate through starsCtrlHist since the totals have already been
+         * calculated from all types of ActiveRestore types
+         */
+        StarsLMControlHistory currentStarsLMControlHistory = 
+            adjustLMControlHistoryByEnrollmentAndOptOutTimes(starsCtrlHist, 
+                                                             startDate, 
+                                                             enrollments, 
+                                                             optOuts);
+        
+        ControlSummary summaryForToday = new ControlSummary();
+        
+        if(period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
+            /* have to do each period separately here, otherwise carry-over control gets missed 
+             * since StarsLMControlHistory objects are constructed differently from the original 
+             * control history database entries depending on the period.
+             * 
+             * Example: Control that started at 10 pm yesterday and ran until 7 this morning should
+             * show up for today's period as 7 hours of control even though it was 10 hours of total
+             * control starting yesterday.
+             */
+            StarsLMControlHistory periodCtrlHist = 
+                buildStarsControlHistoryForPeriod(liteCtrlHist, StarsCtrlHistPeriod.PASTYEAR, tz);
+            summaryForToday.setAnnualTime(
+                                calculateSummaryControlValueForPeriod(periodCtrlHist, 
+                                                                      StarsCtrlHistPeriod.PASTYEAR, 
+                                                                      tz, enrollments, optOuts));
+            
+            periodCtrlHist = 
+                buildStarsControlHistoryForPeriod(liteCtrlHist, StarsCtrlHistPeriod.PASTMONTH, tz);
+            summaryForToday.setMonthlyTime(
+                                calculateSummaryControlValueForPeriod(periodCtrlHist, 
+                                                                      StarsCtrlHistPeriod.PASTMONTH, 
+                                                                      tz, enrollments, optOuts));
+            
+            periodCtrlHist = 
+                buildStarsControlHistoryForPeriod(liteCtrlHist, StarsCtrlHistPeriod.PASTDAY, tz);
+            summaryForToday.setDailyTime(
+                                calculateSummaryControlValueForPeriod(periodCtrlHist, 
+                                                                      StarsCtrlHistPeriod.PASTDAY, 
+                                                                      tz, enrollments, optOuts));
+        }
+        
+        currentStarsLMControlHistory.setControlSummary(summaryForToday);
+        currentStarsLMControlHistory.setBeingControlled(starsCtrlHist.getBeingControlled());
+        //-------------------------------------------------------------------------------
+        
+        return currentStarsLMControlHistory;
+    }
+
+    /**
+     * @Deprecated Use the getStarsLMControlHistory method that includes inventoryId.
+     * This method does not correctly represent enrollment and opt out periods.
+     *   
+     */
+     @Deprecated
 	public static StarsLMControlHistory getStarsLMControlHistory(int groupID, int accountId, StarsCtrlHistPeriod period, TimeZone tz, LiteYukonUser currentUser) {
         /*
          * Don't forget that startDate is simply based on whether it was an ALL, WEEKLY, or MONTHLY choice on the UI page.
