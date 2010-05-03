@@ -2862,7 +2862,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                     }
                     iterations++;
                 }
@@ -2947,7 +2947,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                     }
                     iterations++;
                 }
@@ -3015,7 +3015,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                     }
                     iterations++;
                 }
@@ -3092,7 +3092,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                     }
                     iterations++;
                 }
@@ -3226,7 +3226,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             {
                                 setKVARSolution(-1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                         }
                         else
                         {
@@ -3309,7 +3309,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             {
                                 setKVARSolution(1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                         }
                         else
                         {
@@ -3372,7 +3372,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                         }
                         else
                         {
@@ -3451,7 +3451,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit));
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !stringCompareIgnoreCase(getStrategy()->getControlUnits(), ControlStrategy::KVarControlUnit));
                         }
                         else
                         {
