@@ -144,6 +144,14 @@ public class CapControlComment {
 
             action = CommentAction.SYNC_CAPBANK_STATE;
 
+        } else if (cmdId == CapControlCommand.LTC_REMOTE_DISABLE ||
+                cmdId == CapControlCommand.LTC_REMOTE_ENABLE ||
+                cmdId == CapControlCommand.LTC_SCAN_INTEGRITY ||
+                cmdId == CapControlCommand.LTC_TAP_POSITION_LOWER ||
+                cmdId == CapControlCommand.LTC_TAP_POSITION_RAISE) {
+
+            action = CommentAction.LTC_CONTROL;
+
         }else {
             throw new RuntimeException("Unsupported Action: " + cmdId);
         }

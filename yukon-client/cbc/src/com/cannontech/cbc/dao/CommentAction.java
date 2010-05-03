@@ -10,5 +10,6 @@ public enum CommentAction {
     SEND_ALL_CONTROL, 
     CAPBANK_CONTROL, 
     VERIFY_CONTROL,
-    SYNC_CAPBANK_STATE
+    SYNC_CAPBANK_STATE,
+    LTC_CONTROL
 }
