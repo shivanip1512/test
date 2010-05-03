@@ -1,11 +1,13 @@
 package com.cannontech.core.authorization.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
+import com.google.common.collect.Multimap;
 
 /**
  * Dao for pao permissions
@@ -80,6 +82,28 @@ public interface PaoPermissionDao<T> {
      */
     public AuthorizationResponse hasPermissionForPao(List<T> itList, YukonPao pao, Permission permission);
 
+    /**
+     * Method to get a list of authorizations for a collection of paos and a permission
+     * @param paos - Collection of paos to get permissions for
+     * @param it - Thing asking permission
+     * @param permission - Permission in question
+     * @return - Map of authorization to pao mappings
+     */
+    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
+                                                                          T it, 
+                                                                          Permission permission);
+    
+    /**
+     * Method to get a list of authorizations for a collection of paos and a permission
+     * @param paos - Collection of paos to get permissions for
+     * @param it - List of things asking permission
+     * @param permission - Permission in question
+     * @return - Map of authorization to pao mappings
+     */
+    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
+                                                                          List<T> it, 
+                                                                          Permission permission);
+    
     /**
      * Method to add a pao permission for a thing
      * @param it - Thing to get permission

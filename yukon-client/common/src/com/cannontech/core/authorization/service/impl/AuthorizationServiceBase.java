@@ -1,6 +1,8 @@
 package com.cannontech.core.authorization.service.impl;
 
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
 
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authorization.support.Authorization;
@@ -8,6 +10,7 @@ import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.AuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 /**
@@ -58,19 +61,21 @@ public class AuthorizationServiceBase<T> implements AuthorizationService<T> {
     }
 
     @Override
-    public List<T> filterAuthorized(LiteYukonUser user, Iterable<? extends T> objectsToFilter, Permission... permissions) {
-        /* Start with a copy of the original list and then filter out an object if */
-        /* it doesn't pass one of the permissions. */
-        List<T> filteredList = Lists.newArrayList(objectsToFilter);
-        for(T t : objectsToFilter){
-            for(Permission permission : permissions){
-                if(!isAuthorized(user, permission, t)){
-                    filteredList.remove(t);
-                    break;
-                }
-            }
+    public List<T> filterAuthorized(LiteYukonUser user, 
+                                    Iterable<? extends T> objectsToFilter, 
+                                    Permission permission) {
+        
+        List<T> authorizedObjects = Lists.newArrayList();
+        Queue<T> inputQueue = new ArrayDeque<T>();
+        Iterables.addAll(inputQueue, objectsToFilter);
+        
+        for (Authorization<T> authorization : authorizationList) {
+            Queue<T> unknownQueue = new ArrayDeque<T>();
+            authorization.process(inputQueue, unknownQueue, authorizedObjects, user, permission);
+            inputQueue = unknownQueue;
         }
-        return filteredList;
+        
+        return authorizedObjects;
     }
 
 }

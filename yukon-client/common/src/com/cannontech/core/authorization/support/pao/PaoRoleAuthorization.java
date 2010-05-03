@@ -1,5 +1,8 @@
 package com.cannontech.core.authorization.support.pao;
 
+import java.util.Collection;
+import java.util.Queue;
+
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
@@ -27,6 +30,20 @@ public class PaoRoleAuthorization implements PaoAuthorization {
         } else {
             return AuthorizationResponse.UNAUTHORIZED;
         }
+    }
+    
+    @Override
+    public void process(Queue<YukonPao> inputQueue,
+                        Queue<YukonPao> unknownQueue,
+                        Collection<YukonPao> authorizedObjects,
+                        LiteYukonUser user, Permission permission) {
+
+        // Only check the role property - ignore permission and pao
+        if (this.roleChecker.check(user)) {
+            // authorized
+            authorizedObjects.addAll(inputQueue);
+        }
+        // unauthorized objects are ignored
     }
     
     @Override

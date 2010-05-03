@@ -29,12 +29,11 @@ public interface AuthorizationService<T> {
             throws NotAuthorizedException;
     
     /**
-     * Takes an Iterable<? extends T>, LiteYukonUser, some Permissions and returns the
-     * subset list that the user is authorized to use. 
-     * @param user
-     * @param objectsToFilter
-     * @param permissions
-     * @return
+     * Takes an Iterable<? extends T>, LiteYukonUser, a permission and returns the subset list 
+     * that the user is authorized to use. 
+     * @return - List of authorized objects
      */
-    public List<T> filterAuthorized(LiteYukonUser user, Iterable<? extends T> objectsToFilter, Permission... permissions);
+    public List<T> filterAuthorized(LiteYukonUser user, 
+                                    Iterable<? extends T> objectsToFilter, 
+                                    Permission permission);
 }

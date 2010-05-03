@@ -3,21 +3,30 @@ package com.cannontech.core.authorization.dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.model.GroupPaoPermission;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 /**
  * Group implementation for PaoPermissionDao
@@ -26,6 +35,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
 
     private JdbcOperations jdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     public void setJdbcOps(JdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -33,6 +43,10 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
 
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+    
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     public List<PaoPermission> getPermissions(LiteYukonGroup group) {
@@ -178,6 +192,74 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
                 return AuthorizationResponse.UNAUTHORIZED;
             }
         }
+    }
+    
+    @Override
+    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
+                                                                          LiteYukonGroup it,
+                                                                          Permission permission) {
+        return getPaoAuthorizations(paos, Lists.newArrayList(it), permission);
+    }
+    
+    @Override
+    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
+                                                                          List<LiteYukonGroup> it,
+                                                                          final Permission permission) {
+        
+        final Multimap<AuthorizationResponse, YukonPao> result = ArrayListMultimap.create();
+
+        final Multimap<Integer, YukonPao> paoLookup = ArrayListMultimap.create();
+        for(YukonPao pao : paos) {
+            int paoId = pao.getPaoIdentifier().getPaoId();
+            paoLookup.put(paoId, pao);
+        }
+        
+        final List<Integer> groupIdList = Lists.newArrayList();
+        for(LiteYukonGroup group : it) {
+            groupIdList.add(group.getGroupID());
+        }
+        
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        
+        template.query(new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT allow, paoId ");
+                sql.append("FROM GroupPaoPermission ");
+                sql.append("WHERE groupId").in(groupIdList);
+                sql.append("    AND paoid").in(subList);
+                sql.append("    AND permission").eq(permission.toString());
+                
+                return sql;
+            }
+        },
+        paoLookup.keySet(),
+        new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                int paoId = rs.getInt("paoId");
+                String allow = rs.getString("allow");
+                AllowDeny allowDeny = AllowDeny.valueOf(allow);
+
+                Collection<YukonPao> collection = paoLookup.removeAll(paoId);
+                if(AllowDeny.ALLOW.equals(allowDeny)) {
+                    // Pao is authorized
+                    result.putAll(AuthorizationResponse.AUTHORIZED, collection);
+                } else {
+                    // Pao is unauthorized
+                    result.putAll(AuthorizationResponse.UNAUTHORIZED, collection);
+                }
+
+            }
+        });
+        
+        // Add any leftover paos to the unknown list - there was no row in the paopermission table
+        // for these paos
+        result.putAll(AuthorizationResponse.UNKNOWN, paoLookup.values());
+        
+        return result;
+        
     }
 
     private void addPermission(int groupId, int paoId, Permission permission, boolean allow) {

@@ -1,5 +1,8 @@
 package com.cannontech.core.authorization.support;
 
+import java.util.Collection;
+import java.util.Queue;
+
 import com.cannontech.common.util.Checker;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.checker.NullUserChecker;
@@ -54,6 +57,33 @@ public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
             // authorized or not
             return AuthorizationResponse.UNKNOWN;
         }
+    }
+
+    @Override
+    public void process(Queue<T> inputQueue, Queue<T> unknownQueue,
+                        Collection<T> authorizedObjects, LiteYukonUser user,
+                        Permission permission) {
+        
+        if (this.permission.equals(permission)) {
+            boolean roleValue = this.roleChecker.check(user);
+            
+            for(T object : inputQueue) {
+                if(this.objectChecker.check(object)) {
+                    if(roleValue) {
+                        // authorized
+                        authorizedObjects.add(object);
+                    }
+                    // unauthorized objects are ignored
+                } else {
+                    // Object doesn't match checker - authorization unknown
+                    unknownQueue.add(object);
+                }
+            }
+        } else {
+            // Permission doesn't match - all objects are authorization unknown
+            unknownQueue.addAll(inputQueue);
+        }
+        
     }
     
     @Override

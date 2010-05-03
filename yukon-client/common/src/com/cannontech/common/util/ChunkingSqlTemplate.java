@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+
+import com.google.common.collect.Lists;
 
 public class ChunkingSqlTemplate<E> {
     public static final int DEFAULT_SIZE = 1000;
@@ -65,6 +68,30 @@ public class ChunkingSqlTemplate<E> {
     	}
     	
     	return resultList;
+    }
+
+    public <R> List<R> query(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input, 
+                             final RowCallbackHandler rch) {
+        
+        final List<E> tempInputList = Lists.newArrayList(input);
+        final List<R> resultList = Lists.newArrayList();
+        final List<SqlFragmentSource> queryList = Lists.newArrayList();
+        
+        int inputSize = tempInputList.size();
+        for (int start = 0; start < inputSize; start += chunkSize ) {
+            int nextToIndex = start + chunkSize;
+            int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
+            
+            List<E> subList = tempInputList.subList(start, toIndex);
+            SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
+            queryList.add(sqlFragmentSource);
+        }
+        
+        for (final SqlFragmentSource sql : queryList) {
+            simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
+        }
+        
+        return resultList;
     }
     
     public void update(final SqlGenerator<E> sqlGenerator, final Collection<E> input, final Object... args) {

@@ -1,6 +1,8 @@
 package com.cannontech.core.authorization.support.pao;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Queue;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -33,7 +35,7 @@ public class LMParentAuthorization implements PaoAuthorization {
                 // Control areas and Scenarios don't have parents
                 return AuthorizationResponse.UNKNOWN;
             } else if (PaoType.LM_DIRECT_PROGRAM.equals(type)) {
-                
+                // Program - check parent control areas and scenarios
                 List<YukonPao> parents = demandResponseDao.getControlAreasAndScenariosForProgram(pao);
                 for(YukonPao parent : parents) {
                     if(paoAuthorizationService.isAuthorized(user, permission, parent)) {
@@ -41,7 +43,7 @@ public class LMParentAuthorization implements PaoAuthorization {
                     }
                 }
             }  else {
-                
+                // Load Group - check parent macro groups and programs
                 List<YukonPao> parents = demandResponseDao.getProgramsForGroup(pao);
                 List<PaoIdentifier> macroGroupParents = loadGroupDao.getParentMacroGroups(pao);
                 parents.addAll(macroGroupParents);
@@ -52,13 +54,30 @@ public class LMParentAuthorization implements PaoAuthorization {
                 }
             }
 
-            // None of parents were authorized, don't know if we are authorized
+            // None of parents were authorized - authorization unknown
             return AuthorizationResponse.UNKNOWN;
                 
         } else {
-            // Either object or permission doesn't match - don't know if
-            // authorized or not
+            // Either object or permission doesn't match - authorization unknown
             return AuthorizationResponse.UNKNOWN;
+        }
+    }
+    
+    @Override
+    public void process(Queue<YukonPao> inputQueue,
+                        Queue<YukonPao> unknownQueue,
+                        Collection<YukonPao> authorizedObjects,
+                        LiteYukonUser user, Permission permission) {
+
+        for(YukonPao pao : inputQueue) {
+            AuthorizationResponse authorized = isAuthorized(user, permission, pao);
+            
+            if(AuthorizationResponse.AUTHORIZED.equals(authorized)) {
+                authorizedObjects.add(pao);
+            } else if(AuthorizationResponse.UNKNOWN.equals(authorized)) {
+                unknownQueue.add(pao);
+            }
+            // unauthorized objects are ignored
         }
     }
     

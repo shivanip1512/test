@@ -43,11 +43,13 @@
     <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
     	<property name="jdbcOps" ref="jdbcTemplate" />
     	<property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 	
     <bean id="groupPaoPermissionDao" class="com.cannontech.core.authorization.dao.GroupPaoPermissionDaoImpl" >
     	<property name="jdbcOps" ref="jdbcTemplate" />
     	<property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
     
   	<bean id="userEditorService" class="com.cannontech.core.authorization.service.impl.PaoPermissionEditorServiceImpl">

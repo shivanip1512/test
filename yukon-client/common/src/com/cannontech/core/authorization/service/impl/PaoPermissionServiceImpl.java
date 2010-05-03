@@ -1,6 +1,7 @@
 package com.cannontech.core.authorization.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +16,8 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * Implementation for PaoPermissionService
@@ -96,7 +99,41 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         
         return ret;
     }
+    
+    @Override
+    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
+                                                                          LiteYukonUser user,
+                                                                          Permission permission) {
+        if(!permission.isSettablePerPao()) {
+            // Authorization unknown for all paos
+            Multimap<AuthorizationResponse, YukonPao> result = ArrayListMultimap.create();     
+            result.putAll(AuthorizationResponse.UNKNOWN, paos);
+            return result;
+        }
+        
+        // Get user pao authorizations
+        Multimap<AuthorizationResponse, YukonPao> userPaoAuthorizations = 
+            userPaoPermissionDao.getPaoAuthorizations(paos, user, permission);
+        
+        // Get group pao authorizations for the user
+        List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
+        Collection<YukonPao> unknownUserPaos = 
+            userPaoAuthorizations.get(AuthorizationResponse.UNKNOWN);
+        Multimap<AuthorizationResponse, YukonPao> groupPaoAuthorizations = 
+            groupPaoPermissionDao.getPaoAuthorizations(unknownUserPaos, userGroups, permission);
+        
+        // Add the authorized and unauthorized paos from the user results to the group results to 
+        // get the final map of authorizations.  The unknown paos from the user results are not 
+        // useful since the group authorizations hopefully shrunk that list.
+        groupPaoAuthorizations.putAll(AuthorizationResponse.AUTHORIZED, 
+                                      userPaoAuthorizations.get(AuthorizationResponse.AUTHORIZED));
 
+        groupPaoAuthorizations.putAll(AuthorizationResponse.UNAUTHORIZED, 
+                                      userPaoAuthorizations.get(AuthorizationResponse.UNAUTHORIZED));
+        
+        return groupPaoAuthorizations;
+    }
+    
     public void addGroupPermission(LiteYukonGroup group, YukonPao pao,
             Permission permission, boolean allow) {
         validatePermission(permission);
