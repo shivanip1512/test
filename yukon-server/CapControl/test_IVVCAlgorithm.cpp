@@ -310,9 +310,9 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculatio
     {
         test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
 
-        double test_calculateVf(const PointValueMap &voltages, std::set<long> ignorePoints)
+        double test_calculateVf(const PointValueMap &voltages)
         {
-            return calculateVf(voltages, ignorePoints);
+            return calculateVf(voltages);
         }
     };
 
@@ -357,28 +357,41 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculatio
     // check to 6 significant digits (rounded)
 
     // Don't exclude any points
-    BOOST_CHECK_CLOSE( 2.187500 , _algorithm.test_calculateVf( _voltages, ignorePoints) , 0.0001 );
+    BOOST_CHECK_CLOSE( 2.187500 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
 
     // Exclude a single point
-    ignorePoints.insert(1000);
-    BOOST_CHECK_CLOSE( 2.242857 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 2.242857 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
+    //ignorePoints.insert(1000);
+    _voltages.erase(1000);
+    BOOST_CHECK_CLOSE( 2.242857 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 2.242857 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
 
-    ignorePoints.clear();
-    ignorePoints.insert(1002);
-    BOOST_CHECK_CLOSE( 1.942857 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 1.942857 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
+    //ignorePoints.clear();
+    _value.value    = 120.0;
+    _voltages[1000] = _value;
+
+    //ignorePoints.insert(1002);
+    _voltages.erase(1002);
+    BOOST_CHECK_CLOSE( 1.942857 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 1.942857 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
 
     // Exclude two points
-    ignorePoints.insert(1000);
-    BOOST_CHECK_CLOSE( 1.966667 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 1.966667 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
+    //ignorePoints.insert(1000);
+    _voltages.erase(1000);
+    BOOST_CHECK_CLOSE( 1.966667 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 1.966667 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
 
-    ignorePoints.clear();
-    ignorePoints.insert(1006);
-    ignorePoints.insert(1007);
-    BOOST_CHECK_CLOSE( 0.900000 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.900000 , _algorithm.test_calculateVf( _voltages, ignorePoints ) , 0.0001 );
+    //ignorePoints.clear();
+    _value.value    = 120.0;
+    _voltages[1000] = _value;
+    _value.value    = 122.1;
+    _voltages[1002] = _value;
+
+    //ignorePoints.insert(1006);
+    _voltages.erase(1006);
+    //ignorePoints.insert(1007);
+    _voltages.erase(1007);
+    BOOST_CHECK_CLOSE( 0.900000 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
+    BOOST_CHECK_CLOSE( 0.900000 , _algorithm.test_calculateVf( _voltages ) , 0.0001 );
 }
 
 
@@ -412,9 +425,9 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_ltc_tap_operation_calculati
     {
         test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
 
-        int test_calculateVte(const PointValueMap &voltages, std::set<long> ignorePoints, const double Vmin, const double Vrm, const double Vmax)
+        int test_calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax)
         {
-            return calculateVte(voltages, ignorePoints, Vmin, Vrm, Vmax);
+            return calculateVte(voltages, Vmin, Vrm, Vmax);
         }
     };
 
@@ -458,38 +471,50 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_ltc_tap_operation_calculati
 
     // Don't exclude any points - all voltages within limits, on both sides of the margin - no operation
 
-    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, ignorePoints, 115.0, 119.0, 125.0 ) );
+    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 125.0 ) );
 
     // exclude the only point that is below the marginal voltage - should tap down
 
-    ignorePoints.insert(1006);
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, ignorePoints, 115.0, 119.0, 125.0 ) );
+    //ignorePoints.insert(1006);
+    _voltages.erase(1006);
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 125.0 ) );
 
     // Don't exclude any points - single voltage over limit - should tap down
-    ignorePoints.clear();
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, ignorePoints, 115.0, 119.0, 122.0 ) );
+    //ignorePoints.clear();
+    _value.value    = 118.2;
+    _voltages[1006] = _value;
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 122.0 ) );
 
     // exclude the only point that is above the max voltage - no operation
-    ignorePoints.insert(1002);
-    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, ignorePoints, 115.0, 119.0, 122.0 ) );
+    //ignorePoints.insert(1002);
+    _voltages.erase(1002);
+    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 115.0, 119.0, 122.0 ) );
 
 
     // Don't exclude any points - single voltage over limit and single voltage under limit - should tap down
-    ignorePoints.clear();
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, ignorePoints, 119.0, 120.0, 122.0 ) );
+    //ignorePoints.clear();
+    _value.value    = 122.1;
+    _voltages[1002] = _value;
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
 
     // exclude the point above the max voltage - should tap up
-    ignorePoints.insert(1002);
-    BOOST_CHECK_EQUAL(  1 , _algorithm.test_calculateVte( _voltages, ignorePoints, 119.0, 120.0, 122.0 ) );
+    //ignorePoints.insert(1002);
+    _voltages.erase(1002);
+    BOOST_CHECK_EQUAL(  1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
 
     // exclude the point below the min voltage - should tap down
-    ignorePoints.clear();
-    ignorePoints.insert(1006);
-    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, ignorePoints, 119.0, 120.0, 122.0 ) );
+    //ignorePoints.clear();
+    _value.value    = 122.1;
+    _voltages[1002] = _value;
+
+    //ignorePoints.insert(1006);
+    _voltages.erase(1006);
+    BOOST_CHECK_EQUAL( -1 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
 
     // exclude the points above the max voltage and below min - no operation
-    ignorePoints.insert(1002);
-    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, ignorePoints, 119.0, 120.0, 122.0 ) );
+    //ignorePoints.insert(1002);
+    _voltages.erase(1002);
+    BOOST_CHECK_EQUAL(  0 , _algorithm.test_calculateVte( _voltages, 119.0, 120.0, 122.0 ) );
 }
 
 

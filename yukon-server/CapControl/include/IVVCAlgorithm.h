@@ -22,9 +22,8 @@ class IVVCAlgorithm
         virtual void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<long>& pointIds, std::set<long>& requestPoints);
 
         double calculatePowerFactor(const double varValue, const double wattValue);
-        double calculateVf(const PointValueMap &voltages, const std::set<long> pointIdsToSkip);
-        int calculateVte(const PointValueMap &voltages, const std::set<long> pointIdsToSkip, const double Vmin,
-                         const double Vrm, const double Vmax);
+        double calculateVf(const PointValueMap &voltages);
+        int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax);
         double calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor);
 
         virtual void operateBank(long bankId, CtiCCSubstationBusPtr subbus, DispatchConnectionPtr dispatchConnection);

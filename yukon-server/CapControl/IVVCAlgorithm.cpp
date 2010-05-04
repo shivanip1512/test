@@ -53,9 +53,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         return;
     }
 
-	bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
+        bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
 
-	//This would be better if we had some method of executing a function at a scheduled time.
+        //This would be better if we had some method of executing a function at a scheduled time.
     //Have the Ltc update its flags
     ltcPtr->updateFlags();
 
@@ -656,7 +656,7 @@ void IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
     }
 }
 
-double IVVCAlgorithm::calculateVf(const PointValueMap &voltages, const std::set<long> pointIdsToSkip)
+double IVVCAlgorithm::calculateVf(const PointValueMap &voltages)
 {
     double   totalSum   = 0.0;
     double   minimum    = std::numeric_limits<double>::max();
@@ -669,21 +669,16 @@ double IVVCAlgorithm::calculateVf(const PointValueMap &voltages, const std::set<
 
     for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
     {
-        // Need to ignore the watt and var points that are passed in.
-        if (pointIdsToSkip.find(b->first) == pointIdsToSkip.end())
-        {
-            totalSum += b->second.value;
-            minimum = std::min( minimum, b->second.value );
-            totalCount++;
-        }
+        totalSum += b->second.value;
+        minimum = std::min( minimum, b->second.value );
+        totalCount++;
     }
 
     return ( ( totalSum / totalCount ) - minimum  );
 }
 
 
-int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const std::set<long> pointIdsToSkip, const double Vmin,
-                                const double Vrm, const double Vmax)
+int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax)
 {
     bool lowerTap = false;
     bool raiseTap = false;
@@ -696,13 +691,9 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const std::set<lo
 
     for ( PointValueMap::const_iterator b = voltages.begin(), e = voltages.end(); b != e; ++b )
     {
-        // Need to ignore the points in the skip set.
-        if (pointIdsToSkip.find(b->first) == pointIdsToSkip.end())
-        {
-            if ( b->second.value > Vmax ) { lowerTap = true; }
-            if ( b->second.value < Vmin ) { raiseTap = true; }
-            if ( b->second.value <= Vrm ) { marginTap = false; }
-        }
+        if ( b->second.value > Vmax ) { lowerTap = true; }
+        if ( b->second.value < Vmin ) { raiseTap = true; }
+        if ( b->second.value <= Vrm ) { marginTap = false; }
     }
 
     return (( lowerTap || marginTap ) ? -1 : raiseTap ? 1 : 0);
@@ -858,31 +849,30 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     // Can't get here if these IDs don't exist
     long wattPointID = subbus->getCurrentWattLoadPointId();
-    pointIdsToSkip.insert(wattPointID);
-
     PointValueMap::iterator iter = pointValues.find(wattPointID);
     double wattValue = iter->second.value;
+    pointValues.erase(wattPointID);
 
     double varValue = 0.0;
 
     std::list<long> pointIds = subbus->getCurrentVarLoadPoints();
     for each (long pointId in pointIds)
     {
-        pointIdsToSkip.insert(pointId);
         iter = pointValues.find(pointId);
         varValue += iter->second.value;
-    }
+        pointValues.erase(pointId);
+    }//At this point we have removed the var and watt points. Only volt points remain.
 
     double PFBus = calculatePowerFactor(varValue, wattValue);
 
     //calculate potential tap operation
-    int tapOp = calculateVte(pointValues, pointIdsToSkip,
+    int tapOp = calculateVte(pointValues,
                              strategy->getLowerVoltLimit(isPeakTime),
                              strategy->getLowerVoltLimit(isPeakTime) + strategy->getVoltageRegulationMargin(isPeakTime),
                              strategy->getUpperVoltLimit(isPeakTime));
 
     //calculate current flatness of the bus
-    double Vf = calculateVf(pointValues, pointIdsToSkip);
+    double Vf = calculateVf(pointValues);
 
     //calculate current weight of the bus
     double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
@@ -898,10 +888,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         dout << "Voltages [ Point ID : Value ]" << endl;
         for ( PointValueMap::const_iterator b = pointValues.begin(), e = pointValues.end(); b != e; ++b )
         {
-            if (pointIdsToSkip.find(b->first) == pointIdsToSkip.end())     // Ignore the watt and var points.
-            {
-                dout << b->first << " : " << b->second.value << endl;
-            }
+            dout << b->first << " : " << b->second.value << endl;
         }
         dout << "Subbus Watts        : " << wattValue << endl;
         dout << "Subbus VARs         : " << varValue << endl;
@@ -973,7 +960,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 }
 
                 //calculate estimated flatness of the bus if current bank switches state
-                state->_estimated[currentBank->getPaoId()].flatness = calculateVf(deltas, pointIdsToSkip);
+                state->_estimated[currentBank->getPaoId()].flatness = calculateVf(deltas);
 
                 //calculate estimated power factor of the bus if current bank switches state
                 double estVarValue = varValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() );
