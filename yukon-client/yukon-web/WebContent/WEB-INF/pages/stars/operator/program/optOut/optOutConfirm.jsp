@@ -76,13 +76,13 @@
             </table>
 
             <br>
-            <input type="submit" value="<cti:msg2 key='.save'/>" />
-
-            <cti:url var="optOutUrl" value="/spring/stars/operator/program/optOut">
-                <cti:param name="accountId" value="${accountId}" />
-            </cti:url>
-            <input type="button" width="80px" value="<cti:msg2 key='.cancel'/>"
-                   onclick="javascript:location.href='${optOutUrl}';">
+            <button type="submit">
+                <i:inline key=".save"/>
+            </button>
+            
+            <button type="submit" name="cancel">
+                <i:inline key=".cancel"/>
+            </button>
 
         </form:form>
     </tags:formElementContainer>

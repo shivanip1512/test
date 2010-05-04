@@ -970,7 +970,7 @@
 		    	</page>
 		    	<page name="optOut.main" type="DETAIL_CHILD_WITH_INFO" contributeToMenu="true">
 		    		<menu>account</menu>
-		           	<link>/spring/stars/operator/program/optOut?accountId=${accountId}</link>
+		           	<link>/spring/stars/operator/program/optOut/view?accountId=${accountId}</link>
 		           	<labelArgument>${accountNumber}</labelArgument>
                     <pages>
                         <page name="optOut.inventoryList" type="DETAIL_CHILD_WITH_INFO">

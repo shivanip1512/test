@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.DateTime;
@@ -23,7 +24,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -64,6 +64,7 @@ import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
+@RequestMapping(value = "/operator/program/optOut/*")
 public class OperatorProgramOptOutOperatorController {
     
     private CustomerAccountDao customerAccountDao;
@@ -77,7 +78,7 @@ public class OperatorProgramOptOutOperatorController {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    @RequestMapping(value = "/operator/program/optOut")
+    @RequestMapping
     public String view(YukonUserContext yukonUserContext, 
                         ModelMap modelMap,
                         AccountInfoFragment accountInfoFragment) {
@@ -142,14 +143,18 @@ public class OperatorProgramOptOutOperatorController {
         return "operator/program/optOut/optOut.jsp";
     }
 
-    @RequestMapping(value = "/operator/program/optOut/view2")
-    public String view2(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
-                         BindingResult bindingResult,
-                         ModelMap modelMap,
-                         YukonUserContext userContext,
-                         FlashScope flashScope,
-                         AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+    @RequestMapping
+    public String deviceSelection(
+                       @ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
+                       BindingResult bindingResult,
+                       ModelMap modelMap,
+                       YukonUserContext userContext,
+                       FlashScope flashScope,
+                       AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+        
         // Check to see if the user can only opt out today.  If so set the start date to today.
         boolean isOptOutTodayOnly = 
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, 
@@ -168,6 +173,7 @@ public class OperatorProgramOptOutOperatorController {
             List<MessageSourceResolvable> messages = 
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            
             return view(userContext, modelMap, accountInfoFragment);
         } 
 
@@ -191,7 +197,7 @@ public class OperatorProgramOptOutOperatorController {
         return "operator/program/optOut/optOutList.jsp";
     }
 
-    @RequestMapping(value = "/operator/program/optOut/optOutQuestions")
+    @RequestMapping
     public String optOutQuestions(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
                                    BindingResult bindingResult,
                                    HttpServletRequest request, 
@@ -200,14 +206,26 @@ public class OperatorProgramOptOutOperatorController {
                                    YukonUserContext userContext,
                                    FlashScope flashScope,
                                    AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException, CommandCompletionException {
+
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+        
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
         if (inventoryIds.size() == 0) {
         	
-            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.noInventorySelected"), FlashScopeMessageType.ERROR);
-            return "redirect:/spring/stars/operator/program/optOut";
+            flashScope.setMessage(
+                           new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.noInventorySelected"), 
+                           FlashScopeMessageType.ERROR);
+
+            return deviceSelection(optOutBackingBean,
+                                    bindingResult,
+                                    modelMap,
+                                    userContext,
+                                    flashScope,
+                                    accountInfoFragment);
 
         }
 
@@ -224,22 +242,24 @@ public class OperatorProgramOptOutOperatorController {
             processOptOut(optOutBackingBean, bindingResult, request, modelMap,
                           userContext, flashScope, accountInfoFragment,
                           inventoryIds, customerAccount);
-
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
-            return "redirect:/spring/stars/operator/program/optOut";
+            return "redirect:view";
         }
         
         return confirm(optOutBackingBean, jsonInventoryIds, modelMap, 
                         userContext, accountInfoFragment);
     }
     
-    @RequestMapping("/operator/program/optOut/confirm")
+    @RequestMapping
     public String confirm(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
                            String jsonInventoryIds, 
                            ModelMap modelMap,
                            YukonUserContext yukonUserContext,
                            AccountInfoFragment accountInfoFragment) {
 
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       yukonUserContext.getYukonUser());
+                
         List<String> questions = 
             OptOutControllerHelper.getConfirmQuestions(
                     messageSourceResolver, 
@@ -254,7 +274,7 @@ public class OperatorProgramOptOutOperatorController {
         return "operator/program/optOut/optOutConfirm.jsp";
     }
     
-    @RequestMapping(value = "/operator/program/optOut/optOutHistory", method = RequestMethod.GET)
+    @RequestMapping
     public String optOutHistory(ModelMap modelMap,
                                  AccountInfoFragment accountInfoFragment) {
         
@@ -267,7 +287,7 @@ public class OperatorProgramOptOutOperatorController {
         return "operator/program/optOut/optOutHistory.jsp";
     }
     
-    @RequestMapping("/operator/program/optOut/update")
+    @RequestMapping
     public String update(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
                           BindingResult bindingResult,
                           String jsonInventoryIds, 
@@ -276,6 +296,9 @@ public class OperatorProgramOptOutOperatorController {
                           YukonUserContext userContext,
                           FlashScope flashScope,
                           AccountInfoFragment accountInfoFragment) throws Exception {
+
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
 
         String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
         List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
@@ -297,7 +320,7 @@ public class OperatorProgramOptOutOperatorController {
         }
        
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.success"));
-        return "redirect:/spring/stars/operator/program/optOut";
+        return "redirect:view";
     }
 
     /**
@@ -360,12 +383,15 @@ public class OperatorProgramOptOutOperatorController {
         }
     }
 
-    @RequestMapping(value = "/operator/program/optOut/cancel")
-    public String cancel(Integer eventId,
-                          FlashScope flashScope,
-                          ModelMap modelMap,
-                          YukonUserContext yukonUserContext,
-                          AccountInfoFragment accountInfoFragment) throws Exception {
+    @RequestMapping
+    public String cancelOptOut(Integer eventId,
+                                FlashScope flashScope,
+                                ModelMap modelMap,
+                                YukonUserContext yukonUserContext,
+                                AccountInfoFragment accountInfoFragment) throws Exception {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       yukonUserContext.getYukonUser());
         
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -379,16 +405,19 @@ public class OperatorProgramOptOutOperatorController {
                               "yukon.web.modules.operator.optOut.main.cancelOptOut.successText"));
         
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
-        return "redirect:/spring/stars/operator/program/optOut";
+        return "redirect:view";
     }
 
-    @RequestMapping(value = "/operator/program/optOut/allowAnother")
+    @RequestMapping
     public String allowAnother(Integer inventoryId,  
                                 FlashScope flashScope,
                                 ModelMap modelMap,
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -400,16 +429,18 @@ public class OperatorProgramOptOutOperatorController {
                                "yukon.web.modules.operator.optOut.main.allowOne.successText"));
                
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
-        return "redirect:/spring/stars/operator/program/optOut";
+        return "redirect:view";
     }
     
-    @RequestMapping(value = "/operator/program/optOut/repeat")
+    @RequestMapping
     public String repeat(Integer inventoryId,
                           FlashScope flashScope,
                           ModelMap modelMap,
                           YukonUserContext yukonUserContext,
                           AccountInfoFragment accountInfoFragment) throws Exception {
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       yukonUserContext.getYukonUser());
         
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -425,16 +456,18 @@ public class OperatorProgramOptOutOperatorController {
                                "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
                
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
-        return "redirect:/spring/stars/operator/program/optOut";
+        return "redirect:view";
     }
     
-    @RequestMapping(value = "/operator/program/optOut/resetToLimit")
+    @RequestMapping
     public String resetToLimit(Integer inventoryId, 
                                 FlashScope flashScope,
                                 ModelMap modelMap,
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) {
 
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
         
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
@@ -447,7 +480,17 @@ public class OperatorProgramOptOutOperatorController {
                                "yukon.web.modules.operator.optOut.main.resetToLimit.successText"));
                
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
-        return "redirect:/spring/stars/operator/program/optOut";
+        return "redirect:view";
+    }
+
+    @RequestMapping(params="cancel")
+    public String cancel(ModelMap modelMap,
+                          AccountInfoFragment accountInfoFragment,
+                          YukonUserContext userContext,
+                          HttpSession session) {
+        
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        return "redirect:view";
     }
     
     /**
