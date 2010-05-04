@@ -144,7 +144,10 @@ inline RWvistream& operator>>(RWvistream &strm, bool& b)
  * RW stream operators.  serialize stl containers
  */
 
-/* --Overload to put Vectors on stream for saveguts in capcontrol. used when Replacing RWOrdered */
+/* --Overload to put Vectors on stream for saveguts in capcontrol. used when Replacing RWOrdered* 
+*  Note that this cannot do a vector copy, RWCollection objects must never be put onto the stream
+*  using temporary objects. RW does pointer comparison to know if an object is already on the stream
+*  and if the object was on the stack, it is easy for another object to use the same pointer address.*/ 
 template <class T> 
 RWvostream& operator<< ( RWvostream& strm, const std::vector<T> &v )
 {
