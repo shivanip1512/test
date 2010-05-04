@@ -40,17 +40,17 @@ public class GeneralAlarmPointMonitorProcessorFactory extends MonitorProcessorFa
 	    PointMonitorProcessor monitorProcessor = new PointMonitorProcessor() {
 	
 	        @Override
-	        public boolean evaluate(RichPointData richPointValue) {
+	        public boolean evaluate(RichPointData richPointData) {
 
-	            PointIdentifier pointIdentifier = richPointValue.getPaoPointIdentifier().getPointIdentifier();
+	            PointIdentifier pointIdentifier = richPointData.getPaoPointIdentifier().getPointIdentifier();
 	            // get the paoPointIdentifier for the attribute 
-	            PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointValue.getPaoPointIdentifier().getPaoIdentifier(), BuiltInAttribute.GENERAL_ALARM_FLAG);
+	            PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointData.getPaoPointIdentifier().getPaoIdentifier(), BuiltInAttribute.GENERAL_ALARM_FLAG);
 
-	            // the richPointValue matches the attribute we're looking for
+	            // the richPointData matches the attribute we're looking for
 	            if (pointIdentifier.equals(paoPointIdentifier.getPointIdentifier())) {
 
 	                // if the value is 1 (TRUE), flag was set
-	                if ( richPointValue.getPointValue().getValue() == 1) {
+	                if ( richPointData.getPointValue().getValue() == 1) {
 	                    return true;
 	                }
 	            }

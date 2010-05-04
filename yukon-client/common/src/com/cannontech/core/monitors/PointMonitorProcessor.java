@@ -8,10 +8,10 @@ public interface PointMonitorProcessor {
 
 	/**
 	 * Evaluates the pointValue for the processor.
-	 * @param richPointValue
+	 * @param richPointData
 	 * @return true if the pointValue matches the qualifications of the processor, else false.
 	 */
-	public boolean evaluate(RichPointData richPointValue);
+	public boolean evaluate(RichPointData richPointData);
 
 	/**
 	 * Returns the group this processor is monitoring

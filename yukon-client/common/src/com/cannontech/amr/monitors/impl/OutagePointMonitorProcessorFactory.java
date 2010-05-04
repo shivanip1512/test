@@ -49,20 +49,20 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
         PointMonitorProcessor monitorProcessor = new PointMonitorProcessor() {
 
             @Override
-            public boolean evaluate(RichPointData richPointValue) {
+            public boolean evaluate(RichPointData richPointData) {
 
-                PointIdentifier pointIdentifier = richPointValue.getPaoPointIdentifier()
+                PointIdentifier pointIdentifier = richPointData.getPaoPointIdentifier()
                                                                 .getPointIdentifier();
                 // get the paoPointIdentifier for the attribute
-                PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointValue.getPaoPointIdentifier().getPaoIdentifier(),
+                PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointData.getPaoPointIdentifier().getPaoIdentifier(),
                                                                                                            BuiltInAttribute.BLINK_COUNT);
 
-                // the richPointValue matches the attribute we're looking for
+                // the richPointData matches the attribute we're looking for
                 if (pointIdentifier.equals(paoPointIdentifier.getPointIdentifier())) {
-                    List<PointValueHolder> latestPreviousReadings = getLatestPreviousReading(richPointValue);
+                    List<PointValueHolder> latestPreviousReadings = getLatestPreviousReading(richPointData);
                     if (!latestPreviousReadings.isEmpty()) {
                         PointValueHolder latestPreviousReading = latestPreviousReadings.get(0);
-                        double thisReading = richPointValue.getPointValue().getValue();
+                        double thisReading = richPointData.getPointValue().getValue();
                         double previousReading = latestPreviousReading.getValue();
                         double delta = thisReading - previousReading;
 
@@ -76,7 +76,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 return false;
             }
 
-            private List<PointValueHolder> getLatestPreviousReading(RichPointData richPointValue) {
+            private List<PointValueHolder> getLatestPreviousReading(RichPointData richPointData) {
                 Date startDate = outageMonitorService.getLatestPreviousReadingDate(outageMonitor);
 
                 // use a threshold of time that is up to x times the time
@@ -86,7 +86,7 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
                 int maxNumberOfDays = outageMonitor.getTimePeriodDays() * 4;
                 Duration maxDuration = Duration.standardDays(maxNumberOfDays);
                 Date stopDate = new Instant(startDate).minus(maxDuration).toDate();
-                return rawPointHistoryDao.getPointData(richPointValue.getPointValue().getId(),
+                return rawPointHistoryDao.getPointData(richPointData.getPointValue().getId(),
                                                        startDate,
                                                        stopDate,
                                                        1);
