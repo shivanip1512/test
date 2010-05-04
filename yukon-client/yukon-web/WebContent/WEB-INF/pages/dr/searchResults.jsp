@@ -7,7 +7,6 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="searchResults">
-    <cti:standardMenu/>
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
@@ -15,17 +14,17 @@
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
 
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.searchResults.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.searchResults.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.searchResults.breadcrumb.home"/></cti:crumbLink>
-    </cti:breadCrumbs>
-
     <c:set var="baseUrl" value="/spring/dr/search"/>
+    
+    <form accept-charset="ISO-8859-1" method="get" action="/spring/dr/search" enctype="application/x-www-form-urlencoded">
+    	<div id="findForm">
+    		Find:
+    		<input id="textinput" value="${quickSearchBean.name}" name="name" type="text"/>
+    		<input style="vertical-align: middle" alt="Go" name="Go" src="/WebConfig/yukon/Buttons/GoButtonGray.gif" type="image"/>
+    	</div>
+    </form>
+    <br />
+    
     <cti:msg var="searchTitle" key="yukon.web.modules.dr.searchResults.searchResult" argument="${quickSearchBean.name}"/>
     <tags:pagedBox title="${searchTitle}" searchResult="${searchResult}"
         baseUrl="${baseUrl}">
@@ -53,7 +52,7 @@
                     <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="${favoritesByPaoId[pao.paoIdentifier.paoId]}"/></td>
                     <td>
                         <cti:paoDetailUrl yukonPao="${pao}">
-                            <spring:escapeBody>${pao.name}</spring:escapeBody>
+                            <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
                         </cti:paoDetailUrl>
                     </td>
                     <td>

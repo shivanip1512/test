@@ -96,11 +96,11 @@ gearChanged = function() {
 <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"
-            argument="${controlArea.name}"/>
+        	htmlEscape="true" argument="${controlArea.name}"/>
     </c:if>
     <c:if test="${!empty scenario}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario"
-            argument="${scenario.name}"/>
+        	htmlEscape="true" argument="${scenario.name}"/>
     </c:if>
 </h1>
 
@@ -173,10 +173,10 @@ gearChanged = function() {
                 <form:checkbox path="programStartInfo[${status.index}].startProgram"
                     id="startProgramCheckbox${status.index}"
                     onclick="singleProgramChecked(this);"/>
-                <label for="startProgramCheckbox${status.index}"><spring:escapeBody>${program.name}</spring:escapeBody></label></td>
+                <label for="startProgramCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label></td>
                 <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()">
                     <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
-                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
+                        <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
                     </c:forEach>
                 </form:select></td>
                 <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>

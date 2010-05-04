@@ -37,7 +37,7 @@ updateComponentAvailability = function() {
 
 <h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
-        argument="${program.name}"/>
+    	htmlEscape="true" argument="${program.name}"/>
 </h1>
 
 <form:form id="stopProgramForm" commandName="backingBean" onsubmit="return submitForm();">
@@ -81,7 +81,7 @@ updateComponentAvailability = function() {
                     <tr><td class="padded">
                         <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                             <c:forEach var="gear" varStatus="status" items="${gears}">
-                                <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
+                                <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
                             </c:forEach>
                         </form:select><br>
                         <script type="text/javascript">updateComponentAvailability();</script>

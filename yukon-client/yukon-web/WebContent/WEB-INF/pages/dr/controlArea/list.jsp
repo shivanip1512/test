@@ -7,23 +7,12 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="controlAreaList">
-    <cti:standardMenu menuSelection="details|controlareas"/>
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.controlAreaList.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.controlAreaList.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas"/></cti:crumbLink>
-    </cti:breadCrumbs>
 
     <c:set var="baseUrl" value="/spring/dr/controlArea/list"/>
     <cti:url var="submitUrl" value="${baseUrl}"/>

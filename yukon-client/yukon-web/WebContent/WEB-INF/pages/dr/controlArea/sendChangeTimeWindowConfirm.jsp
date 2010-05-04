@@ -3,7 +3,7 @@
 
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.confirmQuestion"
-            arguments="${startTime},${stopTime},${controlArea.name}" />
+			htmlEscape="true" arguments="${startTime},${stopTime},${controlArea.name}" />
     </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/controlArea/changeTimeWindow"/>

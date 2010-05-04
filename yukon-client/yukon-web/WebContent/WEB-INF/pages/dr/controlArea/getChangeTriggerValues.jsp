@@ -5,7 +5,7 @@
 
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.instructions"
-            argument="${controlArea.name}" />
+			htmlEscape="true" argument="${controlArea.name}" />
     </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/controlArea/triggerChange"/>

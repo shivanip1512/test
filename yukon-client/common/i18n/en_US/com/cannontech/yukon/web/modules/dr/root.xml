@@ -3,5 +3,6 @@
 <properties>
 
     <entry key="yukon.web.modules.dr.pageTitle">Consumer Energy Services</entry>
-    
+    <entry key="yukon.web.modules.dr.moduleName">Demand Response</entry>
+
 </properties>

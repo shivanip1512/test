@@ -5,11 +5,11 @@
         <c:choose>
             <c:when test="${isEnabled}">
                 <cti:msg key="yukon.web.modules.dr.program.sendEnableConfirm.confirmQuestion"
-                    argument="${program.name}"/>
+                	htmlEscape="true" argument="${program.name}"/>
             </c:when>
             <c:otherwise>
                 <cti:msg key="yukon.web.modules.dr.program.sendDisableConfirm.confirmQuestion"
-                    argument="${program.name}"/>
+                	htmlEscape="true" argument="${program.name}"/>
             </c:otherwise>
         </c:choose>
     </h1>

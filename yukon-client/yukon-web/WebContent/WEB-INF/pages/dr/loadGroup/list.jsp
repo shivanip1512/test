@@ -6,20 +6,9 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="loadGroupList">
-    <cti:standardMenu menuSelection="details|loadgroups"/>
 
     <tags:simpleDialog id="drDialog"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-        	<cti:msg key="yukon.web.modules.dr.loadGroupList.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.loadGroupList.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups"/></cti:crumbLink>
-    </cti:breadCrumbs>
 
     <c:set var="baseUrl" value="/spring/dr/loadGroup/list"/>
     <%@ include file="loadGroupList.jspf" %>

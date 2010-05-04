@@ -61,7 +61,7 @@ updateSubmitButtons = function() {
 
 <h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
-        argument="${program.name}"/>
+    	htmlEscape="true" argument="${program.name}"/>
 </h1>
 
 <form:form id="startProgramForm" commandName="backingBean" onsubmit="return submitForm();">
@@ -81,7 +81,7 @@ updateSubmitButtons = function() {
                     <tr><td>
                         <form:select path="gearNumber" id="gearNumber" onchange="gearChanged()">
                             <c:forEach var="gear" varStatus="status" items="${gears}">
-                                <form:option value="${status.index + 1}"><spring:escapeBody>${gear.gearName}</spring:escapeBody></form:option>
+                                <form:option value="${status.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
                             </c:forEach>
                         </form:select>
                     </td></tr>

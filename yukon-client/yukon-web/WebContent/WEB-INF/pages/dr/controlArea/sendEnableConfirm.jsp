@@ -5,11 +5,11 @@
         <c:choose>
             <c:when test="${isEnabled}">
                 <cti:msg key="yukon.web.modules.dr.controlArea.sendEnableConfirm.confirmQuestion"
-                    argument="${controlArea.name}"/>
+					htmlEscape="true" argument="${controlArea.name}"/>
             </c:when>
             <c:otherwise>
                 <cti:msg key="yukon.web.modules.dr.controlArea.sendDisableConfirm.confirmQuestion"
-                    argument="${controlArea.name}"/>
+					htmlEscape="true" argument="${controlArea.name}"/>
             </c:otherwise>
         </c:choose>
     </h1>

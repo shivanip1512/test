@@ -5,38 +5,19 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.loadGroupDetail.pageTitle" argument="${loadGroup.name}"/>
-<cti:standardPage module="dr" page="loadGroupDetail" title="${pageTitle}">
-    <cti:standardMenu menuSelection="details|loadgroups"/>
+<cti:standardPage module="dr" page="loadGroupDetail">
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/loadGroup/list">
-            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroups"/>
-        </cti:crumbLink>
-        <cti:crumbLink>
-            <cti:msg key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroup"
-                htmlEscape="true" argument="${loadGroup.name}"/>
-        </cti:crumbLink>
-    </cti:breadCrumbs>
-
-    <c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
-    <h2><dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
-        <cti:msg key="yukon.web.modules.dr.loadGroupDetail.loadGroup"
-        htmlEscape="true" argument="${loadGroup.name}"/></h2>
-    <br>
-
+	
+	<c:set var="loadGroupId" value="${loadGroup.paoIdentifier.paoId}"/>
+	<tags:layoutHeadingPrefixPart>
+		<dr:favoriteIcon paoId="${loadGroupId}" isFavorite="${isFavorite}"/>
+	</tags:layoutHeadingPrefixPart>
+	
     <table class="widgetColumns">
         <c:if test="${loadGroup.paoIdentifier.paoType != 'MACRO_GROUP'}">
         <tr>

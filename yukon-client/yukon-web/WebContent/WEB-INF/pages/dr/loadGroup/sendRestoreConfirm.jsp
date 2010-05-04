@@ -1,8 +1,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-    <h1 class="dialogQuestion"><cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.confirmQuestion"
-        argument="${loadGroup.name}"/></h1>
+    <h1 class="dialogQuestion">
+    	<cti:msg key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.confirmQuestion"
+    		htmlEscape="true" argument="${loadGroup.name}"/>
+    </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/loadGroup/sendRestore"/>
     <form id="sendRestoreForm" action="${submitUrl}"

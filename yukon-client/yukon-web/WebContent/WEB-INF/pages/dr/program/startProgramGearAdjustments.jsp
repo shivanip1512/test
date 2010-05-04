@@ -9,7 +9,7 @@
 <c:if test="${!empty program}">
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.program.startProgram.enterAdjustments"
-            argument="${program.name}"/>
+			htmlEscape="true" argument="${program.name}"/>
     </h1>
     <cti:url var="submitUrl" value="/spring/dr/program/start/constraints"/>
     <dr:programStartInfo page="startProgram"/>

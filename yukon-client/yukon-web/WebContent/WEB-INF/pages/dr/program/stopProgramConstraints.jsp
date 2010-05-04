@@ -21,7 +21,7 @@ overrideConstraintsChecked = function() {
 
     <h1 class="dialogQuestion">
         <cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
-            argument="${program.name}"/>
+        	htmlEscape="true" argument="${program.name}"/>
     </h1>
 
     <p>

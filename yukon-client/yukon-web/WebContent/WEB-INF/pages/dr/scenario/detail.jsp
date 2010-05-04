@@ -4,37 +4,18 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.scenarioDetail.pageTitle" argument="${scenario.name}"/>
 <cti:standardPage module="dr" page="scenarioDetail" title="${pageTitle}">
-    <cti:standardMenu menuSelection="details|scenarios"/>
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/scenario/list">
-            <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenarios"/>
-        </cti:crumbLink>
-        <cti:crumbLink>
-            <cti:msg key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenario"
-                htmlEscape="true" argument="${scenario.name}"/>
-        </cti:crumbLink>
-    </cti:breadCrumbs>
-
+	
     <c:set var="scenarioId" value="${scenario.paoIdentifier.paoId}"/>
-    <h2><dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}"/>
-        <cti:msg key="yukon.web.modules.dr.scenarioDetail.scenario"
-        htmlEscape="true" argument="${scenario.name}"/></h2>
-    <br>
+    <tags:layoutHeadingPrefixPart>
+    	<dr:favoriteIcon paoId="${scenarioId}" isFavorite="${isFavorite}"/>
+    </tags:layoutHeadingPrefixPart>
 
     <table class="widgetColumns">
         <tr>

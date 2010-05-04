@@ -315,9 +315,6 @@
       <options>
         <option name="home">
           <link>/spring/dr/home</link>
-        </option>
-        <option name="details">
-          <link>/spring/dr/details</link>
           <options>
             <option name="scenarios">
               <requireRoleProperty value="SHOW_SCENARIOS" />
@@ -339,8 +336,71 @@
       </options>
     </menu>
     
-    <search bean="drSearchProducer" />
- 	
+    <pages>
+    	<page name="home" type="LANDING">
+    		<menu>home</menu>
+    		<link>/spring/dr/home</link>
+    		<pages>
+    			<page name="scenarioList" type="BASIC">
+    				<menu>home|scenarios</menu>
+    				<link>/spring/dr/scenario/list</link>
+    				<pages>
+    					<page name="scenarioDetail" type="DETAIL">
+    						<menu>home|scenarios</menu>
+    						<link>/spring/dr/scenario/detail</link>
+    						<labelArgument>${scenario.name}</labelArgument>
+    					</page>
+    				</pages>
+    			</page>
+    			<page name="controlAreaList" type="BASIC">
+    				<menu>home|controlareas</menu>
+    				<link>/spring/dr/controlArea/list</link>
+    				<pages>
+    					<page name="controlAreaDetail" type="DETAIL">
+    						<menu>home|controlareas</menu>
+    						<link>/spring/dr/controlArea/detail</link>
+    						<labelArgument>${controlArea.name}</labelArgument>
+    					</page>
+    				</pages>
+    			</page>
+    			<page name="programList" type="BASIC">
+    				<menu>home|programs</menu>
+    				<link>/spring/dr/program/list</link>
+    				<pages>
+    					<page name="programDetail" type="DETAIL">
+    						<menu>home|programs</menu>
+    						<link>/spring/dr/program/detail</link>
+    						<labelArgument>${program.name}</labelArgument>
+    					</page>
+    				</pages>
+    			</page>
+    			<page name="loadGroupList" type="BASIC">
+    				<menu>home|loadgroups</menu>
+    				<link>/spring/dr/loadGroup/list</link>
+    				<pages>
+    					<page name="loadGroupDetail" type="DETAIL">
+    						<menu>home|loadgroups</menu>
+    						<link>/spring/dr/loadGroup/detail</link>
+    						<labelArgument>${loadGroup.name}</labelArgument>
+    					</page>
+    				</pages>
+    			</page>
+    			<page name="searchResults" type="BASIC" hideSearch="true">
+    				<menu>home</menu>
+    				<link>/spring/dr/search</link>
+    			</page>
+    			<page name="optOutAdmin" type="BASIC">
+    				<menu>optout|admin</menu>
+    				<link>/spring/stars/operator/optOut/admin</link>
+    			</page>
+    			<page name="optOutScheduledEvents" type="BASIC">
+    				<menu>optout|scheduledevents</menu>
+    				<link>/spring/stars/operator/optOut/admin/viewScheduled</link>
+    			</page>
+    		</pages>
+    	</page>
+    </pages>
+    <search bean="drSearchProducer" />	
   </module>
 
   <module name="energyCompanyAdmin">

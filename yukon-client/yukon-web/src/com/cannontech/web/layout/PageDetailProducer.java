@@ -137,7 +137,8 @@ public class PageDetailProducer {
         
         String label = getPagePart("crumbTitle", pageContext, messageSourceAccessor);
         
-        String result = previousCrumbs + label;
+        String thisCrumb = createLink(label, null);
+        String result = previousCrumbs + thisCrumb;
         return result;
     }
 
@@ -149,7 +150,6 @@ public class PageDetailProducer {
         previousCrumbs += CRUMB_SEPERATOR;
         
         String label = getPagePart("crumbTitle", pageContext, messageSourceAccessor);
-        
         String link = expressionLanguageResolver.resolveElExpression(pageContext.pageInfo.getLinkExpression(), request);
         
         String thisCrumb;

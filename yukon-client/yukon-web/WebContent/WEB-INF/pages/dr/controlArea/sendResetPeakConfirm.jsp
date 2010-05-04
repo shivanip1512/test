@@ -2,8 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
     <h1 class="dialogQuestion">
-        <cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.confirmQuestion"
-            argument="${controlArea.name}" />
+        	<cti:msg key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.confirmQuestion"
+        		htmlEscape="true" argument="${controlArea.name}" />
     </h1>
 
     <cti:url var="submitUrl" value="/spring/dr/controlArea/resetPeak"/>

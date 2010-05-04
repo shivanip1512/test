@@ -5,38 +5,19 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.programDetail.pageTitle" argument="${program.name}"/>
-<cti:standardPage module="dr" page="programDetail" title="${pageTitle}">
-    <cti:standardMenu menuSelection="details|programs"/>
+<cti:standardPage module="dr" page="programDetail">
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/program/list">
-            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.programs"/>
-        </cti:crumbLink>
-        <cti:crumbLink>
-            <cti:msg key="yukon.web.modules.dr.programDetail.breadcrumb.program"
-                htmlEscape="true" argument="${program.name}"/>
-        </cti:crumbLink>
-    </cti:breadCrumbs>
-
-    <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-    <h2><dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
-        <cti:msg key="yukon.web.modules.dr.programDetail.program"
-        htmlEscape="true" argument="${program.name}"/></h2>
-    <br>
-
+	
+	<c:set var="programId" value="${program.paoIdentifier.paoId}"/>
+	<tags:layoutHeadingPrefixPart>
+		<dr:favoriteIcon paoId="${programId}" isFavorite="${isFavorite}"/>
+	</tags:layoutHeadingPrefixPart>
+	
     <table class="widgetColumns">
         <tr>
             <td class="widgetColumnCell" valign="top">

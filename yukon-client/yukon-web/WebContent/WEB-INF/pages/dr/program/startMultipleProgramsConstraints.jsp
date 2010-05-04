@@ -5,6 +5,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <script type="text/javascript">
 overrideAllChecked = function() {
@@ -56,11 +57,11 @@ singleOverrideChecked = function(boxChecked) {
     <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.controlArea"
-            argument="${controlArea.name}"/>
+        	htmlEscape="true" argument="${controlArea.name}"/>
     </c:if>
     <c:if test="${!empty scenario}">
         <cti:msg key="yukon.web.modules.dr.program.startMultiplePrograms.confirmQuestion.scenario"
-            argument="${scenario.name}"/>
+        	htmlEscape="true" argument="${scenario.name}"/>
     </c:if>
     </h1>
 
@@ -93,7 +94,9 @@ singleOverrideChecked = function(boxChecked) {
                                    path="programStartInfo[${status.index}].overrideConstraints"
                                    onclick="singleOverrideChecked(this)"/>
                             </c:if>
-                            <label for="programStartInfoOverride${index}">${program.name}</label>
+                            <label for="programStartInfoOverride${index}">
+                            	<spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody>
+                            </label>
                         </td>
                         <td class="violations">
                             <c:if test="${empty violationsForProgram}">
@@ -102,14 +105,14 @@ singleOverrideChecked = function(boxChecked) {
                             <c:if test="${!empty violationsForProgram}">
                                     <ul>
                                         <c:forEach var="violation" items="${violationsForProgram.violations}">
-                                            <li><spring:escapeBody>${violation}</spring:escapeBody></li>
+                                            <li><spring:escapeBody htmlEscape="true">${violation}</spring:escapeBody></li>
                                         </c:forEach>
                                     </ul>
                             </c:if>
                         </td>
                     </c:if>
                     <c:if test="${!constraintsViolated}">
-                        <td><spring:escapeBody>${program.name}</spring:escapeBody></td>
+                        <td><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></td>
                     </c:if>
                 </tr>
                 <c:set var="index" value="${index + 1}"/>

@@ -4,37 +4,18 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<cti:msg var="pageTitle" key="yukon.web.modules.dr.controlAreaDetail.pageTitle" argument="${controlArea.name}"/>
-<cti:standardPage module="dr" page="controlAreaDetail" title="${pageTitle}">
-    <cti:standardMenu menuSelection="details|controlareas"/>
+<cti:standardPage module="dr" page="controlAreaDetail">
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/home">
-            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.drHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink url="/spring/dr/controlArea/list">
-            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlAreas"/>
-        </cti:crumbLink>
-        <cti:crumbLink>
-            <cti:msg key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlArea"
-                htmlEscape="true" argument="${controlArea.name}"/>
-        </cti:crumbLink>
-    </cti:breadCrumbs>
-
+	
     <c:set var="controlAreaId" value="${controlArea.paoIdentifier.paoId}"/>
-    <h2><dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
-    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.controlArea"
-        htmlEscape="true" argument="${controlArea.name}"/></h2>
-    <br>
+    <tags:layoutHeadingPrefixPart>
+    	<dr:favoriteIcon paoId="${controlAreaId}" isFavorite="${isFavorite}"/>
+    </tags:layoutHeadingPrefixPart>
 
     <table class="widgetColumns">
         <tr>

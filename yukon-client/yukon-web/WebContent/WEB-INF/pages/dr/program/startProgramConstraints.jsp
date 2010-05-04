@@ -33,8 +33,10 @@ overrideConstraintsChecked = function() {
         </c:forEach>
     </c:if>
 
-    <h1 class="dialogQuestion"><cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
-        argument="${program.name}"/></h1>
+    <h1 class="dialogQuestion">
+    	<cti:msg key="yukon.web.modules.dr.program.startProgram.confirmQuestion"
+    		htmlEscape="true" argument="${program.name}"/>
+    </h1>
 
     <dr:programStartInfo page="startProgram"/>
 

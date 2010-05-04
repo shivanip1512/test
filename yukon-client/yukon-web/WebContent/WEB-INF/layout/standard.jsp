@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
@@ -47,7 +48,13 @@
 <div id="ContentWrapper">
 <div id="Content">
 <c:if test="${not empty pageDetail.pageHeading}">
-    <h2 class="standardPageHeading">${requestScope['com.cannontech.web.layout.part.headingPrefix']} ${pageDetail.pageHeading} ${requestScope['com.cannontech.web.layout.part.headingSuffix']}</h2>
+    <h2 class="standardPageHeading">
+    	${requestScope['com.cannontech.web.layout.part.headingPrefix']}
+    	<spring:escapeBody htmlEscape="true">
+    	${pageDetail.pageHeading}
+    	</spring:escapeBody>
+    	${requestScope['com.cannontech.web.layout.part.headingSuffix']}
+    </h2>
 </c:if>
 
 <%-- FLASH SCOPE MESSAGES --%>

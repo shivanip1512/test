@@ -6,20 +6,12 @@
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
 <cti:standardPage module="dr" page="home">
-    <cti:standardMenu menuSelection="home"/>
-
+    
     <tags:simpleDialog id="drDialog"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
-
-    <cti:breadCrumbs>
-        <cti:crumbLink url="/operator/Operations.jsp">
-            <cti:msg key="yukon.web.modules.dr.home.breadcrumb.operationsHome"/>
-        </cti:crumbLink>
-        <cti:crumbLink><cti:msg key="yukon.web.modules.dr.home.breadcrumb.home"/></cti:crumbLink>
-    </cti:breadCrumbs>
 
 <table class="widgetColumns">
     <tr>
@@ -58,7 +50,7 @@
                                 <td><dr:favoriteIcon paoId="${pao.paoIdentifier.paoId}" isFavorite="true" fromHomePage="true"/></td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${pao}">
-                                        <spring:escapeBody>${pao.name}</spring:escapeBody>
+                                        <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
                                     </cti:paoDetailUrl>
                                 </td>
                                 <td>
@@ -134,7 +126,7 @@
                                     fromHomePage="true" isRecentlyViewedItem="true"/></td>
                                 <td>
                                     <cti:paoDetailUrl yukonPao="${pao}">
-                                        <spring:escapeBody>${pao.name}</spring:escapeBody>
+                                        <spring:escapeBody htmlEscape="true">${pao.name}</spring:escapeBody>
                                     </cti:paoDetailUrl>
                                 </td>
                                 <td>
