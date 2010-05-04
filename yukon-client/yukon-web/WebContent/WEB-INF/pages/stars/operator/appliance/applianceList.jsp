@@ -37,7 +37,7 @@
                                     </option>
                                 </c:forEach>
                             </select>
-                            <button type="submit"><i:inline key=".create"/></button>
+                            <button type="submit" class="formSubmit"><i:inline key=".create"/></button>
                         </ct:nameValue2>
                     </ct:nameValueContainer2>
                 </form>

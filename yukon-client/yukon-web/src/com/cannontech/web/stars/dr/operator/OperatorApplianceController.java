@@ -301,10 +301,10 @@ public class OperatorApplianceController {
     }
 
     @RequestMapping(params="cancel")
-    public String applianceDelete(ModelMap modelMap,
-                                   AccountInfoFragment accountInfoFragment,
-                                   YukonUserContext userContext,
-                                   HttpSession session) {
+    public String cancel(ModelMap modelMap,
+                          AccountInfoFragment accountInfoFragment,
+                          YukonUserContext userContext,
+                          HttpSession session) {
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:applianceList";

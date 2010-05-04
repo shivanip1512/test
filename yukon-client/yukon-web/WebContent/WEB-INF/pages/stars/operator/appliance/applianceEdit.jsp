@@ -7,15 +7,15 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr/forms" prefix="drForms" %>
 
 <cti:standardPage module="operator" page="appliance.edit">
-	
-	<tags:setFormEditMode mode="${mode}"/>
+    
+    <tags:setFormEditMode mode="${mode}"/>
 
-	<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
+    <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 
     <script type="text/javascript">
 
-    	alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
-	
+        alignTableColumnsByTable('#enrollmentTable', '#hardwareSummaryTable');
+    
     </script>
     
     <table>
@@ -116,19 +116,21 @@
                     <br>
                     
                     <cti:displayForPageEditModes modes="CREATE">
-                        <button type="submit" name="create">
+                        <button type="submit" name="create" class="formSubmit">
                             <i:inline key=".create"/>
                         </button>
                     </cti:displayForPageEditModes>
+                    
                     <cti:displayForPageEditModes modes="EDIT">
-                        <button type="submit" name="update">
+                        <button type="submit" name="update" class="formSubmit">
                             <i:inline key=".save"/>
                         </button>
-                        <button type="submit" name="delete">
+                        <button type="submit" name="delete" class="formSubmit">
                             <i:inline key=".delete"/>
                         </button>
                     </cti:displayForPageEditModes>
-                    <button type="submit" name="cancel">
+                    
+                    <button type="submit" name="cancel" class="formSubmit">
                         <i:inline key=".cancel"/>
                     </button>
                 </form:form>
@@ -136,7 +138,7 @@
                 <br>
             </tags:formElementContainer>
         </td>
-		<td rowspan="3" width="50px"></td>
+        <td rowspan="3" width="50px"></td>
         <td valign="top">
             <c:if test="${not empty displayableInventoryEnrollment}">
                 <tags:formElementContainer nameKey="enrollment">
@@ -175,5 +177,5 @@
             </c:if>          
         </td>
       </tr>
- 	</table>
+    </table>
 </cti:standardPage>
