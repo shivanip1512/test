@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.database.CollectionRowCallbackHandler;
 import com.google.common.collect.Lists;
 
 public class ChunkingSqlTemplate<E> {
@@ -48,33 +49,19 @@ public class ChunkingSqlTemplate<E> {
     public <R> List<R> query(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input, 
     		final ParameterizedRowMapper<R> rowMapper) {
     	
-    	final List<E> tempInputList = new ArrayList<E>(input);
-    	final List<R> resultList = new ArrayList<R>(tempInputList.size());
-    	final List<SqlFragmentSource> queryList = new ArrayList<SqlFragmentSource>();
+    	List<R> resultList = Lists.newArrayList();
+    	CollectionRowCallbackHandler<R> rch = 
+    	    new CollectionRowCallbackHandler<R>(rowMapper, resultList);
     	
-    	int inputSize = tempInputList.size();
-    	for (int start = 0; start < inputSize; start += chunkSize ) {
-    		int nextToIndex = start + chunkSize;
-    		int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
-    		
-    		List<E> subList = tempInputList.subList(start, toIndex);
-    		SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
-    		queryList.add(sqlFragmentSource);
-    	}
-    	
-    	for (final SqlFragmentSource sql : queryList) {
-    		List<R> list = simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
-    		resultList.addAll(list);
-    	}
+    	query(sqlGenerator, input, rch);
     	
     	return resultList;
     }
 
-    public <R> List<R> query(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input, 
+    public void query(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input, 
                              final RowCallbackHandler rch) {
         
         final List<E> tempInputList = Lists.newArrayList(input);
-        final List<R> resultList = Lists.newArrayList();
         final List<SqlFragmentSource> queryList = Lists.newArrayList();
         
         int inputSize = tempInputList.size();
@@ -91,7 +78,6 @@ public class ChunkingSqlTemplate<E> {
             simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), rch);
         }
         
-        return resultList;
     }
     
     public void update(final SqlGenerator<E> sqlGenerator, final Collection<E> input, final Object... args) {

@@ -1,9 +1,11 @@
 package com.cannontech.core.authorization.support;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
+
 /**
  * Enum of permissions
  */
-public enum Permission {
+public enum Permission implements DatabaseRepresentationSource {
 
     READ_COMMAND("read command", false, false), 
     WRITE_COMMAND("write command", false, false), 
@@ -34,5 +36,10 @@ public enum Permission {
     
     public boolean isSettablePerPao(){
         return this.settablePerPao;
+    }
+
+    @Override
+    public Object getDatabaseRepresentation() {
+        return name();
     }
 }

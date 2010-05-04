@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.YukonPao;
@@ -198,7 +197,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
     public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
                                                                           LiteYukonGroup it,
                                                                           Permission permission) {
-        return getPaoAuthorizations(paos, Lists.newArrayList(it), permission);
+        return getPaoAuthorizations(paos, Collections.singletonList(it), permission);
     }
     
     @Override
@@ -229,30 +228,13 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
                 sql.append("FROM GroupPaoPermission ");
                 sql.append("WHERE groupId").in(groupIdList);
                 sql.append("    AND paoid").in(subList);
-                sql.append("    AND permission").eq(permission.toString());
+                sql.append("    AND permission").eq(permission);
                 
                 return sql;
             }
         },
         paoLookup.keySet(),
-        new RowCallbackHandler() {
-            @Override
-            public void processRow(ResultSet rs) throws SQLException {
-                int paoId = rs.getInt("paoId");
-                String allow = rs.getString("allow");
-                AllowDeny allowDeny = AllowDeny.valueOf(allow);
-
-                Collection<YukonPao> collection = paoLookup.removeAll(paoId);
-                if(AllowDeny.ALLOW.equals(allowDeny)) {
-                    // Pao is authorized
-                    result.putAll(AuthorizationResponse.AUTHORIZED, collection);
-                } else {
-                    // Pao is unauthorized
-                    result.putAll(AuthorizationResponse.UNAUTHORIZED, collection);
-                }
-
-            }
-        });
+        new PaoPermissionRowCallbackHandler(paoLookup, result));
         
         // Add any leftover paos to the unknown list - there was no row in the paopermission table
         // for these paos
