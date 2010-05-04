@@ -5,11 +5,11 @@ div.optOutQuestion {
 }
 
 div.optOutAnswer {
-    style="padding-bottom: 0.5em;
+    style=padding-bottom: 0.5em;
 }    
 
 
 table.selectDeviceTable td {
-    vertical-align: top !important;
+    vertical-align: top;
     text-align: left;
 }
