@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -30,7 +31,7 @@ public class UpdateOperatorLoginController extends StarsAdminActionController {
             String username = ServletRequestUtils.getStringParameter(request, "Username" );
             String password = ServletRequestUtils.getStringParameter(request, "Password" );
             boolean enabled = ServletRequestUtils.getBooleanParameter(request, "Status");
-            String status = (enabled)? UserUtils.STATUS_ENABLED : UserUtils.STATUS_DISABLED;
+            LoginStatusEnum status = (enabled)? LoginStatusEnum.ENABLED : LoginStatusEnum.DISABLED;
             
             if (userID == -1) {
                 // Create new operator login

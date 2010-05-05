@@ -33,6 +33,9 @@ public class AssignedProgramNameFilter implements UiFilter<AssignedProgram> {
                 retVal.append("LOWER(pao.paoName) like LOWER(");
                 retVal.appendArgument('%' + name + '%');
                 retVal.append(")");
+                retVal.append("OR LOWER(wc.alternateDisplayName) like LOWER(");
+                retVal.appendArgument('%' + name + '%');
+                retVal.append(")");
                 return retVal;
             }});
 

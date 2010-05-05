@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.impl.LoginStatusEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
@@ -123,8 +124,11 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     
                     // Create the default operator login
                     LiteYukonGroup[] operGroups = new LiteYukonGroup[] { operGroup, liteAdminGrp };
-                    LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
-                                                                                request.getParameter("Username"), request.getParameter("Password"), UserUtils.STATUS_ENABLED, operGroups, null );
+                    LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(request.getParameter("Username"),
+                                                                                request.getParameter("Password"),
+                                                                                LoginStatusEnum.ENABLED,
+                                                                                operGroups,
+                                                                                null);
                     
                     // Create primary contact of the energy company
                     com.cannontech.database.data.customer.Contact contact =
@@ -179,8 +183,11 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     // Create login for the second operator
                     if (request.getParameter("Username2").length() > 0) {
                         operGroups = new LiteYukonGroup[] { operGroup };
-                        StarsAdminUtil.createOperatorLogin(
-                                                           request.getParameter("Username2"), request.getParameter("Password2"), UserUtils.STATUS_ENABLED, operGroups, newCompany );
+                        StarsAdminUtil.createOperatorLogin(request.getParameter("Username2"),
+                                                           request.getParameter("Password2"),
+                                                           LoginStatusEnum.ENABLED,
+                                                           operGroups,
+                                                           newCompany);
                     }
                     
                     // Assign default route to the energy company

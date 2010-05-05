@@ -7,8 +7,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<tags:setFormEditMode mode="${mode}"/>
 <cti:msgScope paths="modules.energyCompanyAdmin.editAssignedProgram">
 
+<cti:displayForPageEditModes modes="EDIT,CREATE">
 <script type="text/javascript">
 <c:if test="${!backingBean.multiple}">
 lastDisplayName = false;
@@ -51,8 +53,7 @@ displayNameChanged = function() {
 updateDisplayNameKey = function() {
     // This prefix and pattern must match MessageCodeGenerator.java
     var prefix = 'yukon.dr.program.displayname.'; 
-    var pattern = /[\.|\"|\s+|&|<]/g;
-    var displayNameKey = prefix + $('displayNameInput').value.replace(pattern, '');
+    var displayNameKey = prefix + $('displayNameInput').value.replace(/\W+/g, '');
 
     $('displayNameKeyArea').innerHTML = displayNameKey;
 }
@@ -68,6 +69,7 @@ submitForm = function() {
     return submitFormViaAjax('acDialog', 'inputForm')
 }
 </script>
+</cti:displayForPageEditModes>
 
 <tags:errorMessages/>
 
@@ -92,13 +94,13 @@ submitForm = function() {
     <tags:nameValueContainer>
         <cti:msg2 var="fieldName" key=".applianceCategory"/>
         <tags:nameValue name="${fieldName}" nameColumnWidth="170px">
-            <spring:escapeBody>${applianceCategory.name}</spring:escapeBody>
+            <spring:escapeBody htmlEscape="true">${applianceCategory.name}</spring:escapeBody>
         </tags:nameValue>
         <c:if test="${!backingBean.multiple}">
             <cti:msg2 var="fieldName" key=".programName"/>
             <tags:nameValue name="${fieldName}">
                 <c:if test="${!backingBean.virtual}">
-                    <spring:escapeBody>${backingBean.assignedProgram.programName}</spring:escapeBody>
+                    <spring:escapeBody htmlEscape="true">${backingBean.assignedProgram.programName}</spring:escapeBody>
                 </c:if>
                 <c:if test="${backingBean.virtual}">
                     <i:inline key=".isVirtual"/>
@@ -112,6 +114,7 @@ submitForm = function() {
                 <tags:input id="displayNameInput"
                     path="assignedProgram.displayName" size="30"
                     onkeyup="displayNameChanged()" onblur="displayNameChanged()"/>
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${!backingBean.virtual}">
                     <c:if test="${backingBean.assignedProgram.displayName == backingBean.assignedProgram.programName}">
                         <c:set var="checked" value=" checked=\"true\""/>
@@ -120,35 +123,44 @@ submitForm = function() {
                         onclick="sameAsProgramNameClicked()"/>
                     <label for="sameAsProgramName"><i:inline key=".sameAsProgramName"/></label>
                 </c:if>
+                </cti:displayForPageEditModes>
             </tags:nameValue>
 
             <cti:msg2 var="fieldName" key=".shortName"/>
             <tags:nameValue name="${fieldName}">
-                <form:input id="shortNameInput" path="assignedProgram.shortName" size="30"/>
+                <tags:input id="shortNameInput" path="assignedProgram.shortName" size="30"/>
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <c:if test="${backingBean.assignedProgram.shortName == backingBean.assignedProgram.displayName}">
                     <c:set var="checked" value=" checked=\"true\""/>
                 </c:if>
                 <input id="sameAsDisplayName" type="checkbox"${checked}
                     onclick="sameAsDisplayNameClicked()"/>
                 <label for="sameAsDisplayName"><i:inline key=".sameAsDisplayName"/></label>
+                </cti:displayForPageEditModes>
             </tags:nameValue>
 
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
             <cti:msg2 var="fieldName" key=".displayNameKey"/>
             <tags:nameValue name="${fieldName}">
                 <span id="displayNameKeyArea"></span>
             </tags:nameValue>
+            </cti:displayForPageEditModes>
         </c:if>
 
         <cti:msg2 var="fieldName" key=".description"/>
         <tags:nameValue name="${fieldName}">
-            <form:textarea path="assignedProgram.description" cols="40" rows="5"/>
+            <tags:textarea path="assignedProgram.description" cols="40" rows="3"/>
         </tags:nameValue>
 
         <cti:msg2 var="fieldName" key=".chanceOfControl"/>
         <tags:nameValue name="${fieldName}">
-            <form:select path="assignedProgram.chanceOfControlId" items="${chanceOfControls}"
-                itemValue="chanceOfControlId" itemLabel="name">
-            </form:select>
+            <cti:displayForPageEditModes modes="VIEW">
+                <spring:escapeBody htmlEscape="true">${chanceOfControl}</spring:escapeBody>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <form:select path="assignedProgram.chanceOfControlId" items="${chanceOfControls}"
+                    itemValue="chanceOfControlId" itemLabel="name"/>
+            </cti:displayForPageEditModes>
         </tags:nameValue>
 
         <cti:msg2 var="fieldName" key=".programDescriptionIcons"/>
@@ -156,23 +168,24 @@ submitForm = function() {
             <cti:msg2 var="nestedFieldName" key=".savings"/>
             <tags:nameValue name="${nestedFieldName}">
                 <dr:iconChooser id="savings" path="assignedProgram.savingsIcon"
-                    icons="${savingsIcons}"
+                    icons="${savingsIcons}" value="${backingBean.assignedProgram.savingsIcon}"
                     selectedIcon="${backingBean.assignedProgram.savingsIconEnum}"/>
             </tags:nameValue>
             <cti:msg2 var="nestedFieldName" key=".controlPercent"/>
             <tags:nameValue name="${nestedFieldName}">
                 <dr:iconChooser id="controlPercent" path="assignedProgram.controlPercentIcon"
-                    icons="${controlPercentIcons}"
+                    icons="${controlPercentIcons}" value="${backingBean.assignedProgram.controlPercentIcon}"
                     selectedIcon="${backingBean.assignedProgram.controlPercentIconEnum}"/>
             </tags:nameValue>
             <cti:msg2 var="nestedFieldName" key=".environment"/>
             <tags:nameValue name="${nestedFieldName}">
                 <dr:iconChooser id="environment" path="assignedProgram.environmentIcon"
-                    icons="${environmentIcons}"
+                    icons="${environmentIcons}" value="${backingBean.assignedProgram.environmentIcon}"
                     selectedIcon="${backingBean.assignedProgram.environmentIconEnum}"/>
             </tags:nameValue>
         </tags:nameValue>
     </tags:nameValueContainer>
+    <cti:displayForPageEditModes modes="EDIT,CREATE">
     <c:if test="${!backingBean.multiple}">
         <script type="text/javascript">
             <c:if test="${!backingBean.virtual}">
@@ -180,12 +193,16 @@ submitForm = function() {
             </c:if>
             <c:if test="${backingBean.virtual}">
             sameAsDisplayNameClicked();
+            updateDisplayNameKey();
             </c:if>
         </script>
     </c:if>
+    </cti:displayForPageEditModes>
 
     <div class="actionArea">
-        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <input type="submit" value="<cti:msg2 key=".ok"/>"/>
+        </cti:displayForPageEditModes>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('acDialog').hide()"/>
     </div>

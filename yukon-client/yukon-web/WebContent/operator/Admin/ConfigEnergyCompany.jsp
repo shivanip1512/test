@@ -345,7 +345,7 @@ function deleteWarehouse(form, warehouseId) {
                                         <%
         final List<StarsEnrLMProgram> programList = Arrays.asList(category.getStarsEnrLMProgram());
         Collections.sort(programList, programComparator);                                
-		for (int j = 0; j < programList.size(); j++) {
+		for (int j = 0; j < programList.size() && j < 6; j++) {
 			StarsEnrLMProgram program = programList.get(j);
 			String[] dispNames = StarsUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
 			
@@ -371,6 +371,14 @@ function deleteWarehouse(form, warehouseId) {
                                         </tr>
                                         <%
 		}
+		if (programList.size() > 6) {
+		    %>
+		    <tr>
+                <td width="15" class="TableCell">&nbsp;</td>
+                <td width="458" class="TableCell">(List truncated.  Edit program to see full list of programs.)</td>
+		    </tr>
+		    <%
+		}
 %>
                                       </table>
                                     </td>
@@ -378,7 +386,8 @@ function deleteWarehouse(form, warehouseId) {
 		if (category.getInherited()) {
 %>
                                     <td width="25%" class="TableCell" colspan="2"> 
-                                      <input type="button" name="Edit9" value="View" onClick="location.href='ApplianceCategory.jsp?Category=<%= i %>'">
+                                      <input type="button" name="Edit9" value="View" onClick="location.href='/spring/stars/dr/admin/applianceCategory/view?applianceCategoryId=<%= category.getApplianceCategoryID() %>'">
+                                      <a href="ApplianceCategory.jsp?Category=<%= i %>">old link</a>
                                       (Inherited) </td>
                                     <%
 		} else {

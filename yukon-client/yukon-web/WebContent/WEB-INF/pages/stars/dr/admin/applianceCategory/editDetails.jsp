@@ -48,13 +48,13 @@ submitForm = function() {
     <tags:nameValueContainer>
         <cti:msg2 var="fieldName" key=".name"/>
         <tags:nameValue name="${fieldName}" nameColumnWidth="150px">
-            <tags:input id="nameInput" path="name" size="30"
+            <tags:input id="nameInput" path="name" size="30" maxlength="40"
                 onkeyup="nameChanged()" onblur="nameChanged()"/>
         </tags:nameValue>
 
         <cti:msg2 var="fieldName" key=".displayName"/>
         <tags:nameValue name="${fieldName}">
-            <tags:input id="displayNameInput" path="displayName" size="30"/>
+            <tags:input id="displayNameInput" path="displayName" size="30" maxlength="100"/>
             <c:set var="selcted" value=""/>
             <c:if test="${applianceCategory.name == applianceCategory.displayName}">
                 <c:set var="checked" value=" checked=\"true\""/>
@@ -82,7 +82,7 @@ submitForm = function() {
 
         <cti:msg2 var="fieldName" key=".description"/>
         <tags:nameValue name="${fieldName}">
-            <form:textarea path="description" cols="40" rows="5"/>
+            <tags:textarea path="description" cols="40" rows="5"/>
         </tags:nameValue>
 
         <c:set var="fieldName">

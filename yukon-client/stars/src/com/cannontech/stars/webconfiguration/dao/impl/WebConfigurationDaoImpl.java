@@ -14,6 +14,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
@@ -37,8 +38,8 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         public WebConfiguration mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             int configurationId = rs.getInt("configurationId");
-            String logoLocation = rs.getString("logoLocation");
-            String description = rs.getString("description");
+            String logoLocation = SqlUtils.convertDbValueToString(rs.getString("logoLocation"));
+            String description = SqlUtils.convertDbValueToString(rs.getString("description"));
             String displayName = rs.getString("alternateDisplayName");
             String url = rs.getString("url");
             WebConfiguration webConfiguration =

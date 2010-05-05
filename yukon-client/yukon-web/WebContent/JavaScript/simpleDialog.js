@@ -32,7 +32,7 @@ function adjustDialogSizeAndPosition(dialogId) {
     }
 
     var x = (viewportDimensions.width - dialogDimensions.width - 24) / 2;
-    var y = (viewportDimensions.height - dialogDimensions.height - 24) / 2;
+    var y = (viewportDimensions.height - dialogDimensions.height - 24) / 4;
     dialogDiv.setStyle({
         'top': y + "px",
         'left': x + "px"

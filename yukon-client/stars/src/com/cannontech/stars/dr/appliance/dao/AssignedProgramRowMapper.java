@@ -36,12 +36,13 @@ public class AssignedProgramRowMapper extends
     @Override
     public SqlFragmentSource getBaseQuery() {
         SqlStatementBuilder retVal = new SqlStatementBuilder();
-        retVal.append("SELECT p.applianceCategoryId, " +
-                      "p.deviceId, p.webSettingsId, " +
-                      "p.chanceOfControlId, p.programOrder, " +
-                      "p.programId, pao.paoName");
+        retVal.append("SELECT p.applianceCategoryId,");
+        retVal.append(    "p.deviceId, p.webSettingsId,");
+        retVal.append(    "p.chanceOfControlId, p.programOrder,");
+        retVal.append(    "p.programId, pao.paoName");
         retVal.append("FROM lmProgramWebPublishing p");
-        retVal.append("INNER JOIN yukonPaobject pao ON pao.paobjectId = p.deviceId");
+        retVal.append(    "JOIN yukonWebConfiguration wc ON p.webSettingsId = wc.configurationId");
+        retVal.append(    "JOIN yukonPaobject pao ON pao.paobjectId = p.deviceId");
         return retVal;
     }
 

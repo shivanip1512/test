@@ -10,11 +10,16 @@
 <cti:standardPage module="energyCompanyAdmin" page="editApplianceCategory">
 
     <cti:includeScript link="/JavaScript/iconChooser.js"/>
+    <tags:setFormEditMode mode="${mode}"/>
 
     <tags:simpleDialog id="acDialog"/>
 
+    <c:set var="pageBase" value="edit"/>
+    <cti:displayForPageEditModes modes="VIEW">
+        <c:set var="pageBase" value="view"/>
+    </cti:displayForPageEditModes>
     <c:set var="applianceCategoryId" value="${param.applianceCategoryId}"/>
-    <c:set var="baseUrl" value="/spring/stars/dr/admin/applianceCategory/edit"/>
+    <c:set var="baseUrl" value="/spring/stars/dr/admin/applianceCategory/${pageBase}"/>
     <cti:url var="clearFilterUrl" value="${baseUrl}">
         <c:if test="${!empty param.itemsPerPage}">
             <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
@@ -46,8 +51,7 @@
     </form>
 
     <i:simplePopup id="filterDialog" titleKey=".filters">
-        <cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/edit"/>
-        <form:form action="${submitUrl}" commandName="backingBean" method="get">
+        <form:form action="${baseUrl}" commandName="backingBean" method="get">
             <input type="hidden" name="applianceCategoryId" value="${applianceCategoryId}"/>
             <tags:sortFields backingBean="${backingBean}"/>
 
@@ -101,7 +105,9 @@
                             </tags:nameValue2>
 
                             <tags:nameValue2 nameKey=".icon">
-                                <img src="<cti:url value="/WebConfig/${applianceCategory.icon}"/>"/>
+                                <c:if test="${!empty applianceCategory.icon}">
+                                    <img src="<cti:url value="/WebConfig/${applianceCategory.icon}"/>"/>
+                                </c:if>
                             </tags:nameValue2>
 
                             <tags:nameValue2 nameKey=".description">
@@ -121,6 +127,10 @@
             <td class="widgetColumnCell" valign="top">
                 <div class="widgetContainer">
                     <tags:boxContainer2 nameKey="actions">
+                      <cti:displayForPageEditModes modes="VIEW">
+                        <i:inline key=".noActionsInViewOnlyMode"/>
+                      </cti:displayForPageEditModes>
+                      <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <ul>
                             <cti:url var="detailUrl" value="/spring/stars/dr/admin/applianceCategory/editDetails">
                                 <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
@@ -155,6 +165,7 @@
                                     actionUrl="${createVirtualProgramUrl}"/>
                             </li>
                         </ul>
+                      </cti:displayForPageEditModes>
                     </tags:boxContainer2>
                 </div>
             </td>
@@ -167,6 +178,10 @@
     <tags:pagedBox title="${boxTitle}" searchResult="${assignedPrograms}"
         baseUrl="${baseUrl}" filterDialog="filterDialog" isFiltered="${isFiltered}"
         showAllUrl="${clearFilterUrl}">
+        <c:if test="${empty assignedPrograms.resultList}">
+            <i:inline key=".noAssignedPrograms"/>
+        </c:if>
+        <c:if test="${!empty assignedPrograms.resultList}">
         <table id="programList" class="compactResultsTable rowHighlighting">
             <tr>
                 <th>
@@ -198,7 +213,7 @@
                         </c:if>
                     </td>
                     <td>
-                        <cti:url var="editProgramUrl" value="/spring/stars/dr/admin/applianceCategory/editAssignedProgram">
+                        <cti:url var="editProgramUrl" value="/spring/stars/dr/admin/applianceCategory/${pageBase}AssignedProgram">
                             <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
                             <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
                         </cti:url>
@@ -206,16 +221,19 @@
                             key="editAssignedProgram" skipLabel="true" 
                             actionUrl="${editProgramUrl}"/>
 
-                        <cti:url var="unassignProgramUrl" value="/spring/stars/dr/admin/applianceCategory/confirmUnassignProgram">
-                            <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
-                            <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
-                        </cti:url>
-                        <tags:simpleDialogLink2 dialogId="acDialog"
-                            key="unassignProgram" skipLabel="true"
-                            actionUrl="${unassignProgramUrl}"/>
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <cti:url var="unassignProgramUrl" value="/spring/stars/dr/admin/applianceCategory/confirmUnassignProgram">
+                                <cti:param name="applianceCategoryId" value="${applianceCategoryId}"/>
+                                <cti:param name="assignedProgramId" value="${assignedProgram.assignedProgramId}"/>
+                            </cti:url>
+                            <tags:simpleDialogLink2 dialogId="acDialog"
+                                key="unassignProgram" skipLabel="true"
+                                actionUrl="${unassignProgramUrl}"/>
+                        </cti:displayForPageEditModes>
                     </td>
                     <c:if test="${applianceCategory.consumerSelectable}">
                     <td>
+                      <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <c:if test="${assignedProgram.first}">
                             <cti:img key="up.disabled"/>
                         </c:if>
@@ -238,12 +256,14 @@
                             </cti:url>
                             <cti:img key="down" href="javascript:simpleAJAXRequest('${moveProgramDownUrl}')"/>
                         </c:if>
+                      </cti:displayForPageEditModes>
                         ${assignedProgram.programOrder}
                     </td>
                     </c:if>
                 </tr>
             </c:forEach>
         </table>
+        </c:if>
     </tags:pagedBox>
                 </div>
             </td>

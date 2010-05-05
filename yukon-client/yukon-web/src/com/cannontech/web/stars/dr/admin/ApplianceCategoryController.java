@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.admin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -30,6 +29,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -49,11 +49,14 @@ import com.cannontech.stars.dr.appliance.service.AssignedProgramService;
 import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/applianceCategory/*")
+@CheckRoleProperty(YukonRoleProperty.ADMIN_CONFIG_ENERGY_COMPANY)
 public class ApplianceCategoryController {
     private final static String baseKey = "yukon.web.modules.energyCompanyAdmin";
     private AssignedProgramDao assignedProgramDao;
@@ -73,6 +76,10 @@ public class ApplianceCategoryController {
                                                           requiredField,
                                                           baseKey + ".editApplianceCategory.empty");
             }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", target.getName(), 40);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "displayName", target.getDisplayName(), 100);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "icon", target.getIcon(), 100);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "description", target.getDescription(), 500);
         }
     };
 
@@ -85,6 +92,36 @@ public class ApplianceCategoryController {
                     "assignedProgram.displayName",
                     baseKey + ".editAssignedProgram.empty");
             }
+
+            AssignedProgram ap = assignedProgram.getAssignedProgram();
+            if (!assignedProgram.isMultiple()) {
+                String alternateDisplayName = ap.getWebConfiguration().getAlternateDisplayName();
+                String displayName = ap.getDisplayName();
+                if (displayName.indexOf(',') != -1 && displayName.indexOf('"') != -1) {
+                    errors.rejectValue("assignedProgram.displayName", baseKey + ".editAssignedProgram.commaAndQuotes");
+                }
+                String shortName = ap.getShortName();
+                if (shortName.indexOf(',') != -1 && shortName.indexOf('"') != -1) {
+                    errors.rejectValue("assignedProgram.shortName", baseKey + ".editAssignedProgram.commaAndQuotes");
+                }
+                if (alternateDisplayName.length() > 99) {
+                    errors.reject(baseKey + ".editAssignedProgram.namesTooLong");
+                }
+            }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "assignedProgram.description",
+                                                       ap.getDescription(), 500);
+            if (ap.getWebConfiguration().getLogoLocation().length() > 100) {
+                errors.reject(baseKey + ".editAssignedProgram.iconNamesTooLong");
+            }
+            if (ap.getSavingsIcon().indexOf(',') != -1) {
+                errors.rejectValue("assignedProgram.savingsIcon", ".editAssignedProgram.noCommas");
+            }
+            if (ap.getControlPercentIcon().indexOf(',') != -1) {
+                errors.rejectValue("assignedProgram.controlPercentIcon", ".editAssignedProgram.noCommas");
+            }
+            if (ap.getEnvironmentIcon().indexOf(',') != -1) {
+                errors.rejectValue("assignedProgram.environmentIcon", ".editAssignedProgram.noCommas");
+            }
         }
     };
 
@@ -94,16 +131,30 @@ public class ApplianceCategoryController {
     }
 
     @RequestMapping
+    public String view(ModelMap model,
+            @ModelAttribute("backingBean") ListBackingBean backingBean,
+            int applianceCategoryId, YukonUserContext userContext) {
+        return edit(model, backingBean, applianceCategoryId, userContext,
+                    PageEditMode.VIEW);
+    }
+
+    @RequestMapping
     public String edit(ModelMap model,
             @ModelAttribute("backingBean") ListBackingBean backingBean,
             int applianceCategoryId, YukonUserContext userContext) {
+        return edit(model, backingBean, applianceCategoryId, userContext,
+                    PageEditMode.EDIT);
+    }
+
+    private String edit(ModelMap model, ListBackingBean backingBean,
+            int applianceCategoryId, YukonUserContext userContext,
+            PageEditMode pageEditMode) {
         ApplianceCategory applianceCategory =
             applianceCategoryDao.getById(applianceCategoryId);
         model.addAttribute("applianceCategory", applianceCategory);
+        model.addAttribute("mode", pageEditMode);
 
-        List<UiFilter<AssignedProgram>> filters =
-            new ArrayList<UiFilter<AssignedProgram>>();
-
+        List<UiFilter<AssignedProgram>> filters = Lists.newArrayList();
         boolean isFiltered = false;
 
         if (!StringUtils.isEmpty(backingBean.getName())) {
@@ -191,8 +242,7 @@ public class ApplianceCategoryController {
 
     @RequestMapping
     public String assignProgram(ModelMap model, int applianceCategoryId,
-            Integer[] programsToAssign,
-            YukonUserContext userContext) {
+            Integer[] programsToAssign, YukonUserContext userContext) {
         AssignedProgram assignedProgram = new AssignedProgram();
         boolean multiple = true;
         if (programsToAssign.length == 0) {
@@ -209,7 +259,7 @@ public class ApplianceCategoryController {
                                          programsToAssign,
                                          assignedProgram);
         return editAssignedProgram(model, applianceCategoryId, backingBean,
-                                   userContext);
+                                   userContext, PageEditMode.CREATE);
     }
 
     @RequestMapping
@@ -218,9 +268,9 @@ public class ApplianceCategoryController {
         AssignProgramBackingBean backingBean =
             new AssignProgramBackingBean(true, false, null, new AssignedProgram());
         return editAssignedProgram(model, applianceCategoryId, backingBean,
-                                   userContext);
+                                   userContext, PageEditMode.CREATE);
     }
-    
+
     @RequestMapping
     public String editAssignedProgram(ModelMap model, int applianceCategoryId,
             int assignedProgramId, YukonUserContext userContext) {
@@ -230,12 +280,26 @@ public class ApplianceCategoryController {
             new AssignProgramBackingBean(assignedProgram.getProgramId() == 0,
                                          false, null, assignedProgram);
         return editAssignedProgram(model, applianceCategoryId, backingBean,
-                                   userContext);
+                                   userContext, PageEditMode.EDIT);
     }
 
+    @RequestMapping
+    public String viewAssignedProgram(ModelMap model, int applianceCategoryId,
+            int assignedProgramId, YukonUserContext userContext) {
+        AssignedProgram assignedProgram =
+            assignedProgramDao.getById(assignedProgramId);
+        AssignProgramBackingBean backingBean =
+            new AssignProgramBackingBean(assignedProgram.getProgramId() == 0,
+                                         false, null, assignedProgram);
+        return editAssignedProgram(model, applianceCategoryId, backingBean,
+                                   userContext, PageEditMode.VIEW);
+    }
+    
     private String editAssignedProgram(ModelMap model,
             int applianceCategoryId, AssignProgramBackingBean backingBean,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, PageEditMode pageEditMode) {
+        model.addAttribute("mode", pageEditMode);
+
         ApplianceCategory applianceCategory =
             applianceCategoryDao.getById(applianceCategoryId);
         model.addAttribute("applianceCategory", applianceCategory);
@@ -249,11 +313,18 @@ public class ApplianceCategoryController {
             energyCompany.getStarsCustSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL);
         List<ChanceOfControl> chanceOfControls = Lists.newArrayList();
 
-        chanceOfControls.add(0, new ChanceOfControl(0, "Not Specified"));
+        String chanceOfControl = "Not Specified";
+        chanceOfControls.add(0, new ChanceOfControl(0, chanceOfControl));
         for (StarsSelectionListEntry cocEntry : chanceOfControlList.getStarsSelectionListEntry()) {
             chanceOfControls.add(new ChanceOfControl(cocEntry.getEntryID(), cocEntry.getContent()));
+            if (cocEntry.getEntryID() == backingBean.getAssignedProgram().getChanceOfControlId()) {
+                chanceOfControl = cocEntry.getContent();
+            }
         }
         model.addAttribute("chanceOfControls", chanceOfControls);
+        if (pageEditMode == PageEditMode.VIEW) {
+            model.addAttribute("chanceOfControl", chanceOfControl);
+        }
 
         SavingsIcon[] savingsIcons = SavingsIcon.values();
         model.addAttribute("savingsIcons", savingsIcons);
@@ -279,7 +350,7 @@ public class ApplianceCategoryController {
             model.addAttribute("errors", errors);
 
             return editAssignedProgram(model, assignedProgram.getApplianceCategoryId(),
-                                       backingBean, userContext);
+                                       backingBean, userContext, PageEditMode.EDIT);
         }
 
         if (backingBean.isVirtual()
@@ -447,4 +518,5 @@ public class ApplianceCategoryController {
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
+
 }

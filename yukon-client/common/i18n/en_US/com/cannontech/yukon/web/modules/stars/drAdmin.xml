@@ -25,6 +25,7 @@
 
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.info.title">Info</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.actions.title">Actions</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.noActionsInViewOnlyMode">There are no actions in view mode.</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.name">Category Name</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.displayName">Display Name</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.sameAsName">Same as Category Name</entry>
@@ -65,6 +66,7 @@
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.showAllButton">Show All</entry>
 
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.assignedPrograms">Assigned Programs</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.noAssignedPrograms">There are currently no programs assigned to this appliance category.</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.programName">Program Name</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.virtualProgramName">Virtual Program {0}</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.actions">Actions</entry>
@@ -114,6 +116,7 @@
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.savings">Savings</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.controlPercent">Control %</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.environment">Environment</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.noIcon">No Icon</entry>
 
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategoryUnassignedProgram.confirmationQuestion">
     Are you sure you want to remove {0} from {1}?  Removing the program will unenroll customers currently enrolled.
@@ -130,6 +133,9 @@
 
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.empty">Required field.</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.empty.assignedProgram.displayName">Display name cannot be empty.</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.namesTooLong">Display name and short name combined cannot be longer than 95 characters.</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.commaAndQuotes">Cannot contain both comma and quote at the same time.</entry>
+<entry key="yukon.web.modules.energyCompanyAdmin.editAssignedProgram.iconNamesTooLong">Icon names combined length cannot exceed 98 characters.</entry>
 
 <!-- Edit Program Enrollment -->
 <entry key="yukon.web.modules.stars.dr.admin.account.programEnrollment.edit.pageTitle">Program Enrollment</entry>

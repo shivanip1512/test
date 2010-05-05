@@ -3,6 +3,7 @@
 <%@ attribute name="icons" required="true" type="com.cannontech.stars.dr.appliance.model.IconEnum[]" %>
 <%@ attribute name="selectedIcon" required="true" type="com.cannontech.stars.dr.appliance.model.IconEnum" %>
 <%@ attribute name="applianceCategoryIconMode" type="java.lang.Boolean" %>
+<%@ attribute name="value" %>
 <%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -21,6 +22,18 @@
     <c:set var="iconInputAtts" value=""/>
     <c:set var="baseDir" value="/WebConfig/"/>
 </c:if>
+
+<cti:displayForPageEditModes modes="VIEW">
+    <c:if test="${empty pageScope.value}">
+        <i:inline key=".noIcon"/>
+    </c:if>
+    <c:if test="${!empty pageScope.value}">
+        <img src="${pageScope.baseDir}${pageScope.value}"/>
+    </c:if>
+</cti:displayForPageEditModes>
+
+<cti:displayForPageEditModes modes="EDIT,CREATE">
+<spring:bind path="${pageScope.path}">
 
 <table cellpadding="0" cellspacing="0">
     <tr>
@@ -44,13 +57,16 @@
         </td>
     </tr>
     <tr>
-       <td${pageScope.iconInputAtts}>
+        <td${pageScope.iconInputAtts}>
             <input id="${pageScope.id}IconInput" type="text" size="50"
                 onkeyup="${pageScope.id}.iconInputChanged()"
                 onblur="${pageScope.id}.iconInputChanged()"/>
-       </td>
+        </td>
     </tr>
 </table>
+<c:if test="${status.error}">
+    <form:errors path="${path}" cssClass="errorMessage"/>
+</c:if>
 
 <script type="text/javascript">
 ${pageScope.id} = new IconChooser('${pageScope.id}', '${pageScope.baseDir}');
@@ -63,3 +79,6 @@ ${pageScope.id}.iconFilenames = {
 $('${pageScope.id}IconInput').value = $('${pageScope.id}HiddenIconInput').value;
 ${pageScope.id}.iconSelected();
 </script>
+
+</spring:bind>
+</cti:displayForPageEditModes>

@@ -1046,7 +1046,7 @@ public class StarsAdminUtil {
 		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
+	public static LiteYukonUser createOperatorLogin(String username, String password, LoginStatusEnum status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
@@ -1063,7 +1063,7 @@ public class StarsAdminUtil {
 		
 		userDB.setUsername( username );
         userDB.setAuthType(defaultAuthType);
-		userDB.setLoginStatus( LoginStatusEnum.valueOf(status));
+		userDB.setLoginStatus(status);
 		
 		for (int i = 0; i < operGroups.length; i++) {
 			com.cannontech.database.db.user.YukonGroup group =
@@ -1098,7 +1098,7 @@ public class StarsAdminUtil {
 		return liteUser;
 	}
 	
-	public static void updateLogin(LiteYukonUser liteUser, String username, String password, String status,
+	public static void updateLogin(LiteYukonUser liteUser, String username, String password, LoginStatusEnum status,
 		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) throws Exception
 	{
 		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
@@ -1124,7 +1124,7 @@ public class StarsAdminUtil {
             dbUser.setAuthType(AuthType.NONE);
         }
         
-		if (status != null) dbUser.setLoginStatus( LoginStatusEnum.valueOf(status));
+		if (status != null) dbUser.setLoginStatus(status);
 		
 		boolean groupChanged = false;
 		if (loginGroup != null) {

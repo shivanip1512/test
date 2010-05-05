@@ -316,7 +316,7 @@ public class UpdateLoginAction implements ActionBase {
 				loginGroup = DaoFactory.getRoleDao().getGroup( updateLogin.getGroupID() );
 			
 			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
-			StarsAdminUtil.updateLogin( liteUser, username, password, status.getDatabaseRepresentation().toString(), loginGroup, energyCompany, authTypeChanged );
+			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany, authTypeChanged );
 		}
 	}
 	

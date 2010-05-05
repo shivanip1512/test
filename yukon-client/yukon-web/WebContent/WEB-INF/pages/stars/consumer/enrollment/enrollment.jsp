@@ -21,22 +21,27 @@
 
     <table id="enrollmentTable" cellspacing="0" cellpadding="0">
     <c:forEach var="enrollment" items="${enrollments}">
-        <c:if test="${enrollment.applianceCategory.consumerSelectable}">
+        <c:if test="${enrollment.applianceCategory.consumerSelectable || enrollment.enrolled}">
             <c:set var="enrollmentPrograms" value="${enrollment.enrollmentPrograms}"/>
             <c:set var="applianceCategoryId"
                 value="${enrollment.applianceCategory.applianceCategoryId}"/>
-            <c:set var="numRows" value="${fn:length(enrollmentPrograms) + 1}"/>
+            <c:set var="numRows" value="1"/>
             <c:if test="${!empty enrollment.applianceCategory.description}">
                 <c:set var="numRows" value="${numRows + 1}"/>
             </c:if>
             <c:forEach var="enrollmentProgram" items="${enrollmentPrograms}">
-                <c:if test="${!empty fn:trim(enrollmentProgram.program.description)}">
+                <c:if test="${enrollment.applianceCategory.consumerSelectable || enrollmentProgram.enrolled}">
                     <c:set var="numRows" value="${numRows + 1}"/>
+                    <c:if test="${!empty fn:trim(enrollmentProgram.program.description)}">
+                        <c:set var="numRows" value="${numRows + 1}"/>
+                    </c:if>
                 </c:if>
             </c:forEach>
             <tr class="applianceCategory">
                 <td class="applianceCategoryIcon" rowspan="${numRows}">
-                    <img src="../../../WebConfig/${enrollment.applianceLogo}">
+                    <c:if test="${!empty enrollment.applianceLogo}">
+                        <img src="../../../WebConfig/${enrollment.applianceLogo}">
+                    </c:if>
                 </td>
                 <td colspan="5">
                     <spring:escapeBody htmlEscape="true">${enrollment.applianceCategory.categoryLabel}</spring:escapeBody>
@@ -52,6 +57,7 @@
                 </tr>
             </c:if>
             <c:forEach var="enrollmentProgram" items="${enrollmentPrograms}">
+              <c:if test="${enrollment.applianceCategory.consumerSelectable || enrollmentProgram.enrolled}">
                 <c:set var="assignedProgramId" value="${enrollmentProgram.program.programId}"/>
                 <c:set var="rowClass" value="notEnrolled"/>
                 <c:if test="${enrollmentProgram.enrolled}">
@@ -93,6 +99,10 @@
                         </c:if>
                     </td>
                     <td class="enrollLink lastColumn">
+                      <c:if test="${!enrollment.applianceCategory.consumerSelectable}">
+                        &nbsp;
+                      </c:if>
+                      <c:if test="${enrollment.applianceCategory.consumerSelectable}">
                         <c:if test="${!enrollmentProgram.enrolled}">
                             <c:set var="enrollType" value="enroll"/>
                         </c:if>
@@ -104,6 +114,7 @@
                         </cti:url>
                         <a href="${enrollUrl}"><cti:msg
                             key="yukon.dr.consumer.enrollment.${enrollType}"/></a>
+                      </c:if>
                     </td>
                 </tr>
                 <c:if test="${!empty fn:trim(enrollmentProgram.program.description)}">
@@ -113,6 +124,7 @@
                         </td>
                     </tr>
                 </c:if>
+              </c:if>
             </c:forEach>
         </c:if>
     </c:forEach>
