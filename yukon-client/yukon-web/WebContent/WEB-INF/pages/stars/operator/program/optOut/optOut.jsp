@@ -200,7 +200,7 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-        	        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
+                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
                         <td>
                             <c:if test="${!noOptOutLimits}">
                         
