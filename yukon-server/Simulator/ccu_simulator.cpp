@@ -57,13 +57,6 @@ bool validRequest(SocketComms &socket_interface);
 
 int SimulatorMainFunction(int argc, char **argv)
 {
-    srand(time(NULL));
-
-    // Apparently the first random needs to be dumped or else
-    // the random number will be some linear function as 
-    // opposed to being truly (or rather pseudo-) random.
-    rand();
-
     int strategy = 0,
         port_min = 0,
         port_max = 0;
@@ -251,6 +244,14 @@ void CcuPort(int portNumber, int strategy)
 
 void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 {
+    CtiTime now;
+
+    srand(now.seconds());
+
+    // First rand is apparently linear. Dump the first one to avoid the 
+    // first call to give the program undesired predictability.
+    rand();
+
     SocketComms socket_interface(mySocket, 1200);
 
     if( double chance = gConfigParms.getValueAsDouble("SIMULATOR_DELAY_CHANCE_PERCENT") )
@@ -335,8 +336,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
             
                 if( rdr() )
                 {
-                    // The database query result wasn't empty, so the device is a 721.
-                    ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                    
+                    // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
+                    string str;
+                    rdr["TYPE"] >> str;
+                    if( strcmp(str.c_str(), "CCU-721") == 0 )
+                    {
+                        ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                    }
                 }
                 else
                 {
@@ -367,13 +374,6 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
                     }
                 }
             }
-
-            if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
-            {
-                logger.log("Error while processing message, clearing socket");
-    
-                socket_interface.clear();
-            }
         }
         else
         {
@@ -397,13 +397,13 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
 
                 ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
             }
+        }
 
-            if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
-            {
-                logger.log("Error while processing message, clearing socket");
-    
-                socket_interface.clear();
-            }
+        if( !ccu_list[ccu_address]->handleRequest(socket_interface, logger) )
+        {
+            logger.log("Error while processing message, clearing socket");
+
+            socket_interface.clear();
         }
     }
 }

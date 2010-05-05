@@ -385,6 +385,7 @@ private:
 
         struct dtran_info
         {
+            unsigned sequence;
             bytes message;
 
         } dtran;
@@ -416,16 +417,9 @@ private:
 
     struct status_info
     {
-        status_info() :
-            status_bytes(0),
-            completed(0),
-            available(0)
-        { };
+        status_info() : status_bytes(0) { };
 
         unsigned short status_bytes;
-
-        unsigned completed;
-        unsigned available;
 
     } _status;
 

@@ -128,14 +128,11 @@ error_t Ccu721::extractRequestInfo(const bytes &message, request_info &info) con
         case Klondike_Dtran:
         {
             info.command = Klondike_Dtran;  
-            // CCU721 SSPEC Page 18 - Dtran message goes directly on Transmitted Message Queue.
-            // How to proceed?
             return extractRequestInfo_Dtran(command_data, info);
         }
         case Klondike_CheckStatus:
         {
             info.command = Klondike_CheckStatus; 
-
             return error_t::success;
         }
         case Klondike_ClearBuffers:     
@@ -145,75 +142,62 @@ error_t Ccu721::extractRequestInfo(const bytes &message, request_info &info) con
         }
         case Klondike_LoadBuffer:   
         {
-            info.command = Klondike_LoadBuffer;  
-
-            // There is some additional data to process here.
+            info.command = Klondike_LoadBuffer;
             return extractRequestInfo_LoadBuffer(command_data, info);
         }
         case Klondike_FreezeBuffer:   
         {
             info.command = Klondike_FreezeBuffer;
-
             return error_t::success;
         }
         case Klondike_ThawBuffer:
         {
             info.command = Klondike_ThawBuffer;  
-
             return error_t::success;
         }
         case Klondike_SpyBuffer:
         {
             info.command = Klondike_SpyBuffer;
-
             return error_t::success;
         }
         case Klondike_ReadBuffer:
         {
             info.command = Klondike_ReadBuffer;
-
             return extractRequestInfo_ReadBuffer(command_data, info);
         }
         case Klondike_TimeSync:
         {
             info.command = Klondike_TimeSync;
-
             return extractRequestInfo_TimeSync(command_data, info);
         }
         case Klondike_WriteRouteTable:
         {
             info.command = Klondike_WriteRouteTable;
-
             return extractRequestInfo_WriteRtTable(command_data, info);
         }
         case Klondike_ReadRouteTable:
         {
             info.command = Klondike_ReadRouteTable;
-
             return error_t::success;
         }
         case Klondike_ReadRouteTableOpen:
         {
             info.command = Klondike_ReadRouteTableOpen;
-
             return error_t::success;
         }
         case Klondike_ClearRouteTable:
         {
             info.command = Klondike_ClearRouteTable;
-
             return extractRequestInfo_ClrRtTable(command_data, info);
         }
         case Klondike_ReadMemory:
         {
             info.command = Klondike_ReadMemory;
-
             return extractRequestInfo_ReadMem(command_data, info);
         }
         case Klondike_WriteMemory:
         {
             info.command = Klondike_WriteMemory;
-
             return extractRequestInfo_WriteMem(command_data, info);
         }
         default:
@@ -232,6 +216,8 @@ error_t Ccu721::extractRequestInfo_Dtran(const bytes &command_data, request_info
     }
 
     int index = 0;
+
+    info.dtran.message.assign(command_data.begin(), command_data.end());
 
     queue_entry::request_info &request = info.dtran.data.request;
 
@@ -466,6 +452,8 @@ error_t Ccu721::extractRequestInfo_LoadBuffer(const bytes &command_data, request
 
         index += entry.request.length;  // This too?
     }
+
+    return error_t::success;
 }
 
 error_t Ccu721::extractRequestInfo_WriteRtTable(const bytes &command_data, request_info &info) const
@@ -913,6 +901,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
         }
         case Klondike_Dtran:
         {
+            _next_seq++;
             return processDtranRequest(request, reply);
         }
         case Klondike_SpyBuffer:
@@ -977,14 +966,18 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
             // The pending queue can only hold 8 messages at a time. Ensure that
             // it doesn't exceed this threshold.
 
-            unsigned available = LoadBufferMaxSlots - _queue.pending.size();
+            //unsigned available = LoadBufferMaxSlots - _queue.pending.size();
+            unsigned pre_pending = _queue.pending.size();
 
             _queue.pending.insert(request.info.loadBuffer.request_group.begin(),
                                   request.info.loadBuffer.request_group.begin() 
-                                  + min(request.info.loadBuffer.request_group.size(), available));
+                                  + min(request.info.loadBuffer.request_group.size(), (LoadBufferMaxSlots - pre_pending)));
 
             reply.info.loadBuffer.available = LoadBufferMaxSlots - _queue.pending.size();
-            reply.info.loadBuffer.accepted  = _queue.pending.size() + LoadBufferMaxSlots - available;
+            //reply.info.loadBuffer.accepted  = _queue.pending.size() + LoadBufferMaxSlots - available;
+            reply.info.loadBuffer.accepted  = _queue.pending.size() - pre_pending;
+
+            _next_seq += reply.info.loadBuffer.accepted;
 
             if( !_queue.pending.empty() )
             {
@@ -1010,7 +1003,9 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
             // Read the entries from the completed queue and put them into the collected queue.
             reply.info.readBuffer.flags = request.info.readBuffer.flags;
 
-            while( !_queue.completed.empty() )
+            int bufferCount = LoadBufferMaxSlots;
+
+            while( !_queue.completed.empty() && bufferCount )
             {
                 const queue_entry &entry = *(_queue.completed.begin());
 
@@ -1019,6 +1014,8 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
                 reply.info.collected_queue_entries.push_back(entry);
 
                 _queue.completed.erase(_queue.completed.begin());
+
+                bufferCount--;
             }
 
             if( _queue.completed.empty() )
@@ -1091,10 +1088,12 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
     byte_appender request_oitr(request_buf);
 
     request.info.dtran.data.request.b_word.serialize(request_oitr);
-    for each ( EmetconWordC cword in request.info.dtran.data.request.c_words )
+    for each ( const EmetconWordC &cword in request.info.dtran.data.request.c_words )
     {
         cword.serialize(request_oitr);
     }
+
+    reply.info.dtran.sequence = request.info.dtran.data.sequence;
 
     Sleep(dlc_time(request_buf.size() * 8) * (request.info.dtran.data.request.stagesToFollow + 1));
 
@@ -1142,7 +1141,7 @@ void Ccu721::processQueue(PortLogger &logger)
     queue_info::pending_set::const_iterator pending_itr = _queue.pending.begin(),
                                             pending_end = _queue.pending.end();
 
-    while( pending_itr != pending_end ) //&& _queue.last_transmit < now )
+    while( pending_itr != pending_end && _queue.last_transmit < now )
     {
         queue_entry entry = *pending_itr;
 
@@ -1285,24 +1284,37 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
 {
     ostringstream info_description;
 
-    info_description << "Command ";
+    info_description << "Command";
 
     switch( info.command )
     {
         case Klondike_Dtran:
         {
             // Describe this correctly!
-            info_description << " DTran / length " << info.dtran.message.size() << endl;
+            info_description << " DTran / length " << info.dtran.message.size();
             break;
         }
         case Klondike_CheckStatus:
         {
-            info_description << " Check Status / " << info.reply_length;
+            info_description << " Check Status / ";
             break;
         }
         case Klondike_ClearBuffers:
         {
             info_description << " Clear Buffers / ";
+            if ( info.clearBuffer.clearAll )
+            {
+                info_description << "clear all buffers ";
+            }
+            else 
+            {
+                info_description << "sequences to clear: ";
+                for each (int seq in info.clearBuffer.sequences )
+                {
+                    info_description << seq << " ";
+                }
+                info_description << " / ";
+            }
             break;
         }
         case Klondike_LoadBuffer:
@@ -1316,7 +1328,8 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
             {
                 info_description << endl;
 
-                info_description << "sequence " << setw(10) << setfill('0') << entry_itr->sequence << ", ";
+                info_description << "sequence "; //<< setw(10) << setfill('0') 
+                info_description << entry_itr->sequence << ", ";
                 info_description << "priority " << setw(2)                  << entry_itr->priority << ", ";
 
                 const queue_entry::request_info &request = entry_itr->request;
@@ -1377,7 +1390,76 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
                 }
             }
         }
-
+        case Klondike_FreezeBuffer:
+        {
+            info_description << " Freeze Buffer / ";
+            break;
+        }
+        case Klondike_ThawBuffer:
+        {
+            info_description << " Thaw Buffer / ";
+            break;
+        }
+        case Klondike_SpyBuffer:
+        {
+            info_description << " Spy Buffer / ";
+            break;
+        }
+        case Klondike_ReadBuffer:
+        {
+            info_description << " Read Buffer / Block Read Flags " << std::hex << info.readBuffer.flags;
+            break;
+        }
+        case Klondike_TimeSync:
+        {
+            info_description << " Time Sync / " << info.xtime.timesync;
+            break;
+        }
+        case Klondike_WriteRouteTable:
+        {
+            info_description << " Write Route Table / entries " << info.routeTable.write_requests.size();
+            break;
+        }
+        case Klondike_ReadRouteTable:
+        {
+            info_description << " Read Route Table / ";
+            break;
+        }
+        case Klondike_ReadRouteTableOpen:
+        {
+            info_description << " Read Route Table Open Slots / ";
+            break;
+        }
+        case Klondike_ClearRouteTable:
+        {
+            info_description << " Clear Route Table / ";
+            if( info.routeTable.clearAllRoutes )
+            {
+                info_description << " clear all routes / ";
+            }
+            else 
+            {
+                info_description << " routes to clear: ";
+                for each (int route in info.routeTable.routesToClear)
+                {
+                    info_description << route << " ";
+                }
+                info_description << " / ";
+            }
+            break;
+        }
+        case Klondike_ReadMemory:
+        {
+            info_description << " Read Memory / start address " << info.memoryAccess.startAddress;
+            info_description << " number of bytes " << info.memoryAccess.numBytes;
+            break;
+        }
+        case Klondike_WriteMemory:
+        {
+            info_description << " Write Memory / start address " << info.memoryAccess.startAddress;
+            info_description << " number of bytes " << info.memoryAccess.numBytes;
+            break;
+        }
         default:
         {
             info_description << " Unhandled command " << info.command;
@@ -1437,38 +1519,20 @@ string Ccu721::describeGeneralReply(const reply_info &info) const
 {
     ostringstream info_description;
 
-    switch( info.command )
-    {
-        case Klondike_Dtran:              info_description << "dtran";        break;
-        case Klondike_CheckStatus:        info_description << "chkstatus";    break;
-        case Klondike_ClearBuffers:       info_description << "clearbuf";     break;
-        case Klondike_LoadBuffer:         info_description << "loadbuf";      break;
-        case Klondike_FreezeBuffer:       info_description << "freezebuf";    break;
-        case Klondike_ThawBuffer:         info_description << "thawbuf";      break;
-        case Klondike_SpyBuffer:          info_description << "spybuf";       break;
-        case Klondike_ReadBuffer:         info_description << "readbuf";      break;
-        case Klondike_TimeSync:           info_description << "timesync";     break;
-        case Klondike_WriteRouteTable:    info_description << "wrttable";     break;
-        case Klondike_ReadRouteTable:     info_description << "readtable";    break;
-        case Klondike_ReadRouteTableOpen: info_description << "readslots";    break;
-        case Klondike_ClearRouteTable:    info_description << "clrtable";     break;
-        case Klondike_ReadMemory:         info_description << "readmem";      break;
-        case Klondike_WriteMemory:        info_description << "writemem";     break;
-        case Klondike_AckNoData:          info_description << "acknodata";    break;
-        case Klondike_AckData:            info_description << "ackdata";      break;
-        case Klondike_NAK:                info_description << "nak";          break;
-    }
-
     info_description << describeStatuses(_status.status_bytes);
-/*
+
+    info_description << "Responding to ";
+
     switch( info.command )
     {
-        case Command_DTran:
+        case Klondike_Dtran:
         {
+            info_description << "Dtran / response data ";
+
             bytes::const_iterator message_itr = info.dtran.message.begin();
             bytes::const_iterator message_end = info.dtran.message.end();
 
-            info_description << endl << hex;
+            info_description << hex;
 
             int dFill = info_description.fill('0');
 
@@ -1479,48 +1543,82 @@ string Ccu721::describeGeneralReply(const reply_info &info) const
 
             info_description.fill(dFill);
 
-            info_description << dec << endl << info.dtran.reply->description;
-
             break;
         }
-        case Command_RColQ:
+        case Klondike_CheckStatus:
         {
-            info_description << "; " << info.collected_queue_entries.size() << " entries" << endl;
-
-            vector<queue_entry>::const_iterator completed_itr = info.collected_queue_entries.begin(),
-                                                  completed_end = info.collected_queue_entries.begin();
-
-            for( ; completed_itr != completed_end; ++completed_itr )
+            info_description << "Check Status / Expected Sequence " << _next_seq << ", slots available ";
+            info_description << LoadBufferMaxSlots - _queue.pending.size() << ", status ";
+            info_description << std::hex << _status.status_bytes;
+            break;
+        }
+        case Klondike_LoadBuffer:
+        {
+            info_description << "Load Buffer / accepted " << info.loadBuffer.accepted;
+            info_description << " / slots available " << info.loadBuffer.available;
+            break;
+        }
+        case Klondike_SpyBuffer:
+        {
+            info_description << "Spy Buffer / accepted " << info.loadBuffer.accepted;
+            info_description << " / slots available " << info.loadBuffer.available;
+            break;
+        }
+        case Klondike_ReadBuffer:
+        {
+            info_description << "Read Buffer / block read flags " << std::hex << info.readBuffer.flags << " /";
+            info_description << " buffer slots read " << info.collected_queue_entries.size();
+            if( !info.collected_queue_entries.empty() )
             {
-                int dFill = info_description.fill('0');
+                vector<queue_entry>::const_iterator buffer_itr = info.collected_queue_entries.begin(),
+                                                    buffer_end = info.collected_queue_entries.end();
 
-//  TODO-P2:  Change completion_status to output text instead of an integer
-                info_description << setw(9) << completed_itr->entry_id << " ";
-                info_description << completed_itr->result.completion_status << " at ";
-                info_description << completed_itr->result.completion_time << ", ";
-
-                if( !completed_itr->request.write )
+                for( ; buffer_itr != buffer_end; buffer_itr++ )
                 {
-                    info_description << ", data: " << hex;
-
-                    bytes::const_iterator data_itr = completed_itr->result.data.begin();
-                    bytes::const_iterator data_end = completed_itr->result.data.end();
-
-                    while( data_itr != data_end )
-                    {
-                        info_description << setw(2) << static_cast<int>(*data_itr++) << " ";
-                    }
-
-                    info_description << dec;
+                    info_description << endl;
+                    info_description << "sequence " << buffer_itr->sequence << ", ";
+                    info_description << "completion time " << buffer_itr->result.completion_time << ", ";
+                    info_description << "message length " << buffer_itr->result.data.size();
                 }
-
-                info_description.fill(dFill);
             }
 
             break;
         }
+        case Klondike_ReadRouteTable:
+        {
+            // Once the route table is actually implemented this will describe
+            // the entries that are in the route table. Until then this does nothing.
+            info_description << " Read Route Table / ";
+            break;
+        }
+        case Klondike_ReadRouteTableOpen:
+        {
+            // Same as read route table description.
+            info_description << "Read Route Table Open Slots / ";
+            break;
+        }
+        case Klondike_ReadMemory:
+        {
+            info_description << "Read Memory / start address " << info.memoryAccess.startAddress;
+            info_description << " / number of bytes " << info.memoryAccess.numBytes << " / ";
+
+            bytes::const_iterator message_itr = info.memoryAccess.data.begin();
+            bytes::const_iterator message_end = info.memoryAccess.data.end();
+
+            info_description << hex;
+
+            int dFill = info_description.fill('0');
+
+            while( message_itr != message_end )
+            {
+                info_description<< setw(2) << static_cast<int>(*message_itr++) << " ";
+            }
+
+            info_description.fill(dFill);
+
+            break;
+        }
     }
-*/
     return info_description.str();
 }
 
@@ -1530,39 +1628,39 @@ string Ccu721::describeStatuses(const unsigned short &status) const
 
     if( status & Status_TimeSyncRequired )
     {
-        info_description << ", Time Sync Required";
+        info_description << "Time Sync Required / ";
     }
     if( status & Status_RespBufHasData )
     {
-        info_description << ", Response Buffer has Data";
+        info_description << "Response Buffer has Data / ";
     }
     if( status & Status_RespBufMarkedData )
     {
-        info_description << ", Response Buffer has Marked Data";
+        info_description << "Response Buffer has Marked Data / ";
     }
     if( status & Status_RespBufFull )
     {
-        info_description << ", Response Buffer Full";
+        info_description << "Response Buffer Full / ";
     }
     if( status & Status_TransBufHasData )
     {
-        info_description << ", Transmit Buffer has Data";
+        info_description << "Transmit Buffer has Data / ";
     }
     if( status & Status_TransBufFull )
     {
-        info_description << ", Transmit Buffer full";
+        info_description << "Transmit Buffer full / ";
     }
     if( status & Status_TransBufFrozen )
     {
-        info_description << ", Transmit Buffer Frozen";
+        info_description << "Transmit Buffer Frozen / ";
     }
     if( status & Status_PLCTransDtran )
     {
-        info_description << ", PLC Transmitting DTran Message";
+        info_description << "PLC Transmitting DTran Message / ";
     }
     if( status & Status_PLCTransBuf )
     {
-        info_description << ", PLC Transmitting Buffer Message";
+        info_description << "PLC Transmitting Buffer Message / ";
     }
 
     return info_description.str();
@@ -1710,8 +1808,8 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
         case Klondike_Dtran:
         {
             // Sequence number
-            data_buf.push_back(_next_seq);
-            data_buf.push_back(_next_seq >> 8);
+            data_buf.push_back(info.dtran.sequence);
+            data_buf.push_back(info.dtran.sequence >> 8);
 
             // Signal Strength
             data_buf.push_back(0xff);
@@ -1748,14 +1846,8 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
             data_buf.push_back(info.readBuffer.flags);
             data_buf.push_back(info.collected_queue_entries.size());
 
-            // Need to check if the response buffer has data. The next value pushed onto
-            // the data_buf is the number of slots being returned. The number of queue
-            // entries returned in this response gets pushed on next.
-
             unsigned entries;
 
-            // CCU 721 SSPEC page 27 explains the ACK / Data response layout for the queue entries.
-            // Completed queue contains the entries needing to be processed here.
             vector<queue_entry>::const_iterator completed_itr = info.collected_queue_entries.begin(),
                                                 completed_end = info.collected_queue_entries.end();
 
@@ -1766,7 +1858,7 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
                 completed_entry_buf.push_back(completed_itr->sequence);
                 completed_entry_buf.push_back(completed_itr->sequence >> 8);
                 
-                unsigned utc_seconds = completed_itr->result.completion_time.seconds();// - DawnOfTime.seconds();
+                unsigned utc_seconds = completed_itr->result.completion_time.seconds();
 
                 completed_entry_buf.push_back(utc_seconds);
                 completed_entry_buf.push_back(utc_seconds >> 8);
@@ -1861,7 +1953,7 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
         case Klondike_ReadRouteTableOpen:
         {
             // This responds with the route number of all the open routes in the 
-            // routing table. Contrary to what the Read Route Table command responds with
+            // routing table. Contrary to what the Read Route Table command responds with,
             // and to make this response a lot simpler, assume all routes are being used
             // and that there are no route numbers open.
 
