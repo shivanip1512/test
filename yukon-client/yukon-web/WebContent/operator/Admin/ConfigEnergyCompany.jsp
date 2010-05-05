@@ -387,7 +387,6 @@ function deleteWarehouse(form, warehouseId) {
 %>
                                     <td width="25%" class="TableCell" colspan="2"> 
                                       <input type="button" name="Edit9" value="View" onClick="location.href='/spring/stars/dr/admin/applianceCategory/view?applianceCategoryId=<%= category.getApplianceCategoryID() %>'">
-                                      <a href="ApplianceCategory.jsp?Category=<%= i %>">old link</a>
                                       (Inherited) </td>
                                     <%
 		} else {
