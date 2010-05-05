@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,29 +22,32 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Repository
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
     
     @Override
-    public List<DisplayableProgram> getDisplayablePrograms(final CustomerAccount customerAccount, 
-                                                           final YukonUserContext yukonUserContext,
-                                                           final ControlPeriod controlPeriod) {
+    public List<DisplayableProgram> getControlHistorySummaryDisplayablePrograms(
+                                         final CustomerAccount customerAccount, 
+                                         final YukonUserContext yukonUserContext,
+                                         final ControlPeriod controlPeriod) {
         List<DisplayableProgram> displayableProgramList = 
             doAction(customerAccount, yukonUserContext, controlPeriod, true);
-        removeExtraEntriesForControlHistorySummary(displayableProgramList);
-        return displayableProgramList;
+        List<DisplayableProgram> controlHistorySummaryDisplayablePrograms = 
+            removeExtraEntriesForControlHistorySummary(displayableProgramList);
+        return controlHistorySummaryDisplayablePrograms;
     }
 
     @Override
-    public List<DisplayableProgram> getAllDisplayablePrograms(final CustomerAccount customerAccount, 
-                                                              final YukonUserContext yukonUserContext,
-                                                              final ControlPeriod controlPeriod) {
+    public List<DisplayableProgram> getAllControlHistorySummaryDisplayablePrograms(
+                                         final CustomerAccount customerAccount, 
+                                         final YukonUserContext yukonUserContext,
+                                         final ControlPeriod controlPeriod) {
         List<DisplayableProgram> displayableProgramList = 
             doAction(customerAccount, yukonUserContext, controlPeriod, false);
-        removeExtraEntriesForControlHistorySummary(displayableProgramList);
-        return displayableProgramList;
+        List<DisplayableProgram> controlHistorySummaryDisplayablePrograms = 
+            removeExtraEntriesForControlHistorySummary(displayableProgramList);
+        return controlHistorySummaryDisplayablePrograms;
     }
 
     /**
@@ -157,28 +159,39 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
     
     
     /**
-     * This method goes through the list of displayable control history and reduces the list to
-     * one control history event for each inventory in a program.
+     * This method goes through the list of displayablePrograms and keeps the first 
+     * control history event for each device.  This method should only be used when
+     * you want to display the control history summaries and should not be used 
+     * for displaying actual control history events.
      */
-    private void removeExtraEntriesForControlHistorySummary(List<DisplayableProgram> displayablePrograms) {
-
+    private List<DisplayableProgram> removeExtraEntriesForControlHistorySummary(
+                                          List<DisplayableProgram> displayablePrograms) {
+        List<DisplayableProgram> results = Lists.newArrayList();
+        
         for (DisplayableProgram displayableProgram : displayablePrograms) {
-            Map<String, DisplayableControlHistory> inventoryToControlHistoryMap = 
-                Maps.newTreeMap();
-            
+
+            List<InventoryBase> includedInventoryBases = Lists.newArrayList();
+            List<DisplayableControlHistory> reducedControlHistory = Lists.newArrayList();
+
             for (DisplayableControlHistory displayableControlHistory : 
                      displayableProgram.getDisplayableControlHistoryList()) {
 
                 InventoryBase inventoryBase = 
                     displayableControlHistory.getControlHistory().getInventory();
-                inventoryToControlHistoryMap.put(inventoryBase.getDeviceLabel(), 
-                                                 displayableControlHistory);
+                if (!includedInventoryBases.contains(inventoryBase)) {
+                
+                    includedInventoryBases.add(inventoryBase);
+                    reducedControlHistory.add(displayableControlHistory);
+                }
             }
             
-            // Set the revised control history result set to the specific displayable program
-            ArrayList<DisplayableControlHistory> summaryControlHistoryList = 
-                Lists.newArrayList(inventoryToControlHistoryMap.values());
-            displayableProgram.setDisplayableControlHistoryList(summaryControlHistoryList);
+            DisplayableProgram reducedDisplayableProgram = 
+                new DisplayableProgram(displayableProgram.getProgram(),
+                                       reducedControlHistory);
+            results.add(reducedDisplayableProgram);
+            
         }
+        
+        return results;
     }
 }

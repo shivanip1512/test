@@ -16,13 +16,29 @@ public interface DisplayableProgramDao {
                                                     ControlPeriod controlPeriod,
                                                     boolean applyFilters);
 
-    public List<DisplayableProgram> getDisplayablePrograms(CustomerAccount customerAccount, 
-                                                           YukonUserContext yukonUserContext,
-                                                           ControlPeriod controlPeriod);
+    /**
+     * This method returns a list of displayablePrograms that contain one control history
+     * event for each piece of hardware in a given program.  This allows us to get the
+     * control summaries for each device without having to deal with all the excess 
+     * control history data.
+     * 
+     */
+    public List<DisplayableProgram> getControlHistorySummaryDisplayablePrograms(
+                                         CustomerAccount customerAccount, 
+                                         YukonUserContext yukonUserContext,
+                                         ControlPeriod controlPeriod);
 
-    public List<DisplayableProgram> getAllDisplayablePrograms(CustomerAccount customerAccount,
-                                                              YukonUserContext yukonUserContext, 
-                                                              ControlPeriod controlPeriod);
+    /**
+     * This method returns a list of displayablePrograms that contain one control history
+     * event for each piece of hardware in a given program.  This allows us to get the
+     * control summaries for each device without having to deal with all the excess 
+     * control history data.
+     * 
+     */
+    public List<DisplayableProgram> getAllControlHistorySummaryDisplayablePrograms(
+                                         CustomerAccount customerAccount,
+                                         YukonUserContext yukonUserContext, 
+                                         ControlPeriod controlPeriod);
 
     public DisplayableProgram getDisplayableProgram(CustomerAccount customerAccount, 
                                                     YukonUserContext yukonUserContext,

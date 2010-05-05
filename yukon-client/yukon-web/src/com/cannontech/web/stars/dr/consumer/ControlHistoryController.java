@@ -51,9 +51,10 @@ public class ControlHistoryController extends AbstractConsumerController {
         map.addAttribute("totalDurationMap", totalDurationMap);
         
         List<DisplayableProgram> displayablePrograms = 
-            displayableProgramDao.getAllDisplayablePrograms(customerAccount, 
-                                                            userContext, 
-                                                            ControlPeriod.PAST_DAY);
+            displayableProgramDao.getAllControlHistorySummaryDisplayablePrograms(
+                                      customerAccount, 
+                                      userContext, 
+                                      ControlPeriod.PAST_DAY);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
         return viewName;

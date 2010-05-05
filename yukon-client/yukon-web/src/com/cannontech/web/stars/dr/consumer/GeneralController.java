@@ -40,9 +40,10 @@ public class GeneralController extends AbstractConsumerController {
             YukonUserContext yukonUserContext, ModelMap map) {
         
         List<DisplayableProgram> displayablePrograms = 
-            displayableProgramDao.getDisplayablePrograms(customerAccount, 
-                                                         yukonUserContext,
-                                                         ControlPeriod.PAST_DAY);
+            displayableProgramDao.getControlHistorySummaryDisplayablePrograms(
+                                      customerAccount,
+                                      yukonUserContext,
+                                      ControlPeriod.PAST_DAY);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
         boolean isNotEnrolled = displayablePrograms.size() == 0;

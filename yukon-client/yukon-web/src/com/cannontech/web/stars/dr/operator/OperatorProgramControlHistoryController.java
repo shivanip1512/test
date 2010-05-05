@@ -71,9 +71,10 @@ public class OperatorProgramControlHistoryController {
         modelMap.addAttribute("totalDurationMap", totalDurationMap);
         
         List<DisplayableProgram> displayablePrograms = 
-            displayableProgramDao.getAllDisplayablePrograms(customerAccount, 
-                                                            userContext, 
-                                                            ControlPeriod.PAST_DAY);
+            displayableProgramDao.getAllControlHistorySummaryDisplayablePrograms(
+                                      customerAccount, 
+                                      userContext, 
+                                      ControlPeriod.PAST_DAY);
         modelMap.addAttribute("displayablePrograms", displayablePrograms);
         return viewName;
     }
