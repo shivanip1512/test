@@ -35,8 +35,8 @@ function getOrder( str ) {
 
 function setFeederIDinRedirectURL( id, oneline, subBusId ) {
     $("redirectURL").value = "/capcontrol/moved.jsp?FeederID=" + id;
-    if( oneline == 'true' ){
-        $("redirectURL").value = "/capcontrol/moved.jsp&subBusId=" + subBusId;
+    if( oneline == true ){
+        $("redirectURL").value += "&subbusID=" + subBusId;
     }
 }
 
