@@ -13,36 +13,6 @@
     <cti:param name="accountId" value="${accountId}" />
 </cti:url>
 
-<script type="text/javascript">
-function createJSON() {
-    var array = new Array();
-    var index = 0;
-
-    $$('INPUT').each(function(input) {
-        if (input) {
-            var name = input.name;
-            if (name == 'inventoryId') {
-                var inventoryId = input.value;
-                var checked = $('check_' + inventoryId).checked;
-                if (checked) {
-                    array[index++] = input.value;
-                }    
-            }
-        }
-    });
-
-
-    // error message here
-    
-    var inputElement = document.createElement('input');
-    inputElement.type = 'hidden';
-    inputElement.name = 'jsonInventoryIds';
-    inputElement.value = array.toJSON();
-    
-    $('form').appendChild(inputElement);
-}
-</script>    
-
     <div>
 		<c:if test="${!empty error}">
 			<span class="errorMessage"><cti:msg key="${error}"/></span><br>
@@ -72,15 +42,14 @@ function createJSON() {
     
                             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                                 <td title="${displayableInventory.serialNumber}">
-                                    <label for="check_${inventoryId}">
+                                    <label for="${inventoryId}">
                                         <c:choose>
                                             <c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
-                                                <input id="unused_${inventoryId}" disabled="disabled" type="checkbox"></input>
+                                                <input type="checkbox" disabled="disabled" ></input>
                                             </c:when>
                                             <c:otherwise>
                                                 <c:set var="showNextButton" value="true" />
-                                                <input type="hidden" name="inventoryId" value="${inventoryId}"/>
-                                                <input id="check_${inventoryId}" type="checkbox"></input>
+                                                <input type="checkbox" id="${inventoryId}" name="inventoryIds" value="${inventoryId}"/>
                                             </c:otherwise>
                                         </c:choose>
                                         <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>

@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -61,6 +61,7 @@ import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
@@ -200,41 +201,45 @@ public class OperatorProgramOptOutOperatorController {
     @RequestMapping
     public String optOutQuestions(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
                                    BindingResult bindingResult,
-                                   HttpServletRequest request, 
-                                   String jsonInventoryIds, 
+                                   HttpServletRequest request,
                                    ModelMap modelMap,
                                    YukonUserContext userContext,
                                    FlashScope flashScope,
-                                   AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException, CommandCompletionException {
+                                   AccountInfoFragment accountInfoFragment)
+            throws ServletRequestBindingException, CommandCompletionException {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                        userContext.getYukonUser());
         
-        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
+        String[] inventoryIdsArr = ServletRequestUtils.getStringParameters(request, "inventoryIds");
         
-        String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
-        List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
-        if (inventoryIds.size() == 0) {
-        	
-            flashScope.setMessage(
-                           new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.noInventorySelected"), 
-                           FlashScopeMessageType.ERROR);
-
+        if (inventoryIdsArr.length < 1) {
+            flashScope.setMessage(new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.main.noInventorySelected"), 
+                                  FlashScopeMessageType.ERROR);
+            setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
+            
             return deviceSelection(optOutBackingBean,
-                                    bindingResult,
-                                    modelMap,
-                                    userContext,
-                                    flashScope,
-                                    accountInfoFragment);
-
+                                   bindingResult,
+                                   modelMap,
+                                   userContext,
+                                   flashScope,
+                                   accountInfoFragment);
+            
         }
-
+        
+        // get the list of inventory ids
+        int[] inventoryIdsIntArr = StringUtils.toIntArray(inventoryIdsArr);
+        List<Integer> inventoryIds = Lists.newArrayList();
+        for (int inventoryId : inventoryIdsIntArr) {
+            inventoryIds.add(inventoryId);
+        }
+        
         List<String> questions = OptOutControllerHelper.getConfirmQuestions(
                 messageSourceResolver, 
                 userContext,
                 "yukon.dr.operator.optoutconfirm.question.");
 
-        modelMap.addAttribute("jsonInventoryIds", jsonInventoryIds);
+        modelMap.addAttribute("inventoryIds", inventoryIds);
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         if (questions.size() == 0) {
 
@@ -246,13 +251,13 @@ public class OperatorProgramOptOutOperatorController {
             return "redirect:view";
         }
         
-        return confirm(optOutBackingBean, jsonInventoryIds, modelMap, 
+        return confirm(optOutBackingBean, inventoryIds, modelMap, 
                         userContext, accountInfoFragment);
     }
     
     @RequestMapping
     public String confirm(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
-                           String jsonInventoryIds, 
+                           List<Integer> inventoryIds, 
                            ModelMap modelMap,
                            YukonUserContext yukonUserContext,
                            AccountInfoFragment accountInfoFragment) {
@@ -267,8 +272,7 @@ public class OperatorProgramOptOutOperatorController {
                     "yukon.dr.operator.optoutconfirm.question.");
         modelMap.addAttribute("questions", questions);
         
-        String escaped = StringEscapeUtils.escapeHtml(jsonInventoryIds);
-        modelMap.addAttribute("jsonInventoryIds", escaped);
+        modelMap.addAttribute("inventoryIds", inventoryIds);
 
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
         return "operator/program/optOut/optOutConfirm.jsp";
@@ -290,7 +294,6 @@ public class OperatorProgramOptOutOperatorController {
     @RequestMapping
     public String update(@ModelAttribute("optOutBackingBean") OptOutBackingBean optOutBackingBean,
                           BindingResult bindingResult,
-                          String jsonInventoryIds, 
                           HttpServletRequest request, 
                           ModelMap modelMap,
                           YukonUserContext userContext,
@@ -300,9 +303,15 @@ public class OperatorProgramOptOutOperatorController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                        userContext.getYukonUser());
 
-        String unEscaped = StringEscapeUtils.unescapeHtml(jsonInventoryIds);
-        List<Integer> inventoryIds = OptOutControllerHelper.toInventoryIdList(unEscaped);
-
+        // get the list of inventory ids
+        String inventoryIdsStr = 
+            ServletRequestUtils.getRequiredStringParameter(request, "inventoryIds");
+        inventoryIdsStr = inventoryIdsStr.substring(1, inventoryIdsStr.length()-1);
+        List<Integer> inventoryIds = Lists.newArrayList(); 
+        for (String inventoryIdStr : inventoryIdsStr.split(",")) {
+            inventoryIds.add(Integer.parseInt(inventoryIdStr.trim()));
+        }
+        
         bindingResult = new BeanPropertyBindingResult(optOutBackingBean, "optOutBackingBean");
         
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());

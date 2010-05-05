@@ -59,7 +59,7 @@
             <form:hidden path="startDate" />
 
             <input type="hidden" name="accountId" value="${accountId}" />
-            <input type="hidden" name="jsonInventoryIds" value="${jsonInventoryIds}" />
+            <input type="hidden" name="inventoryIds" value="${inventoryIds}" />
 
             <c:set var="index" value="0"/> 
             <table id="questionTable">

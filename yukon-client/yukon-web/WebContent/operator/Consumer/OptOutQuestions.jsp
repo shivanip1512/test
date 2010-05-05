@@ -41,7 +41,7 @@
             <jsp:include page="/spring/stars/operator/optout/confirm">
                 <jsp:param name="startDate" value="${param.startDate}"/>
                 <jsp:param name="durationInDays" value="${param.duration}"/>
-                <jsp:param name="jsonInventoryIds" value="${param.inventoryIds}"/>
+                <jsp:param name="inventoryIds" value="${param.inventoryIds}"/>
               </jsp:include>
             </div>
           </td>
