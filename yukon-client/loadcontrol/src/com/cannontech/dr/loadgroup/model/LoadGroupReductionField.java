@@ -30,10 +30,10 @@ public class LoadGroupReductionField extends LoadGroupBackingFieldBase {
                     return 0;
                 }
                 if (group1 == null || group1.getReduction() == null) {
-                    return 1;
+                    return -1;
                 }
                 if (group2 == null || group2.getReduction() == null) {
-                    return -1;
+                    return 1;
                 }
                 Double reduction1 = group1.getReduction();
                 Double reduction2 = group2.getReduction();

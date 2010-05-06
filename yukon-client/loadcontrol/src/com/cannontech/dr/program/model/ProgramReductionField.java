@@ -30,10 +30,10 @@ public class ProgramReductionField extends ProgramBackingFieldBase {
                     return 0;
                 }
                 if (program1 == null) {
-                    return 1;
+                    return -1;
                 }
                 if (program2 == null) {
-                    return -1;
+                    return 1;
                 }
                 Double reduction1 = program1.getReductionTotal();
                 Double reduction2 = program2.getReductionTotal();

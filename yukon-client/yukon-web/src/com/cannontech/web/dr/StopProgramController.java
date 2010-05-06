@@ -33,6 +33,7 @@ import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
 @RequestMapping("/program/stop/*")
@@ -107,7 +108,8 @@ public class StopProgramController extends ProgramControllerBase {
     @RequestMapping
     public String stop(ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             return details(model, true, backingBean, bindingResult, userContext);
@@ -145,7 +147,8 @@ public class StopProgramController extends ProgramControllerBase {
                                                                         program.getName(),
                                                                         stopDate);
         }
-
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopProgram.programStopped"));
+        
         return closeDialog(model);
     }
 
@@ -216,7 +219,8 @@ public class StopProgramController extends ProgramControllerBase {
     @RequestMapping
     public String stopMultiple(ModelMap model, Boolean overrideConstraints,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
             return multipleDetails(model, true, backingBean, bindingResult, userContext);
@@ -270,7 +274,14 @@ public class StopProgramController extends ProgramControllerBase {
                                                    stopDate, stopOffset);
             }
         }
-
+        
+        if(backingBean.getControlAreaId() != null){
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopped"));
+        }
+        if(backingBean.getScenarioId() != null){
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopped"));
+        }
+        
         return closeDialog(model);
     }
 

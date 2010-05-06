@@ -24,7 +24,9 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.program.service.ProgramService;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
 public class LoadGroupController {
@@ -111,7 +113,8 @@ public class LoadGroupController {
 
     @RequestMapping("/loadGroup/sendShed")
     public String sendShed(ModelMap modelMap, int loadGroupId,
-            int durationInSeconds, YukonUserContext userContext) {
+            int durationInSeconds, YukonUserContext userContext,
+            FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -125,6 +128,7 @@ public class LoadGroupController {
         demandResponseEventLogService.threeTierLoadGroupShed(yukonUser, 
                                                              loadGroup.getName(), 
                                                              durationInSeconds);
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendShedConfirm.shedSent"));
         
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
@@ -145,7 +149,8 @@ public class LoadGroupController {
     }
 
     @RequestMapping("/loadGroup/sendRestore")
-    public String sendRestore(ModelMap modelMap, int loadGroupId, YukonUserContext userContext) {
+    public String sendRestore(ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
+                              FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -157,6 +162,7 @@ public class LoadGroupController {
         loadGroupService.sendRestore(loadGroupId);
         
         demandResponseEventLogService.threeTierLoadGroupRestore(yukonUser, loadGroup.getName());
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendRestoreConfirm.restoreSent"));
         
         modelMap.addAttribute("popupId", "drDialog");
         return "common/closePopup.jsp";
@@ -179,7 +185,7 @@ public class LoadGroupController {
     
     @RequestMapping("/loadGroup/setEnabled")
     public String setEnabled(ModelMap modelMap, int loadGroupId, boolean isEnabled,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -192,8 +198,10 @@ public class LoadGroupController {
 
         if (isEnabled) {
             demandResponseEventLogService.threeTierLoadGroupEnabled(yukonUser, loadGroup.getName());
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendEnableConfirm.enabled"));
         } else {
             demandResponseEventLogService.threeTierLoadGroupDisabled(yukonUser, loadGroup.getName());
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.loadGroup.sendEnableConfirm.disabled"));
         }
 
         modelMap.addAttribute("popupId", "drDialog");

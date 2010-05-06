@@ -43,9 +43,11 @@ import com.cannontech.dr.controlarea.service.TriggerFieldService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Ordering;
@@ -218,7 +220,7 @@ public class ControlAreaController {
 
     @RequestMapping("/controlArea/setEnabled")
     public String setEnabled(ModelMap modelMap, int controlAreaId, boolean isEnabled,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -232,9 +234,11 @@ public class ControlAreaController {
         if(isEnabled) {
             demandResponseEventLogService.threeTierControlAreaEnabled(yukonUser,
                                                                       controlArea.getName());
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendEnableConfirm.enabled"));
         } else {
             demandResponseEventLogService.threeTierControlAreaDisabled(yukonUser,
                                                                        controlArea.getName());
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendEnableConfirm.disabled"));
         }
 
         return closeDialog(modelMap);
@@ -255,7 +259,8 @@ public class ControlAreaController {
     }
 
     @RequestMapping("/controlArea/resetPeak")
-    public String resetPeak(ModelMap modelMap, int controlAreaId, YukonUserContext userContext) {
+    public String resetPeak(ModelMap modelMap, int controlAreaId, YukonUserContext userContext,
+                            FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -268,7 +273,7 @@ public class ControlAreaController {
 
         demandResponseEventLogService.threeTierControlAreaPeakReset(yukonUser,
                                                                     controlArea.getName());
-
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendResetPeakConfirm.peakReset"));
         return closeDialog(modelMap);
     }
 
@@ -321,13 +326,14 @@ public class ControlAreaController {
             modelMap.addAttribute("validWindow", false);
             return "dr/controlArea/getChangeTimeWindowValues.jsp";
         }
-
+        
         return "dr/controlArea/sendChangeTimeWindowConfirm.jsp";
     }
 
     @RequestMapping("/controlArea/changeTimeWindow")
     public String changeTimeWindow(ModelMap modelMap, int controlAreaId, String startTime,
-                                   String stopTime, YukonUserContext userContext) {
+                                   String stopTime, YukonUserContext userContext, 
+                                   FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -348,6 +354,7 @@ public class ControlAreaController {
                                                                             startSeconds,
                                                                             stopSeconds);
 
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.timeWindowChanged"));
         return closeDialog(modelMap);
     }
 
@@ -373,7 +380,7 @@ public class ControlAreaController {
     @RequestMapping("/controlArea/triggerChange")
     public String triggerChange(ModelMap modelMap, int controlAreaId, Double threshold1,
                                 Double offset1, Double threshold2, Double offset2,
-                                YukonUserContext userContext) {
+                                YukonUserContext userContext, FlashScope flashScope) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -393,6 +400,7 @@ public class ControlAreaController {
                                                                           threshold1, offset1,
                                                                           threshold2, offset2);
 
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.controlArea.getChangeTriggerValues.triggerValueChanged"));
         return closeDialog(modelMap);
     }
 

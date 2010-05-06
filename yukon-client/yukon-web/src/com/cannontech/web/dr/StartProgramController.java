@@ -41,6 +41,7 @@ import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -125,7 +126,8 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String constraints(ModelMap model, String from,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, 
+            FlashScope flashScope) {
         if (backingBean.isStartNow()) {
             backingBean.setStartDate(backingBean.getNow());
         }
@@ -156,7 +158,7 @@ public class StartProgramController extends ProgramControllerBase {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
 
         if (autoObserveConstraintsAllowed && backingBean.isAutoObserveConstraints()) {
-            return start(model, from, backingBean, bindingResult, false, userContext);
+            return start(model, from, backingBean, bindingResult, false, userContext, flashScope);
         }
 
         boolean checkConstraintsAllowed =
@@ -190,7 +192,7 @@ public class StartProgramController extends ProgramControllerBase {
     public String start(ModelMap model, String from,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, Boolean overrideConstraints,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, FlashScope flashScope) {
         validate(datesValidator, model, backingBean, bindingResult);
         if (backingBean.isAddAdjustments()) {
             validate(gearAdjustmentsValidator, model, backingBean,
@@ -228,7 +230,8 @@ public class StartProgramController extends ProgramControllerBase {
         demandResponseEventLogService.threeTierProgramScheduled(userContext.getYukonUser(),
                                                                 program.getName(),
                                                                 startDate);
-
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startProgram.programStarted"));
+        
         return closeDialog(model);
     }
 
@@ -379,7 +382,8 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String multipleConstraints(ModelMap model, String from,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
         if (backingBean.isStartNow()) {
             backingBean.setStartDate(backingBean.getNow());
         }
@@ -422,7 +426,7 @@ public class StartProgramController extends ProgramControllerBase {
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
 
         if (autoObserveConstraintsAllowed && backingBean.isAutoObserveConstraints()) {
-            return multipleStart(model, from, backingBean, bindingResult, userContext);
+            return multipleStart(model, from, backingBean, bindingResult, userContext, flashScope);
         }
 
         boolean checkConstraintsAllowed =
@@ -499,7 +503,8 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String multipleStart(ModelMap model, String from,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext,
+            FlashScope flashScope) {
         validate(datesValidator, model, backingBean, bindingResult);
         if (backingBean.isAddAdjustments()) {
             validate(gearAdjustmentsValidator, model, backingBean, bindingResult);
@@ -577,7 +582,12 @@ public class StartProgramController extends ProgramControllerBase {
                                         programStartInfo.isOverrideConstraints(),
                                         gearAdjustments);
         }
-
+        if(backingBean.getScenarioId() != null){
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.scenarioStarted"));
+        }
+        if(backingBean.getControlAreaId() != null){
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStarted"));
+        }
         return closeDialog(model);
     }
 

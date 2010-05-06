@@ -91,12 +91,15 @@
 <entry key="yukon.web.modules.dr.controlArea.sendDisableConfirm.confirmQuestion">Are you sure you want to disable the control area {0}?</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.enabled">Control area enabled.</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendEnableConfirm.disabled">Control area disabled.</entry>
 
 <!-- sendResetPeakConfirm.jsp -->
 <entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.title">Send Reset Peak</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.confirmQuestion">Are you sure you want to reset the Peak Value(s) to zero for all triggers the control area {0}?</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendResetPeakConfirm.peakReset">Peak reset.</entry>
 
 <!-- getChangeTimeWindowValues.jsp -->
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.title">Send Time Window Change</entry>
@@ -112,6 +115,7 @@
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.confirmQuestion">Are you sure you want to change the time window to {0} - {1} the control area {2}?</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.controlArea.sendChangeTimeWindowConfirm.timeWindowChanged">Time window changed.</entry>
 
 <!-- getChangeTriggerValues.jsp -->
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title">Send Trigger Change</entry>
@@ -121,6 +125,7 @@
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offset">New restore offset:</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.triggerValueChanged">Trigger value changed.</entry>
 
 <!--  Program Field Values -->
 <entry key="yukon.web.modules.dr.program.value.STATE.ACTIVE">Active</entry>
@@ -139,10 +144,10 @@
 <entry key="yukon.web.modules.dr.program.value.PRIORITY">{0}</entry>
 <entry key="yukon.web.modules.dr.program.value.REDUCTION">{0,number,0.0}</entry>
 <entry key="yukon.web.modules.dr.program.value.LOAD_CAPACITY">{0,number,0.0}</entry>
-<entry key="yukon.web.modules.dr.program.value.REDUCTION"></entry>
 <entry key="yukon.web.modules.dr.program.value.ENABLED"></entry>
 <entry key="yukon.web.modules.dr.program.value.DISABLED">Disabled:</entry>
 
+<!-- start program -->
 <entry key="yukon.web.modules.dr.program.startProgram.title">Start Program</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.confirmQuestion">Are you sure you want to start the program {0}?</entry>
 
@@ -179,7 +184,9 @@
 <entry key="yukon.web.modules.dr.program.startProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.program.startProgram.programStarted">Program started.</entry>
 
+<!-- stop program -->
 <entry key="yukon.web.modules.dr.program.stopProgram.title">Stop Program</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.confirmQuestion">Are you sure you want to stop the program {0}?</entry>
 
@@ -198,6 +205,7 @@
 <entry key="yukon.web.modules.dr.program.stopProgram.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.program.stopProgram.programStopped">Program stopped.</entry>
 
 <entry key="yukon.web.modules.dr.program.stopProgram.required.stopDate">A valid stop date is required if "stop now" not selected.</entry>
 <entry key="yukon.web.modules.dr.program.stopProgram.typeMismatch.stopDate">A valid stop date is required if "stop now" not selected.</entry>
@@ -238,6 +246,8 @@
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.nextButton">Next</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.startMultiplePrograms.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.scenarioStarted">Scenario started.</entry>
+<entry key="yukon.web.modules.dr.program.startMultiplePrograms.controlAreaStarted">Control area started.</entry>
 
 <!-- stop multiple programs -->
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.title">Stop Programs</entry>
@@ -257,6 +267,8 @@
 
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.stopMultiplePrograms.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopped">Scenario stopped.</entry>
+<entry key="yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopped">Control area stopped.</entry>
 
 <!-- getChangeGearValue.jsp -->
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.title">Send Change Gear</entry>
@@ -265,7 +277,7 @@
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.cancelButton">Cancel</entry>
 <entry key="yukon.web.modules.dr.program.getChangeGearValue.notEnoughGears">Program {0} does not have multiple gears.</entry>
-
+<entry key="yukon.web.modules.dr.program.getChangeGearValue.gearChanged">Gear changed.</entry>
 
 <!-- sendEnableConfirm.jsp -->
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.title">Send Enable</entry>
@@ -274,7 +286,8 @@
 <entry key="yukon.web.modules.dr.program.sendDisableConfirm.confirmQuestion">Are you sure you want to disable the program {0}?</entry>
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.program.sendEnableConfirm.cancelButton">Cancel</entry>
-
+<entry key="yukon.web.modules.dr.program.sendEnableConfirm.enabled">Program enabled.</entry>
+<entry key="yukon.web.modules.dr.program.sendEnableConfirm.disabled">Program disabled.</entry>
 
 <!--  Load Group Field Values -->
 <entry key="yukon.web.modules.dr.loadGroup.value.STATE.ACTIVE">Active</entry>
@@ -296,12 +309,14 @@
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.shedTimeNotes">Note: Ripple switches ignore this setting.</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendShedConfirm.shedSent">Shed sent.</entry>
 
 <!-- sendRestoreConfirm.jsp -->
 <entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.title">Send Restore</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.confirmQuestion">Are you sure you want to restore the load group {0}?</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendRestoreConfirm.restoreSent">Restore sent.</entry>
 
 <!-- sendEnableConfirm.jsp -->
 <entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.title">Send Enable</entry>
@@ -310,6 +325,8 @@
 <entry key="yukon.web.modules.dr.loadGroup.sendDisableConfirm.confirmQuestion">Are you sure you want to disable the load group {0}?</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.cancelButton">Cancel</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.enabled">Load group enabled.</entry>
+<entry key="yukon.web.modules.dr.loadGroup.sendEnableConfirm.disabled">Load group disabled.</entry>
 
 <!-- Demand Response Home -->
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>

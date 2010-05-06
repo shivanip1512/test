@@ -274,13 +274,15 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
 
         // Add trigger change commands for trigger 2 if it exists
-        LMControlAreaTrigger trigger2 = triggerVector.get(1);
-        if(trigger2 != null) {
-            List<LMCommand> triggerCommands = 
-                this.getTriggerCommands(controlAreaId, trigger2, threshold2, offset2);
-            commandVector.addAll(triggerCommands);
+        if(triggerVector.size() > 1) {
+            LMControlAreaTrigger trigger2 = triggerVector.get(1);
+            if(trigger2 != null) {
+                List<LMCommand> triggerCommands = 
+                    this.getTriggerCommands(controlAreaId, trigger2, threshold2, offset2);
+                commandVector.addAll(triggerCommands);
+            }
         }
-
+        
         loadControlClientConnection.write(multi);
         demandResponseEventLogService.controlAreaTriggersChanged(controlArea.getYukonName(),
                                                                  threshold1, offset1, 

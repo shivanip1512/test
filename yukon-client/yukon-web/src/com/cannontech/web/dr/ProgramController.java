@@ -19,7 +19,9 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 
 @Controller
 @RequestMapping("/program/*")
@@ -84,7 +86,7 @@ public class ProgramController extends ProgramControllerBase {
     
     @RequestMapping
     public String changeGear(ModelMap modelMap, int programId, int gearNumber, 
-                             YukonUserContext userContext) {
+                             YukonUserContext userContext, FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -96,7 +98,7 @@ public class ProgramController extends ProgramControllerBase {
         programService.changeGear(programId, gearNumber);
         
         demandResponseEventLogService.threeTierProgramChangeGear(yukonUser, program.getName());
-        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.getChangeGearValue.gearChanged"));
         return closeDialog(modelMap);
     }
     
@@ -117,7 +119,7 @@ public class ProgramController extends ProgramControllerBase {
     
     @RequestMapping
     public String setEnabled(ModelMap modelMap, int programId, boolean isEnabled,
-            YukonUserContext userContext) {
+            YukonUserContext userContext, FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
@@ -130,8 +132,10 @@ public class ProgramController extends ProgramControllerBase {
 
         if(isEnabled) {
             demandResponseEventLogService.threeTierProgramEnabled(yukonUser, program.getName());
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.sendEnableConfirm.enabled"));
         } else {
             demandResponseEventLogService.threeTierProgramDisabled(yukonUser, program.getName());
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.sendEnableConfirm.disabled"));
         }
         
         return closeDialog(modelMap);
