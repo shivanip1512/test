@@ -53,7 +53,7 @@
     <tags:formElementContainer nameKey="optOuts">
         <form:form id="form" commandName="optOutBackingBean" 
                    action="/spring/stars/operator/program/optOut/update" 
-                   method="POST" onsubmit="createJSON();">
+                   method="POST">
 
             <form:hidden path="durationInDays" />
             <form:hidden path="startDate" />
@@ -76,10 +76,7 @@
             </table>
 
             <br>
-            <button type="submit">
-                <i:inline key=".save"/>
-            </button>
-            
+            <tags:slowInput2 key="save" formId="form" onsubmit="createJSON()"/>
             <button type="submit" name="cancel">
                 <i:inline key=".cancel"/>
             </button>
