@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/26/2010 11:31:14 AM                        */
+/* Created on:     5/6/2010 9:58:33 AM                          */
 /*==============================================================*/
 
 
@@ -9391,7 +9391,6 @@ INSERT INTO YukonRoleProperty VALUES(-10909,-109,'Stars Reports Group','true','A
 INSERT INTO YukonRoleProperty VALUES(-10923,-109,'C&I Curtailment Reports Group','false','Access to C&I Curtailment group reports');
 
 /* Operator Consumer Info Role Properties */
-INSERT INTO YukonRoleProperty VALUES(-20101,-201,'Account General','true','Controls whether to show the general account information');
 INSERT INTO YukonRoleProperty VALUES(-20102,-201,'Account Residence','false','Controls whether to show the customer residence information');
 INSERT INTO YukonRoleProperty VALUES(-20103,-201,'Account Call Tracking','false','Controls whether to enable the call tracking feature');
 INSERT INTO YukonRoleProperty VALUES(-20104,-201,'Metering Interval Data','false','Controls whether to show the metering interval data');
