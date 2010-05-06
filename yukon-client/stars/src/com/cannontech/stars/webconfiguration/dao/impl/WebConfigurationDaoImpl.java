@@ -40,8 +40,8 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
             int configurationId = rs.getInt("configurationId");
             String logoLocation = SqlUtils.convertDbValueToString(rs.getString("logoLocation"));
             String description = SqlUtils.convertDbValueToString(rs.getString("description"));
-            String displayName = rs.getString("alternateDisplayName");
-            String url = rs.getString("url");
+            String displayName = SqlUtils.convertDbValueToString(rs.getString("alternateDisplayName"));
+            String url = SqlUtils.convertDbValueToString(rs.getString("url"));
             WebConfiguration webConfiguration =
                 new WebConfiguration(configurationId, logoLocation, description,
                                      displayName, url);
