@@ -11,8 +11,9 @@ public class CapControlRetriesReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Area", "Region", 120),
         new ColumnLayoutData("Substation Bus", "SubBus", 110),
-        new ColumnLayoutData("Feeder", "Feeder", 110),
-        new ColumnLayoutData("Cap Bank", "CapBank", 110),
+        new ColumnLayoutData("Feeder", "Feeder", 80),
+        new ColumnLayoutData("Cap Bank", "CapBank", 80),
+        new ColumnLayoutData("CB Type", "ControllerType", 80),
         new ColumnLayoutData("CBC", "CBC", 110),
         new ColumnLayoutData("Retries", "numRetries", 50),
         new ColumnLayoutData("Attempts", "numAttempts", 50),

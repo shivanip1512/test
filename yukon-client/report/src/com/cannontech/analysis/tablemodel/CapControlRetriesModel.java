@@ -25,6 +25,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         public String SubBus;
         public String Feeder;
         public String CapBank;
+        public String ControllerType;
         public String CBC;
         public Integer numRetries;
         public Integer numAttempts;
@@ -74,6 +75,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
                         row.SubBus = rs.getString("SubBus");
                         row.Feeder = rs.getString("Feeder");
                         row.CapBank = rs.getString("CapBank");
+                        row.ControllerType = rs.getString("CBType");
                         row.CBC = rs.getString("CBC");
                         row.numRetries = rs.getInt("NumRetries");
                         Integer attempts = rs.getInt("numAttempts");
@@ -106,6 +108,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append(", yp2.paoname feeder ");
         sql.append(", yp3.paoname capbank ");
         sql.append(", yp4.paoname cbc ");
+        sql.append(", cb.controllertype cbtype");
         sql.append(", el.ct numRetries ");
         sql.append(", el2.ct numAttempts ");
         sql.append(", el3.ct success ");
