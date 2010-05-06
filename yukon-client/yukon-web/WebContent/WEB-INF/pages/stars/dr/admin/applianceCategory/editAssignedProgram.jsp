@@ -81,6 +81,7 @@ submitForm = function() {
 <form:form id="inputForm" commandName="backingBean" action="${submitUrl}"
     onsubmit="return submitForm()">
     <form:hidden path="virtual"/>
+    <form:hidden path="multiple"/>
     <c:if test="${backingBean.multiple}">
         <c:forEach var="programId" items="${backingBean.programIds}">
             <input type="hidden" name="programIds" value="${programId}">

@@ -961,10 +961,10 @@ h1.dialogQuestion {
     color: red;
 }
 
-div.dialogScrollArea {
-    width: 100%;
+.dialogScrollArea {
     height: 200px;
-	overflow: scroll;
+    overflow: auto;
+    overflow-x: hidden;
 }
 
 div.padded {

@@ -61,11 +61,11 @@ updateOKButton = function() {
     <br>
     <tags:boxContainer2 nameKey="hardwareAssigned">
         <div class="dialogScrollArea">
-        <table class="compactResultsTable rowHighlighting">
+        <table id="hardwareAssignedTable" class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <th></th>
-                <th><i:inline key=".serialNumber"/></th>
-                <th><i:inline key=".relay"/></th>
+                <th class="deviceLabel"><i:inline key=".deviceLabel"/></th>
+                <th class="relay"><i:inline key=".relay"/></th>
             </tr>
             <c:forEach var="item" varStatus="status"
                 items="${programEnrollment.inventoryEnrollments}">
@@ -79,10 +79,10 @@ updateOKButton = function() {
                             path="inventoryEnrollments[${status.index}].enrolled"
                             onclick="enrollmentChanged(${inventoryId});"/>
                     </td>
-                    <td><label for="enrolledCB${inventoryId}">
+                    <td class="deviceLabel"><label for="enrolledCB${inventoryId}">
                         <spring:escapeBody htmlEscape="true">${displayableInventory.displayName}</spring:escapeBody>
                     </label></td>
-                    <td>
+                    <td class="relay">
                         <form:select id="relaySelect${inventoryId}"
                             path="inventoryEnrollments[${status.index}].relay">
                             <form:option value="0"><cti:msg2 key=".noRelay"/></form:option>

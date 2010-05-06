@@ -62,8 +62,8 @@
     </entry>
     <entry key="yukon.web.modules.operator.enrollmentEdit.group">Group</entry>
     <entry key="yukon.web.modules.operator.enrollmentEdit.groupNotApplicable">Not Applicable</entry>
-    <entry key="yukon.web.modules.operator.enrollmentEdit.hardwareAssigned.title">Hardware Assigned</entry>
-    <entry key="yukon.web.modules.operator.enrollmentEdit.serialNumber">Serial #</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.hardwareAssigned.title">Hardware</entry>
+    <entry key="yukon.web.modules.operator.enrollmentEdit.deviceLabel">Device Label</entry>
     <entry key="yukon.web.modules.operator.enrollmentEdit.relay">Relay</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentEdit.ok">OK</entry>

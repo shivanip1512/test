@@ -6,89 +6,73 @@
     border: 2px solid black;
 }
 
-#enrollmentTable tr.applianceCategory td {
-    padding: 20px 5px 0px 5px;
+div.applianceCategory {
+    margin: 20px 10px 20px 10px;
+    border: 2px solid black;
+    padding: 5px;
 }
 
-#enrollmentTable tr.enrolled {
+table.applianceCategoryHeading {
+}
+
+td.applianceCategoryIcon {
+    vertical-align: top;
+    padding: 5px;
+}
+
+td.applianceCategoryName {
+    vertical-align: top;
+    padding: 5px;
+    font-size: 16px;
+	font-weight: bold;
+}
+
+td.applianceCategoryDescription {
+    padding: 5px;
+}
+
+div.programList {
+	padding: 5px;
+}
+
+div.programList table {
+	margin: 5px;
+	padding-right: 10px;
+	width: 100%;
+}
+
+.enrolled {
     background-color: #77ff77;
 }
 
-#enrollmentTable tr.notEnrolled {
+.notEnrolled {
 }
 
-#enrollmentTable {
-    width: 100%;
+div.program {
+	margin: 5px;
+	padding: 5px;
 }
 
-#enrollmentTable tr.applianceCategoryDescription td,
-#enrollmentTable tr.programDescription td {
-	padding-left: 25px;
-	padding-bottom: 10px;
-}
-
-#enrollmentTable tr.programDescription td {
-    padding-bottom: 5px;
-}
-
-#enrollmentTable td {
+td.programName {
     padding-left: 5px;
     padding-right: 5px;
 }
 
-#enrollmentTable td.programDescriptionIcon {
+td.programDescriptionIcon {
+    padding-left: 2px;
+    padding-right: 2px;
     width: 25px;
+    max-width: 25px;
 }
 
-#enrollmentTable td.applianceCategoryIcon {
-    width: 64px;
-    max-width: 64px;
-    vertical-align: top;
-    padding-left: 0px;
-    padding-right: 0px;
+td.enrollLink {
+    padding-left: 5px;
+    padding-right: 10px;
+	text-align: right;
+	width: 75px;
 }
 
-#enrollmentTable td.enrollLink {
-    text-align: right;
-}
-
-#enrollmentTable .enrolled td.firstColumn {
-    border-left: 2px solid black;
-}
-
-#enrollmentTable .notEnrolled td.firstColumn {
-    border-left: 2px solid white;
-}
-
-#enrollmentTable .enrolled td.lastColumn {
-    border-right: 2px solid black;
-}
-
-#enrollmentTable .notEnrolled td.lastColumn {
-    border-right: 2px solid white;
-}
-
-#enrollmentTable .firstProgramRow td {
-    padding-top: 10px;
-}
-
-#enrollmentTable .firstProgramRow.enrolled td {
-    border-top: 2px solid black;
-}
-
-#enrollmentTable .firstProgramRow.notEnrolled td {
-    border-top: 2px solid white;
-}
-
-#enrollmentTable .lastProgramRow td,
-#enrollmentTable .lastProgramRow td.firstColumn {
-    padding-bottom: 10px;
-}
-
-#enrollmentTable .lastProgramRow.enrolled td {
-    border-bottom: 2px solid black;
-}
-
-#enrollmentTable .lastProgramRow.notEnrolled td {
-    border-bottom: 2px solid white;
+.programDescription {
+	padding-left: 35px;
+	padding-right: 10px;
 }

@@ -11,7 +11,7 @@ import com.cannontech.stars.dr.program.model.Program;
 
 public final class DisplayableEnrollment {
     public static final Comparator<DisplayableEnrollmentProgram> enrollmentProgramComparator;
-    public static final Comparator<DisplayableEnrollment> enrollmentComparator;
+    public static final Comparator<DisplayableEnrollment> byApplianceCategoryNameComparator;
     private ApplianceCategory applianceCategory;
     private Set<DisplayableEnrollmentProgram> enrollmentPrograms;
     
@@ -26,10 +26,10 @@ public final class DisplayableEnrollment {
             }
         };
 
-        enrollmentComparator = new Comparator<DisplayableEnrollment>() {
+        byApplianceCategoryNameComparator = new Comparator<DisplayableEnrollment>() {
             @Override
             public int compare(DisplayableEnrollment o1, DisplayableEnrollment o2) {
-                return o1.getApplianceTypeEnum().name().compareTo(o2.getApplianceTypeEnum().name());
+                return o1.getApplianceCategory().getDisplayName().compareTo(o2.getApplianceCategory().getDisplayName());
             }
         };
     }

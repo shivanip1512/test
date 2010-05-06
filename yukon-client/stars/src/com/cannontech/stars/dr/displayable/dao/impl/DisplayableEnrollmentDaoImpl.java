@@ -78,7 +78,7 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         }
         
         List<DisplayableEnrollment> resultList = new ArrayList<DisplayableEnrollment>(enrollmentMap.values());
-        Collections.sort(resultList, DisplayableEnrollment.enrollmentComparator);
+        Collections.sort(resultList, DisplayableEnrollment.byApplianceCategoryNameComparator);
         return resultList;
     }
 

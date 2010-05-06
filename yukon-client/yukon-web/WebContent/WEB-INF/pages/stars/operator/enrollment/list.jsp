@@ -8,6 +8,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:standardPage module="operator" page="enrollmentList">
+<cti:includeCss link="/WebConfig/yukon/styles/operator/enrollment.css"/>
 
 <tags:simpleDialog id="peDialog"/>
 <script type="text/javascript">
@@ -21,16 +22,16 @@ var programIdsAlreadyEnrolled = [];
     <c:if test="${!empty enrollmentPrograms}">
     <table class="compactResultsTable rowHighlighting">
         <tr>
-            <th><i:inline key=".name"/></th>
-            <th><i:inline key=".applianceCategory"/></th>
+            <th class="programName"><i:inline key=".name"/></th>
+            <th class="applianceCategory"><i:inline key=".applianceCategory"/></th>
             <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-                <th><i:inline key=".group"/></th>
+                <th class="loadGroup"><i:inline key=".group"/></th>
             </cti:checkRolesAndProperties>
-            <th><i:inline key=".hardware"/></th>
-            <th><i:inline key=".relay"/></th>
-            <th><i:inline key=".status"/></th>
+            <th class="hardware"><i:inline key=".hardware"/></th>
+            <th class="relay"><i:inline key=".relay"/></th>
+            <th class="status"><i:inline key=".status"/></th>
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                <th><i:inline key=".actions"/></th>
+                <th class="actions"><i:inline key=".actions"/></th>
             </cti:checkRolesAndProperties>
         </tr>
 
@@ -40,18 +41,18 @@ var programIdsAlreadyEnrolled = [];
             programIdsAlreadyEnrolled.push(${programId});
             </script>
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
-                <td>
+                <td class="programName">
                     <spring:escapeBody htmlEscape="true">
                         ${enrollmentProgram.program.programName}
                     </spring:escapeBody>
                 </td>
-                <td>
+                <td class="applianceCategory">
                     <spring:escapeBody htmlEscape="true">
                         ${enrollmentProgram.applianceCategory.name}
                     </spring:escapeBody>
                 </td>
                 <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
-                    <td>
+                    <td class="loadGroup">
                         <c:if test="${enrollmentProgram.loadGroupId != 0}">
                             <spring:escapeBody htmlEscape="true">
                                 ${loadGroupNames[enrollmentProgram.loadGroupId]}
@@ -59,7 +60,7 @@ var programIdsAlreadyEnrolled = [];
                         </c:if>
                     </td>
                 </cti:checkRolesAndProperties>
-                <td>
+                <td class="hardware">
                     <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
                         <c:if test="${hardware.enrolled}">
                             <spring:escapeBody htmlEscape="true">
@@ -68,7 +69,7 @@ var programIdsAlreadyEnrolled = [];
                         </c:if>
                     </c:forEach>
                 </td>
-                <td>
+                <td class="relay">
                     <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
                         <c:if test="${hardware.enrolled}">
                             <c:set var="relayStr" value="${hardware.relay}"/>
@@ -79,7 +80,7 @@ var programIdsAlreadyEnrolled = [];
                         </c:if>
                     </c:forEach>
                 </td>
-                <td>
+                <td class="status">
                     <c:forEach var="hardware" items="${enrollmentProgram.inventory}">
                         <c:if test="${hardware.enrolled}">
                             <i:inline key=".inService.${hardware.inService}"/><br>
@@ -87,7 +88,7 @@ var programIdsAlreadyEnrolled = [];
                     </c:forEach>
                 </td>
                 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
-                    <td>
+                    <td class="actions">
                         <cti:url var="editUrl" value="/spring/stars/operator/enrollment/edit">
                             <cti:param name="accountId" value="${accountId}"/>
                             <cti:param name="assignedProgramId" value="${programId}"/>

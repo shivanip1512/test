@@ -50,19 +50,19 @@ public class AssignedProgramName {
     
     public String getAlternateDisplayName() {
         StringBuilder alternateDisplayName = new StringBuilder();
-        if (displayName.indexOf(',') !=  -1) {
+        if (displayName != null && displayName.indexOf(',') !=  -1) {
             alternateDisplayName.append('"');
             alternateDisplayName.append(displayName);
             alternateDisplayName.append('"');
-        } else {
+        } else if (displayName != null) {
             alternateDisplayName.append(displayName);
         }
         alternateDisplayName.append(',');
-        if (shortName.indexOf(',') !=  -1) {
+        if (shortName != null && shortName.indexOf(',') !=  -1) {
             alternateDisplayName.append('"');
             alternateDisplayName.append(shortName);
             alternateDisplayName.append('"');
-        } else {
+        } else if (shortName != null) {
             alternateDisplayName.append(shortName);
         }
         return alternateDisplayName.toString();
