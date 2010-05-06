@@ -36,13 +36,18 @@ end;
 //---------------------------------------------------------------------------- 
 export prototype Tomcat_Installing();
 function Tomcat_Installing()
-string sName, sKey;
+string sName, sKey, sEnv;
+pointer pEnv;
 begin
 	//set the system environment variable JRE_HOME for use by the Tomcat service
 	sName = "JRE_HOME";         
 	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
 	sKey = "\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 	RegDBSetKeyValueEx(sKey, sName, REGDB_STRING, TARGETDIR + "\\Runtime", -1);
+	//broadcast notification of env variable change
+	sEnv = "Environment";
+	pEnv = &sEnv;
+	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 end;
 
 //----------------------------------------------------------------------------
@@ -79,6 +84,7 @@ begin
 	//Add this service to the YUKON GROUP so it shows up in TDC
 	sKey = "\\SYSTEM\\CurrentControlSet\\Services\\YukonWebApplicationService"; 
 	RegDBSetKeyValueEx(sKey, "Group", REGDB_STRING, "YUKON GROUP", -1);
+	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 end;
 
 //----------------------------------------------------------------------------

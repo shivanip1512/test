@@ -4,6 +4,9 @@
 #include "featureevents.rul"
 #include "util.rul"
 
+//for windows api message broadcasting
+#define WM_SETTINGCHANGE 		0x001A
+
 //constants
 #define SCANNER_DESC	"Collects real-time and interval data from a list of devices."
 #define PORTER_DESC		"Controls communication channel and field hardware communications."
@@ -82,9 +85,10 @@ end;
 // of the setup when the setup is running in first install mode.
 //---------------------------------------------------------------------------
 function OnFirstUIAfter()
-string sProg, sCMD, sName, sKey;
+string sProg, sCMD, sName, sKey, sEnv;
 number nResult;
 BOOL opt, bOptYes, bOptNo;
+pointer pEnv;
 begin
 	//set the YUKON_BASE environment variable to the TARGETDIR
 	//where we just installed Yukon
@@ -94,6 +98,11 @@ begin
 	if(nResult != 0) then
 		MessageBox("Unable to set YUKON_BASE environment variable.", WARNING);
 	endif;
+	//broadcast notification of environment variable change so it is visible
+	//to other programs
+	sEnv = "Environment";
+	pEnv = &sEnv;
+	SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, pEnv);
 	
 	//check to see if any yukon services were installed
 	if (FeatureIsItemSelected(MEDIA, "Yukon Server")) then	
