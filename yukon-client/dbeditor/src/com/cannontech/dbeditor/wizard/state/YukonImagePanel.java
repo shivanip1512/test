@@ -1,6 +1,11 @@
 package com.cannontech.dbeditor.wizard.state;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.image.ImageChooser;
+import com.cannontech.common.gui.util.DialogUtil;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.yukon.IDatabaseCache;
@@ -208,11 +213,15 @@ public void ctiCallBackAction( java.beans.PropertyChangeEvent pEvent )
 
 }
 
+private void disposePanel1() {
+    getJPanelImages().removeAll();
+    disposePanel();
+}
 
 /* Override me to do things when this panel is dismissed */
-public void disposePanel()
+protected void disposePanel()
 {
-   
+    
 }
 
 
@@ -773,7 +782,7 @@ public void jButtonAddImages_ActionPerformed(java.awt.event.ActionEvent actionEv
  */
 public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
-   disposePanel();
+   disposePanel1();
 
 	return;
 }
@@ -785,7 +794,7 @@ public void jButtonCancel_ActionPerformed(java.awt.event.ActionEvent actionEvent
 public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
 {
    retResult = OK_OPTION;
-   disposePanel();
+   disposePanel1();
    
 	return;
 }
@@ -978,10 +987,8 @@ protected void setUpImages( LiteYukonImage[] images )
 
    private void createImageLabel( LiteYukonImage image )
    {
-      javax.swing.JLabel imageLabel = new javax.swing.JLabel( image.getImageName(),
-            new javax.swing.ImageIcon(
-               java.awt.Toolkit.getDefaultToolkit().createImage(image.getImageValue())),
-            javax.swing.SwingConstants.CENTER);
+      ImageIcon scaledImage = DialogUtil.scaleImage(new ImageIcon(image.getImageValue()));
+      JLabel imageLabel = new JLabel( image.getImageName(), scaledImage,SwingConstants.CENTER);
       
       imageLabel.setHorizontalTextPosition( javax.swing.SwingConstants.CENTER );
       imageLabel.setVerticalAlignment( javax.swing.SwingConstants.BOTTOM );

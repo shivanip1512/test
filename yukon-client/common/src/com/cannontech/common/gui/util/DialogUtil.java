@@ -6,6 +6,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -97,6 +98,11 @@ public class DialogUtil {
 	
 	// no instances please!
 	private DialogUtil() {
+	}
+	
+	public static ImageIcon scaleImage(ImageIcon img)
+	{
+	    return new ImageIcon(img.getImage().getScaledInstance(20,20, java.awt.Image.SCALE_AREA_AVERAGING ));
 	}
 	
 }
