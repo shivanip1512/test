@@ -41,9 +41,15 @@ public class AccountSiteDaoImpl implements AccountSiteDao {
         int accountSiteId = nextValueHelper.getNextValue("AccountSite");
         accountSite.setAccountSiteId(accountSiteId);
         
+        /* SiteNumber column in AccountSite does not allow nulls */
+        String siteNumber = accountSite.getSiteNumber();
+        if(siteNumber == null) {
+            siteNumber = "";
+        }
+        
         int rows = simpleJdbcTemplate.update(sql, accountSiteId,
                                                   accountSite.getSiteInformationId(),
-                                                  SqlUtils.convertStringToDbValue(accountSite.getSiteNumber()),
+                                                  SqlUtils.convertStringToDbValue(siteNumber),
                                                   accountSite.getStreetAddressId(),
                                                   SqlUtils.convertStringToDbValue(accountSite.getPropertyNotes()),
                                                   SqlUtils.convertStringToDbValue(accountSite.getCustomerStatus()),
