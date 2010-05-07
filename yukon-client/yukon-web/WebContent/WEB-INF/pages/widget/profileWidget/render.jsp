@@ -45,8 +45,6 @@
 <%--PAST PROFILES, don't display if the device does not support --%>
 <cti:checkRole role="operator.MeteringRole.ROLEID">
 <cti:checkProperty property="operator.MeteringRole.PROFILE_COLLECTION">
-<c:if test="${isReadable}">
-
     <br/>
 	<table class="compactResultsTable">
 		<tr>
@@ -84,15 +82,13 @@
 				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 			</td>
 	  	    <td class="last" align="right">
-	           <tags:widgetActionRefresh hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start"/>
+	           <tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>
             </td>
 		</tr>
 		
         </tr>
 	</table>
 	<br/>
-
-</c:if>
 </cti:checkProperty>
 </cti:checkRole>
 

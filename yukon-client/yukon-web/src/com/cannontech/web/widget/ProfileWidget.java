@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -71,7 +70,6 @@ public class ProfileWidget extends WidgetControllerBase {
     private ContactDao contactDao = null;
     private SimpleReportService simpleReportService = null;
     private ToggleProfilingService toggleProfilingService = null;
-    private MeterReadService meterReadService = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
     private RolePropertyDao rolePropertyDao;
     
@@ -242,11 +240,6 @@ public class ProfileWidget extends WidgetControllerBase {
         // email
         mav.addObject("email", getUserEmail(userContext));
 
-        // Checks to see if the meter is readable for load profile attributes
-        Set<Attribute> supportedProfileAttributes = getSupportedProfileAttributes(meter);
-        boolean isReadable = meterReadService.isReadable(meter, supportedProfileAttributes, userContext.getYukonUser());
-        mav.addObject("isReadable", isReadable);
-        
         // pending requests
         List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(device, userContext);
         mav.addObject("pendingRequests", pendingRequests);
@@ -716,11 +709,6 @@ public class ProfileWidget extends WidgetControllerBase {
         this.toggleProfilingService = toggleProfilingService;
     }
 
-    @Required
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
-    }
-    
     @Autowired
     public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
         this.templateProcessorFactory = templateProcessorFactory;
