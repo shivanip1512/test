@@ -276,10 +276,10 @@ public class StopProgramController extends ProgramControllerBase {
         }
         
         if(backingBean.getControlAreaId() != null){
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopped"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopped"));
         }
         if(backingBean.getScenarioId() != null){
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.controlAreaStopped"));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.program.stopMultiplePrograms.scenarioStopped"));
         }
         
         return closeDialog(model);
