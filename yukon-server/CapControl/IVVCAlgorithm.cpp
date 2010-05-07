@@ -706,9 +706,9 @@ double IVVCAlgorithm::calculatePowerFactor(const double varValue, const double w
 }
 
 
-double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
+double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor, const double targetPowerFactor)
 {
-    const double Pf = std::abs(100.0 * ( 1.0 - powerFactor ) );
+    const double Pf = std::abs(100.0 * ( targetPowerFactor - powerFactor ) );
 
     const double a = 1.0;
     const double b = 1.0;
@@ -876,7 +876,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     //calculate current weight of the bus
     double currentBusWeight = calculateBusWeight(strategy->getVoltWeight(isPeakTime), Vf,
-                                                 strategy->getPFWeight(isPeakTime), PFBus);
+                                                 strategy->getPFWeight(isPeakTime), PFBus,
+                                                 (strategy->getTargetPF(isPeakTime) / 100.0) );
+
+    double targetPowerFactorVars = calculateTargetPFVars(strategy->getTargetPF(isPeakTime), wattValue);
 
     // Log our current measurement set and calculations
     if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -895,6 +898,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         dout << "Subbus Flatness     : " << Vf << endl;
         dout << "Subbus Power Factor : " << PFBus << endl;
         dout << "Subbus Weight       : " << currentBusWeight << endl;
+        dout << "Target PF VARs      : " << targetPowerFactorVars << endl;
     }
 
     //calculate estimated bus weights etc from historical data
@@ -962,14 +966,40 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 //calculate estimated flatness of the bus if current bank switches state
                 state->_estimated[currentBank->getPaoId()].flatness = calculateVf(deltas);
 
+                //calculate the VAR target window
+                double varLowLimit   = targetPowerFactorVars - (currentBank->getBankSize() * (strategy->getMinBankOpen(isPeakTime) / 100.0));
+                double varUpperLimit = targetPowerFactorVars + (currentBank->getBankSize() * (strategy->getMinBankClose(isPeakTime) / 100.0));
+
                 //calculate estimated power factor of the bus if current bank switches state
-                double estVarValue = varValue + ( ( isCapBankOpen ? -1.0 : 1.0 ) * currentBank->getBankSize() );
+                double estVarValue = 0.0;
+                double pfmodifier  = 1.0;
+
+                if ( isCapBankOpen )
+                {
+                   estVarValue -= currentBank->getBankSize();     // reduce the estmated vars....
+
+                   if ( estVarValue < varLowLimit)
+                   {
+                      pfmodifier = 1.5;
+                   }
+                }
+                else
+                {
+                   estVarValue += currentBank->getBankSize();     // increase the estmated vars....
+
+                   if ( estVarValue > varUpperLimit)
+                   {
+                      pfmodifier = 1.5;
+                   }
+                }
+
                 state->_estimated[currentBank->getPaoId()].powerFactor = calculatePowerFactor(estVarValue, wattValue);
 
                 //calculate estimated weight of the bus if current bank switches state
                 state->_estimated[currentBank->getPaoId()].busWeight =
                     calculateBusWeight(strategy->getVoltWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].flatness,
-                                       strategy->getPFWeight(isPeakTime), state->_estimated[currentBank->getPaoId()].powerFactor);
+                                       (pfmodifier * strategy->getPFWeight(isPeakTime)), state->_estimated[currentBank->getPaoId()].powerFactor,
+                                       (strategy->getTargetPF(isPeakTime) / 100.0));
 
                 // Log our estimated calculations
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -1105,5 +1135,25 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     }
 
     return true;
+}
+
+
+/*
+   Takes a WATT value and a desired POWER FACTOR value [ range: 0.0 to 200.0 ].
+   Returns the VARs required to produce the given PF with the given Watts.
+*/
+double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double wattValue)
+{
+   // Normalize the power factor.
+
+   double pf = std::abs( (targetPF > 100.0) ? 200.0 - targetPF : targetPF ) / 100.0;
+
+   // Compute VARs needed to meet desired power factor.
+
+   double vars = ( wattValue / pf ) * std::sqrt( 1.0 - std::pow( pf, 2.0 ) );
+
+   // If we have a leading power factor our VARs are negative.  Lagging VARs are positive.
+
+   return (targetPF > 100.0) ? -vars : vars;
 }
 

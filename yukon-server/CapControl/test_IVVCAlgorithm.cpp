@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_bus_weight_calculation)
 
         double test_calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor)
         {
-            return calculateBusWeight(Kv, Vf, Kp, powerFactor);
+            return calculateBusWeight(Kv, Vf, Kp, powerFactor, 1.0);    // Tying the last param to 1.0...
         }
     };
 
@@ -416,6 +416,34 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_bus_weight_calculation)
     BOOST_CHECK_CLOSE( 2.000000 , _algorithm.test_calculateBusWeight( 0.500000, 1.000000, 0.500000, 0.970000 ) , 0.0001 );
 
     BOOST_CHECK_CLOSE( 2.625000 , _algorithm.test_calculateBusWeight( 0.250000, 2.500000, 0.500000, 0.960000 ) , 0.0001 );
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_target_power_factor_var_calculation)
+{
+    struct test_IVVCAlgorithm : public IVVCAlgorithm
+    {
+        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
+
+        double test_calculateTargetPFVars(const double targetPF, const double wattValue)
+        {
+            return calculateTargetPFVars(targetPF, wattValue);
+        }
+    };
+
+    test_IVVCAlgorithm  _algorithm;
+
+    // check to 1 significant digits (rounded)
+
+    BOOST_CHECK_CLOSE( -881.9 , _algorithm.test_calculateTargetPFVars( 125.0, 1000.0) , 0.1 );
+
+    BOOST_CHECK_CLOSE(  881.9 , _algorithm.test_calculateTargetPFVars(  75.0, 1000.0) , 0.1 );
+
+    BOOST_CHECK_CLOSE(  484.3 , _algorithm.test_calculateTargetPFVars(  90.0, 1000.0) , 0.1 );
+
+    BOOST_CHECK_CLOSE( -484.3 , _algorithm.test_calculateTargetPFVars( 110.0, 1000.0) , 0.1 );
+
+    BOOST_CHECK_CLOSE(    0.0 , _algorithm.test_calculateTargetPFVars( 100.0, 1000.0) , 0.1 );
 }
 
 
