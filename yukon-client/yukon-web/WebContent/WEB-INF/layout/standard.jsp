@@ -43,7 +43,7 @@
 </div>
 <cti:outputContent writable="${menuRenderer}"/>
 
-<div id="MainContainer" class="${showContextualNavigation ? "StandardWithNavLayout" : "StandardLayout"}">
+<div id="busyBox" class="busyBox" style="display: none"></div><div id="MainContainer" class="${showContextualNavigation ? "StandardWithNavLayout" : "StandardLayout"}">
 
 <div id="ContentWrapper">
 <div id="Content">

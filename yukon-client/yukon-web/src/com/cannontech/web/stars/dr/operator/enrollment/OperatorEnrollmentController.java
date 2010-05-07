@@ -4,6 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -95,10 +99,10 @@ public class OperatorEnrollmentController {
      */
     @RequestMapping
     public String add(ModelMap model, int assignedProgramId,
-            YukonUserContext userContext,
+            HttpServletResponse response, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        return edit(model, assignedProgramId, userContext, accountInfoFragment,
-                    true, flashScope);
+        return edit(model, assignedProgramId, response, userContext,
+                    accountInfoFragment, true, flashScope);
     }
 
     /**
@@ -107,14 +111,14 @@ public class OperatorEnrollmentController {
      */
     @RequestMapping
     public String edit(ModelMap model, int assignedProgramId,
-            YukonUserContext userContext,
+            HttpServletResponse response, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        return edit(model, assignedProgramId, userContext, accountInfoFragment,
-                    false, flashScope);
+        return edit(model, assignedProgramId, response, userContext,
+                    accountInfoFragment, false, flashScope);
     }
 
     private String edit(ModelMap model, int assignedProgramId,
-            YukonUserContext userContext,
+            HttpServletResponse response, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, boolean isAdd,
             FlashScope flashScope) {
 
@@ -130,6 +134,9 @@ public class OperatorEnrollmentController {
         if (isAdd && autoConfiguration
                 && programEnrollment.getInventoryEnrollments().size() == 1) {
             programEnrollment.getInventoryEnrollments().get(0).setEnrolled(true);
+            JSONObject actionCommand = new JSONObject();
+            actionCommand.append("action", "close");
+            response.addHeader("X-JSON", actionCommand.toString());
             return save(model, assignedProgramId, isAdd, programEnrollment,
                         userContext, accountInfoFragment, flashScope);
         }

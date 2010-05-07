@@ -1013,9 +1013,9 @@ div.padded {
 	left: 50%;
     margin-left: -16px;
     margin-top: -16px;
-    top: 50%;
-	width: 90px;
-	height: 90px;
+    top: 33%;
+	width: 32px;
+	height: 32px;
     z-index: 101;
     background-image: url('/WebConfig/yukon/Icons/busy_rotation.gif');
     background-repeat: no-repeat;

@@ -39,15 +39,22 @@ function adjustDialogSizeAndPosition(dialogId) {
     });
 }
 
-function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters) {
+function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters, skipShow) {
+	showBusy();
 
     if (arguments.length > 2 && title) {
         $(dialogId + '_title').innerHTML = title;
     }
 
     var onComplete = function(transport, json) {
-    	adjustDialogSizeAndPosition(dialogId);
-        $(dialogId).show();
+    	if (json && json.action == 'close') {
+    		$(dialogId).hide();
+    	}
+    	else if (!skipShow) {
+    		adjustDialogSizeAndPosition(dialogId);
+    		$(dialogId).show();
+    	}
+    	hideBusy();
     }
 
     new Ajax.Updater($(dialogId + '_body'), innerHtmlUrl, {
@@ -59,16 +66,9 @@ function openSimpleDialog(dialogId, innerHtmlUrl, title, parameters) {
 }
 
 function submitFormViaAjax(dialogId, formId, url, title) {
-    if (arguments.length > 3) {
-        $(dialogId + '_title').innerHTML = title;
-    }
 	if (arguments.length < 3 || url == null) {
 		url = $(formId).action;
 	}
-    new Ajax.Updater(dialogId + '_body', url, {
-            'evalScripts': true,
-            'method': 'post',
-            'parameters': $(formId).serialize(true)
-        });
+	openSimpleDialog(dialogId, url, title, $(formId).serialize(true), true);
     return false; // useful if we want to use this for "onsubmit" on a form
 }

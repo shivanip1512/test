@@ -90,8 +90,6 @@ Picker.prototype = {
 			// because they type a character and deleted it.
 			if (!pickerThis.inSearch && pickerThis.currentSearch != ss) {
 				pickerThis.doSearch();
-			} else {
-				pickerThis.hideBusy();
 			}
 		};
 		var quietDelay = 300;
@@ -100,7 +98,7 @@ Picker.prototype = {
 		var ss = pickerThis.ssInput.value;
 		if (pickerThis.currentSearch != ss) {
 			setTimeout(timerFunction, quietDelay);
-			this.showBusy();
+			showBusy();
 		}
 	},
 
@@ -112,7 +110,7 @@ Picker.prototype = {
 	 */
 	doSearch: function(start) {
 		this.inSearch = true;
-		this.showBusy();
+		showBusy();
 		var ss = this.ssInput.value;
 		if (ss) {
 			this.showAllLink.show();
@@ -154,7 +152,9 @@ Picker.prototype = {
 			this.multiSelectMode = false;
 		}
 		this.reset(false, true);
+		this.clearSearchResults();
 		if (!$(this.pickerId)) {
+			showBusy();
 			var bodyElem = document.documentElement.getElementsByTagName('body')[0];
 			var pickerDialogDivContainer = document.createElement('div');
 			bodyElem.appendChild(pickerDialogDivContainer);
@@ -186,6 +186,7 @@ Picker.prototype = {
 	},
 
 	onComplete : function(transport, json) {
+		hideBusy();
 		this.ssInput = $('picker_' + this.pickerId + '_ss');
 		this.showAllLink = $('picker_' + this.pickerId + '_showAllLink');
 		this.inputAreaDiv = $('picker_' + this.pickerId + '_inputArea');
@@ -203,14 +204,6 @@ Picker.prototype = {
 	 */
 	hide: function() {
 		$(this.pickerId).hide();
-	},
-
-	showBusy: function() {
-		$(this.pickerId).getElementsBySelector('.busyBox')[0].show();
-	},
-
-	hideBusy: function() {
-		$(this.pickerId).getElementsBySelector('.busyBox')[0].hide();
 	},
 
 	okPressed: function() {
@@ -269,6 +262,22 @@ Picker.prototype = {
 	},
 
 	/**
+	 * Clear any old search results (used when the dialog is first popped up).
+	 */
+	clearSearchResults: function() {
+		if (!this.resultsDiv) {
+			// our first time up; nothing to do
+			return;
+		}
+		this.updatePagingArea();
+		var oldResultArea = $(this.resultAreaId);
+		var resultHolder = this.resultsDiv;
+		if (oldResultArea) {
+			resultHolder.removeChild(oldResultArea);
+		}
+	},
+
+	/**
 	 * Update the UI with data from the search results.  This method calls
 	 * renderTalbeResults to update the table itself and then updates the
 	 * previous and next buttons appropriately.
@@ -290,18 +299,18 @@ Picker.prototype = {
 		this.updateSelectAllCheckbox();
 
 		var ss = this.ssInput.value;
+		hideBusy();
 		if (this.currentSearch != ss) {
 			// do another search
 			this.doSearch();
 		} else {
 			this.inSearch = false;
-			this.hideBusy();
 		}
 	},
 
 	ajaxError: function(transport) {
 		this.inSearch = false;
-		this.hideBusy();
+		hideBusy();
 		this.resultsDiv.innerHTML = '';
 		errorHolder = document.createElement('div');
 		errorHolder.id = this.errorHolderId;
@@ -389,7 +398,7 @@ Picker.prototype = {
 		this.previousIndex = -1;
 		this.nextIndex = -1;
 
-		if (json.hits.startIndex > 0) {
+		if (json && json.hits.startIndex > 0) {
 			this.previousIndex = json.hits.previousStartIndex;
 			pickerDiv.getElementsBySelector('.previousLink .enabledAction')[0].show();
 			pickerDiv.getElementsBySelector('.previousLink .disabledAction')[0].hide();
@@ -397,7 +406,7 @@ Picker.prototype = {
 			pickerDiv.getElementsBySelector('.previousLink .enabledAction')[0].hide();
 			pickerDiv.getElementsBySelector('.previousLink .disabledAction')[0].show();
 		}
-		if (json.hits.endIndex < json.hits.hitCount) {
+		if (json && json.hits.endIndex < json.hits.hitCount) {
 			this.nextIndex = json.hits.endIndex;
 			pickerDiv.getElementsBySelector('.nextLink .enabledAction')[0].show();
 			pickerDiv.getElementsBySelector('.nextLink .disabledAction')[0].hide();
@@ -406,7 +415,7 @@ Picker.prototype = {
 			pickerDiv.getElementsBySelector('.nextLink .disabledAction')[0].show();
 		}
 
-		pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = json.pages;
+		pickerDiv.getElementsBySelector('.pageNumText')[0].innerHTML = json ? json.pages : '';
 	},
 
 	selectAll: function() {
@@ -456,7 +465,6 @@ Picker.prototype = {
 			this.selectAllCheckBox.checked = false;
 		} else {
 			// select
-			parentRow.addClassName('highlighted');
 			if (!this.multiSelectMode) {
 				// not multi-select mode; unselect all others
 				var rows = parentRow.parentNode.childNodes;
@@ -468,6 +476,7 @@ Picker.prototype = {
 				this.selectedItems.push(hit);
 				this.updateSelectAllCheckbox();
 			}
+			parentRow.addClassName('highlighted');
 		}
 	}
 }

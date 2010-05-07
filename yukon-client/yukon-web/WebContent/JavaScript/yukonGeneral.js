@@ -270,3 +270,11 @@ function alignTableColumnsByTable() {
     	
 	});
 }
+
+function showBusy() {
+	$('busyBox').show();
+}
+
+function hideBusy() {
+	$('busyBox').hide();
+}

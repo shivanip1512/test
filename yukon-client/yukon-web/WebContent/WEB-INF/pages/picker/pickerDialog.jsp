@@ -28,8 +28,6 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
         </table>
     </form>
 
-    <div class="busyBox"></div>
-
     <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>
     <div id="picker_${id}_results" class="pickerResults"></div>
     <div id="picker_${id}_noResults" style="display: none" class="pickerResults"><i:inline key=".noResults"/></div>
