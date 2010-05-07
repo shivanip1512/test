@@ -15,12 +15,13 @@
     <dr:favoriteIconSetup/>
 
     <c:set var="baseUrl" value="/spring/dr/search"/>
-    
+    <cti:msg var="submitButtonSrc" key="yukon.web.modules.dr.searchResults.searchBoxSubmitImg"/>
+    <cti:msg var="submitButtonAlt" key="yukon.web.modules.dr.searchResults.searchBoxSubmitAlt"/>
     <form accept-charset="ISO-8859-1" method="get" action="/spring/dr/search" enctype="application/x-www-form-urlencoded">
     	<div id="findForm">
-    		Find:
-    		<input id="textinput" value="${quickSearchBean.name}" name="name" type="text"/>
-    		<input style="vertical-align: middle" alt="Go" name="Go" src="/WebConfig/yukon/Buttons/GoButtonGray.gif" type="image"/>
+    		<cti:msg key="yukon.web.modules.dr.searchResults.searchBoxLabel"/>
+    		<input type="text" id="textinput" value="${quickSearchBean.name}" name="name"/>
+    		<input type="image" style="vertical-align: middle" alt="${submitButtonAlt}" src="${submitButtonSrc}"/>
     	</div>
     </form>
     <br />

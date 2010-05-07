@@ -358,7 +358,9 @@
 <entry key="yukon.web.modules.dr.searchResults.typeHeader">Type</entry>
 <entry key="yukon.web.modules.dr.searchResults.stateHeader">State</entry>
 <entry key="yukon.web.modules.dr.searchResults.actionsHeader">Actions</entry>
-
+<entry key="yukon.web.modules.dr.searchResults.searchBoxLabel">Find:</entry>
+<entry key="yukon.web.modules.dr.searchResults.searchBoxSubmitImg">/WebConfig/yukon/Buttons/GoButtonGray.gif</entry>
+<entry key="yukon.web.modules.dr.searchResults.searchBoxSubmitAlt">Go</entry>
 
 <!-- Scenario List -->
 <entry key="yukon.web.modules.dr.scenarioList.pageTitle">Scenarios</entry>
