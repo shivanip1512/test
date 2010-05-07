@@ -59,7 +59,7 @@
         <form:hidden path="hardwareType"/>
         <form:hidden path="hardwareTypeEntryId"/>
         
-        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;width:50%;" tableClasses="widgetColumns">
+        <cti:dataGrid cols="2" rowStyle="vertical-align:top;" cellStyle="padding-right:20px;">
         
             <%-- METER INFO --%>
             <cti:dataGridCell>
@@ -93,17 +93,17 @@
                             
                             <table class="resultsTable">
                                 <tr>
-                                    <th><i:inline key="yukon.web.modules.operator.hardware.serialNumber"/></th>
-                                    <th><i:inline key="yukon.web.modules.operator.hardware.label"/></th>
+                                    <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.serialNumber"/></th>
+                                    <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.hardware.label"/></th>
                                 </tr>
                                 <c:forEach var="switch" items="${hardwareDto.switchAssignments}" varStatus="switchRow">
                                     <tr>
-                                        <td>
+                                        <td nowrap="nowrap">
                                             <tags:checkbox path="switchAssignments[${switchRow.index}].assigned" /><span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${switch.serialNumber}</spring:escapeBody></span>
                                             <form:hidden path="switchAssignments[${switchRow.index}].inventoryId"/>
                                             <form:hidden path="switchAssignments[${switchRow.index}].serialNumber"/>
                                         </td>
-                                        <td><spring:escapeBody htmlEscape="true">${switch.label}</spring:escapeBody></td>
+                                        <td nowrap="nowrap"><spring:escapeBody htmlEscape="true">${switch.label}</spring:escapeBody></td>
                                     </tr>
                                     
                                 </c:forEach>

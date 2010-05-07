@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -47,7 +48,8 @@ public class OperatorResidenceController {
     							AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
         // CustomerResidence
-        CustomerResidence customerResidence = customerResidenceDao.findByAccountSiteId(accountId);
+	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        CustomerResidence customerResidence = customerResidenceDao.findByAccountSiteId(customerAccount.getAccountSiteId());
         if (customerResidence == null) {
         	customerResidence = new CustomerResidence();
         }
@@ -63,7 +65,7 @@ public class OperatorResidenceController {
 	}
 	
 	// RESIDENCE UPDATE
-	@RequestMapping
+	@RequestMapping(method=RequestMethod.POST)
     public String residenceUpdate(@ModelAttribute("customerResidence") CustomerResidence customerResidence, 
     								BindingResult bindingResult,
 						    		int accountId,

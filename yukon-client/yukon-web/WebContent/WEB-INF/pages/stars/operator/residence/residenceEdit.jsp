@@ -7,7 +7,7 @@
 <cti:standardPage module="operator" page="residence">
 <tags:setFormEditMode mode="${mode}"/>
 
-	<form:form id="residenceUpdateForm" commandName="customerResidence" action="/spring/stars/operator/residence/residenceUpdate">
+	<form:form id="residenceUpdateForm" commandName="customerResidence" action="/spring/stars/operator/residence/residenceUpdate" method="POST">
 	
 		<input type="hidden" name="accountId" value="${accountId}"/>
 		<form:hidden path="accountSiteId"/>

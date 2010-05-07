@@ -515,10 +515,11 @@
                                     
                                 </cti:checkRolesAndProperties>
                                 
-                                <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
-                                    <cti:img key="meterDetail" />
-                                </cti:paoDetailUrl>
-                                
+                                <cti:checkRolesAndProperties value="METERING,APPLICATION_BILLING,SCHEDULER,DEVICE_ACTIONS">
+                                    <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
+                                        <cti:img key="meterDetail" />
+                                    </cti:paoDetailUrl>
+                                </cti:checkRolesAndProperties>
                             </td>
                         </c:if>
                         

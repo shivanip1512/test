@@ -26,6 +26,8 @@
           parent="abstractFilter">
           <property name="batchSize" value="500"/>
     </bean>      
+    
+    <bean id="starsApplianceService" class="com.cannontech.stars.dr.appliance.service.impl.StarsApplianceServiceImpl"/>
 
     <bean id="abstractInventoryFilterByProducer" class="com.cannontech.stars.util.filter.filterby.inventory.AbstractInventoryFilterByProducer"
           abstract="true"/>

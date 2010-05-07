@@ -360,7 +360,6 @@ public class OperatorHardwareController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
             if(hardwareDto.getHardwareType() == HardwareType.NON_YUKON_METER) {
-                modelMap.addAttribute("displayName", "Create Meter");
                 modelMap.addAttribute("mode", PageEditMode.CREATE);
                 AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
                 return "operator/hardware/meterProfile.jsp";

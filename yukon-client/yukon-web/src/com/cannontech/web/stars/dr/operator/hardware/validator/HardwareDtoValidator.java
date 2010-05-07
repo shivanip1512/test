@@ -9,6 +9,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -60,8 +61,8 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
                      * be less than 30 characters long. */
                     if (!StringUtils.isAlphanumeric(hardwareDto.getSerialNumber())) {
                         errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.invalid.alphanumeric");
-                    } else if(hardwareDto.getSerialNumber().length() > 30) {
-                        errors.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.tooLong");
+                    } else {
+                        YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", hardwareDto.getSerialNumber(), 30);
                     } 
                 }
             }
@@ -69,37 +70,29 @@ public class HardwareDtoValidator extends SimpleValidator<HardwareDto> {
             /* Meter Number */
             if (StringUtils.isBlank(hardwareDto.getMeterNumber())) {
                 errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterProfile.error.required");
-            } else if(hardwareDto.getMeterNumber().length() > 30) {
-                errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterProfile.error.tooLong");
+            } else {
+                YukonValidationUtils.checkExceedsMaxLength(errors, "meterNumber", hardwareDto.getMeterNumber(), 30);
             }
         }
         
         /* Device Label */
         if (StringUtils.isNotBlank(hardwareDto.getDisplayLabel())) {
-            if(hardwareDto.getDisplayLabel().length() > 60){
-                errors.rejectValue("displayLabel", "yukon.web.modules.operator.hardware.error.tooLong");
-            }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "displayLabel", hardwareDto.getDisplayLabel(), 60);
         }
         
         /* Alternate Tracking Number */
         if (StringUtils.isNotBlank(hardwareDto.getAltTrackingNumber())) {
-            if(hardwareDto.getAltTrackingNumber().length() > 40){
-                errors.rejectValue("altTrackingNumber", "yukon.web.modules.operator.hardware.error.tooLong");
-            }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "altTrackingNumber", hardwareDto.getAltTrackingNumber(), 40);
         }
         
         /* Device Info Notes */
         if (StringUtils.isNotBlank(hardwareDto.getDeviceNotes())) {
-            if(hardwareDto.getDeviceNotes().length() > 500){
-                errors.rejectValue("deviceNotes", "yukon.web.modules.operator.hardware.error.tooLong");
-            }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "deviceNotes", hardwareDto.getDeviceNotes(), 500);
         }
         
         /* Install Notes */
         if (StringUtils.isNotBlank(hardwareDto.getInstallNotes())) {
-            if(hardwareDto.getInstallNotes().length() > 500){
-                errors.rejectValue("installNotes", "yukon.web.modules.operator.hardware.error.tooLong");
-            }
+            YukonValidationUtils.checkExceedsMaxLength(errors, "installNotes", hardwareDto.getInstallNotes(), 500);
         }
         
         /* Two Way LCR's */
