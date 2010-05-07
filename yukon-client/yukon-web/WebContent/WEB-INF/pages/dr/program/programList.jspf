@@ -1,201 +1,199 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 
-<c:choose>
-	<c:when test="${searchResult.hitCount == 0}">
-    	<cti:msg key="yukon.web.modules.dr.programList.noResults"/>
-    </c:when>
-    <c:otherwise>
-		<cti:url var="submitUrl" value="${baseUrl}"/>
-		<cti:url var="clearFilterUrl" value="${baseUrl}">
-		    <c:if test="${!empty param.itemsPerPage}">
-		        <cti:param name="itemsPerPage" value="${param.itemsPerPage}"/>
-		    </c:if>
-		    <c:if test="${!empty param.sort}">
-		        <cti:param name="sort" value="${param.sort}"/>
-		    </c:if>
-		    <c:if test="${!empty param.descending}">
-		        <cti:param name="descending" value="${param.descending}"/>
-		    </c:if>
-		    <c:if test="${!empty param.controlAreaId}">
-		        <cti:param name="controlAreaId" value="${param.controlAreaId}"/>
-		    </c:if>
-		    <c:if test="${!empty param.scenarioId}">
-		        <cti:param name="scenarioId" value="${param.scenarioId}"/>
-		    </c:if>
-		</cti:url>
-		
-		<script type="text/javascript">
+
+<cti:url var="submitUrl" value="${baseUrl}" />
+<cti:url var="clearFilterUrl" value="${baseUrl}">
+	<c:if test="${!empty param.itemsPerPage}">
+		<cti:param name="itemsPerPage" value="${param.itemsPerPage}" />
+	</c:if>
+	<c:if test="${!empty param.sort}">
+		<cti:param name="sort" value="${param.sort}" />
+	</c:if>
+	<c:if test="${!empty param.descending}">
+		<cti:param name="descending" value="${param.descending}" />
+	</c:if>
+	<c:if test="${!empty param.controlAreaId}">
+		<cti:param name="controlAreaId" value="${param.controlAreaId}" />
+	</c:if>
+	<c:if test="${!empty param.scenarioId}">
+		<cti:param name="scenarioId" value="${param.scenarioId}" />
+	</c:if>
+</cti:url>
+
+<script type="text/javascript">
 		function clearFilter() {
 		    window.location = '${clearFilterUrl}';
 		}
-		</script>
-		
-		<%-- Program filtering popup section --%>
-		
-		<cti:msg var="filterLabel" key="yukon.web.modules.dr.programList.filters"/>
-		<tags:simplePopup id="filterPopup" title="${filterLabel}">
-		    <form:form action="${submitUrl}" commandName="backingBean" method="get">
-		        <c:if test="${!empty param.controlAreaId}">
-		            <input type="hidden" name="controlAreaId" value="${param.controlAreaId}"/>
-		        </c:if>
-		        <c:if test="${!empty param.scenarioId}">
-		            <input type="hidden" name="scenarioId" value="${param.scenarioId}"/>
-		        </c:if>
-		        <tags:sortFields backingBean="${backingBean}"/>
-		        <cti:msg var="minStr" key="yukon.web.modules.dr.programList.filter.min"/>
-		        <cti:msg var="maxStr" key="yukon.web.modules.dr.programList.filter.max"/>
-		        <cti:msg var="toStr" key="yukon.web.modules.dr.programList.filter.to"/>
-		        <table cellspacing="10">
-		            <tr>
-		                <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.name"/>
-		                <td>${fieldName}</td>
-		                <td>
-		                    <form:input path="name" size="40"/>
-		                </td>
-		                <cti:checkRolesAndProperties value="PROGRAM_STATE">
-		                    <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.state"/>
-		                    <td>${fieldName}</td>
-		                    <td>
-		                        <form:select path="state">
-		                            <form:option value="all">
-		                                <cti:msg key="yukon.web.modules.dr.programList.filter.state.all"/>
-		                            </form:option>
-		                            <form:option value="active">
-		                                <cti:msg key="yukon.web.modules.dr.programList.filter.state.active"/>
-		                            </form:option>
-		                            <form:option value="inactive">
-		                                <cti:msg key="yukon.web.modules.dr.programList.filter.state.inactive"/>
-		                            </form:option>
-		                        </form:select>
-		                    </td>
-		                </cti:checkRolesAndProperties>
-		            </tr>
-		
-		            <cti:checkRolesAndProperties value="PROGRAM_START,PROGRAM_PRIORITY">
-		                <tr>
-		                    <cti:checkRolesAndProperties value="PROGRAM_START">
-		                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.start"/>
-		                        <td>${fieldName}</td>
-		                        <td>
-		                            <tags:dateInputCalendar springInput="true" fieldName="start.min"/>
-		                            &nbsp;${toStr}&nbsp;
-		                            <tags:dateInputCalendar springInput="true" fieldName="start.max"/>
-		                        </td>
-		                    </cti:checkRolesAndProperties>
-		      
-		                    <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-		                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.priority"/>
-		                        <td>${fieldName}</td>
-		                        <td>
-		                            <form:input path="priority.min" size="5"/>&nbsp;${minStr}&nbsp;&nbsp;
-		                            <form:input path="priority.max" size="5"/>&nbsp;${maxStr}
-		                        </td>
-		                    </cti:checkRolesAndProperties>
-		                </tr>
-		            </cti:checkRolesAndProperties>
-		
-		            <cti:checkRolesAndProperties value="PROGRAM_STOP,PROGRAM_LOAD_CAPACITY">
-		                <tr>
-		                    <cti:checkRolesAndProperties value="PROGRAM_STOP">
-		                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.stop"/>
-		                        <td>${fieldName}</td>
-		                        <td>
-		                            <tags:dateInputCalendar springInput="true" fieldName="stop.min"/>
-		                            &nbsp;${toStr}&nbsp;
-		                            <tags:dateInputCalendar springInput="true" fieldName="stop.max"/>
-		                        </td>
-		                    </cti:checkRolesAndProperties>
-		
-		                    <%--
-		                    <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
-		                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.loadCapacity"/>
-		                        <td>${fieldName}:</td>
-		                        <td>
-		                            <form:input path="loadCapacity.min"/>${minStr}
-		                            <form:input path="loadCapacity.max"/>${maxStr}
-		                        </td>
-		                    </cti:checkRolesAndProperties>
-		                    --%>
-		                </tr>
-		            </cti:checkRolesAndProperties>
-		        </table>
-		        
-		        <br>
-		        <div class="actionArea">
-		            <input type="submit" value="<cti:msg key="yukon.web.modules.dr.programList.filter.submit"/>"/>
-		            <input type="button" value="<cti:msg key="yukon.web.modules.dr.programList.filter.clear"/>"
-		                onclick="javascript:clearFilter()"/>
-		        </div>
-		    </form:form>
-		</tags:simplePopup>
-		
-		<%-- Main Program list table section --%>
-		
-		<cti:msg var="programTitle" key="yukon.web.modules.dr.programList.programs"/>
-		<tags:pagedBox title="${programTitle}" searchResult="${searchResult}"
-		    filterDialog="filterPopup" baseUrl="${baseUrl}" isFiltered="${isFiltered}"
-		        showAllUrl="${clearFilterUrl}">
-		    <table id="programList" class="compactResultsTable rowHighlighting">
-		        <tr>
-		            <th class="favoritesColumn"></th>
-		            <c:set var="numColumns" value="1"/>
-		            <th>
-		                <tags:sortLink key="yukon.web.modules.dr.programList.heading.name"
-		                    baseUrl="${baseUrl}" fieldName="NAME"/>
-		            </th>
-		            <cti:checkRolesAndProperties value="PROGRAM_STATE">
-		                <c:set var="numColumns" value="${numColumns + 1}"/>
-		                <th>
-		                    <tags:sortLink key="yukon.web.modules.dr.programList.heading.state"
-		                        baseUrl="${baseUrl}" fieldName="STATE"/>
-		                </th>
-		            </cti:checkRolesAndProperties>
-		            <c:set var="numColumns" value="${numColumns + 1}"/>
-		            <th>
-		                <cti:msg key="yukon.web.modules.dr.programList.heading.actions"/>
-		            </th>
-		            <cti:checkRolesAndProperties value="PROGRAM_START">
-		                <c:set var="numColumns" value="${numColumns + 1}"/>
-		                <th>
-		                    <tags:sortLink key="yukon.web.modules.dr.programList.heading.start"
-		                        baseUrl="${baseUrl}" fieldName="START"/>
-		                </th>
-		            </cti:checkRolesAndProperties>
-		            <cti:checkRolesAndProperties value="PROGRAM_STOP">
-		                <c:set var="numColumns" value="${numColumns + 1}"/>
-		                <th>
-		                    <tags:sortLink key="yukon.web.modules.dr.programList.heading.stop"
-		                        baseUrl="${baseUrl}" fieldName="STOP"/>
-		                </th>
-		            </cti:checkRolesAndProperties>
-		            <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-		                <c:set var="numColumns" value="${numColumns + 1}"/>
-		                <th>
-		                    <tags:sortLink key="yukon.web.modules.dr.programList.heading.currentGear"
-		                        baseUrl="${baseUrl}" fieldName="CURRENT_GEAR"/>
-		                </th>
-		            </cti:checkRolesAndProperties>
-		            <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-		                <c:set var="numColumns" value="${numColumns + 1}"/>
-		                <th>
-		                    <tags:sortLink key="yukon.web.modules.dr.programList.heading.priority"
-		                        baseUrl="${baseUrl}" fieldName="PRIORITY"/>
-		                </th>
-		            </cti:checkRolesAndProperties>
-		            <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
-		                <c:set var="numColumns" value="${numColumns + 1}"/>
-		                <th>
-		                    <tags:sortLink key="yukon.web.modules.dr.programList.heading.reduction"
-		                        baseUrl="${baseUrl}" fieldName="REDUCTION"/>
-		                </th>
-		            </cti:checkRolesAndProperties>
-		            <%--
+</script>
+
+<%-- Program filtering popup section --%>
+
+<cti:msg var="filterLabel"
+	key="yukon.web.modules.dr.programList.filters" />
+<tags:simplePopup id="filterPopup" title="${filterLabel}">
+	<form:form action="${submitUrl}" commandName="backingBean" method="get">
+		<c:if test="${!empty param.controlAreaId}">
+			<input type="hidden" name="controlAreaId"
+				value="${param.controlAreaId}" />
+		</c:if>
+		<c:if test="${!empty param.scenarioId}">
+			<input type="hidden" name="scenarioId" value="${param.scenarioId}" />
+		</c:if>
+		<tags:sortFields backingBean="${backingBean}" />
+		<cti:msg var="minStr"
+			key="yukon.web.modules.dr.programList.filter.min" />
+		<cti:msg var="maxStr"
+			key="yukon.web.modules.dr.programList.filter.max" />
+		<cti:msg var="toStr" key="yukon.web.modules.dr.programList.filter.to" />
+
+		<table cellspacing="10">
+			<tr>
+				<cti:msg var="fieldName"
+					key="yukon.web.modules.dr.programList.filter.name" />
+				<td>${fieldName}</td>
+				<td><form:input path="name" size="40" /></td>
+				<cti:checkRolesAndProperties value="PROGRAM_STATE">
+					<cti:msg var="fieldName"
+						key="yukon.web.modules.dr.programList.filter.state" />
+					<td>${fieldName}</td>
+					<td><form:select path="state">
+						<form:option value="all">
+							<cti:msg key="yukon.web.modules.dr.programList.filter.state.all" />
+						</form:option>
+						<form:option value="active">
+							<cti:msg
+								key="yukon.web.modules.dr.programList.filter.state.active" />
+						</form:option>
+						<form:option value="inactive">
+							<cti:msg
+								key="yukon.web.modules.dr.programList.filter.state.inactive" />
+						</form:option>
+					</form:select></td>
+				</cti:checkRolesAndProperties>
+			</tr>
+
+			<cti:checkRolesAndProperties value="PROGRAM_START,PROGRAM_PRIORITY">
+				<tr>
+					<cti:checkRolesAndProperties value="PROGRAM_START">
+						<cti:msg var="fieldName"
+							key="yukon.web.modules.dr.programList.filter.start" />
+						<td>${fieldName}</td>
+						<td><tags:dateInputCalendar springInput="true"
+							fieldName="start.min" /> &nbsp;${toStr}&nbsp; <tags:dateInputCalendar
+							springInput="true" fieldName="start.max" /></td>
+					</cti:checkRolesAndProperties>
+
+					<cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+						<cti:msg var="fieldName"
+							key="yukon.web.modules.dr.programList.filter.priority" />
+						<td>${fieldName}</td>
+						<td><form:input path="priority.min" size="5" />&nbsp;${minStr}&nbsp;&nbsp;
+						<form:input path="priority.max" size="5" />&nbsp;${maxStr}</td>
+					</cti:checkRolesAndProperties>
+				</tr>
+			</cti:checkRolesAndProperties>
+
+			<cti:checkRolesAndProperties
+				value="PROGRAM_STOP,PROGRAM_LOAD_CAPACITY">
+				<tr>
+					<cti:checkRolesAndProperties value="PROGRAM_STOP">
+						<cti:msg var="fieldName"
+							key="yukon.web.modules.dr.programList.filter.stop" />
+						<td>${fieldName}</td>
+						<td><tags:dateInputCalendar springInput="true"
+							fieldName="stop.min" /> &nbsp;${toStr}&nbsp; <tags:dateInputCalendar
+							springInput="true" fieldName="stop.max" /></td>
+					</cti:checkRolesAndProperties>
+
+					<%--
+	                    <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
+	                        <cti:msg var="fieldName" key="yukon.web.modules.dr.programList.filter.loadCapacity"/>
+	                        <td>${fieldName}:</td>
+	                        <td>
+	                            <form:input path="loadCapacity.min"/>${minStr}
+	                            <form:input path="loadCapacity.max"/>${maxStr}
+	                        </td>
+	                    </cti:checkRolesAndProperties>
+	                 --%>
+				</tr>
+			</cti:checkRolesAndProperties>
+		</table>
+
+		<br>
+		<div class="actionArea"><input type="submit"
+			value="<cti:msg key="yukon.web.modules.dr.programList.filter.submit"/>" />
+		<input type="button"
+			value="<cti:msg key="yukon.web.modules.dr.programList.filter.clear"/>"
+			onclick="javascript:clearFilter()" /></div>
+	</form:form>
+</tags:simplePopup>
+
+<%-- Main Program list table section --%>
+
+<cti:msg var="programTitle"
+	key="yukon.web.modules.dr.programList.programs" />
+<tags:pagedBox title="${programTitle}" searchResult="${searchResult}"
+	filterDialog="filterPopup" baseUrl="${baseUrl}"
+	isFiltered="${isFiltered}" showAllUrl="${clearFilterUrl}">
+
+	<c:choose>
+		<c:when test="${searchResult.hitCount == 0}">
+			<cti:msg key="yukon.web.modules.dr.programList.noResults" />
+		</c:when>
+		<c:otherwise>
+			<table id="programList" class="compactResultsTable rowHighlighting">
+				<tr>
+					<th class="favoritesColumn"></th>
+					<c:set var="numColumns" value="1" />
+					<th><tags:sortLink
+						key="yukon.web.modules.dr.programList.heading.name"
+						baseUrl="${baseUrl}" fieldName="NAME" /></th>
+					<cti:checkRolesAndProperties value="PROGRAM_STATE">
+						<c:set var="numColumns" value="${numColumns + 1}" />
+						<th><tags:sortLink
+							key="yukon.web.modules.dr.programList.heading.state"
+							baseUrl="${baseUrl}" fieldName="STATE" /></th>
+					</cti:checkRolesAndProperties>
+					<c:set var="numColumns" value="${numColumns + 1}" />
+					<th><cti:msg
+						key="yukon.web.modules.dr.programList.heading.actions" /></th>
+					<cti:checkRolesAndProperties value="PROGRAM_START">
+						<c:set var="numColumns" value="${numColumns + 1}" />
+						<th><tags:sortLink
+							key="yukon.web.modules.dr.programList.heading.start"
+							baseUrl="${baseUrl}" fieldName="START" /></th>
+					</cti:checkRolesAndProperties>
+					<cti:checkRolesAndProperties value="PROGRAM_STOP">
+						<c:set var="numColumns" value="${numColumns + 1}" />
+						<th><tags:sortLink
+							key="yukon.web.modules.dr.programList.heading.stop"
+							baseUrl="${baseUrl}" fieldName="STOP" /></th>
+					</cti:checkRolesAndProperties>
+					<cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
+						<c:set var="numColumns" value="${numColumns + 1}" />
+						<th><tags:sortLink
+							key="yukon.web.modules.dr.programList.heading.currentGear"
+							baseUrl="${baseUrl}" fieldName="CURRENT_GEAR" /></th>
+					</cti:checkRolesAndProperties>
+					<cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+						<c:set var="numColumns" value="${numColumns + 1}" />
+						<th><tags:sortLink
+							key="yukon.web.modules.dr.programList.heading.priority"
+							baseUrl="${baseUrl}" fieldName="PRIORITY" /></th>
+					</cti:checkRolesAndProperties>
+					<cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+						<c:set var="numColumns" value="${numColumns + 1}" />
+						<th><tags:sortLink
+							key="yukon.web.modules.dr.programList.heading.reduction"
+							baseUrl="${baseUrl}" fieldName="REDUCTION" /></th>
+					</cti:checkRolesAndProperties>
+					<%--
 		            <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
 		                <c:set var="numColumns" value="${numColumns + 1}"/>
 		                <th>
@@ -204,50 +202,53 @@
 		                </th>
 		            </cti:checkRolesAndProperties>
 		            --%>
-		        </tr>
-		        <c:forEach var="program" items="${programs}">
-		            <c:set var="programId" value="${program.paoIdentifier.paoId}"/>
-		            <c:url var="programURL" value="/spring/dr/program/detail">
-		                <c:param name="programId" value="${programId}"/>
-		            </c:url>
-		            <tr id="programRow${programId}" class="<tags:alternateRow odd="" even="altRow"/>">
-		                <td><dr:favoriteIcon paoId="${programId}" isFavorite="${favoritesByPaoId[programId]}"/></td>
-		                <td>
-		                    <%-- TODO:  in phase 3, update cti:classUpdater to be able to
-		                     update the class of the row instead --%>
-		                    <a href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
-		                </td>
-		                <cti:checkRolesAndProperties value="PROGRAM_STATE">
-		                    <td>
-		                        <dr:programState programId="${programId}"/>
-		                    </td>
-		                </cti:checkRolesAndProperties>
-		                <td style="white-space: nowrap;">
-		                    <dr:programListActions pao="${program}"/>
-		                </td>
-		                <cti:checkRolesAndProperties value="PROGRAM_START">
-		                    <td><cti:dataUpdaterValue identifier="${programId}/START" type="DR_PROGRAM"/></td>
-		                </cti:checkRolesAndProperties>
-		                <cti:checkRolesAndProperties value="PROGRAM_STOP">
-		                    <td><cti:dataUpdaterValue identifier="${programId}/STOP" type="DR_PROGRAM"/></td>
-		                </cti:checkRolesAndProperties>
-		                <cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
-		                    <td><cti:dataUpdaterValue identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM"/></td>
-		                </cti:checkRolesAndProperties>
-		                <cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
-		                    <td><cti:dataUpdaterValue identifier="${programId}/PRIORITY" type="DR_PROGRAM"/></td>
-		                </cti:checkRolesAndProperties>
-		                <cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
-		                    <td><cti:dataUpdaterValue identifier="${programId}/REDUCTION" type="DR_PROGRAM"/></td>
-		                </cti:checkRolesAndProperties>
-		                <%--
+				</tr>
+				<c:forEach var="program" items="${programs}">
+					<c:set var="programId" value="${program.paoIdentifier.paoId}" />
+					<c:url var="programURL" value="/spring/dr/program/detail">
+						<c:param name="programId" value="${programId}" />
+					</c:url>
+					<tr id="programRow${programId}"
+						class="<tags:alternateRow odd="" even="altRow"/>">
+						<td><dr:favoriteIcon paoId="${programId}"
+							isFavorite="${favoritesByPaoId[programId]}" /></td>
+						<td><%-- TODO:  in phase 3, update cti:classUpdater to be able to
+		                     update the class of the row instead --%> <a
+							href="${programURL}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></a>
+						</td>
+						<cti:checkRolesAndProperties value="PROGRAM_STATE">
+							<td><dr:programState programId="${programId}" /></td>
+						</cti:checkRolesAndProperties>
+						<td style="white-space: nowrap;"><dr:programListActions
+							pao="${program}" /></td>
+						<cti:checkRolesAndProperties value="PROGRAM_START">
+							<td><cti:dataUpdaterValue identifier="${programId}/START"
+								type="DR_PROGRAM" /></td>
+						</cti:checkRolesAndProperties>
+						<cti:checkRolesAndProperties value="PROGRAM_STOP">
+							<td><cti:dataUpdaterValue identifier="${programId}/STOP"
+								type="DR_PROGRAM" /></td>
+						</cti:checkRolesAndProperties>
+						<cti:checkRolesAndProperties value="PROGRAM_CURRENT_GEAR">
+							<td><cti:dataUpdaterValue
+								identifier="${programId}/CURRENT_GEAR" type="DR_PROGRAM" /></td>
+						</cti:checkRolesAndProperties>
+						<cti:checkRolesAndProperties value="PROGRAM_PRIORITY">
+							<td><cti:dataUpdaterValue identifier="${programId}/PRIORITY"
+								type="DR_PROGRAM" /></td>
+						</cti:checkRolesAndProperties>
+						<cti:checkRolesAndProperties value="PROGRAM_REDUCTION">
+							<td><cti:dataUpdaterValue
+								identifier="${programId}/REDUCTION" type="DR_PROGRAM" /></td>
+						</cti:checkRolesAndProperties>
+						<%--
 		                <cti:checkRolesAndProperties value="PROGRAM_LOAD_CAPACITY">
 		                    <td><cti:dataUpdaterValue identifier="${programId}/LOAD_CAPACITY" type="DR_PROGRAM"/></td>
 		                </cti:checkRolesAndProperties>
 		                --%>
-		            </tr>
-		        </c:forEach>
-		    </table>
-		</tags:pagedBox>
-	</c:otherwise>
-</c:choose>
+					</tr>
+				</c:forEach>
+			</table>
+		</c:otherwise>
+	</c:choose>
+</tags:pagedBox>
