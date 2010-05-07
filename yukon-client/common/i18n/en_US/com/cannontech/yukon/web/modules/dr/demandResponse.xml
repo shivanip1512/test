@@ -3,40 +3,28 @@
 <properties>
 
 <!-- Demand Response Module Config -->
-    
-    <entry key="yukon.web.modules.dr.controlAreaList.pageName">Control Areas</entry>
-    <entry key="yukon.web.modules.dr.controlAreaList.pageDescription">Control Areas</entry>
-    
-    <entry key="yukon.web.modules.dr.controlAreaDetail.pageName">{0}</entry>
-    <entry key="yukon.web.modules.dr.controlAreaDetail.pageDescription">{0}</entry>
-    
-    <entry key="yukon.web.modules.dr.scenarioList.pageName">Scenarios</entry>
-    <entry key="yukon.web.modules.dr.scenarioList.pageDescription">Scenarios</entry>
-    
-    <entry key="yukon.web.modules.dr.scenarioDetail.pageName">{0}</entry>
-    <entry key="yukon.web.modules.dr.scenarioDetail.pageDescription">{0}</entry>
-    
-    <entry key="yukon.web.modules.dr.programList.pageName">Programs</entry>
-    <entry key="yukon.web.modules.dr.programList.pageDescription">Programs</entry>
-    
-    <entry key="yukon.web.modules.dr.programDetail.pageName">{0}</entry>
-    <entry key="yukon.web.modules.dr.programDetail.pageDescription">{0}</entry>
-    
-	<entry key="yukon.web.modules.dr.loadGroupList.pageName">Load Groups</entry>
-    <entry key="yukon.web.modules.dr.loadGroupList.pageDescription">Load Groups</entry>
-    
-    <entry key="yukon.web.modules.dr.loadGroupDetail.pageName">{0}</entry>
-    <entry key="yukon.web.modules.dr.loadGroupDetail.pageDescription">{0}</entry>
-    
-    <entry key="yukon.web.modules.dr.searchResults.pageName">Search</entry>
-    <entry key="yukon.web.modules.dr.searchResults.pageDescription">Search</entry>
-    
-    <entry key="yukon.web.modules.dr.optOutAdmin.pageName">Opt Out Status</entry>
-    <entry key="yukon.web.modules.dr.optOutAdmin.pageDescription">Opt Out Status</entry>
-    
-    <entry key="yukon.web.modules.dr.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
-    <entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
-    
+<entry key="yukon.web.modules.dr.controlAreaList.pageName">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaList.pageDescription">Control Areas</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.scenarioList.pageName">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioList.pageDescription">Scenarios</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.scenarioDetail.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.programList.pageName">Programs</entry>
+<entry key="yukon.web.modules.dr.programList.pageDescription">Programs</entry>
+<entry key="yukon.web.modules.dr.programDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.programDetail.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.pageName">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupList.pageDescription">Load Groups</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.pageName">{0}</entry>
+<entry key="yukon.web.modules.dr.loadGroupDetail.pageDescription">{0}</entry>
+<entry key="yukon.web.modules.dr.searchResults.pageName">Search</entry>
+<entry key="yukon.web.modules.dr.searchResults.pageDescription">Search</entry>
+<entry key="yukon.web.modules.dr.optOutAdmin.pageName">Opt Out Status</entry>
+<entry key="yukon.web.modules.dr.optOutAdmin.pageDescription">Opt Out Status</entry>    
+<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageName">Scheduled Opt Outs</entry>
+<entry key="yukon.web.modules.dr.optOutScheduledEvents.pageDescription">Scheduled Opt Outs</entry>
 
 <!-- General Demand Response -->
 <entry key="yukon.web.modules.dr.fieldNotInLoadManagement">-</entry>
@@ -330,8 +318,6 @@
 
 <!-- Demand Response Home -->
 <entry key="yukon.web.modules.dr.home.pageTitle">Demand Response</entry>
-<entry key="yukon.web.modules.dr.home.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.home.breadcrumb.home">Demand Response</entry>
 <entry key="yukon.web.modules.dr.home.noFavorites">No Favorites</entry>
 <entry key="yukon.web.modules.dr.home.favorites">Favorites</entry>
 <entry key="yukon.web.modules.dr.home.nameHeader">Name</entry>
@@ -349,9 +335,6 @@
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>
-<entry key="yukon.web.modules.dr.searchResults.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.searchResults.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.searchResults.breadcrumb.home">Quick Search</entry>
 <entry key="yukon.web.modules.dr.searchResults.searchResult">Search Results for &quot;{0}&quot;</entry>
 <entry key="yukon.web.modules.dr.searchResults.noResults">No items matched.</entry>
 <entry key="yukon.web.modules.dr.searchResults.nameHeader">Name</entry>
@@ -364,9 +347,6 @@
 
 <!-- Scenario List -->
 <entry key="yukon.web.modules.dr.scenarioList.pageTitle">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenarioList.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.scenarioList.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.scenarioList.breadcrumb.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.scenarios">Scenarios</entry>
 <entry key="yukon.web.modules.dr.scenarioList.noResults">No scenarios matched.</entry>
 <entry key="yukon.web.modules.dr.scenarioList.filters">Filters</entry>
@@ -380,14 +360,8 @@
 
 <!-- Scenario Detail -->
 <entry key="yukon.web.modules.dr.scenarioDetail.pageTitle">Scenario {0}</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenarios">Scenarios</entry>
-<entry key="yukon.web.modules.dr.scenarioDetail.breadcrumb.scenario">Scenario {0}</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.scenario">Scenario {0}</entry>
-
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.info">Info</entry>
-
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.noControl">You do not have permission to control this scenario</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.start">Start Scenario</entry>
@@ -400,15 +374,11 @@
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.hover">/WebConfig/yukon/Icons/control_stop_blue_over.gif</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled">/WebConfig/yukon/Icons/control_stop_blue_disabled.gif</entry>
 <entry key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.alt">Stop Scenario</entry>
-
 <entry key="yukon.web.modules.dr.scenarioDetail.heading.programs">Programs</entry>
 
 
 <!-- Control Area List -->
 <entry key="yukon.web.modules.dr.controlAreaList.pageTitle">Control Areas</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.controlAreaList.breadcrumb.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.controlAreas">Control Areas</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.noResults">No Control Areas matched.</entry>
 <entry key="yukon.web.modules.dr.controlAreaList.filters">Filters</entry>
@@ -437,12 +407,7 @@
 
 <!-- Control Area Detail -->
 <entry key="yukon.web.modules.dr.controlAreaDetail.pageTitle">Control Area {0}</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlAreas">Control Areas</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.breadcrumb.controlArea">Control Area {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.controlArea">Control Area {0}</entry>
-
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.info">Info</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.valueThreshold">Value/Threshold</entry>
@@ -454,7 +419,6 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.trigger">Trigger {0}</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.noTriggers">No triggers found</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.info.separator">-</entry>
-
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.alreadyFullyActive">This control area is already fully active.</entry>
@@ -500,9 +464,6 @@
 
 <!-- Program List -->
 <entry key="yukon.web.modules.dr.programList.pageTitle">Programs</entry>
-<entry key="yukon.web.modules.dr.programList.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.programList.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.programList.breadcrumb.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.programs">Programs</entry>
 <entry key="yukon.web.modules.dr.programList.noResults">No programs matched.</entry>
 <entry key="yukon.web.modules.dr.programList.filters">Program Filters</entry>
@@ -533,12 +494,7 @@
 
 <!-- Program Detail -->
 <entry key="yukon.web.modules.dr.programDetail.pageTitle">Program {0}</entry>
-<entry key="yukon.web.modules.dr.programDetail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.programDetail.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.programDetail.breadcrumb.programs">Programs</entry>
-<entry key="yukon.web.modules.dr.programDetail.breadcrumb.program">Program {0}</entry>
 <entry key="yukon.web.modules.dr.programDetail.program">Program {0}</entry>
-
 <entry key="yukon.web.modules.dr.programDetail.heading.info">Info</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.start">Start</entry>
@@ -547,7 +503,6 @@
 <entry key="yukon.web.modules.dr.programDetail.info.priority">Priority</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.reduction">Reduction</entry>
 <entry key="yukon.web.modules.dr.programDetail.info.loadCapacity">Load Capacity</entry>
-
 <entry key="yukon.web.modules.dr.programDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>
 <entry key="yukon.web.modules.dr.programDetail.unknown">This program is not in Load Management</entry>
@@ -595,9 +550,6 @@
 
 <!-- Load Group List -->
 <entry key="yukon.web.modules.dr.loadGroupList.pageTitle">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.loadGroupList.breadcrumb.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.loadGroups">Load Groups</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.noResults">No load groups matched.</entry>
 <entry key="yukon.web.modules.dr.loadGroupList.filters">Load Group Filters</entry>
@@ -623,12 +575,6 @@
 
 <!-- Load Group Detail -->
 <entry key="yukon.web.modules.dr.loadGroupDetail.pageTitle">Load Group {0}</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.operationsHome">Operations Home</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.drHome">Demand Response</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroups">Load Groups</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.breadcrumb.loadGroup">Load Group {0}</entry>
-<entry key="yukon.web.modules.dr.loadGroupDetail.loadGroup">Load Group {0}</entry>
-
 <entry key="yukon.web.modules.dr.loadGroupDetail.heading.info">Info</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.state">State</entry>
 <entry key="yukon.web.modules.dr.loadGroupDetail.info.lastAction">Last Action</entry>
