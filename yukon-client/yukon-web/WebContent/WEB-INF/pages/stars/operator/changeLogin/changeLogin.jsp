@@ -1,6 +1,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 
@@ -82,7 +83,12 @@
 	                    <tags:nameValue2 nameKey=".userName"><tags:input path="username" autocomplete="false"/></tags:nameValue2>
 	                </cti:checkRolesAndProperties>
 	                <cti:checkRolesAndProperties value="!OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME">
-	                    <tags:nameValue2 nameKey=".userName"><tags:input readonly="true" path="username"/></tags:nameValue2>
+	                    <tags:hidden path="username"/>
+                        <tags:nameValue2 nameKey=".userName">
+                            <spring:htmlEscape defaultHtmlEscape="true">
+                                ${changeLoginBackingBean.username}
+                            </spring:htmlEscape>
+                        </tags:nameValue2>
 	                </cti:checkRolesAndProperties>
 	                
 	                <!-- Password Fields -->
