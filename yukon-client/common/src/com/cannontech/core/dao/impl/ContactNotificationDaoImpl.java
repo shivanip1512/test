@@ -294,8 +294,8 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         @Override
         public SqlFragmentSource generate(List<Integer> contactNotificationIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("UPDATE PointAlarming pa SET pa.RecipientId = 0");
-            sql.append("WHERE pa.RecipientId IN (");
+            sql.append("UPDATE PointAlarming SET RecipientId = 0");
+            sql.append("WHERE RecipientId IN (");
             sql.appendList(contactNotificationIds);
             sql.append(")");
             return sql;
