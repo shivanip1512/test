@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -40,7 +41,7 @@ public class CapBankStateColorTag extends YukonTagSupport {
         final StringBuilder beforeBodyBuilder = new StringBuilder();
         beforeBodyBuilder.append("<span id=\"cannonColorUpdater_" + paoId + "\" style=\"color: ");
         beforeBodyBuilder.append(color + " !important");
-        beforeBodyBuilder.append(";\" cannonColorUpdater=\"" + value.getFullIdentifier() + "\">");
+        beforeBodyBuilder.append(";\" cannonColorUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\">");
         String before = beforeBodyBuilder.toString(); 
         
         final StringBuilder afterBodyBuilder = new StringBuilder();

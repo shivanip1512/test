@@ -10,8 +10,6 @@ import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.web.util.JavaScriptUtils;
-
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("dataUpdaterCallbackTagPrototype")
@@ -24,7 +22,6 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
     @Override
     public void doTag() throws JspException, IOException {
         
-        LiteYukonUser user = getYukonUser();
         Map<String,String> identifierValues = new HashMap<String, String>();
         for(String identifierName : identifierAttributes.keySet()) {
             UpdateValue identifierValue = dataUpdaterService.getFirstValue((String)identifierAttributes.get(identifierName), getUserContext());

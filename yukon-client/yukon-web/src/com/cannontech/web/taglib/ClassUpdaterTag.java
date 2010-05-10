@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.web.updater.DataUpdaterService;
@@ -38,7 +39,7 @@ public class ClassUpdaterTag extends YukonTagSupport {
         JspWriter out = getJspContext().getOut();
         
         String className = value.isUnavailable() ? initialClassName :  value.getValue();
-        out.print("<span cannonClassUpdater=\"" + value.getFullIdentifier() + "\" class=\"" + className + "\" >");
+        out.print("<span cannonClassUpdater=\"" + StringEscapeUtils.escapeHtml(value.getFullIdentifier()) + "\" class=\"" + className + "\" >");
         getJspBody().invoke(null);
         out.print("</span>");
     }

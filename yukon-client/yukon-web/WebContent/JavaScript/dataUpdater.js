@@ -24,7 +24,7 @@ function initiateCannonDataUpdate(url, delayMs) {
             var newData = responseStruc.data[id];
             if (newData != null && newData != it.innerHTML) {
                 // data was sent and is different than current
-                it.innerHTML = newData;
+                it.innerHTML = newData.escapeHTML();
                 someValueHasUpdated = true;
                 // make it glow
                 if (!disableHighlight) {
