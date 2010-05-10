@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +23,7 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Repository
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
@@ -34,7 +36,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         List<DisplayableProgram> displayableProgramList = 
             doAction(customerAccount, yukonUserContext, controlPeriod, true);
         List<DisplayableProgram> controlHistorySummaryDisplayablePrograms = 
-            removeExtraEntriesForControlHistorySummary(displayableProgramList);
+            filterEntriesForControlHistorySummary(displayableProgramList);
         return controlHistorySummaryDisplayablePrograms;
     }
 
@@ -46,7 +48,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         List<DisplayableProgram> displayableProgramList = 
             doAction(customerAccount, yukonUserContext, controlPeriod, false);
         List<DisplayableProgram> controlHistorySummaryDisplayablePrograms = 
-            removeExtraEntriesForControlHistorySummary(displayableProgramList);
+            filterEntriesForControlHistorySummary(displayableProgramList);
         return controlHistorySummaryDisplayablePrograms;
     }
 
@@ -164,13 +166,13 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
      * you want to display the control history summaries and should not be used 
      * for displaying actual control history events.
      */
-    private List<DisplayableProgram> removeExtraEntriesForControlHistorySummary(
+    private List<DisplayableProgram> filterEntriesForControlHistorySummary(
                                           List<DisplayableProgram> displayablePrograms) {
         List<DisplayableProgram> results = Lists.newArrayList();
         
         for (DisplayableProgram displayableProgram : displayablePrograms) {
 
-            List<InventoryBase> includedInventoryBases = Lists.newArrayList();
+            Set<InventoryBase> includedInventoryBases = Sets.newHashSet();
             List<DisplayableControlHistory> reducedControlHistory = Lists.newArrayList();
 
             for (DisplayableControlHistory displayableControlHistory : 
