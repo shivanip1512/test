@@ -287,7 +287,7 @@ public class CapbankDaoImpl implements CapbankDao {
 	public List<LiteCapControlObject> getOrphans() {
         List<Integer> ids = getUnassignedCapBankIds();
 		
-		ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
 		final List<LiteCapControlObject> unassignedObjects = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

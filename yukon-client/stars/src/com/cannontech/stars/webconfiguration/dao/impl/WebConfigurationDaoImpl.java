@@ -89,8 +89,8 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
     @Override
     public Map<Integer, WebConfiguration> getForAssignedPrograms(
             Collection<Integer> assignedProgramIds) {
-        ChunkingSqlTemplate<Integer> template =
-            new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        ChunkingSqlTemplate template =
+            new ChunkingSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {

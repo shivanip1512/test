@@ -26,7 +26,7 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
     private static final String selecltByWorkOrderIdSql;
     private static final ParameterizedRowMapper<EventWorkOrder> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     static {
         
@@ -152,6 +152,6 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao, InitializingBea
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

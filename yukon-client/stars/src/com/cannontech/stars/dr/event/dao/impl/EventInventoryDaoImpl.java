@@ -19,7 +19,7 @@ public class EventInventoryDaoImpl implements EventInventoryDao,
         InitializingBean {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private ChunkingSqlTemplate<Integer> chunkingJdbcTemplate;
+    private ChunkingSqlTemplate chunkingJdbcTemplate;
     private EventBaseDao eventBaseDao;
 
     @Override
@@ -70,7 +70,7 @@ public class EventInventoryDaoImpl implements EventInventoryDao,
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkingJdbcTemplate = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 
 }

@@ -127,7 +127,7 @@ public class AddressDaoImpl implements AddressDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Map<Integer,LiteAddress> getAddresses(final List<Integer> addressIdList) {
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
         
         final List<LiteAddress> addressList = template.query(new SqlGenerator<Integer>() {
             @Override

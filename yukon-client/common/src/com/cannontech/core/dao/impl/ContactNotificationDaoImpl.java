@@ -36,7 +36,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonJdbcOperations yukonJdbcOperations;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private PhoneNumberFormattingService phoneNumberFormattingService;
     
@@ -234,6 +234,12 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
         List<LiteContactNotification> notificationsForContactByType = getNotificationsForContactByType(liteContact, contactNotificationType);
         return notificationsForContactByType.isEmpty() ? null : notificationsForContactByType.get(0);
     }
+    
+    @Override
+    public LiteContactNotification getFirstNotificationForContactByType(int contactId, ContactNotificationType contactNotificationType) {
+        List<LiteContactNotification> notificationsForContactByType = getNotificationsForContactByType(contactId, contactNotificationType);
+        return notificationsForContactByType.isEmpty() ? null : notificationsForContactByType.get(0);
+    }
 
     // REMOVING CONTACT NOTIFICATIONS
     // --------------------------------------------------------------------------------------
@@ -327,7 +333,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
     
     @Autowired

@@ -129,7 +129,7 @@ public class DeviceRequestDetailModel extends BareDatedReportModelBase<DeviceReq
         
         deviceIds = getDeviceIds();
         
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
         SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {

@@ -43,7 +43,7 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
 public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, InitializingBean {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     private ECMappingDao ecMappingDao;
     private LMCustomerEventBaseDao lmCustomerEventBaseDao;
     private NextValueHelper nextValueHelper;
@@ -55,7 +55,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao, Initial
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 
     @Autowired

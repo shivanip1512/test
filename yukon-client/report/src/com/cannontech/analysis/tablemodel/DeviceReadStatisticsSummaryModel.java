@@ -135,7 +135,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
                 deviceIds.add(paoIdentifier.getPaoId());
             }
 
-            ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+            ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
 
             SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
                 @Override

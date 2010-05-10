@@ -138,7 +138,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList) {
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
         
         List<InventoryBase> list = template.query(new SqlFragmentGenerator<Integer>() {
             @Override

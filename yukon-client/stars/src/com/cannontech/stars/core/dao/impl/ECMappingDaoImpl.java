@@ -25,7 +25,7 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     private YukonJdbcTemplate yukonJdbcTemplate;;
     private StarsDatabaseCache starsDatabaseCache;
     private RolePropertyDao rolePropertyDao;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     @Override
     public LiteStarsEnergyCompany getCustomerAccountEC(final CustomerAccount account) {
@@ -219,6 +219,6 @@ public class ECMappingDaoImpl implements ECMappingDao, InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
 }

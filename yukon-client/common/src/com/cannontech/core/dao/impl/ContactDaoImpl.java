@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
@@ -75,7 +74,6 @@ public final class ContactDaoImpl implements ContactDao {
 		super();
 	}
 
-	@Transactional
     public LiteContact getContact(int contactId) {
 
         StringBuilder sql = new StringBuilder("SELECT *");
@@ -89,7 +87,6 @@ public final class ContactDaoImpl implements ContactDao {
 
     }
 	
-	@Transactional
 	@Override
     public List<LiteContact> getContactsByLoginId(int loginId) {
 	    StringBuilder sql = new StringBuilder("SELECT *");
@@ -99,9 +96,8 @@ public final class ContactDaoImpl implements ContactDao {
         return contactList;
     }
     
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Map<Integer, LiteContact> getContacts(List<Integer> contactIds) {
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
 
         final List<LiteContact> contactList = template.query(new SqlGenerator<Integer>() {
             @Override
@@ -425,7 +421,6 @@ public final class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    @Transactional
     public LiteContact getPrimaryContactForAccount(int accountId) {
 
         StringBuilder sql = new StringBuilder("SELECT c.*");
@@ -442,7 +437,6 @@ public final class ContactDaoImpl implements ContactDao {
     
 
     @Override
-    @Transactional
     public List<LiteContact> getAdditionalContactsForCustomer(int customerId) {
         
         StringBuilder sql = new StringBuilder("SELECT c.*");
@@ -466,7 +460,6 @@ public final class ContactDaoImpl implements ContactDao {
     }
 
     @Override
-    @Transactional
     public List<LiteContact> getAdditionalContactsForAccount(int accountId) {
 
         StringBuilder sql = new StringBuilder("SELECT c.*");

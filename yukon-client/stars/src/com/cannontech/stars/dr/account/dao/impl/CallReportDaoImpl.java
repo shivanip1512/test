@@ -30,7 +30,7 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
 	private SimpleTableAccessTemplate<CallReport> template;
 	
     private ECMappingDao ecMappingDao;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     
     static {
@@ -146,7 +146,7 @@ public class CallReportDaoImpl implements CallReportDao, InitializingBean {
     	template.withPrimaryKeyField("CallId");
     	template.withFieldMapper(rowAndFieldMapper); 
     	
-    	chunkyJdbcTemplate = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+    	chunkyJdbcTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
     }
 
     @Autowired

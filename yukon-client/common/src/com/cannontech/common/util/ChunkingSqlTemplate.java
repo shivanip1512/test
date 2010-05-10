@@ -11,7 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.google.common.collect.Lists;
 
-public class ChunkingSqlTemplate<E> {
+public class ChunkingSqlTemplate {
     public static final int DEFAULT_SIZE = 1000;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private int chunkSize;
@@ -21,10 +21,10 @@ public class ChunkingSqlTemplate<E> {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
-    public <R> List<R> query(final SqlGenerator<E> sqlGenerator, final Collection<E> input, 
+    public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Collection<I> input, 
                  final ParameterizedRowMapper<R> rowMapper, final Object... args) {
         
-        final List<E> tempInputList = new ArrayList<E>(input);
+        final List<I> tempInputList = new ArrayList<I>(input);
         final List<R> resultList = new ArrayList<R>(tempInputList.size());
         final List<String> queryList = new ArrayList<String>();
         
@@ -33,7 +33,7 @@ public class ChunkingSqlTemplate<E> {
             int nextToIndex = start + chunkSize;
             int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
             
-            List<E> subList = tempInputList.subList(start, toIndex);
+            List<I> subList = tempInputList.subList(start, toIndex);
             String query = sqlGenerator.generate(subList);
             queryList.add(query);
         }
@@ -46,7 +46,7 @@ public class ChunkingSqlTemplate<E> {
         return resultList;
     }
     
-    public <R> List<R> query(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input, 
+    public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Collection<I> input, 
     		final ParameterizedRowMapper<R> rowMapper) {
     	
     	List<R> resultList = Lists.newArrayList();
@@ -58,10 +58,10 @@ public class ChunkingSqlTemplate<E> {
     	return resultList;
     }
 
-    public void query(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input, 
+    public <I> void query(final SqlFragmentGenerator<I> sqlGenerator, final Collection<I> input, 
                              final RowCallbackHandler rch) {
         
-        final List<E> tempInputList = Lists.newArrayList(input);
+        final List<I> tempInputList = Lists.newArrayList(input);
         final List<SqlFragmentSource> queryList = Lists.newArrayList();
         
         int inputSize = tempInputList.size();
@@ -69,7 +69,7 @@ public class ChunkingSqlTemplate<E> {
             int nextToIndex = start + chunkSize;
             int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
             
-            List<E> subList = tempInputList.subList(start, toIndex);
+            List<I> subList = tempInputList.subList(start, toIndex);
             SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
             queryList.add(sqlFragmentSource);
         }
@@ -80,9 +80,9 @@ public class ChunkingSqlTemplate<E> {
         
     }
     
-    public void update(final SqlGenerator<E> sqlGenerator, final Collection<E> input, final Object... args) {
+    public <I> void update(final SqlGenerator<I> sqlGenerator, final Collection<I> input, final Object... args) {
                     
-        final List<E> tempInputList = new ArrayList<E>(input);
+        final List<I> tempInputList = new ArrayList<I>(input);
         final List<String> queryList = new ArrayList<String>();
         
         int inputSize = tempInputList.size();
@@ -90,7 +90,7 @@ public class ChunkingSqlTemplate<E> {
             int nextToIndex = start + chunkSize;
             int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
             
-            List<E> subList = tempInputList.subList(start, toIndex);
+            List<I> subList = tempInputList.subList(start, toIndex);
             String query = sqlGenerator.generate(subList);
             queryList.add(query);
         }
@@ -100,9 +100,9 @@ public class ChunkingSqlTemplate<E> {
         }
     }
 
-    public void update(final SqlFragmentGenerator<E> sqlGenerator, final Collection<E> input) {
+    public <I> void update(final SqlFragmentGenerator<I> sqlGenerator, final Collection<I> input) {
     	
-    	final List<E> tempInputList = new ArrayList<E>(input);
+    	final List<I> tempInputList = new ArrayList<I>(input);
     	final List<SqlFragmentSource> sqlFragmentList = new ArrayList<SqlFragmentSource>();
     	
     	int inputSize = tempInputList.size();
@@ -110,7 +110,7 @@ public class ChunkingSqlTemplate<E> {
     		int nextToIndex = start + chunkSize;
     		int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
     		
-    		List<E> subList = tempInputList.subList(start, toIndex);
+    		List<I> subList = tempInputList.subList(start, toIndex);
     		
     		SqlFragmentSource sqlFragmentSource = sqlGenerator.generate(subList);
     		sqlFragmentList.add(sqlFragmentSource);

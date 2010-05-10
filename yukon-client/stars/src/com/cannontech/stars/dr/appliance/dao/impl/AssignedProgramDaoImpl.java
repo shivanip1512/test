@@ -42,8 +42,8 @@ public class AssignedProgramDaoImpl implements AssignedProgramDao {
         Map<Integer, WebConfiguration> webConfigurations =
             webConfigurationDao.getForAssignedPrograms(assignedProgramIds);
 
-        ChunkingSqlTemplate<Integer> template =
-            new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        ChunkingSqlTemplate template =
+            new ChunkingSqlTemplate(yukonJdbcTemplate);
 
         final AssignedProgramRowMapper rowMapper =
             new AssignedProgramRowMapper(true, false, -1, webConfigurations);

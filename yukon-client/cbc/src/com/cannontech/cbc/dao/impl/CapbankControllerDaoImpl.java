@@ -310,7 +310,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	public List<LiteCapControlObject> getOrphans() {
 		List<Integer> cbcIds = getUnassignedControllerIds();
 		
-		ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
 		final List<LiteCapControlObject> unassignedCbcs = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

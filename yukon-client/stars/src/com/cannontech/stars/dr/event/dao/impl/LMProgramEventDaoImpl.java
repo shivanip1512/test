@@ -23,7 +23,7 @@ public class LMProgramEventDaoImpl implements LMProgramEventDao, InitializingBea
     SimpleJdbcTemplate simpleJdbcTemplate;
     ECMappingDao ecMappingDao;
     LMCustomerEventBaseDao lmCustomerEventBaseDao;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     @Override
     @Transactional
@@ -81,6 +81,6 @@ public class LMProgramEventDaoImpl implements LMProgramEventDao, InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

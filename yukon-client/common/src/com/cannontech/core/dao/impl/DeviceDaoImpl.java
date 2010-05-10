@@ -20,7 +20,7 @@ import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -40,7 +40,7 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -385,62 +385,34 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     public Map<PaoIdentifier, String> getNamesForYukonDevices(Iterable<PaoIdentifier> identifiers) {
-        // build a lookup map based on the pao id (will also be used as a set of ids for the sql)
-        final ImmutableMap<Integer, PaoIdentifier> deviceLookup = Maps.uniqueIndex(identifiers, new Function<PaoIdentifier, Integer>() {
-            @Override
-            public Integer apply(PaoIdentifier device) {
-                return device.getPaoIdentifier().getPaoId();
-            }
-        });
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+    	
+    	ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
+		
+		SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+		    public SqlFragmentSource generate(List<Integer> subList) {
+		        SqlStatementBuilder sql = new SqlStatementBuilder();
+		        sql.append("select ypo.paoname, d.deviceid");
+		        sql.append("from yukonpaobject ypo");
+		        sql.append("join device d on ypo.paobjectid = d.deviceid");
+		        sql.append("where ypo.paObjectId").in(subList);
+		        return sql;
+		    }
+		};
+        
+        Function<PaoIdentifier, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<PaoIdentifier, Integer>() {
+			public Integer apply(PaoIdentifier from) {
+				return from.getPaoId();
+			}
+		};
 
-        // build the sql generator, selects name and id for a set of ids
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("select ypo.paoname, d.deviceid");
-                sql.append("from yukonpaobject ypo");
-                sql.append("join device d on ypo.paobjectid = d.deviceid");
-                sql.append("where ypo.paObjectId in (").appendList(subList).append(")");
-                return sql;
-            }
-        };
-
-        // build mapper, builds a throw away structure that contains the id and name
-        ParameterizedRowMapper<DeviceAndName> rowMapper = new ParameterizedRowMapper<DeviceAndName>() {
-            @Override
-            public DeviceAndName mapRow(ResultSet rs, int rowNum)
-            throws SQLException {
-                DeviceAndName result = new DeviceAndName();
-                result.deviceId = rs.getInt("deviceid");
-                result.name = rs.getString("paoname");
-                return result;
+        ParameterizedRowMapper<Entry<Integer, String>> rowMapper = new ParameterizedRowMapper<Entry<Integer, String>>() {
+            public Entry<Integer, String> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return Maps.immutableEntry(rs.getInt("deviceid"), rs.getString("paoname"));
             }
         };
+        
 
-        // run the query with the generator, the set of ids passed in, and the mapper
-        List<DeviceAndName> names = template.query(sqlGenerator, deviceLookup.keySet(), rowMapper);
-
-        // convert the resulting list into a lookup table
-        ImmutableMap<PaoIdentifier, DeviceAndName> intermediaryResult = Maps.uniqueIndex(names, new Function<DeviceAndName, PaoIdentifier>() {
-            public PaoIdentifier apply(DeviceAndName meter) {
-                return deviceLookup.get(meter.deviceId);
-            }
-        });
-
-        // transform the lookup table into the identifier to string map that will be returned
-        Map<PaoIdentifier,String> result = Maps.transformValues(intermediaryResult, new Function<DeviceAndName, String>() {
-            public String apply(DeviceAndName deviceAndName) {
-                return deviceAndName.name;
-            }
-        });
-
-        return result;
-    }
-
-    private static class DeviceAndName {
-        int deviceId;
-        String name;
+        return template.mappedQuery(sqlGenerator, Lists.newArrayList(identifiers), rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
 
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {

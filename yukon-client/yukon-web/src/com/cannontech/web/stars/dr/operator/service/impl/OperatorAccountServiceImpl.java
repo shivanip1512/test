@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AddressDao;
@@ -22,13 +21,14 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
-import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.general.dao.OperatorAccountSearchDao;
 import com.cannontech.stars.dr.general.service.ContactNotificationService;
 import com.cannontech.stars.dr.general.service.ContactService;
+import com.cannontech.stars.dr.general.service.impl.AccountSearchResult;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.model.ContactDto;
@@ -49,7 +49,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	private ContactService contactService;
 	private ContactNotificationService contactNotificationService;
 	private ContactNotificationFormattingService contactNotificationFormattingService;
-	private ECMappingDao ecMappingDao;
+	private OperatorAccountSearchDao operatorAccountSearchDao;
 	
 	@Override
 	@Transactional
@@ -322,28 +322,9 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
     @Override
     public AccountInfoFragment getAccountInfoFragment(int accountId) {
     	
-    	int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
-    	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountId, energyCompanyId);
+    	AccountSearchResult accountSearchResult = operatorAccountSearchDao.getAccountSearchResultForAccountId(accountId);
     	
-    	// customer objects
-    	CustomerAccount customerAccount = customerAccountDao.getById(accountId);
-    	LiteCustomer customer = customerDao.getLiteCustomer(customerAccount.getCustomerId());
-    	LiteContact primaryContact = contactDao.getContact(customer.getPrimaryContactID());
-    	accountInfoFragment.setCustomerAccount(customerAccount);
-    	accountInfoFragment.setCustomer(customer);
-    	accountInfoFragment.setPrimaryContact(primaryContact);
-    	
-    	// display address
-    	AccountSite accountSite = accountSiteDao.getByAccountSiteId(customerAccount.getAccountSiteId());
-    	LiteAddress liteAddress = addressDao.getByAddressId(accountSite.getStreetAddressId());
-    	Address address = Address.getDisplayableAddress(liteAddress);
-    	accountInfoFragment.setAddress(address);
-    	
-    	// notifications
-    	LiteContactNotification homePhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.HOME_PHONE);
-        LiteContactNotification workPhoneNotif = contactNotificationDao.getFirstNotificationForContactByType(primaryContact, ContactNotificationType.WORK_PHONE);
-        accountInfoFragment.setHomePhoneNotif(homePhoneNotif);
-    	accountInfoFragment.setWorkPhoneNotif(workPhoneNotif);
+    	AccountInfoFragment accountInfoFragment = new AccountInfoFragment(accountSearchResult);
     	
     	return accountInfoFragment;
     }
@@ -399,7 +380,7 @@ public class OperatorAccountServiceImpl implements OperatorAccountService {
 	}
 	
 	@Autowired
-	public void setEcMappingDao(ECMappingDao ecMappingDao) {
-		this.ecMappingDao = ecMappingDao;
+	public void setOperatorAccountSearchDao(OperatorAccountSearchDao operatorAccountSearchDao) {
+		this.operatorAccountSearchDao = operatorAccountSearchDao;
 	}
 }

@@ -39,7 +39,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
     private static final ParameterizedRowMapper<LiteLMHardwareEvent> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
-    private ChunkingSqlTemplate<Integer> chunkingJdbcTemplate;
+    private ChunkingSqlTemplate chunkingJdbcTemplate;
     private ECMappingDao ecMappingDao;
     private LMCustomerEventBaseDao customerEventBaseDao;
 
@@ -209,7 +209,7 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao,
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkingJdbcTemplate = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 
     @Autowired

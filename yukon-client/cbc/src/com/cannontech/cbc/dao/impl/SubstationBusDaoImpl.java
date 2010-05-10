@@ -246,7 +246,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
 	public List<LiteCapControlObject> getOrphans() {
         List<Integer> ids = getAllUnassignedBuses();
 		
-		ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
 		final List<LiteCapControlObject> unassignedObjects = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

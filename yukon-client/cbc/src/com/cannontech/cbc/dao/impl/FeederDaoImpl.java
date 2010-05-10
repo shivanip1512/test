@@ -230,7 +230,7 @@ public class FeederDaoImpl implements FeederDao {
 	public List<LiteCapControlObject> getOrphans() {
         List<Integer> ids = getUnassignedFeederIds();
 		
-		ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
 		final List<LiteCapControlObject> unassignedObjects = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

@@ -66,7 +66,7 @@ public class StarsCustAccountInformationDaoImpl implements StarsCustAccountInfor
     @Override
     @Transactional(readOnly = true)
     public Map<Integer, LiteStarsCustAccountInformation> getByIds(Set<Integer> accountIds, final int energyCompanyId) {
-        final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
 
         final List<LiteStarsCustAccountInformation> resultList = 
             template.query(new SqlGenerator<Integer>() {

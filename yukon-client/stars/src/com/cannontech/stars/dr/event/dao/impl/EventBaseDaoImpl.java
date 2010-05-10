@@ -15,7 +15,7 @@ import com.cannontech.stars.dr.event.dao.EventBaseDao;
 public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private ChunkingSqlTemplate<Integer> chunkingJdbcTemplate;
+    private ChunkingSqlTemplate chunkingJdbcTemplate;
 
     @Override
     @Transactional
@@ -46,6 +46,6 @@ public class EventBaseDaoImpl implements EventBaseDao, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkingJdbcTemplate = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkingJdbcTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

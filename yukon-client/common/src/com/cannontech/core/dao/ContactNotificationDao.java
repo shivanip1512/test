@@ -43,6 +43,14 @@ public interface ContactNotificationDao {
      * @return
      */
     public LiteContactNotification getFirstNotificationForContactByType(LiteContact liteContact, ContactNotificationType contactNotificationType);
+    
+    /**
+     * Method to return the lite notification for a contact of a specific type.
+     * Returns null if none exists for that type.
+     * Example usage: getFirstNotificationForContactByType(contactId, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
+     * would return the home phone for that contact.
+     */
+    public LiteContactNotification getFirstNotificationForContactByType(int contactId, ContactNotificationType contactNotificationType);
 
     /**
      * Method to save a list of contact notifications for a contact (will remove

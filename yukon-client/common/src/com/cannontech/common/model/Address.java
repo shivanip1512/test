@@ -9,11 +9,21 @@ public class Address {
     private String zipCode;
     private String locationAddress1;
     private String locationAddress2;
-    private String country;
+    private String county;
     
     public Address() {
     }
     
+    public Address(String locationAddress1, String locationAddress2, String cityName, String stateCode, String zipCode, String county) {
+    	
+    	this.locationAddress1 = locationAddress1;
+    	this.locationAddress2 = locationAddress2;
+    	this.cityName = cityName;
+    	this.stateCode = stateCode;
+    	this.zipCode = zipCode;
+    	this.county = county;
+    }
+
     public Address(LiteAddress liteAddress) {
     	
     	this.setLocationAddress1(liteAddress.getLocationAddress1());
@@ -65,11 +75,11 @@ public class Address {
     }
     
     public String getCounty() {
-        return country;
+        return county;
     }
 
-    public void setCounty(final String country) {
-        this.country = country;
+    public void setCounty(final String county) {
+        this.county = county;
     }
     
     public static Address getDisplayableAddress(LiteAddress liteAddress) {
@@ -92,7 +102,7 @@ public class Address {
                 (this.locationAddress2.equals(obj.locationAddress2)) &&
                 (this.stateCode.equals(obj.stateCode)) &&
                 (this.zipCode.equals(obj.zipCode)) &&
-                (this.country.equals(obj.country)));   
+                (this.county.equals(obj.county)));   
     }
     
     @Override
@@ -103,7 +113,7 @@ public class Address {
         result = result * 37 + this.zipCode.hashCode();
         result = result * 37 + this.locationAddress1.hashCode();
         result = result * 37 + this.locationAddress2.hashCode();
-        result = result * 37 + this.country.hashCode();
+        result = result * 37 + this.county.hashCode();
         return result;
     }
     

@@ -19,7 +19,7 @@ import com.cannontech.stars.dr.event.dao.EventAccountDao;
 public class EventAccountDaoImpl implements EventAccountDao, InitializingBean {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
     
     @Override
     public List<Integer> getAllEventsForAccount(Integer accountId) {
@@ -66,6 +66,6 @@ public class EventAccountDaoImpl implements EventAccountDao, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

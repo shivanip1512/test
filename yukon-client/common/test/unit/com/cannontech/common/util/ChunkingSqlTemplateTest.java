@@ -27,7 +27,7 @@ public class ChunkingSqlTemplateTest {
         fullSizeList.addAll(chunkedList2);
         fullSizeList.addAll(chunkedList3);
         
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(new CustomerSimpleJdbcTemplate());
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(new CustomerSimpleJdbcTemplate());
         template.setChunkSize(customChunkSize);
         
         List<String> resultList = template.query(new SqlGenerator<Integer>() {

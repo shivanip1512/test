@@ -8,17 +8,27 @@ public class AccountSearchResult {
 	private int accountId;
 	private int energyCompanyId;
 	private String accountNumber;
-	private String name;
+	private String altTrackingNumber;
+	private String firstName;
+	private String lastName;
+	private String companyName;
 	private LiteContactNotification homePhoneNotif ;
 	private LiteContactNotification workPhoneNotif;
 	private Address address;
 	
-	public AccountSearchResult(int accountId, int energyCompanyId, String accountNumber, String name, LiteContactNotification homePhoneNotif, LiteContactNotification workPhoneNotif, Address address) {
+	public AccountSearchResult(int accountId, int energyCompanyId,
+			                   String accountNumber, String altTrackingNumber,
+			                   String firstName, String lastName, String companyName,
+							   LiteContactNotification homePhoneNotif, LiteContactNotification workPhoneNotif, 
+							   Address address) {
 		
 		this.accountId = accountId;
 		this.energyCompanyId = energyCompanyId;
 		this.accountNumber = accountNumber;
-		this.name = name;
+		this.altTrackingNumber = altTrackingNumber;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.companyName = companyName;
 		this.homePhoneNotif = homePhoneNotif;
 		this.workPhoneNotif = workPhoneNotif;
 		this.address = address;
@@ -27,27 +37,42 @@ public class AccountSearchResult {
 	public int getAccountId() {
 		return accountId;
 	}
-	
 	public int getEnergyCompanyId() {
 		return energyCompanyId;
 	}
-	
 	public String getAccountNumber() {
 		return accountNumber;
 	}
-	
-	public String getName() {
+	public String getAltTrackingNumber() {
+		return altTrackingNumber;
+	}
+	public String getFirstName() {
+		return firstName;
+	}
+	public String getLastName() {
+		return lastName;
+	}
+	public String getCompanyName() {
+		return companyName;
+	}
+	public String getCombinedName() {
+		
+		// name
+		String name = "";
+    	name += lastName + ", ";
+    	name += firstName;
+    	if (companyName !=  null) {
+    		name += "(" + companyName + ")";
+    	}
+    	
 		return name;
 	}
-	
 	public LiteContactNotification getHomePhoneNotif() {
 		return homePhoneNotif;
 	}
-	
 	public LiteContactNotification getWorkPhoneNotif() {
 		return workPhoneNotif;
 	}
-	
 	public Address getAddress() {
 		return address;
 	}

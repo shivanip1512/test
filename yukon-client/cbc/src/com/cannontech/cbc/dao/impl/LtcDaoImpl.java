@@ -148,7 +148,7 @@ public class LtcDaoImpl implements LtcDao {
         
         List<Integer> ltcIds = getUnassignedLtcIds();
         
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         final List<LiteCapControlObject> unassignedLtcs = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

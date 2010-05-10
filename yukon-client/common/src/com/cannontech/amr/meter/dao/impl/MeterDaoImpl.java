@@ -1,5 +1,7 @@
 package com.cannontech.amr.meter.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -41,7 +45,6 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -212,29 +215,33 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     }
     
     public <I extends YukonPao> Map<I, Meter> getMetersForYukonDevices(Iterable<I> identifiers) {
-    	final ImmutableMap<Integer, I> deviceLookup = Maps.uniqueIndex(identifiers, new Function<I, Integer>() {
-    		@Override
-    		public Integer apply(I device) {
-    			return device.getPaoIdentifier().getPaoId();
-    		}
-    	});
-    	ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
     	
-    	List<Meter> meters = template.query(new SqlFragmentGenerator<Integer>() {
-    		public SqlFragmentSource generate(List<Integer> subList) {
-    			SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
-    			sql.append("where ypo.paObjectId in (").appendList(subList).append(")");
+    	ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
+		
+		SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+		    public SqlFragmentSource generate(List<Integer> subList) {
+		    	SqlStatementBuilder sql = new SqlStatementBuilder(meterRowMapper.getSql());
+    			sql.append("where ypo.paObjectId").in(subList);
     			return sql;
-    		}
-    	}, deviceLookup.keySet(), meterRowMapper);
-    	
-    	ImmutableMap<I, Meter> result = Maps.uniqueIndex(meters, new Function<Meter, I>() {
-    		public I apply(Meter meter) {
-    			return deviceLookup.get(meter.getPaoIdentifier().getPaoId());
-    		}
-    	});
-    	
-    	return result;
+		    }
+		};
+        
+        Function<I, Integer> inputTypeToSqlGeneratorTypeMapper = new Function<I, Integer>() {
+			public Integer apply(I from) {
+				return from.getPaoIdentifier().getPaoId();
+			}
+		};
+
+        ParameterizedRowMapper<Entry<Integer, Meter>> rowMapper = new ParameterizedRowMapper<Entry<Integer, Meter>>() {
+            public Entry<Integer, Meter> mapRow(ResultSet rs, int rowNum) throws SQLException {
+            	
+            	Meter meter = meterRowMapper.mapRow(rs, rowNum);
+            	
+                return Maps.immutableEntry(meter.getPaoIdentifier().getPaoId(), meter);
+            }
+        };
+
+        return template.mappedQuery(sqlGenerator, Lists.newArrayList(identifiers), rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
     
     @Override
@@ -244,7 +251,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     		return Collections.emptyList();
     	}
     	
-    	ChunkingSqlTemplate<String> template = new ChunkingSqlTemplate<String>(simpleJdbcTemplate);
+    	ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
     	
     	List<Meter> meters = template.query(new SqlFragmentGenerator<String>() {
     		public SqlFragmentSource generate(List<String> subList) {

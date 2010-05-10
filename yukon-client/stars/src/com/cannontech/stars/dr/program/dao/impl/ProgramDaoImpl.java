@@ -92,7 +92,7 @@ public class ProgramDaoImpl implements ProgramDao {
             idList.add(applianceCategoryId);
         }
         
-        final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         List<Program> programList = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

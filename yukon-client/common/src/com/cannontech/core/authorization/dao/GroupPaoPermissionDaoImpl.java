@@ -218,7 +218,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
             groupIdList.add(group.getGroupID());
         }
         
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(yukonJdbcTemplate);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
         template.query(new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {

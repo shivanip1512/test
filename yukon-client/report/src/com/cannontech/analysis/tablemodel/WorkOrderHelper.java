@@ -97,7 +97,7 @@ public final class WorkOrderHelper {
         };
         
         // Run SQL for Inventory that contain non-zero DeviceID's.
-        final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        final ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
         List<Holder> list1 = template.query(new SqlGenerator<Integer>() {
             @Override
             public String generate(List<Integer> subList) {

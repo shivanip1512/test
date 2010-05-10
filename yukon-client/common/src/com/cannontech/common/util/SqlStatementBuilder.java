@@ -200,6 +200,12 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    public SqlStatementBuilder endsWith(String argument) {
+        statement.append("like ");
+        appendArgument("%" + argument);
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendArgument(java.lang.Object)
      */

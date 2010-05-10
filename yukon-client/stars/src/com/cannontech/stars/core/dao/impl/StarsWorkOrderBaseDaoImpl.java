@@ -28,7 +28,7 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, Initial
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private ECMappingDao ecMappingDao;
     private EventWorkOrderDao eventWorkOrderDao;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
 
     static {
 
@@ -164,6 +164,6 @@ public class StarsWorkOrderBaseDaoImpl implements StarsWorkOrderBaseDao, Initial
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

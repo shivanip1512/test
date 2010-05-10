@@ -18,7 +18,7 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, Initi
     private static final String[] insertSql;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
-    private ChunkingSqlTemplate<Integer> chunkyJdbcTemplate;
+    private ChunkingSqlTemplate chunkyJdbcTemplate;
 
     static {
         
@@ -90,6 +90,6 @@ public class LMCustomerEventBaseDaoImpl implements LMCustomerEventBaseDao, Initi
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        chunkyJdbcTemplate= new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        chunkyJdbcTemplate= new ChunkingSqlTemplate(simpleJdbcTemplate);
     }
 }

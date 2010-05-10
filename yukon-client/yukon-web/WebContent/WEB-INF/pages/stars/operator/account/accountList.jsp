@@ -56,7 +56,7 @@
 		    			</td>
 		    			
 		    			<td>
-		    				${accountSearchResult.name}
+		    				${accountSearchResult.combinedName}
 		    			</td>
 		    			
 		    			<td>
