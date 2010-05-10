@@ -71,7 +71,7 @@
     <entry key="yukon.web.modules.operator.optOut.confirm.pageName">Opt Out Questions</entry>
     <entry key="yukon.web.modules.operator.optOut.confirm.title">Programs - Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.confirm.description">Please complete the following form to opt out of your program:</entry>
-    <entry key="yukon.web.modules.operator.optOut.confirm.save">Opt Out</entry>
+    <entry key="yukon.web.modules.operator.optOut.confirm.save.label">Opt Out</entry>
     <entry key="yukon.web.modules.operator.optOut.confirm.cancel">Cancel</entry>
     
 	<!-- Current Opt Outs -->
