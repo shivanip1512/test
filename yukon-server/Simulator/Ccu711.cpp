@@ -998,9 +998,11 @@ error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &r
         case Command_LGrpQ:
         {
 //  TODO-P2: return a REQACK if all 32 slots are full
+            unsigned available = min(request.info.lgrpq.request_group.size(),
+                                     0x20 - _queue.pending.size() - _queue.completed.size());
 
             _queue.pending.insert(request.info.lgrpq.request_group.begin(),
-                                  request.info.lgrpq.request_group.end());
+                                  request.info.lgrpq.request_group.begin() + available);
 
             return error_t::success;
         }
@@ -1008,7 +1010,7 @@ error_t Ccu711::processGeneralRequest(const idlc_request &request, idlc_reply &r
         case Command_RColQ:
         {
             bool full = false;
-            unsigned length_used = 0;
+            unsigned length_used = CCU_ReplyLength;
 
             while( !_queue.completed.empty() && !full )
             {
