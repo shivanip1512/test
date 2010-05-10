@@ -79,7 +79,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public Number getPrimaryKey(LiteCustomer object) {
-            return object.getCustomerID() == CtiUtilities.NONE_ZERO_ID ? null : object.getCustomerID();
+            return object.getCustomerID() == -1 ? null : object.getCustomerID();
         }
 
         @Override
@@ -102,7 +102,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public Number getPrimaryKey(LiteCICustomer object) {
-            return object.getCustomerID() == CtiUtilities.NONE_ZERO_ID ? null : object.getCustomerID();
+            return object.getCustomerID();
         }
 
         @Override
