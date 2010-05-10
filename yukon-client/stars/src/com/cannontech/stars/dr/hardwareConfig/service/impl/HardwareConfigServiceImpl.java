@@ -1,8 +1,11 @@
 package com.cannontech.stars.dr.hardwareConfig.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.ActivityLogger;
+import com.cannontech.clientutils.LogHelper;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -21,6 +24,8 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private CustomerAccountDao customerAccountDao;
 
+    private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
+    
     @Override
     public void disable(int inventoryId, int accountId, int energyCompanyId,
             YukonUserContext userContext) throws WebClientException {
@@ -67,6 +72,9 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
 
     private void logEvent(int accountId, int energyCompanyId, String serialNumber, String action,
             YukonUserContext userContext) {
+        LogHelper.debug(log, "%s was done to %s on %d in %d", 
+                        action, serialNumber, accountId, energyCompanyId);
+
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         ActivityLogger.logEvent(userContext.getYukonUser().getUserID(),
                                 accountId, energyCompanyId,

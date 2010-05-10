@@ -1090,9 +1090,9 @@
                             <labelArgument>${displayName}</labelArgument>
                         </page>
                         <page name="hardwareConfig" type="DETAIL">
-                            <menu>general</menu>
+                            <menu>account</menu>
                             <link>/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                            <labelArguments>${accountNumber}</labelArguments>
+                            <labelArgument>${deviceLabel}</labelArgument>
                         </page>
                         <page name="thermostatSelect" type="DETAIL_CHILD">
 				    		<menu>account</menu>

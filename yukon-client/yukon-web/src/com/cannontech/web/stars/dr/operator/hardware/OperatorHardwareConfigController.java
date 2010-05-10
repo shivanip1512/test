@@ -283,6 +283,7 @@ public class OperatorHardwareConfigController {
 
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
+        model.addAttribute("deviceLabel", hardware.getDeviceLabel());
     }
 
     @Autowired

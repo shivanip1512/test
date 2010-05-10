@@ -14,7 +14,6 @@
 var programIdsAlreadyEnrolled = [];
 </script>
 
-<h1><i:inline key=".header" arguments="${hardware.deviceLabel}"/></h1>
 <tags:boxContainer2 nameKey="enrolledPrograms">
     <c:if test="${fn:length(enrollments) == 0}">
         <i:inline key=".noEnrolledPrograms"/>

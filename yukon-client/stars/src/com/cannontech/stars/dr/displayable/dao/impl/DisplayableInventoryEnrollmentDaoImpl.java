@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
@@ -52,6 +53,7 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
         }
 
         @Override
+        @Transactional
         public DisplayableInventoryEnrollment mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             int inventoryId = rs.getInt("inventoryId");

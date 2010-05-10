@@ -4,8 +4,8 @@
 
     <!-- hardwareConfig -->
     <entry key="yukon.web.modules.operator.hardwareConfig.pageName">Hardware Configuration</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.pageDescription">Hardware Configuration</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.header">Serial #{0}</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.title">Hardware Configuration</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.enrolledPrograms.title">Enrolled Programs</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.noEnrolledPrograms">This device is not currently enrolled in any programs.</entry>
