@@ -45,7 +45,7 @@
                                     <label for="${inventoryId}">
                                         <c:choose>
                                             <c:when test="${displayableInventory.currentlyOptedOut && isSameDay}">
-                                                <input type="checkbox" disabled="disabled" ></input>
+                                                <input type="checkbox" disabled="disabled" >
                                             </c:when>
                                             <c:otherwise>
                                                 <c:set var="showNextButton" value="true" />
