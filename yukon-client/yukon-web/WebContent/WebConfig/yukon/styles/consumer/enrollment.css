@@ -1,6 +1,6 @@
 #enrollmentNote {
     text-align: center;
-    background-color: #77ff77;
+    background-color: #C3FDB8;
     padding:  10px;
     margin: 0px 50px 20px 50px;
     border: 2px solid black;
@@ -42,7 +42,7 @@ div.programList table {
 }
 
 .enrolled {
-    background-color: #77ff77;
+    background-color: #C3FDB8;
 }
 
 .notEnrolled {
