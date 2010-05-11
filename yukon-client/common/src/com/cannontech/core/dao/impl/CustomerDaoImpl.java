@@ -79,7 +79,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
 
         @Override
         public Number getPrimaryKey(LiteCustomer object) {
-            return object.getCustomerID() == -1 ? null : object.getCustomerID();
+            return object.getCustomerID();
         }
 
         @Override
@@ -521,7 +521,8 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(simpleJdbcTemplate, nextValueHelper);
         liteCustomerTemplate.withTableName(CUSTOMER_TABLE_NAME);
         liteCustomerTemplate.withPrimaryKeyField("CustomerId");
-        liteCustomerTemplate.withFieldMapper(customerFieldMapper); 
+        liteCustomerTemplate.withFieldMapper(customerFieldMapper);
+        liteCustomerTemplate.withPrimaryKeyValidOver(-1);
         
         liteCICustomerTemplate = new SimpleTableAccessTemplate<LiteCICustomer>(simpleJdbcTemplate, nextValueHelper);
         liteCICustomerTemplate.withTableName(CI_CUSTOMER_TABLE_NAME);
