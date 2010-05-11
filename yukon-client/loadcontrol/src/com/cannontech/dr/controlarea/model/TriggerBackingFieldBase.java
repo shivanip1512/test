@@ -59,19 +59,17 @@ public abstract class TriggerBackingFieldBase implements
                 return 1;
             }
 
-            ControlAreaTrigger.TriggerType trigger1Type =
-                ControlAreaTrigger.TriggerType.valueOf(trigger1.getTriggerType().toUpperCase());
-            ControlAreaTrigger.TriggerType trigger2Type =
-                ControlAreaTrigger.TriggerType.valueOf(trigger2.getTriggerType().toUpperCase());
+            TriggerType trigger1Type = trigger1.getTriggerType();
+            TriggerType trigger2Type = trigger2.getTriggerType();
             if (trigger1Type != trigger2Type) {
-                return trigger1Type == ControlAreaTrigger.TriggerType.STATUS ? -1 : 1;
+                return trigger1Type == TriggerType.STATUS ? -1 : 1;
             }
 
             return triggerCompare(trigger1Type, trigger1, trigger2);
         }
 
         public abstract int triggerCompare(
-                ControlAreaTrigger.TriggerType triggerType,
+                TriggerType triggerType,
                 LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2);
     }
 

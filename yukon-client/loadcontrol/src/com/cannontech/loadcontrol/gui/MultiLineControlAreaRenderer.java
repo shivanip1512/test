@@ -12,7 +12,7 @@ import javax.swing.JTable;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.datamodels.ControlAreaTableModel;
 
@@ -209,7 +209,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			{
 				LitePoint point = DaoFactory.getPointDao().getLitePoint( trigger.getPointId().intValue() );
 			
-				if( IlmDefines.TYPE_STATUS.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( trigger.getTriggerType() == TriggerType.STATUS )
 				{
 					LiteState lsVal = DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
 					LiteState lsThresh = DaoFactory.getStateDao().getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
@@ -233,7 +233,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 	
 			case ControlAreaTableModel.PEAK_PROJECTION:
 			{	
-				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( trigger.getTriggerType() == TriggerType.THRESHOLD )
 				{
 					strBuf.append(
 						NMBR_FORMATTER.format(trigger.getPeakPointValue()) +
@@ -247,7 +247,7 @@ public class MultiLineControlAreaRenderer extends javax.swing.JPanel implements 
 			
 			case ControlAreaTableModel.ATKU:
 			{
-				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
+				if( trigger.getTriggerType() == TriggerType.THRESHOLD )
 				{
 					strBuf.append(
 						(trigger.getThresholdKickPercent().intValue() <= 0

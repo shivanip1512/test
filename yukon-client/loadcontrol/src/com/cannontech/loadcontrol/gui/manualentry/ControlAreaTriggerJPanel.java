@@ -8,7 +8,7 @@ package com.cannontech.loadcontrol.gui.manualentry;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.messages.LMCommand;
@@ -618,7 +618,7 @@ public void jButtonUpdate_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		double threshValue = 0.0;
 		double restoreVal = 0.0;
 		
-		if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
+		if( trigger.getTriggerType() == TriggerType.THRESHOLD )
 		{
 			try
 			{
@@ -817,7 +817,7 @@ private void setTrigger1Values(LMControlAreaTrigger trigger, com.cannontech.data
 	else
 */
 
-	if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
+	if( trigger.getTriggerType() == TriggerType.THRESHOLD )
 	{
 		getJLabelTrigger1NotPresent().setVisible(false);
 
@@ -853,7 +853,7 @@ private void setTrigger2Values(LMControlAreaTrigger trigger, com.cannontech.data
 	}
 	else
 */
-	if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
+	if( trigger.getTriggerType() == TriggerType.THRESHOLD )
 	{
 		getJLabelTrigger2NotPresent().setVisible(false);
 

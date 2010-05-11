@@ -2,11 +2,13 @@ package com.cannontech.loadcontrol.data;
 
 import java.util.Date;
 
+import com.cannontech.dr.controlarea.model.TriggerType;
+
 public class LMControlAreaTrigger implements Cloneable
 {
 	private Integer yukonID = null;
 	private Integer triggerNumber = null;
-	private String triggerType = null;
+	private TriggerType triggerType = null;
 	private Integer pointId = null;
 	private Double pointValue = null;
 	private Date lastPointValueTimeStamp = null;
@@ -90,7 +92,7 @@ public java.lang.Integer getTriggerNumber() {
 	return triggerNumber;
 }
 
-public java.lang.String getTriggerType() {
+public TriggerType getTriggerType() {
 	return triggerType;
 }
 
@@ -158,8 +160,8 @@ public void setTriggerNumber(java.lang.Integer newTriggerNumber) {
 	triggerNumber = newTriggerNumber;
 }
 
-public void setTriggerType(java.lang.String newTriggerType) {
-	triggerType = newTriggerType;
+public void setTriggerType(TriggerType triggerType) {
+	this.triggerType = triggerType;
 }
 
 public void setYukonID(java.lang.Integer newYukonID) {

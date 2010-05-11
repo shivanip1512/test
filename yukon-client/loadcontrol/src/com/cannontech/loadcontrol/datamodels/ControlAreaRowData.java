@@ -6,7 +6,7 @@ package com.cannontech.loadcontrol.datamodels;
  * @author: 
  */
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.db.device.lm.IlmDefines;
+import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 
 public class ControlAreaRowData 
@@ -71,12 +71,12 @@ public java.lang.String getTriggerValue()
 	if( triggerValue == null )
 	{
 		//Returns the value of the trigger
-		if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
+		if( getTrigger().getTriggerType() == TriggerType.STATUS )
 		{
 			triggerValue = DaoFactory.getStateDao().getLiteState( getLitePoint().getStateGroupID(), 
 					getTrigger().getNormalState().intValue()).getStateText();
 		}
-		else if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
+		else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD )
 		{
 			triggerValue = getTrigger().getThreshold().toString();
 		}
@@ -96,7 +96,7 @@ public boolean isFiring()
 {
 	if( isValidTrigger() )
 	{
-		if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
+		if( getTrigger().getTriggerType() == TriggerType.STATUS )
 		{
 			return getCurrentValue().equalsIgnoreCase(getTriggerValue());
 		}
@@ -153,11 +153,11 @@ public String toString()
 {
 	if( !isValidTrigger() )
 		return "(null)";
-	else if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_STATUS) )
+	else if( getTrigger().getTriggerType() == TriggerType.STATUS )
 	{
 		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Normal = " + getTriggerValue() + "]";
 	}
-	else if( getTrigger().getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
+	else if( getTrigger().getTriggerType() == TriggerType.THRESHOLD )
 	{
 		return getLitePoint().getPointName().toUpperCase() + " : " + getCurrentValue() + " [Threshold = " + getTriggerValue() + "]";
 	}

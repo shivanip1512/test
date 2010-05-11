@@ -20,6 +20,15 @@ public class ControlArea extends DisplayablePaoBase {
         return triggers;
     }
 
+    public boolean isHasThresholdTrigger() {
+        for (ControlAreaTrigger trigger : getTriggers()) {
+            if (trigger.getType() == TriggerType.THRESHOLD) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setTriggers(List<ControlAreaTrigger> triggers) {
         this.triggers = triggers;
     }

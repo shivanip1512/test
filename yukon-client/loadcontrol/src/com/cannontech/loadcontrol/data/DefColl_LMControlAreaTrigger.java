@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.data;
  */
 import java.util.Date;
 
+import com.cannontech.dr.controlarea.model.TriggerType;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -59,7 +60,7 @@ public String getCxxStringId()
 /**
  * getJavaClass method comment.
  */
-public Class getJavaClass()
+public Class<?> getJavaClass()
 {
 	return LMControlAreaTrigger.class;
 }
@@ -90,7 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  	
 	lmTrigger.setYukonID(yukonID);
 	lmTrigger.setTriggerNumber(triggerNumber);
-	lmTrigger.setTriggerType(triggerType);
+	lmTrigger.setTriggerType(TriggerType.valueOf(triggerType.toUpperCase()));
 	lmTrigger.setPointId(pointID);
 	lmTrigger.setPointValue(pointValue);
 	lmTrigger.setLastPointValueTimeStamp(lastPointValueTimeStamp);

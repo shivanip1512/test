@@ -8,6 +8,7 @@
 
     <tags:simpleDialog id="drDialog"/>
     <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+    <cti:includeCss link="/WebConfig/yukon/styles/operator/demandResponse.css"/>
     <cti:includeScript link="/JavaScript/calendarControl.js"/>
     <cti:includeScript link="/JavaScript/calendarTagFuncs.js"/>
     <dr:favoriteIconSetup/>
@@ -133,8 +134,8 @@
                                 <br>
 
                                 <c:choose>
-                                    <%-- Trigger actions are only active for Control Areas with at least one trigger --%>
-                                    <c:when test="${!empty controlArea.triggers}">
+                                    <%-- Trigger actions are only active for Control Areas with at least one threshold trigger --%>
+                                    <c:when test="${controlArea.hasThresholdTrigger}">
                                         <cti:url var="sendTriggerChangeUrl" value="/spring/dr/controlArea/getTriggerChangeValues">
                                             <cti:param name="controlAreaId" value="${controlAreaId}"/>
                                         </cti:url>

@@ -25,13 +25,12 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
     @Override
     public Object getTriggerValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
 
-        ControlAreaTrigger.TriggerType triggerType =
-            ControlAreaTrigger.TriggerType.valueOf(trigger.getTriggerType().toUpperCase());
+        TriggerType triggerType = trigger.getTriggerType();
 
         ResolvableTemplate template = 
             new ResolvableTemplate(getKey(triggerType + "." + getFieldName()));
 
-        if (triggerType == ControlAreaTrigger.TriggerType.STATUS) {
+        if (triggerType == TriggerType.STATUS) {
             String triggerState = getTriggerStateValue(trigger);
             String triggerThreshold = getTriggerStateThreshold(trigger);
             template.addData("state", triggerState);
@@ -51,10 +50,10 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
         return new TriggerComparator() {
             @Override
             public int triggerCompare(
-                    ControlAreaTrigger.TriggerType triggerType,
+                    TriggerType triggerType,
                     LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
 
-                if (triggerType == ControlAreaTrigger.TriggerType.STATUS) {
+                if (triggerType == TriggerType.STATUS) {
                     return getTriggerStateValue(trigger1).compareTo(getTriggerStateValue(trigger2));
                 }
                 return trigger1.getPointValue().compareTo(trigger2.getPointValue());
@@ -64,8 +63,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
     private String getTriggerStateValue(LMControlAreaTrigger trigger) {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
-        if (trigger.getTriggerType()
-                .equalsIgnoreCase(ControlAreaTrigger.TriggerType.STATUS.getDbString())) {
+        if (trigger.getTriggerType() == TriggerType.STATUS) {
             LiteState state = stateDao.getLiteState( point.getStateGroupID(), trigger.getPointValue().intValue() );
             result = (state == null ? "(Unknown State)" : state.getStateText());
         }
@@ -75,8 +73,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
     private String getTriggerStateThreshold(LMControlAreaTrigger trigger) {
         String result = null;
         LitePoint point = pointDao.getLitePoint( trigger.getPointId().intValue() );
-        if (trigger.getTriggerType()
-                .equalsIgnoreCase(ControlAreaTrigger.TriggerType.STATUS.getDbString())) {
+        if (trigger.getTriggerType() == TriggerType.STATUS) {
             LiteState state = stateDao.getLiteState( point.getStateGroupID(), trigger.getThreshold().intValue() );
             result = (state == null ? "(Unknown State)" : state.getStateText());
         }   

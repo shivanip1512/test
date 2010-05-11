@@ -14,8 +14,8 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.lm.IlmDefines;
 import com.cannontech.database.db.point.RawPointHistory;
+import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -31,9 +31,6 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 			 "where PointID=? " +
 			 "order by TimeStamp desc";
 
-
-	private String fontName = "dialog";
-	private int fontSize = 12;
 
 	private Vector rows = null;
 
@@ -298,9 +295,8 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 			{
 				LMControlAreaTrigger trigger =
 					(LMControlAreaTrigger)getCurrentControlArea().getTriggerVector().get(i);
-				
-				if( trigger.getTriggerType().equalsIgnoreCase(IlmDefines.TYPE_THRESHOLD) )
-				{
+
+                if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
 					valPtID = trigger.getPointId().intValue();
 					peakPtID = trigger.getPeakPointId().intValue();
 				}
@@ -376,10 +372,9 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger = 
 						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
-				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
-				{
-					return trigger.getThreshold().doubleValue();
-				}
+                if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
+                    return trigger.getThreshold().doubleValue();
+                }
 			}
 			
 
@@ -398,8 +393,7 @@ public class ControlHistoryTableModel extends javax.swing.table.AbstractTableMod
 				LMControlAreaTrigger trigger = 
 						(LMControlAreaTrigger)area.getTriggerVector().get(i);
 				
-				if( IlmDefines.TYPE_THRESHOLD.equalsIgnoreCase(trigger.getTriggerType()) )
-				{
+                if (trigger.getTriggerType() == TriggerType.THRESHOLD) {
 					return trigger.getPointId().intValue();
 				}
 			}

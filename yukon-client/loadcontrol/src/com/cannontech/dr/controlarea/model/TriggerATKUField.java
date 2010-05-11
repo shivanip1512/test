@@ -17,8 +17,8 @@ public class TriggerATKUField extends TriggerBackingFieldBase {
     @Override
     public Object getTriggerValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
 
-        String triggerType = trigger.getTriggerType();
-        if (triggerType.equalsIgnoreCase(ControlAreaTrigger.TriggerType.THRESHOLD.getDbString())) {
+        TriggerType triggerType = trigger.getTriggerType();
+        if (triggerType == TriggerType.THRESHOLD) {
 
             if(trigger.getThresholdKickPercent() <= 0) {
                 return buildResolvable(getFieldName() + ".disabledKU");
@@ -36,10 +36,10 @@ public class TriggerATKUField extends TriggerBackingFieldBase {
         return new TriggerComparator() {
             @Override
             public int triggerCompare(
-                    ControlAreaTrigger.TriggerType triggerType,
+                    TriggerType triggerType,
                     LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
 
-                if (triggerType == ControlAreaTrigger.TriggerType.THRESHOLD) {
+                if (triggerType == TriggerType.THRESHOLD) {
                     return trigger1.getThresholdKickPercent().compareTo(trigger2.getThresholdKickPercent());
                 }
                 return 0;

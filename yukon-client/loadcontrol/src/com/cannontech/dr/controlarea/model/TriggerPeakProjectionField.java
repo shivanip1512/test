@@ -17,9 +17,9 @@ public class TriggerPeakProjectionField extends TriggerBackingFieldBase {
     @Override
     public Object getTriggerValue(LMControlAreaTrigger trigger, YukonUserContext userContext) {
         
-        String triggerType = trigger.getTriggerType();
+        TriggerType triggerType = trigger.getTriggerType();
 
-        if (triggerType.equalsIgnoreCase(ControlAreaTrigger.TriggerType.THRESHOLD.getDbString())) {
+        if (triggerType == TriggerType.THRESHOLD) {
             ResolvableTemplate template = new ResolvableTemplate(getKey(getFieldName()));
 
             Double peakPointValue = trigger.getPeakPointValue();
@@ -36,10 +36,10 @@ public class TriggerPeakProjectionField extends TriggerBackingFieldBase {
         return new TriggerComparator() {
             @Override
             public int triggerCompare(
-                    ControlAreaTrigger.TriggerType triggerType,
+                    TriggerType triggerType,
                     LMControlAreaTrigger trigger1, LMControlAreaTrigger trigger2) {
 
-                if (triggerType == ControlAreaTrigger.TriggerType.THRESHOLD) {
+                if (triggerType == TriggerType.THRESHOLD) {
                     return trigger1.getPeakPointValue().compareTo(trigger2.getPeakPointValue());
                 }
                 return 0;

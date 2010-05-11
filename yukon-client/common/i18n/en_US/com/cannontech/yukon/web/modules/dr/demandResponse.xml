@@ -109,8 +109,9 @@
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.title">Send Trigger Change</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.instructions">Please enter the new threshold and restore offset for the trigger(s) you would like to change for control area {0}.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.trigger">Trigger #{0} Settings</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.threshold">New threshold:</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offset">New restore offset:</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.statusTrigger">This trigger is a status trigger.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.threshold">New threshold</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offset">New restore offset</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.cancelButton">Cancel</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.triggerValueChanged">Trigger value changed.</entry>
@@ -436,7 +437,7 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon">/WebConfig/yukon/Icons/wrench.gif</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.hover">/WebConfig/yukon/Icons/wrench_over.gif</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled">/WebConfig/yukon/Icons/wrench_disabled.gif</entry>
-<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled">There are no triggers on this control area</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange.disabled">There are no threshold triggers on this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.alt">Change Triggers</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange">Change Control Area Time Window</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon">/WebConfig/yukon/Icons/time.gif</entry>

@@ -29,6 +29,7 @@ import com.cannontech.dr.controlarea.dao.ControlAreaDao;
 import com.cannontech.dr.controlarea.filter.ForProgramFilter;
 import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
+import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -264,19 +265,21 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         Vector<LMCommand> commandVector = multi.getVector();
         
         Vector<LMControlAreaTrigger> triggerVector = controlArea.getTriggerVector();
-        
-        // Add trigger change commands for trigger 1 if it exists
+
+        // Add trigger change commands for trigger 1 if it exists and is a
+        // threshold trigger.
         LMControlAreaTrigger trigger1 = triggerVector.get(0);
-        if(trigger1 != null) {
+        if (trigger1 != null && trigger1.getTriggerType() == TriggerType.THRESHOLD) {
             List<LMCommand> triggerCommands = 
                 this.getTriggerCommands(controlAreaId, trigger1, threshold1, offset1);
             commandVector.addAll(triggerCommands);
         }
 
-        // Add trigger change commands for trigger 2 if it exists
-        if(triggerVector.size() > 1) {
+        // Add trigger change commands for trigger 2 if it exists and is a
+        // threshold trigger.
+        if (triggerVector.size() > 1) {
             LMControlAreaTrigger trigger2 = triggerVector.get(1);
-            if(trigger2 != null) {
+            if (trigger2 != null && trigger2.getTriggerType() == TriggerType.THRESHOLD) {
                 List<LMCommand> triggerCommands = 
                     this.getTriggerCommands(controlAreaId, trigger2, threshold2, offset2);
                 commandVector.addAll(triggerCommands);
