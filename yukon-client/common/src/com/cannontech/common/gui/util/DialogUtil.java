@@ -3,6 +3,7 @@ package com.cannontech.common.gui.util;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -100,9 +101,9 @@ public class DialogUtil {
 	private DialogUtil() {
 	}
 	
-	public static ImageIcon scaleImage(ImageIcon img)
+	public static ImageIcon scaleImage(ImageIcon img, int width, int height)
 	{
-	    return new ImageIcon(img.getImage().getScaledInstance(20,20, java.awt.Image.SCALE_AREA_AVERAGING ));
+	    return new ImageIcon(img.getImage().getScaledInstance( width, height, Image.SCALE_AREA_AVERAGING ));
 	}
 	
 }
