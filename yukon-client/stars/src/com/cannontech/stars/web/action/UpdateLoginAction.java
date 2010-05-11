@@ -326,7 +326,7 @@ public class UpdateLoginAction implements ActionBase {
 		String NEW_LINE = System.getProperty( "line.separator" );
 		String msg = "Your login information has been changed, here is the new information:" + NEW_LINE
 				+ NEW_LINE
-				+ "User Name:\t" + updateLogin.getUsername() + NEW_LINE
+				+ "Username:\t" + updateLogin.getUsername() + NEW_LINE
 				+ "Password:\t" + updateLogin.getPassword() + NEW_LINE;
 		
 		EmailMessage emailMsg = new EmailMessage( to, "Login Change Notification", msg );

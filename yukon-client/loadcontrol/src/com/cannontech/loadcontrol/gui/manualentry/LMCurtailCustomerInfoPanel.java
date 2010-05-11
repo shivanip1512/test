@@ -567,7 +567,7 @@ private javax.swing.JLabel getJLabelUserIDName() {
 			ivjJLabelUserIDName = new javax.swing.JLabel();
 			ivjJLabelUserIDName.setName("JLabelUserIDName");
 			ivjJLabelUserIDName.setFont(new java.awt.Font("Arial", 1, 12));
-			ivjJLabelUserIDName.setText("User Name:");
+			ivjJLabelUserIDName.setText("Username:");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

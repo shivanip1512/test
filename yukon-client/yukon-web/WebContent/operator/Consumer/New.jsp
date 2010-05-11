@@ -673,7 +673,7 @@ are present in page, session, etc. as an attribute. -->
                 </tr>
                 <tr> 
                   <td width="100" class="TableCell"> 
-                    <div align="right">User Name: </div>
+                    <div align="right">Username: </div>
                   </td>
                   <td width="200"> 
                     <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<spring:escapeBody htmlEscape="true"><%= login.getUsername() %></spring:escapeBody>" onchange="setContentChanged(true)">

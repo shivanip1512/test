@@ -52,7 +52,7 @@
 				<table width="600" border="1" cellspacing="0" cellpadding="5" align="center">
 		        	<tr>
 		        		<td class='HeaderCell' width='200'>Event</td>
-		        		<td class='HeaderCell' width='200'>User Name</td>
+		        		<td class='HeaderCell' width='200'>Username</td>
 		        		<td class='HeaderCell' width='200'>Time of Event</td>
 		        	</tr>
 		        	<c:forEach var="event" items="${accountBean.currentEvents}">

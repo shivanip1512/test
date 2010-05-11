@@ -81,7 +81,7 @@ public class StarsRequestPword extends RequestPword {
 
 					LiteYukonUser user = DaoFactory.getYukonUserDao().getLiteYukonUser( lc.getLoginID() );
 					
-					foundData.add( " User Name: " + user.getUsername() );					
+					foundData.add( " Username: " + user.getUsername() );					
 					foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );					
 					
 					//we must get the Yukon lite energy company for the stars lite energy company

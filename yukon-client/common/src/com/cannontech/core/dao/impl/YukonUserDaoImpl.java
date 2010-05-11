@@ -140,10 +140,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
 		return databaseCache.getAContactByUserID(userId);
 	}
 	/**
-	 * Generates a user name from a first name and last name. This will attempt to return the
-	 * first initial and last name. If the user name exceeds the 64 character database limit 
-	 * it will truncate the last name. If the user name exists it will add the time stamp and 
-	 * some extra numbers to attempt to find a unique user name. 
+	 * Generates a username from a first name and last name. This will attempt to return the
+	 * first initial and last name. If the username exceeds the 64 character database limit 
+	 * it will truncate the last name. If the username exists it will add the time stamp and 
+	 * some extra numbers to attempt to find a unique username. 
 	 * 
 	 * @param String firstName
 	 * @param String lastName
@@ -161,13 +161,13 @@ public class YukonUserDaoImpl implements YukonUserDao {
         	newUsername = firstInitial + lastName.toLowerCase();
         }
         
-        //If the user name is not unique, we will try once to generate a unique one.
+        //If the username is not unique, we will try once to generate a unique one.
         if (getLiteYukonUser(newUsername) != null) {
             String extraDigits = RandomStringUtils.randomAlphanumeric(numberOfRandomChars);
             String uniqueUsername;
             
             //If the extra digits will push this over 64, 
-            //we will truncate part of the user name to make room for it.
+            //we will truncate part of the username to make room for it.
             if(newUsername.length() + numberOfRandomChars > 64  ) {
             	uniqueUsername = newUsername.substring(0, newUsername.length() - numberOfRandomChars);
             } else {

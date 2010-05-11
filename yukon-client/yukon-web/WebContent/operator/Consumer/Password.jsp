@@ -117,7 +117,7 @@ function deleteLogin(form) {
                   <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME %>">
                   <tr> 
                     <td width="128" class="TableCell"> 
-                      <div align="right">New User Name: </div>
+                      <div align="right">New Username: </div>
                     </td>
                     <td width="268"> 
                       <input type="text" autocomplete="off" name="Username" maxlength="20" size="20" value="<spring:escapeBody htmlEscape="true"><%= login.getUsername() %></spring:escapeBody>" onchange="setContentChanged(true)" />

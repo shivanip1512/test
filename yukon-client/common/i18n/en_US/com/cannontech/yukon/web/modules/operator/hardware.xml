@@ -42,7 +42,7 @@
     <entry key="yukon.web.modules.operator.hardware.deviceStatusSection.title">Device Status</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.title">Device Status History</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.event">Event</entry>
-    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.userName">User Name</entry>
+    <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.userName">Username</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.timeOfEvent">Time of Event</entry>
     <entry key="yukon.web.modules.operator.hardware.deviceStatusHistory.none">No Device Status Events</entry>
     
@@ -171,6 +171,7 @@
     <entry key="yukon.web.modules.operator.meterProfile.delete">Delete Meter {0}</entry>
     <entry key="yukon.web.modules.operator.meterProfile.deleteQuestion">Are you sure you want to delete this meter?</entry>
     
+    <entry key="yukon.web.modules.operator.meterProfile.error.tooLong.meterNumber">Meter numbers must be 30 characters or less.</entry>
     <entry key="yukon.web.modules.operator.meterProfile.error.required.meterNumber">A meter number is required.</entry>
     
 </properties>

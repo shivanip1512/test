@@ -243,7 +243,7 @@ private javax.swing.JLabel getJLabelUserName() {
 		try {
 			ivjJLabelUserName = new javax.swing.JLabel();
 			ivjJLabelUserName.setName("JLabelUserName");
-			ivjJLabelUserName.setText("User Name:");
+			ivjJLabelUserName.setText("Username:");
 			ivjJLabelUserName.setMaximumSize(new java.awt.Dimension(122, 17));
 			ivjJLabelUserName.setPreferredSize(new java.awt.Dimension(122, 17));
 			ivjJLabelUserName.setFont(new java.awt.Font("dialog", 0, 14));

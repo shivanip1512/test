@@ -16,7 +16,7 @@
     <tr>
       <th width="15%">Job Name</th>
       <th>Bean Name</th>
-      <th>User Name</th>
+      <th>Username</th>
       <th>Cron String</th>
       <th>Enable/Disable</th>
     </tr>
@@ -53,7 +53,7 @@
     <tr>
       <th width="15%">Job Name</th>
       <th>Bean Name</th>
-      <th>User Name</th>
+      <th>Username</th>
       <th>Scheduled Start</th>
       <th>Enable/Disable</th>
     </tr>

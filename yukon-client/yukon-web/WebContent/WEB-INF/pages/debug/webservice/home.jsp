@@ -87,10 +87,10 @@
     					</td>
     				</tr>
     				<tr>
-    					<td><B>User Name:</B></td>
+    					<td><B>Username:</B></td>
     					<td>
     						<input type="text" id="userName" name="userName" value="${userName}">
-    						<input type="button" onclick="resetUserName()" value="Reset User Name">
+    						<input type="button" onclick="resetUserName()" value="Reset Username">
     					</td>
     				</tr>
     			</table>

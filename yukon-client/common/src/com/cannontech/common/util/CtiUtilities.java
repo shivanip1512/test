@@ -1114,7 +1114,7 @@ public final static String getUserIPAddress()
 
 /**
  * Returns the YukonUser name. This method use to return the
- * windows user name. 
+ * windows username. 
  */
 public final static String getUserName()
 {

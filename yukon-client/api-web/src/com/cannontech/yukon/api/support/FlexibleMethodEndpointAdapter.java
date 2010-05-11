@@ -129,7 +129,7 @@ public class FlexibleMethodEndpointAdapter extends AbstractMethodEndpointAdapter
         String userName = SoapHeaderElementUtil.findElementValue(messageContext.getRequest(), userQName);
 
         if (userName == null) {
-            throw new NotAuthorizedException("Service requires user name header");
+            throw new NotAuthorizedException("Service requires username header");
         }
         LiteYukonUser yukonUser = yukonUserDao.getLiteYukonUser(userName);
         if (yukonUser == null) {

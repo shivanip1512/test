@@ -172,7 +172,7 @@
                             <input type="text" name="add_serviceVoltage" value="${add_serviceVoltage}">
                         </tags:nameValue>
                         
-                        <tags:nameValue name="User Name" nameColumnWidth="200px">
+                        <tags:nameValue name="Username" nameColumnWidth="200px">
                             <input type="text" name="add_username" value="${add_username}">
                         </tags:nameValue>
                         <tags:nameValue name="Password" nameColumnWidth="200px">
@@ -284,7 +284,7 @@
                             <input type="text" name="update_serviceVoltage" value="${update_serviceVoltage}">
                         </tags:nameValue>
                         
-                        <tags:nameValue name="User Name" nameColumnWidth="200px">
+                        <tags:nameValue name="Username" nameColumnWidth="200px">
                             <input type="text" name="update_username" value="${update_username}">
                         </tags:nameValue>
                         <tags:nameValue name="Password" nameColumnWidth="200px">

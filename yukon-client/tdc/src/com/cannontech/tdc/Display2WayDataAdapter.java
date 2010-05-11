@@ -2162,7 +2162,7 @@ private Vector setRowForEventViewer( Signal signal )
 	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) )
 		aRow.setElementAt( new ModifiedDate( signal.getTimeStamp().getTime() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_POINTTIMESTAMP) );
 
-	// set User Name
+	// set Username
 	if( getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
 		aRow.setElementAt( CommonUtils.createString( signal.getUserName() ), getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
 

@@ -532,7 +532,7 @@ public static void main(String[] args)
 				"   mailhost = The address of the smtp out server.\r\n" +
 				"   toaddress = E-mail address(es) to send the e-mail to.\r\n" +
 				"   fromaddress = E-mail address that will appear in the From.\r\n" +
-            "   MailUserName = [Optional] User name if the smtp server requires it.\r\n" +
+            "   MailUserName = [Optional] Username if the smtp server requires it.\r\n" +
             "   MailPassword = [Optional] Password if the smtp server requires it.\r\n" +
 				"   type = [Optional] qmail or javamail, defaults to javamail.\r\n" +
 				"   test = [Optional] Y if you want to send a test message.\r\n" +

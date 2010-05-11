@@ -96,7 +96,7 @@ public class RequestPword
             else
             {
                 foundData.add( " Contact Name: " + lc.getContFirstName() + " " + lc.getContLastName() );
-                foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lc.getLoginID()).getUsername() );
+                foundData.add( " Username: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lc.getLoginID()).getUsername() );
 
                 LiteEnergyCompany[] cmps = processContact( lc );
                 processEnergyCompanies( cmps );
@@ -107,7 +107,7 @@ public class RequestPword
     
     private void handleUserName()
     {
-        //unique system wide user name
+        //unique system wide username
         if( userName != null )
         {
             //we may continue after this, remove all the stored data
@@ -118,7 +118,7 @@ public class RequestPword
                 setState( RET_FAILED, "USER_NOT_FOUND" );
             else
             {
-                foundData.add( " User Name: " + user.getUsername() );                   
+                foundData.add( " Username: " + user.getUsername() );                   
 
                 LiteContact lc = DaoFactory.getYukonUserDao().getLiteContact( user.getUserID() );
                 if( lc == null )
@@ -148,7 +148,7 @@ public class RequestPword
 			//unique system wide email address
             handleEmail();
 				
-			//unique system wide user name
+			//unique system wide username
 			if( getState() != RET_SUCCESS )
 			{
                 handleUserName();
@@ -282,7 +282,7 @@ public class RequestPword
 				switch( i )
 				{
 					case 0:
-					body += " User Name    : " + allParams[i] + CR;
+					body += " Username    : " + allParams[i] + CR;
 					break;
 
 					case 1:

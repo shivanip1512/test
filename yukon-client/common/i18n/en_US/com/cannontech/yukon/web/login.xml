@@ -45,9 +45,9 @@
     <entry key="yukon.web.forgotPassword.MULTIPLE_ACCOUNTS">More than one account number found, forwarding request onto the WebMaster</entry>
     <entry key="yukon.web.forgotPassword.DOES_NOT_MATCH">The information you supplied does not match a known user.  Please verify that the information you have entered is correct.</entry>
     <entry key="yukon.web.forgotPassword.MORE_INFO">More information needs to be entered</entry>
-    <entry key="yukon.web.forgotPassword.USER_NOT_FOUND">User Name not found, try again</entry>
+    <entry key="yukon.web.forgotPassword.USER_NOT_FOUND">Username not found, try again</entry>
     <entry key="yukon.web.forgotPassword.EMAIL_NOT_FOUND">Contact for Email not found, try again</entry>
-    <entry key="yukon.web.forgotPassword.CONTACT_NOT_FOUND">Contact for User Name not found, try again</entry>
+    <entry key="yukon.web.forgotPassword.CONTACT_NOT_FOUND">Contact for Username not found, try again</entry>
     <entry key="yukon.web.forgotPassword.COMPANY_NOT_FOUND">No energy company OR customer found for the entered data</entry>
     <entry key="yukon.web.forgotPassword.MULTIPLE_COMPANIES">More than one energy company found, forwarding request onto the WebMaster</entry>
     

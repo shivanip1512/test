@@ -417,7 +417,7 @@ private javax.swing.JLabel getUsernameLabel() {
 			ivjUsernameLabel = new javax.swing.JLabel();
 			ivjUsernameLabel.setName("UsernameLabel");
 			ivjUsernameLabel.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjUsernameLabel.setText("User name:  ");
+			ivjUsernameLabel.setText("Username:  ");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

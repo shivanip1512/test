@@ -20,7 +20,7 @@ import javax.swing.JTextField;
 class LoginPanel extends JPanel {
 	
 	private final JLabel hostLabel = new JLabel("Yukon server:");
-	private final JLabel usernameLabel = new JLabel("User name:");
+	private final JLabel usernameLabel = new JLabel("Username:");
 	private final JLabel passwordLabel = new JLabel("Password:");
 	private final JTextField hostField = new JTextField();
 	private final JTextField usernameField = new JTextField();

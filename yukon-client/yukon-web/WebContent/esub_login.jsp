@@ -55,7 +55,7 @@ self.name = "mainWin";
               <table width="250" border="0" cellspacing="0" cellpadding="3" align="center">
                 <tr> 
                   <td width="83" class = "MainText"> 
-                    <div align="right"> User Name</div>
+                    <div align="right"> Username</div>
                   </td>
                   <td width="117" valign="bottom"> 
                     <input type="text" autocomplete="off" name="USERNAME">

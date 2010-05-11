@@ -23,7 +23,7 @@
     <entry key="yukon.web.modules.operator.accountLog.title">Account Log</entry>
     <entry key="yukon.web.modules.operator.accountLog.accountActionLog">Account Action Log</entry>
     <entry key="yukon.web.modules.operator.accountLog.event">Event</entry>
-    <entry key="yukon.web.modules.operator.accountLog.username">User Name</entry>
+    <entry key="yukon.web.modules.operator.accountLog.username">Username</entry>
     <entry key="yukon.web.modules.operator.accountLog.timeOfEvent">Time of Event</entry>
 
 	<!-- changeLogin -->
@@ -32,7 +32,7 @@
 	<entry key="yukon.web.modules.operator.changeLogin.changeLogin">Change Login</entry>
 	<entry key="yukon.web.modules.operator.changeLogin.customerGroup">Customer Group</entry>
 	<entry key="yukon.web.modules.operator.changeLogin.loginEnabled">Enabled</entry>
-	<entry key="yukon.web.modules.operator.changeLogin.userName">User Name</entry>
+	<entry key="yukon.web.modules.operator.changeLogin.userName">Username</entry>
 	<entry key="yukon.web.modules.operator.changeLogin.newPassword">New Password</entry>
 	<entry key="yukon.web.modules.operator.changeLogin.confirmPassword">Confirm Password</entry>
 	<entry key="yukon.web.modules.operator.changeLogin.showPassword">Show Password</entry>

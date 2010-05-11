@@ -623,7 +623,7 @@ public class ViewCreator
 			if( tableModel.getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_TXT_MSG) )
 				newRow.setElementAt( CommonUtils.createString( rowData[i][4] ), tableModel.getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_TXT_MSG));
 	
-			// set User Name
+			// set Username
 			if( tableModel.getColumnTypeName().contains(CustomDisplay.COLUMN_TYPE_DEVICEID) )
 				newRow.setElementAt( CommonUtils.createString( rowData[i][5] ), tableModel.getColumnTypeName().indexOf(CustomDisplay.COLUMN_TYPE_DEVICEID) );
 
