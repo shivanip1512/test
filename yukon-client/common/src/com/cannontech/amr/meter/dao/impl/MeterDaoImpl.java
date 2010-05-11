@@ -92,8 +92,14 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
         // Updates the meter's address
         sqlUpdate = " UPDATE DeviceCarrierSettings" + " SET Address = ?" + " WHERE DEVICEID = ? ";
-
+        
         jdbcOps.update(sqlUpdate, new Object[] { newMeterInfo.getAddress(),
+                newMeterInfo.getDeviceId() });
+        
+        // Updates the meter's route
+        sqlUpdate = " UPDATE DeviceRoutes" + " SET RouteId = ?" + " WHERE DeviceId = ? ";
+        
+        jdbcOps.update(sqlUpdate, new Object[] { newMeterInfo.getRouteId(),
                 newMeterInfo.getDeviceId() });
 
         sendDBChangeMessage(newMeterInfo);

@@ -1094,6 +1094,10 @@
                             <link>/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
                             <labelArgument>${deviceLabel}</labelArgument>
                         </page>
+                        <page name="meterConfig" type="DETAIL">
+                            <menu>account</menu>
+                            <labelArgument>${displayName}</labelArgument>
+                        </page>
                         <page name="thermostatSelect" type="DETAIL_CHILD">
 				    		<menu>account</menu>
 				    		<link>/spring/stars/operator/thermostat/select?accountId=${accountId}</link>

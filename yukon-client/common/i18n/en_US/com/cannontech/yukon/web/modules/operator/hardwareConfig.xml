@@ -52,5 +52,23 @@
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.saveToBatch">Save to Batch</entry>
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.saveConfigOnly">Save Config Only</entry>
     <entry key="yukon.web.modules.operator.hardwareConfigEdit.cancel">Cancel</entry>
-
+    
+    <!-- meterConfig -->
+    <entry key="yukon.web.modules.operator.meterConfig.pageName">Meter Configuration</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.operator.hardwareConfig.meterConfigUpdated">Meter Configuration Updated</entry>
+    
+    <entry key="yukon.web.modules.operator.meterConfig.meterConfigurationSection.title">Meter Configuration</entry>
+    
+    <entry key="yukon.web.modules.operator.meterConfig.meterName">Meter Name</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.meterType">Meter Type</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.meterNumber">Meter Number</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.physicalAddress">Physical Address</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.route">Route</entry>
+    
+    <entry key="yukon.web.modules.operator.meterConfig.error.required.meterNumber">Meter Number Required</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.error.invalidRange.address">Valid range for {0} addresses is {1} to {2}.</entry>
+    <entry key="yukon.web.modules.operator.meterConfig.error.nonNumeric">Address can only contain numeric characters.</entry>
+    
 </properties>

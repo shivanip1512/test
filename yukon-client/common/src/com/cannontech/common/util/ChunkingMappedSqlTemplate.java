@@ -61,9 +61,11 @@ public class ChunkingMappedSqlTemplate {
 		});
 
 		for (C i : inputList) {
-			I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
-			R r = intermediaryResult.get(e);
-			resultMap.put(i, r);
+		    I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
+		    if (intermediaryResult.containsKey(e)) {
+		        R r = intermediaryResult.get(e);
+		        resultMap.put(i, r);
+		    }
 		}
 
 		return resultMap;

@@ -5,19 +5,28 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
@@ -38,10 +47,14 @@ import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -59,6 +72,9 @@ public class OperatorHardwareConfigController {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private HardwareConfigService hardwareConfigService;
     private ApplianceCategoryDao applianceCategoryDao;
+    private MeterDao meterDao;
+    private MeterConfigValidator meterConfigValidator;
+    private PaoDao paoDao;
 
     @RequestMapping
     public String list(ModelMap model, int inventoryId,
@@ -285,6 +301,64 @@ public class OperatorHardwareConfigController {
         model.addAttribute("hardware", hardware);
         model.addAttribute("deviceLabel", hardware.getDeviceLabel());
     }
+    
+    @RequestMapping
+    public String meterConfig(ModelMap model, int meterId,
+                              YukonUserContext userContext,
+                              AccountInfoFragment accountInfoFragment) {
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+        
+        setPageMode(model, userContext);
+        
+        Meter meter = meterDao.getForId(meterId);
+        model.addAttribute("meter", meter);
+        model.addAttribute("displayName", meter.getName());
+        
+        List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new int[]{RouteTypes.ROUTE_CCU,RouteTypes.ROUTE_MACRO}));
+        model.addAttribute("routes", routes);
+        
+        return "operator/hardware/config/meterConfig.jsp";
+    }
+    
+    @RequestMapping
+    public String updateMeterConfig(@ModelAttribute("meter") Meter meter, BindingResult bindingResult,
+                                 ModelMap model, 
+                                 YukonUserContext userContext,
+                                 HttpServletRequest request,
+                                 FlashScope flashScope,
+                                 AccountInfoFragment accountInfoFragment) {
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+        
+        meterConfigValidator.validate(meter, bindingResult);
+        
+        if(!bindingResult.hasErrors()) {
+            meterDao.update(meter);
+        } else {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new int[]{RouteTypes.ROUTE_CCU,RouteTypes.ROUTE_MACRO}));
+            model.addAttribute("routes", routes);
+            return "operator/hardware/config/meterConfig.jsp";
+        }
+        
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.meterConfigUpdated"));
+        return "redirect:/spring/stars/operator/hardware/hardwareList";
+    }
+    
+    @RequestMapping(params="cancel")
+    public String cancel(ModelMap modelMap,
+                          AccountInfoFragment accountInfoFragment,
+                          YukonUserContext userContext,
+                          HttpSession session) {
+
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
+        return "redirect:/spring/stars/operator/hardware/hardwareList";
+    }
+    
+    private void setPageMode(ModelMap modelMap, YukonUserContext userContext) {
+           boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+           modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
+       }
 
     @Autowired
     public void setDisplayableInventoryEnrollmentDao(
@@ -336,5 +410,20 @@ public class OperatorHardwareConfigController {
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;
+    }
+    
+    @Autowired
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+    
+    @Autowired
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setMeterConfigValidator(MeterConfigValidator meterConfigValidator) {
+        this.meterConfigValidator = meterConfigValidator;
     }
 }

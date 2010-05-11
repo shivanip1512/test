@@ -10,6 +10,7 @@
 
 <cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editMeterConfigUrl" value="/spring/stars/operator/hardware/config/meterConfig?accountId=${accountId}&amp;meterId="/>
 <cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>
 <cti:url var="selectMultipleUrl" value="/spring/stars/operator/thermostatSelect/select?accountId=${accountId}"/>
@@ -514,6 +515,8 @@
                                     </c:if>
                                     
                                 </cti:checkRolesAndProperties>
+                                
+                                <cti:img key="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
                                 
                                 <cti:checkRolesAndProperties value="METERING,APPLICATION_BILLING,SCHEDULER,DEVICE_ACTIONS">
                                     <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
