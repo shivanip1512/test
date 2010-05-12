@@ -53,7 +53,6 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
         }
 
         @Override
-        @Transactional
         public DisplayableInventoryEnrollment mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             int inventoryId = rs.getInt("inventoryId");
@@ -75,6 +74,7 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
     };
 
     @Override
+    @Transactional(readOnly=true)
     public DisplayableInventoryEnrollment find(int accountId, int inventoryId,
             int assignedProgramId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -94,6 +94,7 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
     }
 
     @Override
+    @Transactional(readOnly=true)
     public List<DisplayableInventoryEnrollment> find(int accountId,
             int inventoryId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
