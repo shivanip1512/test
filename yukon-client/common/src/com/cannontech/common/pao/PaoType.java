@@ -91,6 +91,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     RTM(DeviceTypes.RTM, "RTM", PaoCategory.DEVICE, PaoClass.RTU),
     CBC_EXPRESSCOM(DeviceTypes.CBC_EXPRESSCOM, "CBC Expresscom", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     SENTINEL(DeviceTypes.SENTINEL, "SENTINEL", PaoCategory.DEVICE, PaoClass.METER),
+    FOCUS(DeviceTypes.FOCUS, "FOCUS", PaoCategory.DEVICE, PaoClass.METER),
     ALPHA_A3(DeviceTypes.ALPHA_A3, "ALPHA A3", PaoCategory.DEVICE, PaoClass.METER),
     MCT470(DeviceTypes.MCT470, "MCT-470", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT410CL(DeviceTypes.MCT410CL, "MCT-410CL", PaoCategory.DEVICE, PaoClass.CARRIER),

@@ -820,6 +820,7 @@ public final static boolean isMeter(int deviceType)
 		case KV:
 		case KVII:
 		case SENTINEL:
+		case FOCUS:
 		case ALPHA_A3:
 			return true;
 	
@@ -1017,7 +1018,7 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 		case TRANSDATA_MARKV:
 		case DAVISWEATHER:
 		case SENTINEL:
-		
+		case FOCUS:		
 			return true;
 		
 		default:

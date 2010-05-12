@@ -4180,6 +4180,9 @@
 	<pao id="SENTINEL" inherits="ELECTRONIC_METER_BASE">
         <displayName>SENTINEL</displayName>
 	</pao>
+	<pao id="FOCUS" inherits="ELECTRONIC_METER_BASE">
+        <displayName>FOCUS</displayName>
+	</pao>
 	<pao id="SIXNET" inherits="ELECTRONIC_METER_BASE">
         <displayName>SIXNET</displayName>
 	</pao>

@@ -333,6 +333,8 @@ public final static int getDeviceType(String typeString)
 		return CBC_EXPRESSCOM;
 	else if (isStringDevice(compareString, STRING_SENTINEL))
 	   return SENTINEL;
+	else if (isStringDevice(compareString, STRING_FOCUS))
+		   return FOCUS;
 	else if (isStringDevice(compareString, STRING_ALPHA_A3))
 	   return ALPHA_A3;
 	else if (isStringDevice(compareString, STRING_CBC_7010[0]))
@@ -642,6 +644,8 @@ public final static String getPAOTypeString(int type)
 	  	  	return STRING_KVII[0];
 	  	case SENTINEL:
 	  	  	return STRING_SENTINEL[0];
+	  	case FOCUS:
+	  	  	return STRING_FOCUS[0];
 	  	case ALPHA_A3:
 	  	  	return STRING_ALPHA_A3[0];
 	  	case CBC_EXPRESSCOM:

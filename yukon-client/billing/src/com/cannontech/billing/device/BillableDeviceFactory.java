@@ -66,6 +66,9 @@ public class BillableDeviceFactory {
         case DeviceTypes.SENTINEL:
             device = new Sentinel();
             break;
+        case DeviceTypes.FOCUS:
+            device = new Focus();
+            break;
 
         default:
             device = new GenericMCT();

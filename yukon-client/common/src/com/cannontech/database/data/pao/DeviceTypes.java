@@ -141,6 +141,8 @@ public interface DeviceTypes extends TypeBase
     
     public final static int LCR3102                 = DEVICE_OFFSET + 108;
     public final static int TNPP_TERMINAL    = DEVICE_OFFSET + 109;
+    public final static int FOCUS    		= DEVICE_OFFSET + 110;
+
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
 	public final static int DEVICE_TYPES_COUNT = 109;
@@ -254,7 +256,8 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_INTEGRATION_TRANSMITTER = {"INTEGRATION"};
 	public static final String[] STRING_RTC = {"RTC"};
 	public static final String[] STRING_RTM = {"RTM"};
-	public static final String[] STRING_SENTINEL = {"SENTINEL"};
+	public static final String[] STRING_SENTINEL = {"SENTINEL"};	
+	public static final String[] STRING_FOCUS = {"FOCUS"};
 	public static final String[] STRING_ALPHA_A3 = {"ALPHA A3"};
 	public static final String[] STRING_CBC_7010 = {"CBC 7010", "CBC 7011", "CBC 7012"};
 	public static final String[] STRING_CBC_7020 = {"CBC 7020", "CBC 7022", "CBC 7023", "CBC 7024"};

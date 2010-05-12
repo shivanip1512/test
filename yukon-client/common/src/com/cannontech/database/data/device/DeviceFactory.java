@@ -100,6 +100,9 @@ public final static DeviceBase createDevice(int deviceType) {
 		case PAOGroups.SENTINEL:
 			returnDevice = new Sentinel();
 			break;
+		case PAOGroups.FOCUS:
+			returnDevice = new Focus();
+			break;
 		case PAOGroups.ALPHA_A3:
 			returnDevice = new Alpha();
 			break;
