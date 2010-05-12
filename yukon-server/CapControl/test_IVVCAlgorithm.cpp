@@ -435,13 +435,13 @@ BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_target_power_factor_var_cal
 
     // check to 1 significant digits (rounded)
 
-    BOOST_CHECK_CLOSE( -881.9 , _algorithm.test_calculateTargetPFVars( 125.0, 1000.0) , 0.1 );
+    BOOST_CHECK_CLOSE( -881.9 , _algorithm.test_calculateTargetPFVars( -75.0, 1000.0) , 0.1 );
 
     BOOST_CHECK_CLOSE(  881.9 , _algorithm.test_calculateTargetPFVars(  75.0, 1000.0) , 0.1 );
 
     BOOST_CHECK_CLOSE(  484.3 , _algorithm.test_calculateTargetPFVars(  90.0, 1000.0) , 0.1 );
 
-    BOOST_CHECK_CLOSE( -484.3 , _algorithm.test_calculateTargetPFVars( 110.0, 1000.0) , 0.1 );
+    BOOST_CHECK_CLOSE( -484.3 , _algorithm.test_calculateTargetPFVars( -90.0, 1000.0) , 0.1 );
 
     BOOST_CHECK_CLOSE(    0.0 , _algorithm.test_calculateTargetPFVars( 100.0, 1000.0) , 0.1 );
 }

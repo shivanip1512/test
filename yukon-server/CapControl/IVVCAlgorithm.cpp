@@ -708,7 +708,10 @@ double IVVCAlgorithm::calculatePowerFactor(const double varValue, const double w
 
 double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor, const double targetPowerFactor)
 {
-    const double Pf = std::abs(100.0 * ( targetPowerFactor - powerFactor ) );
+    // convert from [-1.0, 1.0] to [0.0, 2.0]
+    const double biasedTargetPF = (targetPowerFactor < 0.0) ? 2.0 + targetPowerFactor : targetPowerFactor;
+
+    const double Pf = std::abs(100.0 * ( biasedTargetPF - powerFactor ) );
 
     const double a = 1.0;
     const double b = 1.0;
@@ -971,7 +974,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 double varUpperLimit = targetPowerFactorVars + (currentBank->getBankSize() * (strategy->getMinBankClose(isPeakTime) / 100.0));
 
                 //calculate estimated power factor of the bus if current bank switches state
-                double estVarValue = 0.0;
+                double estVarValue = varValue;
                 double pfmodifier  = 1.0;
 
                 if ( isCapBankOpen )
@@ -1146,7 +1149,7 @@ double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double 
 {
    // Normalize the power factor.
 
-   double pf = std::abs( (targetPF > 100.0) ? 200.0 - targetPF : targetPF ) / 100.0;
+   double pf = std::abs( targetPF ) / 100.0;
 
    // Compute VARs needed to meet desired power factor.
 
@@ -1154,6 +1157,6 @@ double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double 
 
    // If we have a leading power factor our VARs are negative.  Lagging VARs are positive.
 
-   return (targetPF > 100.0) ? -vars : vars;
+   return (targetPF < 0.0) ? -vars : vars;
 }
 
