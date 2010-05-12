@@ -132,6 +132,7 @@ prot_idlc.obj \
 prot_klondike.obj \
 prot_ansi_kv2.obj \
 prot_ansi_sentinel.obj \
+prot_ansi_focus.obj \
 prot_ansi.obj \
 $(ANSIOBJS) \
 prot_transdata.obj \

@@ -66,6 +66,7 @@
 
 #include <windows.h>
 #include "prot_ansi.h"
+//#include "prot_ansi_base.h"
 #include "pointdefs.h"
 #include "ansi_kv2_mtable_000.h"
 #include "ansi_kv2_mtable_070.h"
@@ -83,16 +84,10 @@ class IM_EX_PROT CtiProtocolANSI_kv2:public CtiProtocolANSI
         virtual void destroyManufacturerTables( void );
         virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID );
 
-        virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
-        virtual int calculateLPDataBlockSize(int numChans);
-        virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
         virtual void setAnsiDeviceType();
-        virtual int snapshotData();
-        virtual int batteryLifeData();
-        virtual bool retreiveKV2PresentValue( int offset, double *value );
-        virtual int getGoodBatteryReading();
-        virtual int getCurrentBatteryReading();
-        virtual int getDaysOnBatteryReading();
+        virtual bool snapshotData();
+        virtual bool retreiveMfgPresentValue( int offset, double *value );
+
 
 
    private:

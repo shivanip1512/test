@@ -637,7 +637,7 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<tempSourceSelRcd[x].lp_source_sel;
+        dout << " "<<(int)tempSourceSelRcd[x].lp_source_sel;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -646,11 +646,11 @@ void CtiAnsiTable62::printLPSelSet(int set, int numChans)
     for (x = 0; x < numChans; x++)
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<tempSourceSelRcd[x].end_blk_rdg_source_select;
+        dout << " "<<(int) tempSourceSelRcd[x].end_blk_rdg_source_select;
     }
     {
         CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       IntFmtCde: "<<tempIntSel<<endl;
+        dout <<endl<< "       IntFmtCde: "<<(int)tempIntSel<<endl;
     }
 }
 void CtiAnsiTable62::printScalarsDivisorSet(int set, int numChans)

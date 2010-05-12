@@ -17,7 +17,7 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable61::CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed )
+CtiAnsiTable61::CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder )
 {
     int x = 0;
     int lpTbl[] = {64, 65, 66, 67};
@@ -50,7 +50,7 @@ CtiAnsiTable61::CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed )
 }
 
 
-CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed )
+CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder )
 {
     int x = 0;
     int offset = 0;
@@ -81,18 +81,43 @@ CtiAnsiTable61::CtiAnsiTable61( BYTE *dataBlob,  unsigned char *stdTblsUsed, int
             x++;
         }
     }
+    double tempResult; 
+    offset = toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
+    _lp_tbl.lp_memory_len = tempResult;
+    dataBlob += offset;
+    ULONG tempLong;
+    offset = toUint16Parser( dataBlob, tempLong, lsbDataOrder );
+    memcpy( (void *)&_lp_tbl.lp_flags, &tempLong, sizeof( unsigned char )*2);
+    dataBlob += offset;
+    memcpy( (void *)&_lp_tbl.lp_fmats, dataBlob, sizeof( unsigned char ));
+    dataBlob +=   sizeof( unsigned char );
 
-    memcpy( (void *)&_lp_tbl, dataBlob, sizeof( unsigned char ) * 7);
-    dataBlob +=   sizeof( unsigned char ) * 7;
     _lp_tbl.lp_data_set_info = new LP_DATA_SET[4];
     int xx = 0;
     for (x = 0; x < 4; x++)
     {
         if (_lpDataSetUsed[x])
         {
-            memcpy( (void *)&_lp_tbl.lp_data_set_info[xx], dataBlob, sizeof( LP_DATA_SET ));
-            dataBlob +=   sizeof( LP_DATA_SET );
-            xx++;
+
+            if (lsbDataOrder)
+			{
+				memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blks_set, dataBlob, sizeof(short));
+				memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set, dataBlob+2, sizeof(short));
+
+                dataBlob += sizeof(short) * 2;
+			}
+			else
+			{
+                ULONG tempLong;
+                dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
+                _lp_tbl.lp_data_set_info[xx].nbr_blks_set = tempLong;
+                dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
+                _lp_tbl.lp_data_set_info[xx].nbr_blk_ints_set = tempLong;
+			}
+             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].nbr_chns_set, dataBlob, sizeof( UINT8 ));
+             memcpy( (void *)&_lp_tbl.lp_data_set_info[xx].max_int_time_set, dataBlob+1, sizeof( UINT8 ));
+             dataBlob +=   sizeof( UINT8 ) * 2;
+             xx++;
         }
     }
 }
@@ -218,8 +243,8 @@ void CtiAnsiTable61::printLPDataSetInfo(int set, int offset )
         dout << "           LP SET "<<set+1<<" : "<<endl;
         dout << "                   nbr blocks set             "<<_lp_tbl.lp_data_set_info[offset].nbr_blks_set<<endl;
         dout << "                   nbr block intervals set    "<<_lp_tbl.lp_data_set_info[offset].nbr_blk_ints_set<<endl;
-        dout << "                   nbr channels set           "<<_lp_tbl.lp_data_set_info[offset].nbr_chns_set<<endl;
-        dout << "                   max interval time set      "<<_lp_tbl.lp_data_set_info[offset].max_int_time_set<<endl;
+        dout << "                   nbr channels set           "<<(int)(_lp_tbl.lp_data_set_info[offset].nbr_chns_set)<<endl;
+        dout << "                   max interval time set      "<<(int)(_lp_tbl.lp_data_set_info[offset].max_int_time_set)<<endl;
     }
 
 }

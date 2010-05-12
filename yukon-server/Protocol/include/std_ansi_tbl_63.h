@@ -93,8 +93,8 @@ private:
 
 public:
 
-   CtiAnsiTable63( bool *dataSetUsedFlag  );
-   CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag );
+   CtiAnsiTable63( bool *dataSetUsedFlag, bool lsbDataOrder = true  );
+   CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbDataOrder = true );
 
    virtual ~CtiAnsiTable63();
 
@@ -108,6 +108,7 @@ public:
    UINT16 getLastBlkSeqNbr(int setNbr);
    UINT16 getNbrUnreadBlks(int setNbr);
    UINT16 getNbrValidIntvls(int setNbr);
+   bool isDataBlockOrderDecreasing(int setNbr);
 
 };
 #endif // #ifndef __STD_ANSI_TBL_63_H__

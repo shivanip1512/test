@@ -71,6 +71,7 @@
 #include "dev_kv2.h"
 #include "dev_mct.h"  //  for the test addresses
 #include "dev_sentinel.h"
+#include "dev_focus.h"
 #include "dev_mark_v.h"
 #include "msg_trace.h"
 #include "msg_cmd.h"
@@ -1499,6 +1500,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         break;
                     }
                     case TYPE_SENTINEL:
+                    case TYPE_FOCUS:
                     {
 
                        // extern CtiConnection VanGoghConnection;
@@ -1506,8 +1508,10 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         BYTE  outBuffer[300];
                         ULONG bytesReceived = 0;
 
-                        CtiDeviceSentinel *sentinelDev    = ( CtiDeviceSentinel *)Device.get();
-                        CtiProtocolANSI_sentinel &ansi   = sentinelDev->getSentinelProtocol();
+                        CtiDeviceSentinel *sentinelDev = NULL;
+                        if (Device->getType() == TYPE_SENTINEL) sentinelDev = ( CtiDeviceSentinel *)Device.get();
+                        else sentinelDev = ( CtiDeviceFocus *)Device.get();
+                        CtiProtocolANSI &ansi   = sentinelDev->getANSIProtocol();
 
                         ansi.setAnsiDeviceName(sentinelDev->getName());
                         //allocate some space
@@ -2191,6 +2195,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_KV2:
                     case TYPE_ALPHA_A3:
                     case TYPE_SENTINEL:
+                    case TYPE_FOCUS:
                     case TYPE_TDMARKV:
                     case TYPE_CCU721:
                     default:
@@ -2219,6 +2224,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_KV2:
                     case TYPE_ALPHA_A3:
                     case TYPE_SENTINEL:
+                    case TYPE_FOCUS:
                     case TYPE_TDMARKV:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
@@ -3472,6 +3478,7 @@ INT VTUPrep(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, CtiDeviceS
       Device->getType() != TYPE_KV2 &&
       Device->getType() != TYPE_ALPHA_A3 &&
       Device->getType() != TYPE_SENTINEL &&
+      Device->getType() != TYPE_FOCUS &&
       Device->getType() != TYPE_ALPHA_A1 &&
       Device->getType() != TYPE_TDMARKV &&
       Device->getType() != TYPE_SNPP

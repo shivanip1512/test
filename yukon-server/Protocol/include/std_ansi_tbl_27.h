@@ -29,8 +29,8 @@ class IM_EX_PROT CtiAnsiTable27 : public CtiAnsiTableBase
 {
 protected:
 
-  UINT8 *_presentDemandSelect;
-  UINT8 *_presentValueSelect;
+  unsigned char *_presentDemandSelect;
+  unsigned char *_presentValueSelect;
 
 private:
 
@@ -45,8 +45,8 @@ public:
    CtiAnsiTable27& operator=(const CtiAnsiTable27& aRef);
    void printResult( const string& deviceName );
 
-   UINT8* getDemandSelect( );
-   UINT8* getValueSelect( );
+   unsigned char* getDemandSelect( );
+   unsigned char* getValueSelect( );
 
 };
 #endif // #ifndef __STD_ANSI_TBL_SIX_TWO_H__

@@ -20,6 +20,7 @@
 
 #include <windows.h>
 #include "prot_ansi.h"
+//#include "prot_ansi_base.h"
 
 
 #define DAYS_SINCE_DEMAND_RESET    0x1c030008
@@ -32,7 +33,7 @@
 #define DST_CONFIGURED             0x6c000008
 
 
-class IM_EX_PROT CtiProtocolANSI_sentinel:public CtiProtocolANSI
+class IM_EX_PROT CtiProtocolANSI_sentinel: public CtiProtocolANSI
 {
     typedef CtiProtocolANSI Inherited;
 
@@ -45,17 +46,12 @@ class IM_EX_PROT CtiProtocolANSI_sentinel:public CtiProtocolANSI
         virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID );
 
         virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
-        virtual int calculateLPDataBlockSize(int numChans);
         virtual void setAnsiDeviceType();
-        virtual int snapshotData();
-        virtual int batteryLifeData();
+        virtual bool batteryLifeData();
         virtual int getGoodBatteryReading();
         virtual int getCurrentBatteryReading();
         virtual int getDaysOnBatteryReading();
 
-        virtual bool retreiveKV2PresentValue( int offset, double *value );
-
-        int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock);
 
    private:
 

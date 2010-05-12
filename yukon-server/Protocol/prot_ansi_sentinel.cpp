@@ -127,18 +127,7 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
           break;
       }
 
-        /*case 70:
-            {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating KV2 table 70" << endl;
-                }
-
-                _tableSeventy = new CtiAnsiKV2ManufacturerTableSeventy( data );
-                _tableSeventy->printResult();
-                break;
-            }
-        */case 110:
+        case 110:
             {
                 {
                    CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -175,10 +164,7 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 
     reqData.u.pm22.time = lastLPTime - CtiTime(CtiDate(1,1,2000)).seconds();
 
-    //UINT32 tempTime =  CtiTime().seconds() - 60 - CtiTime(CtiDate(1,1,2000)).seconds() - /*(26 * 3600 * 24) - */10800;
     getApplicationLayer().populateParmPtr((BYTE *) &reqData.u.pm22.time, 4) ;
-    //getApplicationLayer().populateParmPtr((BYTE *) &tempTime, 4) ;
-
 
     getApplicationLayer().setProcDataSize( sizeof(TBL_IDB_BFLD) + sizeof(reqData.seq_nbr) + 4 );
 
@@ -187,33 +173,14 @@ int CtiProtocolANSI_sentinel::calculateLPDataBlockStartIndex(ULONG lastLPTime)
 }
 
 
-int CtiProtocolANSI_sentinel::calculateLPDataBlockSize(int numChans)
-{
-    return (264 * numChans) + 260;
-}
-
-int CtiProtocolANSI_sentinel::calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock)
-{
-    return 4+ (8*numChans) + (numIntvlsLastDataBlock * ((2 * numChans) + 2));
-}
-
 void CtiProtocolANSI_sentinel::setAnsiDeviceType()
 {
     // 2 = sentinel
     getApplicationLayer().setAnsiDeviceType(2);
     return;
 }
-int CtiProtocolANSI_sentinel::snapshotData()
-{
-    return 1;
-}
 
-bool CtiProtocolANSI_sentinel::retreiveKV2PresentValue( int offset, double *value )
-{
-    return false;
-}
-
-int CtiProtocolANSI_sentinel::batteryLifeData()
+bool CtiProtocolANSI_sentinel::batteryLifeData()
 {
     //setWriteProcedureInProgress(true);
 
@@ -295,7 +262,7 @@ int CtiProtocolANSI_sentinel::batteryLifeData()
 
     getApplicationLayer().setProcDataSize( 34 );
 
-    return -1;
+    return true;
 
 }
 

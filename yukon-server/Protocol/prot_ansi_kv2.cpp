@@ -153,57 +153,6 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
 }
 
 
-int CtiProtocolANSI_kv2::calculateLPDataBlockStartIndex(ULONG lastLPTime)
-{
-    int nbrIntervals = 0;
-    int nbrValidInts = getNbrValidIntvls();
-    int nbrIntsPerBlock = getNbrIntervalsPerBlock();
-    int nbrBlksSet = getNbrValidBlks();
-    CtiTime currentTime;
-
-
-    currentTime.now();
-    nbrIntervals =  (int)(abs((long)(currentTime.seconds() - lastLPTime))/60) / getMaxIntervalTime();
-    if (nbrIntervals > (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts))
-    {
-        nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts);
-    }
-
-    if (nbrIntervals <= nbrValidInts)
-    {
-        // lastBlockIndex;
-        return getLastBlockIndex();
-    }
-    else if ((nbrIntervals - nbrValidInts) > nbrIntsPerBlock)
-    {
-        // lastBlockIndex - ((nbrIntervals - nbrValidInts) / nbrIntsPerBlock);
-        return getLastBlockIndex() - ((nbrIntervals - nbrValidInts) / nbrIntsPerBlock);
-    }
-    else //(nbrIntervals - nbrValidInts) <= nbrIntsPerBlock
-    {
-        // lastBlockIndex -  1;
-        return getLastBlockIndex() - 1;
-    }
-
-
-    /*setPreviewTable64InProgress(true);
-
-    setCurrentAnsiWantsTableValues(64,0,1,ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
-    getApplicationLayer().initializeTableRequest (64, 0, 1, ANSI_TABLE_TYPE_STANDARD, ANSI_OPERATION_READ);
-      */
-
-}
-
-int CtiProtocolANSI_kv2::calculateLPDataBlockSize(int numChans)
-{
-    return getSizeOfLPDataBlock(1);
-}
-
-
-int CtiProtocolANSI_kv2::calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock)
-{
-    return 4+ (8*numChans) + (numIntvlsLastDataBlock * ((2 * numChans) +2));
-}
 
 void CtiProtocolANSI_kv2::setAnsiDeviceType()
 {
@@ -211,7 +160,7 @@ void CtiProtocolANSI_kv2::setAnsiDeviceType()
     return;
 }
 
-int CtiProtocolANSI_kv2::snapshotData()
+bool CtiProtocolANSI_kv2::snapshotData()
 {
     //setWriteProcedureInProgress(true);
 
@@ -230,20 +179,13 @@ int CtiProtocolANSI_kv2::snapshotData()
     getApplicationLayer().setWriteSeqNbr( reqData.seq_nbr );
 
 
-    //getApplicationLayer().populateParmPtr(0, 1) ;
-
-
     getApplicationLayer().setProcDataSize( sizeof(TBL_IDB_BFLD) + sizeof(reqData.seq_nbr) );
 
-    return -1;
+    return true;
 
 }
-int CtiProtocolANSI_kv2::batteryLifeData()
-{
-    return 1;
-}
 
-bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
+bool CtiProtocolANSI_kv2::retreiveMfgPresentValue( int offset, double *value )
 {
     bool retVal = false;
     switch(offset)
@@ -307,16 +249,4 @@ bool CtiProtocolANSI_kv2::retreiveKV2PresentValue( int offset, double *value )
 }
 
 
-int CtiProtocolANSI_kv2::getGoodBatteryReading()
-{
-    return  -1;
-}
 
-int CtiProtocolANSI_kv2::getCurrentBatteryReading()
-{
-    return -1;
-}
-int CtiProtocolANSI_kv2::getDaysOnBatteryReading()
-{
-    return -1;
-}

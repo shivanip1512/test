@@ -21,7 +21,7 @@ CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
                                 int numberBlockIntervalsSet, bool blockEndReadFlag,
                                 bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                                 int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt,
-                                int meterHour ) :
+                                int meterHour, bool timeZoneApplied, bool lsbDataOrder ) :
     _nbrBlksSet1(numberBlocksSet),
     _nbrChnsSet1(numberChansSet),
     _closureStatusFlag(closureStatusFlag),
@@ -36,7 +36,9 @@ CtiAnsiTable64::CtiAnsiTable64( int numberBlocksSet, int numberChansSet,
     _niFmt1(niFmt1),
     _niFmt2(niFmt2),
     _timeFmt(timeFmt),
-    _meterHour(meterHour)
+    _meterHour(meterHour),
+    _timeZoneApplied(timeZoneApplied),
+    _lsbDataOrder(lsbDataOrder)
 {
     memset( &_lp_data_set1_tbl, 0, sizeof(LP_DATA_SET1_RCD) );
 }
@@ -45,7 +47,8 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
                                           bool closureStatusFlag, bool simpleIntervalStatusFlag,
                                           int numberBlockIntervalsSet, bool blockEndReadFlag,
                                           bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
-                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour )
+                                          int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2, int timeFmt, int meterHour,  
+                                          bool timeZoneApplied, bool lsbDataOrder )
 {
     int index, i, j;
     int bytes = 0;
@@ -65,6 +68,8 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
     _niFmt1 = niFmt1;
     _niFmt2 = niFmt2;
     _meterHour = meterHour;
+    _timeZoneApplied = timeZoneApplied;
+    _lsbDataOrder = lsbDataOrder;
 
     _lp_data_set1_tbl.lp_data_sets1 = new LP_BLK1_DAT_RCD[_nbrBlksSet1];
 
@@ -81,7 +86,7 @@ CtiAnsiTable64::CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberC
             if (_blkEndReadFlag)
             {
                 // END READINGS - block end reading
-                bytes = toDoubleParser( dataBlob, _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read, _niFmt1 );
+                bytes = toDoubleParser( dataBlob, _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read, _niFmt1, _lsbDataOrder );
                 dataBlob += bytes;
             }
             if (_blkEndPulseFlag)
@@ -345,15 +350,18 @@ void CtiAnsiTable64::printResult( const string& deviceName )
         {
             nbrBlkInts = _nbrBlkIntsSet1;
         }
-        //printStime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time);
-        //CtiTime = temp
+
         {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
                 dout << "  **B*L*O*C*K** : "<<index<<endl;
-        }
-        {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time)<<endl;
+                if (_timeZoneApplied)
+                {
+                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asGMT()<<endl;
+                }
+                else
+                {
+                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time)<<endl;
+                }
         }
         if (_blkEndReadFlag)
         {
@@ -445,7 +453,7 @@ void CtiAnsiTable64::printResult( const string& deviceName )
                 {
                     {
                         CtiLockGuard< CtiLogger > doubt_guard( dout );
-                        dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j];
+                        dout << "  "<<(int)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j];
                     }
                     {
                         CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -484,7 +492,7 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << intData.u.s1.item;
+                dout << (int)intData.u.s1.item;
             }
             break;
         }
@@ -492,7 +500,7 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << intData.u.s2.item;
+                dout << (int)intData.u.s2.item;
             }
             break;
         }
@@ -501,7 +509,7 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << intData.u.s4.item;
+                dout << (int)intData.u.s4.item;
             }
             break;
         }
@@ -510,7 +518,7 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << intData.u.s8.item;
+                dout << (int)intData.u.s8.item;
             }
             break;
         }
@@ -519,7 +527,7 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << intData.u.s16.item;
+                dout << (int)intData.u.s16.item;
             }
             break;
         }
@@ -528,7 +536,7 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
         {
             {
                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << intData.u.s32.item;
+                dout << (int)intData.u.s32.item;
             }
             break;
         }
@@ -545,19 +553,9 @@ void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
     }
 }
 
-/*bool CtiAnsiTable64::getIntervalFmtRecord(ULONG intvlTime, )
+
+void CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime, bool blockOrderDecreasing)
 {
-    bool retVal = false;
-    if (intvlTime > ) {
-    }
-
-
-    return retVal;
-} */
-
-bool CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime)
-{
-    bool retVal = false;
     ULONG blkEndTime = 0;
     if (getBlkEndTime(blkSet,blkEndTime))
     {
@@ -566,19 +564,15 @@ bool CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
             int totIntvls = _lp_data_set1_tbl.lp_data_sets1[blkSet].closure_status[0].nbr_valid_interval;
             if (blkIntvl <= totIntvls)
             {
-                blkIntvlTime = blkEndTime - ((totIntvls - (blkIntvl+1)) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
-                /*if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= totIntvls ))
+
+                if (blockOrderDecreasing)
                 {
-                    if (CtiTime(blkIntvlTime) < CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()))// && getDayLightSavingsFlag(blkSet, blkIntvl))
-                    {
-                        {
-                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                            dout << "  **  ADjuSTing Time + 3600  **  "<<endl;
-                        }
-                        blkIntvlTime = blkIntvlTime + 3600;
-                    }
-                } */
-                retVal = true;
+                    blkIntvlTime = blkEndTime - (blkIntvl * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
+                }
+                else
+                {
+                    blkIntvlTime = blkEndTime - ((totIntvls - (blkIntvl+1)) * _maxIntvlTime * 60); //likely need to change to time, then convert to seconds.
+                }
             }
             else
             {
@@ -590,37 +584,27 @@ bool CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
             //if (blkSet == (_nbrBlksSet1-1) && blkIntvl < _nbrValidInts)
             if (blkSet == (_nbrBlksSet1 -1) && blkIntvl < _nbrValidInts)
             {
-                blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
-               /* if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= _nbrValidInts ))
+                if (blockOrderDecreasing)
                 {
-                    if (CtiTime(blkIntvlTime) < CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()))
-                    {
-                        {
-                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                            dout << "  **  ADjuSTing Time + 3600  **  "<<endl;
-                        }
-                        blkIntvlTime = blkIntvlTime + 3600;
-                    }
-                } */
-                retVal = true;
+                    blkIntvlTime = blkEndTime - (blkIntvl * _maxIntvlTime * 60);
+                }
+                else
+                {
+                    blkIntvlTime = blkEndTime - ((_nbrValidInts - (blkIntvl+1)) * _maxIntvlTime * 60);
+                }
             }
             else
             {
                 if (blkIntvl < _nbrBlkIntsSet1)
                 {
-                    blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
-                    /*if (CtiTime(blkEndTime) > CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()) && ((CtiTime(blkEndTime).seconds() - CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()).seconds())/(_maxIntvlTime) <= _nbrBlkIntsSet1 ))
+                    if (blockOrderDecreasing)
                     {
-                        if (CtiTime(blkIntvlTime) < CtiTime().beginDST(RWDate(CtiTime(blkEndTime)).year()))
-                        {
-                            {
-                                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                dout << "  **  ADjuSTing Time+ 3600  **  "<<endl;
-                            }
-                            blkIntvlTime = blkIntvlTime + 3600;
-                        }
-                    }   */
-                    retVal = true;
+                        blkIntvlTime = blkEndTime - (blkIntvl * _maxIntvlTime * 60);
+                    }
+                    else
+                    {    
+                        blkIntvlTime = blkEndTime - ((_nbrBlkIntsSet1 - (blkIntvl+1)) * _maxIntvlTime * 60);
+                    }
                 }
                 else
                 {
@@ -629,7 +613,7 @@ bool CtiAnsiTable64::getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTi
             }
         }
     }
-    return retVal;
+    return;
 }
 
 bool CtiAnsiTable64::getBlkEndTime(int blkSet, ULONG &blkEndTime)
@@ -647,14 +631,10 @@ bool CtiAnsiTable64::getBlkEndTime(int blkSet, ULONG &blkEndTime)
     return retVal;
 }
 
-ULONG CtiAnsiTable64::getLPDemandTime (int blkSet, int blkIntvl)
+ULONG CtiAnsiTable64::getLPDemandTime (int blkSet, int blkIntvl, bool decreasingBlockOrder)
 {
     ULONG blkEndTime = 0;
-    if (getBlkIntvlTime(blkSet, blkIntvl, blkEndTime))
-    {
-
-
-    }
+    getBlkIntvlTime(blkSet, blkIntvl, blkEndTime, decreasingBlockOrder);
     return blkEndTime;
 }
 double CtiAnsiTable64::getLPDemandValue ( int channel, int blkSet, int blkIntvl )

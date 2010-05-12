@@ -558,6 +558,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_SENTINEL;
     }
+    else if(rwsTemp == "focus")
+    {
+        nRet = TYPE_FOCUS;
+    }
     else if(rwsTemp == "sixnet")
     {
         nRet = TYPE_SIXNET;
@@ -1205,6 +1209,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_KV2:
         case TYPE_ALPHA_A3:
         case TYPE_SENTINEL:
+        case TYPE_FOCUS:
         case TYPE_SIXNET:
         case TYPEDCT501:
         case TYPEMCT210:
@@ -1741,6 +1746,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
     case TYPE_KV2:
     case TYPE_ALPHA_A3:
     case TYPE_SENTINEL:
+    case TYPE_FOCUS:
     case TYPE_SERIESVRTU:
     case TYPE_SERIESVLMIRTU:
     case TYPE_ION7330:

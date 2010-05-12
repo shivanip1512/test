@@ -303,7 +303,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
               if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
               {
                   CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout <<"  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
+                  dout <<CtiTime::now() << "  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
               }
               if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
               {

@@ -117,8 +117,8 @@ private:
 
 public:
 
-   CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed );
-   CtiAnsiTable61(  BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed );
+   CtiAnsiTable61( unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder = true);
+   CtiAnsiTable61(  BYTE *dataBlob,  unsigned char *stdTblsUsed, int dimStdTblsUsed, bool lsbDataOrder = true);
 
    virtual ~CtiAnsiTable61();
 

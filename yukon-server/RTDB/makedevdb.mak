@@ -131,6 +131,7 @@ rte_macro.obj \
 rte_versacom.obj \
 rte_xcu.obj \
 slctdev.obj \
+dev_focus.obj \
 
 
 

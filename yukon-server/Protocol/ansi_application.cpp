@@ -369,7 +369,14 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
             if (_currentTableID == 64)
             {
                 // make this generic
-                getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
+               /* if  (getAnsiDeviceType() == focus)
+                {
+                    getDatalinkLayer().buildTableRequest( xfer, _currentTableID, full_read, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
+                }
+                else*/
+                {
+                    getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
+                }
                 if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
@@ -385,11 +392,18 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 // make this generic
                 BYTE operation;
                 // sentinel likes full reads, kv2 likes partial read offsets
-                if  ((int)_ansiDeviceType == sentinel)
+                if  (getAnsiDeviceType() == focus)
+                {
+                    if (_currentTableID == 64)
+                    {
+                        operation =  pread_offset;
+                    }
+                    else
+                        operation =  full_read;
+                }
+                else if  (getAnsiDeviceType() == sentinel)
                 {
                     if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == 23 && (int)getFWVersionNumber() < 3)) //FW Version 5
-
-                        //_currentTableID == 28)  */
                         operation =  full_read;
                     else
                         operation = pread_offset;
@@ -397,11 +411,11 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 else
                     operation =  pread_offset;
 
-                if( getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
+                if( getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                   dout << CtiTime::now() << " ** _ansiDeviceType == " <<(int)_ansiDeviceType<< endl;
-                   dout << CtiTime::now() << " ** pktSize == " <<(int)pktSize<< endl;
+                   dout << CtiTime::now() << " " << getAnsiDeviceName() << " ** Device Type = " <<(int)_ansiDeviceType<< endl;
+                   dout << CtiTime::now() << " " << getAnsiDeviceName() << " ** Packet Size = " <<(int)pktSize<< endl;
                 }
                 getDatalinkLayer().buildTableRequest( xfer, _currentTableID, operation, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
                 if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
@@ -589,8 +603,8 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
                 {
                   CtiLockGuard< CtiLogger > doubt_guard( dout );
                   dout << endl;
-                  dout << CtiTime::now() << " ** CRC Not Valid **" << endl;
-                  dout << CtiTime::now() << " ** _currentState/_requestedState " <<_currentState<< endl;
+                  dout << CtiTime::now() << " "<< getAnsiDeviceName() <<" ** CRC Not Valid **" << endl;
+                  dout << CtiTime::now() << " "<< getAnsiDeviceName() <<" ** Current State/Requested State " <<_currentState<< endl;
                   dout << endl;
                }
 
@@ -641,7 +655,7 @@ bool CtiANSIApplication::analyzePacket()
              }
              case request:
              {
-                 if ( !getDatalinkLayer().compareToggleBits() )
+                 if ( getAnsiDeviceType() != focus && !getDatalinkLayer().compareToggleBits() )
                  {
                      if (getRetries() > 0)
                      {
@@ -773,12 +787,12 @@ bool CtiANSIApplication::analyzePacket()
                      if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                      {
                           CtiLockGuard< CtiLogger > doubt_guard( dout );
-                          dout << CtiTime::now() << " ** DEBUG ****  _currentTableOffset " << _currentTableOffset<< endl;
-                          dout << CtiTime::now() << " ** DEBUG ****  _totalBytesInTable " << _totalBytesInTable<< endl;
+                          dout << CtiTime::now() << " "<<getAnsiDeviceName()<< " ** Current Table Offset " << _currentTableOffset<< endl;
+                          dout << CtiTime::now() << " "<<getAnsiDeviceName()<< " ** Current Bytes Expected " << _currentBytesExpected<< endl;
+                          dout << CtiTime::now() << " "<<getAnsiDeviceName()<< " ** Total Bytes In Table " << _totalBytesInTable<< endl;
                      }
                      setTableComplete(false);
                      _currentState = passThrough;
-                     //_currentState = request;
                      if (getDatalinkLayer().getPacketPart() && getDatalinkLayer().getSequence() == 0)
                      {
                          _currentState = _requestedState;
@@ -834,7 +848,7 @@ bool CtiANSIApplication::analyzePacket()
             }
             }
     }
-    else if (_currentTableID == 7 || _currentTableID == 2049)
+    else if (_currentTableID == 7 || _currentTableID == 2049 )
     {
         setTableComplete (true);
 
@@ -859,7 +873,7 @@ bool CtiANSIApplication::areThereMorePackets()
     {
         if(getDatalinkLayer().getSequence() == 0 )
         {
-            if (_totalBytesInTable < _currentBytesExpected)
+            if ( _totalBytesInTable < _currentBytesExpected )
             {
                 retVal = true;
             }
@@ -997,6 +1011,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
          dout << CtiTime::now() << " The " << getAnsiDeviceName() << " responded: Invalid Service Sequence State" << endl;
 
          msg = isss;
+         _currentState = loggedOff;
       }
       break;
    }

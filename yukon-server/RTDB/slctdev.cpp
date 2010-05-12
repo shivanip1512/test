@@ -79,6 +79,7 @@
 #include "dev_mct_broadcast.h"
 #include "dev_kv2.h"
 #include "dev_sentinel.h"
+#include "dev_focus.h"
 #include "dev_mark_v.h"
 #include "dev_repeater800.h"
 #include "dev_repeater.h"
@@ -229,6 +230,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_ALPHA_A3:     NewDevice = CTIDBG_new CtiDeviceKV2;        break;
 
         case TYPE_SENTINEL:     NewDevice = CTIDBG_new CtiDeviceSentinel;   break;
+        case TYPE_FOCUS:        NewDevice = CTIDBG_new CtiDeviceFocus;      break;
 
         case TYPE_SIXNET:       NewDevice = CTIDBG_new CtiDeviceSixnet;     break;
 

@@ -304,7 +304,7 @@ struct TIME
 
 #pragma pack( pop )
 
-class IM_EX_PROT CtiProtocolANSI
+class IM_EX_PROT CtiProtocolANSI//: public CtiProtocolANSI_base
 {
    public:
       CtiProtocolANSI();
@@ -341,21 +341,19 @@ class IM_EX_PROT CtiProtocolANSI
     int sizeOfSTimeDate( void );
     int sizeOfLTimeDate( void );
 
-    // pure virtual functions
-    virtual void destroyManufacturerTables( void )=0;
-    virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )=0;
-    virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime) = 0;
-    virtual int calculateLPDataBlockSize(int numChans) = 0;
-    virtual int calculateLPLastDataBlockSize(int numChans, int numIntvlsLastDataBlock) = 0;
-    virtual void setAnsiDeviceType() = 0;
-    virtual int snapshotData() = 0;
-    virtual int batteryLifeData() = 0;
-    virtual int getGoodBatteryReading()=0;
-    virtual int getCurrentBatteryReading()=0;
-    virtual int getDaysOnBatteryReading()=0;
-    virtual bool retreiveKV2PresentValue( int offset, double *value )=0;
 
-    /**** JULIE *****/
+    // pure virtual functions
+    virtual void destroyManufacturerTables( void );
+    virtual void convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID );
+    virtual int calculateLPDataBlockStartIndex(ULONG lastLPTime);
+    virtual void setAnsiDeviceType();
+    virtual bool snapshotData();
+    virtual bool batteryLifeData();
+    virtual int getGoodBatteryReading();
+    virtual int getCurrentBatteryReading();
+    virtual int getDaysOnBatteryReading();
+    virtual bool retreiveMfgPresentValue( int offset, double *value );
+
     bool retreiveSummation( int offset, double *value );
     bool retreiveDemand( int offset, double *value, double *time );
     bool retreiveFrozenSummation( int offset, double *value, double *time );
@@ -390,6 +388,7 @@ class IM_EX_PROT CtiProtocolANSI
     int getNbrIntervalsPerBlock();
     int getLastBlockIndex();
     int getNbrBlksSet();
+    bool isDataBlockOrderDecreasing();
 
     const string& getAnsiDeviceName() const;
     void setAnsiDeviceName(const string& devName);

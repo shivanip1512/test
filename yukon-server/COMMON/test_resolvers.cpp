@@ -247,6 +247,9 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     tempName = "sentinel";
     devType = TYPE_SENTINEL;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "focus";
+    devType = TYPE_FOCUS;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "dct-501";
     devType = TYPEDCT501;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);

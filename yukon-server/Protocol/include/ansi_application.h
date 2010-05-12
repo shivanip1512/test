@@ -167,7 +167,8 @@ class IM_EX_PROT CtiANSIApplication
       {
           kv = 0,
           kv2,
-          sentinel
+          sentinel,
+          focus
 
       } ANSI_DEVICE_TYPE;
 

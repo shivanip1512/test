@@ -632,16 +632,14 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
 
                if (_tables[_index].tableID == 22)
                {
-                   int julie = snapshotData();
-                   if (julie < 0)
-                   {
+                   if ( snapshotData() ) 
+                   {    
                        return true;
                    }
                }
                if (_tables[_index].tableID == 28)
                {
-                   int battery = batteryLifeData();
-                   if (battery < 0)
+                   if ( batteryLifeData() )
                    {
                        _requestingBatteryLifeFlag = true;
                        return true;
@@ -662,8 +660,8 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
                    {
                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                           dout <<  "  ** DEBUG **** _lpNbrIntvlsLastBlock  " <<_lpNbrIntvlsLastBlock << endl;
-                           dout <<  "  ** DEBUG **** _lpLastBlockIndex  " <<_lpLastBlockIndex << endl;
+                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpNbrIntvlsLastBlock  " <<_lpNbrIntvlsLastBlock << endl;
+                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockIndex  " <<_lpLastBlockIndex << endl;
                    }
                    _lpBlockSize = getSizeOfLPDataBlock(1);
                    _lpLastBlockSize =  getSizeOfLastLPDataBlock(1);
@@ -672,52 +670,20 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
                    {
                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                           dout <<  "  ** DEBUG **** _lpBlockSize  " <<_lpBlockSize << endl;
-                           dout <<  "  ** DEBUG **** _lpLastBlockSize  " <<_lpLastBlockSize << endl;
+                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpBlockSize  " <<_lpBlockSize << endl;
+                           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockSize  " <<_lpLastBlockSize << endl;
                    }
-                   //Fall Back DST adjustment
-                   if (_table52 != NULL)
-                   {
-                       CtiTime llp(_header->lastLoadProfileTime);
-                       CtiDate dte = llp.date();
-                       CtiTime endLLP = CtiTime().endDST( dte.year() );
 
-                       CtiTime now = CtiTime();
-                       CtiDate dtf = now.date();
-                       CtiTime end = CtiTime().endDST(dtf.year());
-
-                       CtiTime begin = CtiTime().beginDST(dtf.year());
-
-                       CtiTime beginLLP = CtiTime().beginDST( dte.year() );
-
-
-                       if (!_table52->adjustTimeForDST() &&
-                          ( (llp < endLLP  ) &&
-                            (now > end) ) )
-                       {
-                           _header->lastLoadProfileTime -= 3600;
-                           {
-                                   CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<CtiTime(_header->lastLoadProfileTime) << endl;
-                           }
-                       }
-                       //Spring Ahead DST adjustment
-                       /*if (_table52->adjustTimeForDST() )
-                       {
-                           _header->lastLoadProfileTime += 3600;
-                           {
-                                   CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                   dout <<  "  ** DEBUG **** Last Load Profile Time Adjusted to: " <<CtiTime(_header->lastLoadProfileTime) << endl;
-                           }
-                       }  */
-                   }
                    if ((_lpStartBlockIndex = calculateLPDataBlockStartIndex(_header->lastLoadProfileTime)) < 0)
                    {
                        return true;
                    }
                    else
                    {
-                       _lpNbrFullBlocks = _lpLastBlockIndex - _lpStartBlockIndex;
+                       if ( isDataBlockOrderDecreasing() )
+                           _lpNbrFullBlocks = _lpNbrValidBlks - ( _lpNbrIntvlsLastBlock < _lpNbrIntvlsPerBlock ? 1 : 0 );
+                       else
+                           _lpNbrFullBlocks =  _lpLastBlockIndex - _lpStartBlockIndex;
                        _lpOffset = _lpStartBlockIndex * _lpBlockSize;
                    }
                    }
@@ -749,7 +715,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                      _tables[_index].tableID += 0x0800;
                    }
 
-                   if (_tables[_index].tableID == 15 || _tables[_index].tableID == 23 || _tables[_index].tableID == 25)
+                   if (getApplicationLayer().getAnsiDeviceType() != CtiANSIApplication::focus && (_tables[_index].tableID == 15 || _tables[_index].tableID == 23 || _tables[_index].tableID == 25))
                    {
                        getApplicationLayer().setLPDataMode( true, _tables[_index].bytesExpected );
                    }
@@ -1072,7 +1038,8 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table11->getRawSetOnePresentFlag(),
                                                                _table11->getRawSetTwoPresentFlag(),
                                                                _table00->getRawNIFormat1(),
-                                                               _table00->getRawNIFormat2() );
+                                                               _table00->getRawNIFormat2(),
+                                                               (_table00->getRawDataOrder() == 0) );
 
                            getApplicationLayer().setLPDataMode( false, 0 );
                            if( _table15 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
@@ -1160,7 +1127,8 @@ void CtiProtocolANSI::convertToTable(  )
                                                                  _table00->getRawNIFormat1(),
                                                                  _table00->getRawNIFormat2(),
                                                                  _table00->getRawTimeFormat(),
-                                                                  23 );
+                                                                  23, 
+                                                                (_table00->getRawDataOrder() == 0));
 
                            getApplicationLayer().setLPDataMode( false, 0 );
                            if( _table23 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
@@ -1236,7 +1204,8 @@ void CtiProtocolANSI::convertToTable(  )
                                                                  _table21->getTimeRemainingFlag(),
                                                                  _table00->getRawNIFormat1(),
                                                                  _table00->getRawNIFormat2(),
-                                                                 _table00->getRawTimeFormat() );
+                                                                 _table00->getRawTimeFormat(),
+                                                                (_table00->getRawDataOrder() == 0)  );
 
                            if( _table28 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                       {
@@ -1342,7 +1311,10 @@ void CtiProtocolANSI::convertToTable(  )
                        }
                        if( _table00 != NULL )
                        {
-                           _table61 = new CtiAnsiTable61( getApplicationLayer().getCurrentTable(), _table00->getStdTblsUsed(), _table00->getDimStdTblsUsed() );
+                           _table61 = new CtiAnsiTable61( getApplicationLayer().getCurrentTable(), 
+                                                          _table00->getStdTblsUsed(), 
+                                                          _table00->getDimStdTblsUsed(),
+                                                          (_table00->getRawDataOrder() == 0)  );
                            if( _table61 != NULL )
                            {
                               if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
@@ -1384,7 +1356,7 @@ void CtiProtocolANSI::convertToTable(  )
                        }
                       if( _table61 != NULL )
                       {
-                          _table63 = new CtiAnsiTable63( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags());
+                          _table63 = new CtiAnsiTable63( getApplicationLayer().getCurrentTable(), _table61->getLPDataSetUsedFlags(), (_table00->getRawDataOrder() == 0));
                           if( _table63 != NULL && getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                           {
                               _table63->printResult(getAnsiDeviceName());
@@ -1423,9 +1395,11 @@ void CtiProtocolANSI::convertToTable(  )
                     }
 
                     int meterHour = 0;
+                    bool timeZoneApplied = false;
                     if (_table52 != NULL)
                     {
                         meterHour = _table52->getClkCldrHour();
+                        timeZoneApplied = _table52->getTimeZoneAppliedFlag();
                     }
 
                     if( _table00 != NULL && _table62 != NULL && _table61 != NULL )
@@ -1437,13 +1411,14 @@ void CtiProtocolANSI::convertToTable(  )
                                                                _table61->getExtendedIntStatusFlag(), _table61->getMaxIntTimeSet(1),
                                                                _table62->getIntervalFmtCde(1), validIntvls,
                                                                _table00->getRawNIFormat1(), _table00->getRawNIFormat2(),
-                                                               _table00->getRawTimeFormat(), meterHour );
+                                                               _table00->getRawTimeFormat(), meterHour, timeZoneApplied,
+                                                               (_table00->getRawDataOrder() == 0)  );
 
                         getApplicationLayer().setLPDataMode( false, 0 );
 
                         if (_invalidLastLoadProfileTime && _table64 != NULL)
                         {
-                            _header->lastLoadProfileTime = _table64->getLPDemandTime(0,0);
+                            _header->lastLoadProfileTime = _table64->getLPDemandTime(0,0, isDataBlockOrderDecreasing());
                         }
                     }
                 }
@@ -1486,11 +1461,7 @@ void CtiProtocolANSI::updateBytesExpected( )
                         _tables[_index].bytesExpected = 59;
                         break;
                     }
-                /*case 1:
-                {
-                    _tables[_index].bytesExpected = 59;
-                    break;
-                } */
+                
                 case 2:
                 {
                     _tables[_index].bytesExpected = 20;
@@ -1516,9 +1487,6 @@ void CtiProtocolANSI::updateBytesExpected( )
             {
 
             }
-    //        convertToManufacturerTable (getApplicationLayer().getCurrentTable(),
-    //                                    _tables[_index].bytesExpected,
-    //                                    _tables[_index].tableID);
         }
         else
         {
@@ -1719,8 +1687,13 @@ void CtiProtocolANSI::updateBytesExpected( )
                    break;
                 case 28:
                     {
-                        _tables[_index].bytesExpected += ( _table21->getNbrPresentDemands() * ( sizeOfNonIntegerFormat(_table00->getRawNIFormat2()) + 4 ))
+                        if (_table27 != NULL)
+                        {
+                            _tables[_index].bytesExpected += ( _table21->getNbrPresentDemands() * ( sizeOfNonIntegerFormat(_table00->getRawNIFormat2()) + 4 ))
                                                           + ( _table21->getNbrPresentValues() * sizeOfNonIntegerFormat (_table00->getRawNIFormat1()) );
+                        }
+                        else
+                            _tables[_index].bytesExpected = 0;
 
                     }
                     break;
@@ -2091,10 +2064,8 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    if (_table52->adjustTimeForDST())
-                                    {
-                                        *timestamp -= 3600;
-                                    }
+                                    ULONG tmStamp = *timestamp;
+                                    *timestamp = _table52->adjustTimeZoneAndDST(tmStamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2106,10 +2077,8 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    if (_table52->adjustTimeForDST())
-                                    {
-                                        *timestamp -= 3600;
-                                    }
+                                    ULONG tmStamp = *timestamp;
+                                    *timestamp = _table52->adjustTimeZoneAndDST(tmStamp);
                                 }
                             }
                         }
@@ -2121,10 +2090,8 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    if (_table52->adjustTimeForDST())
-                                    {
-                                        *timestamp -= 3600;
-                                    }
+                                    ULONG tmStamp = *timestamp;
+                                    *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2135,10 +2102,8 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                  *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                  if (_table52 != NULL)
                                  {
-                                     if (_table52->adjustTimeForDST())
-                                     {
-                                         *timestamp -= 3600;
-                                     }
+                                    ULONG tmStamp = *timestamp;
+                                    *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                                  }
                             }
 
@@ -2157,10 +2122,8 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                             *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
-                                if (_table52->adjustTimeForDST())
-                                {
-                                    *timestamp -= 3600;
-                                }
+                                ULONG tmStamp = *timestamp;
+                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                             }
                         }
                         else  // 2 = sentinel
@@ -2171,10 +2134,8 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                             *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
-                                if (_table52->adjustTimeForDST() )
-                                {
-                                    *timestamp -= 3600;
-                                }
+                                ULONG tmStamp = *timestamp;
+                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                             }
                         }
                     }
@@ -2346,10 +2307,8 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    if (_table52->adjustTimeForDST() )
-                                    {
-                                        *timestamp -= 3600;
-                                    }
+                                     ULONG tmStamp = *timestamp;
+                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2365,10 +2324,8 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 }
                                 if (_table52 != NULL)
                                 {
-                                    if (_table52->adjustTimeForDST() )
-                                    {
-                                        *timestamp -= 3600;
-                                    }
+                                     ULONG tmStamp = *timestamp;
+                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                                 }
                             }
                         }
@@ -2380,10 +2337,8 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    if (_table52->adjustTimeForDST() )
-                                    {
-                                        *timestamp -= 3600;
-                                    }
+                                     ULONG tmStamp = *timestamp;
+                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2398,10 +2353,8 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                  }
                                  if (_table52 != NULL)
                                  {
-                                     if (_table52->adjustTimeForDST() )
-                                     {
-                                         *timestamp -= 3600;
-                                     }
+                                     ULONG tmStamp = *timestamp;
+                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                                  }
                             }
 
@@ -2420,10 +2373,8 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
-                                if (_table52->adjustTimeForDST() )
-                                {
-                                    *timestamp -= 3600;
-                                }
+                                ULONG tmStamp = *timestamp;
+                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                             }
                         }
                         else  // 2 = sentinel
@@ -2439,10 +2390,8 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             }
                             if (_table52 != NULL)
                             {
-                                if (_table52->adjustTimeForDST() )
-                                {
-                                    *timestamp -= 3600;
-                                }
+                                ULONG tmStamp = *timestamp;
+                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
                             }
                         }
                     }
@@ -2596,7 +2545,7 @@ bool CtiProtocolANSI::retreivePresentValue( int offset, double *value )
     {
         try
         {
-            success = retreiveKV2PresentValue(offset, value);
+            success = retreiveMfgPresentValue(offset, value);
             if (success)
             {
                 if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
@@ -2732,7 +2681,7 @@ bool CtiProtocolANSI::retreivePresentDemand( int offset, double *value )
             if (_table27 != NULL)
             {
                 /* returns pointer to list of present Demand Selects */
-                presentDemandSelect = (unsigned char*)_table27->getDemandSelect();
+                presentDemandSelect = _table27->getDemandSelect();
 
                 if (_table21 != NULL && presentDemandSelect != NULL)
                 {
@@ -2969,19 +2918,11 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                                            (_table15->getElecMultiplier((lpDemandSelect[x]%20)))) /
                                                                             (_table12->getResolvedMultiplier(lpDemandSelect[x]) * 1000) *
                                                                             (60 / _table61->getMaxIntTimeSet(dataSet)) ) ;
-                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex);
+                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex,_table63->isDataBlockOrderDecreasing(dataSet));
                                                             if (_table52 != NULL)
                                                             {
-                                                                if (_table52->adjustTimeForDST() )
-                                                                {
-                                                                    if (CtiTime(_lpTimes[y]) > CtiTime().beginDST(RWDate().year()))
-                                                                        _lpTimes[y] -= 3600;
-                                                                    else
-                                                                    {
-                                                                        _lpTimes[y] -= ( 3600 * 2 );
-
-                                                                    }
-                                                                }
+                                                                _lpTimes[y] = _table52->adjustTimeZoneAndDST(_lpTimes[y]);
+                                                                
                                                             }
                                                             if (_table64->getPowerFailFlag(blkIndex, intvlIndex))
                                                                 _lpQuality[y] = PowerfailQuality; //powerFailQuality
@@ -2991,7 +2932,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<_lpQuality[y]<<endl;
+                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y]<<endl;
                                                             }
                                                         }
                                                         else
@@ -2999,18 +2940,11 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             _lpValues[y] = ( _table64->getLPDemandValue ( x, blkIndex, intvlIndex ) /
                                                                            (_table12->getResolvedMultiplier(lpDemandSelect[x]) * 1000) *
                                                                              (60 / _table61->getMaxIntTimeSet(dataSet)) ) ;
-                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex);
+                                                            _lpTimes[y] = _table64->getLPDemandTime (blkIndex, intvlIndex, _table63->isDataBlockOrderDecreasing(dataSet));
                                                             if (_table52 != NULL)
                                                             {
-                                                                if (_table52->adjustTimeForDST() )
-                                                                {
-                                                                    if (CtiTime(_lpTimes[y]) > CtiTime().beginDST(RWDate().year()))
-                                                                        _lpTimes[y] -= 3600;
-                                                                    else
-                                                                    {
-                                                                        _lpTimes[y] -= ( 3600 * 2 );
-                                                                    }
-                                                                }
+                                                                _lpTimes[y] = _table52->adjustTimeZoneAndDST(_lpTimes[y]);
+
                                                             }
                                                             if (_table64->getPowerFailFlag(blkIndex, intvlIndex))
                                                                 _lpQuality[y] = PowerfailQuality; //powerFailQuality
@@ -3021,7 +2955,7 @@ bool CtiProtocolANSI::retreiveLPDemand( int offset, int dataSet )
                                                             if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                                             {
                                                                 CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<_lpQuality[y]<<endl;
+                                                                dout << "    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y]<<endl;
                                                             }
                                                         }
 
@@ -3553,7 +3487,7 @@ int CtiProtocolANSI::getSizeOfLPIntSetRcd(int dataSetNbr)
 {
     try
     {
-            int sizeOfIntSetRcd = 0;
+        int sizeOfIntSetRcd = 0;
         int nbrChnsSet = _table61->getNbrChansSet(dataSetNbr);
 
         if (_table61->getExtendedIntStatusFlag())
@@ -3728,7 +3662,14 @@ int CtiProtocolANSI::getLastBlockIndex()
 {
     return _lpLastBlockIndex;
 }
-
+bool CtiProtocolANSI::isDataBlockOrderDecreasing()
+{
+    if( _table63 != NULL )
+    {
+        return _table63->isDataBlockOrderDecreasing(1);
+    }
+    return false;
+}
 
 
 void CtiProtocolANSI::setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed, unsigned char * mfgTblsUsed, int dimMfgTblsUsed)
@@ -3924,3 +3865,78 @@ bool CtiProtocolANSI::isTimeUninitialized(double timestamp)
 
 
 
+ void CtiProtocolANSI::destroyManufacturerTables( void )
+ {
+     return;
+ }
+ void CtiProtocolANSI::convertToManufacturerTable( BYTE *data, BYTE numBytes, short aTableID )
+ {
+     return;
+ }
+ 
+bool CtiProtocolANSI::snapshotData()
+{
+    return false;
+}
+void CtiProtocolANSI::setAnsiDeviceType()
+{
+    getApplicationLayer().setAnsiDeviceType(0);
+}
+bool CtiProtocolANSI::batteryLifeData()
+{
+    return false;
+}
+
+int CtiProtocolANSI::getGoodBatteryReading()
+{
+    return 0;
+}
+int CtiProtocolANSI::getCurrentBatteryReading()
+{
+    return 0;
+}
+int CtiProtocolANSI::getDaysOnBatteryReading()
+{
+   return 0;
+}
+bool CtiProtocolANSI::retreiveMfgPresentValue( int offset, double *value )
+{
+    return false;
+}
+
+
+int CtiProtocolANSI::calculateLPDataBlockStartIndex(ULONG lastLPTime)
+{
+    int nbrIntervals = 0;
+    int nbrValidInts = getNbrValidIntvls();
+    int nbrIntsPerBlock = getNbrIntervalsPerBlock();
+    int nbrBlksSet = getNbrValidBlks();
+    CtiTime currentTime;
+
+
+    currentTime.now();
+    nbrIntervals =  (int)(abs((long)(currentTime.seconds() - lastLPTime))/60) / getMaxIntervalTime();
+    if (nbrIntervals > (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts))
+    {
+        nbrIntervals = (((nbrBlksSet-1) * nbrIntsPerBlock) + nbrValidInts);
+    }
+    if (isDataBlockOrderDecreasing())
+    {
+        return 0;
+    }
+    if (nbrIntervals <= nbrValidInts)
+    {
+        // lastBlockIndex;
+        return getLastBlockIndex();
+    }
+    else if ((nbrIntervals - nbrValidInts) > nbrIntsPerBlock)
+    {
+        return getLastBlockIndex() - ((nbrIntervals - nbrValidInts) / nbrIntsPerBlock);
+    }
+    else //(nbrIntervals - nbrValidInts) <= nbrIntsPerBlock
+    {
+        // lastBlockIndex -  1;
+        return getLastBlockIndex() - 1;
+    }
+
+}

@@ -136,8 +136,11 @@ public:
    int getClkCldrHour();
    int getClkCldrMin();
    int getClkCldrSec();
+   bool isCalendarValid();
 
    ULONG getMeterServerTimeDifference();
+   bool getTimeZoneAppliedFlag();
+   ULONG adjustTimeZoneAndDST(ULONG adjustedTime);
    bool adjustTimeForDST();
 
 };

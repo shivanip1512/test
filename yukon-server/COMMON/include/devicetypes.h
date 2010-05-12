@@ -110,6 +110,7 @@
 #define TYPE_QUANTUM                         1830  // Schlumberger Quantum
 #define TYPE_KV2                             1835  // GE KV2
 #define TYPE_SENTINEL                        1840  // Schlumberger Sentinel
+#define TYPE_FOCUS                           1841  // Focus
 #define TYPE_ALPHA_A3                        1845  // ABB Alpha A3
 
 #define TYPE_SIXNET                          1850  // Sixnet VersaTrak/SiteTrak firmware > 7/1/01

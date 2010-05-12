@@ -864,6 +864,11 @@ CtiProtocolANSI & CtiDeviceKV2::getKV2Protocol( void )
    return  _ansiProtocol;
 }
 
+CtiProtocolANSI_kv2 & CtiDeviceKV2::getANSIProtocol( void )
+{
+   return  _ansiProtocol;
+}
+
 //=====================================================================================================================
 //=====================================================================================================================
 

@@ -100,6 +100,7 @@ private:
    bool                 _cumd;
    bool                 _cumcont;
    int                  _timefmt;
+   bool                 _lsbDataOrder;
 
    int                  _tablePrintNumber;
 
@@ -121,9 +122,9 @@ public:
    bool getCumd( void );
    bool getCumcont( void );
    CtiAnsiTable23( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat, int tableNbr );
+                         int f1, int f2, int timeformat, int tableNbr, bool lsbDataOrder = true );
    CtiAnsiTable23( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
-                         int f1, int f2, int timeformat, int tableNbr );
+                         int f1, int f2, int timeformat, int tableNbr,  bool lsbDataOrder = true);
    virtual ~CtiAnsiTable23();
    CtiAnsiTable23& operator=(const CtiAnsiTable23& aRef);
    void printResult( const string& deviceName );

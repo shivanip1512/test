@@ -90,6 +90,12 @@ typedef union
    float      u32;
 } BYTEFLOAT32;
 
+typedef union
+{
+   UCHAR    ch[2];
+   short    u16;
+} BYTEUINT16;
+
 
 
 #define BCD                unsigned char
@@ -203,12 +209,13 @@ private:
 
 public:
 
-   int toDoubleParser( BYTE *source, double &result, int format );
-   int fromDoubleParser ( double &result, BYTE *source, int format );
+   int toDoubleParser( BYTE *source, double &result, int format, bool dataOrderLSB = true);
+   int fromDoubleParser ( double &result, BYTE *source, int format,  bool dataOrderLSB = true );
    int toUint32STime( BYTE *source, ULONG &result, int format );
    ULONG BCDtoBase10( UCHAR* buffer, ULONG len );
    int toUint32LTime( BYTE *source, ULONG &result, int format );
    int toTime( BYTE *source, ULONG &result, int format );
+   int toUint16Parser( BYTE *source, ULONG &result, bool dataOrderLSB);
 
    CtiAnsiTableBase();
    virtual ~CtiAnsiTableBase();

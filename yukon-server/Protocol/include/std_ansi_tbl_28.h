@@ -51,12 +51,13 @@ private:
     int _format1;
     int _format2;
     int _timefmt;
+    bool _lsbDataOrder;
 
 public:
 
    CtiAnsiTable28( );
    CtiAnsiTable28( BYTE *dataBlob, UINT8 nbrPresentDemands, UINT8 nbrPresentValues,
-                         bool timeRemainingFlag, int format1, int format2, int timefmt );
+                         bool timeRemainingFlag, int format1, int format2, int timefmt, bool lsbDataOrder = true );
    virtual ~CtiAnsiTable28();
    CtiAnsiTable28& operator=(const CtiAnsiTable28& aRef);
    void printResult( const string& deviceName );

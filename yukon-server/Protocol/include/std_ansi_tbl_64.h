@@ -158,6 +158,8 @@ private:
     int   _niFmt2;
     int   _timeFmt;
     int   _meterHour;
+    bool  _timeZoneApplied;
+    bool  _lsbDataOrder;
 
 
 public:
@@ -167,13 +169,13 @@ public:
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
-                        int timeFmt, int meterHour  );
+                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true );
    CtiAnsiTable64( BYTE *dataBlob, int numberBlocksSet, int numberChansSet,
                         bool closureStatusFlag, bool simpleIntervalStatusFlag,
                         int numberBlockIntervalsSet, bool blockEndReadFlag,
                         bool blockEndPulseFlag, bool extendedIntervalStatusFlag, int maxIntvlTime,
                         int intervalFmtCde, int nbrValidInts, int niFmt1, int niFmt2,
-                        int timeFmt, int meterHour );
+                        int timeFmt, int meterHour, bool timeZoneApplied, bool lsbDataOrder = true );
 
    virtual ~CtiAnsiTable64();
 
@@ -184,11 +186,11 @@ public:
    int populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob);
    void printIntervalFmtRecord(INT_FMT1_RCD intData);
 
-   bool getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime);
+   void getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime, bool blockOrderDecreasing);
    bool getBlkEndTime(int blkSet, ULONG &blkEndTime);
 
    double getLPDemandValue ( int channel, int blkSet, int blkIntvl );
-   ULONG getLPDemandTime (int blkSet, int blkIntvl);
+   ULONG getLPDemandTime (int blkSet, int blkIntvl, bool decreasingBlockOrder);
 
    int getExtendedIntervalStatus(int channel, int blkSet, int blkIntvl);
    bool getDayLightSavingsFlag(int blkSet, int blkIntvl) const;

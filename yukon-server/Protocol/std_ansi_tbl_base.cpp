@@ -87,6 +87,25 @@ CtiAnsiTableBase& CtiAnsiTableBase::operator=(const CtiAnsiTableBase& aRef)
    }
    return *this;
 }
+int CtiAnsiTableBase::toUint16Parser( BYTE *source, ULONG &result, bool dataOrderLSB)
+{
+
+    ULONG tempShort;
+    if (dataOrderLSB)
+    {
+        tempShort = ((long) source[1] * (0x100)) +
+                    (long) source[0];
+    }
+    else
+    {
+        tempShort = ((long)source[0] * (0x100)) +
+                    (long)source[1];
+    }
+    result = tempShort;
+    return  sizeof( unsigned char )* 2;
+}
+
+
 
 //=========================================================================================================================================
 //this guy converts raw bytes from the meter to doubles so we have a set size to work with
@@ -96,7 +115,7 @@ CtiAnsiTableBase& CtiAnsiTableBase::operator=(const CtiAnsiTableBase& aRef)
 //
 //=========================================================================================================================================
 
-int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
+int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format,  bool dataOrderLSB )
 {
    BYTEFLOAT32  float32;
    BYTEFLOAT64 flipFloat;
@@ -110,7 +129,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
    case ANSI_NI_FORMAT_FLOAT64:
       //float64
        {
-           if (1) //data order LSB
+           if (dataOrderLSB) //data order LSB
            {    
                flipFloat.ch[7] = source[7];
                flipFloat.ch[6] = source[6];
@@ -148,7 +167,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
        //float32
        {
 
-            if (1) //data order LSB
+            if (dataOrderLSB) //data order LSB
             {    
                float32.ch[3] = source[3];
                float32.ch[2] = source[2];
@@ -193,19 +212,46 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
 
    case ANSI_NI_FORMAT_INT24:
       //int24
+       if (dataOrderLSB)
+       {
+           tempLong = ((long) source[2] * (0x10000)) +
+                      ((long) source[1] * (0x100)) +
+                       (long) source[0];
+       }
+       else
+       {
+           tempLong = ((long)source[0] * (0x10000)) +
+                      ((long)source[1] * (0x100)) +
+                       (long)source[2];
+       }
+       result = tempLong;
+       offset = sizeof( unsigned char ) * 3;
       break;
 
    case ANSI_NI_FORMAT_INT32:
       //int32
-      memcpy( &tempLong, source, sizeof( long ));
-      result = tempLong;
-      offset = sizeof( long );
+       if (dataOrderLSB)
+       {
+           tempLong = ((long) source[3] * (0x1000000)) +
+                      ((long) source[2] * (0x10000)) +
+                      ((long) source[1] * (0x100)) +
+                       (long) source[0];
+       }
+       else
+       {
+           tempLong = ((long)source[0] * (0x1000000)) +
+                          ((long)source[1] * (0x10000)) +
+                          ((long)source[2] * (0x100)) +
+                           (long)source[3];
+       }
+       result = tempLong;
+       offset = sizeof( long );
       break;
 
    case ANSI_NI_FORMAT_INT40:
       //int40  
        {
-           if (1) 
+           if (dataOrderLSB) 
            {
                tempDbl = ((double) source[5] * (0x10000000000)) +
                          ((double) source[4] * (0x100000000)) +
@@ -235,7 +281,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
           //int48
           //tempDbl = source[0] * multer;
                
-           if (1) 
+           if (dataOrderLSB) 
            {
                tempDbl = ((double) source[5] * (0x10000000000)) +
                          ((double) source[4] * (0x100000000)) +
@@ -283,7 +329,7 @@ int CtiAnsiTableBase::toDoubleParser( BYTE *source, double &result, int format )
 //
 //=========================================================================================================================================
 
-int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format )
+int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format, bool dataOrderLSB )
 {
    BYTEFLOAT32  float32;
    long tempLong;
@@ -299,7 +345,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
        {   //float64
        
            tempDbl = source;
-           if (1) 
+           if (dataOrderLSB) 
            {    
                flipFloat.u64 = tempDbl;
                result[0] = flipFloat.ch[0];
@@ -333,7 +379,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
    case ANSI_NI_FORMAT_FLOAT32:
       //float32
        float32.u32 = source;
-       if (1) 
+       if (dataOrderLSB) 
        {
            result[0] = float32.ch[0];
            result[1] = float32.ch[1];
@@ -378,7 +424,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
    case ANSI_NI_FORMAT_INT32:
       //int32
        tempLong = (long)source;
-       if (1)
+       if (dataOrderLSB)
        {
            result[3] = tempLong / 0x1000000;
            tempLong =  tempLong - (result[3] * 0x1000000);
@@ -407,7 +453,7 @@ int CtiAnsiTableBase::fromDoubleParser( double &source, BYTE *result, int format
 
    case ANSI_NI_FORMAT_INT48:
        tempDbl = source;
-       if (1) 
+       if (dataOrderLSB) 
        {
            result[5] = tempDbl / 0x10000000000;
            tempDbl =  tempDbl - (result[5] * 0x10000000000);
@@ -476,6 +522,8 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
    {
    case 0:
        {
+          result = 0;
+          offset = 0;
        }
       break;
 
@@ -513,9 +561,7 @@ int CtiAnsiTableBase::toUint32STime( BYTE *source, ULONG &result, int format )
        source += sizeof (BYTE);
        
        offset = 5;
-       //result = 11;
-       CtiTime timeResult( CtiDate( day, month, year + 2000 ), hour, minute);
-       //result = CtiTime( CtiDate( day, month, year ), hour, minute).seconds();
+       CtiTime timeResult( CtiDate( day, month, year + 2000), hour, minute);
        result = timeResult.seconds();
        }
       break;
@@ -558,6 +604,7 @@ int CtiAnsiTableBase::toTime( BYTE *source, ULONG &result, int format )
    {
    case 0:
        {
+           result = CtiTime( second ).seconds();
        }
       break;
 
@@ -659,6 +706,11 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
    switch( format )
    {
    case 0:
+
+      {
+          result = 0;
+          offset = 0;
+      }
       break;
 
    case 1:
@@ -685,20 +737,20 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
    case 2:
        {
           
-          memcpy ((void *)year, source, sizeof (BYTE) );
+          memcpy ((void *)&year, source, sizeof (BYTE) );
           source += sizeof (BYTE);
-          memcpy ((void *)month, source, sizeof (BYTE) );
+          memcpy ((void *)&month, source, sizeof (BYTE) );
           source += sizeof (BYTE);
-          memcpy ((void *)day, source, sizeof (BYTE) );
+          memcpy ((void *)&day, source, sizeof (BYTE) );
           source += sizeof (BYTE);
-          memcpy ((void *)hour, source, sizeof (BYTE) );
+          memcpy ((void *)&hour, source, sizeof (BYTE) );
           source += sizeof (BYTE);
-          memcpy ((void *)minute, source, sizeof (BYTE) );
+          memcpy ((void *)&minute, source, sizeof (BYTE) );
           source += sizeof (BYTE);
-          memcpy ((void *)second, source, sizeof (BYTE) );
+          memcpy ((void *)&second, source, sizeof (BYTE) );
           source += sizeof (BYTE);
           offset = 6;
-          result = CtiTime( CtiDate( day, month, year ), hour, minute, second).seconds();
+          result = CtiTime( CtiDate( day, month, year + 2000 ), hour, minute, second).seconds();
        }
       break;
 

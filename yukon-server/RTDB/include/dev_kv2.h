@@ -140,6 +140,7 @@ public:
 
 
    CtiProtocolANSI & getKV2Protocol( void );
+   CtiProtocolANSI_kv2 & getANSIProtocol( void );
    void processDispatchReturnMessage( list< CtiReturnMsg* >  &retList, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);

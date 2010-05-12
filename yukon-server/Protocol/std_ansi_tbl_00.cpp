@@ -84,12 +84,23 @@ CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
     _std_revision_no(0),
     _nbr_pending(0)
 {
-   int   byteCount;
+   //int   byteCount;
+   //byteCount = sizeof( FORMAT_CONTROL_1 ) + sizeof( FORMAT_CONTROL_2 ) + sizeof( FORMAT_CONTROL_3 ) + sizeof( unsigned char )*16;
 
-   byteCount = sizeof( FORMAT_CONTROL_1 ) + sizeof( FORMAT_CONTROL_2 ) + sizeof( FORMAT_CONTROL_3 ) + sizeof( unsigned char )*16;
+   memcpy(( void *)&_control_1, dataBlob, sizeof( FORMAT_CONTROL_1 ) );
+   dataBlob += sizeof( FORMAT_CONTROL_1 );
 
-   memcpy(( void *)&_control_1, dataBlob, byteCount );
-   dataBlob += byteCount;
+
+   memcpy(( void *)&_control_2, dataBlob, sizeof( FORMAT_CONTROL_2 ) );
+   dataBlob += sizeof( FORMAT_CONTROL_2 );
+
+
+   memcpy(( void *)&_control_3, dataBlob, sizeof( FORMAT_CONTROL_3 ) );
+   dataBlob += sizeof( FORMAT_CONTROL_3 );
+
+
+   memcpy(( void *)&_device_class, dataBlob, sizeof( unsigned char )*16 );
+   dataBlob += sizeof( unsigned char )*16;
 
    _std_tbls_used = new unsigned char[_dim_std_tbls_used];
    memcpy( _std_tbls_used, dataBlob, _dim_std_tbls_used );
@@ -115,10 +126,7 @@ CtiAnsiTable00::CtiAnsiTable00( BYTE *dataBlob ) :
    memcpy( _mfg_tbls_write, dataBlob, _dim_mfg_status_used );
    dataBlob += _dim_mfg_status_used;
 
-   memset( &_control_2, 0, sizeof(FORMAT_CONTROL_2) );
-   memset( &_control_3, 0, sizeof(FORMAT_CONTROL_3) );
 
-   memset( _device_class, 0, sizeof(_device_class) );
 }
 
 //=========================================================================================================================================
@@ -347,11 +355,16 @@ void CtiAnsiTable00::printResult(const string& deviceName)
             CtiLockGuard< CtiLogger > doubt_guard( dout );
             dout << "   STD TBLS USED: ";
     }
-    for (int xx = 0; xx < _dim_std_tbls_used; xx++ )
+    for (long xx = 0; xx < _dim_std_tbls_used; xx++ )
     {
+        for (int x3 = 0; x3 < 8; x3++ )
         {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "  "<<  (int)_std_tbls_used[xx];
+            int offset = (xx==0?1:8);
+            if ((_std_tbls_used[xx] >> x3) & 0x01 == 0x01)
+            {
+                CtiLockGuard< CtiLogger > doubt_guard( dout );
+                dout << "  "<<  (int)((offset * xx) + x3);
+            }
         }
     }
     {

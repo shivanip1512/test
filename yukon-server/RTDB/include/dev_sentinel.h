@@ -73,6 +73,7 @@ public:
                        list< OUTMESS* >     &outList );
 
    CtiProtocolANSI_sentinel& getSentinelProtocol( void );
+   virtual CtiProtocolANSI& getANSIProtocol( void );
    void processDispatchReturnMessage( list< CtiReturnMsg* > &retList, UINT archiveFlag );
    int buildScannerTableRequest (BYTE *ptr, UINT flags);
    int buildCommanderTableRequest (BYTE *ptr, UINT flags);
@@ -88,6 +89,7 @@ public:
 
 private:
     CtiProtocolANSI_sentinel   _ansiProtocol;
+    CtiProtocolANSI _ansi;
 
     //UINT _parseFlags;
     string _result_string;

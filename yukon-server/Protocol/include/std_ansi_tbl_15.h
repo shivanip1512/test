@@ -163,11 +163,12 @@ private:
     bool _SetTwoPresentFlag;
     int _NIFormat1;
     int _NIFormat2;
+    bool _lsbDataOrder;
 
 public:
 
-   CtiAnsiTable15( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2 );
-   CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2 );
+   CtiAnsiTable15( int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2, bool lsbDataOrder = true );
+   CtiAnsiTable15( BYTE *dataBlob, int selector, int constants_entries, bool noOffset, bool useSet1, bool useSet2, int format1, int format2, bool lsbDataOrder = true);
    virtual ~CtiAnsiTable15();
    CtiAnsiTable15& operator=(const CtiAnsiTable15& aRef);
 

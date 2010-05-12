@@ -1887,6 +1887,14 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
               break;
           }
 
+      case TYPE_FOCUS:
+          {
+
+              CtiLockGuard<CtiLogger> doubt_guard(dout);
+              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for focus implemented here" << endl;
+              break;
+          }
+
       case TYPE_TDMARKV:
           {
 

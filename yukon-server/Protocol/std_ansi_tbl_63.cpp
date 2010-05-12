@@ -16,7 +16,7 @@
 
 //=========================================================================================================================================
 //=========================================================================================================================================
-CtiAnsiTable63::CtiAnsiTable63( bool *dataSetUsedFlag )
+CtiAnsiTable63::CtiAnsiTable63( bool *dataSetUsedFlag, bool lsbDataOrder)
 {
     memset( &_lp_status_tbl, 0, sizeof(LP_STATUS_RCD) );
 
@@ -26,7 +26,7 @@ CtiAnsiTable63::CtiAnsiTable63( bool *dataSetUsedFlag )
     }
 }
 
-CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag)
+CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag, bool lsbDataOrder)
 {
     int x;
     int cnt = 0;
@@ -45,18 +45,27 @@ CtiAnsiTable63::CtiAnsiTable63( BYTE *dataBlob, bool *dataSetUsedFlag)
     {
         if (_lpCtrlDataSetUsed[x])
         {
+
+            ULONG tempLong;
             memcpy( (void *)&_lp_status_tbl.lp_status_set[index].lp_set_status_flags, dataBlob, sizeof( LP_SET_STATUS_BFLD ));
             dataBlob += sizeof( LP_SET_STATUS_BFLD );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_blocks, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_element, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].last_block_seq_nbr, dataBlob, sizeof( UINT32 ));
-            dataBlob += sizeof( UINT32 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_unread_blocks, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 );
-            memcpy( (void *)&_lp_status_tbl.lp_status_set[index].nbr_valid_int, dataBlob, sizeof( UINT16 ));
-            dataBlob += sizeof( UINT16 );
+
+            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
+            _lp_status_tbl.lp_status_set[index].nbr_valid_blocks = tempLong;
+
+            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
+            _lp_status_tbl.lp_status_set[index].last_block_element = tempLong;
+
+            double tempResult; 
+            dataBlob += toDoubleParser( dataBlob, tempResult, ANSI_NI_FORMAT_INT32, lsbDataOrder );
+            _lp_status_tbl.lp_status_set[index].last_block_seq_nbr = tempResult;
+
+            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
+            _lp_status_tbl.lp_status_set[index].nbr_unread_blocks = tempLong;
+
+
+            dataBlob += toUint16Parser( dataBlob, tempLong,lsbDataOrder);
+            _lp_status_tbl.lp_status_set[index].nbr_valid_int = tempLong;
 
             index+=1;
         }
@@ -216,5 +225,9 @@ UINT16 CtiAnsiTable63::getNbrUnreadBlks(int setNbr)
 UINT16 CtiAnsiTable63::getNbrValidIntvls(int setNbr)
 {
     return _lp_status_tbl.lp_status_set[setNbr-1].nbr_valid_int;
+}
+bool CtiAnsiTable63::isDataBlockOrderDecreasing(int setNbr)
+{
+    return (bool)_lp_status_tbl.lp_status_set[setNbr - 1].lp_set_status_flags.block_order;
 }
 

@@ -178,6 +178,7 @@ string desolveDeviceType( INT aType )
         case TYPE_KV2:          Ret = "kv2";            break;
         case TYPE_ALPHA_A3:     Ret = "alpha a3";       break;
         case TYPE_SENTINEL:     Ret = "sentinel";       break;
+        case TYPE_FOCUS:        Ret = "focus";          break;
 
         case TYPEDCT501:        Ret = "dct-501";        break;
         case TYPEMCT210:        Ret = "mct-210";        break;
