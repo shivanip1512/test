@@ -74,8 +74,8 @@ public class AttributeServiceImpl implements AttributeService {
         BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
         AttributeDefinition attributeDefinition = paoDefinitionDao.getAttributeLookup(pao.getPaoIdentifier().getPaoType(), builtInAttribute);
         try {
-        PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
-        return paoPointIdentifier;
+            PaoPointIdentifier paoPointIdentifier = attributeDefinition.getPointIdentifier(pao);
+            return paoPointIdentifier;
         } catch (NotFoundException nfe) {
             throw new IllegalUseOfAttribute("Illegal use of attribute: " + attribute.getDescription());
         }

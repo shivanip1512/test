@@ -108,7 +108,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	Date range2 = DateUtils.addHours(d1, 1);
         	
         	// get rph data for range
-        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2, true);
+        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2, true, false);
         	
         	Integer rphCount = pvhList.size();
         	Double hourTotal = 0.0;

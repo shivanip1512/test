@@ -10,12 +10,8 @@ import com.cannontech.amr.tamperFlagProcessing.service.TamperFlagMonitorService;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.core.monitors.PointMonitorListenerFactory;
@@ -42,12 +38,8 @@ public class GeneralAlarmPointMonitorProcessorFactory extends MonitorProcessorFa
 	        @Override
 	        public boolean evaluate(RichPointData richPointData) {
 
-	            PointIdentifier pointIdentifier = richPointData.getPaoPointIdentifier().getPointIdentifier();
-	            // get the paoPointIdentifier for the attribute 
-	            PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointData.getPaoPointIdentifier().getPaoIdentifier(), BuiltInAttribute.GENERAL_ALARM_FLAG);
-
 	            // the richPointData matches the attribute we're looking for
-	            if (pointIdentifier.equals(paoPointIdentifier.getPointIdentifier())) {
+	            if (attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), BuiltInAttribute.GENERAL_ALARM_FLAG)) {
 
 	                // if the value is 1 (TRUE), flag was set
 	                if ( richPointData.getPointValue().getValue() == 1) {

@@ -172,8 +172,8 @@ public class OutageMonitorEditorController extends MultiActionController {
         	editError = "Device group required.";
         } else if (numberOfOutages < 1) {
         	editError= "Number of outages must be greater than or equal to 1.";
-        } else if (timePeriod <= 0) {
-        	editError = "Time period must be greater than 0.";
+        } else if (timePeriod < 0) {
+        	editError = "Time period must be greater than or equal to 0.";
         } 
         
         // editError. redirect to edit page with error

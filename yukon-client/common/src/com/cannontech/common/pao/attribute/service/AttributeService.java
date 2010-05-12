@@ -26,9 +26,10 @@ public interface AttributeService {
      * @param pao - Pao to get point for
      * @param attribute - Attribute to get point for
      * @return The paoPointIdentifier for the given attribute and pao
-     * @throws IllegalUseOfAttribute
+     * @throws IllegalUseOfAttribute if nothing is mapped for a mappable attribute
+     * @throws IllegalArgumentException if the pao does not have that attribute
      */
-    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute, IllegalArgumentException;
 
     /**
      * Method to get a set of attributes available for the given pao

@@ -157,9 +157,7 @@
       <property name="jdbcOps" ref="jdbcTemplate"/>
   </bean>
 
-  <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" >
-      <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-  </bean>
+  <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" />
   
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl">
       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />

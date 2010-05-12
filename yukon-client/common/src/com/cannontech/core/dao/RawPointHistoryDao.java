@@ -25,65 +25,41 @@ public interface RawPointHistoryDao {
     }
 
     /**
-     * Method to get a point value for a given time.
-     * 
-     * See note about start and stop order.
-     * 
+     * Method to get a list of point values for a given point and time period.
+     * StartDate is always exclusive, stopDate is inclusive.
+     * Ordering is always timestamp asc, changeid asc  
      * @param pointId - Id of point to get values for
-     * @param startDate - Start of time period
-     * @param stopDate - End of time period
-     * @return List of values for the point
-     */
-    public PointValueHolder getPointData(int pointId, Date date);
-    
-    
-    /**
-     * Method to get a list of point values for a given time period.
-     * 
-     * See note about start and stop order.
-     * Always excludes start date, and includes end date.
-     * 
-     * @param pointId - Id of point to get values for
-     * @param startDate - Start of time period
-     * @param stopDate - End of time period
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
      * @return List of values for the point
      */
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate);
     
     /**
-     * Method to get a list of point values for a given time period.
-     * Same as getPointData(int pointId, Date startDate, Date stopDate) but allows
-     * startInclusive parameter to be specificed explicitly which defaults to false in 
-     * getPointData(int pointId, Date startDate, Date stopDate).
-     * 
-     * See note about start and stop order.
-     * 
-     * 
+     * Method to get a list of point values for a given point and time period.  
      * @param pointId - Id of point to get values for
-     * @param startDate - Start of time period
-     * @param stopDate - End of time period
-     * @param startInclusive - if set to true, start date is included, end date is excluded
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @param startInclusive - When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
+     * @param reverseOrder - When true, results are returned from query in timestamp DESC, changeId DESC order
      * @return List of values for the point
      */
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive);
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder);
     
     /**
-     * Method to get a list of point values for a given time period, but only returning
-     * up to maxRows rows. If startDate.before(stopDate) is true, the returned list
-     * will contain the maxRows closest to startDate.  If stopDate.before(startDate) 
-     * is true, the returned list will contain the maxRows closest to stopDate. 
-     *
-     * See note about start and stop order.
-     * Always excludes start date, and includes end date.
-     * 
+     * Method to get a list of point values for a given point and time period, 
+     * but only returning up to maxRows rows. 
+     * To return a list with maxRows closest to startDate, use reverseOrder of false.
+     * To return a list with maxRows closest to stopDate, use reverseOrder of true. 
      * @param pointId - Id of point to get values for
-     * @param startDate - Start of time period
-     * @param stopDate - End of time period
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @param startInclusive - When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
+     * @param reverseOrder - When true, results are returned from query in timestamp DESC, changeId DESC order
      * @param maxRows - Maximum number of rows to return
      * @return List of values for the point
      */
-    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, int maxRows);
-    
+    public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder, int maxRows);
 
     /**
      * This method gets values from raw point history similarly to getPointData. But, it
@@ -105,7 +81,6 @@ public interface RawPointHistoryDao {
      * @return
      */
     public List<PointValueHolder> getIntervalPointData(int pointId, Date startDate, Date stopDate, ChartInterval resolution, Mode mode);
-
 
     /**
      * Update the quality for the specified change id.

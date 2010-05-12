@@ -1,6 +1,5 @@
 package com.cannontech.amr.monitors.impl;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -14,19 +13,15 @@ import com.cannontech.amr.outageProcessing.service.OutageMonitorService;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.core.monitors.PointMonitorListenerFactory;
 import com.cannontech.core.monitors.PointMonitorProcessor;
-import com.cannontech.core.service.SystemDateFormattingService;
+import com.google.common.collect.Iterables;
 
 public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryBase<OutageMonitor> {
 
@@ -35,7 +30,6 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
     private DeviceGroupService deviceGroupService;
     private RawPointHistoryDao rawPointHistoryDao;
     private OutageMonitorService outageMonitorService;
-    private SystemDateFormattingService systemDateFormattingService;
     private PointMonitorListenerFactory pointMonitorListenerFactory;
     
     @Override
@@ -51,45 +45,64 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
             @Override
             public boolean evaluate(RichPointData richPointData) {
 
-                PointIdentifier pointIdentifier = richPointData.getPaoPointIdentifier()
-                                                                .getPointIdentifier();
-                // get the paoPointIdentifier for the attribute
-                PaoPointIdentifier paoPointIdentifier = attributeService.getPaoPointIdentifierForAttribute(richPointData.getPaoPointIdentifier().getPaoIdentifier(),
-                                                                                                           BuiltInAttribute.BLINK_COUNT);
-
                 // the richPointData matches the attribute we're looking for
-                if (pointIdentifier.equals(paoPointIdentifier.getPointIdentifier())) {
-                    List<PointValueHolder> latestPreviousReadings = getLatestPreviousReading(richPointData);
-                    if (!latestPreviousReadings.isEmpty()) {
-                        PointValueHolder latestPreviousReading = latestPreviousReadings.get(0);
-                        double thisReading = richPointData.getPointValue().getValue();
-                        double previousReading = latestPreviousReading.getValue();
-                        double delta = thisReading - previousReading;
-
-                        // if delta is equal to or exceeds our allowed number of
-                        // outages
-                        if (delta >= outageMonitor.getNumberOfOutages()) {
-                            return true;
-                        }
-                    }
+                if (!attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), BuiltInAttribute.BLINK_COUNT)) {
+                    return false;
                 }
+
+                int pointId = richPointData.getPointValue().getId();
+                Date currentTimeStamp = richPointData.getPointValue().getPointDataTimeStamp();
+                // get the one reading prior to this stopDate is exclusive, so we simply pass the current reading's time
+                List<PointValueHolder> previousPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, currentTimeStamp, true, true, 1);
+                if (previousPointDatas.isEmpty()) {
+                    return handleNoPriorReading(richPointData.getPointValue());
+                }
+
+                PointValueHolder previousValue = Iterables.getOnlyElement(previousPointDatas);
+
+                // check if reading is unchanged
+                if (previousValue.getValue() == richPointData.getPointValue().getValue()) {
+                    // no need to flag an outage, nothing changed since last time
+                    return false;
+                }
+                
+             // check if the previous value can be used as prior value for calculation (saves trip to the database)
+                Duration minOutagePeriod = Duration.standardDays(outageMonitor.getTimePeriodDays());
+                Instant currentReadingInstant = new Instant(richPointData.getPointValue().getPointDataTimeStamp());
+                Instant latestTimeOfPriorReading = currentReadingInstant.minus(minOutagePeriod);
+
+                Instant previousReadingInstant = new Instant(previousValue.getPointDataTimeStamp());
+                if (previousReadingInstant.isBefore(latestTimeOfPriorReading)) {
+                    return checkThreshold(previousValue, richPointData.getPointValue());
+                }
+                
+                // check if the change from the previous is greater than our threshold anyways
+                if (checkThreshold(previousValue, richPointData.getPointValue())) {
+                    return true;
+                }
+
+                // go back to the database
+                List<PointValueHolder> priorPointDatas = rawPointHistoryDao.getLimitedPointData(pointId, null, latestTimeOfPriorReading.toDate(), true, true, 1);
+                if (priorPointDatas.isEmpty()) {
+                    return handleNoPriorReading(richPointData.getPointValue());
+                }
+
+                PointValueHolder priorValue = Iterables.getOnlyElement(priorPointDatas);
+                return checkThreshold(priorValue, richPointData.getPointValue());
+            }
+
+            private boolean handleNoPriorReading(PointValueHolder pointValue) {
+
                 return false;
             }
 
-            private List<PointValueHolder> getLatestPreviousReading(RichPointData richPointData) {
-                Date startDate = outageMonitorService.getLatestPreviousReadingDate(outageMonitor);
-
-                // use a threshold of time that is up to x times the time
-                // period.
-                // TODO - possibly look at using a roleProperty or config for
-                // setting the 4 part.
-                int maxNumberOfDays = outageMonitor.getTimePeriodDays() * 4;
-                Duration maxDuration = Duration.standardDays(maxNumberOfDays);
-                Date stopDate = new Instant(startDate).minus(maxDuration).toDate();
-                return rawPointHistoryDao.getPointData(richPointData.getPointValue().getId(),
-                                                       startDate,
-                                                       stopDate,
-                                                       1);
+            private boolean checkThreshold(PointValueHolder previousValue, PointValueHolder pointValue) {
+                double thisReading = pointValue.getValue();
+                double previousReading = previousValue.getValue();
+                double delta = thisReading - previousReading;
+                
+                boolean thresholdExceeded = delta >= outageMonitor.getNumberOfOutages();
+                return thresholdExceeded;
             }
 
             @Override
@@ -124,12 +137,6 @@ public class OutagePointMonitorProcessorFactory extends MonitorProcessorFactoryB
     @Autowired
     public void setOutageMonitorDao(OutageMonitorDao outageMonitorDao) {
         this.outageMonitorDao = outageMonitorDao;
-    }
-
-    @Autowired
-    public void setSystemDateFormattingService(
-            SystemDateFormattingService systemDateFormattingService) {
-        this.systemDateFormattingService = systemDateFormattingService;
     }
 
     @Autowired
