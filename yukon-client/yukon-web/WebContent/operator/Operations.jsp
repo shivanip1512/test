@@ -344,13 +344,14 @@
 	            </tags:sectionLink>
 			</cti:checkProperty> 
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"> 
-	        	<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
-	            	<input type="hidden" name="action" value="DeleteEnergyCompany">
-	            	<input type="hidden" name="REDIRECT" value="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
-            		<tags:sectionLink>
+            	<tags:sectionLink>
+	        		<form name="DeleteForm" method="post" action="<cti:url value="/servlet/StarsAdmin"/>">
+	            		<input type="hidden" name="action" value="DeleteEnergyCompany">
+	            		<input type="hidden" name="REDIRECT" value="<cti:url value="/servlet/LoginController?ACTION=LOGOUT"/>">
+
               			<a href="javascript:confirmDelete()">Delete Energy Company</a>
-	            	</tags:sectionLink>
-	        	</form>
+		        	</form>
+	            </tags:sectionLink>
 			</cti:checkProperty>
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"> 
 	            <tags:sectionLink>
