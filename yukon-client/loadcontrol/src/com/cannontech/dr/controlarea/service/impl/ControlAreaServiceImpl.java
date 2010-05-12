@@ -87,7 +87,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
     }
 
-    private static class ControlAreaRowMapper extends AbstractRowMapperWithBaseQuery<ControlArea> {
+    private static class ControlAreaRowMapper extends AbstractRowMapperWithBaseQuery<DisplayablePao> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId;
 
         ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId) {
@@ -179,10 +179,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public ControlArea findControlAreaForProgram(YukonUserContext userContext, int programId) {
+    public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId) {
         UiFilter<DisplayablePao> filter = new ForProgramFilter(programId);
 
-        SearchResult<ControlArea> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             filterControlAreas(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         if (searchResult.getHitCount() > 0) {
@@ -192,7 +192,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public SearchResult<ControlArea> filterControlAreas(UiFilter<DisplayablePao> filter,
+    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
                                                         Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext) {
@@ -210,7 +210,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
         
-        SearchResult<ControlArea> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
 

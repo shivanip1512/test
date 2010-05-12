@@ -3,6 +3,7 @@ package com.cannontech.dr.filter;
 import java.util.List;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
+import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
@@ -19,7 +20,7 @@ public class NotPaoTypeFilter implements UiFilter<DisplayablePao> {
     @Override
     public Iterable<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
         List<PostProcessingFilter<DisplayablePao>> filters = Lists.newArrayList();
-        filters.add(new PostProcessingFilter<DisplayablePao>() {
+        filters.add(new PostProcessingFilterAdapter<DisplayablePao>() {
             @Override
             public boolean matches(DisplayablePao pao) {
                 return !pao.getPaoIdentifier().getPaoType().equals(paoTypeNotToBe);

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
+import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
@@ -23,7 +24,7 @@ public class LoadGroupLoadCapacityFilter implements UiFilter<DisplayablePao> {
     public List<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
         List<PostProcessingFilter<DisplayablePao>> retVal =
             new ArrayList<PostProcessingFilter<DisplayablePao>>(1);
-        retVal.add(new PostProcessingFilter<DisplayablePao>() {
+        retVal.add(new PostProcessingFilterAdapter<DisplayablePao>() {
 
             @Override
             public boolean matches(DisplayablePao object) {

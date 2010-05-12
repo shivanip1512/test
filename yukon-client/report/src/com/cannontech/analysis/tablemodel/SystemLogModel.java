@@ -17,6 +17,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.point.SystemLog;
@@ -172,7 +173,7 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 		//if LMControlLog model, let's trust the YUKONPAOBJECT.class value = 'GROUP'
 		// rather than the SYSTEMLOG.type value == 3 (LOADMANAGMENT)	SN / COREY
 		if(this instanceof LMControlLogModel) {
-		    List<YukonPao> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
+		    List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
 		    /*
              *  Restrict results based on PaoPermissions of LM Groups.
              */

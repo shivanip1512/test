@@ -421,18 +421,18 @@ public class ReportFuncs
         }
     }
     
-    public static List<YukonPao> getRestrictedPrograms(LiteYukonUser user){
+    public static List<LiteYukonPAObject> getRestrictedPrograms(LiteYukonUser user){
         PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
         IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
         List<LiteYukonPAObject> programs = cache.getAllLMPrograms();
         return paoAuthService.filterAuthorized(user, programs, Permission.LM_VISIBLE);
     }
     
-    public static List<YukonPao> getRestrictedLMGroups(LiteYukonUser user){
+    public static List<LiteYukonPAObject> getRestrictedLMGroups(LiteYukonUser user){
         PaoAuthorizationService paoAuthService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
         IDatabaseCache cache = (IDatabaseCache) YukonSpringHook.getBean("databaseCache");
         List<LiteYukonPAObject> groups = cache.getAllLMGroups();
-        List<YukonPao> filtered = paoAuthService.filterAuthorized(user, groups, Permission.LM_VISIBLE); 
+        List<LiteYukonPAObject> filtered = paoAuthService.filterAuthorized(user, groups, Permission.LM_VISIBLE); 
         return filtered;
     }
     
@@ -443,7 +443,8 @@ public class ReportFuncs
      * @param restrictedPrograms
      * @return
      */
-    public static List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, List<YukonPao> restrictedPrograms){
+    public static List<ProgramLoadGroup> filterProgramsByPermission(List<ProgramLoadGroup> programAndGroupList, 
+                                                                    List<LiteYukonPAObject> restrictedPrograms){
         if(!restrictedPrograms.isEmpty()) {
             List<ProgramLoadGroup> filterProgramList = new ArrayList<ProgramLoadGroup>();
             for(ProgramLoadGroup programLoadGroup : programAndGroupList) {

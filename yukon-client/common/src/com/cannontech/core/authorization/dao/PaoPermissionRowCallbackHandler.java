@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.google.common.collect.Multimap;
@@ -16,11 +16,11 @@ import com.google.common.collect.Multimap;
  */
 public class PaoPermissionRowCallbackHandler implements RowCallbackHandler {
 
-    private final Multimap<Integer, YukonPao> paoLookup;
-    private final Multimap<AuthorizationResponse, YukonPao> result;
+    private final Multimap<Integer, PaoIdentifier> paoLookup;
+    private final Multimap<AuthorizationResponse, PaoIdentifier> result;
 
-    public PaoPermissionRowCallbackHandler(Multimap<Integer, YukonPao> paoLookup, 
-                                           Multimap<AuthorizationResponse, YukonPao> result){
+    public PaoPermissionRowCallbackHandler(Multimap<Integer, PaoIdentifier> paoLookup, 
+                                           Multimap<AuthorizationResponse, PaoIdentifier> result){
         this.paoLookup = paoLookup;
         this.result = result;
 
@@ -32,7 +32,7 @@ public class PaoPermissionRowCallbackHandler implements RowCallbackHandler {
         String allow = rs.getString("allow");
         AllowDeny allowDeny = AllowDeny.valueOf(allow);
 
-        Collection<YukonPao> collection = paoLookup.removeAll(paoId);
+        Collection<PaoIdentifier> collection = paoLookup.removeAll(paoId);
         if(AllowDeny.ALLOW.equals(allowDeny)) {
             // Pao is authorized
             result.putAll(AuthorizationResponse.AUTHORIZED, collection);

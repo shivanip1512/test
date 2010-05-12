@@ -35,7 +35,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;
 import com.cannontech.dr.controlarea.filter.StateFilter;
-import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaNameField;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
@@ -109,7 +108,7 @@ public class ControlAreaController {
 
         List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
-        filters.add(new AuthorizedFilter(paoAuthorizationService,
+        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService,
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
 
@@ -165,7 +164,7 @@ public class ControlAreaController {
 
         UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        SearchResult<ControlArea> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             controlAreaService.filterControlAreas(filter, sorter, startIndex,
                                                   backingBean.getItemsPerPage(), userContext);
 

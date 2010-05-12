@@ -33,7 +33,7 @@ public interface AuthorizationService<T> {
      * that the user is authorized to use. 
      * @return - List of authorized objects
      */
-    public List<T> filterAuthorized(LiteYukonUser user, 
-                                    Iterable<? extends T> objectsToFilter, 
+    public <K extends T> List<K> filterAuthorized(LiteYukonUser user, 
+                                    Iterable<K> objectsToFilter, 
                                     Permission permission);
 }

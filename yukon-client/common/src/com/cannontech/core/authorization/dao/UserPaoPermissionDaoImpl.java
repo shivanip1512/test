@@ -9,6 +9,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -135,15 +136,15 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     }
     
     @Override
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          final LiteYukonUser it, 
-                                                                          final Permission permission) {
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               final LiteYukonUser it, 
+                                                                               final Permission permission) {
         
-        final Multimap<AuthorizationResponse, YukonPao> result = ArrayListMultimap.create();
+        final Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();
 
-        final Multimap<Integer, YukonPao> paoLookup = ArrayListMultimap.create();
-        for(YukonPao pao : paos) {
-            int paoId = pao.getPaoIdentifier().getPaoId();
+        final Multimap<Integer, PaoIdentifier> paoLookup = ArrayListMultimap.create();
+        for(PaoIdentifier pao : paos) {
+            int paoId = pao.getPaoId();
             paoLookup.put(paoId, pao);
         }
         
@@ -173,9 +174,9 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     }
     
     @Override
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          List<LiteYukonUser> it,
-                                                                          Permission permission) {
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               List<LiteYukonUser> it,
+                                                                               Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 

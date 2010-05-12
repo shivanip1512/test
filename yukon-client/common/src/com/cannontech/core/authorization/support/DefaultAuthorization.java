@@ -1,7 +1,7 @@
 package com.cannontech.core.authorization.support;
 
 import java.util.Collection;
-import java.util.Queue;
+import java.util.Set;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -17,16 +17,18 @@ public class DefaultAuthorization<T> implements Authorization<T> {
     }
     
     @Override
-    public void process(Queue<T> inputQueue, Queue<T> unknownQueue,
-                        Collection<T> authorizedObjects, LiteYukonUser user,
+    public void process(Collection<T> inputObjects,
+                        Collection<T> unknownObjects,
+                        Set<T> authorizedObjects,
+                        LiteYukonUser user, 
                         Permission permission) {
 
         if(permission.getDefault()) {
             // authorized - add all inputs to authorized collection
-            authorizedObjects.addAll(inputQueue);
+            authorizedObjects.addAll(inputObjects);
         }
         
-        // not authorized - do nothing
+        // not authorized - these objects are now filtered OUT of our list of objects
         
     }
 

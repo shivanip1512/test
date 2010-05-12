@@ -1,10 +1,11 @@
 package com.cannontech.loadcontrol.loadgroup.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.google.common.collect.SetMultimap;
 
 
 public interface LoadGroupDao {
@@ -29,7 +30,7 @@ public interface LoadGroupDao {
      * @param pao
      * @return
      */
-    public List<PaoIdentifier> getParentMacroGroups(YukonPao pao);
+    public List<PaoIdentifier> getParentMacroGroups(PaoIdentifier pao);
 
     /**
      * This method returns a list of loadGroups that are attached to 
@@ -37,5 +38,12 @@ public interface LoadGroupDao {
      * 
      */
     public List<LoadGroup> getByStarsProgramId(int programId);
+    
+    /**
+     * Method to get a mapping of macro group to groups
+     * @param groups - Collection of groups to get macro group mappings for
+     * @return Macro group to groups mapping
+     */
+    public SetMultimap<PaoIdentifier, PaoIdentifier> getMacroGroupToGroupMappings(Collection<PaoIdentifier> groups);
 
 }

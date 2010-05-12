@@ -1,8 +1,11 @@
 package com.cannontech.core.dao;
 
+import java.util.Collection;
 import java.util.List;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.google.common.collect.SetMultimap;
 
 public interface DemandResponseDao {
 
@@ -20,4 +23,13 @@ public interface DemandResponseDao {
      * @return - List of parents
      */
     public List<YukonPao> getProgramsForGroup(YukonPao group);
+    
+    public SetMultimap<PaoIdentifier, PaoIdentifier> getProgramToGroupMappingForGroups(
+                                                                       Collection<PaoIdentifier> groups);
+
+    public SetMultimap<PaoIdentifier, PaoIdentifier> getControlAreaToProgramMappingForPrograms(
+                                                                       Collection<PaoIdentifier> progarms);
+
+    public SetMultimap<PaoIdentifier, PaoIdentifier> getScenarioToProgramMappingForPrograms(
+                                                                       Collection<PaoIdentifier> progarms);
 }

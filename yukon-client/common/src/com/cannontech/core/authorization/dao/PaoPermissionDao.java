@@ -3,6 +3,7 @@ package com.cannontech.core.authorization.dao;
 import java.util.Collection;
 import java.util.List;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.support.AuthorizationResponse;
@@ -89,9 +90,9 @@ public interface PaoPermissionDao<T> {
      * @param permission - Permission in question
      * @return - Map of authorization to pao mappings
      */
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          T it, 
-                                                                          Permission permission);
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               T it, 
+                                                                               Permission permission);
     
     /**
      * Method to get a list of authorizations for a collection of paos and a permission
@@ -100,9 +101,9 @@ public interface PaoPermissionDao<T> {
      * @param permission - Permission in question
      * @return - Map of authorization to pao mappings
      */
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          List<T> it, 
-                                                                          Permission permission);
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               List<T> it, 
+                                                                               Permission permission);
     
     /**
      * Method to add a pao permission for a thing

@@ -1,5 +1,6 @@
 package com.cannontech.core.authorization.service.impl;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 
@@ -8,7 +9,10 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
  * with a type. This class makes it easier to instantiate a
  * PaoAuthorizationService for LiteYukonPAObject using spring.
  */
-public class PaoAuthorizationServiceImpl extends AuthorizationServiceBase<YukonPao>
+public class PaoAuthorizationServiceImpl extends AuthorizationServiceBase<YukonPao, PaoIdentifier>
         implements PaoAuthorizationService {
-
+    @Override
+    protected PaoIdentifier convert(YukonPao input) {
+        return input.getPaoIdentifier();
+    }
 }

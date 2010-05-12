@@ -27,7 +27,7 @@ public class FilterServiceImpl implements FilterService {
     private Logger log = YukonLogManager.getLogger(FilterServiceImpl.class);
 
     @Override
-    public <T> SearchResult<T> filter(UiFilter<? super T> filter,
+    public <T> SearchResult<T> filter(UiFilter<T> filter,
             Comparator<? super T> sorter, int startIndex, int count,
             RowMapperWithBaseQuery<T> rowMapper) {
         SqlFragmentCollection whereClause = SqlFragmentCollection.newAndCollection();
@@ -73,20 +73,14 @@ public class FilterServiceImpl implements FilterService {
         	
         	log.debug("Begin applying post processing filter(s).");
         	
-            for (T obj : objectsFromDb) {
-                boolean useIt = true;
-                for (PostProcessingFilter<? super T> postProcessingFilter
-                        : filter.getPostProcessingFilters()) {
-                    if (!postProcessingFilter.matches(obj)) {
-                        useIt = false;
-                        break;
-                    }
-                }
-                if (useIt) {
-                    objectsThatPassedFilters.add(obj);
-                }
+        	for (PostProcessingFilter<T> postProcessingFilter : 
+        	    filter.getPostProcessingFilters()) {
+                
+        	    List<T> processedList = postProcessingFilter.process(objectsFromDb);
+                objectsFromDb = processedList;
             }
-            
+        	
+        	objectsThatPassedFilters = objectsFromDb;
             log.debug("Finished applying post processing filter(s): " + objectsThatPassedFilters.size() + "/" + objectsFromDb.size() + " objects passed filter.");
         }
 

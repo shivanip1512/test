@@ -2,7 +2,10 @@ package com.cannontech.loadcontrol.loadgroup.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -13,7 +16,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
@@ -23,6 +29,10 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
     
@@ -153,13 +163,52 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                                         loadGroup.getLoadGroupId());
     }
     
-    public List<PaoIdentifier> getParentMacroGroups(YukonPao group) {
-        YukonPaoRowMapper mapper = new YukonPaoRowMapper();
-        SqlStatementBuilder sql = new SqlStatementBuilder("select gm.OwnerID PAObjectID, pao.type Type");
-        sql.append("from GenericMacro gm");
-        sql.append("join YukonPAObject pao on pao.PAObjectID = gm.OwnerID ");
-        sql.append("where gm.MacroType = ").appendArgument(MacroTypes.GROUP).append("and gm.ChildID = ").appendArgument(group.getPaoIdentifier().getPaoId());
-        return simpleJdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
+    public List<PaoIdentifier> getParentMacroGroups(PaoIdentifier group) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT gm.OwnerID PAObjectID, pao.type Type");
+        sql.append("FROM GenericMacro gm");
+        sql.append("JOIN YukonPAObject pao ON pao.PAObjectID = gm.OwnerID ");
+        sql.append("WHERE gm.MacroType").eq(MacroTypes.GROUP);
+        sql.append("    AND gm.ChildID").eq(group.getPaoIdentifier().getPaoId());
+        
+        return simpleJdbcTemplate.query(sql.getSql(), new YukonPaoRowMapper(), sql.getArguments());
+    }
+    
+    @Override
+    public SetMultimap<PaoIdentifier, PaoIdentifier> getMacroGroupToGroupMappings(Collection<PaoIdentifier> groups) {
+        
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT OwnerID, ChildID");
+                sql.append("FROM GenericMacro");
+                sql.append("WHERE MacroType").eq(MacroTypes.GROUP);
+                sql.append("    AND ChildID").in(subList);
+                return sql;
+            }
+        };
+        ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>> rowMapper = 
+            new ParameterizedRowMapper<Map.Entry<Integer, PaoIdentifier>>() {
+            public Entry<Integer, PaoIdentifier> mapRow(ResultSet rs, int rowNum) throws SQLException{
+                Integer macroGroupId = rs.getInt("OwnerID");
+                PaoIdentifier macroGroup = new PaoIdentifier(macroGroupId, PaoType.MACRO_GROUP);
+
+                Integer groupId = rs.getInt("ChildID");
+
+                return Maps.immutableEntry(groupId, macroGroup);
+            }
+        };
+        Function<PaoIdentifier, Integer> typeMapper = new Function<PaoIdentifier, Integer>() {
+           public Integer apply(PaoIdentifier from) {
+               return from.getPaoId();
+           }; 
+        };
+
+        ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
+        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(groups), rowMapper, typeMapper);
+                
     }
     
     // rowMappers
@@ -181,5 +230,5 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-
+    
 }

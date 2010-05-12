@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
@@ -76,9 +77,9 @@ public interface PaoPermissionService {
      * @param permission - Permission in question
      * @return - Map of authorization to pao mappings
      */
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          LiteYukonUser user, 
-                                                                          Permission permission);
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               LiteYukonUser user, 
+                                                                               Permission permission);
     
     /**
      * Method to determine if a group has a permission for a pao

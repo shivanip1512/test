@@ -18,6 +18,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
@@ -217,7 +218,7 @@ public class LoadGroupModel extends ReportModelBase<LoadGroupModel.TempLMControl
 	 * @return StringBuffer  an sqlstatement
 	 */
 	public StringBuffer buildSQLStatement() {
-		List<YukonPao> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
+		List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
 		StringBuffer sql = new StringBuffer("SELECT LMCH.LMCTRLHISTID, LMCH.PAOBJECTID, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
 				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+

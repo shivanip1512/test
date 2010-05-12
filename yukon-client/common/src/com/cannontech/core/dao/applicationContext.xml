@@ -181,11 +181,6 @@
        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean> 
    
-  <bean id="userPaoPermissionDao" class="com.cannontech.core.authorization.dao.UserPaoPermissionDaoImpl" >
-       <property name="jdbcOps" ref="jdbcTemplate" />
-       <property name="nextValueHelper" ref="nextValueHelper" />
-  </bean> 
-  
   <bean id="xmlLMGroupParameterDao" class="com.cannontech.core.dao.impl.LmGroupXmlParameterDaoImpl"/> 
   <bean id="paoScheduleDao" class="com.cannontech.core.dao.impl.PaoScheduleDaoImpl"/>
   

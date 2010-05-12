@@ -1,20 +1,21 @@
 package com.cannontech.dr.filter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
+import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.google.common.collect.Lists;
 
-public class AuthorizedFilter implements UiFilter<DisplayablePao> {
+public class AuthorizedFilter<T extends YukonPao> implements UiFilter<T> {
     private PaoAuthorizationService paoAuthorizationService;
     private LiteYukonUser user;
-    private Permission[] permissions;
+    private Permission permission;
 
     /**
      * Constructor for Authorization filter
@@ -25,31 +26,25 @@ public class AuthorizedFilter implements UiFilter<DisplayablePao> {
      */
     public AuthorizedFilter(PaoAuthorizationService paoAuthorizationService,
                             LiteYukonUser user,
-                            Permission... permissions) {
+                            Permission permission) {
         this.paoAuthorizationService = paoAuthorizationService;
         this.user = user;
-        this.permissions = permissions;
+        this.permission = permission;
     }
 
     @Override
-    public List<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
-        List<PostProcessingFilter<DisplayablePao>> retVal =
-            new ArrayList<PostProcessingFilter<DisplayablePao>>(1);
-        retVal.add(new PostProcessingFilter<DisplayablePao>() {
+    public List<PostProcessingFilter<T>> getPostProcessingFilters() {
+        List<PostProcessingFilter<T>> retVal = Lists.newArrayListWithCapacity(1);
+        retVal.add(new PostProcessingFilterAdapter<T>() {
 
             @Override
-            public boolean matches(DisplayablePao pao) {
-                
-                for(Permission permission : permissions) {
-                    if(!paoAuthorizationService.isAuthorized(user,
-                                                             permission,
-                                                             pao)) {
-                        return false;
-                    }
-                }
-                
-                return true;
-            }});
+            public List<T> process(List<T> objectsFromDb) {
+                List<T> authorizedPaos = 
+                    paoAuthorizationService.filterAuthorized(user, objectsFromDb, permission);
+                return authorizedPaos;
+            }
+
+        });
         return retVal;
     }
 

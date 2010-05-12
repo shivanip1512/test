@@ -99,9 +99,9 @@ public class LoadGroupControllerHelper {
             filters.add(detailFilter);
         }
 
-        filters.add(new AuthorizedFilter(paoAuthorizationService, 
-                                         userContext.getYukonUser(), 
-                                         Permission.LM_VISIBLE));
+        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
+                userContext.getYukonUser(), 
+                Permission.LM_VISIBLE));
 
         boolean isFiltered = false;
         if (!StringUtils.isEmpty(backingBean.getName())) {

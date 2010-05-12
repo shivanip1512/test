@@ -10,6 +10,7 @@ import java.util.List;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -194,22 +195,22 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
     }
     
     @Override
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          LiteYukonGroup it,
-                                                                          Permission permission) {
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               LiteYukonGroup it,
+                                                                               Permission permission) {
         return getPaoAuthorizations(paos, Collections.singletonList(it), permission);
     }
     
     @Override
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          List<LiteYukonGroup> it,
-                                                                          final Permission permission) {
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               List<LiteYukonGroup> it,
+                                                                               final Permission permission) {
         
-        final Multimap<AuthorizationResponse, YukonPao> result = ArrayListMultimap.create();
+        final Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();
 
-        final Multimap<Integer, YukonPao> paoLookup = ArrayListMultimap.create();
-        for(YukonPao pao : paos) {
-            int paoId = pao.getPaoIdentifier().getPaoId();
+        final Multimap<Integer, PaoIdentifier> paoLookup = ArrayListMultimap.create();
+        for(PaoIdentifier pao : paos) {
+            int paoId = pao.getPaoId();
             paoLookup.put(paoId, pao);
         }
         

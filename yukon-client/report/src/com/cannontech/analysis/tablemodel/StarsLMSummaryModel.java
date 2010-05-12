@@ -21,6 +21,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 
@@ -181,7 +182,7 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
 			{
 				pstmt = conn.prepareStatement(sql.toString());
 				rset = pstmt.executeQuery();
-                List<YukonPao> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
+                List<LiteYukonPAObject> restrictedGroups = ReportFuncs.getRestrictedLMGroups(liteUser);
 				while( rset.next())
 				{
 				    String groupName = rset.getString(1);

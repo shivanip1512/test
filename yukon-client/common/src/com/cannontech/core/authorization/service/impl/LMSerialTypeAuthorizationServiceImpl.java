@@ -7,7 +7,12 @@ import com.cannontech.core.authorization.service.LMSerialTypeAuthorizationServic
  * with a type. This class makes it easier to instantiate a
  * LMSerialTypeAuthorizationService for String using spring.
  */
-public class LMSerialTypeAuthorizationServiceImpl extends AuthorizationServiceBase<String>
+public class LMSerialTypeAuthorizationServiceImpl extends AuthorizationServiceBase<String, String>
         implements LMSerialTypeAuthorizationService {
+
+    @Override
+    protected String convert(String input) {
+        return input;
+    }
 
 }

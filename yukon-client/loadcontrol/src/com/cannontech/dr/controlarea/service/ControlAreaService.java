@@ -18,9 +18,9 @@ public interface ControlAreaService {
     
     public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId);
 
-    public ControlArea findControlAreaForProgram(YukonUserContext userContext, int programId);
+    public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
 
-    public SearchResult<ControlArea> filterControlAreas(UiFilter<DisplayablePao> filter,
+    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
                                                         Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext);

@@ -1,5 +1,6 @@
 package com.cannontech.core.authorization.support.string;
 
+import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.PermissionRoleAuthorizationBase;
 
 /**
@@ -9,4 +10,13 @@ import com.cannontech.core.authorization.support.PermissionRoleAuthorizationBase
  */
 public class StringPermissionRoleAuthorization extends PermissionRoleAuthorizationBase<String>
         implements StringAuthorization {
+
+    @Override
+    protected AuthorizationResponse isRoleAuthorized(boolean roleValue){
+        if (roleValue) {
+            return AuthorizationResponse.AUTHORIZED;
+        } else {
+            return AuthorizationResponse.UNAUTHORIZED;
+        }
+    }
 }

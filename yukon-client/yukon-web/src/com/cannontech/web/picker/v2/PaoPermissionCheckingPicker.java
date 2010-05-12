@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
+import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -31,7 +32,8 @@ public class PaoPermissionCheckingPicker extends FilterPaoPicker {
 			ppFilters.addAll(extraPostProcessingFilters);
 		}
 		
-		PostProcessingFilter<UltraLightPao> lmPaoPermissionCheckingPostProcessingFilter = new PostProcessingFilter<UltraLightPao>() {
+		PostProcessingFilter<UltraLightPao> lmPaoPermissionCheckingPostProcessingFilter = 
+		    new PostProcessingFilterAdapter<UltraLightPao>() {
 			
 			@Override
 			public boolean matches(UltraLightPao object) {

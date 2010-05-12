@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
@@ -1226,14 +1225,19 @@ public class CommandDeviceBean implements DBChangeListener
 	            }
 	        });
 
-	        final PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
+	        final PaoAuthorizationService paoAuthorizationService = 
+	            YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);
 	        final LiteYukonUser unloadedLiteYukonUser = new LiteYukonUser(getUserID());
 	        loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>();
 	        
-            List<YukonPao> filtered = paoAuthorizationService.filterAuthorized(unloadedLiteYukonUser, liteLoadGroups, Permission.LM_VISIBLE);
+            List<YCLiteLoadGroup> filtered = 
+                paoAuthorizationService.filterAuthorized(unloadedLiteYukonUser, 
+                                                         liteLoadGroups, 
+                                                         Permission.LM_VISIBLE);
             for (YukonPao yukonPao : filtered) {
                 YCLiteLoadGroup ycLiteLoadGroup = (YCLiteLoadGroup)yukonPao;
-                loadGroupIDToLiteLoadGroupsMap.put(ycLiteLoadGroup.getPaoIdentifier().getPaoId(), ycLiteLoadGroup);
+                loadGroupIDToLiteLoadGroupsMap.put(ycLiteLoadGroup.getPaoIdentifier().getPaoId(), 
+                                                   ycLiteLoadGroup);
             }
 		}
 		return loadGroupIDToLiteLoadGroupsMap;

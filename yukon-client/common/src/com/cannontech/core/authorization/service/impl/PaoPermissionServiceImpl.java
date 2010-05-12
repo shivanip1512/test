@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.authorization.model.PaoPermission;
@@ -101,25 +102,25 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
     
     @Override
-    public Multimap<AuthorizationResponse, YukonPao> getPaoAuthorizations(Collection<YukonPao> paos,
-                                                                          LiteYukonUser user,
-                                                                          Permission permission) {
+    public Multimap<AuthorizationResponse, PaoIdentifier> getPaoAuthorizations(Collection<PaoIdentifier> paos,
+                                                                               LiteYukonUser user,
+                                                                               Permission permission) {
         if(!permission.isSettablePerPao()) {
             // Authorization unknown for all paos
-            Multimap<AuthorizationResponse, YukonPao> result = ArrayListMultimap.create();     
+            Multimap<AuthorizationResponse, PaoIdentifier> result = ArrayListMultimap.create();     
             result.putAll(AuthorizationResponse.UNKNOWN, paos);
             return result;
         }
         
         // Get user pao authorizations
-        Multimap<AuthorizationResponse, YukonPao> userPaoAuthorizations = 
+        Multimap<AuthorizationResponse, PaoIdentifier> userPaoAuthorizations = 
             userPaoPermissionDao.getPaoAuthorizations(paos, user, permission);
         
         // Get group pao authorizations for the user
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
-        Collection<YukonPao> unknownUserPaos = 
+        Collection<PaoIdentifier> unknownUserPaos = 
             userPaoAuthorizations.get(AuthorizationResponse.UNKNOWN);
-        Multimap<AuthorizationResponse, YukonPao> groupPaoAuthorizations = 
+        Multimap<AuthorizationResponse, PaoIdentifier> groupPaoAuthorizations = 
             groupPaoPermissionDao.getPaoAuthorizations(unknownUserPaos, userGroups, permission);
         
         // Add the authorized and unauthorized paos from the user results to the group results to 
