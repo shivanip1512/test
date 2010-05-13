@@ -25,6 +25,66 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;
             }
             
+            case CB_PHASEA_BEFORE : {
+                value = getCBPhaseABefore(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEB_BEFORE : {
+                value = getCBPhaseBBefore(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEC_BEFORE : {
+                value = getCBPhaseCBefore(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_BEFORE_TOTAL : {
+                value = getCBBeforeTotal(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEA_AFTER : {
+                value = getCBPhaseAAfter(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEB_AFTER : {
+                value = getCBPhaseBAfter(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEC_AFTER : {
+                value = getCBPhaseCAfter(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_AFTER_TOTAL : {
+                value = getCBAfterTotal(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEA_PERCENTCHANGE : {
+                value = getCBPhaseAPercentChange(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEB_PERCENTCHANGE : {
+                value = getCBPhaseBPercentChange(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PHASEC_PERCENTCHANGE : {
+                value = getCBPhaseCPercentChange(latestValue, cbcDisplay);
+                break;
+            }
+            
+            case CB_PERCENTCHANGE_TOTAL : {
+                value = getCBPercentChangeTotal(latestValue, cbcDisplay);
+                break;
+            }
+            
             case CB_STATUS_COLOR : {
                 value = getCBStatusColor(latestValue, cbcDisplay);
                 break;
@@ -202,6 +262,54 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
     }
     
     protected String getCBStatus(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseABefore(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseBBefore(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseCBefore(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getCBBeforeTotal(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getCBPhaseAAfter(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseBAfter(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseCAfter(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBAfterTotal(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getCBPhaseAPercentChange(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseBPercentChange(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPhaseCPercentChange(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+
+    protected String getCBPercentChangeTotal(E latestValue, CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     

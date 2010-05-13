@@ -58,7 +58,19 @@ public class CBCDisplay {
     public static final int CB_WARNING_IMAGE_TEXT = 12;
     public static final int CB_WARNING_POPUP = 13;
     public static final int CB_DAILY_MAX_TOTAL_OP_COLUMN = 14;
-
+    public static final int CB_PHASEA_BEFORE = 15;
+    public static final int CB_PHASEB_BEFORE = 16;
+    public static final int CB_PHASEC_BEFORE = 17;
+    public static final int CB_PHASEA_AFTER = 18;
+    public static final int CB_PHASEB_AFTER = 19;
+    public static final int CB_PHASEC_AFTER = 20;
+    public static final int CB_PHASEA_PERCENTCHANGE = 21;
+    public static final int CB_PHASEB_PERCENTCHANGE = 22;
+    public static final int CB_PHASEC_PERCENTCHANGE = 23;
+    public static final int CB_PERCENTCHANGE_TOTAL = 24;
+    public static final int CB_AFTER_TOTAL = 25;
+    public static final int CB_BEFORE_TOTAL = 26;
+    
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
     public static final int FDR_CURRENT_STATE_COLUMN = 1;
@@ -308,7 +320,174 @@ public class CBCDisplay {
 
             return warningText;
         }
-
+        case CB_PHASEA_BEFORE: {
+        	String beforeStr = capBank.getBeforeVars().trim();
+        	String value = beforeStr;
+        	
+        	if(beforeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
+        		value = st.nextToken();
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEB_BEFORE: {
+        	String beforeStr = capBank.getBeforeVars().trim();
+        	String value = "";
+        	
+        	if(beforeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEC_BEFORE: {
+        	String beforeStr = capBank.getBeforeVars().trim();
+        	String value = "";
+        	
+        	if(beforeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+        			st.nextToken();
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }
+        case CB_BEFORE_TOTAL: {
+        	String beforeStr = capBank.getBeforeVars().trim();
+        	String value = "";
+        	
+        	if(beforeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+        			st.nextToken();
+        			st.nextToken();
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEA_AFTER: {
+        	String after = capBank.getAfterVars().trim();
+        	String value = after;
+        	
+        	if(after.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(after, ":");
+        		value = st.nextToken();
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEB_AFTER: {
+        	String after = capBank.getAfterVars().trim();
+        	String value = "";
+        	
+        	if(after.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(after, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEC_AFTER: {
+        	String after = capBank.getAfterVars().trim();
+        	String value = "";
+        	
+        	if(after.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(after, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+        			st.nextToken();
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }
+        case CB_AFTER_TOTAL: {
+        	String afterStr = capBank.getBeforeVars().trim();
+        	String value = "";
+        	
+        	if(afterStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(afterStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+        			st.nextToken();
+        			st.nextToken();
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }        
+        case CB_PHASEA_PERCENTCHANGE: {
+        	String changeStr = capBank.getPercentChange().trim();
+        	String value = changeStr;
+        	
+        	if(changeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(changeStr, ":");
+        		value = st.nextToken();
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEB_PERCENTCHANGE: {
+        	String changeStr = capBank.getPercentChange().trim();
+        	String value = "";
+        	
+        	if(changeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(changeStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }
+        case CB_PHASEC_PERCENTCHANGE: {
+        	String changeStr = capBank.getPercentChange().trim();
+        	String value = "";
+        	
+        	if(changeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(changeStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+        			st.nextToken();
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }   
+        case CB_PERCENTCHANGE_TOTAL: {
+        	String changeStr = capBank.getBeforeVars().trim();
+        	String value = "";
+        	
+        	if(changeStr.contains(":")) {
+        		StringTokenizer st = new StringTokenizer(changeStr, ":");
+        		st.nextToken();
+        		if (st.hasMoreTokens()) {
+        			st.nextToken();
+        			st.nextToken();
+                    value = st.nextToken();
+        		}
+        	}
+        	
+        	return value;
+        }    
         case CB_STATUS_POPUP: {
             String before = capBank.getBeforeVars().trim();
             String beforeRow = "";
@@ -330,7 +509,7 @@ public class CBCDisplay {
                 }else {
                     beforeRow = "<tr><td>Before:</td><td colspan='4'>" + phaseA + "</td></tr>";
                 }
-                    
+
             }else {
                 beforeRow = "<tr><td>Before:</td><td colspan='4'>" + before + "</td></tr>";
             }

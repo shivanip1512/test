@@ -26,6 +26,78 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
     }
     
     @Override
+    protected String getCBPhaseABefore(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEA_BEFORE);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseBBefore(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEB_BEFORE);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseCBefore(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEC_BEFORE);
+        return value;
+    }
+
+    @Override
+    protected String getCBBeforeTotal(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_BEFORE_TOTAL);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseAAfter(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEA_AFTER);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseBAfter(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEB_AFTER);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseCAfter(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEC_AFTER);
+        return value;
+    }
+    
+    @Override
+    protected String getCBAfterTotal(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_AFTER_TOTAL);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseAPercentChange(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEA_PERCENTCHANGE);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseBPercentChange(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEB_PERCENTCHANGE);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPhaseCPercentChange(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PHASEC_PERCENTCHANGE);
+        return value;
+    }
+    
+    @Override
+    protected String getCBPercentChangeTotal(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_PERCENTCHANGE_TOTAL);
+        return value;
+    }
+    
+    @Override
     protected String getCBStatus(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_STATUS_COLUMN);
         return value;

@@ -670,8 +670,39 @@
     					   <input type="text" id="opcount_${thisCapBankId}" maxlength="5" size="5">
     					   <a href="javascript:void(0);" onclick="executeCapBankResetOpCount(${thisCapBankId});" >Reset</a>
     				    </span>
-    					<div id="capBankStatusPopup_${thisCapBankId}" style="display: none;">
-                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS_MESSAGE"/>     
+    					<div id="capBankStatusPopup_${thisCapBankId}" style="display: none">
+                            <span>
+                            	<table class='tierTable'>
+                            	<tr>
+                            		<th>kVAR</th>
+                            		<th>PhaseA</th>
+                            		<th>PhaseB</th>
+                            		<th>PhaseC</th>
+                            		<th>Total</th>
+                            	</tr>
+                            	<tr>
+	                            	<td>Before:</td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_BEFORE_TOTAL"/></td>
+                            	</tr>
+                            	<tr>
+	                            	<td>After:</td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_AFTER_TOTAL"/></td>
+                            	</tr>
+                            	<tr>
+	                            	<td>Change:</td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
+	                            	<td><cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL"/></td>
+                            	</tr>
+                            </table>
+                            </span>
     					</div>
     				</td>
                     
