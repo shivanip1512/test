@@ -112,7 +112,6 @@ extern BOOL ScannerQuit;
 
 CtiConnection     VanGoghConnection;
 ULONG             ScannerDebugLevel = 0;
-bool              CCUQueueScans = false;
 
 HANDLE hLockArray[] = {
     hScannerSyncs[S_QUIT_EVENT],
@@ -352,12 +351,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     {
         for(i = 1; i < argc; i++)
         {
-            if(!(stricmp (argv[i], "/NQ")))
-            {
-                CCUQueue = false;
-                continue;
-            }
-
             if(!(stricmp (argv[i], "/NLP")))
             {
                 SuspendLoadProfile = true;
@@ -1176,36 +1169,6 @@ void InitScannerGlobals(void)
         }
     }
 
-    if(gConfigParms.isOpt("SCANNER_QUEUE"))
-    {
-        string Temp = gConfigParms.getValueAsString("SCANNER_QUEUE");
-        std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
-
-        if(Temp == "true" || Temp == "yes")
-        {
-            CCUQueue = true;
-        }
-        else
-        {
-            CCUQueue = false;
-        }
-    }
-
-    if(gConfigParms.isOpt("SCANNER_QUEUE_SCANS"))
-    {
-        string Temp = gConfigParms.getValueAsString("SCANNER_QUEUE_SCANS");
-        std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
-
-        if(Temp == "true" || Temp == "yes")
-        {
-            CCUQueueScans = true;
-        }
-        else
-        {
-            CCUQueueScans = false;
-        }
-    }
-
     if(gConfigParms.isOpt("SCANNER_OUTPUT_INTERVAL"))
     {
         string Temp = gConfigParms.getValueAsString("SCANNER_OUTPUT_INTERVAL");
@@ -1631,20 +1594,6 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
         /* And send them to porter */
         if(PorterNexus.NexusState != CTINEXUS_STATE_NULL)
         {
-            //  if queueing has been turned off
-            if( !CCUQueue ||
-                (!CCUQueueScans && ((OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum)   ||
-                                    (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_General) ||
-                                    (OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_Integrity))) )
-            {
-                string cmdStr(OutMessage->Request.CommandStr);
-
-                if( findStringIgnoreCase(cmdStr, "noqueue") )  // Make sure we don't stuff it on there multiple times!
-                {
-                    _snprintf(OutMessage->Request.CommandStr, 254, "%s noqueue", cmdStr.c_str());
-                }
-            }
-
             if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
             {
                 if(ScannerDeviceManager.getDeviceByID(OutMessage->TargetID))

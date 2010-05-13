@@ -27,7 +27,6 @@ using namespace std;
 #include "dlldefs.h"
 #include "utility.h"
 
-IM_EX_SCANSUP bool CCUQueue           = true;
 IM_EX_SCANSUP bool SuspendLoadProfile = false;
 
 IM_EX_SCANSUP HANDLE      hScannerSyncs[S_MAX_MUTEX];

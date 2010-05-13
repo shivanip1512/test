@@ -41,5 +41,4 @@
 IM_EX_SCANSUP extern HANDLE      hScannerSyncs[];
 
 IM_EX_SCANSUP extern bool SuspendLoadProfile;
-IM_EX_SCANSUP extern bool CCUQueue;
 
