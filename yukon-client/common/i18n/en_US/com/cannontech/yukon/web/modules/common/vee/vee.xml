@@ -89,7 +89,7 @@
     <entry key="yukon.web.modules.common.vee.monitor.editor.popupInfo.thresholdPopupInfoText">
     <![CDATA[Unreasonable Threshold: <br><br>This is the normalized usage delta that will trigger an Unreasonable Up (UU) tag being 
     applied to the value.  This is the same type of normalization that is used on the Trend Widget for the Usage 
-    graph.  (Note that the Unreasonable Down (UD) threshold cannont be adjusted, it is always 0.)
+    graph.  (Note that the Unreasonable Down (UD) threshold cannot be adjusted, it is always 0.)
     <br><br>
     ]]>
     </entry>
