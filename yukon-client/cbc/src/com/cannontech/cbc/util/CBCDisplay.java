@@ -22,7 +22,6 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ColorUtil;
@@ -80,6 +79,15 @@ public class CBCDisplay {
     public static final int FDR_WARNING_POPUP = 15;
     public static final int FDR_ONELINE_WATTS_VOLTS_COLUMN = 16;
     public static final int FDR_ONELINE_THREE_PHASE_COLUMN = 17;
+    // More Column numbers for the Feeder display
+    public static final int FDR_TARGET_COLUMN_PEAKLEAD = 18;
+    public static final int FDR_TARGET_COLUMN_PEAKLAG = 19;
+    public static final int FDR_TARGET_COLUMN_CLOSEOPENPERCENT = 20;
+    public static final int FDR_VAR_LOAD_QUALITY = 21;
+    public static final int FDR_WATT_QUALITY = 22;
+    public static final int FDR_VOLT_QUALITY = 23;
+    public static final int FDR_VAR_EST_LOAD_COLUMN = 24;
+    public static final int FDR_VOLTS_COLUMN = 25;
     
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
@@ -112,7 +120,17 @@ public class CBCDisplay {
     public static final int SUB_WARNING_IMAGE = 24;
     public static final int SUB_WARNING_POPUP = 25;
     public static final int SUB_ONELINE_THREE_PHASE_COLUMN = 26;
-
+    // More Column numbers for the Feeder display
+    public static final int SUB_TARGET_COLUMN_PEAKLEAD = 27;
+    public static final int SUB_TARGET_COLUMN_PEAKLAG = 28;
+    public static final int SUB_TARGET_COLUMN_CLOSEOPENPERCENT = 29;
+    public static final int SUB_VAR_LOAD_QUALITY = 30;
+    public static final int SUB_WATT_QUALITY = 31;
+    public static final int SUB_VOLT_QUALITY = 32;
+    public static final int SUB_VAR_EST_LOAD_COLUMN = 33;
+    public static final int SUB_VOLTS_COLUMN = 34;
+    
+    
     public static final int AREA_POWER_FACTOR_COLUMN = 0;
     public static final int AREA_VOLT_REDUCTION = 1;
 
@@ -489,7 +507,24 @@ public class CBCDisplay {
             }
             return state;
         }
-        
+        case SUB_TARGET_COLUMN_PEAKLEAD: {
+            return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0);
+        }
+        case SUB_TARGET_COLUMN_PEAKLAG: {
+            return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0);
+        }
+        case SUB_TARGET_COLUMN_CLOSEOPENPERCENT: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
+            String closePercent = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + "%C | ";
+            String target = num.format(subBus.getPeakPFSetPoint() ) + " | ";
+            String openPercent = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O ";
+            
+            String closeOpenPercent = closePercent + target + openPercent;
+            return closeOpenPercent;
+        }
         case SUB_TARGET_COLUMN: {
             // decide which set Point we are to use
             NumberFormat num = NumberFormat.getNumberInstance();
@@ -502,41 +537,27 @@ public class CBCDisplay {
                 return CtiUtilities.STRING_NONE;
             } 
             
-            if(subBus.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName())) {
-                /* Peak and off peak values are just holders for data */
-                String span = "<span style='font-weight:bold;font-size:11px;'>";
-                String endSpan = "</span>";
-                String upperVoltLimit = span + "U:" + endSpan + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + " ";
-                String lowerVoltLimit = span + "L:" + endSpan + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + span + " PF:" + endSpan;
-                String closePercent = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + "%C | ";
-                String target = num.format(subBus.getPeakPFSetPoint() ) + " | ";
-                String openPercent = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O ";
-                
-                String ivvcTarget = upperVoltLimit + lowerVoltLimit + closePercent + target + openPercent;
-                return ivvcTarget;
+            /* Treat peak and off peak normally */
+            if (subBus.getPeakTimeFlag().booleanValue()) { /* Currently in peak operating hours */
+
+                if (subBus.isPowerFactorControlled()) {
+
+                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C | " 
+                    + num.format(subBus.getPeakPFSetPoint() ) + " | " 
+                    + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%O";
+                } else
+                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
+                    + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
-                /* Treat peak and off peak normally */
-                if (subBus.getPeakTimeFlag().booleanValue()) { /* Currently in peak operating hours */
-    
-                    if (subBus.isPowerFactorControlled()) {
-    
-                        return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C | " 
-                        + num.format(subBus.getPeakPFSetPoint() ) + " | " 
-                        + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%O";
-                    } else
-                        return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
-                        + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
-                } else {
-                    /* Currently in off peak operating hours */
-                    if (subBus.isPowerFactorControlled()) {
-    
-                        return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
-                        + "%C | " + num.format(subBus.getOffpeakPFSetPoint()) 
-                        + " | " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O";
-                    } else
-                        return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) 
-                        + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
-                }
+                /* Currently in off peak operating hours */
+                if (subBus.isPowerFactorControlled()) {
+
+                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
+                    + "%C | " + num.format(subBus.getOffpeakPFSetPoint()) 
+                    + " | " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%O";
+                } else
+                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) 
+                    + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
             }
         }
 
@@ -574,35 +595,54 @@ public class CBCDisplay {
                                                          .doubleValue(),
                                                          decPlaces);
             }
-
-            //add an asterisk if the quality was low
-            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
-            {
-                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
-            }
-
-            retVal += " / ";
+            
+            return retVal;
+        }
+        case SUB_VAR_EST_LOAD_COLUMN: {
+            String retVal;
 
             if (subBus.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
-                retVal += DASH_LINE;
+                retVal = DASH_LINE;
             else {
-                retVal += CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue()
+                retVal = CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue()
                                                           .doubleValue(),
                                                           decPlaces);
             }
 
             return retVal;
         }
-
         case SUB_POWER_FACTOR_COLUMN: {
             return getPowerFactorText(subBus.getPowerFactorValue()
                                       .doubleValue(), true) + " / " + getPowerFactorText(subBus.getEstimatedPFValue()
                                                                                          .doubleValue(),
                                                                                          true);
         }
-
+        case SUB_VAR_LOAD_QUALITY: {
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
+            {
+                return "";
+            } else {
+                return "hideImage";
+            }
+        }
+        case SUB_WATT_QUALITY: {
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
+            {
+                return "";
+            } else {
+                return "hideImage";
+            }
+        }
+        case SUB_VOLT_QUALITY: {
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
+            {
+                return "";
+            } else {
+                return "hideImage";
+            }
+        }    
         case SUB_WATTS_COLUMN: {
-            String retVal = DASH_LINE; // default just in case
+            String retVal;
 
             if (subBus.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
                 retVal = DASH_LINE;
@@ -612,27 +652,21 @@ public class CBCDisplay {
                                                          decPlaces);
             }
 
-            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
-            {
-                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
-            }
-            retVal += " / ";
+            return retVal;
+        }
+        case SUB_VOLTS_COLUMN: {
+            String retVal;
 
             if (subBus.getCurrentVoltLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
-                retVal += DASH_LINE;
+                retVal = DASH_LINE;
             else {
-                retVal += CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue()
+                retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue()
                                                           .doubleValue(),
                                                           decPlaces);
-            }
-            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
-            {
-                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
             }
 
             return retVal;
         }
-
         case SUB_TIME_STAMP_COLUMN: {
             Date date = subBus.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
@@ -714,7 +748,24 @@ public class CBCDisplay {
 
             return state;
         }
-
+        case FDR_TARGET_COLUMN_PEAKLEAD: {
+            return CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(),0);
+        }
+        case FDR_TARGET_COLUMN_PEAKLAG: {
+            return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(),0);
+        }
+        case FDR_TARGET_COLUMN_CLOSEOPENPERCENT: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
+            String closePercent = CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(),0) + "%C | ";
+            String target = num.format(feeder.getPeakPFSetPoint() ) + " | ";
+            String openPercent = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(),0) + "%O ";
+            
+            String closeOpenPercent = closePercent + target + openPercent;
+            return closeOpenPercent;
+        }
         case FDR_TARGET_COLUMN: {
             // decide which set Point we are to use
             NumberFormat num = NumberFormat.getNumberInstance();
@@ -725,46 +776,33 @@ public class CBCDisplay {
             } else if (feeder.getControlmethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
                 return CtiUtilities.STRING_NONE;
             } 
-            if(feeder.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName())) {
-                /* Peak and off peak values are just holders for data */
-                String span = "<span style='font-weight:bold;font-size:11px;'>";
-                String endSpan = "</span>";
-                String upperVoltLimit = span + "U:" + endSpan + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(),0) + " ";
-                String lowerVoltLimit = span + "L:" + endSpan + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(),0) + span + " PF:" + endSpan;
-                String closePercent = CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(),0) + "%C | ";
-                String target = num.format(feeder.getPeakPFSetPoint() ) + " | ";
-                String openPercent = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(),0) + "%O ";
-                
-                String ivvcTarget = upperVoltLimit + lowerVoltLimit + closePercent + target + openPercent;
-                return ivvcTarget;
+
+            if (feeder.getPeakTimeFlag().booleanValue()) {
+                if (feeder.isPowerFactorControlled()) {
+                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
+                    + "%C | " 
+                    + num.format( feeder.getPeakPFSetPoint() ) 
+                    + " | " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
+                    + "%O";
+                } else
+                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
+                    + " to " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
+                    + " Pk";
             } else {
-                if (feeder.getPeakTimeFlag().booleanValue()) {
-                    if (feeder.isPowerFactorControlled()) {
-                        return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
-                        + "%C | " 
-                        + num.format( feeder.getPeakPFSetPoint() ) 
-                        + " | " 
-                        + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
-                        + "%O";
-                    } else
-                        return CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
-                        + " to " 
-                        + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
-                        + " Pk";
-                } else {
-                    if (feeder.isPowerFactorControlled()) {
-                        return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
-                        + "%C | " 
-                        + num.format( feeder.getOffpeakPFSetPoint() ) 
-                        + " | " 
-                        + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
-                        + "%O";
-                    } else
-                        return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
-                        + " to " 
-                        + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
-                        + " OffPk";
-                }
+                if (feeder.isPowerFactorControlled()) {
+                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
+                    + "%C | " 
+                    + num.format( feeder.getOffpeakPFSetPoint() ) 
+                    + " | " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
+                    + "%O";
+                } else
+                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
+                    + " to " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
+                    + " OffPk";
             }
         }
         case FDR_TARGET_POPUP: {
@@ -797,20 +835,20 @@ public class CBCDisplay {
         }
 
         case FDR_VAR_LOAD_COLUMN: {
-            String retVal = DASH_LINE; // default just in case
-
+            String retVal = "";
+            
             if (feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
                 retVal = DASH_LINE;
             else
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue()
                                                          .doubleValue(),
                                                          decPlaces);
-            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
-            {
-                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
-            }
+            
+            return retVal;
+        }
+        case FDR_VAR_EST_LOAD_COLUMN: {
+            String retVal = "";
 
-            retVal += " / ";
             if (feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
                 retVal += DASH_LINE;
             else
@@ -820,7 +858,30 @@ public class CBCDisplay {
 
             return retVal;
         }
-
+        case FDR_VAR_LOAD_QUALITY: {
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
+            {
+                return "";
+            } else {
+                return "hideImage";
+            }
+        }
+        case FDR_WATT_QUALITY: {
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
+            {
+                return "";
+            } else {
+                return "hideImage";
+            }
+        }
+        case FDR_VOLT_QUALITY: {
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
+            {
+                return "";
+            } else {
+                return "hideImage";
+            }
+        }        
         case FDR_WATTS_COLUMN: {
             String retVal = DASH_LINE; // default just in case
 
@@ -832,27 +893,20 @@ public class CBCDisplay {
                                                          decPlaces);
             }
 
-            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
-            {
-                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
-            }
-
-            retVal += " / ";
+            return retVal;
+        }
+        case FDR_VOLTS_COLUMN: {
+            String retVal = "";
 
             if (feeder.getCurrentVoltLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
-                retVal += DASH_LINE;
+                retVal = DASH_LINE;
             else {
                 retVal += CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue()
                                                           .doubleValue(),
                                                           decPlaces);
             }
-            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
-            {
-                retVal += "<img alt=\"\" src=\"/WebConfig/yukon/Icons/bullet_red.gif\" class=\"tierImg\">";
-            }
             return retVal;
         }
-
         case FDR_TIME_STAMP_COLUMN: {
             Date date = feeder.getLastCurrentVarPointUpdateTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())

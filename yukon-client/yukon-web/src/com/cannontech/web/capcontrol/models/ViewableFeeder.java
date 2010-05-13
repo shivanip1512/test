@@ -10,6 +10,7 @@ public class ViewableFeeder {
 	private String subBusName = null;
 	private boolean movedFeeder = false;
 	private List<ViewableCapBank> capbanks = null;
+	private boolean ivvcControlled = false;
 	
 	public Feeder getFeeder() {
 		return feeder;
@@ -41,5 +42,13 @@ public class ViewableFeeder {
 
     public void setMovedFeeder(boolean movedFeeder) {
         this.movedFeeder = movedFeeder;
+    }
+
+    public boolean isIvvcControlled() {
+        return ivvcControlled;
+    }
+
+    public void setIvvcControlled(boolean ivvcControlled) {
+        this.ivvcControlled = ivvcControlled;
     }
 }

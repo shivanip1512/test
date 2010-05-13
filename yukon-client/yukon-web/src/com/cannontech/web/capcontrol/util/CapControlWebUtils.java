@@ -9,6 +9,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
@@ -37,6 +38,7 @@ public class CapControlWebUtils {
         for(SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
             viewable.setSubBus(subBus);
+            viewable.setIvvcControlled(subBus.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
             
             int alternateStationId = 0;
             int alternateAreaId = 0;
@@ -86,9 +88,10 @@ public class CapControlWebUtils {
             
             viewable.setFeeder(feeder);
             viewable.setSubBusName(subBusName);
+            viewable.setIvvcControlled(feeder.getControlUnits().equalsIgnoreCase(ControlAlgorithm.INTEGRATED_VOLT_VAR.getDisplayName()));
             
             if (feeder.getOriginalParentId() > 0) {
-               viewable.setMovedFeeder(true); 
+                viewable.setMovedFeeder(true); 
             } else {
                 viewable.setMovedFeeder(false);
             }

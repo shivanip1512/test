@@ -17,6 +17,7 @@ public class ViewableSubBus {
 	private List<ViewableFeeder> feeders = null;
 	private Integer ltcId;
 	private String ltcName = null;
+	private boolean ivvcControlled = false;
 	
 	public SubBus getSubBus() {
 		return this.subBus;
@@ -88,6 +89,14 @@ public class ViewableSubBus {
 
     public void setLtcName(String ltcName) {
         this.ltcName = ltcName;
+    }
+
+    public boolean isIvvcControlled() {
+        return ivvcControlled;
+    }
+
+    public void setIvvcControlled(boolean ivvcControlled) {
+        this.ivvcControlled = ivvcControlled;
     }
     
 }

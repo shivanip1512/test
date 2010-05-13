@@ -57,6 +57,26 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;    
             }
             
+            case KVAR_LOAD_EST : {
+                value = getKVarLoadEst(latestValue, cbcDisplay);
+                break;    
+            }
+            
+            case KVAR_LOAD_QUALITY : {
+                value = getKVarLoadQuality(latestValue, cbcDisplay);
+                break;    
+            }
+            
+            case WATT_QUALITY : {
+                value = getWattQuality(latestValue, cbcDisplay);
+                break;    
+            }
+            
+            case VOLT_QUALITY : {
+                value = getVoltQuality(latestValue, cbcDisplay);
+                break;    
+            }
+            
             case KVAR_LOAD_MESSAGE : {
                 value = getKVarLoadMessage(latestValue, cbcDisplay);
                 break;
@@ -82,8 +102,13 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break; 
             }
             
-            case KW_VOLTS : {
-                value = getKWVolts(latestValue, cbcDisplay);
+            case KW : {
+                value = getKw(latestValue, cbcDisplay);
+                break; 
+            }
+
+            case VOLTS : {
+                value = getVolts(latestValue, cbcDisplay);
                 break; 
             }
             
@@ -111,7 +136,18 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 value = getTarget(latestValue, cbcDisplay);
                 break;
             }
-            
+            case TARGET_PEAKLAG: {
+                value = getTargetPeakLag(latestValue, cbcDisplay);
+                break;
+            }
+            case TARGET_PEAKLEAD: {
+                value = getTargetPeakLead(latestValue, cbcDisplay);
+                break;
+            }
+            case TARGET_CLOSEOPENPERCENT: {
+                value = getTargetCloseOpenPercent(latestValue, cbcDisplay);
+                break;
+            }
             case TARGET_MESSAGE : {
                 value = getTargetMessage(latestValue, cbcDisplay);
                 break;    
@@ -197,6 +233,14 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
+    protected String getKVarLoadEst(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getKVarLoadQuality(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
     protected String getKVarLoadMessage(E latestValue, CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
@@ -217,7 +261,19 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
-    protected String getKWVolts(E latestValue, CBCDisplay cbcDisplay) {
+    protected String getWattQuality(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getVoltQuality(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getKw(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getVolts(E latestValue, CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
@@ -234,6 +290,18 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
     }
     
     protected String getState(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getTargetPeakLead(E latestValue, final CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level"); 
+    }
+    
+    protected String getTargetPeakLag(E latestValue, final CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level"); 
+    }
+    
+    protected String getTargetCloseOpenPercent(E latestValue, final CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     

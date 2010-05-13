@@ -24,6 +24,24 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
     }
     
     @Override
+    protected String getTargetPeakLead(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_TARGET_COLUMN_PEAKLEAD);
+        return value;    
+    }
+    
+    @Override
+    protected String getTargetPeakLag(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_TARGET_COLUMN_PEAKLAG);
+        return value;    
+    }
+    
+    @Override
+    protected String getTargetCloseOpenPercent(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_TARGET_COLUMN_CLOSEOPENPERCENT);
+        return value;    
+    }
+    
+    @Override
     protected String getTarget(final Feeder latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_TARGET_COLUMN);
         return value;    
@@ -38,6 +56,30 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
     @Override
     protected String getKVarLoad(final Feeder latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VAR_LOAD_COLUMN);
+        return value;    
+    }
+  
+    @Override
+    protected String getKVarLoadEst(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VAR_EST_LOAD_COLUMN);
+        return value;    
+    }
+    
+    @Override
+    protected String getKVarLoadQuality(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VAR_LOAD_QUALITY);
+        return value;    
+    }
+    
+    @Override
+    protected String getVoltQuality(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VOLT_QUALITY);
+        return value;    
+    }
+    
+    @Override
+    protected String getWattQuality(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_WATT_QUALITY);
         return value;    
     }
     
@@ -60,8 +102,14 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
     }
     
     @Override
-    protected String getKWVolts(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+    protected String getKw(final Feeder latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_WATTS_COLUMN);
+        return value;    
+    }
+    
+    @Override
+    protected String getVolts(final Feeder latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VOLTS_COLUMN);
         return value;    
     }
 

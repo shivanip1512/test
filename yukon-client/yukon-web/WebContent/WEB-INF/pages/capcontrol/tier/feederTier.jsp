@@ -247,7 +247,19 @@
                                                     viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER')}">
     		                    <a onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
     								onmouseout="nd();">
-    								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+									<c:choose>
+										<c:when test="${viewableSubBus.ivvcControlled}">
+			                            	<span style='font-weight:bold;font-size:11px;'>U:</span>
+			                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLEAD"/>
+			                            	<span style='font-weight:bold;font-size:11px;'> L:</span>
+			                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_PEAKLAG"/>
+			                            	<span style='font-weight:bold;font-size:11px;'> PF:</span>
+			                            	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/>
+			                            </c:when>
+			                            <c:otherwise>
+	    									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
+	    								</c:otherwise>
+    								</c:choose>
     							</a>
                             </c:when>
                             <c:otherwise>
@@ -263,12 +275,18 @@
     						<c:when test="${viewableSubBus.subBus.usePhaseData}">
     							<a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
     							onmouseout="nd();">
-    								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
+									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
+			                        <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+			                        <span> / </span> 
+			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/> 
     		                    </a>
     						</c:when>
     						<c:otherwise>
     							<a>
-    								<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
+									<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>
+			                        <cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/KVAR_LOAD_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+			                        <span> / </span> 
+			                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_EST"/>
     		                    </a>
     						</c:otherwise>
     					</c:choose>
@@ -283,7 +301,13 @@
                         <a id="pFactor_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="PFACTOR"/></a>
     				</td>
     				<td>
-                        <a id="kwVolts_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW_VOLTS"/></a>
+                        <a id="kwVolts_${thisSubBusId}">
+                        	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW"/>
+                        	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/WATT_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+                        	/
+                        	<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="VOLTS"/>
+                        	<cti:classUpdater type="SUBBUS" identifier="${thisSubBusId}/VOLT_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+                        </a>
     				</td>
     				<td>
                         <a id="dailyMaxOps_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></a>
@@ -448,10 +472,22 @@
 					<td>
                         <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                         <c:choose>
-                            <c:when test="${viewfeeder.feeder.controlmethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER')}">
+                            <c:when test="${viewfeeder.feeder.controlmethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER') || viewfeeder.ivvcControlled}">
 		                        <a onmouseover="showDynamicPopupAbove($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
 								   onmouseout="nd();">
-		                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
+								   	<c:choose>
+										<c:when test="${viewfeeder.ivvcControlled}">
+			                            	<span style='font-weight:bold;font-size:11px;'>U:</span>
+			                            	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLEAD"/>
+			                            	<span style='font-weight:bold;font-size:11px;'> L:</span>
+			                            	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_PEAKLAG"/>
+			                            	<span style='font-weight:bold;font-size:11px;'> PF:</span>
+			                            	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
+			                            </c:when>
+			                            <c:otherwise>
+	    									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
+	    								</c:otherwise>
+    								</c:choose>
 		                        </a>
 	                        </c:when>
 	                        <c:otherwise>
@@ -468,11 +504,17 @@
 							<c:when test="${viewfeeder.feeder.usePhaseData}">
 		                        <a onmouseover="showDynamicPopupAbove($('feederVarLoadPopup_${thisFeederId}'));" onmouseout="nd();">
 			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+			                    	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>    
+			                        <span> / </span> 
+			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
 		                        </a>
 						  	</c:when>
 						  	<c:otherwise>
 								<a>
 									<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+			                        <cti:classUpdater type="FEEDER" identifier="${thisFeederId}/KVAR_LOAD_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+			                        <span> / </span> 
+			                        <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_EST"/>
 		                        </a>
 						  	</c:otherwise>
 						</c:choose>
@@ -488,7 +530,13 @@
                         <a id="pFactor_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="PFACTOR"/></a>
 					</td>
 					<td>
-                        <a id="kwVolts_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW_VOLTS"/></a>
+                        <a id="kwVolts_${thisFeederId}">
+                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW"/> 
+                        	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/WATT_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+                        	/
+                        	<cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="VOLTS"/>
+                        	<cti:classUpdater type="FEEDER" identifier="${thisFeederId}/VOLT_QUALITY"><img src="/WebConfig/yukon/Icons/bullet_red.gif"></cti:classUpdater>
+                        </a>
 					</td>
 					<td>
                         <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>

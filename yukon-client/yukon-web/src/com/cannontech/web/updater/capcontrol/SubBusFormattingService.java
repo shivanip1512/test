@@ -20,6 +20,24 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     }
     
     @Override
+    protected String getTargetPeakLead(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN_PEAKLEAD);
+        return value;
+    }
+    
+    @Override
+    protected String getTargetPeakLag(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN_PEAKLAG);
+        return value;
+    }
+    
+    @Override
+    protected String getTargetCloseOpenPercent(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN_CLOSEOPENPERCENT);
+        return value;
+    }
+    
+    @Override
     protected String getTarget(final SubBus latestValue, final CBCDisplay cbcDisplay) {
         String target = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_TARGET_COLUMN);
         return target;
@@ -54,7 +72,31 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
         String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN);
         return value;
     }
-  
+    
+    @Override
+    protected String getKVarLoadEst(final SubBus subBus, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_EST_LOAD_COLUMN);
+        return value;
+    }
+    
+    @Override
+    protected String getKVarLoadQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_VAR_LOAD_QUALITY);
+        return value;    
+    }
+    
+    @Override
+    protected String getVoltQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_VOLT_QUALITY);
+        return value;    
+    }
+    
+    @Override
+    protected String getWattQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_WATT_QUALITY);
+        return value;    
+    }
+    
     @Override
     protected String getKVarLoadMessage(final SubBus subBus, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_POPUP);
@@ -74,8 +116,14 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     }
 
     @Override
-    protected String getKWVolts(final SubBus subBus, final CBCDisplay cbcDisplay) {
+    protected String getKw(final SubBus subBus, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN);
+        return value;
+    }
+
+    @Override
+    protected String getVolts(final SubBus subBus, final CBCDisplay cbcDisplay) {
+        String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VOLTS_COLUMN);
         return value;
     }
     

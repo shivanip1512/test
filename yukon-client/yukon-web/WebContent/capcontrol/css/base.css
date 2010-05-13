@@ -301,3 +301,7 @@ a.tierIconLink{
 #capBankTable tr.hover {
     background-color:yellow;
 }
+
+.hideImage {
+	visibility: hidden;
+}
