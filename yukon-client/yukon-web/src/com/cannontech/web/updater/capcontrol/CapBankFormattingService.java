@@ -110,12 +110,6 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
     }
     
     @Override
-    protected String getCBStatusMessage(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_STATUS_POPUP);
-        return value;
-    }
-    
-    @Override
     protected String getCBSize(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
         String value = latestValue.getBankSize().toString();
         return value;

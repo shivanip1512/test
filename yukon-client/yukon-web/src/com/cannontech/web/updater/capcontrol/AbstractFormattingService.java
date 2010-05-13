@@ -90,10 +90,6 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;
             }
             
-            case CB_STATUS_MESSAGE : {
-                value = getCBStatusMessage(latestValue, cbcDisplay);
-                break;
-            }
             case CB_SIZE : {
                 value = getCBSize(latestValue, cbcDisplay);
                 break;

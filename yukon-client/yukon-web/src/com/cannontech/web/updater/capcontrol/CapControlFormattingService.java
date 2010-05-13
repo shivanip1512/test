@@ -16,7 +16,6 @@ public interface CapControlFormattingService<E> {
         CB_NAME,
         CB_STATUS,
         CB_STATUS_COLOR,
-        CB_STATUS_MESSAGE,
         CB_SIZE,
         CB_PARENT,
         CB_PHASEA_BEFORE,
