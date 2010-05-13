@@ -21,6 +21,7 @@ extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 extern ULONG _CC_DEBUG;
 extern ULONG _IVVC_KEEPALIVE;
 extern ULONG _IVVC_COMMS_RETRY_COUNT;
+extern double _IVVC_NONWINDOW_MULTIPLIER;
 
 
 IVVCAlgorithm::IVVCAlgorithm(const PointDataRequestFactoryPtr& factory)
@@ -983,7 +984,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
                    if ( estVarValue < varLowLimit)
                    {
-                      pfmodifier = 1.5;
+                      pfmodifier = _IVVC_NONWINDOW_MULTIPLIER;
                    }
                 }
                 else
@@ -992,7 +993,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
                    if ( estVarValue > varUpperLimit)
                    {
-                      pfmodifier = 1.5;
+                      pfmodifier = _IVVC_NONWINDOW_MULTIPLIER;
                    }
                 }
 

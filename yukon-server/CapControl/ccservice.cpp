@@ -62,6 +62,7 @@ ULONG _IVVC_HEARTBEAT_CONFIG;
 ULONG _POST_CONTROL_WAIT;
 ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 ULONG _IVVC_COMMS_RETRY_COUNT;
+double _IVVC_NONWINDOW_MULTIPLIER;
 
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
@@ -697,6 +698,13 @@ void CtiCCService::Init()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_IVVC_COMMS_RETRY_COUNT: " << _IVVC_COMMS_RETRY_COUNT << endl;
+    }
+
+    _IVVC_NONWINDOW_MULTIPLIER = gConfigParms.getValueAsDouble("CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER", 1.5);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER: " << _IVVC_NONWINDOW_MULTIPLIER << endl;
     }
 
     _quit = false;

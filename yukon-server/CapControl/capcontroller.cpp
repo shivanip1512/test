@@ -92,6 +92,8 @@ extern ULONG _POST_CONTROL_WAIT;
 extern BOOL _ENABLE_IVVC;
 extern ULONG _IVVC_MIN_TAP_PERIOD_MINUTES;
 extern ULONG _IVVC_COMMS_RETRY_COUNT;
+extern double _IVVC_NONWINDOW_MULTIPLIER;
+
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
 
@@ -4890,6 +4892,13 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_IVVC_COMMS_RETRY_COUNT: " << _IVVC_COMMS_RETRY_COUNT << endl;
+        }
+
+        _IVVC_NONWINDOW_MULTIPLIER = gConfigParms.getValueAsDouble("CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER", 1.5);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER: " << _IVVC_NONWINDOW_MULTIPLIER << endl;
         }
 
     }
