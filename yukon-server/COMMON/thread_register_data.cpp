@@ -31,6 +31,7 @@ CtiThreadRegData::CtiThreadRegData( int id,
     _critical(true),
     _actionTaken(false),
    _unreportedCount(0),
+   _unreportedFilter(0),
     _reported(true)
 {
    _id = id;
@@ -249,3 +250,27 @@ void CtiThreadRegData::setUnreportedCount(int count)
 {
    _unreportedCount = count;
 }
+
+
+/* 
+   The thread monitor is hiccuping when running on a virtual machine.  If the VM takes a long enough nap
+   and then recovers, all of the threads will go unreported and then immediately re-report.  We want to
+   filter out this case.
+*/
+void CtiThreadRegData::resetUnreportedFilter()
+{
+   _unreportedFilter = 0;
+}
+
+
+bool CtiThreadRegData::testUnreportedFilter()
+{
+   if ( _unreportedFilter < 3 )
+   {
+      _unreportedFilter++;
+      return false;
+   }
+
+   return true;
+}
+

@@ -163,10 +163,14 @@ long CtiThreadMonitor::checkForExpriration( void )
 
             if( current_time > check_time )
             {
-                temp->setReported( false );
+                if ( temp->testUnreportedFilter() )
+                {
+                   temp->setReported( false );
+                }
             }
             else
             {
+                temp->resetUnreportedFilter();
                 //
                 //we want to sleep as long as possible, so find the shortest
                 //time to the next possible report failure

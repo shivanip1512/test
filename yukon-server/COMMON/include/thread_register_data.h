@@ -91,6 +91,9 @@ public:
    void setActionTaken(const bool in);
    bool getActionTaken(void);
 
+   void resetUnreportedFilter();
+   bool testUnreportedFilter();
+
 protected:
 
 private:
@@ -102,6 +105,7 @@ private:
    bool                 _actionTaken;//clear until action is taken (makes sure we dont take action twice!)
    ptime                _tickledTime;
    int                  _unreportedCount;
+   int                  _unreportedFilter;
 
    //
    //registeration: must haves
