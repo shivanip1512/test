@@ -10,7 +10,6 @@ public interface DBEditorRole {
 	public static final int ROLEID = ApplicationRoleDefs.DATABASE_EDITOR_ROLEID;		
 	
 	public static final int POINT_ID_EDIT = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE;
-	public static final int DBEDITOR_CORE = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 1;
 	public static final int DBEDITOR_LM = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 2;
 	
 	public static final int DBEDITOR_SYSTEM = ApplicationRoleDefs.DATABASE_EDITOR_PROPERTYID_BASE - 4;

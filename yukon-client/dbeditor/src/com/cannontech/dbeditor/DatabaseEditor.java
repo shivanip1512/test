@@ -2240,19 +2240,8 @@ private void readConfigParameters()
 		coreCreateMenu.remove( coreCreateMenu.billingGroupMenuItem );
 	
 	//Decide which items to put into the view menu
-	boolean showCore = false;
 	boolean showLm = false;
 	boolean showSystem = false;
-	
-	try
-	{
-		showCore = ClientSession.getInstance().getRolePropertyValue(
-			DBEditorRole.DBEDITOR_CORE, "FALSE").trim().equalsIgnoreCase("TRUE");
-	}
-	catch( Exception e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
 	
 	try
 	{
@@ -2292,9 +2281,6 @@ private void readConfigParameters()
 		systemCreateMenu.remove( systemCreateMenu.loginMenuItem );
 	}
 	
-	if( !showCore )
-		viewMenu.remove( viewMenu.coreRadioButtonMenuItem );
-
 	if( !showLm )
 		viewMenu.remove( viewMenu.lmRadioButtonMenuItem );
 

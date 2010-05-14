@@ -41,7 +41,6 @@ public enum YukonRoleProperty {
     ENABLE_CLIENT_COMMANDER(COMMANDER, com.cannontech.roles.application.CommanderRole.ENABLE_CLIENT_COMMANDER, booleanType()),
     
     POINT_ID_EDIT(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.POINT_ID_EDIT, booleanType()),
-    DBEDITOR_CORE(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.DBEDITOR_CORE, stringType()),
     DBEDITOR_LM(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.DBEDITOR_LM, stringType()),
     DBEDITOR_SYSTEM(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.DBEDITOR_SYSTEM, stringType()),
     UTILITY_ID_RANGE(DATABASE_EDITOR, com.cannontech.roles.application.DBEditorRole.UTILITY_ID_RANGE, stringType()),
