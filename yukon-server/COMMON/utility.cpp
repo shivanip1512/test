@@ -1,40 +1,18 @@
 #include "yukon.h"
-// includes /////////////////////////////////////////////////////
 
-#include <iomanip>
-#include <iostream>
-#include <ctime>
-#include <boost/regex.hpp>
-using namespace std;
 
-#pragma once
-
-#include <string>
-#include <vector>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <winsock.h>
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/timeb.h>
-
-#include <rw\thr\mutex.h>
-#include <rw/db/db.h>
-
-#include "ctinexus.h"
 #include "dbaccess.h"
-#include "porter.h"
 #include "logger.h"
-#include "dllbase.h"
-#include "guard.h"
 #include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
 #include "rwutil.h"
 #include "ctidate.h"
-#include "cparms.h"
+#include "devicetypes.h"
+
+#include <boost/regex.hpp>
+
+using namespace std;
 
 LONG GetMaxLMControl(long pao)
 {
