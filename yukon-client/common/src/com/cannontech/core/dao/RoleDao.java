@@ -1,7 +1,5 @@
 package com.cannontech.core.dao;
 
-import com.cannontech.common.util.CommandExecutionException;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -89,15 +87,11 @@ public interface RoleDao {
      * @param rolePropertyID
      * @param newVal
      * @return
-     * @throws CommandExecutionException
-     * @throws TransactionException
      */
     public boolean updateGroupRoleProperty(LiteYukonGroup group, 
                                            int roleID, 
                                            int rolePropertyID, 
-                                           String newVal) 
-        throws CommandExecutionException, 
-               TransactionException;
+                                           String newVal);
     
     /**
      * @deprecated use RolePropertyDao.getPropertyEnumValue()

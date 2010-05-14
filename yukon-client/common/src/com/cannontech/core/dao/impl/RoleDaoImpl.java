@@ -11,11 +11,11 @@ import java.util.Map;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -23,12 +23,11 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.TransactionException;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.db.user.YukonGroupRole;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -172,25 +171,31 @@ public class RoleDaoImpl implements RoleDao
           return null;
     }
 
-    public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) 
-        throws CommandExecutionException, TransactionException {
+    public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) {
         
         newVal = SqlUtils.convertStringToDbValue(newVal);
         YukonGroupRole groupRole = getYukonGroupRole(group.getGroupID(), rolePropertyId);        
         
         if (groupRole != null) {
             groupRole.setValue( newVal );
-            dbPersistentDao.performDBChange(groupRole, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            dbPersistentDao.performDBChange(groupRole, Transaction.UPDATE);
             
         } else {
             groupRole = new YukonGroupRole(null, group.getGroupID(), roleID, rolePropertyId, newVal);
-            dbPersistentDao.performDBChange(groupRole, DBChangeMsg.CHANGE_TYPE_ADD);
+            dbPersistentDao.performDBChange(groupRole, Transaction.INSERT);
             
         }
         
         return true;
     }
 
+    /**
+     * Return yukonGroupRole for groupId and rolePropertyId
+     * If rolePropertyId does not exist for the YukonGroupRole (groupId), then null is returned.
+     * @param groupId
+     * @param rolePropertyId
+     * @return
+     */
     public YukonGroupRole getYukonGroupRole(int groupId, int rolePropertyId) {
 
         String sql = " SELECT YGR.groupRoleId, YGR.groupId, YGR.roleId, "+
@@ -198,10 +203,13 @@ public class RoleDaoImpl implements RoleDao
                      " FROM YukonGroupRole YGR "+
                      " WHERE YGR.GroupId = ? "+
                      " AND YGR.rolePropertyId = ? ";
-        
-        YukonGroupRole groupRole = simpleJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper(), groupId, rolePropertyId);
-
-        return groupRole;
+        try {
+            YukonGroupRole groupRole = simpleJdbcTemplate.queryForObject(sql, new YukonGroupRoleRowMapper(), groupId, rolePropertyId);
+            return groupRole;
+        } catch (EmptyResultDataAccessException e) {
+            // return null when result is _empty_
+            return null;
+        }
     }
     
     @Deprecated

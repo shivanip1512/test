@@ -15,6 +15,7 @@ import com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -22,7 +23,6 @@ import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.user.YukonUserContext;
 
 public class ToggleProfilingServiceImpl implements ToggleProfilingService {
@@ -44,7 +44,7 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         deviceLoadProfile.setLoadProfileIsOnForChannel(channelNum, newToggleVal);
                 
         // persist change
-        dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
+        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
 
     }
     

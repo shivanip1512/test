@@ -823,6 +823,7 @@ public final static boolean isMeter(int deviceType)
 		case SENTINEL:
 		case FOCUS:
 		case ALPHA_A3:
+		case DAVISWEATHER:
 			return true;
 	
 		default:
@@ -982,52 +983,10 @@ public final static boolean isVirtualDevice(int deviceType)
 
 public final static boolean usesDeviceMeterGroup(int deviceType)
 {
-	switch(deviceType)
-	{
-		case MCT213:
-		case MCT310:
-		case MCT318:
-		case MCT360:
-		case MCT370:
-		case MCT240:
-		case MCT248:
-		case MCT250:
-		case MCT210:
-		case LMT_2:
-		case DCT_501:
-		case MCT310ID:
-		case MCT310IDL:
-		case MCT310IL:
-		case MCT410IL:
-		case MCT410CL:
-		case MCT410FL:
-		case MCT410GL:
-        case MCT430A:
-        case MCT430S4:
-        case MCT430SL:
-        case MCT430A3:
-		case MCT470:
-		case MCT310CT:
-		case MCT310IM:
-		case MCT318L:
-		case ALPHA_PPLUS:
-		case ALPHA_A1:
-		case LANDISGYRS4:
-		case DR_87:
-		case SIXNET:
-		case ION_7700:
-		case ION_7330:
-		case ION_8300:
-		case TRANSDATA_MARKV:
-		case DAVISWEATHER:
-		case SENTINEL:
-		case FOCUS:		
-			return true;
-		
-		default:
-			return false;
-	}
-	
+    if (isMCT(deviceType) || isMeter(deviceType)) {
+        return true;
+    }
+	return false;
 }
 public final static boolean isIED(int deviceType) 
 {

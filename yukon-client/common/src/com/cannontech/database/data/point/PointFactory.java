@@ -9,13 +9,13 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.TypeBase;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.calculation.CalcBase;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * This type was created in VisualAge.
@@ -487,7 +487,7 @@ public static synchronized void addPoint(PointBase point) {
         connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         point.setDbConnection(connection);
         point.add();
-        DaoFactory.getDbPersistentDao().performDBChange(point, DBChangeMsg.CHANGE_TYPE_ADD);
+        DaoFactory.getDbPersistentDao().performDBChange(point, Transaction.INSERT);
 
     } catch (SQLException e) {
         CTILogger.error(e);

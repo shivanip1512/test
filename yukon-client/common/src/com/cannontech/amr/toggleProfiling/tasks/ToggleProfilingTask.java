@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.jobs.support.YukonTaskBase;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public class ToggleProfilingTask extends YukonTaskBase {
 
@@ -44,7 +44,7 @@ public class ToggleProfilingTask extends YukonTaskBase {
         deviceLoadProfile.setLoadProfileIsOnForChannel(channelNum, newToggleVal);
                 
         // persist change
-        dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
+        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
     }
 
     // Setters for injected parameters

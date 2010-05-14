@@ -22,12 +22,11 @@ import org.apache.commons.lang.StringUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.user.YukonGroup;
-import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.multispeak.client.MultispeakBean;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -44,7 +43,6 @@ import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.roles.YukonGroupRoleDefs;
-import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
@@ -205,32 +203,35 @@ public class MultispeakServlet extends HttpServlet
             mspMeterLookupField = MultispeakMeterLookupFieldEnum.valueOf(req.getParameter("mspMeterLookupField"));
         
         //Update the role property values if they have changed.
-        if ( mspPrimaryCIS != oldMspPrimaryCIS || 
-             mspPaoNameAlias != oldMspPaoNameAlias || 
-             mspMeterLookupField != oldMspMeterLookupField){
-            try {
-                LiteYukonGroup yukGrp = DaoFactory.getRoleDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
-                YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
-                //fill out the DB Persistent with data
-                yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();
-
-                for( int j = 0; j < yukGrpPersist.getYukonGroupRoles().size(); j++ ){
-                    YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
-                    if( MultispeakRole.MSP_PRIMARY_CB_VENDORID == grpRole.getRolePropertyID().intValue() ) {
-                        grpRole.setValue(String.valueOf(mspPrimaryCIS));
-                    } else if( MultispeakRole.MSP_PAONAME_ALIAS == grpRole.getRolePropertyID().intValue() ) {
-                        grpRole.setValue(String.valueOf(mspPaoNameAlias));
-                    } else if( MultispeakRole.MSP_METER_LOOKUP_FIELD == grpRole.getRolePropertyID().intValue() ) {
-                        grpRole.setValue(String.valueOf(mspMeterLookupField));
-                    } 
-                }
-                //update any changed values in the DB
-                DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
+        try {
+            RoleDao roleDao = DaoFactory.getRoleDao();
+            LiteYukonGroup liteYukonGroup = roleDao.getGroup( YukonGroupRoleDefs.GRP_YUKON );
+            
+            // update Primary CIS Vendor
+            if( mspPrimaryCIS != oldMspPrimaryCIS) {
+                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+                                                YukonRole.MULTISPEAK.getRoleId(),
+                                                YukonRoleProperty.MSP_PRIMARY_CB_VENDORID.getPropertyId(),
+                                                String.valueOf(mspPrimaryCIS));
             }
-            catch (Exception e)
-            {
-                CTILogger.error( "Unable to connect to DISPATCH.  MSPPrimaryCIS role not saved", e );                   
+            
+            // update PaoName Alias
+            if( mspPaoNameAlias != oldMspPaoNameAlias ) {
+                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+                                                YukonRole.MULTISPEAK.getRoleId(),
+                                                YukonRoleProperty.MSP_PAONAME_ALIAS.getPropertyId(),
+                                                String.valueOf(mspPaoNameAlias));
             }
+            
+            // update Meter Lookup Field
+            if ( mspMeterLookupField != oldMspMeterLookupField) {
+                roleDao.updateGroupRoleProperty(liteYukonGroup, 
+                                                YukonRole.MULTISPEAK.getRoleId(),
+                                                YukonRoleProperty.MSP_METER_LOOKUP_FIELD.getPropertyId(),
+                                                String.valueOf(mspMeterLookupField));
+            }
+        } catch (Exception e) {
+            CTILogger.error( "Role Properties for MultiSpeak Setup not saved", e );
         }
     }
 

@@ -16,7 +16,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.stars.core.service.StarsTwoWayLcrYukonDeviceAssignmentService;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceAssignmentException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
@@ -101,7 +100,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
     	            YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(paoDevice);
     	            DeviceLoadProfile deviceLoadProfile = ((TwoWayLCR)yukonPaobject).getDeviceLoadProfile();
     	            deviceLoadProfile.setLastIntervalDemandRate(demandRateSeconds);
-    	            dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
+    	            dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
     	            
         		} catch (Exception e) {
         			throw new StarsTwoWayLcrYukonDeviceCreationException("Unable to create new yukon device.", e);
@@ -153,7 +152,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
 	        inventoryBase.setInventoryID(liteInv.getInventoryID());
 	        inventoryBase = (com.cannontech.database.db.stars.hardware.InventoryBase)Transaction.createTransaction(Transaction.RETRIEVE, inventoryBase).execute();
 	        inventoryBase.setDeviceID(deviceId);
-	        dbPersistentDao.performDBChange(inventoryBase, DBChangeMsg.CHANGE_TYPE_UPDATE);
+	        dbPersistentDao.performDBChange(inventoryBase, Transaction.UPDATE);
 		} catch (Exception e) {
 			throw new StarsTwoWayLcrYukonDeviceCreationException("Unable to assign Yukon device to hardware.", e);
 		}

@@ -40,9 +40,9 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.database.SqlProvidingRowMapper;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -339,8 +339,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     private void sendDBChangeMessage(Meter meter) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject) dbPersistentDao.retrieveDBPersistent(liteYukonPAO);
-        dbPersistentDao.performDBChange(yukonPaobject,
-                                        DBChangeMsg.CHANGE_TYPE_UPDATE);
+        dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
 
     }
 
