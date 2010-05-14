@@ -6,6 +6,7 @@ import org.springframework.validation.Errors;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.device.range.RangeBase;
 
@@ -22,7 +23,7 @@ public class MeterConfigValidator extends SimpleValidator<Meter> {
         if (StringUtils.isBlank(meter.getMeterNumber())) {
             errors.rejectValue("meterNumber", "yukon.web.modules.operator.meterConfig.error.required");
         } else {
-            
+            YukonValidationUtils.checkExceedsMaxLength(errors, "meterNumber", meter.getMeterNumber(), 50);
         }
         
         /* Physical Address */
