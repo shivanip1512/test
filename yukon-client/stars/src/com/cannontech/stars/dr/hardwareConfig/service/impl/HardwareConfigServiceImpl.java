@@ -72,7 +72,8 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
 
     private void logEvent(int accountId, int energyCompanyId, String serialNumber, String action,
             YukonUserContext userContext) {
-        LogHelper.debug(log, "%s was done to %s on %d in %d", 
+        LogHelper.debug(log, 
+                        "%s was done to %s serial number on %d accountId in %d energyCompanyId", 
                         action, serialNumber, accountId, energyCompanyId);
 
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
