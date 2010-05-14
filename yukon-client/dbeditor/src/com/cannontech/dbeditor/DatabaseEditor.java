@@ -40,6 +40,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
@@ -2399,45 +2400,51 @@ public void selectionPerformed( PropertyPanelEvent event)
 	if( event.getID() == PropertyPanelEvent.APPLY_SELECTION ||
 		 event.getID() == PropertyPanelEvent.OK_SELECTION		)
 	{
-		final com.cannontech.database.db.DBPersistent object = (com.cannontech.database.db.DBPersistent) panel.getValue(null);
+	    try {
+	        final com.cannontech.database.db.DBPersistent object = (com.cannontech.database.db.DBPersistent) panel.getValue(null);
 		
-		if( panel.hasChanged() )
-		{
-			panel.setChanged(false);
-            
-			if (DatabaseEditorUtil.showUpdateRouteName(object)) {
-			    DatabaseEditorUtil.updateRouteName(this, panel, object);
-            }    
-			
-            if (DatabaseEditorUtil.isMCT410Series(object)) {
-                DatabaseEditorUtil.updateDisconnectStatus(this, panel, object);
-            }
-            
-			updateResult = updateDBPersistent(object);
-            
-			if( updateResult )
-			{			
-                panel.postSave(object);
-
-				if( event.getID() == PropertyPanelEvent.APPLY_SELECTION )
-				{
-					/* APPLY ONLY EVENTS GO HERE */
-				    synchronized (getInternalEditorFrames()) {
-				        getInternalEditorFrames()[frameLocation].setTitle( object.toString() + " : " + panel.toString() );
-				    }
-				}
-
-			}
-			else
-			{
-				//try and restore the original values to the Editor Panels
-				panel.setValue( panel.getOriginalObjectToEdit() );
-				panel.repaint();
-				return; //the SQLUpdate failed, lets get out of here
-			}
-			
-		}
-			
+    		if( panel.hasChanged() )
+    		{
+    			panel.setChanged(false);
+                
+    			if (DatabaseEditorUtil.showUpdateRouteName(object)) {
+    			    DatabaseEditorUtil.updateRouteName(this, panel, object);
+                }    
+    			
+                if (DatabaseEditorUtil.isMCT410Series(object)) {
+                    DatabaseEditorUtil.updateDisconnectStatus(this, panel, object);
+                }
+                
+    			updateResult = updateDBPersistent(object);
+                
+    			if( updateResult )
+    			{			
+                    panel.postSave(object);
+    
+    				if( event.getID() == PropertyPanelEvent.APPLY_SELECTION )
+    				{
+    					/* APPLY ONLY EVENTS GO HERE */
+    				    synchronized (getInternalEditorFrames()) {
+    				        getInternalEditorFrames()[frameLocation].setTitle( object.toString() + " : " + panel.toString() );
+    				    }
+    				}
+    
+    			}
+    			else
+    			{
+    				//try and restore the original values to the Editor Panels
+    				panel.setValue( panel.getOriginalObjectToEdit() );
+    				panel.repaint();
+    				return; //the SQLUpdate failed, lets get out of here
+    			}
+    		}
+		} catch (EditorInputValidationException e) {
+            javax.swing.JOptionPane.showMessageDialog( panel, 
+                                                       e.getMessage(), 
+                                                       "Input Error", 
+                                                       javax.swing.JOptionPane.WARNING_MESSAGE );
+            return;
+        }			
 	}
  
 	// Remove the frame here	

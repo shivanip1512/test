@@ -4,6 +4,7 @@ package com.cannontech.dbeditor.wizard.device;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -11,6 +12,9 @@ import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.editor.EditorInputValidationException;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -24,6 +28,7 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -167,8 +172,9 @@ public class DeviceRoutePanel
      * This method was created in VisualAge.
      * @return java.lang.Object
      * @param val java.lang.Object
+	 * @throws EditorInputValidationException 
      */
-    public Object getValue(Object val) {
+    public Object getValue(Object val) throws EditorInputValidationException {
 
         Object value = null;
         if (val instanceof SmartMultiDBPersistent) {
@@ -217,7 +223,7 @@ public class DeviceRoutePanel
             for (PointBase point : defaultPoints) {
                 newVal.getDBPersistentVector().add(point);
             }
-
+            
             // if the chosen route is a macro route then the generated route
             // will be copied from
             // the first route in the macro
@@ -252,6 +258,16 @@ public class DeviceRoutePanel
                 }
 
             }
+            
+            // Alert if we are creating a RPT850
+            if( value instanceof Repeater850)
+            {
+                javax.swing.JOptionPane.showMessageDialog( this, 
+                                                           "The Repeater 850 device is not intended to have more than 10 devices connected to it", 
+                                                           "Information",
+                                                           javax.swing.JOptionPane.INFORMATION_MESSAGE );
+            }
+            
             // create new route to be added - copy from the chosen route and add new repeater to it
             // A route is automatically added to each transmitter
             if (chosenRoute instanceof CCURoute) {
@@ -264,6 +280,25 @@ public class DeviceRoutePanel
                 route.setDeviceID(((RouteBase) chosenRoute).getDeviceID());
                 ((CCURoute) route).getCarrierRoute().setBusNumber(((CCURoute) chosenRoute).getCarrierRoute().getBusNumber());
                 ((CCURoute) route).setRepeaterVector(((CCURoute) chosenRoute).getRepeaterVector());
+                
+                // Check to be sure this repeater is ok, it must not have a RPT 850
+                java.util.Vector<RepeaterRoute> repeaterRoutes =  ((CCURoute)chosenRoute).getRepeaterVector();
+
+                List<Integer> paoIds = new ArrayList<Integer>();
+                
+                for( int z = 0; z < repeaterRoutes.size(); z++ ) 
+                {
+                    paoIds.add(repeaterRoutes.elementAt(z).getDeviceID());
+                }
+                
+                List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
+                
+                for (int j = 0; j < paoIdentifiers.size(); j++) {
+                    if(paoIdentifiers.get(j).getPaoType() == PaoType.REPEATER_850) {
+                        // The old route has a RPT850, this is not allowed
+                        throw new EditorInputValidationException("New routes can not be based on routes with Repeater 850's");
+                    }
+                }
 
                 // add the new repeater to this route
                 RepeaterRoute rr = new RepeaterRoute(route.getRouteID(),
@@ -276,7 +311,11 @@ public class DeviceRoutePanel
 
                 ((CCURoute) route).getRepeaterVector().addElement(rr);
 
-                route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
+                if (value instanceof Repeater850){
+                    route.setDefaultRoute(CtiUtilities.getFalseCharacter().toString());
+                }else {
+                    route.setDefaultRoute(CtiUtilities.getTrueCharacter().toString());
+                }
                 
                 RegenerateRoute routeBoss = new RegenerateRoute();
                 RouteRole role = routeBoss.assignRouteLocation((CCURoute)route, null, null);

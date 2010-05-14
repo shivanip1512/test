@@ -1,10 +1,8 @@
 package com.cannontech.common.wizard;
 
-/**
- * This type was created in VisualAge.
- */
 import java.util.Vector;
 
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.db.DBPersistent;
@@ -190,7 +188,15 @@ public Object getValue(Object o) throws CancelInsertException{
 
 		if( p != null )
 		{
-			o = p.getValue(o);
+			try {
+                o = p.getValue(o);
+            } catch (EditorInputValidationException e) {
+                javax.swing.JOptionPane.showMessageDialog( p, 
+                                                           e.getMessage(), 
+                                                           "Input Error", 
+                                                           javax.swing.JOptionPane.WARNING_MESSAGE );
+                throw new CancelInsertException();
+            }
 		}
 		else
 		{

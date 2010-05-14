@@ -5,6 +5,7 @@ package com.cannontech.dbeditor.editor.point;
  */
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.core.dao.DaoFactory;
@@ -491,7 +492,11 @@ public Object getValue(Object val)
 
 	//Get the value out of whatever panel happens to be
 	//the 'specific panel' - was set in setDefaultValue
-	this.currentSpecificPanel.getValue(val);
+	try {
+        this.currentSpecificPanel.getValue(val);
+    } catch (EditorInputValidationException e) {
+        com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    }
 
 	return point;
 }

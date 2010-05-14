@@ -214,6 +214,7 @@ protected DataInputPanel getNextInputPanel(
 				&& (getDeviceType() == DeviceTypes.REPEATER 
                 || getDeviceType() == DeviceTypes.REPEATER_902
                 || getDeviceType() == DeviceTypes.REPEATER_800
+                || getDeviceType() == DeviceTypes.REPEATER_850
                 || getDeviceType() == DeviceTypes.REPEATER_801
                 || getDeviceType() == DeviceTypes.REPEATER_921))
 	{
@@ -406,6 +407,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
                                                                  || getDeviceType() == DeviceTypes.REPEATER
                                                                  || getDeviceType() == DeviceTypes.REPEATER_902
                                                                  || getDeviceType() == DeviceTypes.REPEATER_800
+                                                                 || getDeviceType() == DeviceTypes.REPEATER_850
                                                                  || getDeviceType() == DeviceTypes.REPEATER_801
                                                                  || getDeviceType() == DeviceTypes.REPEATER_921))
     {

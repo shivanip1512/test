@@ -3,7 +3,24 @@ package com.cannontech.dbeditor.editor.route;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.ItemSelectable;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.route.CCURoute;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -15,6 +32,8 @@ public class MacroRouteEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private javax.swing.JTextField ivjNameTextField = null;
 	private int rightListItemIndex = getRoutesAddRemovePanel().rightListGetSelectedIndex();
 	private boolean rightListDragging = false;
+	private PaoDao paoDao = DaoFactory.getPaoDao();
+	private DBPersistentDao persistantDao = DaoFactory.getDbPersistentDao();
 public MacroRouteEditorPanel() {
 	super();
 	initialize();
@@ -436,4 +455,75 @@ public void setValue(Object val ) {
 
 	getNameTextField().setText( ((com.cannontech.database.data.route.MacroRoute)val).getRouteName() );
 }
+
+public boolean isInputValid() {
+    
+    // This code is going to find all RPT 850's that are not at the end of the list and move them there.
+    // The user will be warned if any routes are moved, and a validation error will be returned.
+    boolean firstNon850Found = false;
+    boolean listModified = false;
+    
+    Object itemSelected = new Object();
+    javax.swing.ListModel rightListModel = getRoutesAddRemovePanel().rightListGetModel();
+    java.util.Vector newList = new java.util.Vector( rightListModel.getSize() );
+    
+    for( int i = 0; i < rightListModel.getSize(); i++ )
+        newList.addElement( rightListModel.getElementAt(i) );
+    
+    for( int i = rightListModel.getSize()-1; i >= 0; i-- ) {
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO((((com.cannontech.database.data.lite.LiteYukonPAObject)rightListModel.getElementAt(i)).getPaoIdentifier().getPaoId()));
+        YukonPAObject yukonPaobject = (YukonPAObject)persistantDao.retrieveDBPersistent(device);
+
+        // if it is a CCU Route, check if it has a RPT 850.
+        boolean routeHas850 = false;
+        if(yukonPaobject instanceof CCURoute) {
+            java.util.Vector<RepeaterRoute> repeaterRoutes =  ((CCURoute)yukonPaobject).getRepeaterVector();
+
+            List<Integer> paoIds = new ArrayList<Integer>();
+            
+            for( int z = 0; z < repeaterRoutes.size(); z++ ) {
+                paoIds.add(repeaterRoutes.elementAt(z).getDeviceID());
+            }
+            
+            List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
+            
+            for (int j = 0; j < paoIdentifiers.size(); j++) {
+                if(paoIdentifiers.get(j).getPaoType() == PaoType.REPEATER_850) {
+                    // We have a repeater 850, this one needs to be at the end of the list!
+                    routeHas850 = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!routeHas850) {
+            firstNon850Found = true;
+        }
+        
+        // if we already found the first non 850, and we found another who has it, it must be moved!
+        if (firstNon850Found && routeHas850) {
+            itemSelected = newList.elementAt( i );
+            newList.removeElementAt(i);
+            newList.add(itemSelected);
+            listModified = true;
+        }
+            
+    }
+    
+    if (listModified) {
+        getRoutesAddRemovePanel().rightListSetListData(newList);
+
+        getRoutesAddRemovePanel().revalidate();
+        getRoutesAddRemovePanel().repaint();
+
+        // reset the values
+        rightListItemIndex = -1;
+        fireInputUpdate();
+        setErrorString("Macro routes containing Repeater 850's automatically moved to end of macro list. Route was not saved.");
+        return false;
+    }
+    
+    return true;
+}
+
 }

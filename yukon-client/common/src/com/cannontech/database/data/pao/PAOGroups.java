@@ -319,6 +319,8 @@ public final static int getDeviceType(String typeString)
 	  return REPEATER_800;
    else if (isStringDevice(compareString, STRING_REPEATER_801))
       return REPEATER_801;
+   else if (isStringDevice(compareString, STRING_REPEATER_850))
+       return REPEATER_850;
    else if (isStringDevice(compareString, STRING_REPEATER_921))
       return REPEATER_921;
    else if (isStringDevice(compareString, STRING_SIXNET))
@@ -633,6 +635,8 @@ public final static String getPAOTypeString(int type)
 		  	return STRING_REPEATER_800[0];
         case REPEATER_801:
             return STRING_REPEATER_801[0];
+        case REPEATER_850:
+            return STRING_REPEATER_850[0];
         case REPEATER_921:
             return STRING_REPEATER_921[0];
 	  	case SIXNET:

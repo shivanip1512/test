@@ -3,9 +3,12 @@ package com.cannontech.dbeditor.editor.route;
 import java.util.Vector;
 
 import javax.swing.JLabel;
+
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.dbeditor.editor.regenerate.RegenerateRoute;
 import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
 import com.cannontech.dbeditor.editor.regenerate.RouteRole;
@@ -332,11 +335,12 @@ private com.cannontech.common.gui.util.RepeaterAddRemovePanel getRepeatersAddRem
  * This method was created in VisualAge.
  * @return java.lang.Object
  * @param val java.lang.Object
+ * @throws EditorInputValidationException 
  */
 @SuppressWarnings({ "cast", "unchecked" })
-public Object getValue(Object val) {
+public Object getValue(Object val) throws EditorInputValidationException {
 	com.cannontech.database.data.route.CCURoute route = (com.cannontech.database.data.route.CCURoute) val;
-	   
+	
 	   //Build up an assigned repeaterRoute Vector
 	   java.util.Vector repeaterRouteVector = new java.util.Vector( getRepeatersAddRemovePanel().rightListGetModel().getSize() );
 	   Integer deviceID = null;
@@ -471,6 +475,21 @@ public Object getValue(Object val) {
 	        
 	    }
 	    getIdiotLabel().setVisible(false);
+	    
+	    for( int i = 0; i < getRepeatersAddRemovePanel().rightListGetModel().getSize(); i++ )
+        {
+           if(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
+               if(route.getDefaultRoute().equalsIgnoreCase(com.cannontech.common.util.CtiUtilities.getTrueCharacter().toString())) {
+                   throw new EditorInputValidationException("Default Route is not allowed on a route with a Repeater 850");
+               }else {
+                   javax.swing.JOptionPane.showMessageDialog( this, 
+                                                              "This route contains a Repeater 850, it is recommended that this repeater has no more than 10 devices connected.", 
+                                                              "Information", 
+                                                              javax.swing.JOptionPane.INFORMATION_MESSAGE );
+               }
+           }
+        }
+	    
 		return val;
 }
 /**
@@ -719,7 +738,7 @@ protected void setAdvancedRepeaterSetupEditorPanel(AdvancedRepeaterSetupEditorPa
 public void setValue(Object val) {
    this.objectToEdit = val;
    
-   com.cannontech.database.data.route.CCURoute route = (com.cannontech.database.data.route.CCURoute) val;
+   com.cannontech.database.data.route.CCURoute route = (com.cannontech.database.data.route.CCURoute) val;     
 
    java.util.Vector repeaterRoutes = route.getRepeaterVector();
    java.util.Vector assignedRepeaters = new java.util.Vector();
@@ -780,4 +799,18 @@ public void setValue(Object val) {
       getAdvancedSetupButton().setEnabled(true);
    }
 }
+
+    public boolean isInputValid() {
+        for( int i = 0; i < getRepeatersAddRemovePanel().rightListGetModel().getSize(); i++ )
+        {
+           if(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
+               if(i != getRepeatersAddRemovePanel().rightListGetModel().getSize()-1) {
+                   setErrorString("When present, a repeater 850 MUST be the last repeater in the repeater chain");
+                   return false;
+               }
+           }
+        }
+        return true;
+        
+    }
 }

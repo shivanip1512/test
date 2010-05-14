@@ -209,8 +209,9 @@ public abstract class PropertyPanel extends com.cannontech.common.gui.util.DataI
 	
 	/**
 	 * getValue method comment.
+	 * @throws EditorInputValidationException 
 	 */
-	public Object getValue(Object o)
+	public Object getValue(Object o) throws EditorInputValidationException
 	{
 		//If cancel has been pressed don't giv'em a thing
 	 	if( this.cancelled )

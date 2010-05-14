@@ -141,11 +141,12 @@ public interface DeviceTypes extends TypeBase
     
     public final static int LCR3102                 = DEVICE_OFFSET + 108;
     public final static int TNPP_TERMINAL    = DEVICE_OFFSET + 109;
-    public final static int FOCUS    		= DEVICE_OFFSET + 110;
+    public final static int FOCUS    		 = DEVICE_OFFSET + 110;
+    public final static int REPEATER_850     = DEVICE_OFFSET + 111;
 
     
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 109;
+	public final static int DEVICE_TYPES_COUNT = 111;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -240,6 +241,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_CBC_FP_2800 = {"CBC FP-2800", "CBC FP 2800"};
 	public static final String[] STRING_REPEATER_800 = {"REPEATER 800"};
     public static final String[] STRING_REPEATER_801 = {"REPEATER 801"};
+    public static final String[] STRING_REPEATER_850 = {"REPEATER 850"};
     public static final String[] STRING_REPEATER_921 = {"REPEATER 921"};
 	public static final String[] STRING_LM_ENERGY_EXCHANGE_PROGRAM = {"LM ENERGY EXCHANGE", "ENERGY EXCHANGE" };
 	public static final String[] STRING_SIXNET = {"SIXNET"};

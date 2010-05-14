@@ -1,10 +1,8 @@
 package com.cannontech.common.gui.util;
 
-/**
- * This type was created in VisualAge.
- */
 import java.util.Vector;
 
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -69,8 +67,9 @@ public java.lang.String getErrorString() {
  * This method was created in VisualAge.
  * @return java.lang.Object
  * @param o java.lang.Object
+ * @throws EditorInputValidationException 
  */
-public abstract Object getValue(Object o);
+public abstract Object getValue(Object o) throws EditorInputValidationException;
 /**
  * This method was created in VisualAge.
  */

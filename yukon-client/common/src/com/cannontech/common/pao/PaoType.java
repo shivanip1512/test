@@ -31,6 +31,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     QUANTUM(DeviceTypes.QUANTUM, "QUANTUM", PaoCategory.DEVICE, PaoClass.METER),
     SIXNET(DeviceTypes.SIXNET, "SIXNET", PaoCategory.DEVICE, PaoClass.METER),
     REPEATER_800(DeviceTypes.REPEATER_800, "REPEATER 800", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
+    REPEATER_850(DeviceTypes.REPEATER_850, "REPEATER 850", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     MCT310(DeviceTypes.MCT310, "MCT-310", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT318(DeviceTypes.MCT318, "MCT-318", PaoCategory.DEVICE, PaoClass.CARRIER),
     MCT360(DeviceTypes.MCT360, "MCT-360", PaoCategory.DEVICE, PaoClass.CARRIER),

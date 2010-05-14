@@ -277,6 +277,7 @@ public final static boolean isCarrier(int deviceType)
 		case REPEATER:
 		case REPEATER_902:
 		case REPEATER_800:
+		case REPEATER_850:
         case REPEATER_801:
         case REPEATER_921:
 		case DCT_501:
@@ -863,6 +864,7 @@ public final static boolean isRepeater(int deviceType)
 		case REPEATER_902:
 		case REPEATER_800:
         case REPEATER_801:
+        case REPEATER_850:
         case REPEATER_921:
 			return true;
 	
@@ -936,6 +938,7 @@ public final static boolean isTransmitter(int deviceType)
 		case REPEATER:
 		case REPEATER_902:
 		case REPEATER_800:
+		case REPEATER_850:
         case REPEATER_801:
         case REPEATER_921:
 		case TAPTERMINAL:

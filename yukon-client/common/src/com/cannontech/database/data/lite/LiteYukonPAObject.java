@@ -146,7 +146,12 @@ public int getPortID() {
  * @return int
  */
 public int getType() {
-	return paoType.getDeviceTypeId();
+    if (paoType != null) {
+        return paoType.getDeviceTypeId();
+    } else {
+        return 0;
+    }
+	
 }
 /**
  * Insert the method's description here.

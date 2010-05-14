@@ -215,6 +215,9 @@ public final static DeviceBase createDevice(int deviceType) {
         case PAOGroups.REPEATER_801:
             returnDevice = new Repeater801();
             break;
+        case PAOGroups.REPEATER_850:
+            returnDevice = new Repeater850();
+            break;
         case PAOGroups.REPEATER_921:
             returnDevice = new Repeater921();
             break;

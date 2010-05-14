@@ -1,5 +1,6 @@
 package com.cannontech.dbeditor.editor.device;
 
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -24,7 +25,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.MCT318, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, 
 			PAOGroups.MCT360, PAOGroups.MCT370, PAOGroups.MCT240, PAOGroups.LMT_2, 
 			PAOGroups.MCT248, PAOGroups.MCT250, PAOGroups.MCT210, PAOGroups.MCT213,
-			PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_921, PAOGroups.RTUILEX, PAOGroups.RTUWELCO, 
+			PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_850, PAOGroups.REPEATER_921, PAOGroups.RTUILEX, PAOGroups.RTUWELCO, 
 			PAOGroups.DR_87, PAOGroups.TAPTERMINAL, PAOGroups.TNPP_TERMINAL, PAOGroups.WCTP_TERMINAL, PAOGroups.SNPP_TERMINAL,
 			PAOGroups.VIRTUAL_SYSTEM, PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_MODBUS,
@@ -59,7 +60,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.QUANTUM, PAOGroups.DAVISWEATHER, PAOGroups.LANDISGYRS4,
 			PAOGroups.MCT310, PAOGroups.MCT318, PAOGroups.MCT360, PAOGroups.MCT370, 
 			PAOGroups.MCT240, PAOGroups.LMT_2, PAOGroups.MCT248, PAOGroups.MCT250, 
-			PAOGroups.MCT210, PAOGroups.MCT213, PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_921,
+			PAOGroups.MCT210, PAOGroups.MCT213, PAOGroups.REPEATER, PAOGroups.REPEATER_902, PAOGroups.REPEATER_800, PAOGroups.REPEATER_801, PAOGroups.REPEATER_850, PAOGroups.REPEATER_921,
 			PAOGroups.RTUILEX, PAOGroups.RTUWELCO, PAOGroups.DR_87, PAOGroups.SIXNET, 
 			PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L, PAOGroups.DCT_501,
          	PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.MCT310CT, PAOGroups.MCT310IM,
@@ -311,6 +312,23 @@ private void initialize() {
 	}
 	// user code begin {2}
 	// user code end
+}
+
+
+public Object getValue(Object o) {
+    try {
+        o = super.getValue(o);
+    } catch (EditorInputValidationException e) {
+    }
+    if(o instanceof com.cannontech.database.data.device.Repeater850)
+    {
+            javax.swing.JOptionPane.showMessageDialog( this, 
+                                                       "It is recommended that this repeater has no more than 10 devices connected.", 
+                                                       "Warning", 
+                                                       javax.swing.JOptionPane.WARNING_MESSAGE );
+    }
+    
+    return o;
 }
 
 
