@@ -35,6 +35,7 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
@@ -320,7 +321,10 @@ public class Editor extends JPanel {
 				public void selectionPerformed(PropertyPanelEvent e) {
 					if (e.getID() == PropertyPanelEvent.CANCEL_SELECTION) {}
 					else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
-						editor.getValue(elem);
+						try {
+                            editor.getValue(elem);
+                        } catch (EditorInputValidationException e1) {
+                        }
 					}
 					propertyDialog.setVisible(false);
 				}

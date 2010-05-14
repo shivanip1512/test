@@ -24,6 +24,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.GenericEvent;
 import com.cannontech.clientutils.popup.PopUpEventListener;
 import com.cannontech.clientutils.popup.PopUpMenuShower;
+import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
@@ -929,6 +930,10 @@ public void selectionPerformed( PropertyPanelEvent event)
 		catch( java.io.IOException e )
 		{
 			handleException( e );
+		}
+		catch( EditorInputValidationException e )
+		{
+		    handleException( e );
 		}
 		
 		panel.setChanged(false);

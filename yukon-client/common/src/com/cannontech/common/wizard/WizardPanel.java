@@ -191,10 +191,12 @@ public Object getValue(Object o) throws CancelInsertException{
 			try {
                 o = p.getValue(o);
             } catch (EditorInputValidationException e) {
-                javax.swing.JOptionPane.showMessageDialog( p, 
-                                                           e.getMessage(), 
-                                                           "Input Error", 
-                                                           javax.swing.JOptionPane.WARNING_MESSAGE );
+                if (e.getMessage() != "")
+                    javax.swing.JOptionPane.showMessageDialog( p, 
+                                                               e.getMessage(), 
+                                                               "Input Error", 
+                                                               javax.swing.JOptionPane.WARNING_MESSAGE );
+         
                 throw new CancelInsertException();
             }
 		}
