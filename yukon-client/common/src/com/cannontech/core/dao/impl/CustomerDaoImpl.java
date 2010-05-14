@@ -454,11 +454,6 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     @Override
     @Transactional
     public void addCustomer(LiteCustomer liteCustomer) throws DataAccessException {
-    	// The Customer table uses CustomerId of -1 as it's dummy entry, so the template is setup using "withPrimaryKeyValidOver(-1)"...
-    	// However, "new LiteCustomer()" creates a customer with a CustomerId of 0 by default.
-    	// So, to get the template to properly ADD the first Customer, we must force the ID to -1 instead of 0 otherwise the first customer addition will be 
-    	// handled as an update (to a customer that does not actually exist yet) which will cause an error.
-    	liteCustomer.setCustomerID(-1); 
         liteCustomerTemplate.insert(liteCustomer);
     }
     

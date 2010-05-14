@@ -42,6 +42,7 @@ public class LiteCustomer extends LiteBase {
 	
 	public LiteCustomer() {
 		super();
+		setCustomerID(-1); // LiteBase sets this to 0 as a default, but 0 is a valid customerId 
 		setLiteType( LiteTypes.CUSTOMER );
 	}
 	

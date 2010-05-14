@@ -24,7 +24,7 @@ public class LiteCICustomer extends LiteCustomer
 	
 	public LiteCICustomer() 
 	{
-		this( 0, null );
+		this( -1, null );
 	}
 	
 	public LiteCICustomer(int id) {
