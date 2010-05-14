@@ -59,13 +59,16 @@ submitForm = function(action) {
 
     <div class="actionArea">
         <input type="button" value="<cti:msg2 key=".config"/>"
-            onclick="submitForm('config')"/>
+               title="<cti:msg2 key=".config.description"/>"
+               onclick="submitForm('config')"/>
         <input type="button" value="<cti:msg2 key=".saveToBatch"/>"
-            onclick="submitForm('saveToBatch')"/>
+               title="<cti:msg2 key=".saveToBatch.description"/>"
+               onclick="submitForm('saveToBatch')"/>
         <input type="button" value="<cti:msg2 key=".saveConfigOnly"/>"
-            onclick="submitForm('saveConfigOnly')"/>
+               title="<cti:msg2 key=".saveConfigOnly.description"/>"
+               onclick="submitForm('saveConfigOnly')"/>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
-            onclick="parent.$('hardwareConfigEditDialog').hide()"/>
+               onclick="parent.$('hardwareConfigEditDialog').hide()"/>
     </div>
 
 </form>
