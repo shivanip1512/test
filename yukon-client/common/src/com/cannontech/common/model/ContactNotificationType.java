@@ -2,8 +2,9 @@ package com.cannontech.common.model;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 
-public enum ContactNotificationType implements DisplayableEnum {
+public enum ContactNotificationType implements DisplayableEnum, DatabaseRepresentationSource {
 	
 	CALL_BACK_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_CALL_BACK_PHONE, ContactNotificationMethodType.PHONE), 
     CELL_PHONE(YukonListEntryTypes.YUK_ENTRY_ID_CELL_PHONE, ContactNotificationMethodType.PHONE), 
@@ -68,5 +69,10 @@ public enum ContactNotificationType implements DisplayableEnum {
     @Override
     public String getFormatKey() {
     	return "yukon.web.modules.operator.contactNotificationEnum." + this.toString();
+    }
+    
+    @Override
+    public Object getDatabaseRepresentation() {
+    	return getDefinitionId();
     }
 }

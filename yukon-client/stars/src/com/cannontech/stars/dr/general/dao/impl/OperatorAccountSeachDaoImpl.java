@@ -64,9 +64,9 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 	@Override
 	public List<Integer> getAccountIdsByPhoneNumber(String phoneNumber, Set<Integer> energyCompanyIds) {
 		
-		Set<Integer> phoneNumberNotificationCateogyIds = Sets.newHashSetWithExpectedSize(2);
-		phoneNumberNotificationCateogyIds.add(ContactNotificationType.HOME_PHONE.getDefinitionId());
-		phoneNumberNotificationCateogyIds.add(ContactNotificationType.WORK_PHONE.getDefinitionId());
+		Set<ContactNotificationType> phoneNumberNotificationCategories = Sets.newHashSetWithExpectedSize(2);
+		phoneNumberNotificationCategories.add(ContactNotificationType.HOME_PHONE);
+		phoneNumberNotificationCategories.add(ContactNotificationType.WORK_PHONE);
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT ca.AccountId");
@@ -75,7 +75,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("JOIN Customer cust ON (ca.CustomerId = cust.CustomerId)");
 		sql.append("JOIN ContactNotification cn ON (cust.PrimaryContactId = cn.ContactId)");
 		sql.append("WHERE cn.Notification").endsWith(phoneNumber);
-		sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCateogyIds);
+		sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCategories);
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
 		
@@ -90,7 +90,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 			sql.append("JOIN Customer cust ON (ca.CustomerId = cust.CustomerId)");
 			sql.append("JOIN ContactNotification cn ON (cust.PrimaryContactId = cn.ContactId)");
 			sql.append("WHERE cn.Notification").endsWith(phoneNumber.substring(0, 3) + "-" + phoneNumber.substring(3, 6) + "-" + phoneNumber.substring(6));
-			sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCateogyIds);
+			sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCategories);
 			sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 			sql.append("ORDER BY ca.AccountNumber");
 			

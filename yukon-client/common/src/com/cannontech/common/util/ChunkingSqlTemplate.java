@@ -1,7 +1,6 @@
 package com.cannontech.common.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -21,10 +20,10 @@ public class ChunkingSqlTemplate {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
-    public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Collection<I> input, 
+    public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, 
                  final ParameterizedRowMapper<R> rowMapper, final Object... args) {
         
-        final List<I> tempInputList = new ArrayList<I>(input);
+        final List<I> tempInputList = Lists.newArrayList(input);
         final List<R> resultList = new ArrayList<R>(tempInputList.size());
         final List<String> queryList = new ArrayList<String>();
         
@@ -46,7 +45,7 @@ public class ChunkingSqlTemplate {
         return resultList;
     }
     
-    public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Collection<I> input, 
+    public <I, R> List<R> query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, 
     		final ParameterizedRowMapper<R> rowMapper) {
     	
     	List<R> resultList = Lists.newArrayList();
@@ -58,7 +57,7 @@ public class ChunkingSqlTemplate {
     	return resultList;
     }
 
-    public <I> void query(final SqlFragmentGenerator<I> sqlGenerator, final Collection<I> input, 
+    public <I> void query(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input, 
                              final RowCallbackHandler rch) {
         
         final List<I> tempInputList = Lists.newArrayList(input);
@@ -80,9 +79,9 @@ public class ChunkingSqlTemplate {
         
     }
     
-    public <I> void update(final SqlGenerator<I> sqlGenerator, final Collection<I> input, final Object... args) {
+    public <I> void update(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, final Object... args) {
                     
-        final List<I> tempInputList = new ArrayList<I>(input);
+        final List<I> tempInputList = Lists.newArrayList(input);
         final List<String> queryList = new ArrayList<String>();
         
         int inputSize = tempInputList.size();
@@ -100,9 +99,9 @@ public class ChunkingSqlTemplate {
         }
     }
 
-    public <I> void update(final SqlFragmentGenerator<I> sqlGenerator, final Collection<I> input) {
+    public <I> void update(final SqlFragmentGenerator<I> sqlGenerator, final Iterable<I> input) {
     	
-    	final List<I> tempInputList = new ArrayList<I>(input);
+    	final List<I> tempInputList = Lists.newArrayList(input);
     	final List<SqlFragmentSource> sqlFragmentList = new ArrayList<SqlFragmentSource>();
     	
     	int inputSize = tempInputList.size();

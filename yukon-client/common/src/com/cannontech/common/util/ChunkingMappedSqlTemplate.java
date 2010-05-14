@@ -2,7 +2,6 @@ package com.cannontech.common.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -52,7 +51,7 @@ public class ChunkingMappedSqlTemplate {
      * @return
      */
 	public <I, R, C> Map<C, R> mappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
-										final List<C> inputList,
+										final Iterable<C> input,
 										final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
 										Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
 
@@ -60,7 +59,7 @@ public class ChunkingMappedSqlTemplate {
 		final Map<I, R> intermediaryResult = Maps.newHashMap();
 
 		ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
-		chunkingTemplate.query(sqlGenerator, Lists.transform(inputList, inputTypeToSqlGeneratorTypeMapper), new RowCallbackHandler() {
+		chunkingTemplate.query(sqlGenerator, Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), new RowCallbackHandler() {
 					
 			private int row = 0;
 					
@@ -70,7 +69,7 @@ public class ChunkingMappedSqlTemplate {
 			}
 		});
 
-		for (C i : inputList) {
+		for (C i : input) {
 		    I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
 		    if (intermediaryResult.containsKey(e)) {
 		        R r = intermediaryResult.get(e);
@@ -103,7 +102,7 @@ public class ChunkingMappedSqlTemplate {
      * @return
      */
 	public <I, R, C> SetMultimap<R, C> reverseMultimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
-	                                                           final List<C> inputList,
+	                                                           final Iterable<C> input,
 	                                                           final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
 	                                                           Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
 	    
@@ -112,7 +111,7 @@ public class ChunkingMappedSqlTemplate {
 	    
 	    ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
 	    chunkingTemplate.query(sqlGenerator, 
-	                           Lists.transform(inputList, inputTypeToSqlGeneratorTypeMapper), 
+	                           Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), 
 	                           new RowCallbackHandler() {
 	        
 	        private int row = 0;
@@ -123,7 +122,7 @@ public class ChunkingMappedSqlTemplate {
 	        }
 	    });
 	    
-	    for (C i : inputList) {
+	    for (C i : input) {
 	        I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
 	        if (intermediaryResult.containsKey(e)) {
 	            R r = intermediaryResult.get(e);

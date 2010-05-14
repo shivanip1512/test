@@ -247,7 +247,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
             }
         };
 
-        return template.mappedQuery(sqlGenerator, Lists.newArrayList(identifiers), rowMapper, inputTypeToSqlGeneratorTypeMapper);
+        return template.mappedQuery(sqlGenerator, identifiers, rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
     
     @Override

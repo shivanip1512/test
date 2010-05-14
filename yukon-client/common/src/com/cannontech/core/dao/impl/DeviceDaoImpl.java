@@ -40,7 +40,6 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -412,7 +411,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         };
         
 
-        return template.mappedQuery(sqlGenerator, Lists.newArrayList(identifiers), rowMapper, inputTypeToSqlGeneratorTypeMapper);
+        return template.mappedQuery(sqlGenerator, identifiers, rowMapper, inputTypeToSqlGeneratorTypeMapper);
     }
 
     public SimpleDevice getYukonDeviceForDevice(DeviceBase oldDevice) {

@@ -109,14 +109,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         }
         
         // trim results for paging
-        List<Integer> keeperAccountIds = Lists.newArrayList();
-        int i = 0;
-        for (int accountId : accountIds) {
-        	if (i >= startIndex && keeperAccountIds.size() < pageCount) {
-        		keeperAccountIds.add(accountId);
-        	}
-        	i++;
-        }
+        List<Integer> keeperAccountIds = accountIds.subList(startIndex, startIndex + pageCount > accountIds.size() ? accountIds.size() : startIndex + pageCount);
         
         List<AccountSearchResult> accountSearchResultsList = operatorAccountSearchDao.getAccountSearchResultsForAccountIds(keeperAccountIds);
         
