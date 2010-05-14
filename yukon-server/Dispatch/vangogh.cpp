@@ -69,9 +69,8 @@ int DispatchMainFunction(int argc, char **argv)
 
         if( RW_THR_COMPLETED != VanGogh.join( (gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))*1000) )
         {
-            std::wstring file = L"Dispatch";
-            file += L".DMP";
-            ///CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long)NULL, (EXCEPTION_POINTERS*) NULL);
+            CreateMiniDump("dispatch");
+
             cerr << "***** EXCEPTION ******* Terminating Dispatch" << endl;
             VanGogh.terminate();
         }

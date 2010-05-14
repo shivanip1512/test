@@ -18,7 +18,7 @@ namespace Devices {
 class test_LCR3102 : public LCR3102
 {
 public:
-    
+
     typedef CtiDeviceSingle::point_info point_info;
 
     point_info test_getSixBitValue(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
@@ -50,7 +50,7 @@ private:
 public:
 
     // Note that this always overwrites
-    virtual bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0)
+    virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0)
     {
         point_results.erase(offset);
         point_results.insert(std::make_pair(offset, pi));
@@ -118,18 +118,18 @@ BOOST_AUTO_TEST_CASE(test_dev_lcr3102_get6BitData)
 
 BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
 {
-    /* 
+    /*
     0xCC KW Used
-    This is the amount of KW used in the last interval.  It includes the relay numbers, multipliers, 
-    and the amounts in watts.  Relay number will be the same value as sent in the request. The lowest 
-    relay number is always the first Watts value returned. If only one relay is specified the Watts for 
+    This is the amount of KW used in the last interval.  It includes the relay numbers, multipliers,
+    and the amounts in watts.  Relay number will be the same value as sent in the request. The lowest
+    relay number is always the first Watts value returned. If only one relay is specified the Watts for
     the 2nd relay should be ignored.
-     
-    Fields: 
-    Relay Numbers and Multiplier 
+
+    Fields:
+    Relay Numbers and Multiplier
     Watts for first relay (16 bit value)
     Watts for second relay (16 bit value) (optional)
-    
+
     Relay Numbers And Multiplier:
     "   M2 M2 M1 M1R4R3R2R1
     "   M2M2 = is the multiplier for CT2
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     pi = test_device.test_getPointResults(PointOffest_intervals_relay_2);
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_EQUAL(pi.value, 11);
-    
+
     flags = 0x6C; // Relay 3, multiplier 1/100 Relay 4, multiplier 1/10
     unsigned short relay_3_watts = 0x1234;
     unsigned short relay_4_watts = 0x9873;
@@ -251,9 +251,9 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
 
 BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 {
-    /* 
+    /*
     Propcount is a single value return
-    */ 
+    */
 
     //PointOffset_PropCount        = 13,
     static const int PointOffest_Propcount = 13;

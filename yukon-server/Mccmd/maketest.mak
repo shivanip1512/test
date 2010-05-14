@@ -12,7 +12,7 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(MSG)\include \
 -I$(RTDB)\include \
--I$(TCLINC) \
+-I$(TCL)\include \
 -I$(RW) \
 -I$(BOOST) \
 
@@ -43,9 +43,8 @@ DLLOBJS=\
 $(OBJ)\decodeTextCmdFile.obj
 
 LIBS=\
-$(COMPILEBASE)\lib\$(TCL_LIB).lib \
+$(TCL_LIBS) \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
@@ -81,7 +80,7 @@ deps:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(DLLOBJS) $(LIBS) $(LINKFLAGS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(DLLOBJS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
@@ -96,7 +95,7 @@ deps:
 
 #UPDATE#
 test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h numstr.h clrdump.h ctitime.h \
+		thread.h mutex.h guard.h numstr.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \
 		types.h sorted_vector.h
 #ENDUPDATE#

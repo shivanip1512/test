@@ -1,93 +1,23 @@
-###########################################################
-#                                                         #
-#       Makefile Template for CTI Apps                    #
-#                                                         #
-#       $Revision: 1.18.2.4 $                             #
-#       $Date: 2008/11/12 17:27:30 $                      #
-#                                                         #
-# Definitions                                             #
-###########################################################
+#
+# Global include for Yukon makefiles
+#
 
 OBJ             = .\obj
 BIN             = .\bin
-SRC             = .
 
-###########################################################
-#       Initial read time defines                         #
-###########################################################
-# Define to allow compiling from another directory        #
-###########################################################
-
-# ALTERNATE_REFERENCE_PATH:
-#       if defined, should reference a complete tree of the
-#       compile stucture this is typically a pvcs reference
-#       directory which is a read only directory of the most
-#       recent checked in goods.
 #
-# REFPATH:
-#       Allows the rest of the makefile know about the
-#       default and the alternate
-#       (whichever you have chosen to use)
+# Initial read time assertions
 #
 
 %IF( "$(YUKONOUTPUT)" == "" )
-%set YUKONOUTPUT=\yukon
+        @echo YUKONOUTPUT not specified.
+        %Abort
 %ENDIF
 
-
-%IF( "$(ALTERNATE_REFERENCE_PATH)" == "" )
-        %if %dir( z:\projects\yukon )
-                REFPATH = z:\projects\yukon
-        %else
-                REFPATH = .
-        %endif
-%ELSE
-        REFPATH=$(ALTERNATE_REFERENCE_PATH)\
-%ENDIF
-
-# COMPILEBASE:
-#       This is the programmers working directory set
-#
 %IF( "$(COMPILEBASE)" == "" )
-
-   COMPILEBASE = $(REFPATH)
-
+        @echo COMPILEBASE not specified.
+        %Abort
 %ENDIF
-
-# SOURCEBASE:
-#       This is one level above the compile base.
-#       This is set by the build batch file.
-#
-%IF( "$(SOURCEBASE)" == "" )
-
-   SOURCEBASE = ..
-
-%ENDIF
-
-#
-# Reference directories.
-#
-
-R_LOADMANAGEMENT = $(REFPATH)\LoadManagement
-R_FDR            = $(REFPATH)\Fdr
-R_CALC           = $(REFPATH)\Calc
-R_CAPCONTROL     = $(REFPATH)\CapControl
-R_COMMON         = $(REFPATH)\Common
-R_DISPATCH       = $(REFPATH)\Dispatch
-R_DATABASE       = $(REFPATH)\Database
-R_PIL            = $(REFPATH)\Pil
-R_PORTER         = $(REFPATH)\Porter
-R_SCANNER        = $(REFPATH)\Scanner
-R_SERVER         = $(REFPATH)\Server
-R_CPARMS         = $(REFPATH)\Cparms
-R_MACS           = $(REFPATH)\Macs
-R_MCCMD          = $(REFPATH)\Mccmd
-R_MSG            = $(REFPATH)\Message
-R_PROT           = $(REFPATH)\Protocol
-R_SERVICE        = $(REFPATH)\Service
-R_SIGNAL         = $(REFPATH)\dbsignal
-R_RTDB           = $(REFPATH)\rtdb
-R_DEVICECONFIGURATION = $(REFPATH)\DeviceConfiguration
 
 #
 # Working directories.
@@ -115,35 +45,48 @@ RTDB            = $(COMPILEBASE)\rtdb
 INTERP          = $(COMPILEBASE)\interp
 DEVICECONFIGURATION = $(COMPILEBASE)\deviceconfiguration
 
-TCLINC          = $(COMPILEBASE)\tcl\include
+CPP_LIBRARIES   = $(DEV_ENVIRONMENT)\libraries
 
-XERCESHOME      = $(YUKONBASE)\yukon-3rdparty\Xerces
-XERCESINC       = $(XERCESHOME)\include
+XERCES          = $(CPP_LIBRARIES)\xerces\3.0.1
 
-BOOST           = $(YUKONBASE)\yukon-3rdparty\boost
+TCL             = $(CPP_LIBRARIES)\tcl\8.1.1
+TCL_LIBS = \
+$(TCL)\lib\tcl81.lib
 
-ACTIVEMQ        = $(YUKONBASE)\yukon-3rdparty\ActiveMQ-CPP
+BOOST           = $(CPP_LIBRARIES)\boost\1.37.0
+
+ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.0.1
+
+MICROSOFT       = $(CPP_LIBRARIES)\microsoft
+MICROSOFT_VC    = $(MICROSOFT)\vc\9.0
+MICROSOFT_SQL   = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
+
+DBGHELP         = $(MICROSOFT)\dbghelp\6.12.2.633
+DBGHELP_LIBS =\
+$(DBGHELP)\lib\dbghelp.lib
+
+OPENSSL         = $(CPP_LIBRARIES)\openssl\0.9.8g
+OPENSSL_LIBS = \
+$(OPENSSL)\lib\libeay32.lib \
+$(OPENSSL)\lib\ssleay32.lib
 
 BOOST_ALL_DYN_LINK = 1
 
 !IFDEF DEBUG
-#echo using debug boost libs
-BOOSTLIBS = $(BOOST)\lib\libboost_date_time-vc90-mt-gd-1_37.lib \
-            $(BOOST)\lib\libboost_thread-vc90-mt-gd-1_37.lib   \
-            $(BOOST)\lib\libboost_regex-vc90-mt-gd-1_37.lib
-BOOSTTHREAD = $(BOOST)\lib\boost_thread-vc90-mt-gd-1_37.lib
-BOOSTTESTLIBS = $(BOOST)\lib\\libboost_unit_test_framework-vc90-mt-gd-1_37.lib
+BOOST_VERSION = vc90-mt-gd-1_37
 MICROSOFTDLL = d
-#echo $(BOOSTLIBS)
 !ELSE
-#echo using non-debug boost libs
-BOOSTLIBS = $(BOOST)\lib\libboost_date_time-vc90-mt-1_37.lib \
-            $(BOOST)\lib\libboost_thread-vc90-mt-1_37.lib   \
-            $(BOOST)\lib\libboost_regex-vc90-mt-1_37.lib
-BOOSTTHREAD = $(BOOST)\lib\boost_thread-vc90-mt-1_37.lib
-BOOSTTESTLIBS = $(BOOST)\lib\\libboost_unit_test_framework-vc90-mt-1_37.lib
-#echo $(BOOSTLIBS)
+BOOST_VERSION = vc90-mt-1_37
 !ENDIF
+
+BOOST_LIBS = \
+$(BOOST)\lib\libboost_date_time-$(BOOST_VERSION).lib \
+$(BOOST)\lib\libboost_thread-$(BOOST_VERSION).lib   \
+$(BOOST)\lib\libboost_regex-$(BOOST_VERSION).lib
+
+BOOST_TEST_LIBS = \
+$(BOOST)\lib\libboost_unit_test_framework-$(BOOST_VERSION).lib
+
 
 %IF( "$(BUILD_VERSION)" != "" )
 
@@ -162,26 +105,20 @@ D_BOOST_ENABLE_ASSERT_HANDLER = /DBOOST_ENABLE_ASSERT_HANDLER
 !IFDEF DEBUG
 #note on above:  apparently the "!" is not a NOT -- hence this part is the DEBUG SECTION
 #echo debug build used
-CFLAGS  = /nologo /Zc:wchar_t- /Zi /Od /EHa     /MDd /Zm200 /FD /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /FD /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-#LINKFLAGS = /link
-#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRT.lib
-#LINKFLAGS = /link /VERBOSE:LIB
+CFLAGS  = /nologo /Zc:wchar_t- /Zi /Od /EHa     /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 XERCES_LIB = xerces-c_3D
 XERCES_DLL = xerces-c_3_0D
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
-CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-#LINKFLAGS = /link /NODEFAULTLIB:MSVCRTD.lib
-#LINKFLAGS = /link /FORCE /NODEFAULTLIB:MSVCRTD.lib
-#LINKFLAGS = /link /VERBOSE:LIB
+CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 XERCES_LIB = xerces-c_3
 XERCES_DLL = xerces-c_3_0
 !ENDIF
 
-TCL_LIB = tcl81
+XERCES_LIBS = $(XERCES)\lib\$(XERCES_LIB).lib
 
 PCHFLAGS = /Yu"yukon.h" /Fp"$(BIN)\yukon.pch"
 
@@ -206,9 +143,6 @@ INCLPATHS=-I. -I.\include
 #       the key being that you are going to look in the current dir first,
 #       then look in the reference directory which was established above.
 
-# Must be done in the Makefiles themselves (to prevent name collisions)... .PATH.h = .;$INCPATHADDITIONS);$(INCLUDE)
-# Must be done in the Makefiles themselves (to prevent name collisions)... .PATH.cpp = .;$(CPPREFDIRS)
-
 .IgnoreMissingHeader shared_ptr.hpp
 
 .Hdr.hpp = ^^\#[ \t]*include[ \t][ \t]*\"@.*@\"
@@ -224,17 +158,9 @@ INCLPATHS=-I. -I.\include
 ####################################################
 #
 .PROLOG:
-
-#%if !%file(vcs.cfg)
-# @echo REFERENCEDIR = WRITEPROTECT      *\..>vcs.cfg
-# @echo ARCHIVESUFFIX = +-arc            >> vcs.cfg
-# @echo DELETEWORK                       >> vcs.cfg
-# @echo vcsdir = $(REFPATH)\src\vcs      >>vcs.cfg
-#%endif
-
-%if %file(make.err)
-        @del make.err
-%endif
+#        @%echo
+#        @echo Anything here is done every time BEFORE any file timestamps are examined
+#        @%echo
 
 .INIT:
 #        @%echo
@@ -245,13 +171,6 @@ INCLPATHS=-I. -I.\include
 #        @%echo
 #        @echo Anything here is done every time AFTER something was rebuilt
 #        @%echo
-
-# TYPE the error file if an error occured
-%if %file(err)
-        @echo .
-        @type err
-        @%cd $(CWD)
-%endif
 
 # Implicit dependancies and make lines
 

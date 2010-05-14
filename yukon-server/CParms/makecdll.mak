@@ -8,8 +8,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .;$(R_CPARMS)
-
 CPARM2OBJ=\
 configparms.obj
 
@@ -25,7 +23,7 @@ cparms.dll:     $(CPARM2OBJ) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(CPARM2OBJ) -link $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS) $(BOOSTLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(CPARM2OBJ) -link $(COMPILEBASE)\lib\cticparms.lib $(RWLIBS) $(BOOST_LIBS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

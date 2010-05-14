@@ -8,9 +8,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .;$(R_CPARMS)
-
-
 CPARMOBJS=\
 dllmain.obj \
 configval.obj \
@@ -37,7 +34,7 @@ cticparms.dll:  $(CPARMS_FULLBUILD) $(CPARMOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(CPARMOBJS) -link $(RWLIBS) $(BOOSTLIBS) advapi32.lib shlwapi.lib
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(CPARMOBJS) -link $(RWLIBS) $(BOOST_LIBS) advapi32.lib shlwapi.lib
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -28,10 +28,6 @@ using namespace std;
 #include "logger.h"
 #include "utility.h"
 
-extern "C"
-{
-	#include "clrdump.h"
-}
 #include "dbghelp.h"
 
 extern INT DispatchMainFunction(INT, CHAR**);
@@ -43,9 +39,6 @@ int main(int argc, char* argv[] )
    LPTSTR szDisplay = "Yukon Dispatch Service";
 
    HANDLE hExclusion = INVALID_HANDLE_VALUE;
-
-   ///RegisterFilter( ( wchar_t *) L"CALC_LOGIC_MAIN.DMP", MiniDumpWithDataSegs );
-   ///SetFilterOptions( (DWORD) CLRDMP_OPT_CALLDEFAULTHANDLER );
 
    if( (hExclusion = OpenEvent(EVENT_ALL_ACCESS, FALSE, szName)) != NULL )
    {

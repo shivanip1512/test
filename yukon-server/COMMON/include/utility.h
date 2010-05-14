@@ -174,6 +174,8 @@ public:
 
 IM_EX_CTIBASE void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName);
 
+IM_EX_CTIBASE void CreateMiniDump(const std::string &dumpfilePrefix);
+
 extern LONG gOutMessageCounter;
 
 IM_EX_CTIBASE void  incrementCount();

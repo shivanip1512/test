@@ -11,11 +11,9 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(MSG)\include \
 -I$(RTDB)\include \
--I$(TCLINC) \
--I$<BOOST> \
+-I$(TCL)\include \
+-I$(BOOST) \
 -I$(RW) \
-
-.PATH.cpp = .;$(R_MCCMD)
 
 .PATH.H = \
 .\include \
@@ -48,9 +46,8 @@ xcel.obj
 
 
 LIBS=\
-$(COMPILEBASE)\lib\$(TCL_LIB).lib \
+$(TCL_LIBS) \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\cticparms.lib

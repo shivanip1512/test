@@ -17,8 +17,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .
-
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -40,7 +38,6 @@ INCLPATHS+= \
 
 DLLLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
 $(COMPILEBASE)\lib\ctidevdb.lib \
@@ -73,7 +70,7 @@ $(PIL_FULLBUILD) :
 ctipil.dll:     $(PIL_FULLBUILD) $(DLLOBJS) makedll.mak
                 @echo Building  $@
                 @%cd $(OBJ)
-                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(DLLLIBS) -Fe..\$@ $(LINKFLAGS)
+                $(CC) $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(DLLLIBS) -Fe..\$@ $(LINKFLAGS)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -105,7 +102,7 @@ deps:
 #UPDATE#
 applist.obj:	yukon.h precompiled.h ctidbgmem.h applist.h con_mgr.h \
 		connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
 		collectable.h rwutil.h boost_time.h boostutil.h msg_multi.h \
@@ -115,7 +112,7 @@ exe_pcreq.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		collectable.h dlldefs.h rwutil.h ctitime.h boost_time.h \
 		boostutil.h utility.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h pil_conmgr.h exchange.h dllbase.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
+		dsm2.h mutex.h guard.h cticonnect.h netports.h \
 		logger.h thread.h CtiPCPtrQueue.h con_mgr.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h ctibase.h \
@@ -135,14 +132,14 @@ parsetest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h \
 		rwutil.h ctitime.h dlldefs.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h configkey.h configval.h logger.h thread.h \
-		mutex.h guard.h clrdump.h CtiPCPtrQueue.h cmdparse.h \
+		mutex.h guard.h CtiPCPtrQueue.h cmdparse.h \
 		ctitokenizer.h parsevalue.h
 pilglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h
 pilserver.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dev_grp_versacom.h dev_base.h boostutil.h \
 		utility.h ctitime.h queues.h numstr.h sorted_vector.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h cmdparse.h \
+		mutex.h guard.h cticonnect.h netports.h cmdparse.h \
 		ctitokenizer.h parsevalue.h counter.h dev_exclusion.h \
 		tbl_paoexclusion.h config_device.h logger.h thread.h \
 		CtiPCPtrQueue.h dllbase.h hashkey.h hash_functions.h \
@@ -173,7 +170,7 @@ piltest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h \
 		rwutil.h ctitime.h dlldefs.h boost_time.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h configkey.h configval.h logger.h thread.h \
-		mutex.h guard.h clrdump.h CtiPCPtrQueue.h exchange.h \
+		mutex.h guard.h CtiPCPtrQueue.h exchange.h \
 		dllbase.h dsm2.h cticonnect.h netports.h message.h \
 		collectable.h msg_cmd.h msg_reg.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
@@ -181,7 +178,7 @@ piltest.obj:	yukon.h precompiled.h ctidbgmem.h queue.h cparms.h \
 		ctitokenizer.h parsevalue.h
 pil_conmgr.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		pil_conmgr.h exchange.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
 		rwutil.h boost_time.h boostutil.h con_mgr.h connection.h \

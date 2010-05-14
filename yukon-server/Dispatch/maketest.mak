@@ -19,8 +19,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .
-
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -50,7 +48,6 @@ $(COMPILEBASE)\lib\ctipntdb.lib \
 $(COMPILEBASE)\lib\ctidbres.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\ctivg.lib
 
@@ -101,7 +98,7 @@ clean:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	.\obj\$(@B).obj -link /subsystem:console $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
@@ -118,7 +115,7 @@ test_mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h \
 		mgr_ptclients.h dlldefs.h mgr_point.h smartmap.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h dllbase.h dsm2.h mutex.h guard.h \
-		clrdump.h cticonnect.h netports.h readers_writer_lock.h \
+		cticonnect.h netports.h readers_writer_lock.h \
 		critical_section.h fifo_multiset.h pt_base.h dbmemobject.h \
 		resolvers.h pointtypes.h db_entry_defines.h pointdefs.h \
 		pt_dyn_base.h tbl_pt_base.h dbaccess.h sema.h desolvers.h \
@@ -133,7 +130,7 @@ test_mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_unitmeasure.h tbl_pt_analog.h
 test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
 		signalmanager.h msg_signal.h message.h collectable.h rwutil.h \

@@ -16,7 +16,6 @@ INCLPATHS+= \
 -I$(BOOST) \
 
 
-.PATH.cpp = .
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -37,7 +36,6 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib
 
 CAPCTRLTESTOBJS= \
@@ -127,7 +125,7 @@ deps:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CAPCTRLBASEOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CAPCTRLBASEOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
@@ -144,7 +142,7 @@ test_ccexecuter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ccsubstationbusstore.h observe.h types.h dlldefs.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h ccarea.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h clrdump.h cticonnect.h netports.h dsm2err.h words.h \
+		guard.h cticonnect.h netports.h dsm2err.h words.h \
 		sema.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h message.h collectable.h rwutil.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -167,7 +165,7 @@ test_ccexecuter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ctinexus.h
 test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -192,7 +190,7 @@ test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		PFactorKWKVarStrategy.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -219,7 +217,7 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h
 test_ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -246,7 +244,7 @@ test_ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		PointDataRequestFactory.h
 test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -275,7 +273,7 @@ test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		boost_time.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h
 test_strategymanager.obj:	StrategyManager.h readers_writer_lock.h \
-		dlldefs.h critical_section.h guard.h numstr.h clrdump.h \
+		dlldefs.h critical_section.h guard.h numstr.h \
 		ControlStrategy.h StrategyLoader.h KVarStrategy.h \
 		NoStrategy.h PFactorKWKVarStrategy.h
 #ENDUPDATE#

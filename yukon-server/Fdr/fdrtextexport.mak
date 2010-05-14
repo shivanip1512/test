@@ -14,8 +14,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .;$(R_FDR)
-
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -30,7 +28,6 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
-;$(TCLINC) \
 ;$(RW)
 
 
@@ -55,7 +52,7 @@ fdrtextexport.dll: fdrtextexport.obj fdrtextexport.mak
                 @%cd $(OBJ)
                 @echo Building  ..\$@
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
-                $(CC) $(DLLFLAGS) fdrtextexport.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(CTIFDRLIBS) /Fe..\$@
+                $(CC) $(DLLFLAGS) fdrtextexport.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(CTIFDRLIBS) /Fe..\$@
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

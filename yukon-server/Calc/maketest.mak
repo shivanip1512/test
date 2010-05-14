@@ -15,8 +15,6 @@ INCLPATHS+= \
 -I$(BOOST) \
 
 
-.PATH.cpp = .;$(R_DISPATCH)
-
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -32,7 +30,6 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
-;$(TCLINC) \
 ;$(RW)
 
 
@@ -42,7 +39,6 @@ test_calc.obj \
 
 CALCLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctivg.lib \
 $(COMPILEBASE)\lib\ctisvr.lib \
@@ -50,7 +46,6 @@ $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 advapi32.lib
 
 CALCOBJS= \
@@ -68,7 +63,7 @@ calctest:  $(CALCTESTOBJS) makeexe.mak
 copy:
            -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
            -@if exist bin\*.exe copy bin\*.exe $(YUKONOUTPUT)
-	   #copy 
+	   #copy
 
 deps:
         scandeps -Output maketest.mak test_*.cpp
@@ -103,7 +98,7 @@ $(BIN)\test*.exe
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CALCOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CALCOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
@@ -121,10 +116,10 @@ $(BIN)\test*.exe
 #UPDATE#
 test_calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h ctiqueues.h \
 		calccomponent.h ctitime.h dlldefs.h ctidate.h logger.h \
-		thread.h mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h \
-		utility.h queues.h cticalls.h os2_2w32.h types.h \
-		sorted_vector.h pointstore.h hashkey.h hash_functions.h \
-		rtdb.h dllbase.h dsm2.h cticonnect.h netports.h pointdefs.h \
+		thread.h mutex.h guard.h numstr.h CtiPCPtrQueue.h utility.h \
+		queues.h cticalls.h os2_2w32.h types.h sorted_vector.h \
+		pointstore.h hashkey.h hash_functions.h rtdb.h dllbase.h \
+		dsm2.h cticonnect.h netports.h dsm2err.h words.h pointdefs.h \
 		regression.h tbl_pt_limit.h dbmemobject.h dbaccess.h sema.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
 #ENDUPDATE#

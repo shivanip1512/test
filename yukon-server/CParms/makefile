@@ -35,6 +35,7 @@ copy:
             @build -nologo -f makecdll.mak $@
             @build -nologo -f makeexe.mak $@
 
+deps:
 
 
 

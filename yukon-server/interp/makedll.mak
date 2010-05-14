@@ -3,7 +3,7 @@
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(TCLINC) \
+-I$(TCL)\include \
 -I$(RW) \
 -I$(BOOST) \
 
@@ -14,8 +14,7 @@ interp_pool.obj
 
 CTILIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
-$(COMPILEBASE)\lib\$(TCL_LIB).lib
+$(TCL_LIBS)
 
 
 
@@ -29,7 +28,7 @@ interp.dll:  $(INTERPOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(CTILIBS) advapi32.lib
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) advapi32.lib
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

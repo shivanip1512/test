@@ -36,7 +36,6 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctiseasondb.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib
@@ -114,7 +113,7 @@ deps:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
@@ -134,7 +133,7 @@ test_lmprogram.obj:	yukon.h precompiled.h ctidbgmem.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h rwutil.h boost_time.h lmgroupbase.h \
 		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h ctidate.h \
-		logger.h thread.h mutex.h guard.h clrdump.h CtiPCPtrQueue.h \
+		logger.h thread.h mutex.h guard.h CtiPCPtrQueue.h \
 		lmprogramdirectgear.h lmcontrolarea.h connection.h exchange.h \
 		dllbase.h dsm2.h cticonnect.h netports.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h \

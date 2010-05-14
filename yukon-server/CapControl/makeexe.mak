@@ -16,7 +16,6 @@ INCLPATHS+= \
 -I$(BOOST) \
 
 
-.PATH.cpp = .
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -37,7 +36,6 @@ $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib
 
 BASEOBJS= \
@@ -111,7 +109,7 @@ capcontrol.exe: $(CAPCONTROL_FULLBUILD) $(BASEOBJS) Makefile
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS)
               @echo:
 	      mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
@@ -157,7 +155,7 @@ allclean:   clean all
 capcontroldispatchconnection.obj:	yukon.h precompiled.h ctidbgmem.h \
 		CapControlDispatchConnection.h DispatchConnection.h \
 		connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h logger.h thread.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h \
 		message.h collectable.h rwutil.h boost_time.h boostutil.h \
@@ -178,7 +176,7 @@ capcontroldispatchconnection.obj:	yukon.h precompiled.h ctidbgmem.h \
 		StrategyLoader.h AttributeService.h PointAttribute.h
 capcontroller.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h connection.h exchange.h logger.h \
 		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
@@ -215,7 +213,7 @@ capcontrolpointdatahandler.obj:	yukon.h precompiled.h ctidbgmem.h \
 		boost_time.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h MessageListener.h \
 		DispatchConnection.h connection.h exchange.h dllbase.h dsm2.h \
-		mutex.h guard.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		mutex.h guard.h cticonnect.h netports.h dsm2err.h \
 		words.h logger.h thread.h CtiPCPtrQueue.h msg_multi.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h capcontroller.h dbaccess.h sema.h \
@@ -234,7 +232,7 @@ capcontrolpointdatahandler.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ctdpcptrq.h ctibase.h ctinexus.h
 ccarea.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h msg_signal.h message.h collectable.h rwutil.h \
 		ctitime.h boost_time.h boostutil.h utility.h queues.h \
 		sorted_vector.h ccarea.h connection.h exchange.h logger.h \
@@ -258,7 +256,7 @@ ccarea.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		ctibase.h ctinexus.h resolvers.h db_entry_defines.h
 cccapbank.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h cccapbank.h msg_cmd.h message.h collectable.h \
 		rwutil.h ctitime.h boost_time.h boostutil.h utility.h \
 		queues.h sorted_vector.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -269,7 +267,7 @@ cccapbank.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		db_entry_defines.h
 ccclientconn.obj:	yukon.h precompiled.h ctidbgmem.h ccclientconn.h \
 		ctdpcptrq.h dlldefs.h CtiPCPtrQueue.h mutex.h guard.h \
-		numstr.h clrdump.h observe.h types.h utility.h ctitime.h \
+		numstr.h observe.h types.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h sorted_vector.h ccmessage.h \
 		message.h collectable.h rwutil.h boost_time.h boostutil.h \
 		ccsubstation.h dbaccess.h dllbase.h dsm2.h cticonnect.h \
@@ -294,7 +292,7 @@ ccclientconn.obj:	yukon.h precompiled.h ctidbgmem.h ccclientconn.h \
 		smartmap.h thread_register_data.h
 ccclientlistener.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ccclientlistener.h ccclientconn.h ctdpcptrq.h dlldefs.h \
-		CtiPCPtrQueue.h mutex.h guard.h numstr.h clrdump.h observe.h \
+		CtiPCPtrQueue.h mutex.h guard.h numstr.h observe.h \
 		types.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		sorted_vector.h ccstate.h connection.h exchange.h dllbase.h \
 		dsm2.h cticonnect.h netports.h dsm2err.h words.h logger.h \
@@ -322,14 +320,14 @@ ccconfirmationstats.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ctitime.h boost_time.h boostutil.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
 		pointtypes.h msg_pdata.h pointdefs.h dbaccess.h dllbase.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
+		dsm2.h mutex.h guard.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h logger.h thread.h CtiPCPtrQueue.h \
 		resolvers.h db_entry_defines.h ccconfirmationstats.h \
 		msg_cmd.h observe.h ccoperationstats.h
 ccexecutor.obj:	yukon.h precompiled.h ctidbgmem.h AttributeService.h \
 		LitePoint.h dlldefs.h pointtypes.h PointAttribute.h \
 		ccclientlistener.h ccclientconn.h ctdpcptrq.h CtiPCPtrQueue.h \
-		mutex.h guard.h numstr.h clrdump.h observe.h types.h \
+		mutex.h guard.h numstr.h observe.h types.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		sorted_vector.h ccstate.h connection.h exchange.h dllbase.h \
 		dsm2.h cticonnect.h netports.h dsm2err.h words.h logger.h \
@@ -353,7 +351,7 @@ ccexecutor.obj:	yukon.h precompiled.h ctidbgmem.h AttributeService.h \
 		ctinexus.h
 ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h msg_signal.h message.h collectable.h rwutil.h \
 		ctitime.h boost_time.h boostutil.h utility.h queues.h \
 		sorted_vector.h ccid.h cccapbank.h msg_cmd.h msg_pdata.h \
@@ -380,7 +378,7 @@ ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 ccmain.obj:	yukon.h precompiled.h ctidbgmem.h ccsubstationbusstore.h \
 		observe.h types.h dlldefs.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h numstr.h sorted_vector.h ccarea.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h clrdump.h \
+		dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h message.h \
 		collectable.h rwutil.h boost_time.h boostutil.h msg_multi.h \
@@ -406,7 +404,7 @@ ccmessage.obj:	yukon.h precompiled.h ctidbgmem.h ccmessage.h ctitime.h \
 		dlldefs.h message.h collectable.h rwutil.h boost_time.h \
 		boostutil.h utility.h queues.h cticalls.h os2_2w32.h types.h \
 		numstr.h sorted_vector.h ccsubstation.h dbaccess.h dllbase.h \
-		dsm2.h mutex.h guard.h clrdump.h cticonnect.h netports.h \
+		dsm2.h mutex.h guard.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h connection.h exchange.h logger.h \
 		thread.h CtiPCPtrQueue.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
@@ -420,7 +418,7 @@ ccmessage.obj:	yukon.h precompiled.h ctidbgmem.h ccmessage.h ctitime.h \
 		ccstate.h ccid.h
 ccmonitorpoint.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h ccid.h ccmonitorpoint.h msg_cmd.h \
 		message.h collectable.h rwutil.h ctitime.h boost_time.h \
 		boostutil.h utility.h queues.h sorted_vector.h observe.h \
@@ -431,26 +429,26 @@ ccoperationstats.obj:	yukon.h precompiled.h ctidbgmem.h msg_signal.h \
 		boost_time.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h pointtypes.h \
 		msg_pdata.h pointdefs.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h clrdump.h cticonnect.h netports.h dsm2err.h words.h \
+		guard.h cticonnect.h netports.h dsm2err.h words.h \
 		sema.h logger.h thread.h CtiPCPtrQueue.h resolvers.h \
 		db_entry_defines.h ccid.h ccoperationstats.h msg_cmd.h \
 		observe.h
 ccoriginalparent.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ccoriginalparent.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h ctitime.h \
 		logger.h thread.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h ccid.h
 ccpointresponse.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h ccpointresponse.h observe.h \
 		utility.h ctitime.h queues.h sorted_vector.h ccid.h \
 		pointdefs.h logger.h thread.h CtiPCPtrQueue.h resolvers.h \
 		pointtypes.h db_entry_defines.h
 ccserver.obj:	yukon.h precompiled.h ctidbgmem.h ccserver.h \
 		ccclientlistener.h ccclientconn.h ctdpcptrq.h dlldefs.h \
-		CtiPCPtrQueue.h mutex.h guard.h numstr.h clrdump.h observe.h \
+		CtiPCPtrQueue.h mutex.h guard.h numstr.h observe.h \
 		types.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		sorted_vector.h ccstate.h connection.h exchange.h dllbase.h \
 		dsm2.h cticonnect.h netports.h dsm2err.h words.h logger.h \
@@ -470,7 +468,7 @@ ccservice.obj:	yukon.h precompiled.h ctidbgmem.h id_capcontrol.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h sorted_vector.h ccservice.h \
 		ccclientlistener.h ccclientconn.h ctdpcptrq.h CtiPCPtrQueue.h \
-		mutex.h guard.h clrdump.h observe.h ccstate.h connection.h \
+		mutex.h guard.h observe.h ccstate.h connection.h \
 		exchange.h dllbase.h dsm2.h cticonnect.h netports.h dsm2err.h \
 		words.h logger.h thread.h message.h collectable.h rwutil.h \
 		boost_time.h boostutil.h msg_multi.h msg_pdata.h pointdefs.h \
@@ -495,7 +493,7 @@ ccservice.obj:	yukon.h precompiled.h ctidbgmem.h id_capcontrol.h \
 		thread_register_data.h
 ccsparea.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h msg_signal.h message.h collectable.h rwutil.h \
 		ctitime.h boost_time.h boostutil.h utility.h queues.h \
 		sorted_vector.h ccsparea.h connection.h exchange.h logger.h \
@@ -519,7 +517,7 @@ ccsparea.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		ctibase.h ctinexus.h resolvers.h db_entry_defines.h
 ccstate.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h ccid.h ccstate.h connection.h exchange.h \
 		logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -530,11 +528,11 @@ ccstatsobject.obj:	yukon.h precompiled.h ctidbgmem.h ccstatsobject.h \
 		msg_cmd.h dlldefs.h message.h collectable.h rwutil.h \
 		ctitime.h boost_time.h boostutil.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h clrdump.h \
+		dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h observe.h
 ccsubstation.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h msg_signal.h message.h collectable.h \
 		rwutil.h ctitime.h boost_time.h boostutil.h utility.h \
 		queues.h sorted_vector.h ccsubstation.h connection.h \
@@ -558,7 +556,7 @@ ccsubstation.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		ctibase.h ctinexus.h resolvers.h db_entry_defines.h
 ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h msg_signal.h message.h collectable.h \
 		rwutil.h ctitime.h boost_time.h boostutil.h utility.h \
 		queues.h sorted_vector.h ccsubstationbus.h connection.h \
@@ -586,7 +584,7 @@ ccsubstationbusstore.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ccsubstationbusstore.h observe.h types.h dlldefs.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h ccarea.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h clrdump.h cticonnect.h netports.h dsm2err.h words.h \
+		guard.h cticonnect.h netports.h dsm2err.h words.h \
 		sema.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h message.h collectable.h rwutil.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -611,7 +609,7 @@ ccsubstationbusstore.obj:	yukon.h precompiled.h ctidbgmem.h \
 		thread_register_data.h ctistring.h
 cctwowaycbcpoints.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h cctwowaycbcpoints.h msg_cmd.h \
 		message.h collectable.h rwutil.h ctitime.h boost_time.h \
 		boostutil.h utility.h queues.h sorted_vector.h msg_ptreg.h \
@@ -627,14 +625,14 @@ ccutil.obj:	yukon.h precompiled.h ctidbgmem.h ccutil.h devicetypes.h \
 controllable.obj:	yukon.h precompiled.h ctidbgmem.h ControlStrategy.h \
 		NoStrategy.h Controllable.h CapControlPao.h StrategyManager.h \
 		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
-		numstr.h clrdump.h
+		numstr.h
 controlstrategy.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
+		dlldefs.h thread.h mutex.h guard.h numstr.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h ControlStrategy.h ccid.h
 ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h IVVCAlgorithm.h \
 		ccsubstationbus.h dbaccess.h dlldefs.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		utility.h queues.h sorted_vector.h message.h collectable.h \
@@ -662,7 +660,7 @@ ivvcstate.obj:	yukon.h precompiled.h ctidbgmem.h IVVCState.h ctitime.h \
 		rwutil.h boost_time.h boostutil.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
 		msg_pdata.h pointdefs.h pointtypes.h ccpointresponse.h \
-		dbaccess.h dllbase.h dsm2.h mutex.h guard.h clrdump.h \
+		dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h observe.h \
 		ccmonitorpoint.h ctidate.h logger.h thread.h CtiPCPtrQueue.h \
 		cctwowaycbcpoints.h msg_ptreg.h ccoperationstats.h \
@@ -671,7 +669,7 @@ ivvcstate.obj:	yukon.h precompiled.h ctidbgmem.h IVVCState.h ctitime.h \
 ivvcstrategy.obj:	yukon.h precompiled.h ctidbgmem.h IVVCStrategy.h \
 		IVVCAlgorithm.h ccsubstationbus.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h connection.h exchange.h logger.h thread.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h \
 		message.h collectable.h rwutil.h boost_time.h boostutil.h \
@@ -703,7 +701,7 @@ ltcpointholder.obj:	yukon.h precompiled.h ctidbgmem.h LtcPointHolder.h
 mgr_paosched.obj:	yukon.h precompiled.h ctidbgmem.h mgr_paosched.h \
 		pao_schedule.h ctibase.h ctinexus.h dlldefs.h netports.h \
 		cticonnect.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h dsm2err.h words.h logger.h \
+		mutex.h guard.h numstr.h dsm2err.h words.h logger.h \
 		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h pao_event.h dbmemobject.h capcontroller.h \
 		dbaccess.h sema.h connection.h exchange.h message.h \
@@ -734,7 +732,7 @@ nostrategy.obj:	yukon.h precompiled.h ctidbgmem.h NoStrategy.h \
 		ControlStrategy.h
 pao_event.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h dsm2err.h \
+		guard.h numstr.h cticonnect.h netports.h dsm2err.h \
 		words.h sema.h connection.h exchange.h logger.h thread.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h \
 		message.h collectable.h rwutil.h boost_time.h boostutil.h \
@@ -758,7 +756,7 @@ pao_event.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h dlldefs.h \
 		pao_schedule.h pao_event.h dbmemobject.h
 pao_schedule.obj:	yukon.h precompiled.h ctidbgmem.h dbaccess.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		dsm2err.h words.h sema.h connection.h exchange.h logger.h \
 		thread.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
@@ -791,7 +789,7 @@ pointvalueholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 strategyloader.obj:	yukon.h precompiled.h ctidbgmem.h ccid.h logger.h \
-		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
+		dlldefs.h thread.h mutex.h guard.h numstr.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h sorted_vector.h ControlStrategy.h \
 		StrategyLoader.h StrategyManager.h readers_writer_lock.h \
@@ -812,13 +810,13 @@ strategyloader.obj:	yukon.h precompiled.h ctidbgmem.h ccid.h logger.h \
 		PFactorKWKQStrategy.h VoltStrategy.h
 strategymanager.obj:	yukon.h precompiled.h ctidbgmem.h \
 		StrategyManager.h readers_writer_lock.h dlldefs.h \
-		critical_section.h guard.h numstr.h clrdump.h \
+		critical_section.h guard.h numstr.h \
 		ControlStrategy.h StrategyLoader.h NoStrategy.h
 test_ccexecuter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ccsubstationbusstore.h observe.h types.h dlldefs.h utility.h \
 		ctitime.h queues.h cticalls.h os2_2w32.h numstr.h \
 		sorted_vector.h ccarea.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h clrdump.h cticonnect.h netports.h dsm2err.h words.h \
+		guard.h cticonnect.h netports.h dsm2err.h words.h \
 		sema.h connection.h exchange.h logger.h thread.h \
 		CtiPCPtrQueue.h message.h collectable.h rwutil.h boost_time.h \
 		boostutil.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
@@ -841,7 +839,7 @@ test_ccexecuter.obj:	yukon.h precompiled.h ctidbgmem.h \
 		ctinexus.h
 test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -866,7 +864,7 @@ test_ccfeeder.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		PFactorKWKVarStrategy.h
 test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -893,7 +891,7 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h
 test_ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccsubstationbus.h dbaccess.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -920,7 +918,7 @@ test_ivvcalgorithm.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		PointDataRequestFactory.h
 test_likedaycontrol.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h ccfeeder.h dbaccess.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h dsm2err.h words.h sema.h connection.h \
 		exchange.h logger.h thread.h CtiPCPtrQueue.h utility.h \
 		queues.h sorted_vector.h message.h collectable.h rwutil.h \
@@ -949,7 +947,7 @@ test_pointholder.obj:	yukon.h precompiled.h ctidbgmem.h \
 		boost_time.h boostutil.h utility.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h
 test_strategymanager.obj:	StrategyManager.h readers_writer_lock.h \
-		dlldefs.h critical_section.h guard.h numstr.h clrdump.h \
+		dlldefs.h critical_section.h guard.h numstr.h \
 		ControlStrategy.h StrategyLoader.h KVarStrategy.h \
 		NoStrategy.h PFactorKWKVarStrategy.h
 timeofdaystrategy.obj:	yukon.h precompiled.h ctidbgmem.h \

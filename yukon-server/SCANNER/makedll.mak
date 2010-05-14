@@ -48,7 +48,7 @@ scansup.dll:   $(DLLOBJS) Makedll.mak
                @build -nologo -f $(_InputFile) id
                @echo Building  ..\$@
                @%cd $(OBJ)
-               $(CC) $(DLLFLAGS) $(DLLOBJS) id_sgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib /Fe..\$@
+               $(CC) $(DLLFLAGS) $(DLLOBJS) id_sgdll.obj $(INCLPATHS) $(RWLIBS) $(BOOST_LIBS) $(COMPILEBASE)\lib\ctibase.lib /Fe..\$@
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -93,7 +93,7 @@ mgr_device_scannable.obj:	yukon.h precompiled.h ctidbgmem.h \
 		mgr_device_scannable.h mgr_device.h dlldefs.h rtdb.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
-		dllbase.h dsm2.h mutex.h guard.h clrdump.h cticonnect.h \
+		dllbase.h dsm2.h mutex.h guard.h cticonnect.h \
 		netports.h dev_base.h boostutil.h cmdparse.h ctitokenizer.h \
 		parsevalue.h counter.h dev_exclusion.h tbl_paoexclusion.h \
 		config_device.h logger.h thread.h CtiPCPtrQueue.h rte_base.h \
@@ -112,16 +112,16 @@ mgr_device_scannable.obj:	yukon.h precompiled.h ctidbgmem.h \
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 scanglob.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h scanner.h ctitime.h dllbase.h cticalls.h dsm2.h \
-		mutex.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
+		mutex.h guard.h numstr.h cticonnect.h netports.h \
 		scanglob.h utility.h queues.h sorted_vector.h
 scanmain.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		scansvc.h cservice.h CServiceConfig.h dllbase.h os2_2w32.h \
-		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h ctibase.h ctinexus.h logger.h \
 		thread.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
 scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h dbaccess.h dllbase.h dsm2.h mutex.h \
-		guard.h numstr.h clrdump.h cticonnect.h netports.h sema.h \
+		guard.h numstr.h cticonnect.h netports.h sema.h \
 		elogger.h dsm2err.h queues.h porter.h devicetypes.h scanner.h \
 		ctitime.h master.h dlldev.h scanglob.h rtdb.h hashkey.h \
 		hash_functions.h utility.h sorted_vector.h \

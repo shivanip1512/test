@@ -1,51 +1,13 @@
-/*-----------------------------------------------------------------------------
-    Filename:  guard.h
+#pragma once
 
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiLockGuard
-
-                    Use to acquire and release a resource in an
-                    exception safe way.
-
-                    Example:
-
-                    CtiMutex mux;
-
-                    {
-                        CtiLockGuard<CtiMutex> guard(mux);
-                        // mux is acquired here
-                        // and will be released when guard is
-                        // destroyed
-                    }
-
-    Initial Date:  11/7/00
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
-#pragma warning( disable : 4786 )  // No truncated debug name warnings please....
-
-#ifndef __CTILOCKGUARD_H__
-#define __CTILOCKGUARD_H__
-
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-#include <iostream>
-#include <string>
-
-#include "numstr.h"
+#include "utility.h"
 #include "dlldefs.h"
 
-//Includes to create a dump file
-//#include "dbghelp.h"
-extern "C"
-{
-    #include "clrdump.h"
-}
+#include <iostream>
+#include <sstream>
+
+#include "dbghelp.h"
+
 
 #pragma pack(push, LockGuardPack, 8)
 template<class T>
@@ -61,15 +23,12 @@ public:
             if( !hasDumped )
             {
                 hasDumped = true;
-                std::wstring file = L"LockGuard";
-                wchar_t buff[20];
-                _itow( GetCurrentThreadId(), buff, 10);
-                file += buff;
-                /*file += L"-";
-                _itow( _res.lastAcquiredByTID(), buff, 10);
-                file += buff;*/
-                file += L".DMP";
-                /// CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
+
+                std::ostringstream os;
+
+                os << "lockguard-" << GetCurrentThreadId();
+
+                CreateMiniDump(os.str());
             }
         }
         _acquired = true;
@@ -117,15 +76,12 @@ public:
             if( !hasDumped )
             {
                 hasDumped = true;
-                std::wstring file = L"LockGuard";
-                wchar_t buff[20];
-                _itow( GetCurrentThreadId(), buff, 10);
-                file += buff;
-                /*file += L"-";
-                _itow( _res.lastAcquiredByTID(), buff, 10);
-                file += buff;*/
-                file += L".DMP";
-                ///CreateDump(GetCurrentProcessId(), file.c_str(), (unsigned long) 0, (unsigned long) NULL, (EXCEPTION_POINTERS*) NULL); //I would like a MiniDumpWithDataSegs but I think it would be too large.
+
+                std::ostringstream os;
+
+                os << "lockguard-" << GetCurrentThreadId();
+
+                CreateMiniDump(os.str());
             }
         }
         _acquired = true;
@@ -180,4 +136,3 @@ private:
 };
 #pragma pack(pop, LockGuardPack)
 
-#endif

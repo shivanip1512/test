@@ -6,7 +6,7 @@ include ..\common\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(TCLINC) \
+-I$(TCL)\include \
 -I$(RW) \
 -I$(BOOST) \
 
@@ -14,7 +14,7 @@ OBJS=\
 ctish.obj
 
 LIBS=\
-$(COMPILEBASE)\lib\$(TCL_LIB).lib \
+$(TCL_LIBS) \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
@@ -30,7 +30,7 @@ ctish.exe:     $(OBJS) Makefile
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(OBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
+$(OBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1

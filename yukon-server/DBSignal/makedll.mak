@@ -6,12 +6,8 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(RW) \
 -I$(BOOST) \
--I$(R_COMMON)\include \
--I$(R_DATABASE)\include \
 
 
-
-.PATH.cpp = .;$(R_DBSIGNAL)
 
 .PATH.H = \
 .\include \
@@ -26,18 +22,6 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(R_CPARMS)\include \
-;$(R_DATABASE)\include \
-;$(R_PORTER)\include \
-;$(R_COMMON)\include \
-;$(R_SCANNER)\include \
-;$(R_SERVICE)\include \
-;$(R_PIL)\include \
-;$(R_SERVER)\include \
-;$(R_PROT)\include \
-;$(R_DISPATCH)\include \
-;$(R_MSG)\include \
-;$(TCLINC) \
 ;$(RW)
 
 
@@ -49,7 +33,6 @@ tbl_signal.obj \
 
 DBLIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 
 
 CTIPROGS=\
@@ -62,7 +45,7 @@ ctidbres.dll:  $(DLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(RWLIBS) $(BOOSTLIBS) \
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(RWLIBS) $(BOOST_LIBS) \
 $(DBLIBS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
@@ -113,19 +96,19 @@ $(BIN)\*.exe
 #UPDATE#
 dbsigsend.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
 		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
-		clrdump.h cticonnect.h netports.h tbl_signal.h ctitime.h \
+		cticonnect.h netports.h tbl_signal.h ctitime.h \
 		dbmemobject.h pointdefs.h utility.h queues.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 tbl_rawpthistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_rawpthistory.h ctitime.h dlldefs.h pointdefs.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
-		clrdump.h cticonnect.h netports.h sema.h logger.h thread.h \
+		cticonnect.h netports.h sema.h logger.h thread.h \
 		CtiPCPtrQueue.h rwutil.h boost_time.h boostutil.h
 tbl_signal.obj:	yukon.h precompiled.h ctidbgmem.h tbl_signal.h \
 		ctitime.h dlldefs.h dbmemobject.h pointdefs.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
 		sorted_vector.h dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
-		clrdump.h cticonnect.h netports.h sema.h logger.h thread.h \
+		cticonnect.h netports.h sema.h logger.h thread.h \
 		CtiPCPtrQueue.h rwutil.h boost_time.h boostutil.h
 #ENDUPDATE#

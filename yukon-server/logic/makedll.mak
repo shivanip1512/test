@@ -5,7 +5,7 @@ DLLDEF=..\include\logic.def
 
 INCLPATHS+= \
 -I$(COMMON)\include \
--I$(TCLINC) \
+-I$(TCL)\include \
 -I$(MSG)\include  \
 -I$(CPARMS)\include \
 -I$(MESSAGE)\include \
@@ -18,9 +18,6 @@ logic.obj
 CTILIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
-$(COMPILEBASE)\lib\$(TCL_LIB).lib
-
 
 CTIPROGS=\
 logic.dll
@@ -32,7 +29,7 @@ logic.dll:  $(INTERPOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOSTLIBS) $(CTILIBS) advapi32.lib -link /def:$(DLLDEF)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF)
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

@@ -15,8 +15,6 @@ INCLPATHS+= \
 -I$(RW) \
 
 
-.PATH.cpp = .
-
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -36,7 +34,6 @@ INCLPATHS+= \
 
 LIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib
 
 DLLOBJS = \
 config_device.obj \
@@ -67,7 +64,7 @@ cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
+                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -115,17 +112,17 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
 config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h logger.h thread.h \
-		mutex.h guard.h clrdump.h CtiPCPtrQueue.h dllbase.h dsm2.h \
+		mutex.h guard.h CtiPCPtrQueue.h dllbase.h dsm2.h \
 		cticonnect.h netports.h hashkey.h hash_functions.h
 config_strings.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_data_cbc.h dllbase.h os2_2w32.h dlldefs.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h \
 		cticonnect.h netports.h config_data_mct.h
 da_lp_deviceconfig.obj:	yukon.h precompiled.h ctidbgmem.h \
 		da_lp_deviceconfig.h da_load_profile.h config_device.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		os2_2w32.h types.h numstr.h sorted_vector.h logger.h thread.h \
-		mutex.h guard.h clrdump.h CtiPCPtrQueue.h dllbase.h dsm2.h \
+		mutex.h guard.h CtiPCPtrQueue.h dllbase.h dsm2.h \
 		cticonnect.h netports.h hashkey.h hash_functions.h \
 		config_data_mct.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \

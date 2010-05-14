@@ -10,13 +10,8 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(RW) \
 -I$(BOOST) \
--I$(R_COMMON)\include \
--I$(R_SIGNAL)\include \
--I$(R_DATABASE)\include \
 
 
-
-.PATH.cpp = .;$(R_SIGNAL)
 
 .PATH.H = \
 .\include \
@@ -31,18 +26,6 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(R_CPARMS)\include \
-;$(R_DATABASE)\include \
-;$(R_PORTER)\include \
-;$(R_COMMON)\include \
-;$(R_SCANNER)\include \
-;$(R_SERVICE)\include \
-;$(R_PIL)\include \
-;$(R_SERVER)\include \
-;$(R_PROT)\include \
-;$(R_DISPATCH)\include \
-;$(R_MSG)\include \
-;$(TCLINC) \
 ;$(RW)
 
 
@@ -65,7 +48,7 @@ sigsend.exe:    $(BASEOBJS)
                 @echo Compiling $@
                 @%cd $(OBJ)
                 $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(TABLETESTLIBS)
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(TABLETESTLIBS)
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                mt.exe -manifest ..\$@.manifest -outputresource:..\$@;1

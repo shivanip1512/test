@@ -7,27 +7,12 @@
 #include <boost/regex.hpp>
 using namespace std;
 
-#if _MSC_VER > 1000
-    #pragma once
-#endif // _MSC_VER > 1000
-
-
-
-#pragma warning( disable: 4786 )
-
-#include <rw\re.h>
+#pragma once
 
 #include <string>
 #include <vector>
 #include <stdio.h>
 #include <stdlib.h>
-
-// imagehlp.h must be compiled with packing to eight-byte-boundaries,
-// but does nothing to enforce that. I am grateful to Jeff Shanholtz
-// <JShanholtz@premia.com> for finding this problem.
-#pragma pack( push, before_imagehlp, 8 )
-#include <imagehlp.h>
-#pragma pack( pop, before_imagehlp )
 
 #include <winsock.h>
 #include <stdio.h>
@@ -2767,4 +2752,42 @@ void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
     __except(EXCEPTION_CONTINUE_EXECUTION)
     {
     }
+}
+
+void CreateMiniDump( const std::string &dumpfilePrefix )
+{
+    ostringstream os;
+
+    time_t now    =  time(0);
+    tm     now_tm = *localtime(&now);
+
+    os << dumpfilePrefix
+        << "-"
+        << setfill('0')
+        << setw(4) << (now_tm.tm_year + 1900)
+        << setw(2) << (now_tm.tm_mon + 1)
+        << setw(2) << now_tm.tm_mday
+        << "-"
+        << setw(2) << now_tm.tm_hour
+        << setw(2) << now_tm.tm_min
+        << setw(2) << now_tm.tm_sec
+        << ".dmp";
+
+    HANDLE outfile = CreateFile(os.str().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    if( outfile == INVALID_HANDLE_VALUE )
+    {
+        return;
+    }
+
+    if( !MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), outfile, MiniDumpWithDataSegs, NULL, NULL, NULL) )
+    {
+        ostringstream os;
+
+        os << "MiniDumpWriteDump failed with error " << GetLastError();
+
+        WriteFile(outfile, os.str().c_str(), os.str().length(), 0, 0);
+    }
+
+    CloseHandle(outfile);
 }

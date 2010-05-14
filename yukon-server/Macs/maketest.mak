@@ -13,11 +13,10 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(MSG)\include \
 -I$(INTERP)\include \
--I$(TCLINC) \
+-I$(TCL)\include \
 -I$(RW) \
 -I$(BOOST)
 
-.PATH.cpp = .;$(R_MACS)
 .PATH.H = \
 .\include \
 ;$(COMMON)\include \
@@ -38,12 +37,11 @@ INCLPATHS+= \
 
 LIBS=\
 advapi32.lib \
-$(COMPILEBASE)\lib\$(TCL_LIB).lib \
+$(TCL_LIBS) \
 $(COMPILEBASE)\lib\service.lib \
 $(COMPILEBASE)\lib\cticparms.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctibase.lib \
-$(COMPILEBASE)\lib\clrdump.lib \
 $(COMPILEBASE)\lib\mccmd.lib \
 $(COMPILEBASE)\lib\ctidbsrc.lib \
 $(COMPILEBASE)\lib\ctiholidaydb.lib \
@@ -95,7 +93,7 @@ deps:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(MACSBASEOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(MACSBASEOBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	mt.exe -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
@@ -110,7 +108,7 @@ deps:
 #UPDATE#
 test_scheduletime.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h mc_scheduler.h mc.h logger.h thread.h mutex.h \
-		guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h queues.h \
+		guard.h numstr.h CtiPCPtrQueue.h utility.h queues.h \
 		cticalls.h os2_2w32.h types.h sorted_vector.h mc_sched.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
 		message.h collectable.h rwutil.h boost_time.h boostutil.h \
