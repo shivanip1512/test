@@ -786,6 +786,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
 
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   CtiDeviceDLCBase(),     "REPEATER 800");
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   CtiDeviceDLCBase(),     "REPEATER 801");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   CtiDeviceDLCBase(),     "REPEATER 850");
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   CtiDeviceDLCBase(),     "REPEATER");
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   CtiDeviceDLCBase(),     "REPEATER 902");
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   CtiDeviceDLCBase(),     "REPEATER 921");

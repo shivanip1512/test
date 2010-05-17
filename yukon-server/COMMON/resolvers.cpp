@@ -358,7 +358,8 @@ INT resolveDeviceType(const string& _rwsTemp)
         nRet = TYPE_REPEATER900;
     }
     else if(rwsTemp == "repeater 800" ||
-            rwsTemp == "repeater 801")
+            rwsTemp == "repeater 801" ||
+            rwsTemp == "repeater 850")
     {
         nRet = TYPE_REPEATER800;
     }
