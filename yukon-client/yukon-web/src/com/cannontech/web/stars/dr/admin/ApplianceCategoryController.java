@@ -50,6 +50,8 @@ import com.cannontech.stars.xml.serialize.StarsCustSelectionList;
 import com.cannontech.stars.xml.serialize.StarsSelectionListEntry;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ListBackingBean;
 import com.google.common.collect.Lists;
@@ -218,12 +220,13 @@ public class ApplianceCategoryController {
     @RequestMapping
     public String saveDetails(ModelMap model,
             @ModelAttribute ApplianceCategory applianceCategory,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         detailsValidator.validate(applianceCategory, bindingResult);
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> errors =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            model.addAttribute("errors", errors);
+        	
+        	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 
             return editDetails(model, applianceCategory, userContext);
         }
@@ -341,13 +344,14 @@ public class ApplianceCategoryController {
     @RequestMapping
     public String saveAssignedProgram(ModelMap model,
             @ModelAttribute("backingBean") AssignProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         AssignedProgram assignedProgram = backingBean.getAssignedProgram();
         assignedProgramValidator.validate(backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> errors =
-                YukonValidationUtils.errorsForBindingResult(bindingResult);
-            model.addAttribute("errors", errors);
+        	
+        	List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+			flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
 
             return editAssignedProgram(model, assignedProgram.getApplianceCategoryId(),
                                        backingBean, userContext, PageEditMode.EDIT);

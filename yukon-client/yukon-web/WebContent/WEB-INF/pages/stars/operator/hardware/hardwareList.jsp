@@ -87,7 +87,6 @@
 
 <%-- INVENTORY CHECKING SWITCH POPUP --%>
 <i:simplePopup titleKey=".switches.add" id="inventoryCheckingSwitchPopup" styleClass="smallSimplePopup" showImmediately="${param.showSwitchCheckingPopup}">
-    <tags:errorMessages/>
     <form:form commandName="serialNumber" action="/spring/stars/operator/hardware/checkSerialNumber">
     
         <tags:nameValueContainer2>

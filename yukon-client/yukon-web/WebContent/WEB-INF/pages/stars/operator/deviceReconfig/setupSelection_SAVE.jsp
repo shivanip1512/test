@@ -43,12 +43,6 @@
     	table.reconfigStyleTable td {vertical-align:top;}
     </style>
 
-    <%-- ERRORS --%>
-    <c:if test="${not empty errors}">
-    	<tags:errorMessages/>
-    	<br>
-    </c:if>
-    
     <%-- MISC FORMS --%>
     <form id="cancelForm" action="/spring/stars/operator/deviceReconfig/home" method="get"></form>
     

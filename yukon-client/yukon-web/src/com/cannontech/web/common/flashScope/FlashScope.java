@@ -12,11 +12,14 @@ import com.google.common.collect.Lists;
 
 public class FlashScope {
 
-	private HttpServletRequest request;
+	private HttpSession session;
 	private static final String SESSION_ATTR_PREFIX = "com.cannontech.web.common.flashScope.FlashScope";
 	
 	public FlashScope(HttpServletRequest request) {
-		this.request = request;
+		this.session = request.getSession();
+	}
+	public FlashScope(HttpSession session) {
+		this.session = session;
 	}
 	
 	public void setMessage(List<MessageSourceResolvable> messages, FlashScopeMessageType flashScopeMessageType) {
@@ -50,7 +53,6 @@ public class FlashScope {
 		
 		List<FlashScopeMessage> msgs = Lists.newArrayListWithCapacity(FlashScopeMessageType.values().length);
 		
-		HttpSession session = request.getSession();
 		for (FlashScopeMessageType type : FlashScopeMessageType.values()) {
 			String attributeName = getAttributeNameForType(type);
 			FlashScopeMessage msg = (FlashScopeMessage)session.getAttribute(attributeName);
@@ -68,7 +70,6 @@ public class FlashScope {
 		
 		FlashScopeMessage msg = new FlashScopeMessage(messages, type);
 		
-		HttpSession session = request.getSession();
 		String attributeName = getAttributeNameForType(type);
 		session.setAttribute(attributeName, msg);
 	}

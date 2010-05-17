@@ -27,9 +27,9 @@ import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.StatusPoint;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
+import com.cannontech.web.common.flashScope.FlashScope;
 
 public class AddPointsController extends AddRemovePointsControllerBase {
 	
@@ -54,7 +54,8 @@ public class AddPointsController extends AddRemovePointsControllerBase {
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errors", "yukon.common.device.bulk.addPointsHome."+errorMsg);
+        	FlashScope flashScope = new FlashScope(request);
+        	flashScope.setError(new YukonMessageSourceResolvable("yukon.common.device.bulk.addPointsHome."+errorMsg));
         }
         
         // device types set
@@ -82,7 +83,6 @@ public class AddPointsController extends AddRemovePointsControllerBase {
     public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
     	
     	ModelAndView mav = new ModelAndView("redirect:addPointsResults");
-    	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
     	// device collection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);

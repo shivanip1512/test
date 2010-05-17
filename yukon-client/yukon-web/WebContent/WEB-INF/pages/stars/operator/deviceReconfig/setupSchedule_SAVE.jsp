@@ -33,13 +33,6 @@
     
     <tags:simpleDialog id="deviceReconfigSharedPreviewDialog"/>
     
-
-    <%-- ERRORS --%>
-    <c:if test="${not empty errors}">
-    	<tags:errorMessages/>
-    	<br>
-    </c:if>
-    
     <%-- MISC FORMS --%>
     <tags:simpleDialog id="deviceReconfigPreviewScheduleDialog"/>
     <form id="cancelForm" action="/spring/stars/operator/deviceReconfig/home" method="get"></form>

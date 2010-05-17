@@ -71,7 +71,7 @@ submitForm = function() {
 </script>
 </cti:displayForPageEditModes>
 
-<tags:errorMessages/>
+<cti:flashScopeMessages/>
 
 <c:if test="${backingBean.multiple}">
 <i:inline key=".editingMultiple"/>

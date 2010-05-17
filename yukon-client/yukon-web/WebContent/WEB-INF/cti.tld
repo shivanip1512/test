@@ -1898,6 +1898,18 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>flashScopeMessages</name>
+    <tag-class>com.cannontech.web.taglib.FlashScopeMessagesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>htmlEscape</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+        <description>HTML escape the resolved messages. Defaults to true.</description>
+    </attribute>
+  </tag>
  
   <function>
     <name>equalsIgnoreCase</name>

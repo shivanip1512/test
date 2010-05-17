@@ -38,6 +38,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 @Controller
 @RequestMapping("/program/stop/*")
 public class StopProgramController extends ProgramControllerBase {
+	
     private static class StopProgramValidator
         extends SimpleValidator<StopProgramBackingBeanBase> {
 
@@ -58,7 +59,8 @@ public class StopProgramController extends ProgramControllerBase {
     @RequestMapping
     public String details(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         if (fromBack == null || !fromBack) {
             backingBean.setStopNow(true);
             backingBean.setGearNumber(1);
@@ -73,6 +75,8 @@ public class StopProgramController extends ProgramControllerBase {
         if (stopGearAllowed) {
             addGearsToModel(program, model);
         }
+        
+        addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
 
         return "dr/program/stopProgramDetails.jsp";
     }
@@ -80,10 +84,11 @@ public class StopProgramController extends ProgramControllerBase {
     @RequestMapping
     public String constraints(ModelMap model,
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            return details(model, true, backingBean, bindingResult, userContext);
+            return details(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
@@ -110,9 +115,10 @@ public class StopProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StopProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
+    	
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            return details(model, true, backingBean, bindingResult, userContext);
+            return details(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         DisplayablePao program = programService.getProgram(backingBean.getProgramId());
@@ -155,7 +161,8 @@ public class StopProgramController extends ProgramControllerBase {
     @RequestMapping
     public String multipleDetails(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         UiFilter<DisplayablePao> filter = null;
 
         String paoName = null;
@@ -212,6 +219,8 @@ public class StopProgramController extends ProgramControllerBase {
             }
             backingBean.setProgramStopInfo(programStopInfo);
         }
+        
+        addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
 
         return "dr/program/stopMultipleProgramsDetails.jsp";
     }
@@ -221,9 +230,10 @@ public class StopProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
+    	
         validate(validator, model, backingBean, bindingResult);
         if (bindingResult.hasErrors()) {
-            return multipleDetails(model, true, backingBean, bindingResult, userContext);
+            return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         Date stopDate = backingBean.getStopDate();

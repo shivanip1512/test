@@ -19,10 +19,12 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
 import com.cannontech.web.bulk.model.UpdatePointsFieldType;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.Lists;
 
 public class UpdatePointsController extends AddRemovePointsControllerBase {
@@ -46,7 +48,8 @@ public class UpdatePointsController extends AddRemovePointsControllerBase {
 
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errors", "yukon.common.device.bulk.updatePointsHome."+errorMsg);
+        	FlashScope flashScope = new FlashScope(request);
+        	flashScope.setError(new YukonMessageSourceResolvable("yukon.common.device.bulk.updatePointsHome."+errorMsg));
         }
         
         List<UpdatePointsFieldType> pointFields = Lists.newArrayList(UpdatePointsFieldType.values());

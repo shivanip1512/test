@@ -58,22 +58,7 @@
 </c:if>
 
 <%-- FLASH SCOPE MESSAGES --%>
-<c:forEach var="flashScopeMessage" items="${flashScopeMessages}">
-	<div class="userMessage ${flashScopeMessage.type}">
-		<c:choose>
-			<c:when test="${fn:length(flashScopeMessage.messages) == 1}">
-				<cti:msg htmlEscape="true" key="${flashScopeMessage.messages[0]}"/> 
-			</c:when>
-			<c:otherwise>
-				<ul>
-				<c:forEach var="message" items="${flashScopeMessage.messages}">
-					<li><cti:msg htmlEscape="true" key="${message}"/> </li>
-				</c:forEach>
-				</ul>
-			</c:otherwise>
-		</c:choose>
-	</div>
-</c:forEach>
+<cti:flashScopeMessages/>
 
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->

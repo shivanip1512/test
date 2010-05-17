@@ -91,7 +91,7 @@ gearChanged = function() {
 
 </script>
 
-<tags:errorMessages/>
+<cti:flashScopeMessages/>
 
 <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">

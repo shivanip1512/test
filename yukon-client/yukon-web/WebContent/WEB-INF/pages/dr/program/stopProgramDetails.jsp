@@ -35,6 +35,8 @@ updateComponentAvailability = function() {
 }
 </script>
 
+<cti:flashScopeMessages/>
+
 <h1 class="dialogQuestion">
     <cti:msg key="yukon.web.modules.dr.program.stopProgram.confirmQuestion"
     	htmlEscape="true" argument="${program.name}"/>

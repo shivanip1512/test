@@ -38,7 +38,7 @@ submitForm = function() {
 }
 </script>
 
-<tags:errorMessages/>
+<cti:flashScopeMessages/>
 
 <cti:url var="submitUrl" value="/spring/stars/dr/admin/applianceCategory/saveDetails"/>
 <form:form id="inputForm" commandName="applianceCategory" action="${submitUrl}"

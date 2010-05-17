@@ -32,8 +32,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.common.flashScope.FlashScopeMessage;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.LayoutSkinEnum;
 import com.cannontech.web.menu.ModuleBase;
@@ -181,11 +179,6 @@ public class LayoutController {
                 }
             });
         }
-        
-        // flashScopeMessages
-        FlashScope flashScope = new FlashScope(request);
-        List<FlashScopeMessage> flashScopeMessages = flashScope.pullMessages();
-        map.addAttribute("flashScopeMessages", flashScopeMessages);
         
         boolean showContextualNavigation = pageInfo != null && pageInfo.isShowContextualNavigation();
         map.addAttribute("showContextualNavigation", showContextualNavigation);

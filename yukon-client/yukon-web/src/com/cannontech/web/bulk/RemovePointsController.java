@@ -26,7 +26,9 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.bulk.model.PaoTypeMasks;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.google.common.collect.HashMultimap;
 
 public class RemovePointsController extends AddRemovePointsControllerBase {
@@ -50,7 +52,8 @@ public class RemovePointsController extends AddRemovePointsControllerBase {
         
         String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
         if(StringUtils.isNotBlank(errorMsg)){
-            mav.addObject("errors", "yukon.common.device.bulk.removePointsHome."+ errorMsg);
+        	FlashScope flashScope = new FlashScope(request);
+        	flashScope.setError(new YukonMessageSourceResolvable("yukon.common.device.bulk.removePointsHome."+ errorMsg));
         }
         
         // device types set

@@ -59,7 +59,7 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String details(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
     	
         if (fromBack == null || !fromBack) {
             setStartProgramBackingBeanDefaults(backingBean, userContext);
@@ -75,6 +75,7 @@ public class StartProgramController extends ProgramControllerBase {
 
         addConstraintsInfoToModel(model, fromBack, userContext, backingBean);
         addGearsToModel(program, model);
+        addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
 
         return "dr/program/startProgramDetails.jsp";
     }
@@ -82,15 +83,15 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String gearAdjustments(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         if (fromBack == null || !fromBack) {
             if (backingBean.isStartNow()) {
                 backingBean.setStartDate(backingBean.getNow());
             }
             validate(datesValidator, model, backingBean, bindingResult);
             if (bindingResult.hasErrors()) {
-                return details(model, true, backingBean, bindingResult,
-                                userContext);
+                return details(model, true, backingBean, bindingResult, userContext, flashScope);
             }
         }
 
@@ -119,6 +120,8 @@ public class StartProgramController extends ProgramControllerBase {
                                                      null, userContext);
             backingBean.setGearAdjustments(gearAdjustments);
         }
+        
+        addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
 
         return "dr/program/startProgramGearAdjustments.jsp";
     }
@@ -128,6 +131,7 @@ public class StartProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, 
             FlashScope flashScope) {
+    	
         if (backingBean.isStartNow()) {
             backingBean.setStartDate(backingBean.getNow());
         }
@@ -138,10 +142,9 @@ public class StartProgramController extends ProgramControllerBase {
         }
         if (bindingResult.hasErrors()) {
             if ("gear_adjustments".equals(from)) {
-                return gearAdjustments(model, true, backingBean,
-                                              bindingResult, userContext);
+                return gearAdjustments(model, true, backingBean, bindingResult, userContext, flashScope);
             }
-            return details(model, true, backingBean, bindingResult, userContext);
+            return details(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         LiteYukonUser user = userContext.getYukonUser();
@@ -193,6 +196,7 @@ public class StartProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StartProgramBackingBean backingBean,
             BindingResult bindingResult, Boolean overrideConstraints,
             YukonUserContext userContext, FlashScope flashScope) {
+    	
         validate(datesValidator, model, backingBean, bindingResult);
         if (backingBean.isAddAdjustments()) {
             validate(gearAdjustmentsValidator, model, backingBean,
@@ -200,10 +204,9 @@ public class StartProgramController extends ProgramControllerBase {
         }
         if (bindingResult.hasErrors()) {
             if ("gear_adjustments".equals(from)) {
-                return gearAdjustments(model, true, backingBean,
-                                        bindingResult, userContext);
+                return gearAdjustments(model, true, backingBean, bindingResult, userContext, flashScope);
             }
-            return details(model, true, backingBean, bindingResult, userContext);
+            return details(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         int programId = backingBean.getProgramId();
@@ -238,7 +241,7 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String multipleDetails(ModelMap model,Boolean fromBack,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
 
         UiFilter<DisplayablePao> filter = null;
 
@@ -297,7 +300,8 @@ public class StartProgramController extends ProgramControllerBase {
 
         addConstraintsInfoToModel(model, fromBack, userContext, backingBean);
         addGearsToModel(searchResult.getResultList(), model);
-
+        addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
+        
         Map<Integer, Map<Integer, Boolean>> programIndexTargetGearMap = getIndexBasedIsTargetGearMap(programs);
 
         model.addAttribute("targetGearMap",programIndexTargetGearMap);
@@ -307,15 +311,15 @@ public class StartProgramController extends ProgramControllerBase {
     @RequestMapping
     public String multipleGearAdjustments(ModelMap model, Boolean fromBack,
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
-            BindingResult bindingResult, YukonUserContext userContext) {
+            BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
+    	
         if (fromBack == null || !fromBack) {
             if (backingBean.isStartNow()) {
                 backingBean.setStartDate(backingBean.getNow());
             }
             validate(datesValidator, model, backingBean, bindingResult);
             if (bindingResult.hasErrors()) {
-                return multipleDetails(model, true, backingBean,
-                                        bindingResult, userContext);
+                return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
             }
         }
 
@@ -375,6 +379,8 @@ public class StartProgramController extends ProgramControllerBase {
                                                      userContext);
             backingBean.setGearAdjustments(gearAdjustments);
         }
+        
+        addErrorsToFlashScopeIfNecessary(bindingResult, flashScope);
 
         return "dr/program/startProgramGearAdjustments.jsp";
     }
@@ -384,6 +390,7 @@ public class StartProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
+    	
         if (backingBean.isStartNow()) {
             backingBean.setStartDate(backingBean.getNow());
         }
@@ -393,11 +400,9 @@ public class StartProgramController extends ProgramControllerBase {
         }
         if (bindingResult.hasErrors()) {
             if ("gear_adjustments".equals(from)) {
-                return multipleGearAdjustments(model, true, backingBean,
-                                                bindingResult, userContext);
+                return multipleGearAdjustments(model, true, backingBean, bindingResult, userContext, flashScope);
             }
-            return multipleDetails(model, true, backingBean,
-                                    bindingResult, userContext);
+            return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         LiteYukonUser user = userContext.getYukonUser();
@@ -487,9 +492,8 @@ public class StartProgramController extends ProgramControllerBase {
         }
 
         if (numProgramsToStart == 0) {
-            bindingResult.reject("yukon.web.modules.dr.program.startMultiplePrograms.noProgramsSelected");
-            return multipleDetails(model, true, backingBean,
-                                    bindingResult, userContext);
+            bindingResult.reject("noProgramsSelected");
+            return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         model.addAttribute("numProgramsToStart", numProgramsToStart);
@@ -505,17 +509,16 @@ public class StartProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
+    	
         validate(datesValidator, model, backingBean, bindingResult);
         if (backingBean.isAddAdjustments()) {
             validate(gearAdjustmentsValidator, model, backingBean, bindingResult);
         }
         if (bindingResult.hasErrors()) {
             if ("gear_adjustments".equals(from)) {
-                return multipleGearAdjustments(model, true, backingBean,
-                                                bindingResult, userContext);
+                return multipleGearAdjustments(model, true, backingBean, bindingResult, userContext, flashScope);
             }
-            return multipleDetails(model, true, backingBean,
-                                    bindingResult, userContext);
+            return multipleDetails(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
@@ -734,5 +737,4 @@ public class StartProgramController extends ProgramControllerBase {
         }
         backingBean.setProgramStartInfo(programStartInfo);
     }
-
 }

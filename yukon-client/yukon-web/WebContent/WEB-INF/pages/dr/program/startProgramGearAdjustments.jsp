@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
-<tags:errorMessages/>
+<cti:flashScopeMessages/>
 
 <c:if test="${!empty program}">
     <h1 class="dialogQuestion">

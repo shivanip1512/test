@@ -40,6 +40,8 @@ singleProgramChecked = function(boxChecked) {
 }
 </script>
 
+<cti:flashScopeMessages/>
+
 <h1 class="dialogQuestion">
     <c:if test="${!empty controlArea}">
         <cti:msg key="yukon.web.modules.dr.program.stopMultiplePrograms.confirmQuestion.controlArea"

@@ -32,10 +32,12 @@ public class ProgramController extends ProgramControllerBase {
     @RequestMapping
     public String list(ModelMap modelMap, YukonUserContext userContext,
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
+            BindingResult result, SessionStatus status, FlashScope flashScope) {
 
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
                                                result, status, null);
+        
+        addErrorsToFlashScopeIfNecessary(result, flashScope);
 
         return "dr/program/list.jsp";
     }
@@ -44,7 +46,7 @@ public class ProgramController extends ProgramControllerBase {
     public String detail(int programId, ModelMap modelMap,
             YukonUserContext userContext,
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
-            BindingResult result, SessionStatus status) {
+            BindingResult result, SessionStatus status, FlashScope flashScope) {
         
         DisplayablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
@@ -66,6 +68,9 @@ public class ProgramController extends ProgramControllerBase {
         modelMap.addAttribute("parentControlArea", parentControlArea);
         List<DisplayablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);
+        
+        addErrorsToFlashScopeIfNecessary(result, flashScope);
+        
         return "dr/program/detail.jsp";
     }
 
