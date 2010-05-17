@@ -65,18 +65,27 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
         return value;    
     }
     
+    /**
+     * Returns a css class to be updated. 
+     */
     @Override
     protected String getKVarLoadQuality(final Feeder latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VAR_LOAD_QUALITY);
         return value;    
     }
     
+    /**
+     * Returns a css class to be updated. 
+     */
     @Override
     protected String getVoltQuality(final Feeder latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_VOLT_QUALITY);
         return value;    
     }
     
+    /**
+     * Returns a css class to be updated. 
+     */
     @Override
     protected String getWattQuality(final Feeder latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getFeederValueAt(latestValue, CBCDisplay.FDR_WATT_QUALITY);

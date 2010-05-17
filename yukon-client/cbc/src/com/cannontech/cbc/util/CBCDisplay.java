@@ -3,6 +3,7 @@ package com.cannontech.cbc.util;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
@@ -320,172 +321,19 @@ public class CBCDisplay {
 
             return warningText;
         }
-        case CB_PHASEA_BEFORE: {
-        	String beforeStr = capBank.getBeforeVars().trim();
-        	String value = beforeStr;
-        	
-        	if(beforeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
-        		value = st.nextToken();
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEB_BEFORE: {
-        	String beforeStr = capBank.getBeforeVars().trim();
-        	String value = "";
-        	
-        	if(beforeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEC_BEFORE: {
-        	String beforeStr = capBank.getBeforeVars().trim();
-        	String value = "";
-        	
-        	if(beforeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-        			st.nextToken();
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }
-        case CB_BEFORE_TOTAL: {
-        	String beforeStr = capBank.getBeforeVars().trim();
-        	String value = "";
-        	
-        	if(beforeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(beforeStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-        			st.nextToken();
-        			st.nextToken();
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEA_AFTER: {
-        	String after = capBank.getAfterVars().trim();
-        	String value = after;
-        	
-        	if(after.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(after, ":");
-        		value = st.nextToken();
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEB_AFTER: {
-        	String after = capBank.getAfterVars().trim();
-        	String value = "";
-        	
-        	if(after.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(after, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEC_AFTER: {
-        	String after = capBank.getAfterVars().trim();
-        	String value = "";
-        	
-        	if(after.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(after, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-        			st.nextToken();
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }
-        case CB_AFTER_TOTAL: {
-        	String afterStr = capBank.getBeforeVars().trim();
-        	String value = "";
-        	
-        	if(afterStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(afterStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-        			st.nextToken();
-        			st.nextToken();
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }        
-        case CB_PHASEA_PERCENTCHANGE: {
-        	String changeStr = capBank.getPercentChange().trim();
-        	String value = changeStr;
-        	
-        	if(changeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(changeStr, ":");
-        		value = st.nextToken();
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEB_PERCENTCHANGE: {
-        	String changeStr = capBank.getPercentChange().trim();
-        	String value = "";
-        	
-        	if(changeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(changeStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }
-        case CB_PHASEC_PERCENTCHANGE: {
-        	String changeStr = capBank.getPercentChange().trim();
-        	String value = "";
-        	
-        	if(changeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(changeStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-        			st.nextToken();
-                    value = st.nextToken();
-        		}
-        	}
-        	
-        	return value;
-        }   
-        case CB_PERCENTCHANGE_TOTAL: {
-        	String changeStr = capBank.getBeforeVars().trim();
-        	String value = "";
-        	
-        	if(changeStr.contains(":")) {
-        		StringTokenizer st = new StringTokenizer(changeStr, ":");
-        		st.nextToken();
-        		if (st.hasMoreTokens()) {
-        			st.nextToken();
-        			st.nextToken();
-                    value = st.nextToken();
-        		}
-        	}
-        	
+        case CB_PHASEA_BEFORE:
+        case CB_PHASEB_BEFORE:
+        case CB_PHASEC_BEFORE:
+        case CB_BEFORE_TOTAL:
+        case CB_PHASEA_AFTER:
+        case CB_PHASEB_AFTER:
+        case CB_PHASEC_AFTER:
+        case CB_AFTER_TOTAL:   
+        case CB_PHASEA_PERCENTCHANGE:
+        case CB_PHASEB_PERCENTCHANGE:
+        case CB_PHASEC_PERCENTCHANGE:
+        case CB_PERCENTCHANGE_TOTAL: {        	
+        	String value = getPhaseValueFromBank(capBank,col);
         	return value;
         }
 
@@ -493,6 +341,92 @@ public class CBCDisplay {
         }
     }
 
+    private String getPhaseValueFromBank(CapBankDevice bank, int col) {
+        String value = "";
+        String parseString = "";
+        int parsePosition = 1;
+        boolean phaseA = false;
+        
+        switch (col) {
+            case CB_PHASEA_BEFORE:
+            case CB_PHASEB_BEFORE:
+            case CB_PHASEC_BEFORE:
+            case CB_BEFORE_TOTAL: {
+                parseString = bank.getBeforeVars().trim();
+                break;
+            }
+                
+            case CB_PHASEA_AFTER:
+            case CB_PHASEB_AFTER:
+            case CB_PHASEC_AFTER:
+            case CB_AFTER_TOTAL: {
+                parseString = bank.getAfterVars().trim();
+                break;
+            }
+            
+            case CB_PHASEA_PERCENTCHANGE:
+            case CB_PHASEB_PERCENTCHANGE:
+            case CB_PHASEC_PERCENTCHANGE:
+            case CB_PERCENTCHANGE_TOTAL: {
+                parseString = bank.getPercentChange().trim();
+                break;
+            }
+            default:
+                return value;
+        }
+
+        switch (col) {
+            case CB_PHASEA_BEFORE:
+            case CB_PHASEA_PERCENTCHANGE:
+            case CB_PHASEA_AFTER: {
+                phaseA = true;
+                parsePosition = 1;
+                break;
+            }
+            case CB_PHASEB_BEFORE:
+            case CB_PHASEB_AFTER:
+            case CB_PHASEB_PERCENTCHANGE: {
+                parsePosition = 2;
+                break;
+            }
+            case CB_PHASEC_BEFORE:
+            case CB_PHASEC_AFTER:
+            case CB_PHASEC_PERCENTCHANGE:
+            {
+                parsePosition = 3;
+                break;
+            }
+            case CB_BEFORE_TOTAL:
+            case CB_AFTER_TOTAL:
+            case CB_PERCENTCHANGE_TOTAL: {
+                parsePosition = 4;
+                break;
+            }
+            default:
+                return value;
+        }
+        
+        if (parseString.contains(":")) {
+            StringTokenizer st = new StringTokenizer(parseString, ":");
+            
+            try {
+                String temp = "";
+                
+                for( int i = 1; i <= parsePosition; i++) {
+                    temp = st.nextToken();
+                }
+
+                value = temp;
+            } catch (NoSuchElementException e) {
+                return "";
+            }
+        } else if (phaseA) {
+            value = parseString;
+        }
+        
+        return value;
+    }
+    
     /**
      * getValueAt method for Substations
      */
@@ -722,6 +656,7 @@ public class CBCDisplay {
                                                                                          .doubleValue(),
                                                                                          true);
         }
+        // This is returning a css class to be updated, no data.
         case SUB_VAR_LOAD_QUALITY: {
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
             {
@@ -730,6 +665,7 @@ public class CBCDisplay {
                 return "hideImage";
             }
         }
+        // This is returning a css class to be updated, no data.
         case SUB_WATT_QUALITY: {
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
             {
@@ -738,6 +674,7 @@ public class CBCDisplay {
                 return "hideImage";
             }
         }
+        // This is returning a css class to be updated, no data.
         case SUB_VOLT_QUALITY: {
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
             {
@@ -963,6 +900,7 @@ public class CBCDisplay {
 
             return retVal;
         }
+        // This is returning a css class to be updated, no data.
         case FDR_VAR_LOAD_QUALITY: {
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
             {
@@ -971,6 +909,7 @@ public class CBCDisplay {
                 return "hideImage";
             }
         }
+        // This is returning a css class to be updated, no data.
         case FDR_WATT_QUALITY: {
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
             {
@@ -979,6 +918,7 @@ public class CBCDisplay {
                 return "hideImage";
             }
         }
+        // This is returning a css class to be updated, no data.
         case FDR_VOLT_QUALITY: {
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
             {

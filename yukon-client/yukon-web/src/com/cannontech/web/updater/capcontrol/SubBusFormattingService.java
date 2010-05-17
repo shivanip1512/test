@@ -79,18 +79,27 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
         return value;
     }
     
+    /**
+     * Returns a css class to be updated. 
+     */
     @Override
     protected String getKVarLoadQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_VAR_LOAD_QUALITY);
         return value;    
     }
     
+    /**
+     * Returns a css class to be updated. 
+     */
     @Override
     protected String getVoltQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_VOLT_QUALITY);
         return value;    
     }
     
+    /**
+     * Returns a css class to be updated. 
+     */
     @Override
     protected String getWattQuality(final SubBus latestValue, final CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getSubBusValueAt(latestValue, CBCDisplay.SUB_WATT_QUALITY);
