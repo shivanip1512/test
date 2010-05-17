@@ -2,7 +2,7 @@ package com.cannontech.dr;
 
 import java.util.Comparator;
 
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -26,5 +26,5 @@ public interface DemandResponseBackingField<T> {
      * @param userContext - Current userContext
      * @return Comparator for this field
      */
-    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext);
+    public Comparator<ControllablePao> getSorter(YukonUserContext userContext);
 }
