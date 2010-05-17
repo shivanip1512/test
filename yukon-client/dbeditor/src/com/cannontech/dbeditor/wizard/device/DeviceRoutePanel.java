@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
@@ -260,12 +261,20 @@ public class DeviceRoutePanel
             }
             
             // Alert if we are creating a RPT850
-            if( value instanceof Repeater850)
-            {
-                javax.swing.JOptionPane.showMessageDialog( this, 
-                                                           "The Repeater 850 device is not intended to have more than 10 devices connected to it", 
-                                                           "Information",
-                                                           javax.swing.JOptionPane.INFORMATION_MESSAGE );
+            if( value instanceof Repeater850) {
+                Object[] o = {"The RPT-850 is designed for use as a last hop repeater to\n" +
+                        "improve communication reliability with up to ten end points (MCT’s).\n" +
+                        "Functional limitations are in place to ensure it is only implemented\n" +
+                        "as the last repeater in any route.  To avoid nonessential communications,\n" +
+                        "the operator is encouraged to limit the number of end point devices\n" +
+                        "targeted by this repeater to a maximum of ten.", 
+                        new JCheckBox("I Understand")};
+                
+                JOptionPane.showMessageDialog(this, o, "Implementation Note", JOptionPane.INFORMATION_MESSAGE );
+                
+                if (!((JCheckBox)o[1]).isSelected()) {
+                    throw new EditorInputValidationException("");
+                }
             }
             
             // create new route to be added - copy from the chosen route and add new repeater to it
