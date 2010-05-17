@@ -17,12 +17,12 @@ import com.google.common.collect.SetMultimap;
 
 public class ChunkingMappedSqlTemplate {
 
-	private SimpleJdbcOperations simpleJdbcTemplate;
-    
+    private SimpleJdbcOperations simpleJdbcTemplate;
+
     public ChunkingMappedSqlTemplate(final SimpleJdbcOperations simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-    
+
     /**
      * Returns a mapping of inputs to results. Query is run in a chunking manner. This method 
      * features the ability to keep the resulting map keys in the order of the input list.
@@ -50,36 +50,21 @@ public class ChunkingMappedSqlTemplate {
      *        inputTypeToSqlGeneratorTypeMapper.
      * @return
      */
-	public <I, R, C> Map<C, R> mappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
-										final Iterable<C> input,
-										final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
-										Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+    public <I, R, C> Map<C, R> mappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
+                                           final Iterable<C> input,
+                                           final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                           Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
 
-		Map<C, R> resultMap = Maps.newLinkedHashMap();
-		final Map<I, R> intermediaryResult = Maps.newHashMap();
+        final Map<C, R> resultMap = Maps.newLinkedHashMap();
+        processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
+            public void handle(C a, R b) {
+                resultMap.put(a, b);
+            }
+        });
 
-		ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
-		chunkingTemplate.query(sqlGenerator, Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), new RowCallbackHandler() {
-					
-			private int row = 0;
-					
-			public void processRow(ResultSet rs) throws SQLException {
-				Entry<I, R> entry = rowMapper.mapRow(rs, row++);
-				intermediaryResult.put(entry.getKey(), entry.getValue());
-			}
-		});
+        return resultMap;
+    }
 
-		for (C i : input) {
-		    I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
-		    if (intermediaryResult.containsKey(e)) {
-		        R r = intermediaryResult.get(e);
-		        resultMap.put(i, r);
-		    }
-		}
-
-		return resultMap;
-	}
-	
     /**
      * Returns a mapping of results to inputs. Query is run in a chunking manner.
      * @param <I> Type of value used by the SqlFragmentGenerator. Often Integer or String.
@@ -101,35 +86,50 @@ public class ChunkingMappedSqlTemplate {
      *        inputTypeToSqlGeneratorTypeMapper.
      * @return
      */
-	public <I, R, C> SetMultimap<R, C> reverseMultimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
-	                                                           final Iterable<C> input,
-	                                                           final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
-	                                                           Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
-	    
-	    SetMultimap<R, C> resultMap = HashMultimap.create();
-	    final Map<I, R> intermediaryResult = Maps.newHashMap();
-	    
-	    ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
-	    chunkingTemplate.query(sqlGenerator, 
-	                           Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), 
-	                           new RowCallbackHandler() {
-	        
-	        private int row = 0;
-	        
-	        public void processRow(ResultSet rs) throws SQLException {
-	            Entry<I, R> entry = rowMapper.mapRow(rs, row++);
-	            intermediaryResult.put(entry.getKey(), entry.getValue());
-	        }
-	    });
-	    
-	    for (C i : input) {
-	        I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
-	        if (intermediaryResult.containsKey(e)) {
-	            R r = intermediaryResult.get(e);
-	            resultMap.put(r, i);
-	        }
-	    }
-	    
-	    return resultMap;
-	}
+    public <I, R, C> SetMultimap<R, C> reverseMultimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
+                                                               final Iterable<C> input,
+                                                               final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                                               Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+
+        final SetMultimap<R, C> resultMap = HashMultimap.create();
+        processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
+            public void handle(C a, R b) {
+                resultMap.put(b, a);
+            }
+        });
+
+        return resultMap;
+    }
+    
+    private <R, I, C> void processQuery(final SqlFragmentGenerator<I> sqlGenerator,
+            final Iterable<C> input, final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+            Function<C, I> inputTypeToSqlGeneratorTypeMapper, PairProcessor<C, R> processor) {
+        final Map<I, R> intermediaryResult = Maps.newHashMap();
+
+        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
+        chunkingTemplate.query(sqlGenerator, 
+                               Lists.transform(Lists.newArrayList(input), inputTypeToSqlGeneratorTypeMapper), 
+                               new RowCallbackHandler() {
+
+            private int row = 0;
+
+            public void processRow(ResultSet rs) throws SQLException {
+                Entry<I, R> entry = rowMapper.mapRow(rs, row++);
+                intermediaryResult.put(entry.getKey(), entry.getValue());
+            }
+        });
+
+        for (C i : input) {
+            I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
+            if (intermediaryResult.containsKey(e)) {
+                R r = intermediaryResult.get(e);
+                processor.handle(i, r);
+            }
+        }
+    }
+
+    private static interface PairProcessor<A,B> {
+        public void handle(A a,B b);
+    }
+    
 }
