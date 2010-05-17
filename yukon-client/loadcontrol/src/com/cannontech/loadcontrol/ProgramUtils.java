@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
@@ -101,15 +100,20 @@ public class ProgramUtils {
         
         Date nowTime = new Date();
         
+        boolean applyStopOffset = true;
         if (stopTime == null) {
-            stopTime = DateUtils.addYears(nowTime, 1);
+            stopTime = CtiUtilities.get2035GregCalendar().getTime();
+            applyStopOffset = false;
         }
         if (startTime == null && startOffset != null) {
             startTime = nowTime;
         }
 
         Date startTimeWithOffset = new Instant(startTime).plus(startOffset).toDate();
-        Date stopTimeWithOffset = new Instant(stopTime).plus(stopOffset).toDate();
+        Date stopTimeWithOffset = stopTime;
+        if (applyStopOffset) {
+        	stopTimeWithOffset = new Instant(stopTime).plus(stopOffset).toDate();
+        }
         LMManualControlRequest request = null;
         if (startTimeWithOffset == null || nowTime.getTime() >= startTimeWithOffset.getTime()) {
             request = program.createStartStopNowMsg(stopTimeWithOffset, gearNumber, "", true, constraintFlag);
