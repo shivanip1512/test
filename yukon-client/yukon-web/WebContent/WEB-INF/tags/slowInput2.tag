@@ -27,12 +27,26 @@
 
 		<%-- MAIN BUTTON --%>
 	    <button id="slowInput2Button_${uniqueId}" type="button" class="formSubmit" onclick="slowInput2ButtonPress('${uniqueId}', '${formId}', ${disableOtherButtons}, ${pageScope.onsubmit})">
-			<i:inline key=".label"/>
+			<cti:checkGlobalRolesAndProperties value="!I18N_DESIGN_MODE">
+				<cti:msg2 key=".label"/>
+			</cti:checkGlobalRolesAndProperties>
 			<cti:checkGlobalRolesAndProperties value="I18N_DESIGN_MODE">
-				<br>
-				labelBusy = <i:inline key=".labelBusy"/>
-				</br>
-				description = <i:inline key=".description"/>
+				<span class="i18nInline">
+					<cti:msg2 key=".label" debug="true" fallback="true"/>
+					<span class="i18nInlineDebug">
+						label = 
+						<cti:msg2 key=".label" debug="true" fallback="true"/>
+						<c:forEach items="${msg2TagDebugMap}" var="entry">${entry.key}=${entry.value}<br></c:forEach>
+						<br>
+						labelBusy = 
+						<cti:msg2 key=".labelBusy" debug="true" fallback="true"/>
+						<c:forEach items="${msg2TagDebugMap}" var="entry">${entry.key}=${entry.value}<br></c:forEach>
+						<br>
+						description = 
+						<cti:msg2 key=".description" debug="true" fallback="true"/>
+						<c:forEach items="${msg2TagDebugMap}" var="entry">${entry.key}=${entry.value}<br></c:forEach>
+					</span>
+				</span>
 			</cti:checkGlobalRolesAndProperties>
 	    </button>
 	    
