@@ -3,11 +3,11 @@ package com.cannontech.dr.controlarea.service;
 import java.util.Comparator;
 
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.controlarea.model.ControlArea;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
@@ -18,10 +18,10 @@ public interface ControlAreaService {
     
     public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId);
 
-    public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
+    public ControllablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
 
-    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
-                                                        Comparator<DisplayablePao> sorter, 
+    public SearchResult<ControllablePao> filterControlAreas(UiFilter<ControllablePao> filter,
+                                                        Comparator<ControllablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext);
 

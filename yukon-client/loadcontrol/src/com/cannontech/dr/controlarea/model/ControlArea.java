@@ -3,13 +3,13 @@ package com.cannontech.dr.controlarea.model;
 import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.dr.model.ControllablePao;
 
-public class ControlArea extends DisplayablePaoBase {
+public class ControlArea extends ControllablePao {
 
     private List<ControlAreaTrigger> triggers;
-
+    
     public ControlArea(PaoIdentifier paoIdentifier, String name) {
         super(paoIdentifier, name);
     }
@@ -32,4 +32,5 @@ public class ControlArea extends DisplayablePaoBase {
     public void setTriggers(List<ControlAreaTrigger> triggers) {
         this.triggers = triggers;
     }
+
 }

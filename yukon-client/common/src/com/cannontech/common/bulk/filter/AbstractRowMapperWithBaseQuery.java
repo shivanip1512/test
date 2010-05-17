@@ -6,6 +6,11 @@ public abstract class AbstractRowMapperWithBaseQuery<T> implements
         RowMapperWithBaseQuery<T> {
 
     @Override
+    public SqlFragmentSource getGroupBy() {
+        return null;
+    }
+    
+    @Override
     public SqlFragmentSource getOrderBy() {
         return null;
     }

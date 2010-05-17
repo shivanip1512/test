@@ -3,9 +3,9 @@ package com.cannontech.dr.loadgroup.model;
 import java.util.Comparator;
 import java.util.Date;
 
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
@@ -28,11 +28,11 @@ public class LoadGroupLastActionField extends LoadGroupBackingFieldBase {
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
-        return new Comparator<DisplayablePao>() {
+    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
+        return new Comparator<ControllablePao>() {
 
             @Override
-            public int compare(DisplayablePao pao1, DisplayablePao pao2) {
+            public int compare(ControllablePao pao1, ControllablePao pao2) {
                 LMDirectGroupBase group1 = getGroupFromYukonPao(pao1);
                 LMDirectGroupBase group2 = getGroupFromYukonPao(pao2);
                 if (group1 == group2) {

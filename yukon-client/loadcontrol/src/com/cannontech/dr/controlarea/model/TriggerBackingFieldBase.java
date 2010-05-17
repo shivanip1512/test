@@ -5,10 +5,10 @@ import java.util.Comparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
@@ -27,10 +27,10 @@ public abstract class TriggerBackingFieldBase implements
     private ControlAreaService controlAreaService;
 
     protected abstract class TriggerComparator implements
-            Comparator<DisplayablePao> {
+            Comparator<ControllablePao> {
 
         @Override
-        public int compare(DisplayablePao pao1, DisplayablePao pao2) {
+        public int compare(ControllablePao pao1, ControllablePao pao2) {
             LMControlArea controlArea1 = getControlAreaFromYukonPao(pao1);
             LMControlArea controlArea2 = getControlAreaFromYukonPao(pao2);
 
@@ -95,7 +95,7 @@ public abstract class TriggerBackingFieldBase implements
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
         // Default implementation to return NO sorter
         return null;
     }

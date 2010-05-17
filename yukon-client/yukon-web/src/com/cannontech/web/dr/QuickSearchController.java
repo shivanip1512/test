@@ -16,8 +16,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.ControllablePaoComparator;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -27,6 +26,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
 import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
 import com.cannontech.dr.service.DemandResponseService;
@@ -53,7 +53,7 @@ public class QuickSearchController {
                          @ModelAttribute("quickSearchBean") ListBackingBean quickSearchBean) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
         filters.add(new AuthorizedFilter(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
@@ -73,7 +73,7 @@ public class QuickSearchController {
 
         String sort = quickSearchBean.getSort();
         boolean descending = quickSearchBean.getDescending();
-        Comparator<DisplayablePao> sorter = null;
+        Comparator<ControllablePao> sorter = null;
         if (sort != null) {
             CombinedSortableField sortField =
                 CombinedSortableField.valueOf(sort);
@@ -85,12 +85,12 @@ public class QuickSearchController {
             }
         }
         if (sorter == null) {
-            sorter = new DisplayablePaoComparator();
+            sorter = new ControllablePaoComparator();
         }
 
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (quickSearchBean.getPage() - 1) * quickSearchBean.getItemsPerPage();
-        SearchResult<DisplayablePao> searchResult = 
+        SearchResult<ControllablePao> searchResult = 
                 filterService.filter(filter, 
                                      sorter, 
                                      startIndex, 
@@ -98,7 +98,7 @@ public class QuickSearchController {
                                      new QuickSearchRowMapper());
 
         if (searchResult.getHitCount() == 1) {
-            DisplayablePao pao = searchResult.getResultList().get(0);
+            ControllablePao pao = searchResult.getResultList().get(0);
             String detailUrl = paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
             if (detailUrl != null) {
                 return "redirect:" + detailUrl;

@@ -31,6 +31,7 @@ import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.filter.PriorityFilter;
 import com.cannontech.dr.program.filter.StartStopFilter;
 import com.cannontech.dr.program.filter.StateFilter;
@@ -136,9 +137,9 @@ public class ProgramControllerHelper {
     public void filterPrograms(ModelMap modelMap, YukonUserContext userContext,
             ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status,
-            UiFilter<DisplayablePao> detailFilter) {
+            UiFilter<ControllablePao> detailFilter) {
         // TODO:  validation on backing bean
-        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
         if (detailFilter != null) {
             filters.add(detailFilter);
         }
@@ -177,8 +178,8 @@ public class ProgramControllerHelper {
         modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
-        Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(userContext);
-        Comparator<DisplayablePao> sorter = defaultSorter;
+        Comparator<ControllablePao> defaultSorter = programNameField.getSorter(userContext);
+        Comparator<ControllablePao> sorter = defaultSorter;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
             
@@ -197,8 +198,8 @@ public class ProgramControllerHelper {
         }
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        SearchResult<DisplayablePao> searchResult =
+        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
+        SearchResult<ControllablePao> searchResult =
             programService.filterPrograms(filter, sorter, startIndex, backingBean.getItemsPerPage(),
                                           userContext);
 

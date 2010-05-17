@@ -19,10 +19,13 @@ public class ControlAreaShowActionField extends ControlAreaBackingFieldBase {
         }
 
         // Check manual active
+        boolean noAssignedPrograms = controlArea.getLmProgramVector().isEmpty();
         boolean fullyActive = controlArea.getControlAreaState() == LMControlArea.STATE_FULLY_ACTIVE;
         boolean disabled = controlArea.getDisableFlag();
 
-        if (fullyActive && disabled) {
+        if (noAssignedPrograms) {
+            return "noAssignedPrograms";
+        } else if (fullyActive && disabled) {
             return "fullyActiveDisabled";
         } else if (fullyActive && !disabled) {
             return "fullyActiveEnabled";

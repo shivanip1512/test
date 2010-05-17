@@ -17,7 +17,6 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -31,6 +30,7 @@ import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
@@ -57,6 +57,11 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             return retVal;
         }
 
+        @Override
+        public SqlFragmentSource getGroupBy() {
+            return null;
+        }
+        
         @Override
         public SqlFragmentSource getOrderBy() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
@@ -87,7 +92,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
     }
 
-    private static class ControlAreaRowMapper extends AbstractRowMapperWithBaseQuery<DisplayablePao> {
+    private static class ControlAreaRowMapper extends AbstractRowMapperWithBaseQuery<ControllablePao> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId;
 
         ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId) {
@@ -119,7 +124,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     // Then, we can query specifically for triggers that are specific to the
     // control areas we are filtering on.
     private class TriggerFilter implements UiFilter<ControlAreaTrigger> {
-        UiFilter<DisplayablePao> wrappedControlAreaFilter;
+        UiFilter<ControllablePao> wrappedControlAreaFilter;
 
         class WrappedSqlFilter implements SqlFilter {
             SqlFilter wrapped;
@@ -140,7 +145,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             }
         }
 
-        TriggerFilter(UiFilter<DisplayablePao> wrappedControlAreaFiter) {
+        TriggerFilter(UiFilter<ControllablePao> wrappedControlAreaFiter) {
             this.wrappedControlAreaFilter = wrappedControlAreaFiter;
         }
 
@@ -179,10 +184,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId) {
-        UiFilter<DisplayablePao> filter = new ForProgramFilter(programId);
+    public ControllablePao findControlAreaForProgram(YukonUserContext userContext, int programId) {
+        UiFilter<ControllablePao> filter = new ForProgramFilter(programId);
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterControlAreas(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         if (searchResult.getHitCount() > 0) {
@@ -192,8 +197,8 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
-                                                        Comparator<DisplayablePao> sorter, 
+    public SearchResult<ControllablePao> filterControlAreas(UiFilter<ControllablePao> filter,
+                                                        Comparator<ControllablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext) {
 
@@ -210,7 +215,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
         
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
 

@@ -15,14 +15,14 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.favorites.service.FavoritesService;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.ControllablePaoComparator;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.filter.AuthorizedFilter;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.service.DemandResponseService;
 import com.cannontech.dr.service.DemandResponseService.CombinedSortableField;
 import com.cannontech.user.YukonUserContext;
@@ -44,14 +44,14 @@ public class HomeController {
             Boolean rvDescending) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        List<UiFilter<DisplayablePao>> filters = Lists.newArrayList();
+        List<UiFilter<ControllablePao>> filters = Lists.newArrayList();
         filters.add(new AuthorizedFilter(paoAuthorizationService, user,
                                          Permission.LM_VISIBLE));
 
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
 
-        List<DisplayablePao> favorites = favoritesService.getFavorites(user, filter);
-        Comparator<DisplayablePao> sorter = null;
+        List<ControllablePao> favorites = favoritesService.getFavorites(user, filter);
+        Comparator<ControllablePao> sorter = null;
         if (favSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
             sorter = demandResponseService.getSorter(sortField, userContext);
@@ -60,12 +60,12 @@ public class HomeController {
             }
         }
         if (sorter == null) {
-            sorter = new DisplayablePaoComparator();
+            sorter = new ControllablePaoComparator();
         }
         Collections.sort(favorites, sorter);
         model.addAttribute("favorites", favorites);
 
-        List<DisplayablePao> recentlyViewed = favoritesService.getRecentlyViewed(user, 20, filter);
+        List<ControllablePao> recentlyViewed = favoritesService.getRecentlyViewed(user, 20, filter);
         sorter = null;
         if (rvSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(rvSort);
@@ -75,7 +75,7 @@ public class HomeController {
             }
         }
         if (sorter == null) {
-            sorter = new DisplayablePaoComparator();
+            sorter = new ControllablePaoComparator();
         }
         Collections.sort(recentlyViewed, sorter);
         model.addAttribute("recents", recentlyViewed);

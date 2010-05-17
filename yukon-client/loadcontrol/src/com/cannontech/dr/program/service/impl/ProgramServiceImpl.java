@@ -22,8 +22,6 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -34,6 +32,7 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
@@ -64,8 +63,8 @@ public class ProgramServiceImpl implements ProgramService {
     private SystemDateFormattingService systemDateFormattingService;
     private DateFormattingService dateFormattingService;
 
-    private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
-        new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
+    private static RowMapperWithBaseQuery<ControllablePao> rowMapper =
+        new AbstractRowMapperWithBaseQuery<ControllablePao>() {
 
             @Override
             public SqlFragmentSource getBaseQuery() {
@@ -77,12 +76,12 @@ public class ProgramServiceImpl implements ProgramService {
             }
 
             @Override
-            public DisplayablePao mapRow(ResultSet rs, int rowNum)
+            public ControllablePao mapRow(ResultSet rs, int rowNum)
                     throws SQLException {
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         PaoType.LM_DIRECT_PROGRAM);
-                DisplayablePao retVal = new DisplayablePaoBase(paoId,
-                                                               rs.getString("paoName"));
+                ControllablePao retVal = new ControllablePao(paoId,
+                                                             rs.getString("paoName"));
                 return retVal;
             }
         };
@@ -100,23 +99,23 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
+    public List<ControllablePao> findProgramsForLoadGroup(int loadGroupId, 
                                                          YukonUserContext userContext) {
-        UiFilter<DisplayablePao> filter = new ForLoadGroupFilter(loadGroupId);
+        UiFilter<ControllablePao> filter = new ForLoadGroupFilter(loadGroupId);
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterPrograms(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         return searchResult.getResultList();
     }
 
     @Override
-    public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
-                                                       Comparator<DisplayablePao> sorter, 
+    public SearchResult<ControllablePao> filterPrograms(UiFilter<ControllablePao> filter,
+                                                       Comparator<ControllablePao> sorter, 
                                                        int startIndex, int count,
                                                        YukonUserContext userContext) {
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }
@@ -374,7 +373,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public DisplayablePao getProgram(int programId) {
+    public ControllablePao getProgram(int programId) {
         return programDao.getProgram(programId);
     }
     
@@ -415,7 +414,7 @@ public class ProgramServiceImpl implements ProgramService {
         Message msg = new LMCommand(loadControlCommand, programId, 0, 0.0);
         loadControlClientConnection.write(msg);
         
-        DisplayablePao program = this.getProgram(programId);
+        ControllablePao program = this.getProgram(programId);
         if(isEnabled) {
             demandResponseEventLogService.programEnabled(program.getName());
         } else {

@@ -107,8 +107,37 @@
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${controlArea}">
 
                         <%-- Actions are enabled only if the user has CONTROL_COMMAND for LM objects --%>
-
                         <tags:dynamicChoose updaterString="DR_CONTROLAREA/${controlAreaId}/SHOW_ACTION" suffix="${controlAreaId}">
+                            <tags:dynamicChooseOption optionId="noAssignedPrograms">
+                                <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
+
+                                <cti:msg var="noAssignedPrograms" key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms"/>
+                                <div class="subtleGray" title="${noAssignedPrograms}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
+                                </div>
+                                <div class="subtleGray" title="${noAssignedPrograms}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
+                                </div>
+                                <div class="subtleGray" title="${noAssignedPrograms}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
+                                </div>
+                                <div class="subtleGray" title="${noAssignedPrograms}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
+                                </div>
+                                <div class="subtleGray" title="${noAssignedPrograms}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
+                                </div>
+                                <div class="subtleGray" title="${noAssignedPrograms}">
+                                    <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
+                                </div>
+                                
+                            </tags:dynamicChooseOption>
                             <tags:dynamicChooseOption optionId="enabled">
 
                                 <%-- Actions shown when the Control Area is enabled but not fully active --%>
@@ -446,28 +475,28 @@
 
                         <%-- Actions are disabled if the user does not have CONTROL_COMMAND for LM objects --%>
 
-                        <cti:msg var="noControlAreaControl" key="yukon.web.modules.dr.controlAreaDetail.noControl"/>
-                        <div class="subtleGray" title="${noControlAreaControl}">
+                        <cti:msg var="noAssignedPrograms" key="yukon.web.modules.dr.controlAreaDetail.noControl"/>
+                        <div class="subtleGray" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.start"/>
                         </div>
-                        <div class="subtleGray" title="${noControlAreaControl}">
+                        <div class="subtleGray" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.stop"/>
                         </div>
-                        <div class="subtleGray" title="${noControlAreaControl}">
+                        <div class="subtleGray" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChangeIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.triggersChange"/>
                         </div>
-                        <div class="subtleGray" title="${noControlAreaControl}">
+                        <div class="subtleGray" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChangeIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.dailyTimeChange"/>
                         </div>
-                        <div class="subtleGray" title="${noControlAreaControl}">
+                        <div class="subtleGray" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.disableIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.disable"/>
                         </div>
-                        <div class="subtleGray" title="${noControlAreaControl}">
+                        <div class="subtleGray" title="${noAssignedPrograms}">
                             <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeakIcon.disabled"/>
                             <cti:msg key="yukon.web.modules.dr.controlAreaDetail.actions.resetPeak"/>
                         </div>

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.ControllablePaoComparator;
 import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.dr.controlarea.model.ControlAreaState;
@@ -19,6 +19,7 @@ import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.loadgroup.model.LoadGroupState;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.model.CombinedState;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.model.ProgramState;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.service.DemandResponseService;
@@ -39,7 +40,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
     private LoadGroupService loadGroupService;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
 
-    final Map<CombinedSortableField, Comparator<DisplayablePao>> sorters;
+    final Map<CombinedSortableField, Comparator<ControllablePao>> sorters;
 
     private static class PaoStateInfo implements Comparable<PaoStateInfo>{
         boolean enabled = false;
@@ -58,14 +59,14 @@ public class DemandResponseServiceImpl implements DemandResponseService {
     }
 
     public DemandResponseServiceImpl() {
-        Builder<CombinedSortableField, Comparator<DisplayablePao>> builder =
+        Builder<CombinedSortableField, Comparator<ControllablePao>> builder =
             ImmutableMap.builder();
 
-        builder.put(CombinedSortableField.NAME, new DisplayablePaoComparator());
-        builder.put(CombinedSortableField.STATE, new Comparator<DisplayablePao>(){
+        builder.put(CombinedSortableField.NAME, new ControllablePaoComparator());
+        builder.put(CombinedSortableField.STATE, new Comparator<ControllablePao>(){
 
             @Override
-            public int compare(DisplayablePao pao1, DisplayablePao pao2) {
+            public int compare(ControllablePao pao1, ControllablePao pao2) {
                 PaoStateInfo pao1State = stateForPao(pao1);
                 PaoStateInfo pao2State = stateForPao(pao2);
 
@@ -160,7 +161,7 @@ public class DemandResponseServiceImpl implements DemandResponseService {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(CombinedSortableField field,
+    public Comparator<ControllablePao> getSorter(CombinedSortableField field,
             final YukonUserContext userContext) {
         if (field == CombinedSortableField.TYPE) {
             Ordering<DisplayablePao> typeComparator = new Ordering<DisplayablePao>(){

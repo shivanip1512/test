@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -28,6 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.pao.RouteTypes;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -136,7 +136,7 @@ public class OperatorHardwareConfigController {
         }
         model.addAttribute("enrollment", enrollment);
 
-        List<DisplayablePao> loadGroups =
+        List<ControllablePao> loadGroups =
             loadGroupDao.getForProgram(enrollment.getProgramId());
         model.addAttribute("loadGroups", loadGroups);
 

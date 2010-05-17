@@ -5,10 +5,10 @@ import java.util.Comparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
@@ -43,7 +43,7 @@ public abstract class LoadGroupBackingFieldBase implements DemandResponseBacking
     }
     
     @Override
-    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
         // Default implementation to return NO sorter
         return null;
     }

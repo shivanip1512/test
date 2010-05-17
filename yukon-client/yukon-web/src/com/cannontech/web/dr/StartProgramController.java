@@ -23,13 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.ControllablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.RolePropertyTypeHelper;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
@@ -65,7 +65,7 @@ public class StartProgramController extends ProgramControllerBase {
             setStartProgramBackingBeanDefaults(backingBean, userContext);
         }
 
-        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
+        ControllablePao program = programService.getProgram(backingBean.getProgramId());
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      program,
                                                      Permission.LM_VISIBLE,
@@ -95,7 +95,7 @@ public class StartProgramController extends ProgramControllerBase {
             }
         }
 
-        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
+        ControllablePao program = programService.getProgram(backingBean.getProgramId());
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      program,
                                                      Permission.LM_VISIBLE,
@@ -149,7 +149,7 @@ public class StartProgramController extends ProgramControllerBase {
 
         LiteYukonUser user = userContext.getYukonUser();
 
-        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
+        ControllablePao program = programService.getProgram(backingBean.getProgramId());
         paoAuthorizationService.verifyAllPermissions(user,
                                                      program,
                                                      Permission.LM_VISIBLE,
@@ -210,7 +210,7 @@ public class StartProgramController extends ProgramControllerBase {
         }
 
         int programId = backingBean.getProgramId();
-        DisplayablePao program = programService.getProgram(programId);
+        ControllablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      program,
                                                      Permission.LM_VISIBLE,
@@ -243,12 +243,12 @@ public class StartProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StartMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
 
-        UiFilter<DisplayablePao> filter = null;
+        UiFilter<ControllablePao> filter = null;
 
         String paoName = null;
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
-            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
@@ -258,7 +258,7 @@ public class StartProgramController extends ProgramControllerBase {
             filter = new ForControlAreaFilter(backingBean.getControlAreaId());
         }
         if (backingBean.getScenarioId() != null) {
-            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            ControllablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
@@ -275,10 +275,10 @@ public class StartProgramController extends ProgramControllerBase {
             throw new IllegalArgumentException();
         }
 
-        SearchResult<DisplayablePao> searchResult =
-            programService.filterPrograms(filter, new DisplayablePaoComparator(),
+        SearchResult<ControllablePao> searchResult =
+            programService.filterPrograms(filter, new ControllablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
-        List<DisplayablePao> programs = searchResult.getResultList();
+        List<ControllablePao> programs = searchResult.getResultList();
         if (programs == null || programs.size() == 0) {
 
             model.addAttribute("popupId", "drDialog");
@@ -325,7 +325,7 @@ public class StartProgramController extends ProgramControllerBase {
 
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
-            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
@@ -333,7 +333,7 @@ public class StartProgramController extends ProgramControllerBase {
             model.addAttribute("controlArea", controlArea);
         }
         if (backingBean.getScenarioId() != null) {
-            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            ControllablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
@@ -350,7 +350,7 @@ public class StartProgramController extends ProgramControllerBase {
                 continue;
             }
 
-            DisplayablePao program = programService.getProgram(programStartInfo.getProgramId());
+            ControllablePao program = programService.getProgram(programStartInfo.getProgramId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          program,
                                                          Permission.LM_VISIBLE,
@@ -409,7 +409,7 @@ public class StartProgramController extends ProgramControllerBase {
 
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
-            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(user,
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
@@ -417,7 +417,7 @@ public class StartProgramController extends ProgramControllerBase {
             model.addAttribute("controlArea", controlArea);
         }
         if (backingBean.getScenarioId() != null) {
-            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            ControllablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
@@ -447,7 +447,7 @@ public class StartProgramController extends ProgramControllerBase {
         model.addAttribute("overrideAllowed", overrideAllowed);
 
         Map<Integer, ConstraintViolations> violationsByProgramId = Maps.newHashMap();
-        Map<Integer, DisplayablePao> programsByProgramId = Maps.newHashMap();
+        Map<Integer, ControllablePao> programsByProgramId = Maps.newHashMap();
         boolean constraintsViolated = false;
         int numProgramsToStart = 0;
         for (ProgramStartInfo programStartInfo : backingBean.getProgramStartInfo()) {
@@ -457,7 +457,7 @@ public class StartProgramController extends ProgramControllerBase {
 
             numProgramsToStart++;
             int programId = programStartInfo.getProgramId();
-            DisplayablePao program = programService.getProgram(programId);
+            ControllablePao program = programService.getProgram(programId);
             programsByProgramId.put(programId, program);
 
             LMProgramBase programBase = programService.getProgramForPao(program);
@@ -523,7 +523,7 @@ public class StartProgramController extends ProgramControllerBase {
 
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
-            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
@@ -533,7 +533,7 @@ public class StartProgramController extends ProgramControllerBase {
                                                                       controlArea.getName());
         }
         if (backingBean.getScenarioId() != null) {
-            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            ControllablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
@@ -558,7 +558,7 @@ public class StartProgramController extends ProgramControllerBase {
                 throw new NotAuthorizedException("not authorized to override constraints");
             }
 
-            DisplayablePao program = programService.getProgram(programStartInfo.getProgramId());
+            ControllablePao program = programService.getProgram(programStartInfo.getProgramId());
             LMProgramBase programBase = programService.getProgramForPao(program);
             LMProgramDirectGear gear =
                 ((IGearProgram) programBase).getDirectGearVector().get(programStartInfo.getGearNumber() - 1);
@@ -626,9 +626,9 @@ public class StartProgramController extends ProgramControllerBase {
         }
     }
 
-    private void addGearsToModel(List<DisplayablePao> programs, ModelMap model) {
+    private void addGearsToModel(List<ControllablePao> programs, ModelMap model) {
         Map<Integer, List<LMProgramDirectGear>> gearsByProgramId = Maps.newHashMap();
-        for (DisplayablePao program : programs) {
+        for (ControllablePao program : programs) {
             List<LMProgramDirectGear> gears = Collections.emptyList();
             LMProgramBase programBase = programService.getProgramForPao(program);
             if (programBase instanceof IGearProgram) {
@@ -648,11 +648,11 @@ public class StartProgramController extends ProgramControllerBase {
         }
     }
 
-    private Map<Integer, Map<Integer, Boolean>> getIndexBasedIsTargetGearMap(List<DisplayablePao> programs) {
+    private Map<Integer, Map<Integer, Boolean>> getIndexBasedIsTargetGearMap(List<ControllablePao> programs) {
         Map<Integer, Map<Integer, Boolean>> programIndexTargetGearMap = new HashMap<Integer, Map<Integer, Boolean>>();
         for (int i = 0; i < programs.size(); i++){
-            DisplayablePao displayablePao = programs.get(i);
-            LMProgramBase programBase = programService.getProgramForPao(displayablePao);
+            ControllablePao controllablePao = programs.get(i);
+            LMProgramBase programBase = programService.getProgramForPao(controllablePao);
             List<LMProgramDirectGear> gears;
             if (programBase instanceof IGearProgram) {
                 gears = ((IGearProgram) programBase).getDirectGearVector();
@@ -719,12 +719,12 @@ public class StartProgramController extends ProgramControllerBase {
     private void setStartMultipleProgramBackingBeanBaseDefaults(
                        StartMultipleProgramsBackingBean backingBean,
                        YukonUserContext userContext,
-                       List<DisplayablePao> programs,
+                       List<ControllablePao> programs,
                        Map<Integer, ScenarioProgram> scenarioPrograms) {
 
         setStartProgramBackingBeanBaseDefaults(backingBean, userContext);
         List<ProgramStartInfo> programStartInfo = new ArrayList<ProgramStartInfo>(programs.size());
-        for (DisplayablePao program : programs) {
+        for (ControllablePao program : programs) {
             int programId = program.getPaoIdentifier().getPaoId();
             int gearNumber = 1;
             if (scenarioPrograms != null) {

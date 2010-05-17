@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.dao.ProgramDao;
 
 public class ProgramDaoImpl implements ProgramDao {
@@ -20,20 +19,20 @@ public class ProgramDaoImpl implements ProgramDao {
         "SELECT paObjectId, paoName FROM yukonPAObject"
         + " WHERE type = 'LM DIRECT PROGRAM' AND paObjectId = ?";
 
-    private final static ParameterizedRowMapper<DisplayablePao> programRowMapper =
-        new ParameterizedRowMapper<DisplayablePao>() {
+    private final static ParameterizedRowMapper<ControllablePao> programRowMapper =
+        new ParameterizedRowMapper<ControllablePao>() {
         @Override
-        public DisplayablePao mapRow(ResultSet rs, int rowNum)
+        public ControllablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_DIRECT_PROGRAM);
-            DisplayablePao retVal = new DisplayablePaoBase(paoId,
-                                                           rs.getString("paoName"));
+            ControllablePao retVal = new ControllablePao(paoId,
+                                                         rs.getString("paoName"));
             return retVal;
         }};
 
     @Override
-    public DisplayablePao getProgram(int programId) {
+    public ControllablePao getProgram(int programId) {
         return simpleJdbcTemplate.queryForObject(singleProgramByIdQuery,
                                                  programRowMapper,
                                                  programId);

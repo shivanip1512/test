@@ -15,10 +15,10 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -48,7 +48,7 @@ public class ProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status, FlashScope flashScope) {
         
-        DisplayablePao program = programService.getProgram(programId);
+        ControllablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE);
@@ -59,14 +59,14 @@ public class ProgramController extends ProgramControllerBase {
             favoritesDao.isFavorite(programId, userContext.getYukonUser());
         modelMap.addAttribute("isFavorite", isFavorite);
 
-        UiFilter<DisplayablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
+        UiFilter<ControllablePao> detailFilter = new LoadGroupsForProgramFilter(programId);
         loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
                                                result, status, detailFilter);
 
-        DisplayablePao parentControlArea =
+        ControllablePao parentControlArea =
             controlAreaService.findControlAreaForProgram(userContext, programId);
         modelMap.addAttribute("parentControlArea", parentControlArea);
-        List<DisplayablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
+        List<ControllablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);
         
         addErrorsToFlashScopeIfNecessary(result, flashScope);
@@ -77,7 +77,7 @@ public class ProgramController extends ProgramControllerBase {
     @RequestMapping
     public String getChangeGearValue(ModelMap modelMap, int programId, YukonUserContext userContext) {
         
-        DisplayablePao program = programService.getProgram(programId);
+        ControllablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE, 
@@ -93,7 +93,7 @@ public class ProgramController extends ProgramControllerBase {
     public String changeGear(ModelMap modelMap, int programId, int gearNumber, 
                              YukonUserContext userContext, FlashScope flashScope) {
         
-        DisplayablePao program = programService.getProgram(programId);
+        ControllablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      program, 
@@ -111,7 +111,7 @@ public class ProgramController extends ProgramControllerBase {
     public String sendEnableConfirm(ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext) {
         
-        DisplayablePao program = programService.getProgram(programId);
+        ControllablePao program = programService.getProgram(programId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      program, 
                                                      Permission.LM_VISIBLE, 
@@ -126,7 +126,7 @@ public class ProgramController extends ProgramControllerBase {
     public String setEnabled(ModelMap modelMap, int programId, boolean isEnabled,
             YukonUserContext userContext, FlashScope flashScope) {
         
-        DisplayablePao program = programService.getProgram(programId);
+        ControllablePao program = programService.getProgram(programId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      program, 

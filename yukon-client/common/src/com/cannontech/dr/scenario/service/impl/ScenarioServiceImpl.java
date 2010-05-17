@@ -11,59 +11,78 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 
 public class ScenarioServiceImpl implements ScenarioService {
-    private ScenarioDao scenarioDao = null;
+    private ScenarioDao scenarioDao;
     private FilterService filterService;
 
-    private static RowMapperWithBaseQuery<DisplayablePao> rowMapper = new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
+    private static RowMapperWithBaseQuery<ControllablePao> rowMapper = new AbstractRowMapperWithBaseQuery<ControllablePao>() {
 
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT paObjectId, paoName FROM yukonPAObject" + " WHERE type = ");
-            retVal.appendArgument(PaoType.LM_SCENARIO.getDbString());
+            retVal.append("SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ProgramCount");    
+            retVal.append("FROM YukonPAObject PAO");                                                     
+            retVal.append("LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId ");
+            retVal.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO.getDatabaseRepresentation());   
             return retVal;
         }
 
         @Override
-        public DisplayablePao mapRow(ResultSet rs, int rowNum)
+        public SqlStatementBuilder getGroupBy() {
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("GROUP BY PAO.PAObjectId, PAO.PAOName");
+            return retVal;
+        }
+        
+        @Override
+        public ControllablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_SCENARIO);
-            DisplayablePao retVal = new DisplayablePaoBase(paoId,
-                                                           rs.getString("paoName"));
+            Scenario retVal = new Scenario(paoId,
+                                           rs.getString("paoName"));
+            retVal.setProgramCount(rs.getInt("ProgramCount"));
+            
             return retVal;
         }
     };
 
     @Override
-    public SearchResult<DisplayablePao> filterScenarios(
-            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
-            Comparator<DisplayablePao> sorter, int startIndex, int count) {
+    public SearchResult<ControllablePao> filterScenarios(
+            YukonUserContext userContext, UiFilter<ControllablePao> filter,
+            Comparator<ControllablePao> sorter, int startIndex, int count) {
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
+
         return searchResult;
     }
 
     @Override
-    public DisplayablePao getScenario(int scenarioId) {
-        return scenarioDao.getScenario(scenarioId);
+    public void addScenarioActionState(List<ControllablePao> controllablePaos) {
+        for (int i = 0; i < controllablePaos.size(); i++) {
+            ControllablePao controllablePao = controllablePaos.get(i);
+            if (controllablePao.getPaoIdentifier().getPaoType().equals(PaoType.LM_SCENARIO)) {
+                Scenario scenario = 
+                    scenarioDao.getScenario(controllablePao.getPaoIdentifier().getPaoId());
+                controllablePaos.set(i, scenario);
+            }
+        }
     }
 
     @Override
-    public List<DisplayablePao> findScenariosForProgram(int programId) {
+    public List<ControllablePao> findScenariosForProgram(int programId) {
         return scenarioDao.findScenariosForProgram(programId);
     }
 
@@ -76,4 +95,5 @@ public class ScenarioServiceImpl implements ScenarioService {
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
     }
+
 }

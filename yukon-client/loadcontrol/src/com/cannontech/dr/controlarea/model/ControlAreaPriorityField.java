@@ -2,7 +2,7 @@ package com.cannontech.dr.controlarea.model;
 
 import java.util.Comparator;
 
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
@@ -20,11 +20,11 @@ public class ControlAreaPriorityField extends ControlAreaBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
-        return new Comparator<DisplayablePao>() {
+    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
+        return new Comparator<ControllablePao>() {
 
             @Override
-            public int compare(DisplayablePao pao1, DisplayablePao pao2) {
+            public int compare(ControllablePao pao1, ControllablePao pao2) {
                 LMControlArea controlArea1 = getControlAreaFromYukonPao(pao1);
                 LMControlArea controlArea2 = getControlAreaFromYukonPao(pao2);
                 if (controlArea1 == controlArea2) {

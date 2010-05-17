@@ -8,10 +8,10 @@ import java.util.List;
 import org.joda.time.Duration;
 
 import com.cannontech.common.bulk.filter.UiFilter;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.model.GearAdjustment;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -19,17 +19,17 @@ import com.cannontech.user.YukonUserContext;
 
 public interface ProgramService {
 
-    public DisplayablePao getProgram(int programId);
+    public ControllablePao getProgram(int programId);
     
     public LMProgramBase getProgramForPao(YukonPao from);
     
     public DatedObject<LMProgramBase> findDatedProgram(int programId);
 
-    public List<DisplayablePao> findProgramsForLoadGroup(int loadGroupId, 
+    public List<ControllablePao> findProgramsForLoadGroup(int loadGroupId, 
                                                          YukonUserContext userContext);
 
-    public SearchResult<DisplayablePao> filterPrograms(UiFilter<DisplayablePao> filter,
-                                                       Comparator<DisplayablePao> sorter, 
+    public SearchResult<ControllablePao> filterPrograms(UiFilter<ControllablePao> filter,
+                                                       Comparator<ControllablePao> sorter, 
                                                        int startIndex, int count, 
                                                        YukonUserContext userContext);
 

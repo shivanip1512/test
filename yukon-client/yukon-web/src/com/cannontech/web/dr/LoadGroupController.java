@@ -17,12 +17,12 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -73,7 +73,7 @@ public class LoadGroupController {
             @ModelAttribute("backingBean") LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status, YukonUserContext userContext) {
         
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE);
@@ -88,7 +88,7 @@ public class LoadGroupController {
         modelMap.addAttribute("parentLoadGroups",
                               loadGroupService.findLoadGroupsForMacroLoadGroup(loadGroupId, userContext));
 
-        UiFilter<DisplayablePao> detailFilter =
+        UiFilter<ControllablePao> detailFilter =
             new LoadGroupsForMacroLoadGroupFilter(loadGroupId);
         loadGroupControllerHelper.filterGroups(modelMap, userContext, backingBean,
                                                result, status, detailFilter);
@@ -100,7 +100,7 @@ public class LoadGroupController {
     public String sendShedConfirm(ModelMap modelMap, int loadGroupId,
             YukonUserContext userContext) {
 
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE, 
@@ -116,7 +116,7 @@ public class LoadGroupController {
             int durationInSeconds, YukonUserContext userContext,
             FlashScope flashScope) {
 
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      loadGroup, 
@@ -138,7 +138,7 @@ public class LoadGroupController {
     public String sendRestoreConfirm(ModelMap modelMap, int loadGroupId,
             YukonUserContext userContext) {
 
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE, 
@@ -152,7 +152,7 @@ public class LoadGroupController {
     public String sendRestore(ModelMap modelMap, int loadGroupId, YukonUserContext userContext,
                               FlashScope flashScope) {
 
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      loadGroup, 
@@ -172,7 +172,7 @@ public class LoadGroupController {
     public String sendEnableConfirm(ModelMap modelMap, int loadGroupId, boolean isEnabled,
             YukonUserContext userContext) {
         
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      loadGroup, 
                                                      Permission.LM_VISIBLE, 
@@ -187,7 +187,7 @@ public class LoadGroupController {
     public String setEnabled(ModelMap modelMap, int loadGroupId, boolean isEnabled,
             YukonUserContext userContext, FlashScope flashScope) {
 
-        DisplayablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = loadGroupService.getLoadGroup(loadGroupId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser, 
                                                      loadGroup, 

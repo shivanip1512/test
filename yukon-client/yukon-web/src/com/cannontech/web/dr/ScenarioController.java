@@ -20,15 +20,17 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.ControllablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
+import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dr.ProgramControllerHelper.ProgramListBackingBean;
@@ -38,6 +40,7 @@ import com.cannontech.web.util.ListBackingBean;
 @Controller
 @CheckRoleProperty(YukonRoleProperty.SHOW_SCENARIOS)
 public class ScenarioController {
+    private ScenarioDao scenarioDao;
     private ScenarioService scenarioService;
     private PaoAuthorizationService paoAuthorizationService;
     private ProgramControllerHelper programControllerHelper;
@@ -51,7 +54,7 @@ public class ScenarioController {
                        SessionStatus status) {
         // TODO:  validation on backing bean
 
-        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
 
         filters.add(new AuthorizedFilter(paoAuthorizationService, 
                                          userContext.getYukonUser(),
@@ -65,13 +68,13 @@ public class ScenarioController {
         modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
-        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
+        Comparator<ControllablePao> sorter = new ControllablePaoComparator();
         if(backingBean.getDescending()) {
             sorter = Collections.reverseOrder(sorter);
         }
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             scenarioService.filterScenarios(userContext, filter, sorter, startIndex,
                                             backingBean.getItemsPerPage());
 
@@ -93,7 +96,7 @@ public class ScenarioController {
                          BindingResult result, 
                          SessionStatus status) {
         
-        DisplayablePao scenario = scenarioService.getScenario(scenarioId);
+        Scenario scenario = scenarioDao.getScenario(scenarioId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), 
                                                      scenario, 
                                                      Permission.LM_VISIBLE);
@@ -104,7 +107,7 @@ public class ScenarioController {
             favoritesDao.isFavorite(scenarioId, userContext.getYukonUser());
         modelMap.addAttribute("isFavorite", isFavorite);
 
-        UiFilter<DisplayablePao> detailFilter = new ForScenarioFilter(scenarioId);
+        UiFilter<ControllablePao> detailFilter = new ForScenarioFilter(scenarioId);
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
                                                result, status, detailFilter);
 
@@ -116,6 +119,11 @@ public class ScenarioController {
         programControllerHelper.initBinder(binder, userContext);
     }
 
+    @Autowired
+    public void setScenarioDao(ScenarioDao scenarioDao) {
+        this.scenarioDao = scenarioDao;
+    }
+    
     @Autowired
     public void setScenarioService(ScenarioService scenarioService) {
         this.scenarioService = scenarioService;

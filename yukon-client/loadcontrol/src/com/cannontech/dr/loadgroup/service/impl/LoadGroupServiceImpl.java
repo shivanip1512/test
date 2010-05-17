@@ -12,8 +12,6 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -25,6 +23,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.loadcontrol.data.LMGroupBase;
@@ -55,27 +54,27 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     }
 
     @Override
-    public List<DisplayablePao> findLoadGroupsForMacroLoadGroup(
+    public List<ControllablePao> findLoadGroupsForMacroLoadGroup(
             int loadGroupId, YukonUserContext userContext) {
-        UiFilter<DisplayablePao> filter = new MacroLoadGroupForLoadGroupFilter(loadGroupId);
+        UiFilter<ControllablePao> filter = new MacroLoadGroupForLoadGroupFilter(loadGroupId);
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterGroups(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         return searchResult.getResultList();
     }
 
     @Override
-    public DisplayablePao getLoadGroup(int loadGroupId) {
+    public ControllablePao getLoadGroup(int loadGroupId) {
         return loadGroupDao.getLoadGroup(loadGroupId);
     }
     
     @Override
-    public SearchResult<DisplayablePao> filterGroups(
-            UiFilter<DisplayablePao> filter, Comparator<DisplayablePao> sorter,
+    public SearchResult<ControllablePao> filterGroups(
+            UiFilter<ControllablePao> filter, Comparator<ControllablePao> sorter,
             int startIndex, int count, YukonUserContext userContext) {
 
-        SearchResult<DisplayablePao> searchResult =
+        SearchResult<ControllablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
         return searchResult;
     }    
@@ -87,7 +86,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                                     durationInSeconds, 0.0);
         loadControlClientConnection.write(msg);
         
-        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = this.getLoadGroup(loadGroupId);
         demandResponseEventLogService.loadGroupShed(loadGroup.getName(), 
                                                     durationInSeconds);
     }
@@ -99,7 +98,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                                     0, 0.0);
         loadControlClientConnection.write(msg);
 
-        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = this.getLoadGroup(loadGroupId);
         demandResponseEventLogService.loadGroupRestore(loadGroup.getName());
     }
 
@@ -111,7 +110,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
         Message msg = new LMCommand(loadControlCommand, loadGroupId, 0, 0.0);
         loadControlClientConnection.write(msg);
         
-        DisplayablePao loadGroup = this.getLoadGroup(loadGroupId);
+        ControllablePao loadGroup = this.getLoadGroup(loadGroupId);
         String name = loadGroup.getName();
         if(isEnabled) {
             demandResponseEventLogService.loadGroupEnabled(name);
@@ -127,8 +126,8 @@ public class LoadGroupServiceImpl implements LoadGroupService {
         return !disableFlag;
     }
 
-    private static RowMapperWithBaseQuery<DisplayablePao> rowMapper =
-        new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
+    private static RowMapperWithBaseQuery<ControllablePao> rowMapper =
+        new AbstractRowMapperWithBaseQuery<ControllablePao>() {
 
             @Override
             public SqlFragmentSource getBaseQuery() {
@@ -139,15 +138,15 @@ public class LoadGroupServiceImpl implements LoadGroupService {
             }
 
             @Override
-            public DisplayablePao mapRow(ResultSet rs, int rowNum)
+            public ControllablePao mapRow(ResultSet rs, int rowNum)
                     throws SQLException {
                 String paoTypeStr = rs.getString("type");
                 int deviceTypeId = PAOGroups.getPAOType("DEVICE", paoTypeStr);
                 PaoType paoType = PaoType.getForId(deviceTypeId);
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         paoType);
-                DisplayablePao retVal = new DisplayablePaoBase(paoId,
-                                                               rs.getString("paoName"));
+                ControllablePao retVal = new ControllablePao(paoId,
+                                                             rs.getString("paoName"));
                 return retVal;
             }
         };

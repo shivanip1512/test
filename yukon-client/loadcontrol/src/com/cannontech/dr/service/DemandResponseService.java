@@ -3,7 +3,7 @@ package com.cannontech.dr.service;
 import java.util.Comparator;
 import java.util.Date;
 
-import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.user.YukonUserContext;
 
 public interface DemandResponseService {
@@ -15,6 +15,6 @@ public interface DemandResponseService {
 
     public int getTimeSlotsForTargetCycle(Date stopTime, Date startTime);
 
-    public Comparator<DisplayablePao> getSorter(CombinedSortableField field,
+    public Comparator<ControllablePao> getSorter(CombinedSortableField field,
             YukonUserContext userContext);
 }

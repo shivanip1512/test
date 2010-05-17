@@ -15,13 +15,13 @@ import javax.swing.KeyStroke;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.gui.util.TreeFindPanel;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl;
 import com.cannontech.spring.YukonSpringHook;
@@ -986,7 +986,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		boolean error = false;
 		for(LiteYukonPAObject program : lite)
 		{
-		    List<DisplayablePao> scenarios = scenarioDao.findScenariosForProgram(program.getYukonID());
+		    List<ControllablePao> scenarios = scenarioDao.findScenariosForProgram(program.getYukonID());
 		    if(scenarios.size() > 0)
 		    {
 		        error = true;

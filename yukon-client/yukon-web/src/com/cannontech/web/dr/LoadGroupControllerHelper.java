@@ -19,7 +19,6 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -34,6 +33,7 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
 import com.cannontech.dr.loadgroup.model.LoadGroupNameField;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -92,14 +92,14 @@ public class LoadGroupControllerHelper {
     public void filterGroups(ModelMap modelMap, YukonUserContext userContext,
             LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status,
-            UiFilter<DisplayablePao> detailFilter) {
+            UiFilter<ControllablePao> detailFilter) {
         // TODO:  validation on backing bean
-        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
         if (detailFilter != null) {
             filters.add(detailFilter);
         }
 
-        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
+        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService, 
                 userContext.getYukonUser(), 
                 Permission.LM_VISIBLE));
 
@@ -129,8 +129,8 @@ public class LoadGroupControllerHelper {
         modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
-        Comparator<DisplayablePao> defaultSorter = loadGroupNameField.getSorter(userContext);
-        Comparator<DisplayablePao> sorter = defaultSorter;
+        Comparator<ControllablePao> defaultSorter = loadGroupNameField.getSorter(userContext);
+        Comparator<ControllablePao> sorter = defaultSorter;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
             
@@ -149,8 +149,8 @@ public class LoadGroupControllerHelper {
         }
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
-        SearchResult<DisplayablePao> searchResult =
+        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
+        SearchResult<ControllablePao> searchResult =
             loadGroupService.filterGroups(filter, sorter, startIndex,
                                           backingBean.getItemsPerPage(), userContext);
 

@@ -9,6 +9,16 @@
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
     <tags:dynamicChoose updaterString="DR_CONTROLAREA/${paoId}/SHOW_ACTION" suffix="${paoId}">
+        <tags:dynamicChooseOption optionId="noAssignedPrograms">
+            <cti:msg var="controlAreaHasNoPrograms" 
+                     key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms"/>
+            <span class="subtleGray" title="${controlAreaHasNoPrograms}">
+                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
+            </span>
+            <span class="subtleGray" title="${controlAreaHasNoPrograms}">
+                <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon.disabled"/>
+            </span>
+        </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="enabled">
             <cti:url var="startControlAreaUrl" value="/spring/dr/program/start/multipleDetails">
                 <cti:param name="controlAreaId" value="${paoId}"/>

@@ -2,8 +2,8 @@ package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.DisplayablePaoComparator;
+import com.cannontech.common.pao.ControllablePaoComparator;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.user.YukonUserContext;
 
@@ -20,8 +20,8 @@ public class ProgramNameField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
-        return new DisplayablePaoComparator();
+    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
+        return new ControllablePaoComparator();
     }
 
 }

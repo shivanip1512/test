@@ -16,11 +16,11 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
+import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.appliance.dao.AssignedProgramDao;
 import com.cannontech.stars.dr.appliance.model.AssignedProgram;
@@ -146,7 +146,7 @@ public class OperatorEnrollmentController {
         AssignedProgram assignedProgram =
             assignedProgramDao.getById(assignedProgramId);
         model.addAttribute("assignedProgram", assignedProgram);
-        List<DisplayablePao> loadGroups =
+        List<ControllablePao> loadGroups =
             loadGroupDao.getForProgram(assignedProgram.getProgramId());
         model.addAttribute("loadGroups", loadGroups);
 
