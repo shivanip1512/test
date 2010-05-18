@@ -213,6 +213,20 @@ public class InventoryBean {
         if (numberOfHardware == 0 && errorMsg == null) {
             errorMsg = "No matching hardware records found";
         }
+
+        StringBuilder htmlBuf = new StringBuilder();
+        
+        if ((style & HTML_STYLE_SELECT_INVENTORY) != 0 || 
+            (style & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
+
+            htmlBuf.append("<table width='80%' border='0' cellspacing='0' cellpadding='1'>");
+            htmlBuf.append("    <tr>");
+            htmlBuf.append("        <td class='MainText' align='center'>Check the radio button "); 
+            htmlBuf.append("            of the hardware you want to select, then click Select.</td>");
+            htmlBuf.append("    </tr>");
+            htmlBuf.append("</table>");
+
+        }
         
         if(style == HTML_STYLE_FILTERED_INVENTORY_SUMMARY) {
             String hwRecordsMsg = errorMsg;
@@ -222,7 +236,6 @@ public class InventoryBean {
             return hwRecordsMsg;
         }
 
-        StringBuilder htmlBuf = new StringBuilder();
         		
 		if (errorMsg != null) {
 			htmlBuf.append("<p class='ErrorMsg'>").append(errorMsg).append("</p>").append(LINE_SEPARATOR);
