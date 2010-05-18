@@ -18,12 +18,15 @@ class Test_CtiCCSubstationBusStore : public CtiCCSubstationBusStore
         void insertSubBusToPaoMap(CtiCCSubstationBusPtr bus){addSubBusToPaoMap(bus);};
         void insertFeederToPaoMap(CtiCCFeederPtr feeder){addFeederToPaoMap(feeder);};
         void insertLtcToPaoMap(LoadTapChangerPtr ltc){addLtcToPaoMap(ltc);};
+        void insertSubBusToAltBusMap(CtiCCSubstationBusPtr bus){addSubBusToAltBusMap(bus);};
+        
 };
 
 class Test_CtiCapController : public CtiCapController
 {
     public:
         virtual void sendMessageToDispatch(CtiMessage *message){delete message; return;};
+        void adjustAlternateSettings(long pointID, CtiCCSubstationBusPtr bus){adjustAlternateBusModeValues(pointID, 0, bus);};
 };
 
 template <class T>

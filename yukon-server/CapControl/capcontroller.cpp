@@ -55,7 +55,7 @@
 #include <vector>
 #include <list>
 using std::vector;
-using std::multimap;
+using std::map;
 using std::list;
 
 extern ULONG _CC_DEBUG;
@@ -2229,11 +2229,11 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         }
                         else if (dbChange->getDatabase() == ChangePointDb)
                         {
-                            multimap< long, CtiCCSubstationBusPtr >::iterator subBusBegin,  subBusEnd;
-                            multimap< long, CtiCCFeederPtr >::iterator        feederBegin,  feederEnd;
-                            multimap< long, CtiCCCapBankPtr >::iterator       capBankBegin, capBankEnd;
-                            multimap< long, CtiCCAreaPtr >::iterator          areaBegin,    areaEnd;
-                            multimap< long, CtiCCSpecialPtr >::iterator       sAreaBegin,   sAreaEnd;
+                            map< long, CtiCCSubstationBusPtr >::iterator subBusBegin,  subBusEnd;
+                            map< long, CtiCCFeederPtr >::iterator        feederBegin,  feederEnd;
+                            map< long, CtiCCCapBankPtr >::iterator       capBankBegin, capBankEnd;
+                            map< long, CtiCCAreaPtr >::iterator          areaBegin,    areaEnd;
+                            map< long, CtiCCSpecialPtr >::iterator       sAreaBegin,   sAreaEnd;
                             if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
                             {
                                 CtiCCSubstationBusPtr sub = subBusBegin->second;
@@ -2458,6 +2458,7 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
             currentBus->setAltSubControlValue(currentBus->getRawCurrentVarLoadPointValue());
         }
         currentBus->setBusUpdatedFlag(TRUE);
+        return;
     }
     CtiCCSubstationBusPtr primarySub = store->findSubBusByPAObjectID(currentBus->getAltDualSubId());
     if (primarySub != NULL)
@@ -2475,11 +2476,18 @@ void CtiCapController::adjustAlternateBusModeValues(long pointID, double value, 
 
                 if (currentBus->isControlPoint(pointID) && primarySub->getStrategy()->getIntegrateFlag())
                 {
-                    primarySub->updateIntegrationVPoint(CtiTime());
-                    primarySub->updateIntegrationWPoint(CtiTime());
+                    if (currentBus->getCurrentVarLoadPointId() == pointID)
+                    {    
+                        primarySub->updateIntegrationVPoint(CtiTime());
+                    }
+                    if (currentBus->getCurrentWattLoadPointId() == pointID)
+                    {    
+                        primarySub->updateIntegrationWPoint(CtiTime());
+                    }
                 }
+                primarySub->figureEstimatedVarLoadPointValue();
             }
-
+            
             currentBus->setAllAltSubValues(currentBus->getCurrentVoltLoadPointValue(),
                                              currentBus->getRawCurrentVarLoadPointValue(),
                                              currentBus->getRawCurrentWattLoadPointValue());
@@ -2830,7 +2838,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
 
     CtiCCAreaPtr currentArea = NULL;
-    std::multimap< long, CtiCCAreaPtr >::iterator areaIter, end;
+    std::map< long, CtiCCAreaPtr >::iterator areaIter, end;
     store->findAreaByPointID(pointID, areaIter, end);
 
     while (areaIter != end)
@@ -2879,7 +2887,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
 
 
     CtiCCSpecialPtr currentSpArea = NULL;
-    std::multimap< long, CtiCCSpecialPtr >::iterator saIter, end;
+    std::map< long, CtiCCSpecialPtr >::iterator saIter, end;
     store->findSpecialAreaByPointID(pointID, saIter, end);
 
     while (saIter != end)
@@ -2929,7 +2937,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
-    std::multimap< long, CtiCCSubstationPtr >::iterator stationIter, end;
+    std::map< long, CtiCCSubstationPtr >::iterator stationIter, end;
     store->findSubstationByPointID(pointID, stationIter, end);
 
     while (stationIter != end)
@@ -2995,7 +3003,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
 
-    std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter, end;
+    std::map< long, CtiCCSubstationBusPtr >::iterator subIter, end;
     store->findSubBusByPointID(pointID, subIter, end);
 
     while (subIter != end)
@@ -3125,7 +3133,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
-                        currentSubstationBus->figureAndSetTargetVarValue();
                         adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                     }
                 }
@@ -3219,8 +3226,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 }
 
                 // check for alt sub bus id, and update all sub's alt values
-                multimap<long,long>::iterator it;
-                pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
+                map<long,long>::iterator it;
+                pair<map<long,long>::iterator,map<long,long>::iterator> ret;
 
                 ret = store->getSubsWithAltSubID(currentSubstationBus->getPaoId());
                 for (it = ret.first; it != ret.second; it++)
@@ -3248,6 +3255,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                              altSub->setAltSubControlValue(currentSubstationBus->getCurrentVoltLoadPointValue());
                              altSub->setBusUpdatedFlag(TRUE);
                         }
+                        currentSubstationBus->figureEstimatedVarLoadPointValue();
+                        currentSubstationBus->figureAndSetTargetVarValue();
                     }
                 }
 
@@ -3326,7 +3335,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
-    std::multimap< long, CtiCCFeederPtr >::iterator feedIter, end;
+    std::map< long, CtiCCFeederPtr >::iterator feedIter, end;
     store->findFeederByPointID(pointID, feedIter, end);
 
     while (feedIter != end)
@@ -3563,7 +3572,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
-    std::multimap< long, CtiCCCapBankPtr >::iterator capIter, end;
+    std::map< long, CtiCCCapBankPtr >::iterator capIter, end;
     store->findCapBankByPointID(pointID, capIter, end);
 
     while (capIter != end)

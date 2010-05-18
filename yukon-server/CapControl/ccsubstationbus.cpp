@@ -2603,6 +2603,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                         setIVControl(getIVControlTot() / getIVCount());
                     if (getIWCount() > 0)
                         setIWControl(getIWControlTot() / getIWCount());
+                    if (!getDualBusEnable() || getPrimaryBusFlag())
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
@@ -9245,7 +9246,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
             while (iter != controlid_action_map.end())
             {
                 {
-                    multimap< long, CtiCCCapBankPtr >::iterator bankIter, end;
+                    map< long, CtiCCCapBankPtr >::iterator bankIter, end;
                     if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
                     {
                         CtiCCCapBankPtr bank = bankIter->second;
@@ -9586,8 +9587,8 @@ int CtiCCSubstationBus::getAlterateBusIdForPrimary() const
     int paoId = getPaoId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    multimap<long,long>::iterator it;
-    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
+    map<long,long>::iterator it;
+    pair<map<long,long>::iterator,map<long,long>::iterator> ret;
 
     ret = store->getSubsWithAltSubID(paoId);
     for (it = ret.first; it != ret.second; it++)

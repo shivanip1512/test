@@ -90,6 +90,9 @@ class CtiCapController : public MessageListener
 
         void processNewMessage(CtiMessage* message);
 
+        void adjustAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentBus);
+        void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
+
     private:
 
 
@@ -104,8 +107,6 @@ class CtiCapController : public MessageListener
 
         void registerForPoints(const CtiCCSubstationBus_vec& subBuses);
         void updateAllPointQualities(long quality);
-        void adjustAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentBus);
-        void handleAlternateBusModeValues(long pointID, double value, CtiCCSubstationBusPtr currentSubstationBus);
 
         void parseMessage(RWCollectable* message);
         void pointDataMsg(CtiPointDataMsg* message);
