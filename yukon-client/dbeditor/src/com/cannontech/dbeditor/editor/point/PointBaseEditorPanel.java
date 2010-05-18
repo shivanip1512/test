@@ -4,7 +4,10 @@ package com.cannontech.dbeditor.editor.point;
  * This type was created in VisualAge.
  */
 
+import org.apache.log4j.Logger;
+
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -495,7 +498,9 @@ public Object getValue(Object val)
 	try {
         this.currentSpecificPanel.getValue(val);
     } catch (EditorInputValidationException e) {
-        com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+        Logger log = YukonLogManager.getLogger(EditorInputValidationException.class);
+
+        log.error( e.getMessage(), e );
     }
 
 	return point;

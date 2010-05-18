@@ -1,11 +1,15 @@
 package com.cannontech.dbeditor.editor.route;
 
+import static javax.swing.JOptionPane.showMessageDialog;
+
 import java.util.Vector;
 
 import javax.swing.JLabel;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.CCURoute;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.common.editor.EditorInputValidationException;
@@ -478,14 +482,17 @@ public Object getValue(Object val) throws EditorInputValidationException {
 	    
 	    for( int i = 0; i < getRepeatersAddRemovePanel().rightListGetModel().getSize(); i++ )
         {
-           if(((com.cannontech.database.data.lite.LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i)).getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
-               if(route.getDefaultRoute().equalsIgnoreCase(com.cannontech.common.util.CtiUtilities.getTrueCharacter().toString())) {
-                   throw new EditorInputValidationException("Default Route is not allowed on a route with a Repeater 850");
+           LiteYukonPAObject liteYukonPAObject = (LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i);
+        if(liteYukonPAObject.getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
+               if(route.getDefaultRoute().equalsIgnoreCase(CtiUtilities.getTrueCharacter().toString())) {
+                   throw new EditorInputValidationException("Default Route is not allowed on a route " +
+                   		                                    "with a Repeater 850");
                }else {
-                   javax.swing.JOptionPane.showMessageDialog( this, 
-                                                              "This route contains a Repeater 850, it is recommended that this repeater has no more than 10 devices connected.", 
-                                                              "Information", 
-                                                              javax.swing.JOptionPane.INFORMATION_MESSAGE );
+                   showMessageDialog( this, 
+                                      "This route contains a Repeater 850, it is recommended that " +
+                                       "this repeater has no more than 10 devices connected.", 
+                                      "Information", 
+                                      javax.swing.JOptionPane.INFORMATION_MESSAGE );
                }
            }
         }

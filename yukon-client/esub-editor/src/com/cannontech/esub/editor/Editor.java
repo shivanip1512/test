@@ -323,8 +323,7 @@ public class Editor extends JPanel {
 					else if (e.getID() == PropertyPanelEvent.OK_SELECTION) {
 						try {
                             editor.getValue(elem);
-                        } catch (EditorInputValidationException e1) {
-                        }
+                        } catch (EditorInputValidationException e1) { /* ignore */ }
 					}
 					propertyDialog.setVisible(false);
 				}

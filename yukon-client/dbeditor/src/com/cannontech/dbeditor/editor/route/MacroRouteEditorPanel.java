@@ -22,6 +22,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.route.RepeaterRoute;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 /**
  * This type was created in VisualAge.
@@ -463,12 +464,14 @@ public boolean isInputValid() {
     boolean firstNon850Found = false;
     boolean listModified = false;
     
-    Object itemSelected = new Object();
+    LiteYukonPAObject itemSelected;
     javax.swing.ListModel rightListModel = getRoutesAddRemovePanel().rightListGetModel();
-    java.util.Vector newList = new java.util.Vector( rightListModel.getSize() );
+    java.util.Vector<LiteYukonPAObject> newList = new java.util.Vector<LiteYukonPAObject>( rightListModel.getSize() );
     
-    for( int i = 0; i < rightListModel.getSize(); i++ )
-        newList.addElement( rightListModel.getElementAt(i) );
+    for( int i = 0; i < rightListModel.getSize(); i++ ) {
+        if( rightListModel.getElementAt(i) instanceof LiteYukonPAObject )
+        newList.addElement( (LiteYukonPAObject)rightListModel.getElementAt(i) );
+    }
     
     for( int i = rightListModel.getSize()-1; i >= 0; i-- ) {
         LiteYukonPAObject device = paoDao.getLiteYukonPAO((((com.cannontech.database.data.lite.LiteYukonPAObject)rightListModel.getElementAt(i)).getPaoIdentifier().getPaoId()));
@@ -479,16 +482,17 @@ public boolean isInputValid() {
         if(yukonPaobject instanceof CCURoute) {
             java.util.Vector<RepeaterRoute> repeaterRoutes =  ((CCURoute)yukonPaobject).getRepeaterVector();
 
-            List<Integer> paoIds = new ArrayList<Integer>();
+            List<Integer> paoIds = Lists.newArrayList();
             
-            for( int z = 0; z < repeaterRoutes.size(); z++ ) {
-                paoIds.add(repeaterRoutes.elementAt(z).getDeviceID());
+            
+            for( RepeaterRoute route : repeaterRoutes ) {
+                paoIds.add(route.getDeviceID());
             }
             
             List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
             
-            for (int j = 0; j < paoIdentifiers.size(); j++) {
-                if(paoIdentifiers.get(j).getPaoType() == PaoType.REPEATER_850) {
+            for (PaoIdentifier identifier : paoIdentifiers) {
+                if(identifier.getPaoType() == PaoType.REPEATER_850) {
                     // We have a repeater 850, this one needs to be at the end of the list!
                     routeHas850 = true;
                     break;

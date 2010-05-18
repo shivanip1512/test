@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.database.data.device.Repeater850;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dbeditor.wizard.device.DeviceTNPPTerminalPanel;
 import com.cannontech.roles.application.DBEditorRole;
@@ -263,9 +264,9 @@ public String[] getTabNames() {
 public Object getValue(Object o) {
     try {
         o = super.getValue(o);
-    } catch (EditorInputValidationException e) {
-    }
-    if(o instanceof com.cannontech.database.data.device.Repeater850)
+    } catch (EditorInputValidationException e) {  /* Ignore */  }
+    
+    if(o instanceof Repeater850)
     {
             javax.swing.JOptionPane.showMessageDialog( this, 
                                                        "It is recommended that this repeater has no more than 10 devices connected.", 

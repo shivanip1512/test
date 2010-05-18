@@ -50,6 +50,7 @@ import com.cannontech.dbeditor.editor.regenerate.RoleConflictDialog;
 import com.cannontech.dbeditor.editor.regenerate.RouteRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 
 public class DeviceRoutePanel
 	extends com.cannontech.common.gui.util.DataInputPanel {
@@ -291,19 +292,19 @@ public class DeviceRoutePanel
                 ((CCURoute) route).setRepeaterVector(((CCURoute) chosenRoute).getRepeaterVector());
                 
                 // Check to be sure this repeater is ok, it must not have a RPT 850
-                java.util.Vector<RepeaterRoute> repeaterRoutes =  ((CCURoute)chosenRoute).getRepeaterVector();
+                List<RepeaterRoute> repeaterRoutes =  ((CCURoute)chosenRoute).getRepeaterVector();
 
-                List<Integer> paoIds = new ArrayList<Integer>();
+                List<Integer> paoIds = Lists.newArrayList();
                 
-                for( int z = 0; z < repeaterRoutes.size(); z++ ) 
+                for( RepeaterRoute routeElement : repeaterRoutes ) 
                 {
-                    paoIds.add(repeaterRoutes.elementAt(z).getDeviceID());
+                    paoIds.add(routeElement.getDeviceID());
                 }
                 
                 List<PaoIdentifier> paoIdentifiers = paoDao.getPaoIdentifiersForPaoIds(paoIds);
                 
-                for (int j = 0; j < paoIdentifiers.size(); j++) {
-                    if(paoIdentifiers.get(j).getPaoType() == PaoType.REPEATER_850) {
+                for (PaoIdentifier paoIdentifier : paoIdentifiers) {
+                    if(paoIdentifier.getPaoType() == PaoType.REPEATER_850) {
                         // The old route has a RPT850, this is not allowed
                         throw new EditorInputValidationException("New routes can not be based on routes with Repeater 850's");
                     }
@@ -316,7 +317,7 @@ public class DeviceRoutePanel
                                                      new Integer(((CCURoute) chosenRoute).getRepeaterVector().size() + 1));
 
                 if (((CCURoute) route).getRepeaterVector().size() >= 7)
-                    ((CCURoute) route).setRepeaterVector(new Vector());
+                    ((CCURoute) route).setRepeaterVector(new Vector<RepeaterRoute>());
 
                 ((CCURoute) route).getRepeaterVector().addElement(rr);
 
