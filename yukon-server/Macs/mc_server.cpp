@@ -138,7 +138,7 @@ void CtiMCServer::run()
                     continue;
                 }
 
-                while( (msg =VanGoghConnection.ReadConnQue(0)) != NULL )
+                while( msg = VanGoghConnection.ReadConnQue(0) )
                 {
                     if( msg->isA() == MSG_COMMAND && ((CtiCommandMsg*)msg)->getOperation() == CtiCommandMsg::AreYouThere )
                     {
