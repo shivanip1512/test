@@ -68,11 +68,13 @@ public:
    bool isTransactionComplete();
 
    void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);
+   int sendCommResult(INMESS *InMessage);
 
    enum CommandState
    {
        Normal=0,
-       Complete
+       Fail,
+       Success
    };
 
    enum protocol

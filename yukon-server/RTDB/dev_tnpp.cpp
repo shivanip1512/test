@@ -103,7 +103,13 @@ const int CtiDeviceTnppPagingTerminal::_a_capcode_min                    = 0;
 ******************************************************************************/
 
 
-CtiDeviceTnppPagingTerminal::CtiDeviceTnppPagingTerminal()
+CtiDeviceTnppPagingTerminal::CtiDeviceTnppPagingTerminal() :
+_retryCount(0),
+_serialNumber(0),
+_transmissionCount(0),
+_previousState(StateHandshakeInitialize),
+_currentState(StateHandshakeInitialize),
+_command(Normal)
 {
     resetStates();
 }
@@ -167,14 +173,14 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 dout << CtiTime() << " **** Checkpoint - invalid data recived during hanshake when using " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             // perhaps we could clear out the buffer here instead of erroring, and then try again...
-                            _command = Complete;
+                            _command = Fail;
                             break;
                         }
                     }
                     else
                     {
                         status = ErrorPageNoResponse;
-                        _command = Complete;
+                        _command = Fail;
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - no response received " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         break;
@@ -186,7 +192,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                     {
                         //this is a loop? Bad.
                         status = FinalError;
-                        _command = Complete;
+                        _command = Fail;
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - invalid state reached in " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -230,7 +236,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 }
                                 else
                                 {
-                                    _command = Complete;
+                                    _command = Success;
                                 }
                                 status = Normal;
                             }
@@ -247,7 +253,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             {
                                 _retryCount = 0;
                                 status = ErrorPageRS;
-                                _command = Complete; //Transaction Complete
+                                _command = Fail; //Transaction Complete
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " **** Checkpoint - NAK received 3 times, giving up " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -265,7 +271,7 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             _retryCount = 0;
-                            _command = Complete;
+                            _command = Fail;
                             status = UnknownError;
                         }
                         else if(xfer.getInBuffer()[0] == *_RS)//buffer full
@@ -275,13 +281,13 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                                 dout << CtiTime() << " **** Checkpoint - TNPP device buffer is full: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                             _retryCount = 0;
-                            _command = Complete;
+                            _command = Fail;
                             status = UnknownError;
                         }
                         else
                         {
                             status = UnknownError;
-                            _command = Complete; //Transaction Complete
+                            _command = Fail; //Transaction Complete
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal unknown error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
@@ -294,13 +300,13 @@ INT CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer,INT commReturnValue)
                             dout << CtiTime() << " **** Checkpoint - No response from TNPP device: " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                         status = ErrorPageNoResponse;
-                        _command = Complete; //Transaction Complete
+                        _command = Fail; //Transaction Complete
                     }
                     break;
                 }
             case StateEnd:
                 {
-                    _command = Complete;
+                    _command = Fail;
                     break;
                 }
         }
@@ -413,7 +419,7 @@ INT CtiDeviceTnppPagingTerminal::generate(CtiXfer  &xfer)
                 }
             case StateEnd:
                 {//Failsafe
-                    _command = Complete;
+                    _command = Fail;
                     break;
                 }
         }
@@ -434,15 +440,12 @@ int CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
         _outMessage = *OutMessage;
         resetStates();
         _command = Normal;
+        _transmissionCount = 1;
         if(_outMessage.Sequence == TnppPublicProtocolGolay)//golay message
         {
             if(_outMessage.Buffer.SASt._function == 8 || _outMessage.Buffer.SASt._function == 14 || _outMessage.Buffer.SASt._function == 9)
             {
                 _transmissionCount = 2;
-            }
-            else
-            {
-                _transmissionCount = 1;
             }
         }
 
@@ -462,7 +465,7 @@ int CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
 
 bool CtiDeviceTnppPagingTerminal::isTransactionComplete()
 {
-    return _command == Complete;
+    return _command == Fail || _command == Success;
 }
 
 INT CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
@@ -794,6 +797,14 @@ string CtiDeviceTnppPagingTerminal::getFunctionCode()
     }
 
 }
+
+int CtiDeviceTnppPagingTerminal::sendCommResult(INMESS *InMessage)
+{
+    // We are not interested in changing this return value here!
+    // Must override base as we have no protocol.
+    return NoError;
+}
+
 
 string CtiDeviceTnppPagingTerminal::getExtendedFunctionCode()
 {
