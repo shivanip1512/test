@@ -30,17 +30,6 @@
         
 	</target>
     
-    <target name="build.applets">
-        <!-- This is meant to be run by hand, the output should be checked into CVS -->
-        <javac srcdir="resources"
-               destdir="${yukon-web}/WebContent/JavaScript"
-               target="${yukon.javac.target}" 
-               source="${yukon.javac.source}"
-               bootclasspath="${yukon.javac.bootclasspath}"
-               debug="${yukon.javac.debug}">
-        </javac>
-    </target>
-	
 	<target name="build" depends="build_src, web_content"/>
 
     <!-- 

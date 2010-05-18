@@ -3,7 +3,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<script type="text/javascript" src="/JavaScript/simpleCookies.js"></script>
 <script type="text/javascript" src="/JavaScript/javaWebStartLauncher.js"></script>
 
 <c:if test="${jnlpListSize > 0}">
@@ -17,26 +16,19 @@
 </c:if>
 
 <tags:simplePopup title="Yukon Client Launcher" id="javaWebStartPopup" onClose="jwsClosePopup()">
-<div id="javaWebStartWaiting" style="text-align:center;margin:15px">
-<img src="/WebConfig/yukon/Icons/indicator_arrows.gif" alt="spinning arrows">
-Searching for Java on your system...
+<div style="text-align:center;padding: 15px;">
+<button onclick="jwsRelaunchCurrent()">Launch Application</button>
 </div>
-<div id="javaWebStartNoJava" style="display:none;text-align:center;margin:15px">
-It does not appear that Java is installed on your system.<br>
-Please use the following link to install Java. <br>
-If you think Java is already installed, you may also attempt to start the 
-application.
-</div>
-<div id="javaWebStartLinks" style="text-align:center;padding: 15px;">
-<c:choose>
+<div style="text-align:center;margin:10px">
+Java must be installed on this computer for the application to launch.<br>
+Try to <c:choose>
     <c:when test='${jreInstaller != null}'>
-        <a href="<cti:url value="/spring/static/jre/${jreInstaller}"/>" onclick="jwsClosePopup()">Install Java</a>    
+        <a href="<cti:url value="/spring/static/jre/${jreInstaller}"/>" onclick="jwsClosePopup()">install Java</a> 
     </c:when>
     <c:otherwise>
-        <a href="http://www.java.com/getjava/" onclick="jwsClosePopup()">Install Java</a>
+        <a href="http://www.java.com/getjava/" onclick="jwsClosePopup()">install Java</a>
     </c:otherwise>
-</c:choose>  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="javascript:jwsRelaunchCurrent()">Relaunch Application</a>
+</c:choose> or contact your administrator if the application will not launch.<br>
+
 </div>
 </tags:simplePopup>
