@@ -16,11 +16,13 @@ public final class DeviceClasses
    public final static int SYSTEM            = 1009;
    public final static int GRID              = 1010;
    public final static int INVALID           = 1011;
+   public final static int RFMESH           = 1012;
    
    public static final String STRING_CLASS_RTU = "RTU";
    public static final String STRING_CLASS_TRANSMITTER = "TRANSMITTER";
    public static final String STRING_CLASS_METER = "METER";
    public static final String STRING_CLASS_CARRIER = "CARRIER";
+   public static final String STRING_CLASS_RFMESH = "RFMESH";
    public static final String STRING_CLASS_IED = "IED";
    public static final String STRING_CLASS_GROUP = "GROUP";
    public static final String STRING_CLASS_SYSTEM = "SYSTEM";
@@ -36,7 +38,7 @@ public final class DeviceClasses
 
    public static final Integer[] CORE_DEVICE_CLASSES = 
    {
-		CARRIER, IED, METER,
+		CARRIER, IED, METER, RFMESH,
 		RTU, TRANSMITTER, VIRTUAL, GRID
    };
  
@@ -61,6 +63,9 @@ public final static int getClass(String classString) {
 	if( compareString.equals(STRING_CLASS_CARRIER) )
 		return CARRIER;
 	else
+    if( compareString.equals(STRING_CLASS_RFMESH) )
+        return RFMESH;
+    else
 	if( compareString.equals(STRING_CLASS_IED) )
 		return IED;
 	else
@@ -105,6 +110,9 @@ public final static String getClass(int classInt)
 
 		case CARRIER:
 			return STRING_CLASS_CARRIER;
+			
+		case RFMESH:
+		    return STRING_CLASS_RFMESH;
 
 		case IED:
 			return STRING_CLASS_IED;
@@ -175,6 +183,7 @@ public final static boolean isMeterClass(int deviceClass)
 	{
 		case LOADMANAGEMENT:
 		case CARRIER:
+		case RFMESH:
 		case IED:
 		case METER:
 		case RTU:

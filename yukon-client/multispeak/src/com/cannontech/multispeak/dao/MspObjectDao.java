@@ -191,4 +191,12 @@ public interface MspObjectDao {
      */
     public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByCustId(String custId, MultispeakVendor mspVendor);
 
+    /**
+     * Initiates meter reads for the meter numbers specified and vendor.
+     * @param mspVendor The MultiSpeak Vendor for these meters.
+     * @param meterNos The meter numbers of the meters to read.
+     * @return List<ErrorObject> The errors that may occur. 
+     */
+    public List<ErrorObject> initiateMeterReadByMeterNo(MultispeakVendor mspVendor, String[] meterNos);
+
 }

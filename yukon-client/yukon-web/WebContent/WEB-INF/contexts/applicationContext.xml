@@ -317,6 +317,7 @@
 	   	</property>
         <property name="meterDao" ref="meterDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="paoDefinitionDao" ref="paoDefinitionDao"/>
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
     </bean>
     
@@ -386,6 +387,21 @@
             <value>VOLTAGE</value>
           </list>
         </property>
+    </bean>
+    
+    <bean id="ekeMeterInfoWidget" class="com.cannontech.web.widget.EkaMeterInfoWidget">
+    	<property name="title" value="Eka Meter Info"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="roleAndPropertiesChecker">
+	   		<bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
+                <constructor-arg value="METERING"/>
+            </bean>
+	   	</property>
     </bean>
     
     <bean id="miniTdcWidget"

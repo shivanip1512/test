@@ -824,6 +824,8 @@ public final static boolean isMeter(int deviceType)
 		case FOCUS:
 		case ALPHA_A3:
 		case DAVISWEATHER:
+		case CRF_AL:
+        case CRF_AX:
 			return true;
 	
 		default:

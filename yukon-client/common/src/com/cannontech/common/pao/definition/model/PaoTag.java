@@ -18,6 +18,8 @@ public enum PaoTag {
 	METER_DETAIL_DISPLAYABLE("Meter Detail Displayable"),
 	PHASE_DETECT("Phase Detect"),
 	STARS_ACCOUNT_ATTACHABLE_METER("Stars Account Attachable Meter"),
+	LOCATE_ROUTE("Locate Route"),
+	PORTER_COMMAND_REQUESTS("Porter Command Requests"),
 	;
 
 	private String description;

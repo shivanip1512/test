@@ -11,6 +11,9 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.util.ServletUtil;
@@ -25,6 +28,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
     private MeterDao meterDao = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private CommandRequestDeviceExecutor commandRequestExecutor;
+    private PaoDefinitionDao paoDefinitionDao;
 
     @Required
     public void setMeterDao(MeterDao meterDao) {
@@ -34,6 +38,11 @@ public class MeterInformationWidget extends WidgetControllerBase {
     @Required
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
         this.paoGroupsWrapper = paoGroupsWrapper;
+    }
+    
+    @Required
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
     }
     
     @Required
@@ -73,6 +82,20 @@ public class MeterInformationWidget extends WidgetControllerBase {
         
         Meter meter = meterDao.getForId(deviceId);
         String type = paoGroupsWrapper.getPAOTypeString(meter.getType());
+        
+        /* Show CARRIER settings such as route and physcal address */
+        if(meter.getDeviceType().getPaoClass() == PaoClass.CARRIER) {
+            mav.addObject("showCarrierSettings", true);
+        }
+        
+        /* Show RFMESH settings such as serial number, model, and manufacturer*/
+        if(meter.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
+            mav.addObject("showRFMeshSettings", true);
+        }
+        
+        if(paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
+            mav.addObject("supportsPing", true);
+        }
         
         mav.addObject("meter", meter);
         mav.addObject("deviceType", type);

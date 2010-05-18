@@ -90,6 +90,12 @@
             <tag name="STARS_ACCOUNT_ATTACHABLE_METER">
                 <value>true</value>
             </tag>
+            <tag name="LOCATE_ROUTE">
+                <value>true</value>
+            </tag>
+            <tag name="PORTER_COMMAND_REQUESTS">
+                <value>true</value>
+            </tag>
         </tags>
 	</pao>
     
@@ -4189,6 +4195,90 @@
 	<pao id="SIXNET" inherits="ELECTRONIC_METER_BASE">
         <displayName>SIXNET</displayName>
 	</pao>
+	
+	<pao id="CRF_BASE" abstract="true">
+        <displayGroup>RFMESH</displayGroup>
+        <points>
+            <point type="Analog" offset="1">
+                <init>true</init>
+                <name>Total kWh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kWH"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Voltage</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="20">
+                <init>true</init>
+                <name>Blink Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="0"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="USAGE">
+                <basicLookup point="Total kWh" />
+            </attribute>
+            <attribute name="VOLTAGE">
+                <basicLookup point="Voltage" />
+            </attribute>
+            <attribute name="BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="METER_DETAIL_DISPLAYABLE">
+                <value>true</value>
+            </tag>
+        </tags>
+    </pao>
+    
+    <pao id="CRF_AL" inherits="CRF_BASE">
+        <displayName>CRF-AL</displayName>
+    </pao>
+    
+    <pao id="CRF_AX" inherits="CRF_BASE">
+        <displayName>CRF-AX</displayName>
+        <points>
+            <point type="Analog" offset="11">
+                <init>true</init>
+                <name>Peak kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="15">
+                <name>Min Volts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="14">
+                <init>true</init>
+                <name>Max Volts</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3"/>
+            </point>
+        </points>
+        <attributes>
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW" />
+            </attribute>
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Max Volts" />
+            </attribute>
+        </attributes>
+    </pao>
 	
 	<pao id="TRANSDATA_MARKV">
         <displayName>TRANSDATA MARK-V</displayName>

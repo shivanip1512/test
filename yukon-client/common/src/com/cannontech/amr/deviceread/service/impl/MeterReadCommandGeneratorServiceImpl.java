@@ -69,7 +69,7 @@ public class MeterReadCommandGeneratorServiceImpl implements MeterReadCommandGen
 	}
 	
 	public boolean isReadable(YukonDevice device, Set<? extends Attribute> attributes) {
-	    
+	    if(attributes.isEmpty()) return false;
 	    Multimap<PaoIdentifier, LitePoint> pointsToRead = getPointsToRead(device.getPaoIdentifier(), attributes);
 	    
 	    try {

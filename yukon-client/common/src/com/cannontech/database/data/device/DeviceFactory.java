@@ -1,6 +1,8 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.capcontrol.CapBankController701x;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.MacroGroup;
@@ -119,8 +121,13 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice = new Sixnet();
 			break;
 		case PAOGroups.TRANSDATA_MARKV:
-			returnDevice = new TransdataMarkV();
-			break;
+            returnDevice = new TransdataMarkV();
+		    break;
+		case PAOGroups.CRF_AX:
+		case PAOGroups.CRF_AL:
+		    returnDevice = new CRFBase();
+		    returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RFMESH);
+		    break;
 
 				
 		//Carrier type devices

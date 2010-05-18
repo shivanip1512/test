@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.device;
 
+import java.util.Vector;
+
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
@@ -33,7 +35,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, 
 			PAOGroups.RTC, PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
-            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.INTEGRATION_TRANSMITTER, PAOGroups.LCR3102
+            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.FAULT_CI, PAOGroups.NEUTRAL_MONITOR, PAOGroups.INTEGRATION_TRANSMITTER, PAOGroups.LCR3102,
+            PAOGroups.CRF_AL, PAOGroups.CRF_AX
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PAOGroups.ALPHA_A1, PAOGroups.ALPHA_PPLUS, PAOGroups.FULCRUM, PAOGroups.VECTRON, PAOGroups.QUANTUM, 
@@ -44,7 +47,8 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.ION_7700, PAOGroups.ION_8300, PAOGroups.MCT310IDL, 
 			PAOGroups.TRANSDATA_MARKV, PAOGroups.KV, PAOGroups.KVII, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
             PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL, PAOGroups.MCT430A3, 
-            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102
+            PAOGroups.SENTINEL, PAOGroups.FOCUS, PAOGroups.ALPHA_A3, PAOGroups.LCR3102,
+            PAOGroups.CRF_AL, PAOGroups.CRF_AX
 		},
       	{   //2 - CapBankController
          PAOGroups.CAPBANKCONTROLLER, PAOGroups.CBC_FP_2800, PAOGroups.DNP_CBC_6510, PAOGroups.CBC_EXPRESSCOM,
@@ -130,7 +134,6 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
         }
 
 };
-	private javax.swing.JTabbedPane ivjDeviceEditorTabbedPane = null;
 
 /**
  * Insert the method's description here.
@@ -231,31 +234,6 @@ public Object[] createNewPanel(int panelIndex)
 	return objs;
 }
 
-
-/**
- * Return the DeviceEditorTabbedPane property value.
- * @return javax.swing.JTabbedPane
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JTabbedPane getDeviceEditorTabbedPane() {
-	if (ivjDeviceEditorTabbedPane == null) {
-		try {
-			ivjDeviceEditorTabbedPane = new javax.swing.JTabbedPane();
-			ivjDeviceEditorTabbedPane.setName("DeviceEditorTabbedPane");
-			ivjDeviceEditorTabbedPane.setFont(new java.awt.Font("dialog", 0, 14));
-			ivjDeviceEditorTabbedPane.setBounds(0, 0, 400, 350);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjDeviceEditorTabbedPane;
-}
-
-
 /**
  * This method was created in VisualAge.
  * @return DataInputPanel[]
@@ -282,39 +260,6 @@ public String[] getTabNames() {
 	return this.inputPanelTabNames;
 }
 
-
-/**
- * Called whenever the part throws an exception.
- * @param exception java.lang.Throwable
- */
-private void handleException(java.lang.Throwable exception) {
-
-	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
-}
-
-
-/**
- * Initialize the class.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
-		setName("DeviceEditorPanel");
-		setLayout(null);
-		setSize(400, 350);
-		add(getDeviceEditorTabbedPane(), getDeviceEditorTabbedPane().getName());
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
-	// user code begin {2}
-	// user code end
-}
-
-
 public Object getValue(Object o) {
     try {
         o = super.getValue(o);
@@ -339,8 +284,8 @@ public Object getValue(Object o) {
 public void setValue(Object val) {
 
 	//Vector to hold the panels temporarily
-	java.util.Vector panels = new java.util.Vector();
-	java.util.Vector tabs = new java.util.Vector();
+	Vector<DataInputPanel> panels = new Vector<DataInputPanel>();
+	Vector<Object> tabs = new Vector<Object>();
 	
 	DataInputPanel tempPanel;
 

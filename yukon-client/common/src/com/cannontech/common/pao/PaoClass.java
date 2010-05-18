@@ -24,6 +24,7 @@ public enum PaoClass {
     CAPCONTROL(PAOGroups.CLASS_CAPCONTROL, PAOGroups.STRING_CAT_CAPCONTROL),
     // Schedule doesn't seem have a constant already defined anywhere.
     SCHEDULE(0, "SCHEDULE"),
+    RFMESH(DeviceClasses.RFMESH, "RFMESH");
     ;
 
     // legacy class id

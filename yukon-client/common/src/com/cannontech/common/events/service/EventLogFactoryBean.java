@@ -155,7 +155,12 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         }
         
         // Install ourself as the proxy interceptor.
-        this.serviceProxy = new ProxyFactory(serviceInterface, this).getProxy(classLoader);
+        try {
+            this.serviceProxy = new ProxyFactory(serviceInterface, this).getProxy(classLoader);
+        } catch (Throwable e) {
+            log.warn("caught exception creating proxy", e);
+            throw new RuntimeException(e);
+        }
     }
     
     /**

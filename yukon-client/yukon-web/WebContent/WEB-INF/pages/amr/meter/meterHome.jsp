@@ -36,7 +36,11 @@
 					<ct:widget bean="meterInformationWidget" />
 	
 					<ct:widget bean="meterReadingsWidget" />
-			
+                    
+                    <c:if test="${isRFMesh}">
+                        <ct:widget bean="ekeMeterInfoWidget" />
+                    </c:if>
+                    
 					<c:if test="${cisInfoWidgetName != null}">
 						<ct:widget bean="${cisInfoWidgetName}" />
 					</c:if>
@@ -112,23 +116,37 @@
 	                        <br/>
 	                        
 	                        <!-- Actions: >Manual Commander -->
-							<cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
-								<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
-									<cti:param name="deviceId" value="${deviceId}" />
-								</cti:url>
-								<a href="${commanderUrl}">Manual Commander</a>
-								<br>
-							</cti:checkProperty>
+                            <c:choose>
+                                <c:when test="porterCommandRequestsSupported">
+        							<cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
+        								<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
+        									<cti:param name="deviceId" value="${deviceId}" />
+        								</cti:url>
+        								<a href="${commanderUrl}">Manual Commander</a>
+        							</cti:checkProperty>
+                                </c:when>
+                                <c:otherwise>
+                                    Manual Commander (not supported)
+                                </c:otherwise>
+                            </c:choose>
+                            <br>
 	                        
 	                        <!-- Actions: Locate Route -->
-	                        <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
-	                        <cti:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
-	                            <cti:param name="collectionType" value="idList" />
-	                            <cti:param name="idList.ids" value="${deviceId}" />
-	                        </cti:url>
-	                        <a href="${routeLocateUrl}">Locate Route</a>
+                            <c:choose>
+                                <c:when test="porterCommandRequestsSupported">
+        	                        <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
+        	                        <cti:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
+        	                            <cti:param name="collectionType" value="idList" />
+        	                            <cti:param name="idList.ids" value="${deviceId}" />
+        	                        </cti:url>
+        	                        <a href="${routeLocateUrl}">Locate Route</a>
+        	                        </cti:checkProperty>
+                                </c:when>
+                                <c:otherwise>
+                                    Locate Route (not supported)
+                                </c:otherwise>
+                            </c:choose>
 	                        <br>
-	                        </cti:checkProperty>
 	
 	
 	                    <!-- Actions: Other Collection actions -->

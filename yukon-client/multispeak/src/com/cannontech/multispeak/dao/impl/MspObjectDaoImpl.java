@@ -35,6 +35,7 @@ import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
+import com.google.common.collect.Lists;
 
 public class MspObjectDaoImpl implements MspObjectDao {
 
@@ -432,4 +433,29 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         return meters;
     }
+    
+    @Override
+    public List<ErrorObject> initiateMeterReadByMeterNo(MultispeakVendor mspVendor, String[] meterNos) {
+        ErrorObject[] errorObjects = null;
+        String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.MR_Server_STR);
+        try {
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
+            if (port != null) {
+                String responseURL = null;    //Won't need this, may not be supported by 3.0 build j
+                String transactionID = null;      //Do we need this, may not be supported by 3.0 build j
+                errorObjects = port.initiateMeterReadByMeterNumber(meterNos, responseURL, transactionID);
+                for(ErrorObject error : errorObjects) {
+                    /* Perhaps there is more about these errors that should be logged */
+                    CTILogger.error("Error occured initiating meter read by meter number: " + error.getErrorString());
+                }
+            } else {
+                CTILogger.error("Port not found for MR_Server (" + mspVendor.getCompanyName() + ") for MeterNos: " + Arrays.asList(meterNos));
+            }
+        } catch (RemoteException e) {
+            CTILogger.error("TargetService: " + endpointURL + " - getMeterByCustID (" + mspVendor.getCompanyName() + ") for MeterNos: " + Arrays.asList(meterNos));
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+        }
+        return Lists.newArrayList(errorObjects);
+    }
+
 }

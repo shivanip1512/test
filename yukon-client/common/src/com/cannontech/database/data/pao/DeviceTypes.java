@@ -145,8 +145,11 @@ public interface DeviceTypes extends TypeBase
     public final static int REPEATER_850     = DEVICE_OFFSET + 111;
 
     
+    public final static int CRF_AX    = DEVICE_OFFSET + 112;
+    public final static int CRF_AL    = DEVICE_OFFSET + 113;
+    
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 111;
+	public final static int DEVICE_TYPES_COUNT = 113;
 	
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -266,5 +269,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_CBC_DNP  = {"CBC DNP"};
     public static final String[] STRING_NEUTRAL_MONITOR = { "Capacitor Bank Neutral Monitor" };
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
+    public static final String[] STRING_CRF_AX = {"CRF-AX"};
+    public static final String[] STRING_CRF_AL = {"CRF-AL"};
     
 }

@@ -21,6 +21,9 @@ public class Meter implements YukonDevice {
     private String address;
 
     private String meterNumber;
+    private String manufacturer;
+    private String model;
+    private String serialNumber;
 
     public Meter() {
     }
@@ -126,5 +129,29 @@ public class Meter implements YukonDevice {
 
     public void setType(int type) {
         this.type = PaoType.getForId(type);
+    }
+
+    public String getManufacturer() {
+        return manufacturer;
+    }
+    
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
     }
 }

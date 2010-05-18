@@ -108,10 +108,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     public Meter getForId(Integer id) {
         try {
-            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByIdSql,
-                                                            meterRowMapper,
-                                                            id);
-            return meter;
+            return simpleJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unknown meter id " + id);
         }

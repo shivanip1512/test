@@ -2,7 +2,9 @@ package com.cannontech.common.pao;
 
 
 import org.apache.commons.lang.Validate;
+import org.apache.log4j.Logger;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -155,27 +157,35 @@ public enum PaoType implements DatabaseRepresentationSource {
     CAP_CONTROL_AREA(CapControlTypes.CAP_CONTROL_AREA, "CCAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SPECIAL_AREA(CapControlTypes.CAP_CONTROL_SPECIAL_AREA, "CCSPECIALAREA", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_SUBSTATION(CapControlTypes.CAP_CONTROL_SUBSTATION, "CCSUBSTATION", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
-    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, "Load Tap Changer", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL)
-    ;
+    LOAD_TAP_CHANGER(CapControlTypes.CAP_CONTROL_LTC, "Load Tap Changer", PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
+    CRF_AX(DeviceTypes.CRF_AX, "CRF-AX", PaoCategory.DEVICE, PaoClass.RFMESH),
+    CRF_AL(DeviceTypes.CRF_AL, "CRF-AL", PaoCategory.DEVICE, PaoClass.RFMESH),
+    ; 
     
     
     private final int deviceTypeId;
     private final String dbString;
     private final PaoCategory paoCategory;
     private final PaoClass paoClass;
+    private final static Logger log = YukonLogManager.getLogger(PaoType.class);
 
     private final static ImmutableMap<Integer, PaoType> lookupById;
     private final static ImmutableMap<String, PaoType> lookupByDbString;
     
     static {
-        Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
-        Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
-        for (PaoType deviceType : values()) {
-            idBuilder.put(deviceType.deviceTypeId, deviceType);
-            dbBuilder.put(deviceType.dbString.toLowerCase(), deviceType);
+        try {
+            Builder<Integer, PaoType> idBuilder = ImmutableMap.builder();
+            Builder<String, PaoType> dbBuilder = ImmutableMap.builder();
+            for (PaoType deviceType : values()) {
+                idBuilder.put(deviceType.deviceTypeId, deviceType);
+                dbBuilder.put(deviceType.dbString.toLowerCase(), deviceType);
+            }
+            lookupById = idBuilder.build();
+            lookupByDbString = dbBuilder.build();
+        } catch (IllegalArgumentException e) {
+            log.warn("Caught exception while building lookup maps, look for a duplicate name or db string.", e);
+            throw e;
         }
-        lookupById = idBuilder.build();
-        lookupByDbString = dbBuilder.build();
     }
 
     /**

@@ -25,6 +25,7 @@ import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -315,6 +316,14 @@ public class MeterController extends MultiActionController {
         boolean configSupported = paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_430) ||
                                               paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.DEVICE_CONFIGURATION_470);
         mav.addObject("configSupported", configSupported);
+        
+        if(device.getDeviceType().getPaoClass() == PaoClass.RFMESH) {
+            mav.addObject("isRFMesh", true);
+        }
+        
+        if(paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
+            mav.addObject("porterCommandRequestsSupported", true);
+        }
 
         return mav;
     }
