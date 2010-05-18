@@ -24,7 +24,7 @@ if %1 == uninstall goto doRemove
 
 :doRemove
 rem Remove the service
-"%EXECUTABLE%"//DS//%SERVICE_NAME%
+"%EXECUTABLE%"//DS//"%SERVICE_NAME%"
 echo The service '%PR_DISPLAYNAME%' has been removed
 goto end
 

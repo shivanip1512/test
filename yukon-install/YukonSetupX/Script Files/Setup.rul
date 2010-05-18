@@ -132,6 +132,7 @@ begin
     
     Dialog_MasterConfig:
     Disable(BACKBUTTON);
+    Disable(CANCELBUTTON); //You just installed.  There's no going back.
     bOptYes = TRUE;
     AskOptions(EXCLUSIVE,
     			"Would you like to edit the master.cfg at this time?",
@@ -263,7 +264,7 @@ begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
 	
-	//prettyfy the version number before displaying it
+	//prettyfy the version number
 	sOldVersion = CleanupInstalledVersionNum();
 	
     //Check to see if upgrade-type install is supported.  This

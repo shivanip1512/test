@@ -75,7 +75,7 @@ goto end
 
 :doRemove
 rem Remove the service
-"%EXECUTABLE%" //DS//%SERVICE_NAME%
+"%EXECUTABLE%" //DS//"%SERVICE_NAME%"
 echo The service '%SERVICE_NAME%' has been removed
 goto end
 

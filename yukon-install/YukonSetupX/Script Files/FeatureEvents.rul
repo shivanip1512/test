@@ -97,7 +97,7 @@ string sServPath;
 begin
    	//remove the Tomcat service
 	sServPath = TARGETDIR + "\\Server\\web\\bin\\";
-	LaunchAppAndWait(sServPath + "service.bat", "remove", WAIT);
+	LaunchAppAndWait(sServPath + "yukonservice.bat", "remove", WAIT);
 end;
 
 //---------------------------------------------------------------------------
