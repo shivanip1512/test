@@ -91,7 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
  	
 	lmTrigger.setYukonID(yukonID);
 	lmTrigger.setTriggerNumber(triggerNumber);
-	lmTrigger.setTriggerType(TriggerType.valueOf(triggerType.toUpperCase()));
+	lmTrigger.setTriggerType(TriggerType.getForDbString(triggerType));
 	lmTrigger.setPointId(pointID);
 	lmTrigger.setPointValue(pointValue);
 	lmTrigger.setLastPointValueTimeStamp(lastPointValueTimeStamp);
