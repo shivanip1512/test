@@ -1,5 +1,7 @@
 package com.cannontech.cbc.model;
 
+import com.cannontech.common.pao.PaoType;
+
 public class CapbankController {
 	
 	private int id;
@@ -7,7 +9,7 @@ public class CapbankController {
 	private int serialNumber;
 	private int routeId;
 	private int portId;
-	private int type;
+	private PaoType type;
 	
 	private int masterAddress;
 	private int slaveAddress;
@@ -104,11 +106,11 @@ public class CapbankController {
 		this.alternateRate = alternateRate;
 	}
 
-	public int getType() {
+	public PaoType getType() {
 		return type;
 	}
 
-	public void setType(int type) {
+	public void setType(PaoType type) {
 		this.type = type;
 	}
 
@@ -144,72 +146,109 @@ public class CapbankController {
         this.disabled = disabled;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + alternateRate;
-		result = prime * result + id;
-		result = prime * result + intervalRate;
-		result = prime * result + masterAddress;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + portId;
-		result = prime * result + postCommWait;
-		result = prime * result + routeId;
-		result = prime * result + (scanEnabled ? 1231 : 1237);
-		result = prime * result + scanGroup;
-		result = prime * result
-				+ ((scanType == null) ? 0 : scanType.hashCode());
-		result = prime * result + serialNumber;
-		result = prime * result + slaveAddress;
-		result = prime * result + type;
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + alternateRate;
+        result = prime * result + (disabled ? 1231 : 1237);
+        result = prime * result + id;
+        result = prime * result + intervalRate;
+        result = prime * result + masterAddress;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + portId;
+        result = prime * result + postCommWait;
+        result = prime * result + routeId;
+        result = prime * result + (scanEnabled ? 1231 : 1237);
+        result = prime * result + scanGroup;
+        result = prime * result
+                 + ((scanType == null) ? 0 : scanType.hashCode());
+        result = prime * result + serialNumber;
+        result = prime * result + slaveAddress;
+        result = prime * result + ((type == null) ? 0 : type.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CapbankController other = (CapbankController) obj;
-		if (alternateRate != other.alternateRate)
-			return false;
-		if (id != other.id)
-			return false;
-		if (intervalRate != other.intervalRate)
-			return false;
-		if (masterAddress != other.masterAddress)
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (portId != other.portId)
-			return false;
-		if (postCommWait != other.postCommWait)
-			return false;
-		if (routeId != other.routeId)
-			return false;
-		if (scanEnabled != other.scanEnabled)
-			return false;
-		if (scanGroup != other.scanGroup)
-			return false;
-		if (scanType == null) {
-			if (other.scanType != null)
-				return false;
-		} else if (!scanType.equals(other.scanType))
-			return false;
-		if (serialNumber != other.serialNumber)
-			return false;
-		if (slaveAddress != other.slaveAddress)
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        CapbankController other = (CapbankController) obj;
+        if (alternateRate != other.alternateRate)
+            return false;
+        if (disabled != other.disabled)
+            return false;
+        if (id != other.id)
+            return false;
+        if (intervalRate != other.intervalRate)
+            return false;
+        if (masterAddress != other.masterAddress)
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        if (portId != other.portId)
+            return false;
+        if (postCommWait != other.postCommWait)
+            return false;
+        if (routeId != other.routeId)
+            return false;
+        if (scanEnabled != other.scanEnabled)
+            return false;
+        if (scanGroup != other.scanGroup)
+            return false;
+        if (scanType == null) {
+            if (other.scanType != null)
+                return false;
+        } else if (!scanType.equals(other.scanType))
+            return false;
+        if (serialNumber != other.serialNumber)
+            return false;
+        if (slaveAddress != other.slaveAddress)
+            return false;
+        if (type == null) {
+            if (other.type != null)
+                return false;
+        } else if (!type.equals(other.type))
+            return false;
+        return true;
+    }
 
+    public static boolean isImportableCbc(PaoType type) {
+        
+        switch (type) {
+            case CBC_7010:
+            case CBC_7011:
+            case CBC_7012:
+            case CBC_7020:
+            case CBC_7022:
+            case CBC_7023:
+            case CBC_7024:
+            case CBC_DNP:
+            case CBC_EXPRESSCOM:
+            case CBC_FP_2800:
+                return true;
+            default: 
+                return false;
+        }
+    }
+    
+    public static boolean isOneWayCbc(PaoType type) {
+        
+        switch (type) {
+            case CBC_7010:
+            case CBC_7011:
+            case CBC_7012:
+            case CBC_EXPRESSCOM:
+                return true;
+            default: 
+                return false;
+        }
+    }
 }

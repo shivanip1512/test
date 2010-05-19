@@ -404,57 +404,63 @@ public class CapControlImportController {
         
         while(line != null) {
         	try {
-	        	PaoType deviceType = null;
-	    		
 	        	String cbcName = line[0];
 	        	String cbcType = line[1];
 	
 	    		int typeId = PAOGroups.getDeviceType(cbcType);
 	    		if (typeId == -1) {
 	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Unknown Type: " + cbcType);
-	    		}			            		
-	    		deviceType = PaoType.getForId(typeId);
-	
-	    		int cbcSerialNumber = Integer.decode(line[2]);
-	    		String capBankName = line[3];
-	    		int masterAddress = Integer.decode(line[4]);
-	    		int slaveAddress = Integer.decode(line[5]);
-	    		String commChannel = line[6];
-	    		//String scanEnabled = line[7];
-	    		int scanInterval = Integer.decode(line[8]);
-	    		int altInterval = Integer.decode(line[9]);
-				
-	    		int commChannelId = getPaoIdByName(commChannel);
-	    		if (commChannelId == -1) {
-	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel was not found. " + commChannel);
 	    		}
+	    		PaoType deviceType = PaoType.getForId(typeId);
 	    		
-				CapbankController controller = new CapbankController();
-	    		controller.setType(deviceType.getDeviceTypeId());
-	    		controller.setName(cbcName);
-	    		controller.setSerialNumber(cbcSerialNumber);
-	    		controller.setMasterAddress(masterAddress);
-	    		controller.setSlaveAddress(slaveAddress);
-	    		controller.setPortId(commChannelId);
+	    		if (CapbankController.isImportableCbc(deviceType)) {
 	    		
-	    		//controller.setS    scan Enabled?
-	    		//These two are default settings. Import them?
-	    		controller.setScanGroup(0);
-	    		controller.setScanType(DeviceScanRate.TYPE_GENERAL);
-	
-	    		controller.setIntervalRate(scanInterval);
-	    		controller.setAlternateRate(altInterval);
-	    		
-	    		try {
-	    		    capControlCreationService.createController(controller);
-    	    		if (StringUtils.isNotBlank(capBankName)) {
-    	    			capControlCreationService.assignController(controller, capBankName);
+    	    		int cbcSerialNumber = Integer.decode(line[2]);
+    	    		String capBankName = line[3];
+    	    		int masterAddress = Integer.decode(line[4]);
+    	    		int slaveAddress = Integer.decode(line[5]);
+    	    		String commChannel = line[6];
+    	    		//String scanEnabled = line[7];
+    	    		int scanInterval = Integer.decode(line[8]);
+    	    		int altInterval = Integer.decode(line[9]);
+    				
+    	    		int commChannelId = getPaoIdByName(commChannel);
+    	    		if (commChannelId == -1) {
+    	    			throw new UnsupportedOperationException("Import of " + cbcName + " failed. Comm Channel/Route was not found. " + commChannel);
     	    		}
-	    		} catch (DataIntegrityViolationException e){
-	    		    // else its an orphan
-	    		    errors.add("Error inserting " + cbcName + " into the database.");
+    	    		
+    				CapbankController controller = new CapbankController();
+    	    		controller.setType(deviceType);
+    	    		controller.setName(cbcName);
+    	    		controller.setSerialNumber(cbcSerialNumber);
+    	    		controller.setMasterAddress(masterAddress);
+    	    		controller.setSlaveAddress(slaveAddress);
+    	    		
+                    if (CapbankController.isOneWayCbc(deviceType)) {
+                        controller.setRouteId(commChannelId);
+                    } else {
+                        controller.setPortId(commChannelId);
+                    }
+    	    		
+    	    		//These two are default settings. Import them?
+    	    		controller.setScanGroup(0);
+    	    		controller.setScanType(DeviceScanRate.TYPE_GENERAL);
+    	
+    	    		controller.setIntervalRate(scanInterval);
+    	    		controller.setAlternateRate(altInterval);
+    	    		
+    	    		try {
+    	    		    capControlCreationService.createController(controller);
+        	    		if (StringUtils.isNotBlank(capBankName)) {
+        	    			capControlCreationService.assignController(controller, capBankName);
+        	    		}
+    	    		} catch (DataIntegrityViolationException e){
+    	    		    // else its an orphan
+    	    		    errors.add("Error inserting " + cbcName + " into the database.");
+    	    		}
+	    		} else {
+	    		    throw new UnsupportedOperationException("Import of " + cbcName + " failed. Unknown CBC Type: " + cbcType);
 	    		}
-	    		
 	    	} catch (UnsupportedOperationException e) {
 	    		CTILogger.error(e.getMessage());
 	    		errors.add("Error inserting " + line[0] + " into the database. " + e.getMessage());
@@ -474,7 +480,14 @@ public class CapControlImportController {
         	try {
 	        	String templateName = line[0];
 	        	String cbcName = line[1];
-	
+                String cbcType = line[2];
+               
+                int typeId = PAOGroups.getDeviceType(cbcType);
+                if (typeId == -1) {
+                    throw new UnsupportedOperationException("Import of " + cbcName + " failed. Unknown Type: " + cbcType);
+                }
+                PaoType deviceType = PaoType.getForId(typeId);
+                
 	    		int cbcSerialNumber = Integer.decode(line[3]);
 	    		String capBankName = line[4];
 	    		int masterAddress = Integer.decode(line[5]);
@@ -494,7 +507,12 @@ public class CapControlImportController {
 	    		controller.setSerialNumber(cbcSerialNumber);
 	    		controller.setMasterAddress(masterAddress);
 	    		controller.setSlaveAddress(slaveAddress);
-	    		controller.setPortId(commChannelId);
+                
+	    		if (CapbankController.isOneWayCbc(deviceType)) {
+                    controller.setRouteId(commChannelId);
+                } else {
+                    controller.setPortId(commChannelId);
+                }
 	    		
 	    		//controller.setS    scan Enabled?
 	    		//These two are default settings. Import them?

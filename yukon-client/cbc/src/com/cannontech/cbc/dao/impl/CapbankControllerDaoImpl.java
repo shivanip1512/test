@@ -119,7 +119,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		int newId = paoDao.getNextPaoId();
 		capbankController.setId(newId);
-		PaoType type = PaoType.getForId(capbankController.getType());
+		PaoType type = capbankController.getType();
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());
 		controller.setPAOName(capbankController.getName());
@@ -157,7 +157,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
 	@Override
 	public boolean remove(CapbankController capbankController) {
-    	DeviceBase device = DeviceFactory.createDevice(capbankController.getType());
+    	DeviceBase device = DeviceFactory.createDevice(capbankController.getType().getDeviceTypeId());
     	device.setDeviceID(capbankController.getId());
 		
     	//TODO: Delete Points on object.
@@ -173,7 +173,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 
 	@Override
 	public boolean update(CapbankController capbankController) {
-		PaoType type = PaoType.getForId(capbankController.getType());
+		PaoType type = capbankController.getType();
 		
 		DeviceBase controller = DeviceFactory.createDevice(type.getDeviceTypeId());
 		controller.setPAOName(capbankController.getName());
@@ -216,7 +216,9 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		
 		LiteYukonPAObject pao = paos.get(0);
 		int type = pao.getType();
-		controller.setType(type);
+		PaoType deviceType = PaoType.getForId(type);
+		
+		controller.setType(deviceType);
 		
 		int templateDeviceId = pao.getLiteID();
 		DeviceBase base = DeviceFactory.createDevice(type);

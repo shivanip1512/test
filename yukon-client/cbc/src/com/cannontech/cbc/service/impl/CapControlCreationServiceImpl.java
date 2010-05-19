@@ -117,16 +117,28 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             default : // must be a cbc
                 CapbankController controller = new CapbankController();
                 PaoType deviceType = PaoType.getForId(type);
-                controller.setScanGroup(0);
-                controller.setScanType(DeviceScanRate.TYPE_INTEGRITY);
-                controller.setIntervalRate(300);
-                controller.setAlternateRate(300);
-                controller.setName(name);
-                controller.setType(deviceType.getDeviceTypeId());
-                controller.setPortId(portId);
-                controller.setDisabled(disabled);
-                createController(controller);
-                id = controller.getId();
+                
+                if (CapbankController.isImportableCbc(deviceType)) {
+                    controller.setScanGroup(0);
+                    controller.setScanType(DeviceScanRate.TYPE_INTEGRITY);
+                    controller.setIntervalRate(300);
+                    controller.setAlternateRate(300);
+                    controller.setName(name);
+                    controller.setType(deviceType);
+                    
+                    if (CapbankController.isOneWayCbc(deviceType)) {
+                        controller.setRouteId(portId);
+                    } else {
+                        controller.setPortId(portId);
+                    }
+                    
+                    controller.setDisabled(disabled);
+                    createController(controller);
+                    id = controller.getId();
+                } else {
+                    throw new UnsupportedOperationException("Import of " + name + " failed. Unknown CBC Type: " + deviceType.getDbString());
+                }
+                
                 break;
                 
         }
@@ -305,7 +317,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	public void createController(CapbankController controller) {
 		capbankControllerDao.add(controller);
 
-		String type = PaoType.getForId(controller.getType()).getDbString();
+		String type = controller.getType().getDbString();
         sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,type);
 	}
 	
@@ -315,7 +327,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 		boolean success = capbankControllerDao.createControllerFromTemplate(template, controller);
 
 		if (success) {
-			String devType = PaoType.getForId(controller.getType()).getDbString();
+			String devType = controller.getType().getDbString();
 			sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_ADD,devType);
 		}
 		
@@ -325,7 +337,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
 	@Override
 	public boolean assignController(CapbankController controller, int capbankId) {
 		boolean ret = capbankControllerDao.assignController(capbankId, controller.getId());
-		PaoType deviceType = PaoType.getForId(controller.getType());
+		PaoType deviceType = controller.getType();
 		
 		if (ret) {
 		    sendDeviceDBChangeMessage(controller.getId(),DBChangeMsg.CHANGE_TYPE_UPDATE, deviceType.getDbString());
