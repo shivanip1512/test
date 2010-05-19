@@ -142,8 +142,13 @@ private:
         unsigned char  result;
         byte_buffer_t  message;
 
-        queue_response_t(byte_buffer_t::const_iterator &buf)
+        queue_response_t(byte_buffer_t::const_iterator &buf, const byte_buffer_t::const_iterator &end)
         {
+            if( std::distance(buf, end) < 10 )
+            {
+                throw std::range_error("Not enough bytes to restore queue entry");
+            }
+
             sequence         = *buf++;
             sequence        |= *buf++ <<  8;
 
@@ -158,6 +163,11 @@ private:
             result           = *buf++;
 
             unsigned char message_length = *buf++;
+
+            if( std::distance(buf, end) < message_length )
+            {
+                throw std::range_error("Not enough bytes to restore queue entry's message");
+            }
 
             message.assign(buf, buf + message_length);
 

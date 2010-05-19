@@ -643,7 +643,14 @@ int Klondike::decode( CtiXfer &xfer, int status )
 
 void Klondike::processResponse(const byte_buffer_t &inbound)
 {
-    byte_buffer_t::const_iterator inbound_itr = inbound.begin();
+    byte_buffer_t::const_iterator       inbound_itr = inbound.begin();
+    const byte_buffer_t::const_iterator inbound_end = inbound.end();
+
+    if( distance(inbound_itr, inbound_end) < 4 )
+    {
+        return;
+    }
+
     unsigned char response_command  = *inbound_itr++;
     unsigned char requested_command = *inbound_itr++;
 
@@ -681,7 +688,8 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
         {
             if( response_command == CommandCode_NAK )
             {
-                unsigned char nak_code = *inbound_itr++;
+                //  unused at the moment
+                //  unsigned char nak_code = *inbound_itr++;
 
                 _error = Error_Unknown;
             }
@@ -691,6 +699,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
             }
             else if( response_command == CommandCode_ACK_Data )
             {
+                if( distance(inbound_itr, inbound_end) < 3 )
+                {
+                    return;
+                }
+
                 _device_queue_entries_available = *inbound_itr++;
                 _device_queue_sequence  = *inbound_itr++;
                 _device_queue_sequence |= *inbound_itr++ << 8;
@@ -709,6 +722,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
             if( response_command == CommandCode_NAK )
             {
+                if( distance(inbound_itr, inbound_end) < 1 )
+                {
+                    return;
+                }
+
                 unsigned char nak_code = *inbound_itr++;
 
                 switch( nak_code )
@@ -723,6 +741,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
 
                     case NAK_DirectTransmission_InvalidSequence:
                     {
+                        if( distance(inbound_itr, inbound_end) < 2 )
+                        {
+                            return;
+                        }
+
                         _device_queue_sequence  = *inbound_itr++;
                         _device_queue_sequence |= *inbound_itr++ << 8;
 
@@ -753,6 +776,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 unsigned short sequence, snr;
                 unsigned char  message_length;
 
+                if( distance(inbound_itr, inbound_end) < 5 )
+                {
+                    return;
+                }
+
                 sequence  = *inbound_itr++;
                 sequence |= *inbound_itr++ << 8;
 
@@ -760,6 +788,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 snr      |= *inbound_itr++ << 8;
 
                 message_length = *inbound_itr++;
+
+                if( distance(inbound_itr, inbound_end) < message_length )
+                {
+                    return;
+                }
 
                 _dtran_result.assign(inbound_itr, inbound_itr + message_length);
             }
@@ -771,15 +804,30 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
         {
             if( response_command == CommandCode_NAK )
             {
+                if( distance(inbound_itr, inbound_end) < 1 )
+                {
+                    return;
+                }
+
                 switch( *inbound_itr++ )
                 {
                     case NAK_LoadBuffer_QueueEntries:
                     {
+                        if( distance(inbound_itr, inbound_end) < 3 )
+                        {
+                            return;
+                        }
+
                         //  capture the expected sequence
                         _device_queue_sequence  = *inbound_itr++;
                         _device_queue_sequence |= *inbound_itr++ << 8;
 
                         unsigned char number_rejected = *inbound_itr++;
+
+                        if( distance(inbound_itr, inbound_end) < number_rejected * 3 )
+                        {
+                            return;
+                        }
 
                         while( number_rejected-- > 0 )
                         {
@@ -855,6 +903,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
                 pending_work_t::iterator pending_itr = _pending_requests.begin(),
                                          pending_end = _pending_requests.end();
 
+                if( distance(inbound_itr, inbound_end) < 2 )
+                {
+                    return;
+                }
+
                 unsigned accepted               = *inbound_itr++;
                 _device_queue_entries_available = *inbound_itr++;
 
@@ -890,6 +943,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
         {
             if( response_command == CommandCode_NAK )
             {
+                if( distance(inbound_itr, inbound_end) < 1 )
+                {
+                    return;
+                }
+
                 unsigned char nak_code = *inbound_itr++;
 
                 {
@@ -901,6 +959,11 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
+                if( distance(inbound_itr, inbound_end) < 1 )
+                {
+                    return;
+                }
+
                 _read_toggle = *inbound_itr++ ^ 0x01;  //  we'll echo this bit back to the CCU when we read or ack next
 
                 {
@@ -910,54 +973,70 @@ void Klondike::processResponse(const byte_buffer_t &inbound)
             }
             else if( response_command == CommandCode_ACK_Data )
             {
+                if( distance(inbound_itr, inbound_end) < 2 )
+                {
+                    return;
+                }
+
                 _read_toggle = *inbound_itr++ ^ 0x01;  //  we'll echo this bit back to the CCU when we read or ack next
 
                 unsigned queue_entries_read = *inbound_itr++;
 
                 for( int entry = 0; entry < queue_entries_read; entry++ )
                 {
-                    //  queue_response_t's constructor increments the inbound iterator
-                    queue_response_t q(inbound_itr);
-
+                    try
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - read queue response (seq, timestamp, signal strength, result, message) "
-                             << "(" << setfill('0') << hex
-                                    << setw(4) << q.sequence                  << ", "
-                                    << CtiTime(q.timestamp)                   << ", "
-                                    << setw(2) << (unsigned)q.signal_strength << ", "
-                                    << setw(2) << (unsigned)q.result          << ", ";
+                        //  queue_response_t's constructor increments the inbound iterator
+                        queue_response_t q(inbound_itr,
+                                           inbound_end);
 
-                        byte_buffer_t::iterator message_itr = q.message.begin();
-
-                        while( message_itr != q.message.end() )
                         {
-                            dout << hex << setw(2) << (unsigned)*message_itr++;
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - read queue response (seq, timestamp, signal strength, result, message) "
+                                 << "(" << setfill('0') << hex
+                                        << setw(4) << q.sequence           << ", "
+                                        <<            CtiTime(q.timestamp) << ", "
+                                        << setw(4) << q.signal_strength    << ", "
+                                        << setw(2) << (unsigned)q.result   << ", ";
+
+                            byte_buffer_t::iterator message_itr = q.message.begin();
+
+                            while( message_itr != q.message.end() )
+                            {
+                                dout << hex << setw(2) << (unsigned)*message_itr++;
+                            }
+
+                            dout << dec;
+
+                            dout <<  ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                        dout << dec;
+                        remote_work_t::iterator remote_itr = _remote_requests.find(q.sequence);
 
-                        dout <<  ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        if( remote_itr == _remote_requests.end() )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - unknown sequence (" << hex << setw(4) <<  q.sequence << ") received **** " << dec << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                        else
+                        {
+                            if( remote_itr->second.om )
+                            {
+                                _plc_results.push(queue_result_t(remote_itr->second.om,
+                                                                 Error_None,  //  we'll eventually need to plug an error code in here,
+                                                                 q.timestamp, //    but right now, q.result is poorly defined
+                                                                 q.message));
+                            }
+
+                            _remote_requests.erase(remote_itr);
+                        }
                     }
-
-                    remote_work_t::iterator remote_itr = _remote_requests.find(q.sequence);
-
-                    if( remote_itr == _remote_requests.end() )
+                    catch( std::range_error &re )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unknown sequence (" << hex << setw(4) <<  q.sequence << ") received **** " << dec << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    else
-                    {
-                        if( remote_itr->second.om )
-                        {
-                            _plc_results.push(queue_result_t(remote_itr->second.om,
-                                                             Error_None,  //  we'll eventually need to plug an error code in here,
-                                                             q.timestamp, //    but right now, q.result is poorly defined
-                                                             q.message));
-                        }
+                        dout << CtiTime() << " **** Checkpoint - " << re.what() << " restoring at position " << inbound_itr - inbound.begin() << "/" << inbound.size() << endl;
 
-                        _remote_requests.erase(remote_itr);
+                        return;
                     }
                 }
             }
