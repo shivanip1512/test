@@ -51,7 +51,7 @@
             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                 <tags:slowInput2 formId="updateForm" key="save" />
                 <button type="submit" name="cancel" class="formSubmit">
-                        <i:inline key="yukon.web.components.slowInput.cancel.label"/>
+                        <i:inline key=".cancel"/>
                     </button>
             </cti:checkRolesAndProperties>
         </cti:displayForPageEditModes>    
