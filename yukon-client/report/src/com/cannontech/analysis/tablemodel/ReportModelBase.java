@@ -609,6 +609,10 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	    return false;
 	}
 	
+	public boolean supportsPDF() {
+        return true;
+    }
+	
 	/**
 	 * @return
 	 */

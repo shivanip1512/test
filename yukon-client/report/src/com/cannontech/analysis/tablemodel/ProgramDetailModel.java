@@ -408,5 +408,10 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	{
 		return false;
 	}
+	
+	@Override
+	public boolean supportsPDF() {
+        return false;
+    }
 
 }
