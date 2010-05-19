@@ -168,7 +168,7 @@
 <tags:alternateRowReset/>
 <tags:boxContainer2 nameKey="optOutLimits">
 <c:choose>
-    <c:when test="${fn:length(currentOptOutList) > 0}">
+    <c:when test="${fn:length(displayableInventories) > 0}">
         <table id="deviceTable" class="compactResultsTable rowHighlighting">
             <tr class="<tags:alternateRow odd="" even="altRow"/>">
                 <th><i:inline key=".device"/></th>
