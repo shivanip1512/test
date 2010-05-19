@@ -364,6 +364,7 @@ begin
 	
 	Dialog_DBToolsFrame:
 	Disable(BACKBUTTON);
+	Disable(CANCELBUTTON); //You just installed.  There's no going back.
 	bOptYes = TRUE;
 	AskOptions(EXCLUSIVE,
 				"The Yukon files have been updated.  "
