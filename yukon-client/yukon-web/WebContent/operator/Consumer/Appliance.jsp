@@ -928,8 +928,7 @@ if (appliance.getApplianceCategory().getApplianceType().equals(ApplianceTypeEnum
                             <div align="center"> Enrolled Program</div>
                           </td>
                           <td width="151" class="HeaderCell"> 
-                            <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> 
-                              History</div>
+                            <div align="center">Control History</div>
                           </td>
                         </tr>
                         <tr valign="top"> 

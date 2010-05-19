@@ -1,20 +1,20 @@
 <%@ page import="com.cannontech.database.data.stars.hardware.MeterHardwareBase" %>
 <%
 	// Table of [link, label, page name(optional)]
-	String linkTable[][] = {{"Update.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_GENERAL)},
-						  {"Contacts.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTACTS)},
-						  {"Residence.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_RESIDENCE)},
-						  {"Calls.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CALL_TRACKING)},
-						  {"CreateCalls.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CREATE_CALL)},
-						  {"Metering.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_INTERVAL_DATA)},
+	String linkTable[][] = {{"Update.jsp", "General"},
+						  {"Contacts.jsp", "Contacts"},
+						  {"Residence.jsp", "Residence"},
+						  {"Calls.jsp", "Call Tracking"},
+						  {"CreateCalls.jsp", "Create Call"},
+						  {"Metering.jsp", "Interval Data"},
 					 	  {"CreateTrend.jsp", "New"},
-						  {"ProgramHist.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTROL_HISTORY)},
-						  {"Programs.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_ENROLLMENT)},
-						  {"OptOut.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_OPT_OUT)},
-						  {"Service.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_REQUEST)},
-						  {"ServiceSummary.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_SERVICE_HISTORY)},
-						  {"Password.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CHANGE_LOGIN)},
-						  {"faq.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_FAQ)},
+						  {"ProgramHist.jsp", "Control History"},
+						  {"Programs.jsp", "Enrollment"},
+						  {"OptOut.jsp", "Opt Out"},
+						  {"Service.jsp", "Service Request"},
+						  {"ServiceSummary.jsp", "Service History"},
+						  {"Password.jsp", "Change Login"},
+						  {"faq.jsp", "FAQ"},
 						  {"Privileges.jsp", "Privileges"},
 						  {"PrintExport.jsp", "Print/Export"},
 						  {"CreateAppliances.jsp", "New"},
@@ -58,7 +58,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_ACCOUNT %>" defaultvalue="Account"/></span><br>
+	    <span class="NavHeader">Account</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr> 
             <td width="10"><%= ((String[]) links.get("Update.jsp"))[0] %></td>
@@ -93,7 +93,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_METERING %>" defaultvalue="Metering"/></span><br>
+	    <span class="NavHeader">Metering</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>"> 
           <tr>
@@ -145,7 +145,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_PROGRAMS %>" defaultvalue="Programs"/></span><br>
+	    <span class="NavHeader">Programs</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY %>"> 
           <tr>
@@ -174,7 +174,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_APPLIANCES %>" defaultvalue="Appliances"/></span><br>
+	    <span class="NavHeader">Appliances</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES %>">
           <%
@@ -230,7 +230,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_HARDWARES %>" defaultvalue="Hardware"/></span><br>
+	    <span class="NavHeader">Hardware</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES %>"> 
 <%
@@ -304,7 +304,7 @@
 <%
 		if (switchLabels.size() > 0) {
 %>
-			  <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_SWITCHES %>" defaultvalue="Switches"/></span><br>
+			  <span class="NavGroup">Switches</span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                 <%
 			for (int i = 0; i < switchLabels.size(); i++) {
@@ -324,7 +324,7 @@
 		}	// switchLabels
 		if (thermostatLabels.size() > 0) {
 %>
-              <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_THERMOSTATS %>" defaultvalue="Thermostats"/></span><br>
+              <span class="NavGroup">Thermostats</span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_THERMOSTATS_ALL %>"> 
@@ -365,7 +365,7 @@
 		}	// thermostatLabels
 		if (meterLabels.size() > 0) {
 %>
-              <span class="NavGroup"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_SUB_HEADING_METERS %>" defaultvalue="Meters"/></span><br>
+              <span class="NavGroup">Meters</span><br>
               <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
             // Get the METER_MCT_BASE_DESIGNATION role property using the ec user
@@ -418,7 +418,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_WORK_ORDERS %>" defaultvalue="Work Orders"/></span><br>
+	    <span class="NavHeader">Work Orders</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <tr>
             <td width="10"><%= ((String[]) links.get("Service.jsp"))[0] %></td>
@@ -437,7 +437,7 @@
   <tr> 
     <td> 
       <div align="left">
-	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_ADMINISTRATION %>" defaultvalue="Administration"/></span><br>
+	    <span class="NavHeader">Administration</span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
           <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN_PASSWORD) %>">
 
@@ -454,7 +454,7 @@
 %>
           <tr>
             <td width="10">&nbsp;</td>
-            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_FAQ %>" defaultvalue="FAQ"/></span></a></td>
+            <td style="padding:1"><a href="<%= faqLink %>" class="Link2" target="faqs"><span class="NavText">FAQ</span></a></td>
           </tr>
 <%	} else { %>
           <tr>
@@ -575,22 +575,22 @@ pageLinks = new Array(<%= inventories.getStarsInventoryCount() %>);
   </div>
 <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT %>">
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(2)">
-  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) %>
+  &nbsp;&nbsp;&nbsp;Schedule
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(2)">
-  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) %>
+  &nbsp;&#149;&nbsp;Schedule
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(3)">
-  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL) %>
+  &nbsp;&nbsp;&nbsp;Manual
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(3)">
-  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL) %>
+  &nbsp;&#149;&nbsp;Manual
   </div>
   <div id="thermostatMenuItem" name="thermostatMenuItem" style="width:100px" onmouseover="changeNavStyle(this)" class = "navmenu1" onclick = "if (warnUnsavedChanges()) showPage(4)">
-  &nbsp;&nbsp;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SAVED_SCHED) %>
+  &nbsp;&nbsp;&nbsp;Saved Schedules
   </div>
   <div id="thermostatMenuItemSelected" name="thermostatMenuItemSelected" style="width:100px; display:none" onmouseover="changeNavStyle(this)" class = "navmenu2" onclick = "if (warnUnsavedChanges()) showPage(4)">
-  &nbsp;&#149;&nbsp;<%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SAVED_SCHED) %>
+  &nbsp;&#149;&nbsp;Saved Schedules
   </div>
 </cti:checkProperty>
 </div>

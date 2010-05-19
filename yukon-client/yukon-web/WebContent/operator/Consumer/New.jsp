@@ -279,7 +279,7 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_ALT_TRACK_NUM %>"/> </div>
+                          <div align="right">Alt Tracking #</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getAltTrackingNumber().compareTo("(none)") != 0 ? account.getAltTrackingNumber() : "" %>" onchange="setContentChanged(true)">
@@ -291,7 +291,7 @@ are present in page, session, etc. as an attribute. -->
                         <td width="90" class="TableCell">&nbsp;</td>
                         <td width="210"> 
                           <input type="checkbox" name="NotifyControl" value="true" <% if (email != null && !email.getDisabled()) { %>checked<% } %> onclick="setContentChanged(true)">
-                          <span class="TableCell">Notify <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>"/></span></td>
+                          <span class="TableCell">Notify odds for control</span></td>
                       </tr>
 </cti:checkRole>
                       <tr> 
@@ -459,7 +459,7 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_STATE_LABEL %>"/>:</div>
+                          <div align="right">State</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SState" maxlength="2" size="14" value="<%= account.getStreetAddress().getState() %>" onchange="setContentChanged(true)">
@@ -467,7 +467,7 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL %>"/>:</div>
+                          <div align="right">Zip</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SZip" maxlength="12" size="14" value="<%= account.getStreetAddress().getZip() %>" onchange="setContentChanged(true)">
@@ -475,7 +475,7 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_COUNTY_LABEL %>"/>:</div>
+                          <div align="right">County</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="SCounty" maxlength="30" size="24" value="<%= account.getStreetAddress().getCounty() %>" onchange="setContentChanged(true)">
@@ -534,7 +534,7 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.ADDRESS_STATE_LABEL %>"/>:</div>
+                          <div align="right">State</div>
                         </td>
                         <td width="210"> 
                           <input type="text" name="BState" maxlength="2" size="14" value="<%= account.getBillingAddress().getState() %>" onchange="setContentChanged(true)">
@@ -542,7 +542,7 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell" height="2"> 
-                          <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.ADDRESS_POSTALCODE_LABEL %>"/>:</div>
+                          <div align="right">Zip</div>
                         </td>
                         <td width="210" height="2"> 
                           <input type="text" name="BZip" maxlength="12" size="14" value="<%= account.getBillingAddress().getZip() %>" onchange="setContentChanged(true)">

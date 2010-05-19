@@ -30,14 +30,12 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "PROGRAMS - " + DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL); %>
+              <% String header = "PROGRAMS - odds for control"; %>
               <%@ include file="include/InfoSearchBar2.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
              
-              <div align="center"><span class="MainText">Check the appropriate 
-                <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="Odds for Control"/> 
-				for each program.</span><br>
+              <div align="center"><span class="MainText">Check the appropriate Odds for Control for each program.</span><br>
               </div>
 			  <form name="form1" method="post" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  	<input type="hidden" name="action" value="SendControlOdds">
@@ -45,9 +43,7 @@
                   <tr> 
                     <td width="390" class="HeaderCell" align="center" colspan="2">Program 
                       Enrollment </td>
-                    <td width="148" class="HeaderCell" align="center">
-					  <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL %>" defaultvalue="Odds for Control"/>
-                    </td>
+                    <td width="148" class="HeaderCell" align="center">Odds for Control</td>
                   </tr>
                   <%
 	StarsCustSelectionList oddsList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );

@@ -37,7 +37,7 @@
 <script language="JavaScript">
 function init() {
 	if (document.getElementById("Reenable") != null)
-		document.getElementById("Reenable").value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_REENABLE %>" format="all_capital"/>';
+		document.getElementById("Reenable").value = 'Reenable';
 }
 
 function sendCommand(cmd) {

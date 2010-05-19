@@ -32,7 +32,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_CONTROL_HISTORY); %>
+              <% String header = "PROGRAMS - CONTROL HISTORY"; %>
               <%@ include file="include/InfoSearchBar.jspf" %>
 			<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
              
@@ -43,13 +43,13 @@
                     <div align="center">Enrolled Programs</div>
                   </td>
                   <td width="200" class="HeaderCell"> 
-                    <div align="center">Today's <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History</div>
+                    <div align="center">Today's Control History</div>
                   </td>
                   <td width="150" class="HeaderCell"> 
-                    <div align="center"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History Summary</div>
+                    <div align="center">Control History Summary</div>
                   </td>
                   <td width="130" class="HeaderCell"> 
-                    <div align="center">Complete <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/> History</div>
+                    <div align="center">Complete Control History</div>
                   </td>
                 </tr>
 <%
@@ -103,7 +103,7 @@
 			if (ctrlHistToday.getControlHistoryCount() == 0) {
 %>
                       <tr> 
-                        <td width="61" class="TableCell">No <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_CONTROL %>" defaultvalue="control" format="capital"/></td>
+                        <td width="61" class="TableCell">No Control</td>
                         <td width="61" class="TableCell"></td>
                         <td width="60" class="TableCell">----</td>
                       </tr>

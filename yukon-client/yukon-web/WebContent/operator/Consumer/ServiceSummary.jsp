@@ -64,7 +64,7 @@ function checkOrderNo(form) {
           <td width="657" valign="top" bgcolor="#FFFFFF">
               
             <div align="center"> 
-              <% String header = DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_TITLE_SERVICE_HISTORY); %>
+              <% String header = "WORK ORDERS - SERVICE HISTORY"; %>
               <%@ include file="include/InfoSearchBar.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>              
