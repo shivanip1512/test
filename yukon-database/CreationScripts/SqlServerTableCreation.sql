@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/17/2010 3:34:35 PM                         */
+/* Created on:     5/19/2010 11:38:07 AM                        */
 /*==============================================================*/
 
 
@@ -1510,6 +1510,13 @@ if exists (select 1
            where  id = object_id('COLUMNTYPE')
             and   type = 'U')
    drop table COLUMNTYPE
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CRFAddress')
+            and   type = 'U')
+   drop table CRFAddress
 go
 
 if exists (select 1
@@ -4665,6 +4672,18 @@ insert into columntype values (12, 'UofM');
 insert into columntype values (13, 'State');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
+
+/*==============================================================*/
+/* Table: CRFAddress                                            */
+/*==============================================================*/
+create table CRFAddress (
+   DeviceId             numeric              not null,
+   SerialNumber         varchar(30)          not null,
+   Manufacturer         varchar(80)          not null,
+   Model                varchar(80)          not null,
+   constraint PK_CRFAdd primary key (DeviceId)
+)
+go
 
 /*==============================================================*/
 /* Table: CTIDatabase                                           */
@@ -14056,6 +14075,12 @@ go
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID)
+go
+
+alter table CRFAddress
+   add constraint FK_CRFAdd_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table CalcPointBaseline

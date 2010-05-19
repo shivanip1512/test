@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/17/2010 3:30:36 PM                         */
+/* Created on:     5/19/2010 11:36:07 AM                        */
 /*==============================================================*/
 
 
@@ -382,6 +382,8 @@ drop table CICUSTOMERPOINTDATA cascade constraints;
 drop table CICustomerBase cascade constraints;
 
 drop table COLUMNTYPE cascade constraints;
+
+drop table CRFAddress cascade constraints;
 
 drop table CTIDatabase cascade constraints;
 
@@ -2036,6 +2038,17 @@ insert into columntype values (12, 'UofM');
 insert into columntype values (13, 'State');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
+
+/*==============================================================*/
+/* Table: CRFAddress                                            */
+/*==============================================================*/
+create table CRFAddress  (
+   DeviceId             NUMBER                          not null,
+   SerialNumber         VARCHAR2(30)                    not null,
+   Manufacturer         VARCHAR2(80)                    not null,
+   Model                VARCHAR2(80)                    not null,
+   constraint PK_CRFAdd primary key (DeviceId)
+);
 
 /*==============================================================*/
 /* Table: CTIDatabase                                           */
@@ -10888,6 +10901,11 @@ alter table CICustomerBase
 alter table CICustomerBase
    add constraint FK_CstCI_Cst foreign key (CustomerID)
       references Customer (CustomerID);
+
+alter table CRFAddress
+   add constraint FK_CRFAdd_Device foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table CalcPointBaseline
    add constraint FK_CLCBS_BASL foreign key (BaselineID)
