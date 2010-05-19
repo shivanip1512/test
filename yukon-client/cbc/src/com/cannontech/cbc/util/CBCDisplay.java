@@ -658,29 +658,26 @@ public class CBCDisplay {
         }
         // This is returning a css class to be updated, no data.
         case SUB_VAR_LOAD_QUALITY: {
-            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
-            {
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR)) {
                 return "";
             } else {
-                return "hideImage";
+                return "hideElement";
             }
         }
         // This is returning a css class to be updated, no data.
         case SUB_WATT_QUALITY: {
-            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
-            {
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW)) {
                 return "";
             } else {
-                return "hideImage";
+                return "hideElement";
             }
         }
         // This is returning a css class to be updated, no data.
         case SUB_VOLT_QUALITY: {
-            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
-            {
+            if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS)) {
                 return "";
             } else {
-                return "hideImage";
+                return "hideElement";
             }
         }    
         case SUB_WATTS_COLUMN: {
@@ -902,29 +899,26 @@ public class CBCDisplay {
         }
         // This is returning a css class to be updated, no data.
         case FDR_VAR_LOAD_QUALITY: {
-            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
-            {
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR)) {
                 return "";
             } else {
-                return "hideImage";
+                return "hideElement";
             }
         }
         // This is returning a css class to be updated, no data.
         case FDR_WATT_QUALITY: {
-            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
-            {
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW)) {
                 return "";
             } else {
-                return "hideImage";
+                return "hideElement";
             }
         }
         // This is returning a css class to be updated, no data.
         case FDR_VOLT_QUALITY: {
-            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
-            {
+            if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS)) {
                 return "";
             } else {
-                return "hideImage";
+                return "hideElement";
             }
         }        
         case FDR_WATTS_COLUMN: {
