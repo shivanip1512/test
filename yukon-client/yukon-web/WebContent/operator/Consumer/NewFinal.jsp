@@ -67,7 +67,7 @@
                         <td height="30"> 
                           <div align="center"><span class="MainText">Add hardware to the 
                             account you just created</span><br>
-                            <input type="button" name="AddHardware" value="Add Hardware" onclick="location.href='CreateHardware.jsp'">
+                            <input type="button" name="AddHardware" value="Add Hardware" onclick="location.href='/spring/stars/operator/hardware/hardwareList?accountId=<%= account.getAccountID() %>'">
                           </div>
                         </td>
                       </tr>
@@ -86,7 +86,7 @@
                         <td height="30"> 
                           <div align="center"><span class="MainText">Edit the 
                             account you just created</span><br>
-                            <input type="button" name="Edit" value="Edit" onclick="location.href='Update.jsp'">
+                            <input type="button" name="Edit" value="Edit" onclick="location.href='/spring/stars/operator/account/accountEdit?accountId=<%= account.getAccountID() %>'">
                           </div>
                         </td>
                       </tr>

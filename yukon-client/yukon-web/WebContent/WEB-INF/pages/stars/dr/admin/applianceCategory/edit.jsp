@@ -74,12 +74,14 @@
     <script type="text/javascript">
         function simpleAJAXRequest(url) {
             var successCallback = function(transport, json) {
+                hideBusy();
                 if (json.action === 'reload') {
                     window.location = window.location;
                 }
             };
 
             var errorCallback = function(transport) {
+                hideBusy();
                 alert('error making request');
             };
 
@@ -90,6 +92,7 @@
                     'onFailure': errorCallback
                     };
             // 'parameters'
+            showBusy();
             new Ajax.Request(url, options);
         }
     </script>
