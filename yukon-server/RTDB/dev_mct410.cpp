@@ -1439,8 +1439,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         // Disable load profile peak report for channel 4. (see YUK-4569)
         if ( parse.getsValue("lp_command") == "peak" && parse.getiValue("lp_channel") == 4 )
         {
-            nRet = NoMethod;
-            returnErrorMessage(NoMethod, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
+            nRet = BADPARAM;
+            returnErrorMessage(BADPARAM, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
         }
         else
         {
