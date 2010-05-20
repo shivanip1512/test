@@ -169,6 +169,7 @@ private javax.swing.JButton getJButtonAdd() {
 			ivjJButtonAdd.setName("JButtonAdd");
 			ivjJButtonAdd.setMnemonic('a');
 			ivjJButtonAdd.setText("Add");
+			ivjJButtonAdd.setMinimumSize(new Dimension(80,20));
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -253,6 +254,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldPriority() {
 			ivjJCSpinFieldPriority = new com.klg.jclass.field.JCSpinField();
 			ivjJCSpinFieldPriority.setName("JCSpinFieldPriority");
 			ivjJCSpinFieldPriority.setToolTipText("Search priority");
+			ivjJCSpinFieldPriority.setMinimumSize(new Dimension(40,20));
 			// user code begin {1}
 
 			ivjJCSpinFieldPriority.setDataProperties(
@@ -287,6 +289,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinFieldStopOrder() {
 			ivjJCSpinFieldStopOrder = new com.klg.jclass.field.JCSpinField();
 			ivjJCSpinFieldStopOrder.setName("JCSpinFieldStopOrder");
 			ivjJCSpinFieldStopOrder.setToolTipText("Order number used when stopping");
+	        ivjJCSpinFieldStopOrder.setMinimumSize(new Dimension(40,20));
 			// user code begin {1}
 
 			ivjJCSpinFieldStopOrder.setDataProperties(
@@ -439,58 +442,49 @@ private javax.swing.JPanel getJPanelLMProgram() {
 
 			java.awt.GridBagConstraints constraintsJComboBoxLMProgram = new java.awt.GridBagConstraints();
 			constraintsJComboBoxLMProgram.gridx = 2; constraintsJComboBoxLMProgram.gridy = 1;
-			constraintsJComboBoxLMProgram.gridwidth = 3;
+			constraintsJComboBoxLMProgram.gridwidth = 4;
 			constraintsJComboBoxLMProgram.fill = java.awt.GridBagConstraints.HORIZONTAL;
 			constraintsJComboBoxLMProgram.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJComboBoxLMProgram.weightx = 1.0;
-			constraintsJComboBoxLMProgram.ipadx = 122;
-			constraintsJComboBoxLMProgram.insets = new java.awt.Insets(5, 1, 3, 28);
+			constraintsJComboBoxLMProgram.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJComboBoxLMProgram(), constraintsJComboBoxLMProgram);
 
 			java.awt.GridBagConstraints constraintsJLabelProgram = new java.awt.GridBagConstraints();
 			constraintsJLabelProgram.gridx = 1; constraintsJLabelProgram.gridy = 1;
 			constraintsJLabelProgram.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelProgram.ipadx = 10;
-			constraintsJLabelProgram.insets = new java.awt.Insets(5, 17, 6, 1);
+			constraintsJLabelProgram.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJLabelProgram(), constraintsJLabelProgram);
 
 			java.awt.GridBagConstraints constraintsJButtonAdd = new java.awt.GridBagConstraints();
-			constraintsJButtonAdd.gridx = 4; constraintsJButtonAdd.gridy = 3;
+			constraintsJButtonAdd.gridx = 5; constraintsJButtonAdd.gridy = 3;
 			constraintsJButtonAdd.anchor = java.awt.GridBagConstraints.SOUTHEAST;
-			constraintsJButtonAdd.ipadx = 11;
-			constraintsJButtonAdd.insets = new java.awt.Insets(2, 20, 9, 26);
+			constraintsJButtonAdd.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJButtonAdd(), constraintsJButtonAdd);
 
 			java.awt.GridBagConstraints constraintsJLabelStopOrder = new java.awt.GridBagConstraints();
 			constraintsJLabelStopOrder.gridx = 1; constraintsJLabelStopOrder.gridy = 3;
-			constraintsJLabelStopOrder.gridwidth = 2;
+			constraintsJLabelStopOrder.gridwidth = 3;
 			constraintsJLabelStopOrder.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelStopOrder.ipadx = 3;
-			constraintsJLabelStopOrder.insets = new java.awt.Insets(7, 17, 10, 0);
+			constraintsJLabelStopOrder.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJLabelStopOrder(), constraintsJLabelStopOrder);
 
 			java.awt.GridBagConstraints constraintsJLabelPriority = new java.awt.GridBagConstraints();
 			constraintsJLabelPriority.gridx = 1; constraintsJLabelPriority.gridy = 2;
-			constraintsJLabelPriority.gridwidth = 2;
+			constraintsJLabelPriority.gridwidth = 3;
 			constraintsJLabelPriority.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelPriority.ipadx = 2;
-			constraintsJLabelPriority.insets = new java.awt.Insets(6, 17, 1, 0);
+			constraintsJLabelPriority.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJLabelPriority(), constraintsJLabelPriority);
 
 			java.awt.GridBagConstraints constraintsJCSpinFieldPriority = new java.awt.GridBagConstraints();
-			constraintsJCSpinFieldPriority.gridx = 3; constraintsJCSpinFieldPriority.gridy = 2;
+			constraintsJCSpinFieldPriority.gridx = 4; constraintsJCSpinFieldPriority.gridy = 2;
 			constraintsJCSpinFieldPriority.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJCSpinFieldPriority.ipadx = 54;
-			constraintsJCSpinFieldPriority.ipady = 19;
-			constraintsJCSpinFieldPriority.insets = new java.awt.Insets(4, 1, 2, 25);
+			constraintsJCSpinFieldPriority.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJCSpinFieldPriority(), constraintsJCSpinFieldPriority);
 
 			java.awt.GridBagConstraints constraintsJCSpinFieldStopOrder = new java.awt.GridBagConstraints();
-			constraintsJCSpinFieldStopOrder.gridx = 3; constraintsJCSpinFieldStopOrder.gridy = 3;
+			constraintsJCSpinFieldStopOrder.gridx = 4; constraintsJCSpinFieldStopOrder.gridy = 3;
 			constraintsJCSpinFieldStopOrder.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJCSpinFieldStopOrder.ipadx = 54;
-			constraintsJCSpinFieldStopOrder.ipady = 19;
-			constraintsJCSpinFieldStopOrder.insets = new java.awt.Insets(5, 1, 11, 25);
+			constraintsJCSpinFieldStopOrder.insets = new java.awt.Insets(3,3,3,3);
 			getJPanelLMProgram().add(getJCSpinFieldStopOrder(), constraintsJCSpinFieldStopOrder);
 			// user code begin {1}
 			// user code end
@@ -827,19 +821,17 @@ private void initialize() {
 
 		java.awt.GridBagConstraints constraintsJScrollPaneJTable = new java.awt.GridBagConstraints();
 		constraintsJScrollPaneJTable.gridx = 1; constraintsJScrollPaneJTable.gridy = 3;
-		constraintsJScrollPaneJTable.gridwidth = 2;
+		constraintsJScrollPaneJTable.gridwidth = 5;
 		constraintsJScrollPaneJTable.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJScrollPaneJTable.weightx = 1.0;
 		constraintsJScrollPaneJTable.weighty = 1.0;
-		constraintsJScrollPaneJTable.ipadx = 341;
-		constraintsJScrollPaneJTable.ipady = 158;
-		constraintsJScrollPaneJTable.insets = new java.awt.Insets(2, 10, 0, 16);
+		constraintsJScrollPaneJTable.insets = new java.awt.Insets(3,3,3,3);
 		add(getJScrollPaneJTable(), constraintsJScrollPaneJTable);
 
 		java.awt.GridBagConstraints constraintsJButtonRemove = new java.awt.GridBagConstraints();
-		constraintsJButtonRemove.gridx = 2; constraintsJButtonRemove.gridy = 2;
-		constraintsJButtonRemove.ipadx = 4;
-		constraintsJButtonRemove.insets = new java.awt.Insets(8, 64, 1, 16);
+		constraintsJButtonRemove.gridx = 2; 
+		constraintsJButtonRemove.gridy = 2;
+		constraintsJButtonRemove.insets = new java.awt.Insets(3,3,3,3);
 		add(getJButtonRemove(), constraintsJButtonRemove);
 
 		java.awt.GridBagConstraints constraintsJPanelLMProgram = new java.awt.GridBagConstraints();
@@ -848,15 +840,12 @@ private void initialize() {
 		constraintsJPanelLMProgram.fill = java.awt.GridBagConstraints.BOTH;
 		constraintsJPanelLMProgram.weightx = 1.0;
 		constraintsJPanelLMProgram.weighty = 1.0;
-		constraintsJPanelLMProgram.ipady = 3;
-		constraintsJPanelLMProgram.insets = new java.awt.Insets(15, 10, 8, 16);
+		constraintsJPanelLMProgram.insets = new java.awt.Insets(3,3,3,3);
 		add(getJPanelLMProgram(), constraintsJPanelLMProgram);
 
 		java.awt.GridBagConstraints constraintsJLabelSelectedPrograms = new java.awt.GridBagConstraints();
 		constraintsJLabelSelectedPrograms.gridx = 1; constraintsJLabelSelectedPrograms.gridy = 2;
-		constraintsJLabelSelectedPrograms.ipadx = 15;
-		constraintsJLabelSelectedPrograms.ipady = 8;
-		constraintsJLabelSelectedPrograms.insets = new java.awt.Insets(8, 10, 2, 63);
+		constraintsJLabelSelectedPrograms.insets = new java.awt.Insets(3,3,3,3);
 		add(getJLabelSelectedPrograms(), constraintsJLabelSelectedPrograms);
 
 		java.awt.GridBagConstraints constraintsJLabelSearchInstructions = new java.awt.GridBagConstraints();
