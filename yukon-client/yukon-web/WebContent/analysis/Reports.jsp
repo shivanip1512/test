@@ -237,11 +237,9 @@ function makeFirstSelectedFilterValueVisible() {
 	String linkHtml = null;
 	String linkImgExp = null;
 	
-	final ReportModelBase model = REPORT_BEAN.getModel();
+	final ReportModelBase<?> model = REPORT_BEAN.getModel();
     final ReportController controller = REPORT_BEAN.getReportController();
-    boolean supportPDF = true;
-    if(model != null)
-        supportPDF = model.supportsPDF();
+    boolean supportPdf = controller.supportsPdf();
 %>
 
 	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
@@ -379,8 +377,8 @@ function makeFirstSelectedFilterValueVisible() {
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
 				    <tr>
 					  <td class="main">
-						<input <%=(!supportPDF ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf" <%=(supportPDF ? " checked='checked' " : "")%>>PDF<BR>
-  						<input <%=(!supportPDF ? " checked='checked' " : "")%>type="radio" name="ext" value="csv">CSV
+						<input <%=(!supportPdf ? " disabled='disabled' " : "")%> type="radio" name="ext" value="pdf" <%=(supportPdf ? " checked='checked' " : "")%>>PDF<BR>
+  						<input <%=(!supportPdf ? " checked='checked' " : "")%>type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
 					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>

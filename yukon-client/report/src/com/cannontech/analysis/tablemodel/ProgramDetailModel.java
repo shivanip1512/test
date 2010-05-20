@@ -410,7 +410,7 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	}
 	
 	@Override
-	public boolean supportsPDF() {
+	public boolean supportsPdf() {
         return false;
     }
 

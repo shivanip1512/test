@@ -18,5 +18,6 @@ public interface ReportController {
     public boolean reportHasFilter(int userId);
     public void setRequestParameters(HttpServletRequest request);
     public boolean useStartStopTimes();
+    public boolean supportsPdf();
     
 }

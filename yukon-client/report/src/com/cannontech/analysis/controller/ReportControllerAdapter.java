@@ -12,9 +12,9 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
 public class ReportControllerAdapter extends ReportControllerBase  {
 
-    private final ReportModelBase reportModelbase;
+    private final ReportModelBase<?> reportModelbase;
 
-    public ReportControllerAdapter(ReportModelBase reportModelbase) {
+    public ReportControllerAdapter(ReportModelBase<?> reportModelbase) {
         super();
         this.reportModelbase = reportModelbase;
     }
@@ -51,4 +51,7 @@ public class ReportControllerAdapter extends ReportControllerBase  {
         return reportModelbase.useStartStopTimes();
     }
     
+    public boolean supportsPdf() {
+        return report.supportsPdf();
+    }
 }

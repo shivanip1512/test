@@ -609,10 +609,6 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	    return false;
 	}
 	
-	public boolean supportsPDF() {
-        return true;
-    }
-	
 	/**
 	 * @return
 	 */
@@ -792,6 +788,10 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
             DeviceGroup group = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DEVICETYPES);
             return Lists.newArrayList(deviceGroupService.getDevices(Collections.singletonList(group)));
         }
+    }
+
+    public boolean supportsPdf() {
+        return true;
     }
 
 }

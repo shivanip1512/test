@@ -73,4 +73,9 @@ public abstract class ReportControllerBase implements ReportController {
     public boolean useStartStopTimes() {
         return false;
     }
+    
+    @Override
+    public boolean supportsPdf() {
+        return report.supportsPdf();
+    }
 }

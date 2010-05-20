@@ -285,4 +285,9 @@ public class ProgramDetailReport extends YukonReportBase
 	{
 		showNotEnrolled = b;
 	}
+	
+	@Override
+	public boolean supportsPdf() {
+	    return false;
+	}
 }
