@@ -130,6 +130,8 @@ public:
    void printResult( const string& deviceName);
    void decodeResultPiece( BYTE **dataBlob );
 
+   CtiTime getClkCldrTime();
+   CtiDate getClkCldrDate();
    int getClkCldrYear();
    int getClkCldrMon();
    int getClkCldrDay();

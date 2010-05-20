@@ -1693,7 +1693,9 @@ void CtiProtocolANSI::updateBytesExpected( )
                                                           + ( _table21->getNbrPresentValues() * sizeOfNonIntegerFormat (_table00->getRawNIFormat1()) );
                         }
                         else
+                        {    
                             _tables[_index].bytesExpected = 0;
+                        }
 
                     }
                     break;
@@ -2064,8 +2066,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    ULONG tmStamp = *timestamp;
-                                    *timestamp = _table52->adjustTimeZoneAndDST(tmStamp);
+                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2077,8 +2078,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    ULONG tmStamp = *timestamp;
-                                    *timestamp = _table52->adjustTimeZoneAndDST(tmStamp);
+                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                 }
                             }
                         }
@@ -2090,8 +2090,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                 *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                    ULONG tmStamp = *timestamp;
-                                    *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2102,8 +2101,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                                  *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                                  if (_table52 != NULL)
                                  {
-                                    ULONG tmStamp = *timestamp;
-                                    *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                     *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                  }
                             }
 
@@ -2122,8 +2120,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                             *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
-                                ULONG tmStamp = *timestamp;
-                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                             }
                         }
                         else  // 2 = sentinel
@@ -2134,8 +2131,7 @@ bool CtiProtocolANSI::retreiveDemand( int offset, double *value, double *timesta
                             *timestamp = _table23->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
-                                ULONG tmStamp = *timestamp;
-                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                             }
                         }
                     }
@@ -2307,8 +2303,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                     ULONG tmStamp = *timestamp;
-                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2324,8 +2319,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 }
                                 if (_table52 != NULL)
                                 {
-                                     ULONG tmStamp = *timestamp;
-                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                 }
                             }
                         }
@@ -2337,8 +2331,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                 *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                                 if (_table52 != NULL)
                                 {
-                                     ULONG tmStamp = *timestamp;
-                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                    *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                 }
                             }
                             else  // 2 = sentinel
@@ -2353,8 +2346,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                                  }
                                  if (_table52 != NULL)
                                  {
-                                     ULONG tmStamp = *timestamp;
-                                     *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                     *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                                  }
                             }
 
@@ -2373,8 +2365,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             *timestamp = _frozenRegTable->getDemandResetDataTable()->getDemandEventTime( x, ansiTOURate );
                             if (_table52 != NULL)
                             {
-                                ULONG tmStamp = *timestamp;
-                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                             }
                         }
                         else  // 2 = sentinel
@@ -2390,8 +2381,7 @@ bool CtiProtocolANSI::retreiveFrozenDemand( int offset, double *value, double *t
                             }
                             if (_table52 != NULL)
                             {
-                                ULONG tmStamp = *timestamp;
-                                *timestamp = (double)_table52->adjustTimeZoneAndDST(tmStamp);
+                                *timestamp = _table52->adjustTimeZoneAndDST(*timestamp);
                             }
                         }
                     }

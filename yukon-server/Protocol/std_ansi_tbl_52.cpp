@@ -161,67 +161,60 @@ bool CtiAnsiTable52::isCalendarValid()
 {
     return CtiTime(clock_table.clock_calendar).isValid();
 }
+
+
+CtiTime CtiAnsiTable52::getClkCldrTime()
+{
+    CtiTime meterTime = CtiTime(clock_table.clock_calendar);
+
+    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
+    {   
+        meterTime = meterTime.asGMT();
+    }
+    return meterTime;
+}
+
+CtiDate CtiAnsiTable52::getClkCldrDate()
+{
+    return getClkCldrTime().date();
+}
+
 int CtiAnsiTable52::getClkCldrYear()
 {
     if (!isCalendarValid())
         return 0;
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {   
-        CtiTime meterTime = CtiTime(clock_table.clock_calendar).asGMT();
-        return (int)CtiDate(meterTime).year();
-    }
-    else
-        return (int)CtiDate(CtiTime(clock_table.clock_calendar)).year();
+
+    return (int)getClkCldrDate().year();
 }
 
 int CtiAnsiTable52::getClkCldrMon()
 {
     if (!isCalendarValid())
         return 0;
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {    
-        CtiTime meterTime = CtiTime(clock_table.clock_calendar).asGMT();
-        return (int)CtiDate(meterTime).month();
-    }
-    else
-        return (int)CtiDate(CtiTime(clock_table.clock_calendar)).month();
+    return (int)getClkCldrDate().month();
 }
 
 int CtiAnsiTable52::getClkCldrDay()
 {
     if (!isCalendarValid())
         return 0;
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {    
-        CtiTime meterTime = CtiTime(clock_table.clock_calendar).asGMT();
-        return (int)CtiDate(meterTime).dayOfMonth();
-    }
-    else
-        return (int)CtiDate(CtiTime(clock_table.clock_calendar)).dayOfMonth();
+    return (int)getClkCldrDate().dayOfMonth();
 }
 
 int CtiAnsiTable52::getClkCldrHour()
 {
     if (!isCalendarValid())
         return 0;
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {    
-        return (int) CtiTime(clock_table.clock_calendar).asGMT().hour();
-    }
-    else
-        return (int)CtiTime(clock_table.clock_calendar).hour();
+
+     return (int)getClkCldrTime().hour();
 }
 
 int CtiAnsiTable52::getClkCldrMin()
 {
     if (!isCalendarValid())
         return 0;
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {    
-        return (int) CtiTime(clock_table.clock_calendar).asGMT().minute();
-    }
-    else
-        return (int)CtiTime(clock_table.clock_calendar).minute();
+
+    return (int)getClkCldrTime().minute();
 }
 
 int CtiAnsiTable52::getClkCldrSec()
@@ -229,12 +222,7 @@ int CtiAnsiTable52::getClkCldrSec()
     if (!isCalendarValid())
         return 0;
 
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {    
-        return (int) CtiTime(clock_table.clock_calendar).asGMT().second();
-    }
-    else
-        return (int)CtiTime(clock_table.clock_calendar).second();
+    return (int)getClkCldrTime().second();
 }
 
 ULONG CtiAnsiTable52::getMeterServerTimeDifference()
