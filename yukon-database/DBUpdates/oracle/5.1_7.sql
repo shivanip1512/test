@@ -24,9 +24,16 @@ ALTER TABLE CRFAddress
     ADD CONSTRAINT FK_CRFAdd_Device FOREIGN KEY (DeviceId)
         REFERENCES Device (DeviceId)
             ON DELETE CASCADE;
+
+CREATE UNIQUE INDEX Indx_CRFAdd_SerNum_Man_Mod_UNQ ON CRFAddress(
+SerialNumber ASC,
+Manufacturer ASC,
+Model ASC
+);
 /* End YUK-8718 */
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.1', 'Matt K', '20-MAY-2010', 'Latest Update', 7);

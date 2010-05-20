@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/19/2010 11:36:07 AM                        */
+/* Created on:     5/20/2010 12:18:22 PM                        */
 /*==============================================================*/
 
 
@@ -110,6 +110,8 @@ drop index INDX_CCURTPRGGRP_GRPID_PRGID;
 drop index INDX_CCURPNG_PRGNM_PRGTYPEID;
 
 drop index INDX_CCRTPRGPRM_PGID_PMKEY;
+
+drop index Indx_CRFAdd_SerNum_Man_Mod_UNQ;
 
 drop index Indx_CPCNFDVARPT;
 
@@ -2048,6 +2050,15 @@ create table CRFAddress  (
    Manufacturer         VARCHAR2(80)                    not null,
    Model                VARCHAR2(80)                    not null,
    constraint PK_CRFAdd primary key (DeviceId)
+);
+
+/*==============================================================*/
+/* Index: Indx_CRFAdd_SerNum_Man_Mod_UNQ                        */
+/*==============================================================*/
+create unique index Indx_CRFAdd_SerNum_Man_Mod_UNQ on CRFAddress (
+   SerialNumber ASC,
+   Manufacturer ASC,
+   Model ASC
 );
 
 /*==============================================================*/

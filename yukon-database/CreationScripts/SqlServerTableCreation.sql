@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/19/2010 11:38:07 AM                        */
+/* Created on:     5/20/2010 12:16:54 PM                        */
 /*==============================================================*/
 
 
@@ -408,6 +408,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index CCurtProgramParameter.INDX_CCRTPRGPRM_PGID_PMKEY
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CRFAddress')
+            and   name  = 'Indx_CRFAdd_SerNum_Man_Mod_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index CRFAddress.Indx_CRFAdd_SerNum_Man_Mod_UNQ
 go
 
 if exists (select 1
@@ -4682,6 +4691,16 @@ create table CRFAddress (
    Manufacturer         varchar(80)          not null,
    Model                varchar(80)          not null,
    constraint PK_CRFAdd primary key (DeviceId)
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_CRFAdd_SerNum_Man_Mod_UNQ                        */
+/*==============================================================*/
+create unique index Indx_CRFAdd_SerNum_Man_Mod_UNQ on CRFAddress (
+SerialNumber ASC,
+Manufacturer ASC,
+Model ASC
 )
 go
 
