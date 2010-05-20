@@ -94,7 +94,7 @@
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.instructions">Please enter the new start and stop times for control area {0} in the format HH:mm where HH is the hours from 00 to 23 and mm is minutes from 00 to 59.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.invalidStartTime">Invalid start time.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.invalidStopTime">Invalid stop time.</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTimeAfterStopTime">Start time must be after stop time.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTimeAfterStopTime">Start time must be earlier than stop time.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.startTime">New Start Time:</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.stopTime">New Stop Time:</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTimeWindowValues.okButton">OK</entry>
@@ -117,10 +117,10 @@
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.okButton">OK</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.cancelButton">Cancel</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.triggerValueChanged">Trigger value changed.</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.thresholdOverLimt">Threshold must be less than 1,000,000.</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.thresholdUnderLimt">Threshold must be greater than -1,000,000.</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offsetOverLimt">Offset must be less than 100,000.</entry>
-<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offsetUnderLimt">Offset must be greater than -100,000.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.thresholdOverLimit">Threshold must be less than 1,000,000.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.thresholdUnderLimit">Threshold must be greater than -1,000,000.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offsetOverLimit">Offset must be less than 100,000.</entry>
+<entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.offsetUnderLimit">Offset must be greater than -100,000.</entry>
 <entry key="yukon.web.modules.dr.controlArea.getChangeTriggerValues.thresholdBlank">Threshold cannot be blank.</entry>
 <entry key="yukon.web.modules.dr.controlArea.typeMismatch.threshold">Invalid threshold value.</entry>
 <entry key="yukon.web.modules.dr.controlArea.typeMismatch.minRestoreOffset">Invalid offset value.</entry>

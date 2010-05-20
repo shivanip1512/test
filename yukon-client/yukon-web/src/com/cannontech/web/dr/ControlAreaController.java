@@ -458,16 +458,16 @@ public class ControlAreaController {
 	        		}
 	        		
 	        		if (threshold != null && threshold >= 1000000.0) {
-	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdOverLimt");
+	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdOverLimit");
 	        		}
 	        		if (threshold != null && threshold <= -1000000.0) {
-	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdUnderLimt");
+	        			errors.rejectValue(thresholdFieldName, "getChangeTriggerValues.thresholdUnderLimit");
 	        		}
 	        		if (minRestoreOffset != null && minRestoreOffset >= 100000.0) {
-	        			errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetOverLimt");
+	        			errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetOverLimit");
 	        		}
 	        		if (minRestoreOffset != null && minRestoreOffset <= -100000.0) {
-	        			errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetUnderLimt");
+	        			errors.rejectValue(offsetFieldName, "getChangeTriggerValues.offsetUnderLimit");
 	        		}
 	        		
         		}
