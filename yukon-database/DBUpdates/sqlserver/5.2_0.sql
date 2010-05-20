@@ -26,6 +26,15 @@ Model ASC
 GO
 /* End YUK-8718 */
 
+/* Start YUK-8708 */
+DELETE FROM YukonUserRole
+WHERE RolePropertyId = -10001;
+DELETE FROM YukonGroupRole
+WHERE RolePropertyId = -10001;
+DELETE FROM YukonRoleProperty
+WHERE RolePropertyId = -10001;
+/* End YUK-8708 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

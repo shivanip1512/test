@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/20/2010 12:16:54 PM                        */
+/* Created on:     5/20/2010 4:55:51 PM                         */
 /*==============================================================*/
 
 
@@ -11122,7 +11122,6 @@ insert into YukonGroupRole values(-92,-1,-4,-1307,'(none)');
 /* Assign roles to the default operator group to allow them to use all the main rich Yukon applications */
 /* Database Editor */
 insert into YukonGroupRole values(-100,-100,-100,-10000,'(none)');
-insert into YukonGroupRole values(-101,-100,-100,-10001,'(none)');
 insert into YukonGroupRole values(-102,-100,-100,-10002,'(none)');
 insert into YukonGroupRole values(-104,-100,-100,-10004,'(none)');
 insert into YukonGroupRole values(-105,-100,-100,-10005,'(none)');
@@ -11371,7 +11370,6 @@ insert into yukongrouprole values (-893,-301,-201,-20893,'(none)');
 /* START the System Administrator role Group */
 /* Database Editor */
 insert into YukonGroupRole values(-1000,-2,-100,-10000,'(none)');
-insert into YukonGroupRole values(-1001,-2,-100,-10001,'(none)');
 insert into YukonGroupRole values(-1002,-2,-100,-10002,'(none)');
 insert into YukonGroupRole values(-1004,-2,-100,-10004,'(none)');
 insert into YukonGroupRole values(-1005,-2,-100,-10005,'(none)');
@@ -12311,7 +12309,6 @@ INSERT INTO YukonRoleProperty VALUES(-1509,-6,'Rounding Mode','HALF_EVEN','Round
 
 /* Database Editor Role */
 INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
-INSERT INTO YukonRoleProperty VALUES(-10001,-100,'dbeditor_core','true','Controls whether the Core menu item in the View menu is displayed');
 INSERT INTO YukonRoleProperty VALUES(-10002,-100,'dbeditor_lm','true','Controls whether the Loadmanagement menu item in the View menu is displayed');
 INSERT INTO YukonRoleProperty VALUES(-10004,-100,'dbeditor_system','true','Controls whether the System menu item in the View menu is displayed');
 INSERT INTO YukonRoleProperty VALUES(-10005,-100,'utility_id_range','1-254','<description>');
@@ -12912,7 +12909,6 @@ go
 
 /* Database Editor */
 INSERT INTO YukonUserRole VALUES(-100,-1,-100,-10000,'(none)');
-INSERT INTO YukonUserRole VALUES(-101,-1,-100,-10001,'(none)');
 INSERT INTO YukonUserRole VALUES(-102,-1,-100,-10002,'(none)');
 INSERT INTO YukonUserRole VALUES(-104,-1,-100,-10004,'(none)');
 INSERT INTO YukonUserRole VALUES(-105,-1,-100,-10005,'(none)');
