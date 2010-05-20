@@ -55,7 +55,7 @@
 #include <vector>
 #include <list>
 using std::vector;
-using std::map;
+using std::multimap;
 using std::list;
 
 extern ULONG _CC_DEBUG;
@@ -2229,11 +2229,11 @@ void CtiCapController::parseMessage(RWCollectable *message)
                         }
                         else if (dbChange->getDatabase() == ChangePointDb)
                         {
-                            map< long, CtiCCSubstationBusPtr >::iterator subBusBegin,  subBusEnd;
-                            map< long, CtiCCFeederPtr >::iterator        feederBegin,  feederEnd;
-                            map< long, CtiCCCapBankPtr >::iterator       capBankBegin, capBankEnd;
-                            map< long, CtiCCAreaPtr >::iterator          areaBegin,    areaEnd;
-                            map< long, CtiCCSpecialPtr >::iterator       sAreaBegin,   sAreaEnd;
+                            multimap< long, CtiCCSubstationBusPtr >::iterator subBusBegin,  subBusEnd;
+                            multimap< long, CtiCCFeederPtr >::iterator        feederBegin,  feederEnd;
+                            multimap< long, CtiCCCapBankPtr >::iterator       capBankBegin, capBankEnd;
+                            multimap< long, CtiCCAreaPtr >::iterator          areaBegin,    areaEnd;
+                            multimap< long, CtiCCSpecialPtr >::iterator       sAreaBegin,   sAreaEnd;
                             if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subBusBegin, subBusEnd))
                             {
                                 CtiCCSubstationBusPtr sub = subBusBegin->second;
@@ -2838,7 +2838,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
 
     CtiCCAreaPtr currentArea = NULL;
-    std::map< long, CtiCCAreaPtr >::iterator areaIter, end;
+    std::multimap< long, CtiCCAreaPtr >::iterator areaIter, end;
     store->findAreaByPointID(pointID, areaIter, end);
 
     while (areaIter != end)
@@ -2887,7 +2887,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
 
 
     CtiCCSpecialPtr currentSpArea = NULL;
-    std::map< long, CtiCCSpecialPtr >::iterator saIter, end;
+    std::multimap< long, CtiCCSpecialPtr >::iterator saIter, end;
     store->findSpecialAreaByPointID(pointID, saIter, end);
 
     while (saIter != end)
@@ -2937,7 +2937,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
 
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
-    std::map< long, CtiCCSubstationPtr >::iterator stationIter, end;
+    std::multimap< long, CtiCCSubstationPtr >::iterator stationIter, end;
     store->findSubstationByPointID(pointID, stationIter, end);
 
     while (stationIter != end)
@@ -3003,7 +3003,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
 
-    std::map< long, CtiCCSubstationBusPtr >::iterator subIter, end;
+    std::multimap< long, CtiCCSubstationBusPtr >::iterator subIter, end;
     store->findSubBusByPointID(pointID, subIter, end);
 
     while (subIter != end)
@@ -3226,8 +3226,8 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 }
 
                 // check for alt sub bus id, and update all sub's alt values
-                map<long,long>::iterator it;
-                pair<map<long,long>::iterator,map<long,long>::iterator> ret;
+                multimap<long,long>::iterator it;
+                pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
 
                 ret = store->getSubsWithAltSubID(currentSubstationBus->getPaoId());
                 for (it = ret.first; it != ret.second; it++)
@@ -3335,7 +3335,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
-    std::map< long, CtiCCFeederPtr >::iterator feedIter, end;
+    std::multimap< long, CtiCCFeederPtr >::iterator feedIter, end;
     store->findFeederByPointID(pointID, feedIter, end);
 
     while (feedIter != end)
@@ -3572,7 +3572,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
-    std::map< long, CtiCCCapBankPtr >::iterator capIter, end;
+    std::multimap< long, CtiCCCapBankPtr >::iterator capIter, end;
     store->findCapBankByPointID(pointID, capIter, end);
 
     while (capIter != end)

@@ -9246,7 +9246,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
             while (iter != controlid_action_map.end())
             {
                 {
-                    map< long, CtiCCCapBankPtr >::iterator bankIter, end;
+                    multimap< long, CtiCCCapBankPtr >::iterator bankIter, end;
                     if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
                     {
                         CtiCCCapBankPtr bank = bankIter->second;
@@ -9587,8 +9587,8 @@ int CtiCCSubstationBus::getAlterateBusIdForPrimary() const
     int paoId = getPaoId();
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
-    map<long,long>::iterator it;
-    pair<map<long,long>::iterator,map<long,long>::iterator> ret;
+    multimap<long,long>::iterator it;
+    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> ret;
 
     ret = store->getSubsWithAltSubID(paoId);
     for (it = ret.first; it != ret.second; it++)

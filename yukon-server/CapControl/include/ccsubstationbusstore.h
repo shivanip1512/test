@@ -43,7 +43,7 @@
 #include "AttributeService.h"
 
 
-using std::map;
+using std::multimap;
 typedef std::set<RWCollectable*> CtiMultiMsg_set;
 using std::pair;
 
@@ -173,18 +173,18 @@ public:
 
     bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
 
-    bool findSpecialAreaByPointID(long point_id, std::map< long, CtiCCSpecialPtr >::iterator       &begin, std::map< long, CtiCCSpecialPtr >::iterator       &end);
-    bool findAreaByPointID       (long point_id, std::map< long, CtiCCAreaPtr >::iterator          &begin, std::map< long, CtiCCAreaPtr >::iterator          &end);
-    bool findSubBusByPointID     (long point_id, std::map< long, CtiCCSubstationBusPtr >::iterator &begin, std::map< long, CtiCCSubstationBusPtr >::iterator &end);
-    bool findSubstationByPointID (long point_id, std::map< long, CtiCCSubstationPtr >::iterator    &begin, std::map< long, CtiCCSubstationPtr >::iterator    &end);
-    bool findFeederByPointID     (long point_id, std::map< long, CtiCCFeederPtr >::iterator        &begin, std::map< long, CtiCCFeederPtr >::iterator        &end);
-    bool findCapBankByPointID    (long point_id, std::map< long, CtiCCCapBankPtr >::iterator       &begin, std::map< long, CtiCCCapBankPtr >::iterator       &end);
+    bool findSpecialAreaByPointID(long point_id, std::multimap< long, CtiCCSpecialPtr >::iterator       &begin, std::multimap< long, CtiCCSpecialPtr >::iterator       &end);
+    bool findAreaByPointID       (long point_id, std::multimap< long, CtiCCAreaPtr >::iterator          &begin, std::multimap< long, CtiCCAreaPtr >::iterator          &end);
+    bool findSubBusByPointID     (long point_id, std::multimap< long, CtiCCSubstationBusPtr >::iterator &begin, std::multimap< long, CtiCCSubstationBusPtr >::iterator &end);
+    bool findSubstationByPointID (long point_id, std::multimap< long, CtiCCSubstationPtr >::iterator    &begin, std::multimap< long, CtiCCSubstationPtr >::iterator    &end);
+    bool findFeederByPointID     (long point_id, std::multimap< long, CtiCCFeederPtr >::iterator        &begin, std::multimap< long, CtiCCFeederPtr >::iterator        &end);
+    bool findCapBankByPointID    (long point_id, std::multimap< long, CtiCCCapBankPtr >::iterator       &begin, std::multimap< long, CtiCCCapBankPtr >::iterator       &end);
     int getNbrOfAreasWithPointID (long point_id);
     int getNbrOfSpecialAreasWithPointID(long point_id) ;
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
-    pair<map<long,long>::iterator,map<long,long>::iterator> getSubsWithAltSubID(int altSubId);
+    pair<multimap<long,long>::iterator,multimap<long,long>::iterator> getSubsWithAltSubID(int altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
 
@@ -223,7 +223,7 @@ public:
     void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                    map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                   map< long, CtiCCCapBankPtr > *pointid_capbank_map,
+                                   multimap< long, CtiCCCapBankPtr > *pointid_capbank_map,
                                    map< long, long> *capbank_subbus_map,
                                    map< long, long> *capbank_feeder_map,
                                    map< long, long> *feeder_subbus_map,
@@ -231,33 +231,33 @@ public:
     void reloadMonitorPointsFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                    map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                    map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                   map< long, CtiCCCapBankPtr > *pointid_capbank_map);
+                                   multimap< long, CtiCCCapBankPtr > *pointid_capbank_map);
     void reloadFeederFromDatabase(long feederId,
                                   map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                  map< long, CtiCCFeederPtr > *pointid_feeder_map,
+                                  multimap< long, CtiCCFeederPtr > *pointid_feeder_map,
                                   map< long, long> *feeder_subbus_map);
     void reloadSubBusFromDatabase(long subBusId,
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                   map< long, CtiCCSubstationPtr > *paobject_substation_map,
-                                  map< long, CtiCCSubstationBusPtr > *pointid_subbus_map,
-                                  map<long, long> *altsub_sub_idmap,
+                                  multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map,
+                                  multimap<long, long> *altsub_sub_idmap,
                                   map< long, long> *subbus_substation_map,
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadSubstationFromDatabase(long substationId, map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                       map <long, CtiCCAreaPtr> *paobject_area_map,
                                       map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
-                                      map< long, CtiCCSubstationPtr > *pointid_station_map,
+                                      multimap< long, CtiCCSubstationPtr > *pointid_station_map,
                                       map< long, long> *substation_area_map,
                                       map< long, long> *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
     void reloadAreaFromDatabase(long areaId,
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
-                                  map< long, CtiCCAreaPtr > *pointid_area_map,
+                                  multimap< long, CtiCCAreaPtr > *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas);
     void reloadSpecialAreaFromDatabase(long areaId,
                                   map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
-                                  map< long, CtiCCSpecialPtr > *pointid_specialarea_map,
+                                  multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
     void reloadTimeOfDayStrategyFromDatabase(long strategyId);
     void reloadStrategyFromDatabase(long strategyId);
@@ -597,12 +597,12 @@ private:
     CapBankMap _paobject_capbank_map;
     LtcMap _paobject_ltc_map;
 
-    map< long, CtiCCAreaPtr > _pointid_area_map;
-    map< long, CtiCCSpecialPtr > _pointid_specialarea_map;
-    map< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
-    map< long, CtiCCSubstationPtr > _pointid_station_map;
-    map< long, CtiCCFeederPtr > _pointid_feeder_map;
-    map< long, CtiCCCapBankPtr > _pointid_capbank_map;
+    multimap< long, CtiCCAreaPtr > _pointid_area_map;
+    multimap< long, CtiCCSpecialPtr > _pointid_specialarea_map;
+    multimap< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
+    multimap< long, CtiCCSubstationPtr > _pointid_station_map;
+    multimap< long, CtiCCFeederPtr > _pointid_feeder_map;
+    multimap< long, CtiCCCapBankPtr > _pointid_capbank_map;
 
     StrategyManager _strategyManager;
 
@@ -615,7 +615,7 @@ private:
     map< long, long > _cbc_capbank_map;
     map< long, long > _ltc_subbus_map;
 
-    map< long, long > _altsub_sub_idmap;
+    multimap< long, long > _altsub_sub_idmap;
 
     list <CtiCCCapBankPtr> _unsolicitedCapBanks;
     list <CtiCCCapBankPtr> _unexpectedUnsolicited;

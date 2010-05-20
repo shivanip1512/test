@@ -7109,7 +7109,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
             int capCount = 0;
             long ptId = iter->first;
 
-            map< long, CtiCCCapBankPtr >::iterator bankIter, end;
+            multimap< long, CtiCCCapBankPtr >::iterator bankIter, end;
             if (CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, bankIter, end))
             {
                 CtiCCCapBankPtr bank = bankIter->second;
