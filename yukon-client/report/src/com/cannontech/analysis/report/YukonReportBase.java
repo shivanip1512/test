@@ -60,7 +60,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	/** Flag indicating report header is displayed*/
 	protected boolean showReportFooter = true;
 	/** TableModel data structure */
-	protected ReportModelBase<?> model = null;
+	protected ReportModelBase model = null;
 	/** collection of expressions */
 	protected ExpressionCollection expressions = null;
 	
@@ -72,7 +72,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	protected int pageOrientation = PageFormat.LANDSCAPE;
 	protected SimplePageDefinition pageDefinition = null;
 
-	public void showPreviewFrame(ReportModelBase<?> model_) throws Exception
+	public void showPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		// initialize JFreeReport
 		JFreeReportBoot.getInstance().start();
@@ -90,7 +90,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		dialog.setVisible(true);
 	}
 	
-	public PreviewInternalFrame getPreviewFrame(ReportModelBase<?> model_) throws Exception
+	public PreviewInternalFrame getPreviewFrame(ReportModelBase model_) throws Exception
 	{
 		JFreeReportBoot.getInstance().start();
 		model = model_;
@@ -100,7 +100,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		final PreviewInternalFrame pFrame = new PreviewInternalFrame(report);
 		return pFrame;
 	}	
-	public PreviewDialog getPreviewDialog(ReportModelBase<?> model_) throws Exception
+	public PreviewDialog getPreviewDialog(ReportModelBase model_) throws Exception
 	{
 		JFreeReportBoot.getInstance().start();
 		model = model_;
@@ -330,7 +330,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	/**
 	 * @return
 	 */
-	public ReportModelBase<?> getModel()
+	public ReportModelBase getModel()
 	{
 		return model;
 	}
@@ -338,7 +338,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 	/**
 	 * @param base
 	 */
-	public void setModel(ReportModelBase<?> base)
+	public void setModel(ReportModelBase base)
 	{
 		model = base;
 	}

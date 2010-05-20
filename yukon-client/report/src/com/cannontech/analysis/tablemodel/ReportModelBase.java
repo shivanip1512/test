@@ -790,8 +790,4 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
         }
     }
 
-    public boolean supportsPdf() {
-        return true;
-    }
-
 }
