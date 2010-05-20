@@ -44,6 +44,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.point.calculation.ControlAlgorithm;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
@@ -81,6 +82,20 @@ public class CapBankEditorForm extends DBEditorForm {
                 throw new IllegalArgumentException("Adaptive Count value should be greater then 0.");
         }
         
+    }
+    
+    public boolean getIntegratedVoltVarControlled(){
+        Feeder feeder = cache.getFeeder(cache.getCapBankDevice(getCapBank().getCapBank().getDeviceID()).getParentID());
+        String controlUnits = feeder.getControlUnits();
+        try{
+            ControlAlgorithm algorithm = ControlAlgorithm.getControlAlgorithm(controlUnits);
+            if(algorithm.equals(ControlAlgorithm.INTEGRATED_VOLT_VAR)) {
+                return true;
+            }
+        } catch(IllegalArgumentException ex) {
+            return false;
+        }
+        return false;
     }
 
     public void update() {
