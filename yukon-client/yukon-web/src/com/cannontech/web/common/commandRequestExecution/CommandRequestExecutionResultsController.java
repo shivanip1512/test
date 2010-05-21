@@ -25,7 +25,7 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
-import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.core.service.DateFormattingService;
@@ -201,7 +201,7 @@ public class CommandRequestExecutionResultsController extends MultiActionControl
 		}
 		
 		StoredDeviceGroup tempGroup = temporaryDeviceGroupService.createTempGroup(null);
-		ImmutableList<YukonDevice> deviceList = PaoCollections.asDeviceList(paoIdentifiers);
+		ImmutableList<YukonDevice> deviceList = PaoUtils.asDeviceList(paoIdentifiers);
 		deviceGroupMemberEditorDao.addDevices(tempGroup, deviceList);
 		
 		DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);

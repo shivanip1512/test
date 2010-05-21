@@ -17,7 +17,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -125,7 +125,7 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
                 continue;  /* This device does not support the choosen attribute. */
             }
         }
-        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoCollections.mapPaoPointIdentifiers(identifiers);
+        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);
         
         List<GroupResultsModelRow> groupResultRows = Lists.newArrayList();
         

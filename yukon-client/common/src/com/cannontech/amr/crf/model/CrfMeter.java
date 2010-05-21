@@ -3,6 +3,7 @@ package com.cannontech.amr.crf.model;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.YukonPao;
 
 public class CrfMeter implements YukonDevice, DisplayablePao {
     private PaoIdentifier paoIdentifier;
@@ -10,8 +11,8 @@ public class CrfMeter implements YukonDevice, DisplayablePao {
     private String meterNumber;
     private String paoName;
 
-    public CrfMeter(PaoIdentifier paoIdentifier, CrfMeterIdentifier meterIdentifier) {
-        this.paoIdentifier = paoIdentifier;
+    public CrfMeter(YukonPao pao, CrfMeterIdentifier meterIdentifier) {
+        this.paoIdentifier = pao.getPaoIdentifier();
         this.meterIdentifier = meterIdentifier;
     }
 

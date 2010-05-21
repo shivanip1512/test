@@ -25,6 +25,14 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
         dispatchProxy.putPointData(pointData);
         dynamicDataCache.handleIncoming(pointData);
     }
+    
+    @Override
+    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException {
+        dispatchProxy.putPointData(pointDatas);
+        for (PointData pointData : pointDatas) {
+            dynamicDataCache.handleIncoming(pointData);
+        }
+    }
 
     public void putValue(int pointId, double value) {
         PointData pointData = new PointData();

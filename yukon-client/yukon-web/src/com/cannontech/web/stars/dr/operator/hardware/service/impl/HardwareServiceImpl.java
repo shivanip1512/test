@@ -274,7 +274,7 @@ public class HardwareServiceImpl implements HardwareService {
         SimpleDevice yukonDevice = null;
         try {
             int serialNumber = Integer.parseInt(lmHardwareBase.getManufacturerSerialNumber());
-            yukonDevice = deviceCreationService.createDeviceByDeviceType(yukonDeviceTypeId, deviceName, serialNumber , lmHardwareBase.getRouteId(), true);
+            yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(yukonDeviceTypeId, deviceName, serialNumber , lmHardwareBase.getRouteId(), true);
         } catch (DeviceCreationException e) {
             throw new StarsTwoWayLcrYukonDeviceCreationException("unknown", e);
         } catch (NumberFormatException nfe){

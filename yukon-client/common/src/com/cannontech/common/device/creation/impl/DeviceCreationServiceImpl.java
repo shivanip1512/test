@@ -94,7 +94,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     @Transactional
-    public SimpleDevice createDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
+    public SimpleDevice createCarrierDeviceByDeviceType(int deviceType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
 
         SimpleDevice yukonDevice = new SimpleDevice();
 

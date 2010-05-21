@@ -18,7 +18,7 @@ import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -124,7 +124,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
                 continue;  /* This device does not support the choosen attribute. */
             }
         }
-        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoCollections.mapPaoPointIdentifiers(identifiers);
+        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);
 
         SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
         for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){

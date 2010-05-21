@@ -93,7 +93,7 @@ public class StarsTwoWayLcrYukonDeviceAssignmentServiceImpl implements StarsTwoW
         		
         		SimpleDevice yukonDevice = null;
         		try {
-        			yukonDevice = deviceCreationService.createDeviceByDeviceType(yukonDeviceTypeId, deviceName, Integer.parseInt(serial), routeId, true);
+        			yukonDevice = deviceCreationService.createCarrierDeviceByDeviceType(yukonDeviceTypeId, deviceName, Integer.parseInt(serial), routeId, true);
         			
         			// set demand rate on new device
     	    		LiteYukonPAObject paoDevice = paoDao.getLiteYukonPAO(yukonDevice.getDeviceId());

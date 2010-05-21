@@ -5,13 +5,18 @@ import org.apache.commons.lang.Validate;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableList.Builder;
 
-public class PaoCollections {
-    
-    
+public class PaoUtils {
+    private final Function<PaoIdentifier, Integer> paoIdentifierToPaoIdFunction = new Function<PaoIdentifier, Integer>() {
+        public Integer apply(PaoIdentifier from) {
+            return from.getPaoIdentifier().getPaoId();
+        }
+    };
+
     public static ImmutableList<YukonDevice> asDeviceList(Iterable<PaoIdentifier> identifiers) {
         Builder<YukonDevice> builder = ImmutableList.builder();
         buildSimpleDeviceList(builder, identifiers);
@@ -38,5 +43,18 @@ public class PaoCollections {
             builder.put(paoPointIdentifier.getPointIdentifier(), paoPointIdentifier.getPaoIdentifier());
         }
         return builder.build();
+    }
+
+    public static void validateDeviceType(YukonPao pao) {
+        PaoType paoType = pao.getPaoIdentifier().getPaoType();
+        validateDeviceType(paoType);
+    }
+
+    public static void validateDeviceType(PaoType paoType) {
+        Validate.isTrue(paoType.getPaoCategory() == PaoCategory.DEVICE);
+    }
+    
+    public Function<PaoIdentifier, Integer> getPaoIdFunction() {
+        return paoIdentifierToPaoIdFunction;
     }
 }

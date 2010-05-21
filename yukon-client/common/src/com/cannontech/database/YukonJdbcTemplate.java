@@ -1,5 +1,7 @@
 package com.cannontech.database;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,6 +18,21 @@ import com.cannontech.common.util.SqlFragmentSource;
 
 public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         YukonJdbcOperations {
+
+    private static final class YukonRowMapperAdapter<T> implements ParameterizedRowMapper<T> {
+
+        private final YukonRowMapper<T> rm;
+
+        public YukonRowMapperAdapter(YukonRowMapper<T> rm) {
+            this.rm = rm;
+        }
+
+        @Override
+        public T mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return rm.mapRow(new YukonResultSet(rs));
+        }
+
+    }
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
@@ -38,6 +55,12 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
     public <T> List<T> query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm)
             throws DataAccessException {
         return query(sql.getSql(), rm, sql.getArguments());
+    }
+    
+    @Override
+    public <T> List<T> query(SqlFragmentSource sql, YukonRowMapper<T> rm)
+            throws DataAccessException {
+        return query(sql, new YukonRowMapperAdapter<T>(rm));
     }
     
     public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, int maxResults) throws DataAccessException {
@@ -68,6 +91,12 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         return queryForObject(sql.getSql(), rm, sql.getArguments());
     }
 
+    @Override
+    public <T> T queryForObject(SqlFragmentSource sql,
+            YukonRowMapper<T> rm) throws DataAccessException {
+        return queryForObject(sql, new YukonRowMapperAdapter<T>(rm));
+    }
+    
     @Override
     public String queryForString(SqlFragmentSource sql)
             throws DataAccessException {

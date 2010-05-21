@@ -1,13 +1,12 @@
 package com.cannontech.common.device.model;
 
-import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.YukonPao;
 
@@ -25,11 +24,11 @@ public final class SimpleDevice implements YukonDevice {
     }
     
     public SimpleDevice(YukonPao pao) {
-    	Validate.isTrue(pao.getPaoIdentifier().getPaoType().getPaoCategory() == PaoCategory.DEVICE);
+    	PaoUtils.validateDeviceType(pao);
     	this.deviceId = pao.getPaoIdentifier().getPaoId();
     	this.type = pao.getPaoIdentifier().getPaoType();
     }
-    
+
     public SimpleDevice() {
     }
 

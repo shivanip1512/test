@@ -19,6 +19,7 @@ import com.cannontech.message.dispatch.message.Signal;
 public interface DynamicDataSource {
     
     public void putValue(PointData pointData) throws DynamicDataAccessException;
+    public void putValues(Iterable<PointData> pointDatas) throws DynamicDataAccessException;
     public void putValue(int pointId, double value) throws DynamicDataAccessException;
     
     /**

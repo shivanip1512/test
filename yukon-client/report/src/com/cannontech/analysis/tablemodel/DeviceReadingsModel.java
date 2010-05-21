@@ -19,7 +19,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -102,7 +102,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                 continue;  /* This device does not support the choosen attribute. */
             }
         }
-        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoCollections.mapPaoPointIdentifiers(identifiers);
+        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);
 
         for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
             List<Integer> deviceIds = Lists.newArrayList();

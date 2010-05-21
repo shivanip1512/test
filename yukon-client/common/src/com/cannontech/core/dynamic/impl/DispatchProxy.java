@@ -25,6 +25,7 @@ import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.Command;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.yukon.IServerConnection;
+import com.google.common.collect.Iterables;
 
 /**
  * Intended as a simple package scope interface to hide talking to dispatch.
@@ -113,13 +114,15 @@ class DispatchProxy {
     }
     
     void putPointData(PointData pointData) {
-        putPointData(CtiUtilities.asSet(pointData));
+        putPointData(Collections.singleton(pointData));
     }
     
-    void putPointData(Set<PointData> pointData) {
+    void putPointData(Iterable<PointData> pointDatas) {
         validateDispatchConnection();
-        Multi multi = new Multi();
-        multi.setVector(new Vector<PointData>(pointData));
+        Multi<PointData> multi = new Multi<PointData>();
+        Vector<PointData> vector = new Vector<PointData>();
+        Iterables.addAll(vector, pointDatas);
+        multi.setVector(vector);
         dispatchConnection.write(multi);
     }
     

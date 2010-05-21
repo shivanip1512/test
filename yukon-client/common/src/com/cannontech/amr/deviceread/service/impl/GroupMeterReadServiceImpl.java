@@ -27,7 +27,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -97,7 +97,7 @@ public class GroupMeterReadServiceImpl implements GroupMeterReadService {
         final StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup(null);
         final StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup(null);
         final StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup(null);
-        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, PaoCollections.asDeviceList(unsupportedDevices));
+        deviceGroupMemberEditorDao.addDevices(unsupportedGroup, PaoUtils.asDeviceList(unsupportedDevices));
         
         // command completion callback
         GroupCommandCompletionCallback commandCompletionCallback = new GroupCommandCompletionCallback() {

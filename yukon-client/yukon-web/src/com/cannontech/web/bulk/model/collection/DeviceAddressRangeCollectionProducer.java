@@ -16,7 +16,7 @@ import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.collection.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoCollections;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -66,7 +66,7 @@ public class DeviceAddressRangeCollectionProducer implements DeviceCollectionPro
 
                 List<PaoIdentifier> paoIdentifierList = paoDao.getPaosByAddressRange(startAddress,
                                                                                                  endAddress);
-                List<SimpleDevice> deviceList = PaoCollections.asSimpleDeviceList(paoIdentifierList);
+                List<SimpleDevice> deviceList = PaoUtils.asSimpleDeviceList(paoIdentifierList);
                 return deviceList;
             }
 

@@ -15,11 +15,13 @@ public interface YukonJdbcOperations extends SimpleJdbcOperations {
     public void query(SqlFragmentSource sql, RowCallbackHandler rch) throws DataAccessException;
     public void query(SqlFragmentSource sql, ResultSetExtractor rse) throws DataAccessException;
     public <T> List<T> query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm) throws DataAccessException;
+    public <T> List<T> query(SqlFragmentSource sql, YukonRowMapper<T> rm) throws DataAccessException;
     public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, int maxResults) throws DataAccessException;
     public <T> void query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, Collection<? super T> result) throws DataAccessException;
     public int queryForInt(SqlFragmentSource sql) throws DataAccessException;
     public long queryForLong(SqlFragmentSource sql) throws DataAccessException;
     public String queryForString(SqlFragmentSource sql) throws DataAccessException;
     public <T> T queryForObject(SqlFragmentSource sql, ParameterizedRowMapper<T> rm) throws DataAccessException;
+    public <T> T queryForObject(SqlFragmentSource sql, YukonRowMapper<T> rm) throws DataAccessException;
     public int update(SqlFragmentSource sql) throws DataAccessException;
 }

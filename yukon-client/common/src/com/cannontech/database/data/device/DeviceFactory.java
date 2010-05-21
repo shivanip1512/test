@@ -1,5 +1,7 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
@@ -11,407 +13,409 @@ import com.cannontech.database.data.pao.PAOGroups;
 
 
 public final class DeviceFactory {
-    /**
-     * This method was created in VisualAge.
-     * @return com.cannontech.database.data.device.DeviceBase
-     * @param deviceType int
-     */
-    public final static DeviceBase createDevice(int deviceType) {
+
+    public final static DeviceBase createDevice(int paoTypeId) {
+        return createDevice(PaoType.getForId(paoTypeId));
+    }
+    
+    public final static DeviceBase createDevice(PaoType paoType) {
+        PaoUtils.validateDeviceType(paoType);
 
         DeviceBase returnDevice = null;
 
-        switch( deviceType )
+        switch( paoType )
         {
         //Dumb and Smart type transmitted devices
-        case PAOGroups.CCU710A:
+        case CCU710A:
             returnDevice = new CCU710A();
             break;
-        case PAOGroups.CCU711:
+        case CCU711:
             returnDevice = new CCU711();
             break;
-        case PAOGroups.CCU721:
+        case CCU721:
             returnDevice = new CCU721();
             break;
-        case PAOGroups.TCU5000:
+        case TCU5000:
             returnDevice = new TCU5000();
             break;
-        case PAOGroups.TCU5500:
+        case TCU5500:
             returnDevice = new TCU5500();
             break;
-        case PAOGroups.SERIES_5_LMI:
+        case SERIES_5_LMI:
             returnDevice = new Series5LMI();
             break;
-        case PAOGroups.INTEGRATION_TRANSMITTER:
+        case INTEGRATION_TRANSMITTER:
             returnDevice = new XmlTransmitter();
             break;
-        case PAOGroups.RTC:
+        case RTC:
             returnDevice = new RTC();
             break;
-        case PAOGroups.LCU415:
+        case LCU415:
             returnDevice = new LCU415();
             break;
-        case PAOGroups.LCULG:
+        case LCULG:
             returnDevice = new LCULG();
             break;
-        case PAOGroups.LCU_T3026:
+        case LCU_T3026:
             returnDevice = new LCUT3026();
-            break;			
-        case PAOGroups.LCU_ER:
+            break;          
+        case LCU_ER:
             returnDevice = new LCUER();
             break;
-        case PAOGroups.RTU_DNP:
-        case PAOGroups.RTU_MODBUS:
-        case PAOGroups.RTU_DART:
+        case RTU_DNP:
+        case RTU_MODBUS:
+        case RTU_DART:
             returnDevice = new DNPBase();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
 
             //use only 1 ION class for now!! 1-7-2003
-        case PAOGroups.ION_7700:
-        case PAOGroups.ION_7330:
-        case PAOGroups.ION_8300:
+        case ION_7700:
+        case ION_7330:
+        case ION_8300:
             returnDevice = new Ion7700();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
 
-        case PAOGroups.RTUILEX:
+        case RTUILEX:
             returnDevice = new RTUILEX();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
-        case PAOGroups.RTUWELCO:
+        case RTUWELCO:
             returnDevice = new RTUWELCO();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
 
             //IEDMeter type devices
-        case PAOGroups.ALPHA_A1:
-        case PAOGroups.ALPHA_PPLUS:
+        case ALPHA_A1:
+        case ALPHA_PPLUS:
             returnDevice = new Alpha();
             break;
-        case PAOGroups.FULCRUM: //replaced Schlumberger
-        case PAOGroups.VECTRON: //replaced Schlumberger
-        case PAOGroups.QUANTUM:
+        case FULCRUM: //replaced Schlumberger
+        case VECTRON: //replaced Schlumberger
+        case QUANTUM:
             returnDevice = new Schlumberger();
             break;
-        case PAOGroups.KV:
+        case KV:
             returnDevice = new KV();
             break;
-        case PAOGroups.KVII:
+        case KVII:
             returnDevice = new KV();
             break;
-        case PAOGroups.SENTINEL:
+        case SENTINEL:
             returnDevice = new Sentinel();
             break;
-        case PAOGroups.FOCUS:
+        case FOCUS:
             returnDevice = new Focus();
             break;
-        case PAOGroups.ALPHA_A3:
+        case ALPHA_A3:
             returnDevice = new Alpha();
             break;
-        case PAOGroups.LANDISGYRS4:
+        case LANDISGYRS4:
             returnDevice = new LandisGyrS4();
             break;
-        case PAOGroups.DAVISWEATHER:
+        case DAVISWEATHER:
             returnDevice = new DavisWeather();
             break;
-        case PAOGroups.DR_87:
+        case DR_87:
             returnDevice = new DR87();
             break;
-        case PAOGroups.SIXNET:
+        case SIXNET:
             returnDevice = new Sixnet();
             break;
-        case PAOGroups.TRANSDATA_MARKV:
+        case TRANSDATA_MARKV:
             returnDevice = new TransdataMarkV();
             break;
-        case PAOGroups.CRF_AX:
-        case PAOGroups.CRF_AL:
+        case CRF_AX:
+        case CRF_AL:
             returnDevice = new CRFBase();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RFMESH);
+            returnDevice.setDeviceType(paoType.getDbString());
             break;
 
 
             //Carrier type devices
-        case PAOGroups.MCT213:
+        case MCT213:
             returnDevice = new MCT213();
             break;
-        case PAOGroups.MCT318L:
+        case MCT318L:
             returnDevice = new MCT318L();
             break;
-        case PAOGroups.MCT310ID:
+        case MCT310ID:
             returnDevice = new MCT310ID();
             break;
-        case PAOGroups.MCT310IDL:
+        case MCT310IDL:
             returnDevice = new MCT310IDL();
             break;
-        case PAOGroups.MCT310IL:
+        case MCT310IL:
             returnDevice = new MCT310IL();
             break;
-        case PAOGroups.MCT310CT:
+        case MCT310CT:
             returnDevice = new MCT310CT();
             break;
-        case PAOGroups.MCT310IM:
+        case MCT310IM:
             returnDevice = new MCT310IM();
             break;
-        case PAOGroups.MCT310:
+        case MCT310:
             returnDevice = new MCT310();
             break;
-        case PAOGroups.MCT410IL:
+        case MCT410IL:
             returnDevice = new MCT410IL();
             break;
-        case PAOGroups.MCT410CL:
+        case MCT410CL:
             returnDevice = new MCT410CL();
             break;
-        case PAOGroups.MCT410FL:
+        case MCT410FL:
             returnDevice = new MCT410FL();
             break;
-        case PAOGroups.MCT410GL:
+        case MCT410GL:
             returnDevice = new MCT410GL();
             break;
-        case PAOGroups.MCT430A:
+        case MCT430A:
             returnDevice = new MCT430A();
             break;
-        case PAOGroups.MCT430S4:
+        case MCT430S4:
             returnDevice = new MCT430S4();
             break;
-        case PAOGroups.MCT430SL:
+        case MCT430SL:
             returnDevice = new MCT430SL();
             break;
-        case PAOGroups.MCT430A3:
+        case MCT430A3:
             returnDevice = new MCT430A3();
             break;
-        case PAOGroups.MCT470:
+        case MCT470:
             returnDevice = new MCT470();
             break;
-        case PAOGroups.MCT318:
+        case MCT318:
             returnDevice = new MCT318();
             break;
-        case PAOGroups.MCT360:
+        case MCT360:
             returnDevice = new MCT360();
             break;
-        case PAOGroups.MCT370:
+        case MCT370:
             returnDevice = new MCT370();
             break;
-        case PAOGroups.MCT240:
+        case MCT240:
             returnDevice = new MCT240();
             break;
-        case PAOGroups.MCT248:
+        case MCT248:
             returnDevice = new MCT248();
             break;
-        case PAOGroups.MCT250:
+        case MCT250:
             returnDevice = new MCT250();
             break;
-        case PAOGroups.MCT210:
+        case MCT210:
             returnDevice = new MCT210();
             break;
-        case PAOGroups.LMT_2:
+        case LMT_2:
             returnDevice = new LMT2();
             break;
-        case PAOGroups.DCT_501:
+        case DCT_501:
             returnDevice = new DCT_501();
             break;
 
-        case PAOGroups.REPEATER:
+        case REPEATER:
             returnDevice = new Repeater900();
             break;
-        case PAOGroups.REPEATER_902:
+        case REPEATER_902:
             returnDevice = new Repeater902();
             break;
-        case PAOGroups.REPEATER_800:
+        case REPEATER_800:
             returnDevice = new Repeater800();
             break;
-        case PAOGroups.REPEATER_801:
+        case REPEATER_801:
             returnDevice = new Repeater801();
             break;
-        case PAOGroups.REPEATER_850:
+        case REPEATER_850:
             returnDevice = new Repeater850();
             break;
-        case PAOGroups.REPEATER_921:
+        case REPEATER_921:
             returnDevice = new Repeater921();
             break;
-        case PAOGroups.TAPTERMINAL:
+        case TAPTERMINAL:
             returnDevice = new PagingTapTerminal();
             break;
-        case PAOGroups.TNPP_TERMINAL:
+        case TNPP_TERMINAL:
             returnDevice = new TNPPTerminal();
             break;
-        case PAOGroups.WCTP_TERMINAL:
+        case WCTP_TERMINAL:
             returnDevice = new WCTPTerminal();
             break;
-        case PAOGroups.SNPP_TERMINAL:
+        case SNPP_TERMINAL:
             returnDevice = new SNPPTerminal();
             break;
 
-        case PAOGroups.LM_GROUP_EMETCON:
+        case LM_GROUP_EMETCON:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupEmetcon();
             returnDevice.setDeviceType( PAOGroups.STRING_EMETCON_GROUP[0] );
             returnDevice.setDeviceClass( DeviceClasses.STRING_CLASS_GROUP );
             break;
-        case PAOGroups.LM_GROUP_VERSACOM:
+        case LM_GROUP_VERSACOM:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupVersacom();
             returnDevice.setDeviceType( PAOGroups.STRING_VERSACOM_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_EXPRESSCOMM:
+        case LM_GROUP_EXPRESSCOMM:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupExpressCom();
             returnDevice.setDeviceType( PAOGroups.STRING_EXPRESSCOMM_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_RIPPLE:
+        case LM_GROUP_RIPPLE:
             returnDevice = new LMGroupRipple();
             returnDevice.setDeviceType(PAOGroups.STRING_RIPPLE_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_POINT:
+        case LM_GROUP_POINT:
             returnDevice = new LMGroupPoint();
             returnDevice.setDeviceType(PAOGroups.STRING_POINT_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_MCT:
+        case LM_GROUP_MCT:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupMCT();
             returnDevice.setDeviceType( PAOGroups.STRING_MCT_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_INTEGRATION:
+        case LM_GROUP_INTEGRATION:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupXML();
             returnDevice.setDeviceType( PAOGroups.STRING_INTEGRATION_GROUP[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_SA305:
+        case LM_GROUP_SA305:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupSA305();
             returnDevice.setDeviceType(PAOGroups.STRING_SA305_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_SA205:
+        case LM_GROUP_SA205:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupSA205();
             returnDevice.setDeviceType(PAOGroups.STRING_SA205_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_SADIGITAL:
+        case LM_GROUP_SADIGITAL:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupSADigital();
             returnDevice.setDeviceType(PAOGroups.STRING_SADIGITAL_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.LM_GROUP_GOLAY:
+        case LM_GROUP_GOLAY:
             returnDevice = new com.cannontech.database.data.device.lm.LMGroupGolay();
             returnDevice.setDeviceType(PAOGroups.STRING_GOLAY_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
-        case PAOGroups.MACRO_GROUP:
+        case MACRO_GROUP:
             returnDevice = new MacroGroup();
             returnDevice.setDeviceType(PAOGroups.STRING_MACRO_GROUP[0]);
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_GROUP);
             break;
 
 
-        case PAOGroups.CAPBANK:
+        case CAPBANK:
             returnDevice = new com.cannontech.database.data.capcontrol.CapBank();
             returnDevice.setDeviceType( PAOGroups.STRING_CAP_BANK[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-        case PAOGroups.CAPBANKCONTROLLER:
+        case CAPBANKCONTROLLER:
             returnDevice = new com.cannontech.database.data.capcontrol.CapBankControllerVersacom();
             returnDevice.setDeviceType( PAOGroups.STRING_CAP_BANK_CONTROLLER[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-        case PAOGroups.CBC_EXPRESSCOM:
+        case CBC_EXPRESSCOM:
             returnDevice = new com.cannontech.database.data.capcontrol.CapBankControllerExpresscom();
             returnDevice.setDeviceType( PAOGroups.STRING_CBC_EXPRESSCOM[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-        case PAOGroups.CBC_7010:
+        case CBC_7010:
             returnDevice = new CapBankController701x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;    
-        case PAOGroups.CBC_7011:
+        case CBC_7011:
             returnDevice = new CapBankController701x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[1] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-        case PAOGroups.CBC_7012:
+        case CBC_7012:
             returnDevice = new CapBankController701x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7010[2] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
 
-        case PAOGroups.CBC_FP_2800:
+        case CBC_FP_2800:
             returnDevice = new com.cannontech.database.data.capcontrol.CapBankController_FP_2800();
             returnDevice.setDeviceType( PAOGroups.STRING_CBC_FP_2800[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-        case PAOGroups.DNP_CBC_6510:
+        case DNP_CBC_6510:
             returnDevice = new com.cannontech.database.data.capcontrol.CapBankController6510();
             returnDevice.setDeviceType( PAOGroups.STRING_DNP_CBC_6510[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
-        case PAOGroups.CBC_7020:
+        case CBC_7020:
             returnDevice = new CapBankController702x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;      
 
-        case PAOGroups.CBC_7022:
+        case CBC_7022:
             returnDevice = new CapBankController702x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[1] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;      
 
-        case PAOGroups.CBC_7023:
+        case CBC_7023:
             returnDevice = new CapBankController702x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[2] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;      
 
-        case PAOGroups.CBC_7024:
+        case CBC_7024:
             returnDevice = new CapBankController702x();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_7020[3] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;      
 
-        case PAOGroups.CBC_DNP:
+        case CBC_DNP:
             returnDevice = new CapBankControllerDNP();
             returnDevice.setDeviceType(PAOGroups.STRING_CBC_DNP[0] );
             returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
             break;
 
             //The new MCT broadcast group (lead meter broadcast)
-        case PAOGroups.MCTBROADCAST:
+        case MCTBROADCAST:
             returnDevice = new MCT_Broadcast();
             returnDevice.setDeviceType( PAOGroups.STRING_MCT_BROADCAST[0] );
             break;
 
 
             // Two Way LCR
-        case PAOGroups.LCR3102:
+        case LCR3102:
             returnDevice = new TwoWayLCR();
             returnDevice.setDeviceType(PAOGroups.STRING_LCR_3102[0]);
             break;
 
-            // not a real device	
-        case PAOGroups.VIRTUAL_SYSTEM:
+            // not a real device    
+        case VIRTUAL_SYSTEM:
             returnDevice = new VirtualDevice();
             returnDevice.setDeviceType( PAOGroups.STRING_VIRTUAL_SYSTEM[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_VIRTUAL);
             break;
 
-        case PAOGroups.NEUTRAL_MONITOR :
+        case NEUTRAL_MONITOR :
             returnDevice = new NeutralMonitor();
             returnDevice.setDeviceType(  PAOGroups.STRING_NEUTRAL_MONITOR[0] );
             break;
 
-        case PAOGroups.FAULT_CI:
+        case FAULT_CI:
             returnDevice = new FaultCI();
             returnDevice.setDeviceType(  PAOGroups.STRING_FAULT_CI[0] );
             break;
 
-            // a system reserved device place holder (not to be available to users)	
-        case PAOGroups.SYSTEM:
+            // a system reserved device place holder (not to be available to users) 
+        case SYSTEM:
             returnDevice = new SystemDevice();
             returnDevice.setDeviceType( PAOGroups.STRING_SYSTEM[0] );
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_SYSTEM);
             break;
 
-        case PAOGroups.RTM:
+        case RTM:
             returnDevice = new RTM();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RTU);
             break;
@@ -421,10 +425,10 @@ public final class DeviceFactory {
         if( returnDevice.getPAOCategory() == null )
             returnDevice.setPAOCategory( com.cannontech.database.data.pao.PAOGroups.STRING_CAT_DEVICE );
 
-        returnDevice.setDisableFlag( new Character('N') );
-        returnDevice.getDevice().setAlarmInhibit(new Character('N') );
-        returnDevice.getDevice().setControlInhibit(new Character('N') );
-        setDeviceDefaults( deviceType, returnDevice );
+        returnDevice.setDisableFlag('N');
+        returnDevice.getDevice().setAlarmInhibit('N');
+        returnDevice.getDevice().setControlInhibit('N');
+        setDeviceDefaults( paoType.getDeviceTypeId(), returnDevice );
 
         return returnDevice;
     }
