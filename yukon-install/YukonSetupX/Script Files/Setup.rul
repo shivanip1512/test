@@ -33,7 +33,7 @@
 //---------------------------------------------------------------------------
 function OnFirstUIBefore()
 number nResult, nSize;
-string sDir;
+string sDir, sDirLow;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -56,6 +56,14 @@ begin
 	if (nResult = CUSTOM) then
 		nResult = SdFeatureTree("", "", TARGETDIR, "", 2);
 		if(nResult = BACK) goto Dialog_AskDestinationPath;
+	endif;
+	
+	//if the last five chars of the path aren't "yukon", 
+	//add it to the end of the path
+	StrToLower(sDirLow, sDir);
+	StrRemoveLastSlash(sDirLow);
+	if(StrFindEx(sDirLow, "yukon", StrLengthChars(sDirLow)-5) < 0) then
+		sDir = sDir ^ "Yukon";
 	endif;
 	
 	//make sure we have enough space for the selected features
