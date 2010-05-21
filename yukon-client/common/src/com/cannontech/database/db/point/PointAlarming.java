@@ -1,6 +1,6 @@
 package com.cannontech.database.db.point;
 
-import com.cannontech.common.util.CtiUtilities;
+
 
 /**
  * This type was created in VisualAge.
@@ -33,14 +33,12 @@ public class PointAlarming extends com.cannontech.database.db.DBPersistent
 	private String excludeNotifyStates = DEFAULT_EXCLUDE_NOTIFY;
 	private String notifyOnAcknowledge = "N";
 	private Integer notificationGroupID = new Integer(PointAlarming.NONE_NOTIFICATIONID);
-	private Integer recipientID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
-		
 	public static final String CONSTRAINT_COLUMNS[] = { "POINTID" };
 	
 	public static final String SETTER_COLUMNS[] = { 
 			"ALARMSTATES", "EXCLUDENOTIFYSTATES", "NOTIFYONACKNOWLEDGE",
-			"NOTIFICATIONGROUPID", "RECIPIENTID" };
+			"NOTIFICATIONGROUPID" };
 	
 
 	public final static String TABLE_NAME = "PointAlarming";
@@ -54,10 +52,10 @@ public PointAlarming() {
  * PointUnit constructor comment.
  */
 public PointAlarming(Integer pointID, String alarmStates, String excludeNotifyStates, 
-		String notifyOnAcknowledge, Integer notificationGroupID, Integer newRecipientID )
+		String notifyOnAcknowledge, Integer notificationGroupID )
 {
 	super();
-	initialize(pointID, alarmStates, excludeNotifyStates, notifyOnAcknowledge, notificationGroupID, newRecipientID );
+	initialize(pointID, alarmStates, excludeNotifyStates, notifyOnAcknowledge, notificationGroupID );
 }
 /**
  * add method comment.
@@ -65,7 +63,7 @@ public PointAlarming(Integer pointID, String alarmStates, String excludeNotifySt
 public void add() throws java.sql.SQLException 
 {
 	Object addValues[] = { getPointID(), getAlarmStates(), getExcludeNotifyStates(), 
-		getNotifyOnAcknowledge(), getNotificationGroupID(), getRecipientID() };
+		getNotifyOnAcknowledge(), getNotificationGroupID()};
 
 	add( TABLE_NAME, addValues );
 }
@@ -189,14 +187,6 @@ public Integer getPointID() {
 	return pointID;
 }
 /**
- * Insert the method's description here.
- * Creation date: (9/24/2001 11:42:36 AM)
- * @return java.lang.Integer
- */
-public java.lang.Integer getRecipientID() {
-	return recipientID;
-}
-/**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  * @param units java.lang.String
@@ -204,14 +194,13 @@ public java.lang.Integer getRecipientID() {
  * @param defaultValue java.lang.Double
  */
 private void initialize(Integer pointID, String alarmStates, String excludeNotifyStates, 
-		String notifyOnAcknowledge, Integer notificationGroupID, Integer newRecipientID )
+		String notifyOnAcknowledge, Integer notificationGroupID )
 {
 	setPointID( pointID );
 	setAlarmStates( alarmStates ) ;
 	setExcludeNotifyStates( excludeNotifyStates );
 	setNotifyOnAcknowledge( notifyOnAcknowledge );
 	setNotificationGroupID( notificationGroupID );
-	setRecipientID( newRecipientID );
 }
 /**
  * retrieve method comment.
@@ -228,7 +217,7 @@ public void retrieve() throws java.sql.SQLException
 		setExcludeNotifyStates( (String) results[1] );
 		setNotifyOnAcknowledge( (String) results[2] );
 		setNotificationGroupID( (Integer) results[3] );
-		setRecipientID( (Integer) results[4] );		
+	
 	}
 	//else
 		//throw new Error(getClass() + " - Incorrect Number of results retrieved");	
@@ -273,20 +262,12 @@ public void setPointID(Integer newValue) {
 	this.pointID = newValue;
 }
 /**
- * Insert the method's description here.
- * Creation date: (9/24/2001 11:42:36 AM)
- * @param newRecipientID java.lang.Integer
- */
-public void setRecipientID(java.lang.Integer newRecipientID) {
-	recipientID = newRecipientID;
-}
-/**
  * update method comment.
  */
 public void update() throws java.sql.SQLException 
 {
 	Object setValues[] = { getAlarmStates(), getExcludeNotifyStates(), 
-				getNotifyOnAcknowledge(), getNotificationGroupID(), getRecipientID() };
+				getNotifyOnAcknowledge(), getNotificationGroupID()};
 
 	Object constraintValues[] = { getPointID() };
 

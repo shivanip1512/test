@@ -68,8 +68,7 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			analogPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 			analogPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
-			analogPoint.getPointAlarming().setRecipientID(new Integer(PointAlarming.NONE_NOTIFICATIONID));
-			
+						
 	
 			// set POINTUNIT defaults
 			analogPoint.getPointUnit().setPointID(new Integer(pointID));

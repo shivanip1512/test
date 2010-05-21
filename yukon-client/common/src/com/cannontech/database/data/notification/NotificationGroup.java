@@ -7,7 +7,6 @@ import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.lm.LMDirectNotificationGroupList;
 import com.cannontech.database.db.notification.AlarmCategory;
-import com.cannontech.database.db.point.PointAlarming;
 
 /**
  * This type was created in VisualAge.
@@ -176,35 +175,6 @@ public final static boolean hasAlarmCategory(Integer groupID, String databaseAli
 	}
 	catch( Exception e )
 	{ 
-		return false;
-	}
-}
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-public final static boolean hasPointAlarming(Integer recipientID) throws java.sql.SQLException 
-{	
-	return hasPointAlarming(recipientID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-}
-/**
- * This method was created in VisualAge.
- * @param pointID java.lang.Integer
- */
-public final static boolean hasPointAlarming(Integer groupID, String databaseAlias) throws java.sql.SQLException 
-{
-	SqlStatement stmt =
-		new SqlStatement(
-			"SELECT NotificationGroupID FROM " + PointAlarming.TABLE_NAME + " WHERE NotificationGroupID=" + groupID,
-			databaseAlias );
-
-	try
-	{
-		stmt.execute();
-		return (stmt.getRowCount() > 0 );
-	}
-	catch( Exception e )
-	{
 		return false;
 	}
 }

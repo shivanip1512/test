@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -104,7 +103,6 @@ public class CapBank_OpCntPointCreate extends PointCreate
 			analogPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 			analogPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
 			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
-			analogPoint.getPointAlarming().setRecipientID( new Integer(CtiUtilities.NONE_ZERO_ID) );
 	
 			// set default settings for point POINTUNIT
 			analogPoint.getPointUnit().setPointID(new Integer(pointID));

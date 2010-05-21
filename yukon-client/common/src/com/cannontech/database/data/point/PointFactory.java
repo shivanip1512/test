@@ -265,8 +265,7 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 			com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES,
 			com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY,
 			"N",
-			new Integer(com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID),
-			new Integer(CtiUtilities.NONE_ZERO_ID)) );
+			new Integer(com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID)) );
 
 	return newPoint;
 }

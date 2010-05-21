@@ -99,7 +99,6 @@ public class ImportPAO {
 				((PointBase) dbPoints[i]).getPoint().setStateGroupID(new Integer(oldStateGroupID+idOffset));
 				
 			((PointBase)dbPoints[i]).getPointAlarming().setNotificationGroupID(new Integer(1));
-			((PointBase)dbPoints[i]).getPointAlarming().setRecipientID(new Integer(0));
 			dbPoints[i].setDbConnection(conn);
 			dbPoints[i].add();
 		}

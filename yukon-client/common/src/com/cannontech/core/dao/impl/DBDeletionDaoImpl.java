@@ -151,12 +151,6 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
 	
-		if( com.cannontech.database.data.notification.NotificationGroup.hasPointAlarming( theID ) )
-		{
-			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used by a point alarm.") );
-			return DBDeletionDao.STATUS_DISALLOW;
-		}
-	
 		//this point is deleteable
 		return STATUS_ALLOW;
 	}
@@ -175,14 +169,6 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 				theID, CtiUtilities.getDatabaseAlias() ) )
 		{
 			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used as a primary contact for a customer.") );
-			return DBDeletionDao.STATUS_DISALLOW;
-		}
-
-
-		if( com.cannontech.database.data.customer.Contact.isUsedInPointAlarming(
-				theID, CtiUtilities.getDatabaseAlias() ) )
-		{
-			dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is used as notifications for point alarms.") );
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
 

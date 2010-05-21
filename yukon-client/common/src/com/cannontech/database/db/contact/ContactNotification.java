@@ -63,7 +63,6 @@ public class ContactNotification extends NestedDBPersistent
 	private void deleteDependencies() throws java.sql.SQLException
 	{
 		// ANY AND ALL REFERENCES TO THIS TABLE SHOULD BE DELETED HERE
-		delete( PointAlarming.TABLE_NAME, "RecipientID", getContactNotifID() ); 
 		delete( NotificationDestination.TABLE_NAME, "RecipientID", getContactNotifID() );
 	}
 

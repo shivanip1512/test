@@ -8,7 +8,6 @@ import com.cannontech.database.db.NestedDBPersistentComparators;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
-import com.cannontech.database.db.point.PointAlarming;
 
 /**
  * This type was created in VisualAge.
@@ -62,31 +61,6 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		{
 			((DBPersistent)getContactNotifVect().get(i)).add();
 		}		
-	}
-
-
-	/**
-	 * This method was created in VisualAge.
-	 * @param pointID java.lang.Integer
-	 */
-	public final static boolean isUsedInPointAlarming(Integer contactID, String databaseAlias) 
-	{
-		com.cannontech.database.SqlStatement stmt =
-			new com.cannontech.database.SqlStatement(
-				"SELECT RecipientID FROM " + 
-				PointAlarming.TABLE_NAME + 
-				" WHERE RecipientID=" + contactID,
-				databaseAlias );
-	
-		try
-		{
-			stmt.execute();
-			return (stmt.getRowCount() > 0 );
-		}
-		catch( Exception e )
-		{
-			return false;
-		}
 	}
 
 	/** 

@@ -256,7 +256,6 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     public void removeNotifications(List<Integer> notificationIds) {
         
     	chunkyJdbcTemplate.update(new RemoveNotificationDestinationsSqlGenerator(), notificationIds);
-    	chunkyJdbcTemplate.update(new UpdatePointAlarmingSqlGenerator(), notificationIds);
     	chunkyJdbcTemplate.update(new RemoveNotificationSqlGenerator(), notificationIds);
     }
     
@@ -289,19 +288,6 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao,
     	}
     }
 
-    private class UpdatePointAlarmingSqlGenerator implements SqlFragmentGenerator<Integer> {
-
-        @Override
-        public SqlFragmentSource generate(List<Integer> contactNotificationIds) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("UPDATE PointAlarming SET RecipientId = 0");
-            sql.append("WHERE RecipientId IN (");
-            sql.appendList(contactNotificationIds);
-            sql.append(")");
-            return sql;
-        }
-    }
-    
     /**
      * Helper class to map a result set into LiteContactNotifications
      */
