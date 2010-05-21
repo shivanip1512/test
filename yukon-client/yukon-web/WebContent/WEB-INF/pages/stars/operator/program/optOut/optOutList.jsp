@@ -30,7 +30,7 @@
 
             <tags:boxContainer2 nameKey="selectDevice">
                 <div id="controlEventsDiv" style="height: auto;">
-                    <table class="resultsTable rowHighlighting selectDeviceTable">
+                    <table class="compactResultsTable rowHighlighting selectDeviceTable">
                         <tr>
                             <th><i:inline key=".device"/></th>
                             <th><i:inline key=".programAssigned"/></th>
