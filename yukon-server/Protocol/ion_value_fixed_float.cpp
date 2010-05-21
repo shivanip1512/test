@@ -16,10 +16,12 @@
 #include "ion_value_fixed_float.h"
 
 
-CtiIONFloat::CtiIONFloat( float initialValue=0.0 ) :
+CtiIONFloat::CtiIONFloat( float initialValue ) :
     CtiIONValueFixed(Fixed_Float),
     _float(initialValue)
 {
+    setValid(true);
+
     memset( &_string, 0, sizeof(_string) );
 }
 

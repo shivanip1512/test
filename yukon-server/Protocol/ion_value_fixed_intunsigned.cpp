@@ -27,8 +27,6 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned char *byteStream, unsigned long s
     //  all i know about is 4-byte unsigned ints
     if( streamLength <= 4 )
     {
-        _unsignedInt = 0;
-
         for( int i = 0; i < streamLength; i++ )
         {
             //  doggoned MSB ordering
@@ -62,6 +60,8 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( unsigned long initialValue ) :
     CtiIONValueFixed(Fixed_UnsignedInt),
     _unsignedInt(initialValue)
 {
+    setValid(true);
+
     memset( &_string, 0, sizeof(_string) );
 }
 

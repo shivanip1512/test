@@ -56,6 +56,8 @@ CtiIONTime::CtiIONTime( unsigned char *buf, unsigned long len ) :
 CtiIONTime::CtiIONTime( unsigned long seconds, unsigned long fractionalSeconds ) :
     CtiIONValueFixed(Fixed_Time)
 {
+    setValid(true);
+
     setSeconds(seconds);
     setFractionalSeconds(fractionalSeconds);
 }

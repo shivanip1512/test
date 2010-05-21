@@ -207,7 +207,7 @@ INT CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, 
 
             if( parse.getFlags() & CMD_FLAG_CTL_CLOSE && offset > 0 )
             {
-                if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"),"true") == 0 )
+                if( gConfigParms.isTrue("DUKE_ISSG") )
                 {
                     if( offset == 20 || offset == 21 )
                     {
@@ -772,7 +772,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
             tmpSignal->setId(point->getID());
 
             //  only send to Dispatch
-            vgList.push_back(tmpSignal->replicateMessage());
+            vgList.push_back(tmpSignal);
         }
         else
         {

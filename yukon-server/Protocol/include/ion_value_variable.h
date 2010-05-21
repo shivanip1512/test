@@ -117,6 +117,7 @@ public:
     CtiIONStructEnd( ) :
         CtiIONValueVariable(Variable_StructEnd)
     {
+        setValid(true);
     }
 
     virtual ~CtiIONStructEnd()
@@ -144,6 +145,7 @@ public:
     CtiIONStructArrayEnd( ) :
         CtiIONValueVariable(Variable_StructArrayEnd)
     {
+        setValid(true);
     }
 };
 

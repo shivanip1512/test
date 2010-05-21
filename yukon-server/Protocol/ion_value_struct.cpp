@@ -20,6 +20,8 @@
 #include "ion_value_struct.h"
 #include "ion_value_struct_types.h"
 
+using std::mem_fun;
+using std::count_if;
 
 CtiIONStruct::CtiIONStruct( StructTypes structType, unsigned long numElements ) :
     CtiIONValue(ValueType_Struct),
@@ -65,25 +67,14 @@ bool CtiIONStruct::isStructType( CtiIONValue *toCheck, StructTypes structType )
 
 void CtiIONStruct::init( vector< CtiIONValue * > &structValues )
 {
-    if( _numElements > 0 )
-    {
-        if( structValues.size() != _numElements )
-        {
-            setValid(false);
-        }
-    }
+    bool valid = true;
 
-    for( int i = 0; i < structValues.size() && isValid(); i++ )
-    {
-        if( structValues[i]->isValid( ) )
-        {
-            _structElements.push_back(structValues[i]);
-        }
-        else
-        {
-            setValid(false);
-        }
-    }
+    valid &= _numElements == structValues.size();
+    valid &= _numElements == count_if(structValues.begin(), structValues.end(), mem_fun(&CtiIONValue::isValid));
+
+    setValid(valid);
+
+    copy(structValues.begin(), structValues.end(), back_inserter(_structElements));
 }
 
 

@@ -59,6 +59,8 @@ CtiIONSignedInt::CtiIONSignedInt( long initialValue ) :
     CtiIONValueFixed(Fixed_SignedInt),
     _signedInt(initialValue)
 {
+    setValid(true);
+
     memset( &_string, 0, sizeof(_string) );
 }
 

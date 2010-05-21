@@ -18,10 +18,12 @@
 #include "ion_value_fixed_char.h"
 
 
-CtiIONChar::CtiIONChar( unsigned char initialValue='\0' ) :
+CtiIONChar::CtiIONChar( unsigned char initialValue ) :
     CtiIONValueFixed(Fixed_Char),
     _char(initialValue & 0x7F)
 {
+    setValid(true);
+
     memset( &_string, 0, sizeof(_string) );
 }
 

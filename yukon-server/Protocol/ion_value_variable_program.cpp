@@ -33,19 +33,19 @@ CtiIONProgram::CtiIONProgram( CtiIONStatement *initial ) :
 CtiIONProgram::CtiIONProgram( unsigned char *buf, unsigned long len ) :
     CtiIONValueVariable(Variable_Program)
 {
-    unsigned long pos, bytesUsed;
-    unsigned short handle;
-    CtiIONStatement *tmpStatement;
-
-    pos = 0;
+    unsigned long pos = 0;
 
     //  make sure there's enough data for a statement (3 bytes minimum)
     while( (pos + 3) <= len )
     {
-        tmpStatement = CTIDBG_new CtiIONStatement((buf + pos), (len - pos), &bytesUsed);
+        unsigned long bytesUsed = 0;
 
-        if( tmpStatement != NULL )
+        CtiIONStatement *tmpStatement = CTIDBG_new CtiIONStatement((buf + pos), (len - pos), &bytesUsed);
+
+        if( tmpStatement && tmpStatement->isValid() )
         {
+            setValid(true);
+
             addStatement(tmpStatement);
 
             pos += bytesUsed;

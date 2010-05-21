@@ -1217,7 +1217,7 @@ void CtiProtocolION::generateIntegrityScan( void )
 
             tmpProgram->addStatement(tmpStatement);
 
-            if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"), "true") == 0 )
+            if( gConfigParms.isTrue("DUKE_ISSG") )
             {
                 ion_value_register_map::iterator itr;
 
@@ -1385,7 +1385,7 @@ void CtiProtocolION::decodeIntegrityScan( void )
 
                 _collectedPointData.push_back(pdata);
 
-                if( findStringIgnoreCase(gConfigParms.getValueAsString("DUKE_ISSG"),"true") == 0 )
+                if( gConfigParms.isTrue("DUKE_ISSG") )
                 {
                     pdata.offset = 257;
                     pdata.time   = Now.seconds();

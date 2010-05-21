@@ -331,89 +331,74 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     tmp8b = buf[pos++];
     tmp4b = (tmp8b & 0xF0) >> 4;  //  high nibble of the byte
 
-/*    //  ACH FIXME YADDA YADDA:  this is a bigtime workaround for a bug in the ION's firmware.
-    //                            it sends an incorrect itemlength/arraysize descriptor for
-    //                            arrays of 13 items and 13 bytes long.
-    //                            it should be 0xdd 0x0d, but they screwed up and crammed it all
-    //                            into one byte.
-    //    WARNING:  this WILL break if they fix the firmware.
-    if( classDescriptor == ClassDescriptor_FixedArray_Char &&
-        tmp8b == 0xdd )
+    if( tmp4b <= ItemsDescriptor_ItemsNibbleMax )
     {
-        itemCount   = 0x0d;
-        arrayLength = 0x0d;
+        //  item count = value
+        itemCount = tmp4b;
     }
-    else*/
+    else if( tmp4b == ItemsDescriptor_ItemsNextByte )
     {
-        if( tmp4b <= ItemsDescriptor_ItemsNibbleMax )
-        {
-            //  item count = value
-            itemCount = tmp4b;
-        }
-        else if( tmp4b == ItemsDescriptor_ItemsNextByte )
-        {
-            //  item count = next 8 bits
-            itemCount   = tmp8b & 0x0F;         //  4 bits written
-            tmp8b       = buf[pos++];
-            itemCount <<= 4;
-            itemCount  |= (tmp8b & 0xF0) >> 4;    //  8 bits written
-        }
-        else  //  if( tmp4b == ItemsDescriptor_ItemsNext4Bytes )
-        {
-            //  item count = next 32 bits
-            itemCount   = tmp8b & 0x0F;         //  4 bits written
+        //  item count = next 8 bits
+        itemCount   = tmp8b & 0x0F;         //  4 bits written
+        tmp8b       = buf[pos++];
+        itemCount <<= 4;
+        itemCount  |= (tmp8b & 0xF0) >> 4;    //  8 bits written
+    }
+    else  //  if( tmp4b == ItemsDescriptor_ItemsNext4Bytes )
+    {
+        //  item count = next 32 bits
+        itemCount   = tmp8b & 0x0F;         //  4 bits written
 
-            tmp8b       = buf[pos++];
-            itemCount <<= 8;
-            itemCount  |= tmp8b;                //  12 bits written
+        tmp8b       = buf[pos++];
+        itemCount <<= 8;
+        itemCount  |= tmp8b;                //  12 bits written
 
-            tmp8b       = buf[pos++];
-            itemCount <<= 8;
-            itemCount  |= tmp8b;                //  20 bits written
+        tmp8b       = buf[pos++];
+        itemCount <<= 8;
+        itemCount  |= tmp8b;                //  20 bits written
 
-            tmp8b       = buf[pos++];
-            itemCount <<= 8;
-            itemCount  |= tmp8b;                //  28 bits written
+        tmp8b       = buf[pos++];
+        itemCount <<= 8;
+        itemCount  |= tmp8b;                //  28 bits written
 
-            tmp8b       = buf[pos++];
-            itemCount <<= 4;
-            itemCount  |= (tmp8b & 0xF0) >> 4;  //  32 bits written
-        }
+        tmp8b       = buf[pos++];
+        itemCount <<= 4;
+        itemCount  |= (tmp8b & 0xF0) >> 4;  //  32 bits written
+    }
 
-        tmp4b = tmp8b & 0x0F;
+    tmp4b = tmp8b & 0x0F;
 
-        if( tmp4b <= LengthDescriptor_LengthNibbleMax )
+    if( tmp4b <= LengthDescriptor_LengthNibbleMax )
+    {
+        //  array length = value
+        arrayLength = tmp4b;
+    }
+    else if( tmp4b == LengthDescriptor_LengthNextByte )
+    {
+        //  array length = next 8 bits
+        arrayLength   = buf[pos++];
+    }
+    else if( tmp4b == LengthDescriptor_LengthNext4Bytes )
+    {
+        //  array length = next 32 bits
+        arrayLength   = buf[pos++];  //  8 bits written
+        arrayLength <<= 8;
+        arrayLength  |= buf[pos++];  //  16 bits written
+        arrayLength <<= 8;
+        arrayLength  |= buf[pos++];  //  24 bits written
+        arrayLength <<= 8;
+        arrayLength  |= buf[pos++];  //  32 bits written
+    }
+    else  //  tmp4b == LengthDescriptor_Reserved
+    {
         {
-            //  array length = value
-            arrayLength = tmp4b;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "arrayLength = 0xf, reserved" << endl;
         }
-        else if( tmp4b == LengthDescriptor_LengthNextByte )
-        {
-            //  array length = next 8 bits
-            arrayLength   = buf[pos++];
-        }
-        else if( tmp4b == LengthDescriptor_LengthNext4Bytes )
-        {
-            //  array length = next 32 bits
-            arrayLength   = buf[pos++];  //  8 bits written
-            arrayLength <<= 8;
-            arrayLength  |= buf[pos++];  //  16 bits written
-            arrayLength <<= 8;
-            arrayLength  |= buf[pos++];  //  24 bits written
-            arrayLength <<= 8;
-            arrayLength  |= buf[pos++];  //  32 bits written
-        }
-        else  //  tmp4b == LengthDescriptor_Reserved
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "arrayLength = 0xf, reserved" << endl;
-            }
 
-            itemCount   = 0;
-            arrayLength = 0;
-        }
+        itemCount   = 0;
+        arrayLength = 0;
     }
 
     totalUsed = 0;
