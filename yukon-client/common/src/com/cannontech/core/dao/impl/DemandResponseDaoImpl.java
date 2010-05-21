@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.PaoCollections;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -93,14 +94,13 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
                 return Maps.immutableEntry(groupId, program);
             }
         };
-        Function<PaoIdentifier, Integer> typeMapper = new Function<PaoIdentifier, Integer>() {
-           public Integer apply(PaoIdentifier from) {
-               return from.getPaoId();
-           }; 
-        };
+        Function<PaoIdentifier, Integer> typeMapper = PaoCollections.getPaoIdentifierIdFunction();
 
         ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
-        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, Lists.newArrayList(groups), rowMapper, typeMapper);
+        return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 
+                                                   Lists.newArrayList(groups), 
+                                                   rowMapper, 
+                                                   typeMapper);
         
     }
     

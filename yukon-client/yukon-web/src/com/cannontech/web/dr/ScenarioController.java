@@ -56,7 +56,7 @@ public class ScenarioController {
 
         List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
 
-        filters.add(new AuthorizedFilter(paoAuthorizationService, 
+        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
 

@@ -44,6 +44,16 @@ public class AuthorizedFilter<T extends YukonPao> implements UiFilter<T> {
                 return authorizedPaos;
             }
 
+            @Override
+            /**
+             * Be very careful when using this method - checking authorization individually can
+             * have extremely poor performance.  If checking authorization on several objects, use 
+             * the process(List<T>) method.
+             */
+            protected boolean matches(T object) {
+                return paoAuthorizationService.isAuthorized(user, permission, object);
+            }
+
         });
         return retVal;
     }

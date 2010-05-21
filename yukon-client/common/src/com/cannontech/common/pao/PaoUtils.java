@@ -44,6 +44,14 @@ public class PaoUtils {
         }
         return builder.build();
     }
+    
+    public static Function<PaoIdentifier, Integer> getPaoIdentifierIdFunction() {
+        return new Function<PaoIdentifier, Integer>() {
+            public Integer apply(PaoIdentifier from) {
+                return from.getPaoId();
+            }; 
+         };
+    }
 
     public static void validateDeviceType(YukonPao pao) {
         PaoType paoType = pao.getPaoIdentifier().getPaoType();

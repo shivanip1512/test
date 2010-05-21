@@ -45,7 +45,7 @@ public class HomeController {
         LiteYukonUser user = userContext.getYukonUser();
 
         List<UiFilter<ControllablePao>> filters = Lists.newArrayList();
-        filters.add(new AuthorizedFilter(paoAuthorizationService, user,
+        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService, user,
                                          Permission.LM_VISIBLE));
 
         UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);

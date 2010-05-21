@@ -7,9 +7,7 @@ import com.google.common.collect.Lists;
 public abstract class PostProcessingFilterAdapter<T> implements
         PostProcessingFilter<T> {
 
-    public boolean matches(T object) {
-        throw new UnsupportedOperationException("not implemented");
-    };
+    protected abstract boolean matches(T object);
     
     @Override
     public List<T> process(List<T> objects) {
