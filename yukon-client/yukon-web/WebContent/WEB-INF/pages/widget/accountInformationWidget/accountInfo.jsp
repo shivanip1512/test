@@ -70,6 +70,13 @@
     <tr>
     	<td>
     		<ct:nameValueContainer>
+    			<c:if test="${not empty mspServLoc.objectID}">
+			    	<ct:nameValue name="Service Location">
+			    		${mspServLoc.objectID}
+			    	</ct:nameValue>
+			    	<ct:nameValueGap gapHeight="6px" />
+			    </c:if>
+			    
 			    <c:if test="${not empty mspServLoc.custID}">
 			    	<ct:nameValue name="Customer Number" nameColumnWidth="30%">
 			    		${mspServLoc.custID}

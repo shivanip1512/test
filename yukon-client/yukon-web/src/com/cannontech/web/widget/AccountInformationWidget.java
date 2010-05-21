@@ -184,6 +184,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
     private List<Info> getServLocBasicsInfo(com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
+        add("Service Location", mspServLoc.getObjectID(), false, infoList, userContext);
         add("Customer ID", mspServLoc.getCustID(), false, infoList, userContext);
         add("Account Number", mspServLoc.getAccountNumber(), false, infoList, userContext);
         add("Facility ID", mspServLoc.getFacilityID(), false, infoList, userContext);
