@@ -86,6 +86,50 @@ begin
 end;
 
 //-------------------------------------------------------
+// Helper function to determine if the installed version
+// is newer than the version that is attempting to 
+// install.
+//-------------------------------------------------------
+export prototype BOOL IsDowngrade();
+function BOOL IsDowngrade()
+string sOldVersion, sNewVersion, sTempOld, sTempNew;
+number nOldV1, nOldV2, nOldV3, nNewV1, nNewV2, nNewV3;
+BOOL isDowngrade;
+begin
+	sOldVersion = IFX_INSTALLED_VERSION;
+	sNewVersion = IFX_PRODUCT_VERSION;
+	//split old version into three version components
+    StrSub(sTempOld, sOldVersion, 0, 1);
+    StrToNum(nOldV1, sTempOld);
+    StrSub(sTempOld, sOldVersion, 2, 2);
+    StrToNum(nOldV2, sTempOld);
+    StrSub(sTempOld, sOldVersion, 5, 3);
+    StrToNum(nOldV3, sTempOld);
+    //split new version into three version components
+    //(slightly different format)
+    StrSub(sTempNew, sNewVersion, 0, 1);
+    StrToNum(nNewV1, sTempNew);
+    StrSub(sTempNew, sNewVersion, 2, 2);
+    StrToNum(nNewV2, sTempNew);
+    StrSub(sTempNew, sNewVersion, 4, 3);
+    StrToNum(nNewV3, sTempNew);
+	//compare old to new
+	isDowngrade = FALSE;
+	if(nOldV1 > nNewV1) then
+		isDowngrade = TRUE;
+	else
+		if(nOldV2 > nNewV2) then
+			isDowngrade = TRUE;
+		else
+			if(nOldV3 > nNewV3) then
+				isDowngrade = TRUE;
+			endif;
+		endif;
+	endif;
+	return isDowngrade;
+end;
+
+//-------------------------------------------------------
 // Helper function to check for any running Yukon 
 // services
 //-------------------------------------------------------

@@ -563,18 +563,30 @@ end;
 // program...endprogram style setup.
 //---------------------------------------------------------------------------
 function OnMaintUIBefore()
-    number	nResult, nType;
-    string	szTitle, szMsg;
-    BOOL bOptNo, bOptYes;
+    number nResult, nType;
+    string szTitle, szMsg, sMsg1, sMsg2, sInstalledVersion;
+    BOOL bOpt, bOptNo, bOptYes;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
-	// nType defaults to MODIFY.
+	//nType defaults to MODIFY.
 	nType = MODIFY;
     //Initialize SQL
     OnSQLServerInitializeMaint();
 
-// Beginning of UI Sequence
+//check that we're not trying to 'downgrade'
+if(IsDowngrade()) then
+		sInstalledVersion = CleanupInstalledVersionNum();
+		sMsg1 = "Version " + sInstalledVersion + " of the Yukon Application "
+				+ "Suite is currently installed. This installer is version "
+				+ IFX_PRODUCT_VERSION + ".";
+		sMsg2 = "The Yukon Installer cannot revert the product to a previous "
+				+ "version.";
+		SdFinish("Newer Version Installed", sMsg1, sMsg2, "", "", bOpt, bOpt);
+		abort; //shut down the installer
+endif;
+
+//Beginning of UI Sequence
 Dlg_Start:
     if( !REMOVEONLY ) then
     	// In standard mode show maintenance dialog
