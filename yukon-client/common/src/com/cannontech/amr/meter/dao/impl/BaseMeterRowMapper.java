@@ -16,17 +16,13 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
                                 "DeviceMeterGroup.meterNumber, " + 
                                 "DeviceCarrierSettings.address, " +
                                 "DeviceRoutes.routeId, " +
-                                "rypo.paoName as route, " + 
-                                "rfma.Manufacturer, " + 
-                                "rfma.Model, " + 
-                                "rfma.SerialNumber " + 
+                                "rypo.paoName as route " + 
                                 "from YukonPaObject ypo " + 
                                 "join Device on ypo.paObjectId = Device.deviceId " + 
                                 "join DeviceMeterGroup on Device.deviceId = DeviceMeterGroup.deviceId " + 
                                 "left join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId " + 
                                 "left join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId " + 
-                                "left join YukonPaObject rypo on DeviceRoutes.routeId = rypo.paObjectId " +
-                                "left join CRFAddress rfma on Device.deviceId = rfma.deviceId ";
+                                "left join YukonPaObject rypo on DeviceRoutes.routeId = rypo.paObjectId ";
 
     public BaseMeterRowMapper(PaoGroupsWrapper paoGroupsWrapper) {
         this.paoGroupsWrapper = paoGroupsWrapper;
@@ -52,9 +48,6 @@ public abstract class BaseMeterRowMapper<T> implements SqlProvidingRowMapper<T> 
         meter.setRouteId(routeId);
         String address = rs.getString("address");
         meter.setAddress(address);
-        meter.setManufacturer(rs.getString("Manufacturer"));
-        meter.setModel(rs.getString("Model"));
-        meter.setSerialNumber(rs.getString("SerialNumber"));
     }
     
     @Override

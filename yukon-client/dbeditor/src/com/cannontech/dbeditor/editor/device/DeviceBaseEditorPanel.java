@@ -53,7 +53,7 @@ import com.cannontech.database.data.device.MCT430S4;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.PagingTapTerminal;
-import com.cannontech.database.data.device.CRFBase;
+import com.cannontech.database.data.device.CrfBase;
 import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RemoteBase;
@@ -1851,11 +1851,11 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 CarrierBase carrierBase = (CarrierBase) val;
                 int routeId = (((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID());
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
-            } else if(val instanceof CRFBase) {
-                CRFBase rfmBase = (CRFBase)val;
-                rfmBase.getRFMAddress().setSerialNumber(getSerialNumberTextField().getText());
-                rfmBase.getRFMAddress().setManufacturer(getManufacturerTextField().getText());
-                rfmBase.getRFMAddress().setModel(getModelTextField().getText());
+            } else if(val instanceof CrfBase) {
+                CrfBase crfBase = (CrfBase)val;
+                crfBase.getCrfAddress().setSerialNumber(getSerialNumberTextField().getText());
+                crfBase.getCrfAddress().setManufacturer(getManufacturerTextField().getText());
+                crfBase.getCrfAddress().setModel(getModelTextField().getText());
             }
         }
 
@@ -2602,16 +2602,16 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
     		getPhysicalAddressTextField().setVisible(false);
     		
     		if(deviceBase.getPAOClass().equalsIgnoreCase(DeviceClasses.STRING_CLASS_RFMESH)) {
-    		    CRFBase rfmBase = (CRFBase)deviceBase;
+    		    CrfBase crfBase = (CrfBase)deviceBase;
     		    getSerialNumberLabel().setVisible(true);
     		    getSerialNumberTextField().setVisible(true);
-    		    getSerialNumberTextField().setText(rfmBase.getRFMAddress().getSerialNumber());
+    		    getSerialNumberTextField().setText(crfBase.getCrfAddress().getSerialNumber());
     		    getManufacturerLabel().setVisible(true);
     		    getManufacturerTextField().setVisible(true);
-    		    getManufacturerTextField().setText(rfmBase.getRFMAddress().getManufacturer());
+    		    getManufacturerTextField().setText(crfBase.getCrfAddress().getManufacturer());
     		    getModelLabel().setVisible(true);
     		    getModelTextField().setVisible(true);
-    		    getModelTextField().setText(rfmBase.getRFMAddress().getModel());
+    		    getModelTextField().setText(crfBase.getCrfAddress().getModel());
     		}
     	}
     

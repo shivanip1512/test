@@ -4,29 +4,29 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.db.device.CRFAddress;
+import com.cannontech.database.db.device.CrfAddress;
 
-public class CRFBase extends DeviceBase implements IDeviceMeterGroup {
-    private CRFAddress rfmAddress = null;
+public class CrfBase extends DeviceBase implements IDeviceMeterGroup {
+    private CrfAddress crfAddress = null;
     private DeviceMeterGroup deviceMeterGroup = null;
     
     public void setDeviceID(Integer deviceID) {
         super.setDeviceID(deviceID);
         getDeviceMeterGroup().setDeviceID(deviceID);
-        getRFMAddress().setDeviceID(deviceID);
+        getCrfAddress().setDeviceID(deviceID);
     }
 
     @Override
     public void add() throws SQLException {
         super.add();
         getDeviceMeterGroup().add();
-        getRFMAddress().add();
+        getCrfAddress().add();
     }
     
     @Override
     public void delete() throws SQLException {
         getDeviceMeterGroup().delete();
-        getRFMAddress().delete();
+        getCrfAddress().delete();
         super.delete();
     }
     
@@ -34,19 +34,19 @@ public class CRFBase extends DeviceBase implements IDeviceMeterGroup {
     public void retrieve() throws SQLException {
         super.retrieve();
         getDeviceMeterGroup().retrieve();
-        getRFMAddress().retrieve();
+        getCrfAddress().retrieve();
     }
     
     @Override
     public void update() throws SQLException {
         super.update();
         getDeviceMeterGroup().update();
-        getRFMAddress().update();
+        getCrfAddress().update();
     }
     
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
-        getRFMAddress().setDbConnection(conn);
+        getCrfAddress().setDbConnection(conn);
         getDeviceMeterGroup().setDbConnection(conn);
     }
 
@@ -63,14 +63,14 @@ public class CRFBase extends DeviceBase implements IDeviceMeterGroup {
         this.deviceMeterGroup = deviceMeterGroup;
     }
 
-    public CRFAddress getRFMAddress() {
-        if(rfmAddress == null) {
-            rfmAddress = new CRFAddress();
+    public CrfAddress getCrfAddress() {
+        if(crfAddress == null) {
+            crfAddress = new CrfAddress();
         }
-        return rfmAddress;
+        return crfAddress;
     }
 
-    public void setRFMAddress(CRFAddress rfmAddress) {
-        this.rfmAddress = rfmAddress;
+    public void setCrfAddress(CrfAddress rfmAddress) {
+        this.crfAddress = rfmAddress;
     }
 }

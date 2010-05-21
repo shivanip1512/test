@@ -36,7 +36,7 @@ public class DeviceGridPanel extends com.cannontech.common.gui.util.DataInputPan
 	private javax.swing.JLabel ivjJLabelErrorMessage = null;
 	  
 /**
- * DeviceVirtualNamePanel constructor comment.
+ * DeviceBaseNamePanel constructor comment.
  */
 public DeviceGridPanel() {
 	super();
@@ -57,7 +57,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 }
 
 /**
- * connEtoC1:  (JTextField1.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceVirtualNamePanel.fireInputUpdate()V)
+ * connEtoC1:  (JTextField1.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceBaseNamePanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */

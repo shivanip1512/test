@@ -38,7 +38,7 @@
 					<ct:widget bean="meterReadingsWidget" />
                     
                     <c:if test="${isRFMesh}">
-                        <ct:widget bean="ekeMeterInfoWidget" />
+                        <ct:widget bean="crfMeterInfoWidget" />
                     </c:if>
                     
 					<c:if test="${cisInfoWidgetName != null}">

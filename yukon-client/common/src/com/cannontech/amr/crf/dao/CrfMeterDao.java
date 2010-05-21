@@ -11,6 +11,8 @@ public interface CrfMeterDao {
     
     public CrfMeter getMeter(YukonPao pao) throws NotFoundException;
     
+    public CrfMeter getForId(int deviceId) throws NotFoundException;
+    
     /** 
      * Updates the fields (currently just the CrfMeterIdentifier fields) for the meter 
      * identified by the PaoIdentifier in the CrfMeter object.

@@ -389,8 +389,8 @@
         </property>
     </bean>
     
-    <bean id="ekeMeterInfoWidget" class="com.cannontech.web.widget.EkaMeterInfoWidget">
-    	<property name="title" value="Eka Meter Info"/>
+    <bean id="crfMeterInfoWidget" class="com.cannontech.web.widget.CrfMeterInfoWidget">
+    	<property name="title" value="CRF Meter Info"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>

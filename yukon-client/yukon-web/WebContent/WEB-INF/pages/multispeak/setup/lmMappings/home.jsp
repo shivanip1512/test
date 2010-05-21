@@ -62,8 +62,8 @@
 					    					finalTriggerAction="setMappedNameId">
 	                        	</cti:paoPicker>
 	                        	
-					    		<input type="button" id="searchButton" value="Search" onclick="doLmMappingNameSearch();">
-					    		<input type="button" id="addButton" value="Set New Mapping" onclick="paoPicker.showPicker();">
+					    		<input type="button" id="searchButton" value="Search" onclick="doLmMappingNameSearch();" class="formSubmit">
+					    		<input type="button" id="addButton" value="Set New Mapping" onclick="paoPicker.showPicker();" class="formSubmit">
 					    		<img src="<cti:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;" id="waitImg">
 	                        
 					    	</tags:nameValue>

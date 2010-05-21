@@ -16,9 +16,9 @@
         </tags:nameValue>
     </c:if>
     <c:if test="${showRFMeshSettings}">
-        <tags:nameValue name="Serial Number">${meter.serialNumber}</tags:nameValue>
-        <tags:nameValue name="Model">${meter.model}</tags:nameValue>
-        <tags:nameValue name="Manufacturer">${meter.manufacturer}</tags:nameValue>
+        <tags:nameValue name="Serial Number">${crfMeter.meterIdentifier.sensorSerialNumber}</tags:nameValue>
+        <tags:nameValue name="Model">${crfMeter.meterIdentifier.sensorModel}</tags:nameValue>
+        <tags:nameValue name="Manufacturer">${crfMeter.meterIdentifier.sensorManufacturer}</tags:nameValue>
     </c:if>
 	<tags:nameValue name="Status">
 	<c:if test='${meter.disabled}'><span style="font-weight:bold;color:#CC0000;">Disabled</span></c:if>

@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import com.cannontech.database.db.DBPersistent;
 
-public class CRFAddress extends DBPersistent  {
+public class CrfAddress extends DBPersistent  {
         
     private Integer deviceID = null;
     private String serialNumber;
@@ -15,7 +15,7 @@ public class CRFAddress extends DBPersistent  {
     public static final String CONSTRAINT_COLUMNS[] = { "DeviceID" };
     public static final String TABLE_NAME = "CRFAddress";
     
-    public CRFAddress() {
+    public CrfAddress() {
         super();
     }
 

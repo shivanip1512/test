@@ -22,6 +22,12 @@ public DataInputPanel() {
 	super();
 	initialize();
 }
+
+/**
+ * Override this to set the cursor or focus on a specific element of the ui.
+ */
+public void setFirstFocus(){}
+
 /**
  * This method was created in VisualAge.
  * @param listener com.cannontech.common.gui.util.DataInputPanelListener

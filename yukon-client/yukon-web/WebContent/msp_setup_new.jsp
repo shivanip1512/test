@@ -146,8 +146,8 @@
 					  <%------ SAVE/CANCEL BUTTONS ------%>
 					  <tr> 
 					    <td align="right" colspan="3">
-					      <input type="submit" name="Submit" value="Save" onclick="document.form1.ACTION.value='Create';">
-					      <input type="button" name="Cancel" value="Cancel" onclick="location.href='msp_setup.jsp?init'">
+					      <input type="submit" name="Submit" value="Save" onclick="document.form1.ACTION.value='Create';" class="formSubmit">
+					      <input type="button" name="Cancel" value="Cancel" onclick="location.href='msp_setup.jsp?init'" class="formSubmit">
 					    </td>
 					  </tr>
 							  

@@ -1531,4 +1531,15 @@ public static Object changeType (String newType,
         PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
         return paoDao.getYukonPao(portId).getPaoIdentifier().getPaoType() == PaoType.TCPPORT;
     }
+    
+    public static boolean isCrf(int deviceType) {
+        switch (deviceType) {
+            case CRF_AL:
+            case CRF_AX:
+                return true;
+                
+            default :
+                return false;
+        }
+    }
 }

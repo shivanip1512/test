@@ -128,7 +128,7 @@ public final class DeviceFactory {
             break;
         case CRF_AX:
         case CRF_AL:
-            returnDevice = new CRFBase();
+            returnDevice = new CrfBase();
             returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_RFMESH);
             returnDevice.setDeviceType(paoType.getDbString());
             break;

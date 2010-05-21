@@ -224,13 +224,13 @@
 				  <tr> 
 				    <td align="right" colspan="5">
 				    	<br>
-				      <input type="submit" name="Save" value="Save" onclick="document.form1.ACTION.value='Save';">
-				      <input type="submit" name="Delete" value="Delete" onclick="document.form1.ACTION.value='Delete';">
+				      <input type="submit" name="Save" value="Save" onclick="document.form1.ACTION.value='Save';" class="formSubmit">
+				      <input type="submit" name="Delete" value="Delete" onclick="document.form1.ACTION.value='Delete';" class="formSubmit">
 				      
 				      <cti:url var="setupNewUrl" value="/msp_setup_new.jsp">
 						<cti:param name="init" value="" />
 					  </cti:url>
-				      <input type="button" name="New" value="New" onclick="javascript:window.location='${setupNewUrl}'">
+				      <input type="button" name="New" value="New" onclick="javascript:window.location='${setupNewUrl}'" class="formSubmit">
 				    </td>
 				  </tr>
 				

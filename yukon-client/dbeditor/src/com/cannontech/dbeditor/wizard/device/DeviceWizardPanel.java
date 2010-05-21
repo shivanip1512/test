@@ -1,8 +1,10 @@
 package com.cannontech.dbeditor.wizard.device;
 
+import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel;
 
 /**
  * This type was created in VisualAge.
@@ -19,12 +21,13 @@ public class DeviceWizardPanel extends com.cannontech.common.wizard.WizardPanel
 	private DeviceTNPPTerminalPanel deviceTNPPTerminalPanel;
     private DeviceTapVerizonPanel deviceTapVerizonPanel;
 	private DeviceIEDNamePanel deviceIEDNamePanel;
-	private DeviceVirtualNamePanel deviceVirtualNamePanel;
+	private DeviceBaseNamePanel deviceBaseNamePanel;
     private DeviceGridPanel deviceGridPanel;
 	private DeviceMeterNumberPanel deviceMeterNumberPanel;
 	private DeviceSixnetWizardPanel deviceSixnetWizardPanel;
 	private MCTBroadcastListEditorPanel mctBroadcastListEditorPanel;
-	private com.cannontech.dbeditor.editor.device.DeviceScanRateEditorPanel deviceScanRateEditorPanel;
+	private DeviceScanRateEditorPanel deviceScanRateEditorPanel;
+    private CrfMeterPanel crfMeterPanel;
 
 /**
  * DeviceWizardPanel constructor comment.
@@ -174,17 +177,12 @@ public DeviceTypePanel getDeviceTypePanel() {
 	return deviceTypePanel;
 }
 
-
-/**
- * This method was created in VisualAge.
- * @return com.cannontech.dbeditor.wizard.device.DeviceNameAddressPanel
- */
-protected DeviceVirtualNamePanel getDeviceVirtualNamePanel() 
+protected DeviceBaseNamePanel getDeviceBaseNamePanel() 
 {
-	if( deviceVirtualNamePanel == null )
-		deviceVirtualNamePanel = new DeviceVirtualNamePanel();
+	if( deviceBaseNamePanel == null )
+		deviceBaseNamePanel = new DeviceBaseNamePanel();
 		
-	return deviceVirtualNamePanel;
+	return deviceBaseNamePanel;
 }
 
 protected DeviceGridPanel getDeviceGridPanel()
@@ -206,6 +204,12 @@ protected DeviceCommChannelPanel getDeviceCommChannelPanel() {
 	return deviceCommChannelPanel;
 }
 
+protected CrfMeterPanel getCrfMeterPanel() {
+    if( crfMeterPanel == null ) {
+        crfMeterPanel = new CrfMeterPanel();
+    }
+    return crfMeterPanel;    
+}
 
 /**
  * This method was created in VisualAge.
@@ -240,8 +244,7 @@ public java.awt.Dimension getMinimumSize() {
 /**
  * getNextInputPanel method comment.
  */
-protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
-	com.cannontech.common.gui.util.DataInputPanel currentInputPanel)
+protected DataInputPanel getNextInputPanel(DataInputPanel currentInputPanel)
 {
 	if (currentInputPanel == null)
 	{
@@ -270,21 +273,20 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
             getDeviceTapVerizonPanel().setIsSNPP(true);
 			return getDeviceTapVerizonPanel();
 		}
+        else if( devType == PAOGroups.VIRTUAL_SYSTEM || DeviceTypesFuncs.isCrf(devType)) {
+            getDeviceBaseNamePanel().setDeviceType(devType);
+            getDeviceBaseNamePanel().setFirstFocus();
+            return getDeviceBaseNamePanel();
+        }
 		else if( (DeviceTypesFuncs.isMeter(devType)
 					  && !DeviceTypesFuncs.isIon(devType))
-				    || devType == PAOGroups.DAVISWEATHER)
+					  || devType == PAOGroups.DAVISWEATHER)
 		{
 			getDeviceIEDNamePanel().setDeviceType(devType);
 			getDeviceIEDNamePanel().setFirstFocus();
             return getDeviceIEDNamePanel();
 		}
-		else if( devType == PAOGroups.VIRTUAL_SYSTEM )
-		{
-			getDeviceVirtualNamePanel().setDeviceType(devType);
-			getDeviceVirtualNamePanel().setFirstFocus();
-            return getDeviceVirtualNamePanel();
-		}
-        else if ( devType == PAOGroups.NEUTRAL_MONITOR || devType == PAOGroups.FAULT_CI )
+		else if ( devType == PAOGroups.NEUTRAL_MONITOR || devType == PAOGroups.FAULT_CI )
         {
         	getDeviceGridPanel().setDeviceType(devType);
             getDeviceGridPanel().setFirstFocus();
@@ -296,6 +298,10 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
             getDeviceNameAddressPanel().setFirstFocus();
 			return getDeviceNameAddressPanel();
 		}
+	}
+	else if (currentInputPanel == getDeviceBaseNamePanel()) {
+	    getDeviceMeterNumberPanel().setFirstFocus();
+        return getDeviceMeterNumberPanel();
 	}
 	else if ((currentInputPanel == getDeviceNameAddressPanel()) || (currentInputPanel == getDeviceIEDNamePanel()))
 	{
@@ -346,10 +352,15 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	else if (currentInputPanel == getDeviceMeterNumberPanel())
 	{
-
-		getDeviceScanRatePanel().setDeviceType(getDeviceTypePanel().getDeviceType());
-        getDeviceScanRatePanel().setFirstFocus();
-		return getDeviceScanRatePanel();
+	    int devType = getDeviceTypePanel().getDeviceType();
+	    if(DeviceTypesFuncs.isCrf(devType)) {
+	        getCrfMeterPanel().setFirstFocus();
+	        return getCrfMeterPanel();
+	    } else {
+	        getDeviceScanRatePanel().setDeviceType(devType);
+	        getDeviceScanRatePanel().setFirstFocus();
+	        return getDeviceScanRatePanel();
+	    }
 	}
 	else if (currentInputPanel == getDeviceScanRatePanel())
 	{
@@ -433,8 +444,9 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
 	return  ( currentPanel == getDevicePhoneNumberPanel() 
             || (currentPanel == getDeviceCommChannelPanel() && !getDeviceCommChannelPanel().isDialupPort())
             || currentPanel == getDeviceRoutePanel() 
-            || currentPanel == getDeviceVirtualNamePanel()
+            || (currentPanel == getDeviceBaseNamePanel() && getDeviceTypePanel().getDeviceType() == PAOGroups.VIRTUAL_SYSTEM)
             || currentPanel == getDeviceGridPanel()
+            || currentPanel == getCrfMeterPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
                 (getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700
