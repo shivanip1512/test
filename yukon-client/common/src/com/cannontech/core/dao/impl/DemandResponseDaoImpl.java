@@ -10,9 +10,9 @@ import java.util.Map.Entry;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.common.pao.PaoCollections;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -94,7 +94,7 @@ public class DemandResponseDaoImpl implements DemandResponseDao {
                 return Maps.immutableEntry(groupId, program);
             }
         };
-        Function<PaoIdentifier, Integer> typeMapper = PaoCollections.getPaoIdentifierIdFunction();
+        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdentifierIdFunction();
 
         ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 

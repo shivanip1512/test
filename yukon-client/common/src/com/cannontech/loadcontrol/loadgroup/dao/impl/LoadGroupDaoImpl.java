@@ -15,9 +15,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.pao.PaoCollections;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -201,7 +201,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                 return Maps.immutableEntry(groupId, macroGroup);
             }
         };
-        Function<PaoIdentifier, Integer> typeMapper = PaoCollections.getPaoIdentifierIdFunction();
+        Function<PaoIdentifier, Integer> typeMapper = PaoUtils.getPaoIdentifierIdFunction();
 
         ChunkingMappedSqlTemplate sqlTemplate = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
         return sqlTemplate.reverseMultimappedQuery(sqlGenerator, 
