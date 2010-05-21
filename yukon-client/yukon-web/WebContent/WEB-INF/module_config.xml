@@ -826,7 +826,7 @@
           </options>
         </option>
         <option name="logs">
-          <link>/spring/support/logging/menu</link>
+          <link>/spring/support/logging/menu?file=/</link>
         </option>
         <option name="database">
           <link>/spring/support/database/info</link>

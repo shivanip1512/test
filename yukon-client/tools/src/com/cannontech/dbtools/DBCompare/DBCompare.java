@@ -121,7 +121,7 @@ public class DBCompare extends MessageFrameAdaptor
         if( args.length < 1 )  // the user did not enter any params
         {
             System.out.println("Updates the database with the DBupdate script files given directory.");
-            System.out.println("An intermediate file is generated in the " + CtiUtilities.getLogDirPath() );
+            System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir() );
             System.out.println("directory for each DBUpdate file found.");
             System.out.println("");
             System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false]");

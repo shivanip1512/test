@@ -22,7 +22,7 @@ import com.cannontech.common.util.FileUtil;
 public class LogController {
 
     //get the local log directory
-    protected File localDir = new File(CtiUtilities.getYukonBase(), "Server/Log");
+    protected File localDir = new File(CtiUtilities.getServerLogDir());
     
     /**
      * Gets the correct file from the request and returns it.  In the case that the file

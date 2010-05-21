@@ -41,7 +41,7 @@ public class SystrayLogger extends Thread
 				{
 					RollingFileAppender rfa = new RollingFileAppender(
 							new PatternLayout(),   //no layout needed
-							CtiUtilities.getLogDirPath() +
+							CtiUtilities.getClientLogDir() +
 							"systray_"+ getName() + ".log",
 							true); //append to the file
 					

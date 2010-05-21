@@ -226,9 +226,9 @@ public class UpdateDB
 		ArrayList versions = new ArrayList(32);
 
 		//previously generated list of valid commands
-		final File genDIR = new File( CtiUtilities.getLogDirPath() );
+		final File genDIR = new File( CtiUtilities.getClientLogDir() );
 		if(genDIR.listFiles() == null) {
-		    CTILogger.error("Could not find valid client log directory: " + CtiUtilities.getLogDirPath());
+		    CTILogger.error("Could not find valid client log directory: " + CtiUtilities.getClientLogDir());
 		} else {
     		for( int i = 0; i < genDIR.listFiles().length; i++ )
     		{

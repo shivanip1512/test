@@ -180,7 +180,7 @@ public class DBUpdater extends MessageFrameAdaptor
 		if( args.length < 1 )  // the user did not enter any params
 		{
 			System.out.println("Updates the database with the DBupdate script files given directory.");
-			System.out.println("An intermediate file is generated in the " + CtiUtilities.getLogDirPath() );
+			System.out.println("An intermediate file is generated in the " + CtiUtilities.getClientLogDir() );
 			System.out.println("directory for each DBUpdate file found.");
 			System.out.println("");
 			System.out.println(" DBUpdater " + IRunnableDBTool.PROP_VALUE + "=<SRC_PATH> [verbose= true | false]");
@@ -205,7 +205,7 @@ public class DBUpdater extends MessageFrameAdaptor
 	private synchronized boolean executeCommands()
 	{
 		//get all the files in the log DIR
-		FileVersion[] fileVers = updateDB.getDBUpdateFiles( CtiUtilities.getLogDirPath() );
+		FileVersion[] fileVers = updateDB.getDBUpdateFiles( CtiUtilities.getClientLogDir() );
 
 		Connection conn = 
 			PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
@@ -399,7 +399,7 @@ public class DBUpdater extends MessageFrameAdaptor
 			//find out if we need to right the valid file for this version			
 			if( !UpdateDB.isValidUpdateFile(sqlFile) )
 				printUpdateLines( validLines, 
-						new File( CtiUtilities.getLogDirPath() + 
+						new File( CtiUtilities.getClientLogDir() + 
 							filesVers[i].getVersion() +
 							"_" + filesVers[i].getBuild() +
 							DBMSDefines.NAME_VALID) );

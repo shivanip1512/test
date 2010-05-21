@@ -106,26 +106,10 @@ public class YukonFileAppender extends AppenderSkeleton {
      * This method checks the master configuration file and uses the 'LOG_DIRECTORY' key
      * to figure out correct log directory path.
      *
-     * @return
+     * @return the path to the server log directory
      */
     public static String getLogDirectory() {
-        String directory = CtiUtilities.getYukonBase() + "/Server/Log/";
-        
-        // Gets the value from the cparm if it exists
-        String logDirectory = configSource.getString("LOG_DIRECTORY");
-
-        /* Checks to see if the path exists and also checks to see if the path
-         * is an absolute path or a relative path.  If the path is relative we add
-         * yukon base in front of the path.
-         */
-        if(!StringUtils.isBlank(logDirectory)){
-            File file = new File(logDirectory);
-            if(!file.isAbsolute()) {
-                file = new File(CtiUtilities.getYukonBase(),logDirectory);
-            }
-            directory = file.getPath();
-        }
-        return directory;
+        return CtiUtilities.getServerLogDir();
     }
 
     /**

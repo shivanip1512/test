@@ -53,6 +53,8 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.groups.IllegalGroupNameException;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.util.TextFieldDocument;
@@ -768,9 +770,8 @@ public final static Integer getIntervalSecondsValueFromDecimal(String selectedSt
  * Here is the search order:
  *  1) Uses System.getProperty("yukon.logdir") if found
  *  2) Uses \yukon\client\log if found, else creates yukon\client\log
- * 
  */
-public final static String getLogDirPath()
+public final static String getClientLogDir()
 {   
 	//Logs go different places depending on whether we are running
 	//as a client application or a server application
@@ -786,6 +787,36 @@ public final static String getLogDirPath()
 	{
 		return clientLoc;
 	}
+}
+
+/**
+ * Gets the server log directory.  If the LOG_DIRECTORY cparm exists in the
+ * master.cfg, the absolute value of this path will be returned.  Otherwise,
+ * the default of YUKON_BASE\Server\Log is returned.
+ * 
+ * @see #getYukonBase()
+ * @return the String representation of the path to the server log directory
+ */
+public final static String getServerLogDir()
+{
+    String logDirectory = CtiUtilities.getYukonBase() + "/Server/Log/";
+    
+    // Gets the value from the cparm if it exists
+    ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
+    String masterCfgLogDir = configSource.getString("LOG_DIRECTORY");
+
+    /* Checks to see if the path exists and also checks to see if the path
+     * is an absolute path or a relative path.  If the path is relative we add
+     * yukon base in front of the path.
+     */
+    if(!StringUtils.isBlank(masterCfgLogDir)){
+        File file = new File(masterCfgLogDir);
+        if(!file.isAbsolute()) {
+            file = new File(CtiUtilities.getYukonBase(),masterCfgLogDir);
+        }
+        logDirectory = file.getPath();
+    }
+    return logDirectory;
 }
 
 /**
