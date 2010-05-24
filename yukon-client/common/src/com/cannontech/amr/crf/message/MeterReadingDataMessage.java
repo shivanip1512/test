@@ -1,6 +1,7 @@
 package com.cannontech.amr.crf.message;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 
@@ -118,7 +119,7 @@ public class MeterReadingDataMessage implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("MeterReadingDataMessage [channelDataList=%s, meterReadingType=%s, sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s, timeStamp=%s]",
+        return String.format("MeterReadingDataMessage [channelDataList=%s, meterReadingType=%s, sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s, timeStamp=%tc]",
                              channelDataList,
                              meterReadingType,
                              sensorManufacturer,
