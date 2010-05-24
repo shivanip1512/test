@@ -33,7 +33,7 @@
 //---------------------------------------------------------------------------
 function OnFirstUIBefore()
 number nResult, nSize;
-string sDir, sDirLow;
+string sDir, sDirLow, sDestWarn;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -50,7 +50,10 @@ begin
 	Enable(BACKBUTTON);
 	sDir = TARGETDIR;
 	nSize = 0;
-	nResult = SdSetupType2("", "", sDir, 0);
+	sDestWarn = "Please select a setup type and destination. If the "
+	+ "destination is changed, a restart will be required after "
+	+ "installation.";
+	nResult = SdSetupType2("", sDestWarn, sDir, 0);
 	if (nResult = BACK) goto Dialog_Welcome;
 	//if (nResult = COMPLETE) - just keep going, all features selected by default
 	if (nResult = CUSTOM) then
@@ -58,10 +61,17 @@ begin
 		if(nResult = BACK) goto Dialog_AskDestinationPath;
 	endif;
 	
-	//if the last five chars of the path aren't "yukon", 
-	//add it to the end of the path
 	StrToLower(sDirLow, sDir);
 	StrRemoveLastSlash(sDirLow);
+	
+	//if the install destination isn't C:\Yukon, mandate a restart after
+	//install, so the services can pick up YUKON_BASE.
+	if(StrCompare(sDirLow, "c:\\yukon") != 0) then
+		BATCH_INSTALL = TRUE;
+	endif;
+	
+	//if the last five chars of the path aren't "yukon", 
+	//add it to the end of the path
 	if(StrFindEx(sDirLow, "yukon", StrLengthChars(sDirLow)-5) < 0) then
 		sDir = sDir ^ "Yukon";
 	endif;
@@ -189,10 +199,17 @@ begin
     
     Dialog_InstallComplete:
     Disable(BACKBUTTON);
-    SdFinish("Installation Complete",
-    		 "The installer has successfully installed the Yukon Application Suite.",
-    		 "Click Finish to exit setup.",
-    		 "","",opt,opt);
+    if (BATCH_INSTALL) then
+    	SdFinishReboot("Installation Complete", 
+    				   "The installer has successfully installed the Yukon Application Suite. "
+    				   +"Before you can use the program, you must restart your computer.", 
+    				   SYS_BOOTMACHINE, "", 0);
+    else
+    	SdFinish("Installation Complete",
+    		 		"The installer has successfully installed the Yukon Application Suite.",
+    		 		"Click Finish to exit setup.",
+    		 		"","",opt,opt);
+    endif;
 end;
 
 //--------------------------------------------------------------------------
