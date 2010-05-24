@@ -72,7 +72,7 @@
   <bean id="deviceDao" class="com.cannontech.core.dao.impl.DeviceDaoImpl" >
     <property name="paoDao" ref="paoDao"/>
     <property name="jdbcOps" ref="jdbcTemplate"/>
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+    <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate"/>
     <property name="databaseCache" ref="databaseCache"/>
     <property name="dbPersistantDao" ref="dbPersistentDao" />
     <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
