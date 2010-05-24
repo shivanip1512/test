@@ -523,7 +523,7 @@ public class ViewCreator
 
 
 	/**
-	 * Insert the method's description here.
+	 * Builds the rows for TDC Event Viewer historical view
 	 * Creation date: (3/24/00 1:24:13 PM)
 	 * @param sql java.lang.String
 	 */
@@ -543,7 +543,7 @@ public class ViewCreator
 						  " and s.datetime >= ? " +
 						  " and s.datetime < ? " +
 						  " and s.logid >= ? " +
-						  " and s.logid < ? " +
+						  " and s.logid <= ? " +
 						  " order by s.datetime, s.soe_tag";
    
 		GregorianCalendar lowerCal = new GregorianCalendar();
@@ -560,15 +560,12 @@ public class ViewCreator
 		upperCal.set( upperCal.SECOND, 59 );
 		upperCal.set( upperCal.MILLISECOND, 999 );
 
-
-
 		Object[] objs = new Object[2];
 		objs[0] = lowerCal.getTime();
 		objs[1] = upperCal.getTime();
 
 		//get the row count, min, max   
 		Object[][] rowCount = DataBaseInteraction.queryResults( rowCountQuery, objs );
-
 
 		//set the correct page number values
 		processPagingValues(
