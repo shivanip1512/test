@@ -123,7 +123,7 @@ public class SendControlOddsTask implements Runnable {
 
 					}
 
-					String ctrlOddsText = energyCompany.getEnergyCompanySetting( ConsumerInfoRole.WEB_TEXT_ODDS_FOR_CONTROL );
+					String ctrlOddsText = "odds for control";
 					String subject = "Today's " + ServletUtil.capitalizeAll( ctrlOddsText );
 					
 					StringBuffer messageText = new StringBuffer();
