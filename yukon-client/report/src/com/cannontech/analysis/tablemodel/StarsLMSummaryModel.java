@@ -522,4 +522,15 @@ public class StarsLMSummaryModel extends ReportModelBase<StarsLMSummary>
     public void setLiteUser(LiteYukonUser liteUser) {
         this.liteUser = liteUser;
     }
+    
+    @Override
+    public boolean useStartDate() {
+        return false;
+    }
+
+    @Override
+    public boolean useStopDate() {
+        return false;
+    }
+
 }

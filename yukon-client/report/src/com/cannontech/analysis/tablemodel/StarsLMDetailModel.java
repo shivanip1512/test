@@ -499,4 +499,15 @@ public class StarsLMDetailModel extends ReportModelBase<StarsLMDetail>
     {
         this.showCapacity = showCapacity;
     }
+    
+    @Override
+    public boolean useStartDate() {
+        return false;
+    }
+
+    @Override
+    public boolean useStopDate() {
+        return false;
+    }
+
 }
