@@ -67,14 +67,12 @@ bool CtiIONStruct::isStructType( CtiIONValue *toCheck, StructTypes structType )
 
 void CtiIONStruct::init( vector< CtiIONValue * > &structValues )
 {
-    bool valid = true;
+    if( !_numElements || _numElements == structValues.size() )
+    {
+        setValid(structValues.size() == count_if(structValues.begin(), structValues.end(), mem_fun(&CtiIONValue::isValid)));
 
-    valid &= _numElements == structValues.size();
-    valid &= _numElements == count_if(structValues.begin(), structValues.end(), mem_fun(&CtiIONValue::isValid));
-
-    setValid(valid);
-
-    copy(structValues.begin(), structValues.end(), back_inserter(_structElements));
+        copy(structValues.begin(), structValues.end(), back_inserter(_structElements));
+    }
 }
 
 
