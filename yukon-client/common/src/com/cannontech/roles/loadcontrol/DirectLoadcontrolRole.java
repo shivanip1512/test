@@ -7,7 +7,6 @@ import com.cannontech.roles.LMRoleDefs;
 public interface DirectLoadcontrolRole {
 	public static final int ROLEID = LMRoleDefs.DIRECT_LOADCONTROL_ROLEID;
 	
-	public static final int LOADCONTROL_LABEL = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE;
 	public static final int INDIVIDUAL_SWITCH = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 1;
 	public static final int THREE_TIER_DIRECT = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 2;
 	public static final int DIRECT_CONTROL = LMRoleDefs.DIRECT_LOADCONTROL_PROPERTYID_BASE - 3;

@@ -59,7 +59,7 @@ function selectAccount(accountID, memberID) {
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
             <div align="center"> <br>
-              <span class="TitleHeader">ADMINISTRATION - SCHEDULED <cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN %>" defaultvalue="opt out" format="upper"/> 
+              <span class="TitleHeader">ADMINISTRATION - SCHEDULED OPT OUT 
               EVENTS</span><br>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <br>
