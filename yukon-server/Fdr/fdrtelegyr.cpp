@@ -1095,10 +1095,6 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
    string pointStr; //pointid
    string interval;
 
-   int groupNum   = 1;
-   int analogNum  = 1;
-   int statusNum  = 501;
-
    //iterate through all our destinations per point (should have 1 for telegyr)
    for( int x = 0; x < translationPoint->getDestinationList().size(); x++ )
    {
@@ -1123,20 +1119,32 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
          translationPoint->getDestinationList()[x].setTranslation( pointStr );
       }
    }
-   int i;
-   bool done;
-   for(i=0,done=false; ( i < _groupList.size() ) && ( !done ); i++ )
+
+   int analogNum  = 1;
+   int statusNum  = 501;
+
+   for (int i = 0; i < _groupList.size(); i++ )
    {
       string type = _groupList[i].getGroupType();
+      int interval = _groupList[i].getInterval();
       int size = _groupList[i].getPointList().size();
       std::transform(type.begin(), type.end(), type.begin(), tolower);
       std::transform(pointType.begin(), pointType.end(), pointType.begin(), tolower);
+
+      if (type == "analog")
+      {
+         analogNum++;
+      }
+      else
+      {
+         statusNum++;
+      }
 
       if(( type == pointType ) && ( size < 127 ))
       {
          _groupList[i].getPointList().push_back( *translationPoint );
          foundGroup = true;
-         done = true;
+         break;
       }
    }
 
@@ -1151,18 +1159,15 @@ bool CtiFDRTelegyr::translateSinglePoint(CtiFDRPointSPtr & translationPoint, boo
       if( "status" == pointType )
       {
          itoa( statusNum, valStr, 10 );
-         groupNum = statusNum;
-         statusNum++;
+         tempGroup.setGroupID(statusNum);
       }
       else
       {
          itoa( analogNum, valStr, 10 );
-         groupNum = analogNum;
-         analogNum++;
+         tempGroup.setGroupID(analogNum);
       }
 
       string name( pointType + valStr );
-      tempGroup.setGroupID( groupNum );
       tempGroup.setGroupName( name );
 
       if( interval.empty() )
