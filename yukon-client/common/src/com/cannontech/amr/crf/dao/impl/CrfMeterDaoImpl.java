@@ -74,7 +74,7 @@ public class CrfMeterDaoImpl implements CrfMeterDao {
     public void updateMeter(CrfMeter meter) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("update CrfAddress");
-        sql.append("set SerialNumner").eq(meter.getMeterIdentifier().getSensorSerialNumber());
+        sql.append("set SerialNumber").eq(meter.getMeterIdentifier().getSensorSerialNumber());
         sql.append(  ", Manufacturer").eq(meter.getMeterIdentifier().getSensorManufacturer());
         sql.append(  ", Model").eq(meter.getMeterIdentifier().getSensorModel());
         sql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
