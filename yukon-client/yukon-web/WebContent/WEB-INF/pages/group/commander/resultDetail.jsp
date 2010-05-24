@@ -55,7 +55,7 @@
                 <td valign="top" class="smallBoldLabel">Note:</td>
                 <td style="font-size:11px;">
                     Progress is updated periodically. Processing will continue if you wish to navigate away from this page at any time.<br>
-                    You may view the progress of all recent and ongoing processes from the main Commander page.<br><br>
+                    You may view the progress of all recent and ongoing processes from the <a href="/spring/group/commander/resultList">Group Command Processing Results</a> page.<br><br>
                 </td>
             </tr>
         </table>
