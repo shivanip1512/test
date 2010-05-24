@@ -11,6 +11,7 @@ import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
@@ -31,7 +32,7 @@ public class ScenarioServiceImpl implements ScenarioService {
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ProgramCount");    
+            retVal.append("SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ScenarioProgramCount");    
             retVal.append("FROM YukonPAObject PAO");                                                     
             retVal.append("LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId ");
             retVal.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO.getDatabaseRepresentation());   
@@ -50,35 +51,21 @@ public class ScenarioServiceImpl implements ScenarioService {
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_SCENARIO);
-            Scenario retVal = new Scenario(paoId,
-                                           rs.getString("paoName"));
-            retVal.setProgramCount(rs.getInt("ProgramCount"));
-            
-            return retVal;
+            String paoName = rs.getString("paoName");
+            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
+            return new Scenario(paoId, paoName, scenarioProgramCount);
         }
     };
 
     @Override
     public SearchResult<ControllablePao> filterScenarios(
             YukonUserContext userContext, UiFilter<ControllablePao> filter,
-            Comparator<ControllablePao> sorter, int startIndex, int count) {
+            Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
         SearchResult<ControllablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
 
         return searchResult;
-    }
-
-    @Override
-    public void addScenarioActionState(List<ControllablePao> controllablePaos) {
-        for (int i = 0; i < controllablePaos.size(); i++) {
-            ControllablePao controllablePao = controllablePaos.get(i);
-            if (controllablePao.getPaoIdentifier().getPaoType().equals(PaoType.LM_SCENARIO)) {
-                Scenario scenario = 
-                    scenarioDao.getScenario(controllablePao.getPaoIdentifier().getPaoId());
-                controllablePaos.set(i, scenario);
-            }
-        }
     }
 
     @Override

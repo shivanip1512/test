@@ -12,6 +12,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -71,7 +72,7 @@ public class LoadGroupServiceImpl implements LoadGroupService {
     
     @Override
     public SearchResult<ControllablePao> filterGroups(
-            UiFilter<ControllablePao> filter, Comparator<ControllablePao> sorter,
+            UiFilter<ControllablePao> filter, Comparator<DisplayablePao> sorter,
             int startIndex, int count, YukonUserContext userContext) {
 
         SearchResult<ControllablePao> searchResult =

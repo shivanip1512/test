@@ -1,6 +1,6 @@
 package com.cannontech.dr.model;
 
-public enum DRActionStateEnum {
+public enum DrActionStateEnum {
     CONTROLLABLE,
     NO_ASSIGNED_PROGRAMS,
     ;

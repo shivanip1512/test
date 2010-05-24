@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.dr.scenario.model.Scenario;
 
 public class PaoNameControllablePaoRowMapper implements
         ParameterizedRowMapper<ControllablePao> {
@@ -17,7 +18,13 @@ public class PaoNameControllablePaoRowMapper implements
         int paoID = rs.getInt("paobjectId");
         String paoTypeStr = rs.getString("type");
         PaoType paoType = PaoType.getForDbString(paoTypeStr);
-        return new ControllablePao(new PaoIdentifier(paoID, paoType),
-                                     paoName);
+        
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, paoType);
+        if (paoType.equals(PaoType.LM_SCENARIO)) {
+            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
+            return new Scenario(paoIdentifier, paoName, scenarioProgramCount);
+        }
+        
+        return new ControllablePao(paoIdentifier, paoName);
     }
 }

@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 
-import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 
@@ -22,11 +22,11 @@ public class LoadGroupStateField extends LoadGroupBackingFieldBase {
     }
 
     @Override
-    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
-        return new Comparator<ControllablePao>() {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+        return new Comparator<DisplayablePao>() {
 
             @Override
-            public int compare(ControllablePao pao1, ControllablePao pao2) {
+            public int compare(DisplayablePao pao1, DisplayablePao pao2) {
                 LMDirectGroupBase loadGroup1 = getGroupFromYukonPao(pao1);
                 LMDirectGroupBase loadGroup2 = getGroupFromYukonPao(pao2);
                 if (loadGroup1 == loadGroup2) {

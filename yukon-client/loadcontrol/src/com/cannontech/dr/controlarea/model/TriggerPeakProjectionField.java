@@ -2,8 +2,8 @@ package com.cannontech.dr.controlarea.model;
 
 import java.util.Comparator;
 
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 
@@ -32,7 +32,7 @@ public class TriggerPeakProjectionField extends TriggerBackingFieldBase {
     }
 
     @Override
-    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new TriggerComparator() {
             @Override
             public int triggerCompare(

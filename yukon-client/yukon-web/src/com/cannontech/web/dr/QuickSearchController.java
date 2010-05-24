@@ -16,7 +16,8 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.ControllablePaoComparator;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -73,7 +74,7 @@ public class QuickSearchController {
 
         String sort = quickSearchBean.getSort();
         boolean descending = quickSearchBean.getDescending();
-        Comparator<ControllablePao> sorter = null;
+        Comparator<DisplayablePao> sorter = null;
         if (sort != null) {
             CombinedSortableField sortField =
                 CombinedSortableField.valueOf(sort);
@@ -85,7 +86,7 @@ public class QuickSearchController {
             }
         }
         if (sorter == null) {
-            sorter = new ControllablePaoComparator();
+            sorter = new DisplayablePaoComparator();
         }
 
         UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);

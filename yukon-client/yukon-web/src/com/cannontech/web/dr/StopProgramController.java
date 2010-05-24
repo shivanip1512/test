@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.common.pao.ControllablePaoComparator;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.authorization.support.Permission;
@@ -195,7 +195,7 @@ public class StopProgramController extends ProgramControllerBase {
         }
 
         SearchResult<ControllablePao> searchResult =
-            programService.filterPrograms(filter, new ControllablePaoComparator(),
+            programService.filterPrograms(filter, new DisplayablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
         List<ControllablePao> programs = searchResult.getResultList();
         if (programs == null || programs.size() == 0) {

@@ -15,7 +15,8 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.favorites.service.FavoritesService;
-import com.cannontech.common.pao.ControllablePaoComparator;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -51,7 +52,7 @@ public class HomeController {
         UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
 
         List<ControllablePao> favorites = favoritesService.getFavorites(user, filter);
-        Comparator<ControllablePao> sorter = null;
+        Comparator<DisplayablePao> sorter = null;
         if (favSort != null) {
             CombinedSortableField sortField = CombinedSortableField.valueOf(favSort);
             sorter = demandResponseService.getSorter(sortField, userContext);
@@ -60,7 +61,7 @@ public class HomeController {
             }
         }
         if (sorter == null) {
-            sorter = new ControllablePaoComparator();
+            sorter = new DisplayablePaoComparator();
         }
         Collections.sort(favorites, sorter);
         model.addAttribute("favorites", favorites);
@@ -75,7 +76,7 @@ public class HomeController {
             }
         }
         if (sorter == null) {
-            sorter = new ControllablePaoComparator();
+            sorter = new DisplayablePaoComparator();
         }
         Collections.sort(recentlyViewed, sorter);
         model.addAttribute("recents", recentlyViewed);

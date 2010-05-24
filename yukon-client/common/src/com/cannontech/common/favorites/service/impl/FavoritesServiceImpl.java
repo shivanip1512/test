@@ -13,19 +13,18 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.service.FavoritesService;
-import com.cannontech.common.pao.ControllablePaoComparator;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.impl.PaoNameControllablePaoRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.model.ControllablePao;
-import com.cannontech.dr.scenario.service.ScenarioService;
 import com.google.common.collect.Lists;
 
 public class FavoritesServiceImpl implements FavoritesService {
     private FilterService filterService;
-    private ScenarioService scenarioService;
     
     @Override
     public List<ControllablePao> getRecentlyViewed(LiteYukonUser user,
@@ -36,8 +35,7 @@ public class FavoritesServiceImpl implements FavoritesService {
             filterService.filter(filter, null, 0, count, rowMapper);
         List<ControllablePao> retVal = searchResult.getResultList();
 
-        scenarioService.addScenarioActionState(retVal);
-        Collections.sort(retVal, new ControllablePaoComparator());
+        Collections.sort(retVal, new DisplayablePaoComparator());
         
         return retVal;
     }
@@ -50,12 +48,11 @@ public class FavoritesServiceImpl implements FavoritesService {
         filters.add(new IsFavoriteFilter(user.getUserID()));
         UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
         FavoriteRowMapper rowMapper = new FavoriteRowMapper();
-        Comparator<ControllablePao> sorter = new ControllablePaoComparator();
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         SearchResult<ControllablePao> searchResult =
             filterService.filter(filter, sorter, 0, Integer.MAX_VALUE, rowMapper);
 
         List<ControllablePao> retVal = searchResult.getResultList();
-        scenarioService.addScenarioActionState(retVal);
         
         return retVal;
     }
@@ -65,11 +62,6 @@ public class FavoritesServiceImpl implements FavoritesService {
         this.filterService = filterService;
     }
 
-    @Autowired
-    public void setScenarioService(ScenarioService scenarioService) {
-        this.scenarioService = scenarioService;
-    }
-    
     private static class RecentlyViewedRowMapper extends
             PaoNameControllablePaoRowMapper implements
             RowMapperWithBaseQuery<ControllablePao> {
@@ -77,15 +69,20 @@ public class FavoritesServiceImpl implements FavoritesService {
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT paoName, yukonPaobject.paobjectId, type, whenViewed");
-            retVal.append("FROM paoRecentViews, yukonPaobject");
-            retVal.append("WHERE yukonPaobject.paobjectId = paoRecentViews.paobjectId");
+            retVal.append("SELECT PAO.PAOName, PAO.PAObjectId, PAO.Type, PRV.WhenViewed, ");
+            retVal.append("       COUNT(LMCSP.ProgramId) ScenarioProgramCount");
+            retVal.append("FROM YukonPAObject PAO");
+            retVal.append("JOIN PAORecentViews PRV ON PRV.PAObjectId = PAO.PAObjectId ");
+            retVal.append("LEFT JOIN LMControlScenarioProgram LMCSP ");
+            retVal.append("	   ON LMCSP.ScenarioId = PAO.PAObjectId ");
             return retVal;
         }
 
         @Override
         public SqlFragmentSource getGroupBy() {
-            return null;
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("GROUP BY  PAO.PAOName, PAO.PAObjectId, PAO.Type, PRV.WhenViewed ");
+            return retVal;
         }
 
         @Override
@@ -107,13 +104,19 @@ public class FavoritesServiceImpl implements FavoritesService {
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT paoName, paobjectId, type FROM yukonPAObject");
+            retVal.append("SELECT PAO.PAOName, PAO.PAObjectId, PAO.Type, ");
+            retVal.append("       COUNT(LMCSP.ProgramId) ScenarioProgramCount");
+            retVal.append("FROM YukonPAObject PAO ");
+            retVal.append("LEFT JOIN LMControlScenarioProgram LMCSP ");
+            retVal.append("    ON LMCSP.ScenarioId = PAO.PAObjectId ");
             return retVal;
         }
 
         @Override
         public SqlFragmentSource getGroupBy() {
-            return null;
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("GROUP BY  PAO.PAOName, PAO.PAObjectId, PAO.Type ");
+            return retVal;
         }
         
         @Override

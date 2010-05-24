@@ -22,6 +22,7 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -111,7 +112,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public SearchResult<ControllablePao> filterPrograms(UiFilter<ControllablePao> filter,
-                                                       Comparator<ControllablePao> sorter, 
+                                                       Comparator<DisplayablePao> sorter, 
                                                        int startIndex, int count,
                                                        YukonUserContext userContext) {
 

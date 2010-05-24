@@ -2,27 +2,23 @@ package com.cannontech.dr.scenario.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.model.ControllablePao;
-import com.cannontech.dr.model.DRActionStateEnum;
+import com.cannontech.dr.model.DrActionStateEnum;
 
 public class Scenario extends ControllablePao {
 
     private int programCount = 0;
     
-    public Scenario(PaoIdentifier paoIdentifier, String name) {
+    public Scenario(PaoIdentifier paoIdentifier, String name, int programCount) {
         super(paoIdentifier, name);
+        this.programCount = programCount;
     }
     
     @Override
-    public DRActionStateEnum getIsControllable() {
+    public DrActionStateEnum getDrActionState() {
         if (programCount == 0) {
-            return DRActionStateEnum.NO_ASSIGNED_PROGRAMS;
+            return DrActionStateEnum.NO_ASSIGNED_PROGRAMS;
         } else {
-            return DRActionStateEnum.CONTROLLABLE;
+            return DrActionStateEnum.CONTROLLABLE;
         }
     }
-    
-    public void setProgramCount(int programCount) {
-        this.programCount = programCount;
-    }
-
 }

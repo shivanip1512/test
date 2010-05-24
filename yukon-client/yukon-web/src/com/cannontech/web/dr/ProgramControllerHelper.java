@@ -21,6 +21,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -177,8 +178,8 @@ public class ProgramControllerHelper {
         modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
-        Comparator<ControllablePao> defaultSorter = programNameField.getSorter(userContext);
-        Comparator<ControllablePao> sorter = defaultSorter;
+        Comparator<DisplayablePao> defaultSorter = programNameField.getSorter(userContext);
+        Comparator<DisplayablePao> sorter = defaultSorter;
         if(!StringUtils.isEmpty(backingBean.getSort())) {
             // If there is a custom sorter, add it
             

@@ -5,9 +5,9 @@ import java.util.Comparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.DemandResponseBackingField;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMProgramBase;
@@ -43,7 +43,7 @@ public abstract class ProgramBackingFieldBase implements DemandResponseBackingFi
     }
     
     @Override
-    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         // Default implementation to return NO sorter
         return null;
     }

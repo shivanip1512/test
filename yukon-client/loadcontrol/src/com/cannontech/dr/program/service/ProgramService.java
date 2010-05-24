@@ -8,6 +8,7 @@ import java.util.List;
 import org.joda.time.Duration;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
@@ -29,7 +30,7 @@ public interface ProgramService {
                                                          YukonUserContext userContext);
 
     public SearchResult<ControllablePao> filterPrograms(UiFilter<ControllablePao> filter,
-                                                       Comparator<ControllablePao> sorter, 
+                                                       Comparator<DisplayablePao> sorter, 
                                                        int startIndex, int count, 
                                                        YukonUserContext userContext);
 

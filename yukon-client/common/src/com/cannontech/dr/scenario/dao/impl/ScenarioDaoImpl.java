@@ -29,7 +29,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
         + " WHERE programId = ?)";
 
     private final static String scenarioQuery =
-        "SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ProgramCount "+
+        "SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ScenarioProgramCount "+
         "FROM YukonPAObject PAO "+
         "LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId "+
         "WHERE PAO.Type = '"+ PaoType.LM_SCENARIO.getDatabaseRepresentation() +"' ";
@@ -69,9 +69,10 @@ public class ScenarioDaoImpl implements ScenarioDao {
 
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("PAObjectId"),
                                                     PaoType.LM_SCENARIO);
+            String paoName = rs.getString("PAOName");
+            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
 
-            Scenario scenario = new Scenario(paoId, rs.getString("PAOName"));
-            scenario.setProgramCount(rs.getInt("ProgramCount"));
+            Scenario scenario = new Scenario(paoId, paoName, scenarioProgramCount);
             
             return scenario;
         }};

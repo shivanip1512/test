@@ -17,6 +17,7 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -198,7 +199,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
 
     @Override
     public SearchResult<ControllablePao> filterControlAreas(UiFilter<ControllablePao> filter,
-                                                        Comparator<ControllablePao> sorter, 
+                                                        Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext) {
 

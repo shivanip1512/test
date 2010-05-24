@@ -33,7 +33,7 @@
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${scenario}">
 
                         <c:choose>
-                            <c:when test="${scenario.isControllable eq 'NO_ASSIGNED_PROGRAMS'}">
+                            <c:when test="${scenario.drActionState eq 'NO_ASSIGNED_PROGRAMS'}">
                                 <cti:msg var="scenarioHasNoAssignedPrograms" 
                                          key="yukon.web.modules.dr.scenarioDetail.noAssignedPrograms"/>
                                 <span title="${scenarioHasNoAssignedPrograms}">

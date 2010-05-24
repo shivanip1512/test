@@ -6,10 +6,10 @@ import java.util.GregorianCalendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.service.SystemDateFormattingService;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
@@ -42,11 +42,11 @@ public class ControlAreaStartField extends ControlAreaBackingFieldBase {
     }
     
     @Override
-    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
-        return new Comparator<ControllablePao>() {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+        return new Comparator<DisplayablePao>() {
 
             @Override
-            public int compare(ControllablePao pao1, ControllablePao pao2) {
+            public int compare(DisplayablePao pao1, DisplayablePao pao2) {
                 LMControlArea controlArea1 = getControlAreaFromYukonPao(pao1);
                 LMControlArea controlArea2 = getControlAreaFromYukonPao(pao2);
                 if (controlArea1 == controlArea2) {

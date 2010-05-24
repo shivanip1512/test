@@ -2,7 +2,7 @@ package com.cannontech.dr.program.model;
 
 import java.util.Comparator;
 
-import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.data.LMProgramDirectGear;
@@ -31,11 +31,11 @@ public class ProgramCurrentGearField extends ProgramBackingFieldBase {
     }
 
     @Override
-    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
-        return new Comparator<ControllablePao>() {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
+        return new Comparator<DisplayablePao>() {
 
             @Override
-            public int compare(ControllablePao pao1, ControllablePao pao2) {
+            public int compare(DisplayablePao pao1, DisplayablePao pao2) {
                 LMProgramBase program1 = getProgramFromYukonPao(pao1);
                 LMProgramBase program2 = getProgramFromYukonPao(pao2);
 

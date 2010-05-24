@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
@@ -23,7 +24,7 @@ public interface LoadGroupService {
             int loadGroupId, YukonUserContext userContext);
 
     public SearchResult<ControllablePao> filterGroups(
-            UiFilter<ControllablePao> filter, Comparator<ControllablePao> sorter,
+            UiFilter<ControllablePao> filter, Comparator<DisplayablePao> sorter,
             int startIndex, int count, YukonUserContext userContext);
 
     public void sendShed(int loadGroupId, int durationInSeconds);

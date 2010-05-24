@@ -4,12 +4,12 @@ import java.util.Comparator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.user.YukonUserContext;
 
@@ -46,7 +46,7 @@ public class TriggerValueThresholdField extends TriggerBackingFieldBase {
     }
 
     @Override
-    public Comparator<ControllablePao> getSorter(YukonUserContext userContext) {
+    public Comparator<DisplayablePao> getSorter(YukonUserContext userContext) {
         return new TriggerComparator() {
             @Override
             public int triggerCompare(

@@ -20,7 +20,8 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.pao.ControllablePaoComparator;
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
@@ -68,7 +69,7 @@ public class ScenarioController {
         modelMap.addAttribute("isFiltered", isFiltered);
 
         // Sorting - name is default sorter
-        Comparator<ControllablePao> sorter = new ControllablePaoComparator();
+        Comparator<DisplayablePao> sorter = new DisplayablePaoComparator();
         if(backingBean.getDescending()) {
             sorter = Collections.reverseOrder(sorter);
         }
