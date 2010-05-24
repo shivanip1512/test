@@ -90,7 +90,6 @@ public:
 
 protected:
 
-   CtiTablePointAlarming& setRecipientID        ( const LONG &aLong );
    CtiTablePointAlarming& setAlarmCategory      ( const INT offset, const UINT &aInt );
    CtiTablePointAlarming& setAlarmCategory      ( const string str );
    CtiTablePointAlarming& setExcludeNotifyStates( const UINT &aInt );
@@ -106,8 +105,6 @@ private:
    UINT        _alarmCategory[ ALARM_STATE_SIZE ];
    UINT        _excludeNotifyStates;
    UINT        _autoAckStates;
-
-   LONG        _recipientID;
 
    BOOL        _notifyOnAcknowledge;
    BOOL        _notifyOnClear;
@@ -130,7 +127,6 @@ public:
    static void getSQL(string &sql, LONG pointID = 0, LONG paoID = 0, const std::set<long> &pointIds = std::set<long>());
    static string getTableName();
 
-   virtual LONG getRecipientID()                    const;
    virtual UINT getAlarmCategory(const INT offset)  const;
    virtual UINT getExcludeNotifyStates()            const;
    virtual UINT getAutoAckStates()                  const;

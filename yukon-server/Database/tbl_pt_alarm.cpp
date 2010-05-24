@@ -44,7 +44,6 @@ CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarm
         setExcludeNotifyStates( aRef.getExcludeNotifyStates() );
         setNotifyOnAcknowledge( aRef.getNotifyOnAcknowledge() );
         setNotifyOnClear(aRef.getNotifyOnClear());
-        setRecipientID( aRef.getRecipientID() );
         setNotificationGroupID( aRef.getNotificationGroupID() );
     }
     return *this;
@@ -92,11 +91,6 @@ UINT CtiTablePointAlarming::resolveAutoAcknowledgeStates( string &str )
     return states;
 }
 
-LONG CtiTablePointAlarming::getRecipientID() const
-{
-    return _recipientID;
-}
-
 LONG CtiTablePointAlarming::getPointID() const
 {
     return _pointID;
@@ -127,12 +121,6 @@ BOOL CtiTablePointAlarming::getNotifyOnAcknowledge() const
 BOOL CtiTablePointAlarming::getNotifyOnClear() const
 {
     return _notifyOnClear;
-}
-
-CtiTablePointAlarming& CtiTablePointAlarming::setRecipientID( const LONG &aLong )
-{
-    _recipientID = aLong;
-    return *this;
 }
 
 CtiTablePointAlarming& CtiTablePointAlarming::setAlarmCategory( const INT offset, const UINT &aInt )
@@ -202,7 +190,7 @@ void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID, const 
     ostringstream sql_stream;
 
     sql_stream << "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,";
-    sql_stream << " recipientid, notificationgroupid from pointalarming";
+    sql_stream << " notificationgroupid from pointalarming";
 
     {
         sql_stream << " where alarmstates != '\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001'";
@@ -273,7 +261,6 @@ CtiTablePointAlarming::CtiTablePointAlarming(RWDBReader& rdr)
     setNotifyOnAcknowledge( temp[0] == 'a' || temp[0] == 'b' || temp[0] == 'y' );
     setNotifyOnClear( temp[0] == 'c' || temp[0] == 'b' );
 
-    rdr >> _recipientID;
     rdr >> _notificationGroupID;
 }
 
@@ -283,7 +270,6 @@ _excludeNotifyStates( 0 ),
 _autoAckStates( 0 ),
 _notifyOnAcknowledge(FALSE),
 _notifyOnClear(FALSE),
-_recipientID(0),
 _notificationGroupID( 0 )
 {
     for(int i = 0; i < ALARM_STATE_SIZE; i++)
