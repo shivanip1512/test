@@ -2,12 +2,13 @@ package com.cannontech.common.pao;
 
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
-public enum PaoClass {
+public enum PaoClass implements DatabaseRepresentationSource {
     TRANSMITTER(DeviceClasses.TRANSMITTER, DeviceClasses.STRING_CLASS_TRANSMITTER),
     RTU(DeviceClasses.RTU, DeviceClasses.STRING_CLASS_RTU),
     IED(DeviceClasses.IED, DeviceClasses.STRING_CLASS_IED),
@@ -80,6 +81,11 @@ public enum PaoClass {
     }
 
     public String getDbString() {
+        return dbString;
+    }
+    
+    @Override
+    public Object getDatabaseRepresentation() {
         return dbString;
     }
 }

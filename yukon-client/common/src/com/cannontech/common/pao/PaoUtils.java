@@ -17,6 +17,15 @@ public class PaoUtils {
         }
     };
 
+    public static YukonDevice asYukonDevice(YukonPao pao) {
+        if (pao instanceof YukonDevice) {
+            YukonDevice device = (YukonDevice)pao;
+            return device;
+        } else {
+            return new SimpleDevice(pao);
+        }
+    }
+    
     public static ImmutableList<YukonDevice> asDeviceList(Iterable<PaoIdentifier> identifiers) {
         Builder<YukonDevice> builder = ImmutableList.builder();
         buildSimpleDeviceList(builder, identifiers);

@@ -18,6 +18,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -30,6 +32,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -40,6 +43,7 @@ import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 
 /**
@@ -59,7 +63,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     private YukonDeviceRowMapper yukonDeviceRowMapper = null;
 
     private JdbcOperations jdbcOps;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
     private DBPersistentDao dbPersistantDao;
@@ -129,14 +133,16 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     public SimpleDevice getYukonDeviceObjectByName(String name) {
+        ImmutableSet<PaoClass> allowedClasses = ImmutableSet.of(PaoClass.CARRIER, PaoClass.METER, PaoClass.IED, PaoClass.RFMESH);
 
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT PAO.PAObjectId, PAO.Type ");
-        sqlBuilder.append("FROM YukonPAObject PAO ");
-        sqlBuilder.append("WHERE PAO.Category = 'DEVICE' ");
-        sqlBuilder.append("AND PAO.PAOClass IN ('CARRIER','METER','IED') ");
-        sqlBuilder.append("AND UPPER(PAO.PAOName) = UPPER(?)");
-        SimpleDevice device = (SimpleDevice)jdbcOps.queryForObject(sqlBuilder.getSql(), new Object[] {name}, this.yukonDeviceRowMapper);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAO.PAObjectId, PAO.Type");
+        sql.append("FROM YukonPAObject PAO");
+        sql.append("WHERE PAO.Category").eq(PaoCategory.DEVICE);
+        sql.append(  "AND PAO.PAOClass").in(allowedClasses);
+        sql.append(  "AND UPPER(PAO.PAOName) = UPPER(").appendArgument(name).append(")");
+        
+        SimpleDevice device = yukonJdbcTemplate.queryForObject(sql, this.yukonDeviceRowMapper);
         return device;
     }
 
@@ -220,7 +226,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
         sqlBuilder.append("WHERE UPPER(DMG.MeterNumber) = UPPER(?)");
 
         List<LiteYukonPAObject> paos = 
-            simpleJdbcTemplate.query(sqlBuilder.toString(), new LitePaoRowMapper(), meterNumber);
+            yukonJdbcTemplate.query(sqlBuilder.toString(), new LitePaoRowMapper(), meterNumber);
 
         return paos;
     }
@@ -385,7 +391,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
 
     public Map<PaoIdentifier, String> getNamesForYukonDevices(Iterable<PaoIdentifier> identifiers) {
     	
-    	ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(simpleJdbcTemplate);
+    	ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
 		
 		SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
 		    public SqlFragmentSource generate(List<Integer> subList) {
@@ -464,7 +470,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     }
 
     @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 }
