@@ -36,6 +36,8 @@ public class PointBaseEditorPanel extends com.cannontech.common.gui.util.DataInp
 	private javax.swing.JLabel ivjDeviceNameActualLabel = null;
 	private javax.swing.JLabel ivjPointTypeActualLabel = null;
 	private javax.swing.JLabel ivjPointTypeLabel = null;
+	
+	private Logger log = YukonLogManager.getLogger(PointBaseEditorPanel.class);
 /**
  * Constructor
  */
@@ -498,8 +500,6 @@ public Object getValue(Object val)
 	try {
         this.currentSpecificPanel.getValue(val);
     } catch (EditorInputValidationException e) {
-        Logger log = YukonLogManager.getLogger(EditorInputValidationException.class);
-
         log.error( e.getMessage(), e );
     }
 
