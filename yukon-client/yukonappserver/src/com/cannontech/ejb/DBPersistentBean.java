@@ -667,7 +667,11 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof Character )
       {
-      	String str = StringUtils.trimSpaces(o.toString());
+/* TODO Temperary until eka fixes there whitespace issue in serial numbers
+ *       	
+ * String str = StringUtils.trimSpaces(o.toString());
+ */
+      	String str = o.toString();
       	if( str == null || str.length() <= 0 )
       	{
       		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
@@ -696,7 +700,11 @@ public class DBPersistentBean implements IDBPersistent {
       else
       if( o instanceof String )
       {
-      	String str = StringUtils.trimSpaces(o.toString());
+          /* TODO Temperary until eka fixes there whitespace issue in serial numbers
+           *          
+           * String str = StringUtils.trimSpaces(o.toString());
+           */
+        String str = o.toString();
       	if( str == null || str.length() <= 0 )
       	{
       		log.warn("A null value was found in a DBPersistent object, using a default value of ' '  (blank char)");
