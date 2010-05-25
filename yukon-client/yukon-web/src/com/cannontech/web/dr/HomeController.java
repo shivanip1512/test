@@ -13,8 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.favorites.dao.FavoritesDao;
-import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -22,6 +20,8 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.favorites.dao.FavoritesDao;
+import com.cannontech.dr.favorites.service.FavoritesService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.service.DemandResponseService;

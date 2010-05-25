@@ -1,4 +1,4 @@
-package com.cannontech.common.favorites.service;
+package com.cannontech.dr.favorites.service;
 
 import java.util.List;
 

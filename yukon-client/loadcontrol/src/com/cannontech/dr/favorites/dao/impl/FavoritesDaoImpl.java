@@ -1,5 +1,4 @@
-package com.cannontech.common.favorites.dao.impl;
-
+package com.cannontech.dr.favorites.dao.impl;
 
 import java.util.Date;
 import java.util.List;
@@ -9,10 +8,10 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.favorites.dao.FavoritesDao;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 

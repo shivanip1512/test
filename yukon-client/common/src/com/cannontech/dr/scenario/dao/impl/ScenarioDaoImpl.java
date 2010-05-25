@@ -22,12 +22,6 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	
     private YukonJdbcOperations yukonJdbcOperations;
 
-    private final static String scenariosByProgramIdQuery =
-        "SELECT paObjectId, paoName FROM yukonPAObject"
-        + " WHERE type = 'LMSCENARIO'"
-        + " AND paObjectId IN (SELECT scenarioId FROM lmControlScenarioProgram"
-        + " WHERE programId = ?)";
-
     private final static String scenarioQuery =
         "SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ScenarioProgramCount "+
         "FROM YukonPAObject PAO "+
@@ -42,8 +36,12 @@ public class ScenarioDaoImpl implements ScenarioDao {
             
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_SCENARIO);
-            ControllablePao retVal = new ControllablePao(paoId,
-                                                         rs.getString("paoName"));
+            String paoName = rs.getString("paoName");
+            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
+            ControllablePao retVal = new Scenario(paoId,
+                                                  paoName,
+                                                  scenarioProgramCount);
+            
             return retVal;
         }
     };
@@ -93,20 +91,22 @@ public class ScenarioDaoImpl implements ScenarioDao {
     @Override
     public List<ControllablePao> getAllScenarios() {
     	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT ypo.PAObjectID, ypo.paoName");
-    	sql.append("FROM YukonPaObject ypo");
-    	sql.append("WHERE ypo.Type = ").appendArgument("LMSCENARIO");
-    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
+        sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
+
         return yukonJdbcOperations.query(sql, scenarioRowMapper);
     }
 
     @Override
     public List<ControllablePao> findScenariosForProgram(int programId) {
-        List<ControllablePao> retVal = yukonJdbcOperations.query(scenariosByProgramIdQuery,
-                                                               scenarioRowMapper,
-                                                               programId);
-        return retVal;
+
+        SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
+        sql.append("AND PAO.PAObjectId IN (SELECT ScenarioId ");
+        sql.append("                       FROM LMControlScenarioProgram ");
+        sql.append("                       WHERE ProgramId").eq(programId).append(")");
+        sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
+        
+        return yukonJdbcOperations.query(sql, scenarioRowMapper);
     }
 
     @Override

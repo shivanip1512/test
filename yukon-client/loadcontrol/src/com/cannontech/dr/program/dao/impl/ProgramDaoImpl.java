@@ -11,6 +11,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.dao.ProgramDao;
+import com.cannontech.dr.program.model.Program;
 
 public class ProgramDaoImpl implements ProgramDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -26,8 +27,8 @@ public class ProgramDaoImpl implements ProgramDao {
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_DIRECT_PROGRAM);
-            ControllablePao retVal = new ControllablePao(paoId,
-                                                         rs.getString("paoName"));
+            ControllablePao retVal = new Program(paoId,
+                                                 rs.getString("paoName"));
             return retVal;
         }};
 

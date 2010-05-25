@@ -1,42 +1,39 @@
 package com.cannontech.dr.quicksearch;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Arrays;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.dr.dao.impl.PaoNameControllablePaoRowMapper;
 import com.cannontech.dr.model.ControllablePao;
 
 /**
  * ControllablePao row mapper for DR quick search
  */
-public class QuickSearchRowMapper implements RowMapperWithBaseQuery<ControllablePao> {
+public class QuickSearchRowMapper extends PaoNameControllablePaoRowMapper 
+    implements RowMapperWithBaseQuery<ControllablePao> {
 
     @Override
     public SqlFragmentSource getBaseQuery() {
         SqlStatementBuilder fragment = new SqlStatementBuilder();
-        fragment.append("SELECT paoName, paObjectId, type");
-        fragment.append("FROM yukonPAObject");
-        fragment.append("WHERE ((category = ");
-        fragment.appendArgument(PaoCategory.LOADMANAGEMENT.toString());
-        fragment.append("       AND paoClass = ");
-        fragment.appendArgument(PaoClass.LOADMANAGEMENT.toString());
-
-        fragment.append("       AND type in (");
-        fragment.appendArgumentList(Arrays.asList(PaoType.LM_CONTROL_AREA.getDbString(), 
-                                                  PaoType.LM_SCENARIO.getDbString(), 
-                                                  PaoType.LM_DIRECT_PROGRAM.getDbString()));
-        fragment.append("       ))");
-        fragment.append("       OR (category = ");
-        fragment.appendArgument(PaoCategory.DEVICE.toString());
-        fragment.append("    AND paoClass = ");
-        fragment.appendArgument(PaoClass.GROUP.toString());
+        fragment.append("SELECT PAO.PAOName, PAO.PAObjectId, PAO.Type, ");
+        fragment.append("       COUNT(LMCSP.ProgramId) ScenarioProgramCount");
+        fragment.append("FROM YukonPAObject PAO");
+        fragment.append("LEFT JOIN LMControlScenarioProgram LMCSP ");
+        fragment.append("    ON LMCSP.ScenarioId = PAO.PAObjectId ");
+        fragment.append("WHERE ((PAO.Category").eq(PaoCategory.LOADMANAGEMENT.toString());
+        fragment.append("       AND PAO.PAOClass").eq(PaoClass.LOADMANAGEMENT.toString());
+        fragment.append("       AND PAO.Type").in(
+            Arrays.asList(PaoType.LM_CONTROL_AREA.getDbString(), 
+                          PaoType.LM_SCENARIO.getDbString(), 
+                          PaoType.LM_DIRECT_PROGRAM.getDbString()));
+        fragment.append("       )");
+        fragment.append("       OR (PAO.Category").eq(PaoCategory.DEVICE.toString());
+        fragment.append("    AND PAO.PAOClass").eq(PaoClass.GROUP.toString());
         fragment.append("    ))");
         
         return fragment;
@@ -44,7 +41,9 @@ public class QuickSearchRowMapper implements RowMapperWithBaseQuery<Controllable
 
     @Override
     public SqlFragmentSource getGroupBy() {
-        return null;
+        SqlStatementBuilder retVal = new SqlStatementBuilder();
+        retVal.append("GROUP BY  PAO.PAOName, PAO.PAObjectId, PAO.Type ");
+        return retVal;
     }
     
     @Override
@@ -57,12 +56,4 @@ public class QuickSearchRowMapper implements RowMapperWithBaseQuery<Controllable
         return false;
     }
 
-    @Override
-    public ControllablePao mapRow(ResultSet rs, int rowNum) throws SQLException {
-        int paoId = rs.getInt("paObjectId");
-        String paoType = rs.getString("type");
-        PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForDbString(paoType));
-        ControllablePao pao = new ControllablePao(paoIdentifier, rs.getString("paoName"));
-        return pao;
-    }
 }

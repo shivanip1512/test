@@ -13,6 +13,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
+import com.cannontech.dr.loadgroup.model.LoadGroup;
 import com.cannontech.dr.model.ControllablePao;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
@@ -32,8 +33,8 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             PaoType paoType = PaoType.getForId(deviceTypeId);
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     paoType);
-            ControllablePao retVal = new ControllablePao(paoId,
-                                                         rs.getString("paoName"));
+            ControllablePao retVal = new LoadGroup(paoId,
+                                                    rs.getString("paoName"));
             return retVal;
         }};
 

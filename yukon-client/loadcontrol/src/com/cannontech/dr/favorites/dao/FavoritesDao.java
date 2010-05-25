@@ -1,4 +1,4 @@
-package com.cannontech.common.favorites.dao;
+package com.cannontech.dr.favorites.dao;
 
 import java.util.Map;
 

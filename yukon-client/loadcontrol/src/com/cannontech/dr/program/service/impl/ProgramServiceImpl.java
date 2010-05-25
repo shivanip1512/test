@@ -37,6 +37,7 @@ import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.dao.ProgramDao;
 import com.cannontech.dr.program.filter.ForLoadGroupFilter;
 import com.cannontech.dr.program.model.GearAdjustment;
+import com.cannontech.dr.program.model.Program;
 import com.cannontech.dr.program.service.ConstraintViolations;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -81,8 +82,8 @@ public class ProgramServiceImpl implements ProgramService {
                     throws SQLException {
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         PaoType.LM_DIRECT_PROGRAM);
-                ControllablePao retVal = new ControllablePao(paoId,
-                                                             rs.getString("paoName"));
+                ControllablePao retVal = new Program(paoId,
+                                                     rs.getString("paoName"));
                 return retVal;
             }
         };

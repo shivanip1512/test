@@ -16,10 +16,10 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
-import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.favorites.dao.FavoritesDao;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.model.ControllablePao;

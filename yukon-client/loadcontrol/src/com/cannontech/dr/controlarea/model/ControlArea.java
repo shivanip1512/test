@@ -5,11 +5,12 @@ import java.util.List;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.dr.model.DrActionStateEnum;
 
 public class ControlArea extends ControllablePao {
 
     private List<ControlAreaTrigger> triggers;
-    
+
     public ControlArea(PaoIdentifier paoIdentifier, String name) {
         super(paoIdentifier, name);
     }
@@ -31,6 +32,11 @@ public class ControlArea extends ControllablePao {
 
     public void setTriggers(List<ControlAreaTrigger> triggers) {
         this.triggers = triggers;
+    }
+
+    @Override
+    public DrActionStateEnum getDrActionState() {
+        return DrActionStateEnum.CONTROLLABLE;
     }
 
 }

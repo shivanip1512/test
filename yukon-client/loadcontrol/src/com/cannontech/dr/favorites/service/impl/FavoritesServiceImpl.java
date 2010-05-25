@@ -1,4 +1,4 @@
-package com.cannontech.common.favorites.service.impl;
+package com.cannontech.dr.favorites.service.impl;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,14 +12,14 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
-import com.cannontech.common.favorites.service.FavoritesService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.impl.PaoNameControllablePaoRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.dao.impl.PaoNameControllablePaoRowMapper;
+import com.cannontech.dr.favorites.service.FavoritesService;
 import com.cannontech.dr.model.ControllablePao;
 import com.google.common.collect.Lists;
 

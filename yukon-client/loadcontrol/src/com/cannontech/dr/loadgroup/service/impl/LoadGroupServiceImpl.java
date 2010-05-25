@@ -23,6 +23,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.dr.loadgroup.dao.LoadGroupDao;
 import com.cannontech.dr.loadgroup.filter.MacroLoadGroupForLoadGroupFilter;
+import com.cannontech.dr.loadgroup.model.LoadGroup;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
 import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -146,8 +147,8 @@ public class LoadGroupServiceImpl implements LoadGroupService {
                 PaoType paoType = PaoType.getForId(deviceTypeId);
                 PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                         paoType);
-                ControllablePao retVal = new ControllablePao(paoId,
-                                                             rs.getString("paoName"));
+                ControllablePao retVal = new LoadGroup(paoId,
+                                                       rs.getString("paoName"));
                 return retVal;
             }
         };
