@@ -18,6 +18,8 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 /**
@@ -68,6 +70,29 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
 
     public Map<String, List<PaoDefinition>> getPaoDisplayGroupMap() {
         return paoDefinitionDao.getPaoDisplayGroupMap();
+    }
+
+    public Map<String, List<PaoDefinition>> getCreatablePaoDisplayGroupMap() {
+        
+        Map<String, List<PaoDefinition>> paoDisplayGroupMap = 
+            paoDefinitionDao.getPaoDisplayGroupMap();
+        
+        Map<String, List<PaoDefinition>> creatablePaoDisplayGroupMap = Maps.newLinkedHashMap();
+        
+        // Create a new map with only creatable paoDefinitions in it
+        for (Map.Entry<String, List<PaoDefinition>> entry : paoDisplayGroupMap.entrySet()) {
+            
+            List<PaoDefinition> paoDefinitionList = entry.getValue();
+            List<PaoDefinition> creatablePaoDefinitionList = Lists.newArrayList();
+            for (PaoDefinition paoDefinition : paoDefinitionList) {
+                if(paoDefinition.isCreatable()) {
+                    creatablePaoDefinitionList.add(paoDefinition);
+                }
+            }
+            creatablePaoDisplayGroupMap.put(entry.getKey(), creatablePaoDefinitionList);
+        }
+        
+        return Collections.unmodifiableMap(creatablePaoDisplayGroupMap); 
     }
 
     public boolean isPaoTypeChangeable(YukonPao pao) {

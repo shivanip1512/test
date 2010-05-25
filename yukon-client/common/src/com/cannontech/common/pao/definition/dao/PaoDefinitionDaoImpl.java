@@ -619,10 +619,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
 
         PaoDefinition paoDefinition = new PaoDefinitionImpl(paoType,
-                                                                     displayName,
-                                                                     group,
-                                                                     javaConstant,
-                                                                     pao.getChangeGroup());
+                                                            displayName,
+                                                            group,
+                                                            javaConstant,
+                                                            pao.getChangeGroup(),
+                                                            pao.isCreateable());
 
         // Add paoDefinition to type map
         this.paoTypeMap.put(paoType, paoDefinition);

@@ -16,6 +16,7 @@
 		<xs:attribute name="enabled" type="xs:boolean" default="true" />
 		<xs:attribute name="abstract" type="xs:boolean" default="false" />
 	    <xs:attribute name="inherits" type="xs:string" />
+	    <xs:attribute name="creatable" type="xs:boolean" default="true" />
     </xs:attributeGroup>
     
     <xs:complexType name="paoType">

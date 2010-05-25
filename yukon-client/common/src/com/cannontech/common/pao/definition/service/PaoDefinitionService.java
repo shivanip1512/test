@@ -71,7 +71,7 @@ public interface PaoDefinitionService {
      * @return A list of the default points for the pao (returns a new copy
      *         each time the method is called)
      */
-    public abstract List<PointBase> createDefaultPointsForPao(YukonPao pao);
+    public List<PointBase> createDefaultPointsForPao(YukonPao pao);
 
     /**
      * Method to create all of the points for the given pao. NOTE: this will
@@ -80,7 +80,7 @@ public interface PaoDefinitionService {
      * @return A list of all the points for the pao (returns a new copy each
      *         time the method is called)
      */
-    public abstract List<PointBase> createAllPointsForPao(YukonPao pao);
+    public List<PointBase> createAllPointsForPao(YukonPao pao);
 
     /**
      * Method to get a map of pao display groups and their associated pao
@@ -88,14 +88,22 @@ public interface PaoDefinitionService {
      * @return An immutable map with key: display group name, value: list of
      *         pao display
      */
-    public abstract Map<String, List<PaoDefinition>> getPaoDisplayGroupMap();
+    public Map<String, List<PaoDefinition>> getPaoDisplayGroupMap();
+    
+    /**
+     * Method to get a map of pao display groups and their associated creatable pao
+     * types
+     * @return An immutable map with key: display group name, value: list of creatable
+     *         pao display
+     */
+    public Map<String, List<PaoDefinition>> getCreatablePaoDisplayGroupMap();
 
     /**
      * Method used to determine if a pao can have its type changed
      * @param pao - Pao to change
      * @return True if the pao's type can be changed
      */
-    public abstract boolean isPaoTypeChangeable(YukonPao pao);
+    public boolean isPaoTypeChangeable(YukonPao pao);
 
     /**
      * Method to get a set of pao definitions for paos that the given
@@ -104,7 +112,7 @@ public interface PaoDefinitionService {
      * @return A set of pao definitions that the given pao can change into
      *         (returns a new copy each time the method is called)
      */
-    public abstract Set<PaoDefinition> getChangeablePaos(YukonPao pao);
+    public Set<PaoDefinition> getChangeablePaos(YukonPao pao);
     
     /**
      * Method to get a set of point templates that will be added to the given
@@ -114,7 +122,7 @@ public interface PaoDefinitionService {
      * @return Set of points that will be added to the pao (returns a new
      *         copy each time the method is called)
      */
-    public abstract Set<PointTemplate> getPointTemplatesToAdd(YukonPao pao,
+    public Set<PointTemplate> getPointTemplatesToAdd(YukonPao pao,
             PaoDefinition paoDefinition);
 
     /**
@@ -125,7 +133,7 @@ public interface PaoDefinitionService {
      * @return Set of points that will be removed from the pao (returns a new
      *         copy each time the method is called)
      */
-    public abstract Set<PointIdentifier> getPointTemplatesToRemove(YukonPao pao,
+    public Set<PointIdentifier> getPointTemplatesToRemove(YukonPao pao,
             PaoDefinition paoDefinition);
     
     /**
@@ -137,6 +145,6 @@ public interface PaoDefinitionService {
      * @return Set of point templates that will be transfered from the pao
      *         (returns a new copy each time the method is called)
      */
-    public abstract Set<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonPao pao,
+    public Set<PointTemplateTransferPair> getPointTemplatesToTransfer(YukonPao pao,
             PaoDefinition paoDefinition);
 }

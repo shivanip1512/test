@@ -54,6 +54,11 @@ public class PaoType implements java.io.Serializable {
     private java.lang.String _inherits;
 
     /**
+     * Field _creatable
+     */
+    private java.lang.Boolean _creatable = new java.lang.Boolean("true");
+
+    /**
      * Field _displayName
      */
     private java.lang.String _displayName;
@@ -146,6 +151,17 @@ public class PaoType implements java.io.Serializable {
     {
         return this._commands;
     } //-- com.cannontech.common.pao.definition.model.castor.Commands getCommands() 
+
+    /**
+     * Returns the value of field 'creatable'.
+     * 
+     * @return Boolean
+     * @return the value of field 'creatable'.
+     */
+    public java.lang.Boolean getCreatable()
+    {
+        return this._creatable;
+    } //-- java.lang.Boolean getCreatable() 
 
     /**
      * Returns the value of field 'displayGroup'.
@@ -310,6 +326,16 @@ public class PaoType implements java.io.Serializable {
     {
         this._commands = commands;
     } //-- void setCommands(com.cannontech.common.pao.definition.model.castor.Commands) 
+
+    /**
+     * Sets the value of field 'creatable'.
+     * 
+     * @param creatable the value of field 'creatable'.
+     */
+    public void setCreatable(java.lang.Boolean creatable)
+    {
+        this._creatable = creatable;
+    } //-- void setCreatable(java.lang.Boolean) 
 
     /**
      * Sets the value of field 'displayGroup'.

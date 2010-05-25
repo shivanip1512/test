@@ -2511,7 +2511,7 @@
 	</pao>
 	
     <!-- MCT 318 -->
-    <pao id="MCT318" inherits="MCT_318_BASE">
+    <pao id="MCT318" inherits="MCT_318_BASE" creatable="false">
         <displayName>MCT-318</displayName>
 	</pao> 
 	
@@ -2643,7 +2643,7 @@
     <pao id="MCT310CT" inherits="MCT_310_IM_CT_IL_ID_BASE">
         <displayName>MCT-310CT</displayName>
 	</pao> 
-    <pao id="MCT310ID" inherits="MCT_310_D_BASE">
+    <pao id="MCT310ID" inherits="MCT_310_D_BASE" creatable="false">
         <displayName>MCT-310ID</displayName>
         <tags>
             <tag name="DISCONNECT_310">
@@ -2723,7 +2723,7 @@
             </point>
         </points>
 	</pao>
-    <pao id="MCT310IM" inherits="MCT_310_IM_CT_IL_ID_BASE">
+    <pao id="MCT310IM" inherits="MCT_310_IM_CT_IL_ID_BASE" creatable="false">
         <displayName>MCT-310IM</displayName>
         <points>
 			<point type="PulseAccumulator" offset="2">
@@ -2770,7 +2770,7 @@
             </point>
         </points>
 	</pao>
-    <pao id="MCT310" inherits="MCT_310_BASE">
+    <pao id="MCT310" inherits="MCT_310_BASE" creatable="false">
         <displayName>MCT-310</displayName>
 	</pao>
     
@@ -2870,7 +2870,7 @@
 	</pao> 
     
     <!-- MCT 250/248/240 -->
-    <pao id="MCT250" inherits="MCT_240_248_250_BASE">
+    <pao id="MCT250" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-250</displayName>
         <points>
         	<point type="PulseAccumulator" offset="20">
@@ -2898,7 +2898,7 @@
             </point>
         </points>
 	</pao>
-    <pao id="MCT248" inherits="MCT_240_248_250_BASE">
+    <pao id="MCT248" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-248</displayName>
         <points>
         	<point type="Status" offset="1">
@@ -2907,7 +2907,7 @@
             </point>
         </points>
 	</pao>
-    <pao id="MCT240" inherits="MCT_240_248_250_BASE">
+    <pao id="MCT240" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-240</displayName>
 	</pao>
 	
@@ -2981,7 +2981,7 @@
     </pao>
     
     <!-- MCT 213/210 -->
-    <pao id="MCT213" inherits="MCT_210_213_BASE">
+    <pao id="MCT213" inherits="MCT_210_213_BASE" creatable="false">
         <displayName>MCT-213</displayName>
         <points>
 			<point type="Status" offset="1">
@@ -3012,7 +3012,7 @@
             </tag>
         </tags>
 	</pao>
-	<pao id="MCT210" inherits="MCT_210_213_BASE">
+	<pao id="MCT210" inherits="MCT_210_213_BASE" creatable="false">
         <displayName>MCT-210</displayName>
 	</pao>
 	
@@ -3023,7 +3023,7 @@
     </pao>
     
     <!-- LMT 2 -->
-    <pao id="LMT_2" inherits="MCT_BASE">
+    <pao id="LMT_2" inherits="MCT_BASE" creatable="false">
         <displayName>LMT-2</displayName>
         <points>
             <point type="PulseAccumulator" offset="1">
@@ -3154,7 +3154,7 @@
     </pao>
     
     <!-- DCT 501 -->
-    <pao id="DCT_501" inherits="MCT_BASE, SUPPORTS_LOAD_PROFILE_TAG">
+    <pao id="DCT_501" inherits="MCT_BASE, SUPPORTS_LOAD_PROFILE_TAG" creatable="false">
         <displayName>DCT-501</displayName>
         <points>
             <point type="Analog" offset="1">

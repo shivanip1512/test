@@ -22,6 +22,7 @@ public class PaoStore {
 	// unique per pao
 	private String id;
 	private boolean enabled = true;
+	private boolean createable = true;
 	private List<String> inheritedIds = new ArrayList<String>();
 	private boolean isAbstract = false;
 	private PaoType paoType = null;
@@ -41,6 +42,7 @@ public class PaoStore {
 		// set 
 		this.setId(castor.getId());
 		this.setEnabled(castor.getEnabled());
+		this.setCreateable(castor.getCreatable());
 		this.setAbstract(castor.getAbstract());
 		this.setInheritedIds(castor.getInherits());
 		
@@ -87,6 +89,9 @@ public class PaoStore {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+	private void setCreateable(boolean createable) {
+        this.createable = createable;
+    }
 	private void setInheritedIds(String inherits) {
 		if (inherits == null) {
 			return;
@@ -230,6 +235,9 @@ public class PaoStore {
 	public boolean isEnabled() {
 		return enabled;
 	}
+	public boolean isCreateable() {
+        return createable;
+    }
 	public List<String> getInheritedIds() {
 		return inheritedIds;
 	}

@@ -227,7 +227,8 @@ public class PaoDefinitionServiceImplTest {
                                                                                                      "Device1",
                                                                                                      "display1",
                                                                                                      "MCT310",
-                                                                                                     "change1"));
+                                                                                                     "change1",
+                                                                                                     true));
 
         assertEquals("Point templates to add were not as expected",
                      expectedTemplates,
@@ -269,7 +270,8 @@ public class PaoDefinitionServiceImplTest {
                                                                                                         "Device2",
                                                                                                         "display2",
                                                                                                         "MCT370",
-                                                                                                        "change1"));
+                                                                                                        "change1",
+                                                                                                        true));
 
         assertEquals("Point templates to remove were not as expected",
                      expectedTemplates,
@@ -315,7 +317,8 @@ public class PaoDefinitionServiceImplTest {
                                                                       "Device2",
                                                                       "display2",
                                                                       "MCT370",
-                                                                      "change1");
+                                                                      "change1",
+                                                                      true);
         Set<PointTemplateTransferPair> actualTemplates = service.getPointTemplatesToTransfer(device,
                                                                                               newDefinition);
 

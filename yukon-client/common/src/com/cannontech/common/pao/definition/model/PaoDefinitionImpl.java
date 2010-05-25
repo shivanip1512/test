@@ -16,15 +16,17 @@ public class PaoDefinitionImpl implements PaoDefinition {
     private String javaConstant = null;
     private boolean changeable = false;
     private String changeGroup = null;
+    private boolean createable = true;
 
     public PaoDefinitionImpl(PaoType type, String displayName, String displayGroup,
-            String javaConstant, String changeGroup) {
+            String javaConstant, String changeGroup, boolean createable) {
         this.type = type;
         this.displayName = displayName;
         this.displayGroup = displayGroup;
         this.javaConstant = javaConstant;
         this.changeGroup = changeGroup;
         this.changeable = changeGroup != null;
+        this.createable = createable;
     }
 
     public String getDisplayName() {
@@ -74,6 +76,15 @@ public class PaoDefinitionImpl implements PaoDefinition {
     public void setChangeGroup(String changeGroup) {
         this.changeGroup = changeGroup;
     }
+    
+    public void setCreateable(boolean createable) {
+        this.createable = createable;
+    }
+    
+    @Override
+    public boolean isCreatable() {
+        return createable;
+    }
 
     public String toString() {
         return this.displayName;
@@ -93,6 +104,7 @@ public class PaoDefinitionImpl implements PaoDefinition {
                                   .append(javaConstant, paoDefinition.getJavaConstant())
                                   .append(changeGroup, paoDefinition.getChangeGroup())
                                   .append(changeable, paoDefinition.isChangeable())
+                                  .append(createable, paoDefinition.isCreatable())
                                   .isEquals();
     }
 
@@ -103,6 +115,7 @@ public class PaoDefinitionImpl implements PaoDefinition {
                                           .append(javaConstant)
                                           .append(changeGroup)
                                           .append(changeable)
+                                          .append(createable)
                                           .toHashCode();
     }
 

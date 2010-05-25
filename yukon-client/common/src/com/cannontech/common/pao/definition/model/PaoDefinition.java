@@ -7,16 +7,18 @@ import com.cannontech.common.pao.PaoType;
  */
 public interface PaoDefinition extends Comparable<PaoDefinition> {
 
-    public abstract String getDisplayName();
+    public String getDisplayName();
 
-    public abstract PaoType getType();
+    public PaoType getType();
 
-    public abstract boolean isChangeable();
+    public boolean isChangeable();
 
-    public abstract String getDisplayGroup();
+    public String getDisplayGroup();
 
-    public abstract String getJavaConstant();
+    public String getJavaConstant();
 
-    public abstract String getChangeGroup();
+    public String getChangeGroup();
+    
+    public boolean isCreatable();
 
 }

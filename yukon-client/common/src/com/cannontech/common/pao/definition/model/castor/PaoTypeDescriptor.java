@@ -211,6 +211,41 @@ public class PaoTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
+        //-- _creatable
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Boolean.class, "_creatable", "creatable", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                PaoType target = (PaoType) object;
+                return target.getCreatable();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    PaoType target = (PaoType) object;
+                    target.setCreatable( (java.lang.Boolean) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return null;
+            }
+        };
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _creatable
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            BooleanValidator typeValidator = new BooleanValidator();
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
         //-- _displayName

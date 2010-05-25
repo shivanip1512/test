@@ -200,7 +200,8 @@ public class PaoDefinitionDaoImplTest extends TestCase {
                                                                        "Device 1",
                                                                        "display1",
                                                                        "MCT310",
-                                                                       "change1");
+                                                                       "change1",
+                                                                       true);
         assertEquals("device1 definition is not as expected",
                      expectedDefinition,
                      dao.getPaoDefinition(device.getDeviceType()));
@@ -218,18 +219,21 @@ public class PaoDefinitionDaoImplTest extends TestCase {
                                                              "Device 1",
                                                              "display1",
                                                              "MCT310",
-                                                             "change1"));
+                                                             "change1",
+                                                             true));
         expectedDeviceTypesList.add(new PaoDefinitionImpl(PaoType.getForId(1022),
                                                              "Device 2",
                                                              "display1",
                                                              "MCT370",
-                                                             "change1"));
+                                                             "change1",
+                                                             true));
 
         PaoDefinitionImpl definition = new PaoDefinitionImpl(PaoType.getForId(1019),
                                                                    "test",
                                                                    "test",
                                                                    "test",
-                                                                   "change1");
+                                                                   "change1",
+                                                                   true);
         Set<PaoDefinition> actualDeviceTypesList = dao.getPaosThatPaoCanChangeTo(definition);
 
         assertEquals("Incorrect device type list for change group: change1",
@@ -367,7 +371,8 @@ public class PaoDefinitionDaoImplTest extends TestCase {
                                                                        "Custom Device 1",
                                                                        "customDisplay1",
                                                                        "MCT310",
-                                                                       "customChange1");
+                                                                       "customChange1",
+                                                                       true);
         assertEquals("device1 definition is not as expected",
                      expectedDefinition,
                      dao.getPaoDefinition(device.getDeviceType()));
