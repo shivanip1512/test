@@ -18,7 +18,7 @@
 
 <cti:msg key="yukon.web.modules.widgets.disconnectMeterWidget.disconnectNote" var="disconnectNote" />
 
-<table class="compactResultsTableNoFontSize">
+<table class="compactResultsTable">
 	<tr>
         <th colspan="2">${statusMessages}</th>
     </tr>

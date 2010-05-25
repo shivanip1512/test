@@ -289,16 +289,7 @@ table.compactResultsTable th th {
 table.compactResultsTable th {
 	border-bottom: 1px solid #CCCCCC;
 	color: 	#000000;
-	font-size: 12px;
-	font-weight: 600;
-	text-align:left;
-	vertical-align:bottom;
-	padding: 3px;
-}
-
-table.compactResultsTableNoFontSize th {
-	border-bottom: 1px solid #CCCCCC;
-	color: 	#000000;
+	font-size: 12px !important;
 	font-weight: 600;
 	text-align:left;
 	vertical-align:bottom;
@@ -320,7 +311,7 @@ table.compactResultsTable td td {
 
 table.compactResultsTable td {
     padding: 2px 2px;
-    font-size: 11px;
+    font-size: 11px !important;
     padding-top:3px;
     vertical-align: top;
 }
