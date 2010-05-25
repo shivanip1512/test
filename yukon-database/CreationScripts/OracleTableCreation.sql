@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/25/2010 10:24:16 AM                        */
+/* Created on:     5/25/2010 11:03:14 AM                        */
 /*==============================================================*/
 
 
@@ -7310,7 +7310,7 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'',
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
-	1, 0  from point;
+	1  from point;
 
 /*==============================================================*/
 /* Table: PortTiming                                            */
