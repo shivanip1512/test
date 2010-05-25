@@ -35,6 +35,14 @@ DELETE FROM YukonRoleProperty
 WHERE RolePropertyId = -10001;
 /* End YUK-8708 */
 
+/* Start YUK-8727 */
+ALTER TABLE PointAlarming
+    DROP CONSTRAINT FK_CntNt_PtAl;
+    
+ALTER TABLE PointAlarming
+    DROP COLUMN RecipientId;
+/* End YUK-8727 */ 
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

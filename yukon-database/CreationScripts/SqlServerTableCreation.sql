@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/20/2010 4:55:51 PM                         */
+/* Created on:     5/25/2010 10:21:23 AM                        */
 /*==============================================================*/
 
 
@@ -10242,7 +10242,6 @@ create table PointAlarming (
    ExcludeNotifyStates  varchar(32)          not null,
    NotifyOnAcknowledge  char(1)              not null,
    NotificationGroupID  numeric              not null,
-   RecipientID          numeric              not null,
    constraint PK_POINTALARMING primary key (PointID)
 )
 go
@@ -15801,11 +15800,6 @@ go
 alter table PointAlarming
    add constraint FK_POINTALARMING foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID)
-go
-
-alter table PointAlarming
-   add constraint FK_CntNt_PtAl foreign key (RecipientID)
-      references ContactNotification (ContactNotifID)
 go
 
 alter table PortTiming

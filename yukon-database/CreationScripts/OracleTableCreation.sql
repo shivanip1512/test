@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/20/2010 4:41:16 PM                         */
+/* Created on:     5/25/2010 10:24:16 AM                        */
 /*==============================================================*/
 
 
@@ -7302,7 +7302,6 @@ create table PointAlarming  (
    ExcludeNotifyStates  VARCHAR2(32)                    not null,
    NotifyOnAcknowledge  CHAR(1)                         not null,
    NotificationGroupID  NUMBER                          not null,
-   RecipientID          NUMBER                          not null,
    constraint PK_POINTALARMING primary key (PointID)
 );
 
@@ -12284,10 +12283,6 @@ alter table PointAlarming
 alter table PointAlarming
    add constraint FK_POINTALARMING foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID);
-
-alter table PointAlarming
-   add constraint FK_CntNt_PtAl foreign key (RecipientID)
-      references ContactNotification (ContactNotifID);
 
 alter table PortTiming
    add constraint SYS_C0013163 foreign key (PORTID)
