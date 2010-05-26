@@ -174,7 +174,7 @@ public class RoleDaoImpl implements RoleDao
     public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyId, String newVal) {
         
         newVal = SqlUtils.convertStringToDbValue(newVal);
-        YukonGroupRole groupRole = getYukonGroupRole(group.getGroupID(), rolePropertyId);        
+        YukonGroupRole groupRole = findYukonGroupRole(group.getGroupID(), rolePropertyId);        
         
         if (groupRole != null) {
             groupRole.setValue( newVal );
@@ -196,7 +196,7 @@ public class RoleDaoImpl implements RoleDao
      * @param rolePropertyId
      * @return
      */
-    public YukonGroupRole getYukonGroupRole(int groupId, int rolePropertyId) {
+    public YukonGroupRole findYukonGroupRole(int groupId, int rolePropertyId) {
 
         String sql = " SELECT YGR.groupRoleId, YGR.groupId, YGR.roleId, "+
                      " YGR.rolePropertyId, YGR.value "+
