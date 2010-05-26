@@ -46,14 +46,22 @@ gearChanged = function() {
 }
 
 updateSubmitButtons = function() {
-    if ($('addAdjustmentsCheckbox').checked
-        || !$('autoObserveConstraints').checked) {
+    var autoObservingConstraints = false;
+    if (${autoObserveConstraintsAllowed}) {
+        autoObservingConstraints = true;
+        if (${checkConstraintsAllowed}) {
+            autoObservingConstraints = $('autoObserveConstraints').checked;
+        }
+    }
+
+    if ($('addAdjustmentsCheckbox').checked || !autoObservingConstraints) {
         $('okButton').disable();
         $('nextButton').enable();
-    } else {
+	}
+	else {
         $('okButton').enable();
         $('nextButton').disable();
-    }
+	}
 }
 </script>
 
@@ -149,6 +157,7 @@ updateSubmitButtons = function() {
         <c:if test="${!checkConstraintsAllowed}">
             <%-- They have to automatically observe constraints. --%>
             <cti:msg key="yukon.web.modules.dr.program.startProgram.constraintsWillBeObserved"/>
+            <input type="hidden" name="autoObserveConstraints" value="true"/>
         </c:if>
     </c:if>
     <br>

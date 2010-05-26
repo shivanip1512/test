@@ -159,13 +159,13 @@ public class StartProgramController extends ProgramControllerBase {
 
         boolean autoObserveConstraintsAllowed =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+        boolean checkConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
 
-        if (autoObserveConstraintsAllowed && backingBean.isAutoObserveConstraints()) {
+        if (autoObserveConstraintsAllowed && (!checkConstraintsAllowed || backingBean.isAutoObserveConstraints())) {
             return start(model, from, backingBean, bindingResult, false, userContext, flashScope);
         }
 
-        boolean checkConstraintsAllowed =
-            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)
@@ -323,7 +323,7 @@ public class StartProgramController extends ProgramControllerBase {
             }
         }
 
-        Map<Integer, ScenarioProgram> scenarioPrograms = null;
+        Map<Integer, ScenarioProgram> scenarioPrograms = Collections.emptyMap();
         if (backingBean.getControlAreaId() != null) {
             ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
@@ -429,13 +429,13 @@ public class StartProgramController extends ProgramControllerBase {
 
         boolean autoObserveConstraintsAllowed =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_OBSERVE_CONSTRAINTS, user);
+        boolean checkConstraintsAllowed =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
 
-        if (autoObserveConstraintsAllowed && backingBean.isAutoObserveConstraints()) {
+        if (autoObserveConstraintsAllowed && (!checkConstraintsAllowed || backingBean.isAutoObserveConstraints())) {
             return multipleStart(model, from, backingBean, bindingResult, userContext, flashScope);
         }
 
-        boolean checkConstraintsAllowed =
-            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CHECK_CONSTRAINTS, user);
         if (!checkConstraintsAllowed) {
             // they're not allowed to do anything...they got here by hacking
             // (or a bug)

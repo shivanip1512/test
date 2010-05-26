@@ -160,6 +160,7 @@
 <entry key="yukon.web.modules.dr.program.startProgram.autoObserveConstraints">Automatically Observe Constraints</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.constraintsWillBeObserved">All constraints will be observed.</entry>
 
+<entry key="yukon.web.modules.dr.program.startProgram.gearAdjustments">Gear Adjustments</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.timeFrame">Time Frame</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.adjustmentValue">Adjustment (0 - 250%)</entry>
 <entry key="yukon.web.modules.dr.program.startProgram.startingNow">The program will be started now.</entry>

@@ -49,6 +49,9 @@
     <form:hidden path="autoObserveConstraints"/>
     <form:hidden path="addAdjustments"/>
 
+    <cti:msg var="boxTitle" key="yukon.web.modules.dr.program.startProgram.gearAdjustments"/>
+    <tags:abstractContainer type="box" title="${boxTitle}">
+    <div class="dialogScrollArea">
     <table class="compactResultsTable">
         <tr>
             <th><cti:msg key="yukon.web.modules.dr.program.startProgram.timeFrame"/></th>
@@ -69,7 +72,8 @@
 	        </tr>
 	    </c:forEach>
     </table>
-
+    </div>
+    </tags:abstractContainer>
 
     <br>
     <br>
