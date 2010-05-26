@@ -311,10 +311,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return getStrategy().getStrategyName();
     }
     
-    public void setCurrentStratName(String name) {
-        
-    }
-    
     public void newStrategySelected (ValueChangeEvent vce) {
     }
     

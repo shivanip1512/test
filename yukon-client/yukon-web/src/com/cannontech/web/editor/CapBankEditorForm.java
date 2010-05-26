@@ -84,7 +84,7 @@ public class CapBankEditorForm extends DBEditorForm {
         
     }
     
-    public boolean getIntegratedVoltVarControlled(){
+    public boolean isIntegratedVoltVarControlled(){
         Feeder feeder = cache.getFeeder(cache.getCapBankDevice(getCapBank().getCapBank().getDeviceID()).getParentID());
         String controlUnits = feeder.getControlUnits();
         try{
