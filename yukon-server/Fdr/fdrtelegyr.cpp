@@ -605,8 +605,11 @@ void CtiFDRTelegyr::threadFunctionGetDataFromTelegyr( void )
             {
                if( getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL )
                {
-                  CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  dout << CtiTime::now() << " Return Code not Normal. Got " << returnCode << endl;
+                  if (returnCode != APIERR_NO_DATA)
+                  {
+                     CtiLockGuard<CtiLogger> doubt_guard( dout );
+                     dout << CtiTime::now() << " Return code not normal. Got " << returnCode << endl;
+                  }
                }
                badMsgCount = noDataAction( badMsgCount );
             }
