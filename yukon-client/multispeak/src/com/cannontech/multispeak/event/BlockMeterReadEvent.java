@@ -8,15 +8,20 @@ package com.cannontech.multispeak.event;
 
 
 import java.rmi.RemoteException;
+import java.util.List;
 
-import com.cannontech.amr.meter.dao.MeterDao;
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
@@ -28,6 +33,7 @@ import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Lists;
 
 
 /**
@@ -36,14 +42,14 @@ import com.cannontech.spring.YukonSpringHook;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class BlockMeterReadEvent extends MultispeakEvent {
+public class BlockMeterReadEvent extends MultispeakEvent implements CommandResultHolderHandlingEvent {
 
-    private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
-    
     private Meter meter;
     private Block block;
     boolean populated = false;
     private FormattedBlockService<Block> formattedBlock;
+    
+    private final PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
     
     /**
      * @param mspVendor_
@@ -102,45 +108,48 @@ public class BlockMeterReadEvent extends MultispeakEvent {
 
     public boolean messageReceived(Return returnMsg) {
 
-        Meter meter = meterDao.getForId(returnMsg.getDeviceID());
-        
-        if( returnMsg.getStatus() != 0) {
-            
-            String result = "BlockMeterReadEvent(" + meter.getMeterNumber() + ") - Reading Failed (ERROR:" + returnMsg.getStatus() + ") " + returnMsg.getResultString();
-            CTILogger.info(result);
-            //TODO Should we send old data if a new reading fails?
+    	throw new UnsupportedOperationException("BlockMeterReadEvent commands are handled by the CommandRequestExecutor only.");
+    }
+    
+    public void handleResult(Meter meter, CommandResultHolder result) {
+    	
+    	// error
+    	if (result.isAnyErrorOrException()) {
+    		
+    		List<String> errors = Lists.newArrayList();
+    		if (StringUtils.isNotBlank(result.getExceptionReason())) {
+    			errors.add(result.getExceptionReason());
+    		}
+    		for (DeviceErrorDescription e : result.getErrors()) {
+    			errors.add(e.getPorter());
+    		}
+    		
+    		String errorString = "BlockMeterReadEvent(" + meter.getMeterNumber() + ") - Reading Failed (ERROR:" + StringUtils.join(errors, ", ") + ") " + StringUtils.join(result.getResultStrings(), ", ");
+    		CTILogger.info(errorString);
+    		//TODO Should we send old data if a new reading fails?
             block = formattedBlock.getBlock(meter);
             //TODO - how can we return some sort of errorMessage with the FormattedBlock?
+    	
+    	// success
+    	} else {
+    		
+    		CTILogger.info("BlockMeterReadEvent(" + meter.getMeterNumber() + ") - Reading Successful" );
+    		
+    		for (PointValueHolder pvh : result.getValues()) {
+    			
+    			LitePoint litePoint = pointDao.getLitePoint(pvh.getId());
+    			PaoPointIdentifier paoPointIdentifier = PaoPointIdentifier.createPaoPointIdentifier(litePoint, meter);
+                RichPointData richPointData = new RichPointData((PointValueQualityHolder)pvh, paoPointIdentifier); // all point data from result is of type PointValueQualityHolder
+                block.populate(meter, richPointData);
+    		}
+    	}
+    	
+    	// event notification - only once, after all results have come back
+    	updateReturnMessageCount();
+    	if(getReturnMessages() == 0) {
+            populated = true;
+            eventNotification();
         }
-        else {
-
-            CTILogger.info("BlockMeterReadEvent(" + meter.getMeterNumber() + ") - Reading Successful" );
-            if(returnMsg.getVector().size() > 0 ) {
-                for (int i = 0; i < returnMsg.getVector().size(); i++) {
-                    
-                    Object o = returnMsg.getVector().elementAt(i);
-                    //TODO SN - Hoping at this point that only one value comes back in the point data vector 
-                    if (o instanceof PointData) {
-                        PointData pointData = (PointData) o;
-                        
-                        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(pointData.getId());
-                        PaoPointIdentifier paoPointIdentifier = PaoPointIdentifier.createPaoPointIdentifier(litePoint, meter);
-                        RichPointData richPointData = new RichPointData(pointData, paoPointIdentifier);
-                        block.populate(meter, richPointData);
-                    }
-                }
-            }
-        }
-        
-        if(returnMsg.getExpectMore() == 0){
-            updateReturnMessageCount();
-            if( getReturnMessages() == 0) {
-                populated = true;
-                eventNotification();
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isPopulated() {

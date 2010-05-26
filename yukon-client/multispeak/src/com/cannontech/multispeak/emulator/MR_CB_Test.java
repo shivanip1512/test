@@ -46,12 +46,12 @@ public class MR_CB_Test {
 		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            msgHeader.setCompany("milsoft");
+            msgHeader.setCompany("SEDC");
             
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 8;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
+			int todo = 10;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
 				
 			if (todo==0) {
 			    MeterRead mr = instance.getLatestReadingByMeterNo("10620108");	//1068048 whe, 1010156108 sn_head/amr_demo
@@ -125,7 +125,28 @@ public class MR_CB_Test {
 //				objects = instance.insertMeterInMeterGroup(meterList, groupName);
 //				instance.deleteMeterGroup(groupName);
 				objects = instance.removeMetersFromMeterGroup(meterList, groupName);
+			
+			} else if (todo == 9) {
+				
+				MeterRead mr = instance.getLatestReadingByMeterNo("1100100");
+				if( mr != null) {
+				    CTILogger.info("MeterRead received: " + ( mr.getReadingDate() != null?mr.getReadingDate().getTime():null) + " : " +mr.getPosKWh());
+				    CTILogger.info("MeterRead Error String: " + mr.getErrorString());
+				} else {
+				    CTILogger.info("******   NULL METER READING  **********");
+				}
+				
+			} else if (todo == 10) {
+				
+				String[] meterNumbers = new String[]{"1100100", "1100103"};
+				ErrorObject[] errorObject = instance.initiateMeterReadByMeterNumber(meterNumbers, null, "999");
+				
+			    CTILogger.info("errorObject = " + errorObject);
+				
 			}
+			
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

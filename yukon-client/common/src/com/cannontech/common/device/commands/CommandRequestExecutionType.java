@@ -47,7 +47,16 @@ public enum CommandRequestExecutionType {
 	PHASE_DETECT_COMMAND(false, 14, "Phase Detection Command", "Command sent to broadcast MCT to detect a phase change.", false),
 	PHASE_DETECT_READ(false, 7, "Phase Detection Read", "Command sent to MCT's to read phase data.", false),
 	VEE_RE_READ(false, 7, "Validation Engine Automatic Read", "Command sent to meter to validate previous readings", false),
-	
+
+	MSP_CD_METER_STATE_DISCONNECT_STATUS(false, 13, "Disconnect Status Attribute Read", "Disconnect Status Attribute Read for Multispeak CDMeterState request.", false),
+	MSP_LATEST_READING_INTERROGATE(false, 13, "Multispeak Latest Meter Reading", "Usage and Peak Demand reads for Multispeak getLatestReadingByMeterNo event requst.", false),
+	MSP_METER_READ_EVENT_USAGE(false, 13, "Multispeak Meter Read Usage Reading", "Usage read for Multispeak meter read event requst.", false),
+	MSP_METER_READ_EVENT_PEAK_DEMAND(false, 13, "Multispeak Meter Read Peak Demand Read", "Peak Demand read for Multispeak meter read event requst.", false),
+	MSP_LOAD_FORMATTED_BLOCK_EVENT_LOAD_PROFILE(false, 13, "Multispeak Load Formatted Block Load Profile Read", "Load Profile read for Multispeak load formatted block event requst.", false),
+	MSP_LOAD_FORMATTED_BLOCK_EVENT_VOLTAGE_PROFILE(false, 13, "Multispeak Load Formatted Block Voltage Profile Read", "Voltage Profile read for Multispeak load formatted block event requst.", false),
+	MSP_LOAD_FORMATTED_BLOCK_EVENT_VOLTAGE(false, 13, "Multispeak Load Formatted Block Voltage Read", "Voltage read for Multispeak load formatted block event requst.", false),
+	MSP_LOAD_FORMATTED_BLOCK_EVENT_KVAR(false, 13, "Multispeak Load Formatted Block kVar Read", "kVar read for Multispeak load formatted block event requst.", false),
+	MSP_OUTAGE_FORMATTED_BLOCK_EVENT_BLINK_COUNT(false, 13, "Multispeak Outage Formatted Block Blink Count Read", "Blink Count read for Multispeak outage formatted block event requst.", false),
 	;
 	
     private boolean defaultNoqueue;

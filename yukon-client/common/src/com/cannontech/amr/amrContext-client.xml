@@ -72,6 +72,8 @@
         
     <bean id="groupMeterReadService" class="com.cannontech.amr.deviceread.service.impl.GroupMeterReadServiceImpl"/>
 
+    <bean id="disconnectStatusService" class="com.cannontech.amr.deviceread.service.impl.DisconnectStatusServiceImpl"/>
+
     <bean id="peakReportService"
         class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">
         <property name="dateFormattingService" ref="dateFormattingService" />

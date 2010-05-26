@@ -11,15 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
 import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.google.common.collect.Multimap;
 
 public class MeterReadServiceImpl implements MeterReadService {
     private Logger log = YukonLogManager.getLogger(MeterReadServiceImpl.class);
@@ -31,29 +32,53 @@ public class MeterReadServiceImpl implements MeterReadService {
     	
     	return meterReadCommandGeneratorService.isReadable(device, attributes);
     }
+    
+    // READ METER - WAIT
+    @Override
+    public CommandResultHolder readMeter(YukonDevice device, 
+    									 Set<? extends Attribute> attributes, 
+    									 CommandRequestExecutionType type, 
+    									 LiteYukonUser user) {
+    	
+    	List<CommandRequestDevice> commandRequests = checkReadabilityAndGetCommandRequests(device, attributes, type, user);
+        
+    	try {
+        	return commandExecutor.execute(commandRequests, type, user);
+        } catch (Exception e) {
+            throw new MeterReadRequestException(e);
+        }
+    }
+    
+    // READ METER - CALLBACK
+    @Override
+    public CommandRequestExecutionIdentifier readMeter(YukonDevice device, 
+			 Set<? extends Attribute> attributes, 
+			 CommandRequestExecutionType type,
+			 CommandCompletionCallback<Object> callback,
+			 LiteYukonUser user) {
 
-    public CommandResultHolder readMeter(YukonDevice device, Set<? extends Attribute> attributes, CommandRequestExecutionType type, LiteYukonUser user) {
-        log.info("Reading " + attributes + " on device " + device + " for " + user);
+		List<CommandRequestDevice> commandRequests = checkReadabilityAndGetCommandRequests(device, attributes, type, user);
+		
+		try {
+			return commandExecutor.execute(commandRequests, callback, type, user);
+        } catch (Exception e) {
+            throw new MeterReadRequestException(e);
+        }
+	}
+    
+    // check readability and generate commmand request
+    private List<CommandRequestDevice> checkReadabilityAndGetCommandRequests(YukonDevice device, 
+    																						  Set<? extends Attribute> attributes, 
+			 																				  CommandRequestExecutionType type,
+			 																				  LiteYukonUser user) {
+    	
+    	log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         if (!meterReadCommandGeneratorService.isReadable(device, attributes)) {
             throw new RuntimeException("It isn't possible to read " + attributes + " for  " + device);
         }
         
-        Multimap<YukonDevice, CommandRequestDevice> commandRequests = meterReadCommandGeneratorService.getCommandRequests(Collections.singletonList(device), attributes, type);
-        
-        return execute(new ArrayList<CommandRequestDevice>(commandRequests.values()), type, user);
-    }
-    
-    private CommandResultHolder execute(List<CommandRequestDevice> commands, CommandRequestExecutionType type, LiteYukonUser user) {
-        
-        CommandResultHolder holder;
-        try {
-            holder = commandExecutor.execute(commands, type, user);
-        } catch (Exception e) {
-            throw new MeterReadRequestException(e);
-        }
-        
-        return holder;
+        return new ArrayList<CommandRequestDevice>(meterReadCommandGeneratorService.getCommandRequests(Collections.singletonList(device), attributes, type).values());
     }
     
     @Autowired

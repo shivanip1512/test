@@ -12,6 +12,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
+import com.cannontech.amr.deviceread.model.DisconnectState;
+import com.cannontech.amr.deviceread.service.DisconnectStatusService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -47,15 +49,12 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private CommandRequestDeviceExecutor commandRequestExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
     private DeviceDao deviceDao = null;
+    private DisconnectStatusService disconnectStatusService;
     
     private final String CONTROL_CONNECT_COMMAND = "control connect";
     private final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
     
-    
     private Set<? extends Attribute> disconnectAttribute = Collections.singleton(BuiltInAttribute.DISCONNECT_STATUS);
-    private enum DisconnectState {
-        CONNECTED, DISCONNECTED, UNKNOWN}; 
-
     
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
@@ -72,7 +71,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             PointValueHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
             int stateGroupId = litePoint.getStateGroupID();
             LiteState liteState = stateDao.getLiteState(stateGroupId, (int) pointValue.getValue());
-            mav.addObject("state", getDisconnectedState(liteState.getStateRawState()));
+            mav.addObject("state", DisconnectState.getDisconneectStateForRawState(liteState.getStateRawState()).getSimpleDisconnectState());
             
             LiteState[] liteStates = stateDao.getLiteStates(stateGroupId);
             mav.addObject("stateGroups",liteStates);
@@ -105,7 +104,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = meterReadService.readMeter(meter, disconnectAttribute, CommandRequestExecutionType.DISCONNECT_STATUS_ATTRIBUTE_READ,user);
         
-        mav.addObject("state", getDisconnectedState(meter, result));
+        DisconnectState disconnectState = disconnectStatusService.getDisconnectState(meter, result);
+        mav.addObject("state", disconnectState.getSimpleDisconnectState());
         String configStr = "";
         if ( result.getErrors().isEmpty() )
             configStr = result.getLastResultString().replaceAll("\n", "<BR>");
@@ -218,7 +218,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        mav.addObject("state", getDisconnectedState(meter, result));
+        DisconnectState disconnectState = disconnectStatusService.getDisconnectState(meter, result);
+        mav.addObject("state", disconnectState.getSimpleDisconnectState());
         mav.addObject("configString", "");
         
         mav.addObject("result", result);
@@ -233,58 +234,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("pointId", pointId);
         
         return mav;
-    }
-    
-    private DisconnectState getDisconnectedState(Meter meter, CommandResultHolder result) {
-        
-        Double stateValue =  null;
-        LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.DISCONNECT_STATUS);
-        
-        // result is empty, do lookup on dynamicDataSource
-        if( result.getValues().isEmpty()) {
-            
-            PointValueHolder pointValue = dynamicDataSource.getPointValue(litePoint.getPointID());
-            int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.getLiteState(stateGroupId, (int) pointValue.getValue());
-            
-            stateValue = (double)liteState.getStateRawState();
-        }
-        
-        //else grab from result if correct point is found, otherwise unknown
-        else {
-            
-            for (PointValueHolder pvh : result.getValues()) {
-                
-                int pointId = pvh.getId();
-                if (pointId == litePoint.getLiteID()) {
-                    stateValue = pvh.getValue();
-                    break;
-                }
-            }
-            
-            if (stateValue == null) {
-                return DisconnectState.UNKNOWN;
-            }
-        }
-        
-        return getDisconnectedState(stateValue);
-    }
-    
-    /**
-     * Default Disconnect states:
-     * 0 Confirmed Disconnected
-     * 1 Connected
-     * 2 Unconfirmed Disconnected
-     * 3 Connect Armed
-     * @param value
-     * @return true if value is a disconnected state
-     */
-    private DisconnectState getDisconnectedState(double value) {
-
-        if (value == 0 || value == 2) 
-            return DisconnectState.DISCONNECTED;
-        else 
-            return DisconnectState.CONNECTED;
     }
     
     @Required
@@ -333,5 +282,10 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
     }
+    
+    @Autowired
+    public void setDisconnectStatusService(DisconnectStatusService disconnectStatusService) {
+		this.disconnectStatusService = disconnectStatusService;
+	}
 }
 

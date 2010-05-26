@@ -38,12 +38,12 @@ public class CD_CB_Test {
 		  	CD_ServerSoap_BindingStub instance = new CD_ServerSoap_BindingStub(new URL(endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            msgHeader.setCompany("milsoft");
+            //msgHeader.setCompany("Cannon");
             
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 1;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
+			int todo = 2;	//0=meterRead, 1=getAMRSupportedMeters, 2=getCDMeterState
 			
 			if (todo==0) {
 			    ConnectDisconnectEvent[] cdEvents = new ConnectDisconnectEvent[1];
@@ -77,7 +77,13 @@ public class CD_CB_Test {
                 } else {
                     CTILogger.info("CDDeviceAddNotification Successful");
                 }
+			} else if (todo == 2) {
+				
+				LoadActionCode loadActionCode = instance.getCDMeterState("1100100");
+				
+				CTILogger.info("loadActionCode = " + loadActionCode.getValue());
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

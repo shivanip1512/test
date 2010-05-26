@@ -38,11 +38,11 @@ public class MR_EA_Test {
 //			endpointURL = "http://10.100.10.25:80/soap/MR_EASoap";
 		  	MR_EASoap_BindingStub instance = new MR_EASoap_BindingStub(new URL(endpointURL), new Service());
             YukonMultispeakMsgHeader mspHeader =  new YukonMultispeakMsgHeader();
-            mspHeader.setCompany("Milsoft");
+            mspHeader.setCompany("SEDC");
             
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", mspHeader);
 			instance.setHeader(header);
-			String meterNumber = "0320819";
+			String meterNumber = "1100100";
 			int todo = 6;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=getLatestReadings
 			
 			if (todo==0)
@@ -98,7 +98,7 @@ public class MR_EA_Test {
 				cal.set(Calendar.MILLISECOND, 0);
 
 				GregorianCalendar endCal = (GregorianCalendar)cal.clone();
-				endCal.add(Calendar.MONTH, 1);
+				endCal.add(Calendar.YEAR, 15);
 				MeterRead[] amr = instance.getReadingsByMeterNo(meterNumber, cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( amr != null)
 				{
@@ -130,7 +130,7 @@ public class MR_EA_Test {
             }
             
             else if( todo == 6){
-                ErrorObject[] objects = instance.initiateMeterReadByMeterNoAndType(meterNumber, null, "Load", "1");
+                ErrorObject[] objects = instance.initiateMeterReadByMeterNoAndType(meterNumber, null, "Outage", "1");
                 
                 if (objects != null && objects != null)
                 {
