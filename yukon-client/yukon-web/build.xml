@@ -149,6 +149,7 @@
                 <exclude name="**/build.xml" />
                 <exclude name="**/*.jsp" />
                 <exclude name="**/*.jspf" />
+                <exclude name="**/*.tag" />
             </fileset>
         </copy>
 
