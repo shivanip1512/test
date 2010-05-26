@@ -43,34 +43,37 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService, Initial
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
-
-    	// set to available mspSearchFields based on methods that vendor supports
-    	mspSearchFields = new ArrayList<MspSearchField>();
-    	
-    	int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, null);
-    	if (vendorId > 0) {
-    		
-    		MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-    		List<String> mspMethodNames = mspObjectDao.getMspMethods(MultispeakDefines.CB_Server_STR, mspVendor);
-    		
-    		MspSearchField[] allMspSearchFields = MspSearchField.values();
-    		for (MspSearchField mspSearchField : allMspSearchFields) {
-    			
-    			for (String mspMethodName : mspMethodNames) {
-    				
-    				if (mspSearchField.getRequiredMspMethodName().equalsIgnoreCase(mspMethodName)) {
-    					
-    					if (!methodResultProviderMap.keySet().contains(mspSearchField)) {
-    						throw new IllegalArgumentException("MspSearchField (" + mspSearchField + ") has no associated MspMeterSearchMethodResultProvider");
-    					}
-    					
-    					mspSearchFields.add(mspSearchField);
-    					break;
-    				}
-    			}
-    		}
-    	}
+	    loadMspSearchFields();
     }
+	
+	public void loadMspSearchFields() {
+	    //set to available mspSearchFields based on methods that vendor supports
+        mspSearchFields = new ArrayList<MspSearchField>();
+        
+        int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, null);
+        if (vendorId > 0) {
+            
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
+            List<String> mspMethodNames = mspObjectDao.getMspMethods(MultispeakDefines.CB_Server_STR, mspVendor);
+            
+            MspSearchField[] allMspSearchFields = MspSearchField.values();
+            for (MspSearchField mspSearchField : allMspSearchFields) {
+                
+                for (String mspMethodName : mspMethodNames) {
+                    
+                    if (mspSearchField.getRequiredMspMethodName().equalsIgnoreCase(mspMethodName)) {
+                        
+                        if (!methodResultProviderMap.keySet().contains(mspSearchField)) {
+                            throw new IllegalArgumentException("MspSearchField (" + mspSearchField + ") has no associated MspMeterSearchMethodResultProvider");
+                        }
+                        
+                        mspSearchFields.add(mspSearchField);
+                        break;
+                    }
+                }
+            }
+        }
+	}
 	
 	@Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

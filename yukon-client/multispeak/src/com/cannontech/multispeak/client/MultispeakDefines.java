@@ -15,8 +15,13 @@ public class MultispeakDefines
 	public static final String AMR_VENDOR = "Cannon";
     public static final String MSP_VENDOR = "MSP_VENDOR";
     public static final String MSP_RESULT_MSG = "MSP_RESULT_MSG";
-    public static final String MSP_ERROR_MSG = "MSP_ERROR_MSG";
 
+    //Default setup values
+    public static int MSP_MAX_RETURN_RECORDS = 10000;
+    public static long MSP_REQUEST_MESSAGE_TIMEOUT = 120000;
+    public static long MSP_MAX_INITIATE_REQUEST_OBJECTS = 15;
+    public static String MSP_TEMPLATE_NAME_DEFAULT = "*Default Template";
+    
     //SERVER BUS Interfaces
     public static final String MR_Server_STR = "MR_Server";
     public static final String CD_Server_STR = "CD_Server";
@@ -50,4 +55,14 @@ public class MultispeakDefines
     public static String[] getMSP_CLIENT_INTERFACE_ARRAY() {
 		return MSP_CLIENT_INTERFACE_ARRAY;
 	}
+    
+    public static String[] getPossibleInterfaces(MultispeakVendor mspVendor) {
+        
+        if (mspVendor != null && mspVendor.getVendorID() != null
+                    && mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
+            return MultispeakDefines.MSP_SERVER_INTERFACE_ARRAY;
+        } else {
+            return MultispeakDefines.MSP_CLIENT_INTERFACE_ARRAY;
+        }
+    }
 }

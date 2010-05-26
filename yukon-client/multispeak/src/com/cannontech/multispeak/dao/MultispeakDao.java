@@ -16,6 +16,12 @@ public interface MultispeakDao {
     public List<MultispeakInterface> getMultispeakInterfaces(int vendorID);
     
     public List<MultispeakVendor> getMultispeakVendors();
+    
+    /**
+     * Returns a list of MultiSpeakVendors that support CIS functionality.
+     * @return
+     */
+    public List<MultispeakVendor> getMultispeakCISVendors();
 
     public int deleteMultispeakInterface(int vendorID);
     

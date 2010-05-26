@@ -159,6 +159,24 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }
     }
     
+    public List<MultispeakVendor> getMultispeakCISVendors()
+    {
+        try {
+            String sql = "SELECT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, " +
+                         " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT," +
+                         " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " +
+                         " FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID " +
+                         " WHERE INTERFACE IN ('CB_Server', 'CB_MR')";
+            
+            List<MultispeakVendor> mspVendors = jdbcOps.query(sql,mspVendorRowMapper);
+            
+            return mspVendors;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("MSP Vendors cannot be found.");
+        }
+    }
+
+    
     public synchronized int deleteMultispeakInterface(int vendorID)
     {
         try {

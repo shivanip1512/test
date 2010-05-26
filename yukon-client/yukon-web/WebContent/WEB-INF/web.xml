@@ -622,16 +622,6 @@
 			com.cannontech.servlet.SetupServlet
 		</servlet-class>
 	</servlet>
-	<servlet>
-		<description>
-			Allows a user to setup and implemnent Multispeak interfaces.
-		</description>
-		<display-name>MultispeakServlet</display-name>
-		<servlet-name>MultispeakServlet</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.MultispeakServlet
-		</servlet-class>
-	</servlet>
 
 	<!-- CapControl specific configs -->
 	<servlet>
@@ -1046,10 +1036,6 @@
 	<servlet-mapping>
 		<servlet-name>SetupServlet</servlet-name>
 		<url-pattern>/servlet/SetupServlet</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>MultispeakServlet</servlet-name>
-		<url-pattern>/servlet/MultispeakServlet</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

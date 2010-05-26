@@ -13,7 +13,7 @@
 	
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/msp_setup.jsp" title="MultiSpeak"  />
+	    <cti:crumbLink url="/spring/multispeak/setup/home" title="MultiSpeak"  />
 	    <cti:crumbLink title="${pageTitle}" />
 	</cti:breadCrumbs>
 	

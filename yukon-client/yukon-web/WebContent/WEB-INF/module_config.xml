@@ -199,7 +199,7 @@
           </option>
 
           <option name="multispeakSetup">
-            <link>/msp_setup.jsp</link>
+            <link>/spring/multispeak/setup/home</link>
             <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
           </option>
 
@@ -744,16 +744,16 @@
 
   <module name="multispeak">
     <skin name="STANDARD" />
-    <css file="setupStyle.css" />
+    <css file="/WebContent/setupStyle.css" />
 
     <menu>
       <options>
 
         <option name="multispeak">
-          <link>/msp_setup.jsp?init</link>
+          <link>/spring/multispeak/setup/home</link>
           <options>
             <option name="interfaces">
-              <link>/msp_setup.jsp?init</link>
+              <link>/spring/multispeak/setup/home</link>
             </option>
             <option name="route_mappings">
               <link>/spring/multispeak/setup/routemapping/mappings</link>

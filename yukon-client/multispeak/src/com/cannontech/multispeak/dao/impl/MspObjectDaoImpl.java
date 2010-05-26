@@ -460,4 +460,86 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return errorList;
     }
 
+    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException
+    {
+        ErrorObject[] objects = new ErrorObject[]{};
+        if(service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
+            OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
+            EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
+            LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
+            CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            objects = port.pingURL();
+        } 
+        else if( service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
+            objects = port.pingURL();
+        }
+        else {
+            ErrorObject obj = new ErrorObject("-100", "No server for " + service, null, null);
+            return new ErrorObject[]{obj};
+        }
+        return objects;
+    }
+    
+    public String[] getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
+    {
+        String[] objects = new String[]{};
+        if(service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
+            OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
+            EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
+            LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
+            CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else if(service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor);
+            objects = port.getMethods();
+        }
+        else {
+            return new String[]{"No server for " + service};
+        }
+        return objects;
+    }
 }

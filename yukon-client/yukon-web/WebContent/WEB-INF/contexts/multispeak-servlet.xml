@@ -53,6 +53,8 @@
 		</property>
 	</bean>
 	
+	<bean id="multispeakController" class="com.cannontech.web.multispeak.MultispeakController"/>
+	
 	<bean id="lmMappingsController" class="com.cannontech.web.multispeak.LMMappingsController">
 	</bean>
 	

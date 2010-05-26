@@ -4,7 +4,7 @@
 	<cti:standardMenu menuSelection="multispeak|mappings"/>
 	<cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/msp_setup.jsp" title="MultiSpeak"  />
+    <cti:crumbLink url="/spring/multispeak/setup/home" title="MultiSpeak"  />
     &gt; Substation To Route Mapping
 	</cti:breadCrumbs>
 	

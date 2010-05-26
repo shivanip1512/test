@@ -27,6 +27,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class MultispeakVendor
 {
     public static final String CANNON_MSP_COMPANYNAME = "Cannon";
+    public static final int CANNON_MSP_VENDORID = 1;
     
     private Integer vendorID = null;
     private String companyName;
@@ -36,10 +37,10 @@ public class MultispeakVendor
     private String outUserName;
     private String outPassword;
 
-    private int maxReturnRecords = 10000;
-    private long requestMessageTimeout = 120000;
-    private long maxInitiateRequestObjects = 15;
-    private String templateNameDefault = "*Default Template";
+    private int maxReturnRecords = MultispeakDefines.MSP_MAX_RETURN_RECORDS;
+    private long requestMessageTimeout = MultispeakDefines.MSP_REQUEST_MESSAGE_TIMEOUT;
+    private long maxInitiateRequestObjects = MultispeakDefines.MSP_MAX_INITIATE_REQUEST_OBJECTS;
+    private String templateNameDefault = MultispeakDefines.MSP_TEMPLATE_NAME_DEFAULT;
     
 	public static final int DEFAULT_PAONAME = 0;
     public static final int ACCOUNT_NUMBER_PAONAME = 1;

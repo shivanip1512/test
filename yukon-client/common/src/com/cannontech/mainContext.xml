@@ -188,6 +188,7 @@
                <value>classpath:com/cannontech/yukon/web/modules/operator/serviceRequest</value>
                <value>classpath:com/cannontech/yukon/web/modules/operator/thermostat</value>
                <value>classpath:com/cannontech/yukon/web/modules/multispeak/lmMappings</value>
+			   <value>classpath:com/cannontech/yukon/web/modules/multispeak/mspSetup</value>
                <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                <value>classpath:com/cannontech/yukon/web/modules/trending</value>
                <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigration</value>

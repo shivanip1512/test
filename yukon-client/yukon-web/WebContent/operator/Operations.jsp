@@ -367,7 +367,7 @@
 			</cti:checkProperty> 
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP"> 
 	            <tags:sectionLink>
-	            	<a href="../msp_setup.jsp">MultiSpeak Setup</a>
+	            	<a href="/spring/multispeak/setup/home">MultiSpeak Setup</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
 			<cti:checkProperty property="AdministratorRole.ADMIN_LM_USER_ASSIGN"> 

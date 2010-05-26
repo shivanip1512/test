@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.dao;
 
+import java.rmi.RemoteException;
+
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
@@ -199,4 +201,21 @@ public interface MspObjectDao {
      */
     public List<ErrorObject> initiateMeterReadByMeterNo(MultispeakVendor mspVendor, String[] meterNos);
 
+    /**
+     * Utility to implement the pingURL method for the service.
+     * @param mspVendor The multispeak vendor to invoke. 
+     * @param service The string representation of the webservice to run. 
+     * @return Returns an ArrayOfErrorObjects
+     * @throws RemoteException 
+     */
+    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException;
+    
+    /**
+     * Utility to implement the getMethods method for the service.
+     * @param mspVendor The multispeak vendor to invoke. 
+     * @param service The string representation of the webservice to run. 
+     * @return Returns an ArrayOfErrorObjects
+     * @throws RemoteException
+     */
+    public String[] getMethods(MultispeakVendor mspVendor, String service) throws RemoteException;
 }
