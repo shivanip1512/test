@@ -72,3 +72,11 @@ function submitFormViaAjax(dialogId, formId, url, title) {
 	openSimpleDialog(dialogId, url, title, $(formId).serialize(true), true);
     return false; // useful if we want to use this for "onsubmit" on a form
 }
+
+function showConfirm(popupId, action) {
+	$('confirmDialogQuestion').innerHTML = $('confirmDialogQuestion' + popupId).innerHTML;
+	var popupDiv = $('confirmDialog');
+	popupDiv.getElementsBySelector('.ok')[0].onclick = function() { showBusy(); action(); };
+	adjustDialogSizeAndPosition(popupDiv);
+	popupDiv.show();
+}

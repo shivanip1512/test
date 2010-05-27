@@ -133,8 +133,9 @@
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="eventId" value="${optOut.eventId}" />
                             </cti:url>
-                            <i:simpleLink actionUrl="${cancelOptOutUrl}" 
-                                          logoKey="cancelOptOut"/>
+                            <tags:confirmDialogImg key="cancelOptOut" href="${cancelOptOutUrl}">
+                                <cti:msg2 key=".cancelOptOut.confirm" arguments="${optOut.inventory.displayName}"/>
+                            </tags:confirmDialogImg>
     
                             <c:choose>
                                 <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
@@ -143,9 +144,10 @@
                                         <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
                                         <cti:param name="eventId" value="${optOut.eventId}" />
                                     </cti:url>
-    
-                                    <i:simpleLink actionUrl="${resendOptOutUrl}" 
-                                                  logoKey="resendOptOut"/>
+
+                                    <tags:confirmDialogImg key="resendOptOut" href="${resendOptOutUrl}">
+                                        <cti:msg2 key=".resendOptOut.confirm" arguments="${optOut.inventory.displayName}"/>
+                                    </tags:confirmDialogImg>
                                 </c:when>
                                 <c:otherwise>
                                     <cti:img key="resendOptOutDisabled"/>
@@ -208,20 +210,22 @@
                                     <cti:param name="accountId" value="${accountId}"/>
                                     <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                                 </cti:url>
-            
-                                <i:simpleLink actionUrl="${allowAnotherUrl}" logoKey="allowOne"/>
+                                <tags:confirmDialogImg key="allowOne" href="${allowAnotherUrl}">
+                                    <cti:msg2 key=".allowOne.confirm" arguments="${inventory.displayName}"/>
+                                </tags:confirmDialogImg>
+
                                 <c:choose>
             	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
                                         <cti:img key="resetToLimitDisabled"/>
             	                    </c:when>
             	                    <c:otherwise> 
-            
                                         <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
                                             <cti:param name="accountId" value="${accountId}"/>
                                             <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                                         </cti:url>
-            
-                                        <i:simpleLink actionUrl="${resetToLimitUrl}" logoKey="resetToLimit"/>
+                                        <tags:confirmDialogImg key="resetToLimit" href="${resetToLimitUrl}">
+                                            <cti:msg2 key=".resetToLimit.confirm" arguments="${inventory.displayName}"/>
+                                        </tags:confirmDialogImg>
               	                   </c:otherwise>
             	                </c:choose>
                                                  

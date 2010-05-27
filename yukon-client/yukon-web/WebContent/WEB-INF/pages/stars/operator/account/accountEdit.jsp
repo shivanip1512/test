@@ -97,10 +97,6 @@
     
 	<cti:msg2 var="naLabel" key="defaults.na"/>
     
-    <form id="deleteForm" action="/spring/stars/operator/account/accountDelete" method="post">
-    	<input type="hidden" name="accountId" value="${accountId}">
-    </form>
-    
     <form:form id="updateForm" commandName="accountGeneral" action="/spring/stars/operator/account/accountUpdate">
     
     	<input type="hidden" name="accountId" value="${accountId}">
@@ -217,12 +213,17 @@
     		</cti:dataGridCell>
     	
     	</cti:dataGrid>
-    	
+
     	<%-- BUTTONS --%>
+        <cti:url var="deleteUrl" value="/spring/stars/operator/account/accountDelete">
+            <cti:param name="accountId" value="${accountId}"/>
+        </cti:url>
     	<cti:displayForPageEditModes modes="EDIT">
 	    	<br>
 		    <tags:slowInput2 formId="updateForm" key="save"/>
-		    <tags:slowInput2 formId="deleteForm" key="delete"/>
+		    <tags:confirmDialogImg key=".delete" href="${deleteUrl}" linkType="button">
+		        <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
+		    </tags:confirmDialogImg>
 	    </cti:displayForPageEditModes>
 	    
 	</form:form>

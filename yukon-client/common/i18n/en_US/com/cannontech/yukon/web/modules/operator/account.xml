@@ -80,6 +80,9 @@
     <entry key="yukon.web.modules.operator.accountEdit.billingStateLabel">State</entry>
     <entry key="yukon.web.modules.operator.accountEdit.billingZipLabel">Zip</entry>
 
+    <entry key="yukon.web.modules.operator.accountEdit.delete">Delete</entry>
+    <entry key="yukon.web.modules.operator.accountEdit.confirmDelete">Are you sure you want to delete the account {0}?</entry>
+
     <entry key="yukon.web.modules.operator.accountEdit.accountUpdated">Account Updated</entry>
     <entry key="yukon.web.modules.operator.accountEdit.accountDeleted">Account Deleted</entry>
     

@@ -890,6 +890,10 @@ table.actionArea td.leftActions {
 	text-align: left;
 }
 
+#confirmDialog {
+	width: auto;
+}
+
 a.simpleLink, span.simpleLink a {
     text-decoration: none;
     color: black;
