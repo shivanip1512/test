@@ -4499,7 +4499,8 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                 pi = CtiDeviceMCT470::getData(DSt->Message + 5, 2, ValueType_IED);
 
-                resultString += valueReport("demand reset count", pi);
+                insertPointDataReport(AnalogPointType, PointOffset_DemandResetCount,
+                                      ReturnMsg, pi, "Demand Reset Count");
 
                 pi_time  = CtiDeviceMCT4xx::getData(DSt->Message + 7, 4, ValueType_Raw);
 

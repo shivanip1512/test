@@ -64,6 +64,7 @@ private:
 
         PointOffset_AveragePowerFactor = 31,
 
+        PointOffset_DemandResetCount = 39,
         PointOffset_OutageCount = 40,
 
         PointOffset_VoltsPhaseA = 41,
