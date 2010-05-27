@@ -957,7 +957,7 @@
                 <name>IED Blink Count</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
-                <decimalplaces value="4"/>
+                <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="102">
                 <name>Peak kW Frozen (Rate A kW)</name>
