@@ -4499,12 +4499,14 @@ INT CtiDeviceMCT470::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
                 pi = CtiDeviceMCT470::getData(DSt->Message + 5, 2, ValueType_IED);
 
-                insertPointDataReport(AnalogPointType, PointOffset_DemandResetCount,
-                                      ReturnMsg, pi, "Demand Reset Count");
-
                 pi_time  = CtiDeviceMCT4xx::getData(DSt->Message + 7, 4, ValueType_Raw);
 
-                resultString += "\n" + getName() + " / time of last reset: " + printable_time(CtiTime::fromLocalSeconds(pi_time.value).seconds()) + "\n";
+                CtiTime lastReset = CtiTime::fromLocalSeconds(pi_time.value);
+
+                insertPointDataReport(AnalogPointType, PointOffset_DemandResetCount,
+                                      ReturnMsg, pi, "Demand Reset Count", lastReset);
+
+                resultString += "\n" + getName() + " / time of last reset: " + printable_time(lastReset.seconds()) + "\n";
 
                 pi = CtiDeviceMCT470::getData(DSt->Message + 11, 2, ValueType_IED);
 
