@@ -40,8 +40,8 @@ public class CustomerGraphDaoImpl implements CustomerGraphDao, InitializingBean 
 	public void deleteAllCustomerGraphsByCustomerId(int customerId) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("DELETE FROM GraphCustomerList gcl");
-		sql.append("WHERE gcl.CustomerId").eq(customerId);
+		sql.append("DELETE FROM GraphCustomerList");
+		sql.append("WHERE CustomerId").eq(customerId);
 		yukonJdbcTemplate.update(sql);
 	}
 	
