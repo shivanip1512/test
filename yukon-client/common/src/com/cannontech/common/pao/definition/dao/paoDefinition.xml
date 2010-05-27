@@ -471,6 +471,13 @@
                 <unitofmeasure value="kVar"/>
                 <decimalplaces value="4"/>
             </point>
+			<point type="Analog" offset="39">
+            	<init>true</init>
+                <name>IED Demand Reset Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+                <decimalplaces value="4"/>
+            </point>
             <point type="Analog" offset="40">
             	<init>true</init>
                 <name>IED Blink Count</name>
@@ -936,6 +943,13 @@
                 <name>Peak kM (Coincidental)</name>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVar"/>
+                <decimalplaces value="4"/>
+            </point>
+			<point type="Analog" offset="39">
+            	<init>true</init>
+                <name>IED Demand Reset Count</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
                 <decimalplaces value="4"/>
             </point>
             <point type="Analog" offset="40">
