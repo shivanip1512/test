@@ -13,7 +13,9 @@
   <tx:annotation-driven transaction-manager="transactionManager"/>
   <context:annotation-config/>
   <aop:aspectj-autoproxy/>
-    
+  
+  <bean class="com.cannontech.services.YukonServiceManagerImpl" />
+      
   <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl">
     <property name="roleDao" ref="roleDao"/>
   </bean>

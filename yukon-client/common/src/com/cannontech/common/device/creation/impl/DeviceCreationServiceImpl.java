@@ -24,8 +24,8 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
-import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
@@ -51,16 +51,15 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     public SimpleDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
         
         SimpleDevice newYukonDevice = new SimpleDevice();
-        SimpleDevice templateYukonDevice = new SimpleDevice();
         
         try {
 
             // CREATE NEW MCT DEVICE
-            MCTBase templateDevice = getExistingDeviceByTemplate(templateName);
+            DeviceBase templateDevice = getExistingDeviceByTemplate(templateName);
             int templateDeviceId = templateDevice.getPAObjectID();
             
             int newDeviceId = paoDao.getNextPaoId();
-            MCTBase newDevice = templateDevice;
+            DeviceBase newDevice = templateDevice;
             newDevice.setDeviceID(newDeviceId);
             newDevice.setPAOName(newDeviceName);
             
@@ -79,6 +78,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             newYukonDevice.setDeviceId(newDeviceId);
             newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
             
+            SimpleDevice templateYukonDevice = new SimpleDevice();
             templateYukonDevice.setDeviceId(templateDeviceId);
             templateYukonDevice.setType(paoGroupsWrapper.getDeviceType(templateDevice.getPAOType()));
             
@@ -139,18 +139,18 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return yukonDevice;
     }
     
-    private MCTBase getExistingDeviceByTemplate(String templateName) {
+    private DeviceBase getExistingDeviceByTemplate(String templateName) {
         
-        MCTBase templateDevice = new MCTBase();
         
         try {
-            
             SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
             int templateDeviceId = templateYukonDevice.getDeviceId();
 
+            DeviceBase templateDevice = DeviceFactory.createDevice(templateYukonDevice.getDeviceType());
             templateDevice.setDeviceID(templateDeviceId);
             templateDevice = Transaction.createTransaction(Transaction.RETRIEVE, templateDevice).execute();
 
+            return templateDevice;
         }
         catch (IncorrectResultSizeDataAccessException e) {
             throw new DeviceCreationException("Device for template name not found: " + templateName, e);
@@ -159,7 +159,6 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             throw new DeviceCreationException("Could not load template device from database: " + templateName, e);
         }
         
-        return templateDevice;
     }
     
     private void addToTemplatesGroups(SimpleDevice templateDevice, SimpleDevice newDevice) {
@@ -172,7 +171,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
     }
     
-    private void applyPoints(CarrierBase device, List<PointBase> points) {
+    private void applyPoints(DeviceBase device, List<PointBase> points) {
         
         int deviceId = device.getPAObjectID();
         
@@ -213,7 +212,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return points;
     }
 
-    private void processDeviceDbChange(CarrierBase newDevice) {
+    private void processDeviceDbChange(DeviceBase newDevice) {
 
         DBChangeMsg msg = new DBChangeMsg(newDevice.getPAObjectID(),
                                           DBChangeMsg.CHANGE_PAO_DB,

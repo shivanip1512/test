@@ -247,6 +247,8 @@
     <bean id="yukonUserContextService" class="com.cannontech.i18n.service.impl.YukonUserContextServiceImpl" />
     
     <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />
+    
+    <bean id="connectionFactory" class="com.cannontech.services.jms.YukonJmsConnectionFactory"/>
       
     
 </beans>

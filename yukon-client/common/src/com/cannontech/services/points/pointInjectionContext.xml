@@ -24,15 +24,13 @@
     <!-- Enabling @AspectJ Support -->
     <aop:aspectj-autoproxy/>
       
-    <bean id="connectionFactory" class="com.cannontech.services.jms.YukonJmsConnectionFactory"/>
-    
     <bean id="yukonRichPointUpdateDestination" class="org.apache.activemq.command.ActiveMQTopic">
         <constructor-arg value="yukon.topic.RichPointUpdateObj"/>
     </bean>
     
     <bean id="pointUpdateInjector" class="com.cannontech.services.points.RichPointUpdateInjector"/>
           
-    <i:gateway id="richPointDataGateway" service-interface="com.cannontech.services.points.RichPointDataGateway" />
+    <i:gateway id="_richPointDataGateway" service-interface="com.cannontech.services.points.RichPointDataGateway" />
     <i:channel id="yukonRichPointData"/>
     <jms:outbound-channel-adapter id="jmsOut"  destination="yukonRichPointUpdateDestination" channel="yukonRichPointData"/>
     
