@@ -274,6 +274,19 @@ public class MultispeakFuncs
     }
 
     /**
+     * Return true if mspVendor is the primaryCIS Vendor, else return false;
+     * Also returns false if mspVendor or it's vendorId are null.  
+     * @param mspVendor
+     * @return boolean
+     */
+    public boolean isPrimaryCIS(MultispeakVendor mspVendor) {
+        if( mspVendor != null && mspVendor.getVendorID() != null) {
+            int primaryCIS = getPrimaryCIS();
+            return mspVendor.getVendorID().intValue() == primaryCIS;
+        }
+        return false;        
+    }
+    /**
      * @return Returns the billingCycle parent Device Group
      */
     public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{

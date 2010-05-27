@@ -108,7 +108,7 @@ public class MultispeakController extends MultiActionController implements Initi
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deleteDefaultMessage",defaultMspVendor.getCompanyName()));
         }else {
             MultispeakVendor deletedMspVendor = multispeakDao.getMultispeakVendor(vendorId);
-            if( multispeakFuncs.getPrimaryCIS() == vendorId){
+            if( multispeakFuncs.isPrimaryCIS(deletedMspVendor)){
                 FlashScope flashScope = new FlashScope(request);
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deletePrimaryMessage", deletedMspVendor.getCompanyName()));
             } else {
@@ -197,6 +197,12 @@ public class MultispeakController extends MultiActionController implements Initi
                 mav.addObject("resultColor", "red");
             }
         }
+        
+        // If we called getMethods on the primary CIS vendor, we should reload the search fields
+        if( multispeakFuncs.isPrimaryCIS(mspVendor)) {
+            mspMeterSearchService.loadMspSearchFields();            
+        }
+        
         addSystemModelAndViewObjects(request, mav, mspVendor);
         return mav;
     }
@@ -332,7 +338,7 @@ public class MultispeakController extends MultiActionController implements Initi
         int oldMspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
         int mspPrimaryCIS = ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", oldMspPrimaryCIS);
         
-        int oldMspPaoNameAlias = multispeakFuncs.getPrimaryCIS();
+        int oldMspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
         int mspPaoNameAlias = ServletRequestUtils.getIntParameter(request, "mspPaoNameAlias", oldMspPaoNameAlias);
         
         
