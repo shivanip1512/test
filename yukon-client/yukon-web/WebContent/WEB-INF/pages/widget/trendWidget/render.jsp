@@ -28,7 +28,7 @@
 		</c:if>
 		
 		<%-- THE CHART --%>
-		<div style="height: 250px">
+		<div style="height: 250px; max-width: 525px;">
 			<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" interval="${interval}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"></tags:trend>
 		</div>
 		
