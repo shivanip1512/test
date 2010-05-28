@@ -248,7 +248,15 @@
     
     <bean id="transactionExecutor" class="com.cannontech.common.util.TransactionExecutorImpl" />
     
-    <bean id="connectionFactory" class="com.cannontech.services.jms.YukonJmsConnectionFactory"/>
-      
+    <bean id="connectionFactoryTarget" class="com.cannontech.services.jms.YukonJmsConnectionFactory" lazy-init="true"/>
+    
+    <bean id="connectionFactory" class="org.springframework.aop.framework.ProxyFactoryBean" primary="true">
+      <property name="targetSource">
+        <bean class="org.springframework.aop.target.LazyInitTargetSource">
+          <property name="targetBeanName"><idref local="connectionFactoryTarget"/></property>
+        </bean>
+      </property>
+    </bean>
+          
     
 </beans>
