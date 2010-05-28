@@ -351,6 +351,11 @@ begin
 	ReplaceStringInFile(sMasterConfig, "msq15d.dll", "mssql");
 	ReplaceStringInFile(sMasterConfig, "ora15d.dll", "oracle");
 	
+	//Save the configuration of all installed services.
+	//This will be read in on the other side of the file transfer
+	//to re-populate the settings lost in the upgrade
+	SaveServiceSettings();
+	
 	//set installer to update all features that are currently installed
 	FeatureUpdate("");
 	
@@ -375,7 +380,6 @@ begin
 	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
 	//get the version parts: major.minor.build
 	VerProductVerPartsFromVer (nNewVersion, nVMajor, nVMinor, nVBuild ); 
-	
 	//Update the registry info to the newly installed version.
 	//This affects updating working correctly, as well as the
 	//version # displayed in add/remove programs
@@ -386,6 +390,9 @@ begin
 	RegDBSetItem(REGDB_UNINSTALL_MINOR_VERSION, sVTemp);
 	NumToStr(sVTemp, nNewVersion);
 	RegDBSetItem(REGDB_UNINSTALL_VERSION, sVTemp); 
+	
+	//reapply old settings to newly updated services
+	LoadServiceSettings();
 	
 	Dialog_DBToolsFrame:
 	Disable(BACKBUTTON);

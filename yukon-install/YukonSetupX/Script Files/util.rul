@@ -12,6 +12,86 @@
 #define SM_NAME			"YukonServiceMgr"
 #define SYS32			"C:\\WINDOWS\\System32\\"
 
+//global variable used to store service settings across the upgrade process
+string sServiceSettings(11);
+
+//-------------------------------------------------------
+// Helper function to build up a list of the Yukon
+// service names in the provided string array.
+//-------------------------------------------------------
+export prototype void PopulateServiceNameList(BYREF VARIANT); //array parameters must
+function void PopulateServiceNameList(sServiceNameArray) //be prototyped as VARIANT
+begin
+	//if the array is too small, increase the size
+	if(SizeOf(sServiceNameArray) < 11) then
+		Resize(sServiceNameArray, 11);
+	endif;
+	//populate
+	sServiceNameArray(0) = SCANNER_NAME;
+	sServiceNameArray(1) = MACS_NAME;
+	sServiceNameArray(2) = LM_NAME;
+	sServiceNameArray(3) = FDR_NAME;
+	sServiceNameArray(4) = DISPATCH_NAME;
+	sServiceNameArray(5) = CC_NAME;
+	sServiceNameArray(6) = CALC_NAME;
+	sServiceNameArray(7) = PORTER_NAME;
+	sServiceNameArray(8) = WEB_NAME;
+	sServiceNameArray(9) = NOTIF_NAME;
+	sServiceNameArray(10) = SM_NAME;
+end;
+
+//-------------------------------------------------------
+// Helper function to save current Yukon service
+// configurations prior to an upgrade so they can be
+// reapplied afterward.
+//-------------------------------------------------------
+export prototype void SaveServiceSettings();
+function void SaveServiceSettings()
+number i, nType, nSize, nResult;
+string sServiceNameArray(11), sRegKey, sKeyValue;
+begin
+	PopulateServiceNameList(sServiceNameArray);
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	for i = 0 to 10
+		if (ServiceExistsService(sServiceNameArray(i))) then
+			//get service start values from registry
+			sRegKey = "SYSTEM\\CurrentControlSet\\Services\\" + sServiceNameArray(i);
+			nResult = RegDBGetKeyValueEx(sRegKey, "Start", nType, sKeyValue, nSize);
+			if(nResult < 0) then
+				MessageBox ("Unable to save service settings: " + sServiceNameArray(i) + ".", SEVERE);
+			endif;
+			sServiceSettings(i) = sKeyValue;
+		endif;
+	endfor;
+	RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
+end;
+
+//-------------------------------------------------------
+// Helper function to apply saved configurations to the
+// Yukon services after an upgrade.
+//-------------------------------------------------------
+export prototype void LoadServiceSettings();
+function void LoadServiceSettings()
+number i, nResult;
+string sServiceNameArray(11), sRegKey, sTemp;
+BOOL bEntryFound;
+begin
+	PopulateServiceNameList(sServiceNameArray);
+	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
+	//write service start values to the registry
+	for i = 0 to 10
+		if (ServiceExistsService(sServiceNameArray(i))) then
+			sRegKey = "SYSTEM\\CurrentControlSet\\Services\\" + sServiceNameArray(i);
+			sTemp = sServiceSettings(i);
+			nResult = RegDBSetKeyValueEx(sRegKey, "Start", REGDB_NUMBER, sServiceSettings(i), -1);
+			if(nResult < 0) then
+				MessageBox ("Unable to save service settings: " + sServiceNameArray(i) + ".", SEVERE);
+			endif;
+		endif;
+	endfor;
+	RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
+end;
+
 //-------------------------------------------------------
 // Helper function to clean up the version string for the
 // currently installed version.  This number is pulled
@@ -138,17 +218,7 @@ function BOOL AreYukonServicesRunning()
 string sServiceNameArray(11);
 number i, nServiceState;
 begin
-	sServiceNameArray(0) = SCANNER_NAME;
-	sServiceNameArray(1) = MACS_NAME;
-	sServiceNameArray(2) = LM_NAME;
-	sServiceNameArray(3) = FDR_NAME;
-	sServiceNameArray(4) = DISPATCH_NAME;
-	sServiceNameArray(5) = CC_NAME;
-	sServiceNameArray(6) = CALC_NAME;
-	sServiceNameArray(7) = PORTER_NAME;
-	sServiceNameArray(8) = WEB_NAME;
-	sServiceNameArray(9) = NOTIF_NAME;
-	sServiceNameArray(10) = SM_NAME;
+	PopulateServiceNameList(sServiceNameArray);
 	for i = 0 to 10
 		ServiceGetServiceState(sServiceNameArray(i), nServiceState);
 		if (nServiceState != SERVICE_STOPPED) then
@@ -170,17 +240,7 @@ string sServiceNameArray(11);
 string sCMD;
 number i;
 begin
-	sServiceNameArray(0) = SCANNER_NAME;
-	sServiceNameArray(1) = MACS_NAME;
-	sServiceNameArray(2) = LM_NAME;
-	sServiceNameArray(3) = FDR_NAME;
-	sServiceNameArray(4) = DISPATCH_NAME;
-	sServiceNameArray(5) = CC_NAME;
-	sServiceNameArray(6) = CALC_NAME;
-	sServiceNameArray(7) = PORTER_NAME;
-	sServiceNameArray(8) = WEB_NAME;
-	sServiceNameArray(9) = NOTIF_NAME;
-	sServiceNameArray(10) = SM_NAME;
+	PopulateServiceNameList(sServiceNameArray);
 	sCMD = SYS32 + "net.exe";
 	
 	if(bStart) then
