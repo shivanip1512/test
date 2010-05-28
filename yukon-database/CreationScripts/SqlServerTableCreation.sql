@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/25/2010 11:11:20 AM                        */
+/* Created on:     5/28/2010 10:24:35 AM                        */
 /*==============================================================*/
 
 
@@ -10246,12 +10246,9 @@ create table PointAlarming (
 )
 go
 
-insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
-	select pointid,
-	'',
-	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
-	'N',
-	1  from point;
+INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
+SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
+FROM Point;
 
 /*==============================================================*/
 /* Table: PortTiming                                            */

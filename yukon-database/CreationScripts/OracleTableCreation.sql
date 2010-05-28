@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/25/2010 11:03:14 AM                        */
+/* Created on:     5/28/2010 10:34:59 AM                        */
 /*==============================================================*/
 
 
@@ -7305,12 +7305,9 @@ create table PointAlarming  (
    constraint PK_POINTALARMING primary key (PointID)
 );
 
-insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)
-	select pointid,
-	'',
-	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
-	'N',
-	1  from point;
+INSERT INTO PointAlarming(PointId, AlarmStates, ExcludeNotifyStates, NotifyOnAcknowledge, NotificationGroupId)
+SELECT PointId, '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1 
+FROM Point;
 
 /*==============================================================*/
 /* Table: PortTiming                                            */
