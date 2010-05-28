@@ -278,7 +278,33 @@ public class OptOutController extends AbstractConsumerController {
         map.addAttribute("result", result);
         return "consumer/optout/optOutResult.jsp";
     }
-    
+
+    @RequestMapping(value = "/consumer/optout/confirmCancel")
+    public String confirmCancel(
+            @ModelAttribute("customerAccount") CustomerAccount customerAccount,
+            Integer eventId, YukonUserContext yukonUserContext, ModelMap model) {
+        // Make sure the event is the current user's event
+        checkEventAgainstAccount(eventId, customerAccount);
+
+        // Get the list of current and scheduled opt outs
+        List<OptOutEventDto> currentOptOutList = 
+            optOutEventDao.getCurrentOptOuts(customerAccount.getAccountId());
+        OptOutEventDto optOut = null;
+        for (OptOutEventDto event : currentOptOutList) {
+            if (event.getEventId().equals(eventId)) {
+                optOut = event;
+            }
+        }
+
+        if (optOut == null) {
+            // the opt out has disappeared since they clicked cancel
+            return "/spring/stars/consumer/optout";
+        }
+        model.addAttribute("optOut", optOut);
+
+        return "consumer/optout/confirmCancel.jsp";
+    }
+
     @RequestMapping(value = "/consumer/optout/cancel", method = RequestMethod.POST)
     public String cancel(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
     		Integer eventId, YukonUserContext yukonUserContext, ModelMap map) throws Exception {

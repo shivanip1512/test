@@ -111,7 +111,7 @@
                             </td>
 			        		<td>
                                 <c:if test="${optOut.state == 'SCHEDULED'}">
-			                        <form action="/spring/stars/consumer/optout/cancel" method="post">
+			                        <form action="/spring/stars/consumer/optout/confirmCancel" method="post">
 				        				<input type="hidden" name="eventId" value="${optOut.eventId}">
 				        				<input type="submit" name="submit" value="<cti:msg key="yukon.dr.consumer.optout.cancel"/>" class="formSubmit">
 				        			</form>
