@@ -64,7 +64,7 @@ String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(
         <cti:logo key="yukon.web.error.logo" />
     </cti:link>
 </div>
-<% if (friendlyExceptionMessage != null && showStack) { %>
+<% if (friendlyExceptionMessage != null) { %>
 <br/>
 <div id="errorFriendly">
 <c:set var="friendlyExceptionMessage" value="<%=friendlyExceptionMessage %>"/>
