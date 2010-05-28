@@ -23,4 +23,9 @@
     <entry key="yukon.dr.program.displayname.controlPeriod.PAST_MONTH">Past Month</entry>
     <entry key="yukon.dr.program.displayname.controlPeriod.PAST_YEAR">Past Year</entry>
 
+    <entry key="yukon.dr.program.optOutAction.START_OPT_OUT">Start</entry>
+    <entry key="yukon.dr.program.optOutAction.CANCEL">Cancel</entry>
+    <entry key="yukon.dr.program.optOutAction.SCHEDULE">Schedule</entry>
+    <entry key="yukon.dr.program.optOutAction.CANCEL_SCHEDULE">Cancel Schedule</entry>
+    <entry key="yukon.dr.program.optOutAction.REPEAT_START_OPT_OUT">Resend</entry>
 </properties>

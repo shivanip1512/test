@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="/third-party/easymock.jar"/>
 	<classpathentry kind="lib" path="/third-party/json-lib-0.7.1.jar" sourcepath="Z:/java/Third-Party Sources/json-lib-1.0-jdk15-sources.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsp-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
+	<classpathentry kind="lib" path="/third-party/google-collect-1.0.jar" sourcepath="Z:/java/Third-Party Sources/google-collect-1.0-src.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

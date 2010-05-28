@@ -37,6 +37,9 @@ import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.model.Program;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 /**
  * Implementation class for OptOutEventDao
@@ -197,8 +200,54 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		
 		return eventList;
 	}
-	
+
 	@Override
+	@Transactional(readOnly=true)
+    public Multimap<Integer, OptOutLog> getOptOutEventDetails(
+            Iterable<OptOutEventDto> optOutEvents) {
+	    List<Integer> eventIds = Lists.newArrayList();
+	    for (OptOutEventDto event : optOutEvents) {
+	        eventIds.add(event.getEventId());
+	    }
+
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT optOutEventLogId, inventoryId, customerAccountId,");
+	    sql.append(    "eventAction, logDate, eventStartDate, eventStopDate,");
+	    sql.append(    "logUserId, username, optOutEventId, eventCounts");
+	    sql.append("FROM optOutEventLog");
+        sql.append(    "JOIN yukonUser on userId = logUserId");
+	    sql.append("WHERE optOutEventId").in(eventIds);
+	    sql.append("ORDER BY optOutEventId, logDate");
+
+	    ParameterizedRowMapper<OptOutLog> rowMapper =
+	        new ParameterizedRowMapper<OptOutLog>() {
+                @Override
+                public OptOutLog mapRow(ResultSet rs, int rowNum)
+                        throws SQLException {
+                    OptOutLog retVal = new OptOutLog();
+                    retVal.setLogId(rs.getInt("optOutEventLogId"));
+                    retVal.setInventoryId(rs.getInt("inventoryId"));
+                    retVal.setCustomerAccountId(rs.getInt("customerAccountId"));
+                    retVal.setAction(OptOutAction.valueOf(rs.getString("eventAction")));
+                    retVal.setLogDate(rs.getTimestamp("logDate"));
+                    retVal.setStartDate(rs.getTimestamp("eventStartDate"));
+                    retVal.setStopDate(rs.getTimestamp("eventStopDate"));
+                    retVal.setUserId(rs.getInt("logUserId"));
+                    retVal.setUsername(rs.getString("username"));
+                    retVal.setEventId(rs.getInt("optOutEventId"));
+                    retVal.setEventCounts(OptOutCounts.valueOf(rs.getString("eventCounts")));
+                    return retVal;
+                }};
+	    List<OptOutLog> logs = yukonJdbcTemplate.query(sql, rowMapper);
+
+	    Multimap<Integer, OptOutLog> retVal = ArrayListMultimap.create();
+        for (OptOutLog log : logs) {
+            retVal.put(log.getEventId(), log);
+        }
+	    return retVal;
+    }
+
+    @Override
 	@Transactional
 	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId,
 			Date startDate, Date stopDate) {

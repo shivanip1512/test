@@ -26,11 +26,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -47,6 +49,7 @@ import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
+import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
@@ -62,6 +65,8 @@ import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
 import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT)
@@ -77,7 +82,8 @@ public class OperatorProgramOptOutOperatorController {
     private OptOutValidatorFactory optOutValidatorFactory;
     private RolePropertyDao rolePropertyDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private DateFormattingService dateFormattingService;
 
     @RequestMapping
     public String view(YukonUserContext yukonUserContext, 
@@ -98,6 +104,9 @@ public class OperatorProgramOptOutOperatorController {
         List<OptOutEventDto> previousOptOutList = 
             optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId(), 6);
         modelMap.addAttribute("previousOptOutList", previousOptOutList);
+        Map<Integer, List<MessageSourceResolvable>> previousOptOutDetails =
+            getHistoryActionLog(previousOptOutList, yukonUserContext);
+        modelMap.addAttribute("previousOptOutDetails", previousOptOutDetails);
         
         // Get the current counts for used opt outs and remaining allowed opt outs for each device
         List<DisplayableInventory> displayableInventories = 
@@ -280,12 +289,16 @@ public class OperatorProgramOptOutOperatorController {
     
     @RequestMapping
     public String optOutHistory(ModelMap modelMap,
-                                 AccountInfoFragment accountInfoFragment) {
+                                 AccountInfoFragment accountInfoFragment,
+                                 YukonUserContext yukonUserContext) {
         
         // Get the list of completed and canceled opt outs
-        List<OptOutEventDto> previousOptOutList = optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId());
-
+        List<OptOutEventDto> previousOptOutList =
+            optOutEventDao.getOptOutHistoryForAccount(accountInfoFragment.getAccountId());
         modelMap.addAttribute("previousOptOutList", previousOptOutList);
+        Map<Integer, List<MessageSourceResolvable>> previousOptOutDetails =
+            getHistoryActionLog(previousOptOutList, yukonUserContext);
+        modelMap.addAttribute("previousOptOutDetails", previousOptOutDetails);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "operator/program/optOut/optOutHistory.jsp";
@@ -332,6 +345,32 @@ public class OperatorProgramOptOutOperatorController {
         return "redirect:view";
     }
 
+    private Map<Integer, List<MessageSourceResolvable>> getHistoryActionLog(
+            List<OptOutEventDto> previousOptOutList,
+            YukonUserContext userContext) {
+        Multimap<Integer, OptOutLog> previousOptOutDetails =
+            optOutEventDao.getOptOutEventDetails(previousOptOutList);
+        Map<Integer, List<MessageSourceResolvable>> retVal = Maps.newHashMap();
+        for (Integer eventId : previousOptOutDetails.keySet()) {
+            List<MessageSourceResolvable> actionMessages = Lists.newArrayList();
+            for (OptOutLog actionLog : previousOptOutDetails.get(eventId)) {
+                MessageSourceAccessor messageSourceAccessor =
+                    messageSourceResolver.getMessageSourceAccessor(userContext);
+                String actionStr = messageSourceAccessor.getMessage(actionLog.getAction().getFormatKey());
+                String logDateStr =
+                    dateFormattingService.format(actionLog.getLogDate(),
+                                                 DateFormatEnum.DATEHM, userContext);
+                MessageSourceResolvable msg =
+                    new YukonMessageSourceResolvable("yukon.web.modules.operator.optOut.historyAction",
+                                                     actionStr,
+                                                     actionLog.getUsername(),
+                                                     logDateStr);
+                actionMessages.add(msg);
+            }
+            retVal.put(eventId, actionMessages);
+        }
+        return retVal;
+    }
     /**
      * This method handles the processing for an opt out and also handles
      * validation.
@@ -617,5 +656,10 @@ public class OperatorProgramOptOutOperatorController {
     @Autowired
     public void setOptOutValidatorFactory(OptOutValidatorFactory optOutValidatorFactory) {
         this.optOutValidatorFactory = optOutValidatorFactory;
+    }
+
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
 }

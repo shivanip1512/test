@@ -16,6 +16,7 @@ public class OptOutLog {
 	private Date startDate;
 	private Date stopDate;
 	private Integer userId;
+	private String username;
 	private Integer eventId;
 	private OptOutCounts eventCounts;
 
@@ -83,7 +84,15 @@ public class OptOutLog {
 		this.userId = userId;
 	}
 
-	public Integer getEventId() {
+	public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Integer getEventId() {
 		return eventId;
 	}
 

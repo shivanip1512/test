@@ -11,6 +11,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventDto;
 import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.google.common.collect.Multimap;
 
 /**
  * Dao class for persisting Opt out events
@@ -42,6 +43,15 @@ public interface OptOutEventDao {
 	 * @return List of opt out event history
 	 */
 	public List<OptOutEventDto> getOptOutHistoryForAccount(int customerAccountId, int... numberOfRecords);
+
+    /**
+     * Find event log details for a given event.
+     * @param optOutEvents A list of OptOutEventDto instances, probably from
+     *            getOptOutHistoryForAccount.
+     * @return A multimap of eventId -> list of OptOutLog instances, ordered by
+     *         logDate.
+     */
+	public Multimap<Integer, OptOutLog> getOptOutEventDetails(Iterable<OptOutEventDto> optOutEvents);
 
 	/**
 	 * Method to get a list of opt out events by account and time period
@@ -196,5 +206,4 @@ public interface OptOutEventDao {
 	 */
 	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
 			int customerAccountId);
-	
 }
