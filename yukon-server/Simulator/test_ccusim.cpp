@@ -377,5 +377,69 @@ BOOST_AUTO_TEST_CASE( test_WriteMem_extract )
     BOOST_CHECK_EQUAL(known.data[4], info.data[4]);
     BOOST_CHECK_EQUAL(known.data[5], info.data[5]);
 
-}
+} 
+ 
+BOOST_AUTO_TEST_CASE( test_b_word )
+{
+    unsigned repeater_variable, repeater_fixed, address, function_code, index = 0;
+    bool function, write;
+    EmetconWordB b_word;
+    words_t words;
+
+    bytes command_data;
+
+    command_data.push_back(0xff);
+    command_data.push_back(0xff);
+    command_data.push_back(0xff);
+    command_data.push_back(0xff);
+
+    command_data.push_back(0xa0);
+    command_data.push_back(0x0f);
+    command_data.push_back(0xff);
+    command_data.push_back(0xb7);
+    command_data.push_back(0x2f);
+    command_data.push_back(0x0b);
+    command_data.push_back(0xc0);
+
+    repeater_variable = command_data[index + 4] & 0x0e;
+    repeater_fixed = (int(command_data[index + 4] & 0x01) << 4) | (int(command_data[index + 5] & 0xf0) >> 4);
+
+    address  = int(command_data[index + 5] & 0x0f) << 18;
+    address |= int(command_data[index + 6]) << 10;
+    address |= int(command_data[index + 7]) << 2;
+    address |= int(command_data[index + 8] & 0xc0) >> 6;
+
+    unsigned words_to_follow = (command_data[index + 8] & 0x30) >> 4;
+
+    function_code = int(command_data[index + 8] & 0x0f) << 4 | int(command_data[index + 9] & 0x0f) >> 4;
+
+    function =   command_data[index + 9] & 0x08;
+    write    = !(command_data[index + 9] & 0x04);
+
+    unsigned bch = int(command_data[index + 9] & 0x03) << 4 | int(command_data[index + 10] & 0xf0) >> 4;
+
+    b_word = EmetconWordB(repeater_fixed,
+                          repeater_variable,
+                          address,
+                          words_to_follow,
+                          function_code,
+                          function,
+                          write,
+                          bch);
+
+    bytes b_word_buf = bytes(command_data.begin() + 4, command_data.begin() + 11);
+    EmetconWord::restoreWords(b_word_buf,words);
+    const EmetconWordB &test_word = *boost::static_pointer_cast<const EmetconWordB>(words[0]);
+
+    BOOST_CHECK_EQUAL(b_word.repeater_fixed,    test_word.repeater_fixed);
+    BOOST_CHECK_EQUAL(b_word.repeater_variable, test_word.repeater_variable);
+    BOOST_CHECK_EQUAL(b_word.dlc_address,       test_word.dlc_address);
+    BOOST_CHECK_EQUAL(b_word.words_to_follow,   test_word.words_to_follow);
+    BOOST_CHECK_EQUAL(b_word.function_code,     test_word.function_code);
+    BOOST_CHECK_EQUAL(b_word.function,          test_word.function);
+    BOOST_CHECK_EQUAL(b_word.write,             test_word.write);
+    BOOST_CHECK_EQUAL(b_word.bch,               test_word.bch);
+
+} 
+ 
 */

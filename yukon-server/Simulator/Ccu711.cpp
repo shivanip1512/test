@@ -1482,41 +1482,29 @@ bool Ccu711::validateCommand(SocketComms &socket_interface)
     switch( command )
     {
         case Command_DTran:
-            if( peek_buf[3] < 3 )
             {
-                return false;
+                return ( peek_buf[3] >= 3 );
             }
-            return true;
         case Command_Actin:
-            if (peek_buf[3] < 3 )
             {
-                return false;
+                return ( peek_buf[3] >= 3 );
             }
-            return true;
         case Command_WSets:
-            if (peek_buf[3] < 3 )
             {
-                return false;
+                return ( peek_buf[3] >= 3 );
             }
-            return true;
         case Command_LGrpQ:
-            if (peek_buf[3] < 3 )
             {
-                return false;
+                return ( peek_buf[3] >= 3 );
             }
-            return true;
         case Command_RColQ:
-            if (peek_buf[3] < 3 )
             {
-                return false;
+                return ( peek_buf[3] >= 3 );
             }
-            return true;
         case Command_Xtime:
-            if (peek_buf[3] < 3 )
             {
-                return false;
+                return ( peek_buf[3] >= 3 );
             }
-            return true;
         default:
         {
             // Command is either non-existent or doesn't make sense.

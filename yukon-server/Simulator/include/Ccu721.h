@@ -128,11 +128,11 @@ private:
         {
             request_info() : 
                 word_type(EmetconWord::WordType_Invalid),
-                address(0),
+                //address(0),
                 bus(0),
-                repeater_fixed(0),
-                repeater_variable(0),
-                function_code(0),
+                //repeater_fixed(0),
+                //repeater_variable(0),
+                //function_code(0),
                 length(0),
                 write(false),
                 function(false),
@@ -145,11 +145,11 @@ private:
     
             bool broadcast;
     
-            unsigned address;
+            //unsigned address;
             unsigned bus;
-            unsigned repeater_fixed;
-            unsigned repeater_variable;
-            unsigned function_code;
+            //unsigned repeater_fixed;
+            //unsigned repeater_variable;
+            //unsigned function_code;
             unsigned length;
             unsigned stagesToFollow;
     

@@ -248,8 +248,8 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
 
     srand(now.seconds());
 
-    // First rand is apparently linear. Dump the first one to avoid the 
-    // first call to give the program undesired predictability.
+    // First rand is apparently linear. To avoid undesired predictability while running
+    // the simulator, we should dump the first call here.
     rand();
 
     SocketComms socket_interface(mySocket, 1200);
@@ -321,12 +321,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
                                             "FROM YukonPAObject Y, DEVICE V, DeviceAddress A "
                                             "WHERE A.DeviceID = V.DEVICEID AND "
                                             "V.DEVICEID = Y.PAObjectID AND "
+                                            "Y.TYPE = 'CCU-721' AND "
                                             "A.SlaveAddress = " + ss.str();
 
                 const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
                                             "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, DeviceAddress A "
                                             "WHERE D.DEVICEID = V.DEVICEID AND "
                                             "V.DEVICEID = Y.PAObjectID AND "
+                                            "Y.TYPE = 'CCU-711' AND "
                                             "D.ADDRESS = " + ss.str();
     
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);

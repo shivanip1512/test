@@ -245,32 +245,21 @@ error_t Ccu721::extractRequestInfo_Dtran(const bytes &command_data, request_info
         case 0xb0:  
             request.word_type = EmetconWord::WordType_B;
 
-            // 52 bit B word to process.
-            request.repeater_variable = command_data[index + 5] & 0x0e;
-            request.repeater_fixed = (int(command_data[index + 5] & 0x01) << 4) | (int(command_data[index + 6] & 0xf0) >> 4);
+            words_t b_word_holder;  // Something to hold the B Word
 
-            request.address  = int(command_data[index + 6] & 0x0f) << 18;
-            request.address |= int(command_data[index + 7]) << 10;
-            request.address |= int(command_data[index + 8]) << 2;
-            request.address |= int(command_data[index + 9] & 0xc0) >> 6;
+            // Grab the 7 bytes of data we need to create the B Word
+            bytes b_word_buf = bytes(command_data.begin() + (index + 4), command_data.begin() + (index + 11));
 
-            unsigned words_to_follow = (command_data[index + 9] & 0x30) >> 4;
+            // Create it and store it in the holder.
+            EmetconWord::restoreWords(command_data,b_word_holder);
 
-            request.function_code = int(command_data[index + 9] & 0x0f) << 4 | int(command_data[index + 10] & 0x0f) >> 4;
+            const EmetconWordB &bWord = *boost::static_pointer_cast<const EmetconWordB>(b_word_holder[0]);
 
             request.function =   command_data[index + 10] & 0x08;
             request.write    = !(command_data[index + 10] & 0x04);
 
-            unsigned bch = int(command_data[index + 10] & 0x03) << 4 | int(command_data[index + 11] & 0xf0) >> 4;
+            request.b_word = bWord;
 
-            request.b_word = EmetconWordB(request.repeater_fixed,
-                                          request.repeater_variable,
-                                          request.address,
-                                          words_to_follow,
-                                          request.function_code,
-                                          request.function,
-                                          request.write,
-                                          bch);
             break;
     }
 
@@ -630,36 +619,25 @@ error_t Ccu721::extractQueueEntry(const bytes &command_data, int index, int next
             case 0xb0:  
                 request.word_type = EmetconWord::WordType_B;
 
-                // 52 bit B word to process.
-                request.repeater_variable = command_data[index + 4] & 0x0e;
-                request.repeater_fixed = (int(command_data[index + 4] & 0x01) << 4) | (int(command_data[index + 5] & 0xf0) >> 4);
+                words_t b_word_holder;  // Something to hold the B Word
 
-                request.address  = int(command_data[index + 5] & 0x0f) << 18;
-                request.address |= int(command_data[index + 6]) << 10;
-                request.address |= int(command_data[index + 7]) << 2;
-                request.address |= int(command_data[index + 8] & 0xc0) >> 6;
+                // Grab the 7 bytes of data we need to create the B Word
+                bytes b_word_buf = bytes(command_data.begin() + (index + 4), command_data.begin() + (index + 11));
 
-                unsigned words_to_follow = (command_data[index + 8] & 0x30) >> 4;
+                // Create it and store it in the holder.
+                EmetconWord::restoreWords(command_data,b_word_holder);
 
-                request.function_code = int(command_data[index + 8] & 0x0f) << 4 | int(command_data[index + 9] & 0x0f) >> 4;
+                const EmetconWordB &bWord = *boost::static_pointer_cast<const EmetconWordB>(b_word_holder[0]);
 
                 request.function =   command_data[index + 9] & 0x08;
                 request.write    = !(command_data[index + 9] & 0x04);
 
-                unsigned bch = int(command_data[index + 9] & 0x03) << 4 | int(command_data[index + 10] & 0xf0) >> 4;
+                request.b_word = bWord;
 
-                request.b_word = EmetconWordB(request.repeater_fixed,
-                                              request.repeater_variable,
-                                              request.address,
-                                              words_to_follow,
-                                              request.function_code,
-                                              request.function,
-                                              request.write,
-                                              bch);
                 break;
         }
 
-        if( request.write && request.b_word.words_to_follow )
+        if( request.b_word.write && request.b_word.words_to_follow )
         {
             // There are C words following the B word.
             request.data.assign(command_data.begin() + 11 + index, command_data.end() );
@@ -1334,7 +1312,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
 
                 const queue_entry::request_info &request = entry_itr->request;
 
-                info_description << "addr " << setw(7) << request.address << ", ";
+                info_description << "addr " << setw(7) << request.b_word.dlc_address << ", ";
 
                 switch( request.word_type )
                 {
@@ -1350,10 +1328,10 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
 
                         info_description << (request.function?'f':' ');
                         info_description << (request.write   ?'w':'r');
-                        info_description << hex << setw(2) << setfill('0') << request.function_code << dec << ", ";
+                        info_description << hex << setw(2) << setfill('0') << request.b_word.function_code << dec << ", ";
 
-                        info_description << "repeater fixed bits "    << request.repeater_fixed    << ", ";
-                        info_description << "repeater variable bits " << request.repeater_variable << ", ";
+                        info_description << "repeater fixed bits "    << request.b_word.repeater_fixed    << ", ";
+                        info_description << "repeater variable bits " << request.b_word.repeater_variable << ", ";
                         info_description << "repeater count "         << request.stagesToFollow    << ", ";
                         info_description << "bus "                    << request.bus;
 
@@ -1889,8 +1867,8 @@ error_t Ccu721::writeReplyInfo(const reply_info &info, byte_appender &out_itr) c
 
                 if( data_size )
                 {
-                    EmetconWordD1 dword1(completed_itr->request.repeater_variable,
-                                         completed_itr->request.address,
+                    EmetconWordD1 dword1(completed_itr->request.b_word.repeater_variable,
+                                         completed_itr->request.b_word.dlc_address,
                                          d_data[0],
                                          d_data[1],
                                          d_data[2],
