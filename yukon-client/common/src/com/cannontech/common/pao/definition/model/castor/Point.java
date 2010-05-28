@@ -69,6 +69,11 @@ public class Point implements java.io.Serializable {
     private java.lang.String _controltype = "NONE";
 
     /**
+     * Field _archive
+     */
+    private com.cannontech.common.pao.definition.model.castor.Archive _archive;
+
+    /**
      * Field _pointChoice
      */
     private com.cannontech.common.pao.definition.model.castor.PointChoice _pointChoice;
@@ -88,6 +93,17 @@ public class Point implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'archive'.
+     * 
+     * @return Archive
+     * @return the value of field 'archive'.
+     */
+    public com.cannontech.common.pao.definition.model.castor.Archive getArchive()
+    {
+        return this._archive;
+    } //-- com.cannontech.common.pao.definition.model.castor.Archive getArchive() 
 
     /**
      * Returns the value of field 'controltype'.
@@ -222,6 +238,16 @@ public class Point implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'archive'.
+     * 
+     * @param archive the value of field 'archive'.
+     */
+    public void setArchive(com.cannontech.common.pao.definition.model.castor.Archive archive)
+    {
+        this._archive = archive;
+    } //-- void setArchive(com.cannontech.common.pao.definition.model.castor.Archive) 
 
     /**
      * Sets the value of field 'controltype'.

@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.point.PointAlarming;
@@ -259,11 +260,11 @@ public class CBCSelectionLists {
 	};
 
 	private static final SelectItem[] ptArchiveType =  {
-		new SelectItem(PointTypes.ARCHIVE_NONE, PointTypes.ARCHIVE_NONE),
-		new SelectItem(PointTypes.ARCHIVE_ON_CHANGE, PointTypes.ARCHIVE_ON_CHANGE),
-		new SelectItem(PointTypes.ARCHIVE_ON_TIMER, PointTypes.ARCHIVE_ON_TIMER),
-		new SelectItem(PointTypes.ARCHIVE_ON_UPDATE, PointTypes.ARCHIVE_ON_UPDATE),
-		new SelectItem(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE, "On Timer Or Update")
+		new SelectItem(PointArchiveType.NONE.getPointArchiveTypeName(), PointArchiveType.NONE.getPointArchiveTypeName()),
+		new SelectItem(PointArchiveType.ON_CHANGE.getPointArchiveTypeName(), PointArchiveType.ON_CHANGE.getPointArchiveTypeName()),
+		new SelectItem(PointArchiveType.ON_TIMER.getPointArchiveTypeName(), PointArchiveType.ON_TIMER.getPointArchiveTypeName()),
+		new SelectItem(PointArchiveType.ON_UPDATE.getPointArchiveTypeName(), PointArchiveType.ON_UPDATE.getPointArchiveTypeName()),
+		new SelectItem(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName(), "On Timer Or Update")
 	};
 
 	private static final SelectItem[] ptUpdateType =  {

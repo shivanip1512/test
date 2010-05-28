@@ -58,6 +58,13 @@
         <xs:attribute name="enabled" type="xs:boolean" default="true" />
     </xs:attributeGroup>
     
+    <xs:complexType name="archiveDefaults">
+	    <xs:sequence>
+	        <xs:element name="type" type="xs:string" minOccurs="0" default="NONE" />
+			<xs:element name="interval" type="xs:string" minOccurs="0" default="ZERO" />
+	    </xs:sequence>
+    </xs:complexType>
+    
     <xs:complexType name="pointsType">
 	    <xs:sequence>
 	        <xs:element name="point" minOccurs="0" maxOccurs="unbounded">
@@ -67,6 +74,7 @@
 	                    <xs:element name="name" type="xs:string" minOccurs="0" />
 	                    <xs:element name="description" type="xs:string" minOccurs="0" />
 						<xs:element name="controltype" type="xs:string" minOccurs="0" default="NONE" />
+						<xs:element name="archive" type="archiveDefaults" minOccurs="0" />
 	                    <xs:choice>
 	                        <xs:sequence>
 	                            <xs:element name="multiplier">

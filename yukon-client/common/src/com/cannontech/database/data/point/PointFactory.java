@@ -119,47 +119,21 @@ public static final PointBase retrievePoint(Integer id, String databaseAlias) th
 
 
 
-
+/**
+ * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
+ */
 public static PointBase createAnalogPoint( String pointName, Integer paoID, 
 		Integer pointID, int pointOffset, int pointUnit, int stateGroupId )
 {
-	com.cannontech.database.data.point.PointBase point =
-		com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
 	
-	point = PointFactory.createNewPoint(		
-			pointID,
-			com.cannontech.database.data.point.PointTypes.ANALOG_POINT,
-			pointName,
-			paoID,
-			new Integer(pointOffset) );
-	
-	point.getPoint().setStateGroupID( stateGroupId);			// new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
-	
-	//defaults - pointUnit
-	((com.cannontech.database.data.point.ScalarPoint)point).setPointUnit(
-		new com.cannontech.database.db.point.PointUnit(
-			pointID,
-			new Integer(pointUnit),
-			new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
-			new Double(0.0),
-			new Double(0.0),
-			new Integer (0)));
-	
-	//defaults - pointAnalog
-	((com.cannontech.database.data.point.AnalogPoint)point).setPointAnalog(
-		new com.cannontech.database.db.point.PointAnalog(
-			pointID,
-			new Double(-1.0),
-			com.cannontech.database.data.point.PointTypes.getType(com.cannontech.database.data.point.PointTypes.TRANSDUCER_NONE),
-			new Double(1.0),
-			new Double(0.0)));
-
-	
-	return point;	
+	return createAnalogPoint(pointName, paoID, pointID, pointOffset, pointUnit, 1.0, stateGroupId, com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES, PointArchiveType.NONE, PointArchiveInterval.ZERO);
 }
 
+/**
+ * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
+ */
 public static PointBase createAnalogPoint( String pointName, Integer paoID, 
-        Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId, int decimalPlaces )
+        Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId, int decimalPlaces, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval)
 {
     com.cannontech.database.data.point.PointBase point =
         com.cannontech.database.data.point.PointFactory.createPoint(com.cannontech.database.data.point.PointTypes.ANALOG_POINT);
@@ -170,6 +144,9 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
             pointName,
             paoID,
             new Integer(pointOffset) );
+    
+    point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+    point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
     
     point.getPoint().setStateGroupID( stateGroupId);	// new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
     
@@ -196,9 +173,11 @@ public static PointBase createAnalogPoint( String pointName, Integer paoID,
     return point;   
 }
 
-
+/**
+ * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
+ */
 public static PointBase createDmdAccumPoint( String pointName, Integer paoID, 
-      Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId, int decimalPlaces )
+      Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId, int decimalPlaces, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval)
 {
    com.cannontech.database.data.point.PointBase point =
       com.cannontech.database.data.point.PointFactory.createPoint(
@@ -210,6 +189,9 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
          pointName,
          paoID,
          new Integer(pointOffset) );
+   
+   point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+   point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
    
    point.getPoint().setStateGroupID( stateGroupId);			//new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
 
@@ -237,8 +219,8 @@ public static PointBase createDmdAccumPoint( String pointName, Integer paoID,
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public final static PointBase createNewPoint( Integer pointID, int pointType, String pointName, Integer paoID, Integer offset )
-{	
+public final static PointBase createNewPoint( Integer pointID, int pointType, String pointName, Integer paoID, Integer offset ) {	
+	
 	//A point is automatically created here
 	PointBase newPoint =
 		com.cannontech.database.data.point.PointFactory.createPoint( pointType );
@@ -256,8 +238,8 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
 			com.cannontech.common.util.CtiUtilities.getFalseCharacter(),
 			offset,
-			"None",
-			new Integer(0)));
+			PointArchiveType.NONE.getPointArchiveTypeName(),
+			PointArchiveInterval.ZERO.getSeconds()));
 
 	newPoint.setPointAlarming(
 		new com.cannontech.database.db.point.PointAlarming(
@@ -270,8 +252,11 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 	return newPoint;
 }
 
+/**
+ * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
+ */
 public static PointBase createPulseAccumPoint( String pointName, Integer paoID, 
-      Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId, int decimalPlaces)
+      Integer pointID, int pointOffset, int pointUnit, double multiplier, int stateGroupId, int decimalPlaces, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval)
 {
     
    PointBase point = PointFactory.createNewPoint(  
@@ -280,6 +265,9 @@ public static PointBase createPulseAccumPoint( String pointName, Integer paoID,
          pointName,
          paoID,
          new Integer(pointOffset) );
+   
+   point.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+   point.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
    
    point.getPoint().setStateGroupID(stateGroupId);			// new Integer(StateGroupUtils.STATEGROUP_ANALOG) );
 
@@ -348,10 +336,10 @@ public static synchronized void createBankStatusPt(
 }
 
 /**
- * Creates a status point
+ * @deprecated Use {@link com.cannontech.common.pao.service.PointService}.
  */
 public static synchronized PointBase createStatusPoint( String pointName, Integer paoID, 
-	      Integer pointID, int pointOffset, int stateGroupId, ControlType controlType )
+	      Integer pointID, int pointOffset, int stateGroupId, ControlType controlType, PointArchiveType pointArchiveType, PointArchiveInterval pointArchiveInterval)
 {
 	//Create new point
 	PointBase newPoint = PointFactory.createPoint(PointTypes.STATUS_POINT);
@@ -362,6 +350,9 @@ public static synchronized PointBase createStatusPoint( String pointName, Intege
 			paoID,
 			pointOffset );
 
+	newPoint.getPoint().setArchiveType(pointArchiveType.getPointArchiveTypeName());
+	newPoint.getPoint().setArchiveInterval(pointArchiveInterval.getSeconds());
+	   
 	newPoint.getPoint().setStateGroupID( stateGroupId );
 	
 	

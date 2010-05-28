@@ -16,18 +16,20 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinitionImpl;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.definition.service.PaoDefinitionServiceImpl;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.pao.service.PointCreationServiceImpl;
 import com.cannontech.common.pao.service.PointServiceImpl;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.ControlType;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -40,6 +42,7 @@ public class PaoDefinitionServiceImplTest {
 
     private PaoDefinitionServiceImpl service = null;
     private PointServiceImpl pointService = null;
+    private PointCreationServiceImpl pointCreationService = null;
     private SimpleDevice device = null;
     private PaoDefinitionDao paoDefinitionDao = null;
     private AttributeServiceImpl attributeService = null;
@@ -55,14 +58,15 @@ public class PaoDefinitionServiceImplTest {
         pointDao = new MockPointDao();
         
         pointService = new PointServiceImpl();
+        pointCreationService = new PointCreationServiceImpl();
         // Create the point service for testing
         pointService.setPointDao(pointDao);
-        pointService.setNextValueHelper(new NextValueHelper() {
+        pointCreationService.setNextValueHelper(new NextValueHelper() {
             public int getNextValue(String tableName) {
                 return 1;
             }
         });
-        service.setPointService(pointService);
+        service.setPointCreationService(pointCreationService);
         service.setPointDao(pointDao);
 
         // Create the attribute service for testing
@@ -82,9 +86,9 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
-        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE));
-        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointCreationService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
 
         List<PointBase> actualPoints = service.createDefaultPointsForPao(device);
 
@@ -170,11 +174,11 @@ public class PaoDefinitionServiceImplTest {
 
         // Test with supported device
         List<PointBase> expectedPoints = new ArrayList<PointBase>();
-        expectedPoints.add(pointService.createPoint(0, "status1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE));
-        expectedPoints.add(pointService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
-        expectedPoints.add(pointService.createPoint(2, "pulse2", 1, 2, 0.1, 1, 0, 3, ControlType.NONE));
-        expectedPoints.add(pointService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE));
-        expectedPoints.add(pointService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE));
+        expectedPoints.add(pointCreationService.createPoint(0, "status1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(2, "pulse1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(2, "pulse2", 1, 2, 0.1, 1, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(3, "demand1", 1, 1, 1.0, 0, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
+        expectedPoints.add(pointCreationService.createPoint(1, "analog1", 1, 1, 1.0, 1, 0, 3, ControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
 
         List<PointBase> actualPoints = service.createAllPointsForPao(device);
 

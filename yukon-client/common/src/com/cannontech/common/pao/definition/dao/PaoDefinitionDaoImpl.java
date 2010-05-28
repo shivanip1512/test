@@ -57,6 +57,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.definition.model.castor.Archive;
 import com.cannontech.common.pao.definition.model.castor.BasicLookup;
 import com.cannontech.common.pao.definition.model.castor.Cmd;
 import com.cannontech.common.pao.definition.model.castor.Command;
@@ -74,6 +75,8 @@ import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.ControlType;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
@@ -839,6 +842,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
         ControlType controlType = ControlType.valueOf(point.getControltype());
         template.setControlType(controlType);
+        
+        Archive archive = point.getArchive();
+        if (archive != null) {
+        	template.setPointArchiveType(PointArchiveType.valueOf(archive.getType()));
+        	template.setPointArchiveInterval(PointArchiveInterval.valueOf(archive.getInterval()));
+        }
         
         int stateGroupId = StateGroupUtils.SYSTEM_STATEGROUPID;
         if (point.getPointChoice().getStategroup() != null) {

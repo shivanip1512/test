@@ -13,7 +13,6 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.pao.service.PointServiceImpl;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PointServiceImplTest extends TestCase {
 
@@ -23,11 +22,6 @@ public class PointServiceImplTest extends TestCase {
     protected void setUp() throws Exception {
 
         PointServiceImpl impl = new PointServiceImpl();
-        impl.setNextValueHelper(new NextValueHelper() {
-            public int getNextValue(String tableName) {
-                return 1;
-            }
-        });
         impl.setPointDao(new MockPointDao());
 
         service = impl;

@@ -142,7 +142,7 @@ public class AddPointsController extends AddRemovePointsControllerBase {
 						if (!pointExistsForDevice) {
 							
 							// add new
-							PointBase newPoint = pointService.createPoint(device.getPaoIdentifier().getPaoId(), pointTemplate);
+							PointBase newPoint = pointCreationService.createPoint(device.getPaoIdentifier().getPaoId(), pointTemplate);
 							dbPersistentDao.performDBChange(newPoint, Transaction.INSERT);
 							
 							log.debug("Added point to device: deviceId=" + device.getPaoIdentifier().getPaoId() + " pointTemplate=" + pointTemplate);

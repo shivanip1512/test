@@ -41,6 +41,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
@@ -66,6 +67,7 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     protected PaoGroupsWrapper paoGroupsWrapper;
     protected PaoDefinitionDao paoDefinitionDao;
     protected PointService pointService;
+    protected PointCreationService pointCreationService;
     protected DBPersistentDao dbPersistentDao;
     protected TemporaryDeviceGroupService temporaryDeviceGroupService;
     protected DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -390,6 +392,10 @@ public abstract class AddRemovePointsControllerBase extends BulkControllerBase {
     @Autowired
     public void setPointService(PointService pointService) {
 		this.pointService = pointService;
+	}
+    @Autowired
+    public void setPointCreationService(PointCreationService pointCreationService) {
+		this.pointCreationService = pointCreationService;
 	}
     @Autowired
     public void setTemporaryDeviceGroupService(TemporaryDeviceGroupService temporaryDeviceGroupService) {

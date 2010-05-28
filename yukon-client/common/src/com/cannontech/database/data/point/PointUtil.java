@@ -38,7 +38,9 @@ public class PointUtil {
                                                                       PointUnits.UOMID_VOLTS,
                                                                       1.0, 
                                                                       StateGroupUtils.STATEGROUP_ANALOG,
-                                                                      PointUnit.DEFAULT_DECIMAL_PLACES);
+                                                                      PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                                      PointArchiveType.NONE,
+                                                                      PointArchiveInterval.ZERO);
            dbPersistentVector.getDBPersistentVector().add(point);
            break;
        case PointTypes.STATUS_POINT:
@@ -57,7 +59,9 @@ public class PointUtil {
                                                                       PointUnits.UOMID_UNDEF, 
                                                                       0.1, 
                                                                       StateGroupUtils.STATEGROUP_ANALOG,
-                                                                      PointUnit.DEFAULT_DECIMAL_PLACES);
+                                                                      PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                                      PointArchiveType.NONE,
+                                                                      PointArchiveInterval.ZERO);
            
            dbPersistentVector.getDBPersistentVector().add(point);
            break;

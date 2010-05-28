@@ -3,7 +3,7 @@ package com.cannontech.common.pao.attribute.service;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -17,6 +17,7 @@ import com.cannontech.common.pao.definition.attribute.lookup.MappedAttributeDefi
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoPointTemplate;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -29,9 +30,10 @@ import com.google.common.collect.Sets;
 
 public class AttributeServiceImpl implements AttributeService {
 
-    private DBPersistentDao dbPersistentDao = null;
-    private PaoDefinitionDao paoDefinitionDao = null;
-    private PointService pointService = null;
+    private DBPersistentDao dbPersistentDao;
+    private PaoDefinitionDao paoDefinitionDao;
+    private PointService pointService;
+    private PointCreationService pointCreationService;
     
     private Set<Attribute> readableAttributes;
     {
@@ -41,21 +43,6 @@ public class AttributeServiceImpl implements AttributeService {
     	}
     	// could consider other factors and handle user defined attributes in the future
     	readableAttributes = ImmutableSet.<Attribute>copyOf(nonProfiledAttributes);
-    }
-
-    @Required
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
-    @Required
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
-
-    @Required
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
     }
 
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) {
@@ -144,7 +131,7 @@ public class AttributeServiceImpl implements AttributeService {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
-            PointBase point = pointService.createPoint(paoPointTemplate.getPaoIdentifier().getPaoId(), paoPointTemplate.getPointTemplate());
+            PointBase point = pointCreationService.createPoint(paoPointTemplate.getPaoIdentifier().getPaoId(), paoPointTemplate.getPointTemplate());
             try {
                 dbPersistentDao.performDBChange(point, Transaction.INSERT);
             } catch (PersistenceException e) {
@@ -188,5 +175,21 @@ public class AttributeServiceImpl implements AttributeService {
     public Set<Attribute> getReadableAttributes() {
     	return readableAttributes;
     }
-
+    
+    @Autowired
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+    @Autowired
+    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
+        this.paoDefinitionDao = paoDefinitionDao;
+    }
+    @Autowired
+    public void setPointService(PointService pointService) {
+        this.pointService = pointService;
+    }
+    @Autowired
+    public void setPointCreationService(PointCreationService pointCreationService) {
+		this.pointCreationService = pointCreationService;
+	}
 }

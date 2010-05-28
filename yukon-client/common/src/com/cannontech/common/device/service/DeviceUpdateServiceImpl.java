@@ -17,12 +17,12 @@ import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService.PointTemplateTransferPair;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SimpleCallback;
@@ -66,8 +66,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private CommandRequestDeviceExecutor commandRequestDeviceExecutor = null;
     private PaoDefinitionService paoDefinitionService = null;
     private PointService pointService = null;
+    private PointCreationService pointCreationService = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
-    private AttributeService attributeService = null;
     private DBPersistentDao dbPersistentDao = null;
     
     private Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
@@ -334,7 +334,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         	
         	log.debug("Add point: deviceId=" + device.getPAObjectID() + " point name=" + template.getName() + " type=" + template.getType() + " offset=" + template.getOffset());
         	
-            PointBase point = pointService.createPoint(device.getDevice().getDeviceID(), template);
+            PointBase point = pointCreationService.createPoint(device.getDevice().getDeviceID(), template);
 
             Transaction<?> t = Transaction.createTransaction(Transaction.INSERT, point);
             t.execute();
@@ -411,13 +411,13 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 	}
     
     @Autowired
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-		this.paoGroupsWrapper = paoGroupsWrapper;
+    public void setPointCreationService(PointCreationService pointCreationService) {
+		this.pointCreationService = pointCreationService;
 	}
     
     @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-		this.attributeService = attributeService;
+    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
+		this.paoGroupsWrapper = paoGroupsWrapper;
 	}
     
     @Autowired

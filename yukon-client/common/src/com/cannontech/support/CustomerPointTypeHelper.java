@@ -15,7 +15,6 @@ import com.cannontech.common.exception.PointException;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.SimplePointAccessDao;
 import com.cannontech.database.Transaction;
@@ -27,9 +26,9 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -142,7 +141,7 @@ public class CustomerPointTypeHelper {
                                                              0, 
                                                              PointUnits.UOMID_UNDEF,
                                                              StateGroupUtils.STATEGROUP_ANALOG);
-            point.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
+            point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
             point.getPoint().setArchiveInterval(7*24*60*60); // 1 week as seconds
             dbPersistentDao.performDBChange(point, Transaction.INSERT);
         }

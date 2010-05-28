@@ -36,14 +36,11 @@
     <bean id="commandRequestExecutionResultDao" class="com.cannontech.common.device.commands.dao.impl.CommandRequestExecutionResultDaoImpl">
     </bean>
     
-    <bean id="attributeService" class="com.cannontech.common.pao.attribute.service.AttributeServiceImpl" scope="singleton">
-        <property name="dbPersistentDao" ref="dbPersistentDao" />
-        <property name="paoDefinitionDao" ref="paoDefinitionDao" />
-        <property name="pointService" ref="devicePointService" />
-    </bean>
+    <bean id="attributeService" class="com.cannontech.common.pao.attribute.service.AttributeServiceImpl" scope="singleton"/>
     
-    <bean id="devicePointService" class="com.cannontech.common.pao.service.PointServiceImpl" scope="singleton">
-    </bean>
+    <bean id="devicePointService" class="com.cannontech.common.pao.service.PointServiceImpl" scope="singleton"/>
+    
+    <bean id="pointCreationService" class="com.cannontech.common.pao.service.PointCreationServiceImpl"/>
     
     <bean id="pointReadService" class="com.cannontech.common.device.service.impl.PointReadServiceImpl" />
     

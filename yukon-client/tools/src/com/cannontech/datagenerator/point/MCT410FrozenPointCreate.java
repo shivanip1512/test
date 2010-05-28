@@ -11,6 +11,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -74,7 +76,9 @@ public class MCT410FrozenPointCreate extends PointCreate
 						PointUnits.UOMID_KW,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+                        PointArchiveType.NONE,
+                        PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding Frozen Peak Demand: PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -89,7 +93,9 @@ public class MCT410FrozenPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+                        PointArchiveType.NONE,
+                        PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding Frozen Max Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -106,7 +112,9 @@ public class MCT410FrozenPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+                        PointArchiveType.NONE,
+                        PointArchiveInterval.ZERO) );
 		
 				CTILogger.info("Adding Frozen Min Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;

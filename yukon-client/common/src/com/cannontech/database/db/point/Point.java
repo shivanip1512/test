@@ -4,8 +4,8 @@ package com.cannontech.database.db.point;
  * This type was created in VisualAge.
  */
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointLogicalGroups;
-import com.cannontech.database.data.point.PointTypes;
 
 public class Point extends com.cannontech.database.db.DBPersistent 
 {
@@ -262,7 +262,7 @@ public void setArchiveInterval(Integer newValue) {
  * @param newValue java.lang.String
  */
 public void setArchiveType(String newValue) {
-	if ( newValue.equalsIgnoreCase(PointTypes.ARCHIVE_NONE)){
+	if ( newValue.equalsIgnoreCase(PointArchiveType.NONE.getPointArchiveTypeName())){
 		this.setArchiveStatusData(false);
 	}else{
 		this.setArchiveStatusData(true);

@@ -14,7 +14,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
@@ -28,7 +28,7 @@ import com.google.common.collect.Sets;
 public class PaoDefinitionServiceImpl implements PaoDefinitionService {
 
     private PaoDefinitionDao paoDefinitionDao = null;
-    private PointService pointService = null;
+    private PointCreationService pointCreationService;
     private PointDao pointDao = null;
 
     @Autowired
@@ -37,10 +37,10 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     }
 
     @Autowired
-    public void setPointService(PointService pointService) {
-        this.pointService = pointService;
-    }
-
+    public void setPointCreationService(PointCreationService pointCreationService) {
+		this.pointCreationService = pointCreationService;
+	}
+    
     @Autowired
     public void setPointDao(PointDao pointDao) {
 		this.pointDao = pointDao;
@@ -51,7 +51,7 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         List<PointBase> pointList = new ArrayList<PointBase>();
         Set<PointTemplate> pointTemplates = paoDefinitionDao.getInitPointTemplates(pao.getPaoIdentifier().getPaoType());
         for (PointTemplate template : pointTemplates) {
-            pointList.add(pointService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
+            pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
         }
 
         return pointList;
@@ -62,7 +62,7 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         List<PointBase> pointList = new ArrayList<PointBase>();
         Set<PointTemplate> pointTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
         for (PointTemplate template : pointTemplates) {
-            pointList.add(pointService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
+            pointList.add(pointCreationService.createPoint(pao.getPaoIdentifier().getPaoId(), template));
         }
 
         return pointList;

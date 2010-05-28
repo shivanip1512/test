@@ -3422,7 +3422,11 @@
             <point type="Status" offset="2000">
             	<init>true</init>
                 <name>Comm Status</name>
-                <stategroup value="TwoStateStatus"/>
+                <archive>
+                	<type>ON_CHANGE</type>
+                	<interval>ZERO</interval>
+                </archive>
+                <stategroup value="Comm Status State"/>
             </point>
         </points>
     </pao>

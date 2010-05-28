@@ -9,12 +9,10 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeServiceImpl;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImplTest;
 import com.cannontech.common.pao.service.PointServiceImpl;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.incrementer.NextValueHelper;
 
 public class AttributeServiceImplTest extends TestCase {
 
@@ -31,11 +29,7 @@ public class AttributeServiceImplTest extends TestCase {
         service.setPaoDefinitionDao(paoDefinitionDao);
 
         PointServiceImpl pointService = new PointServiceImpl();
-        pointService.setNextValueHelper(new NextValueHelper() {
-            public int getNextValue(String tableName) {
-                return 1;
-            }
-        });
+
         pointDao = new MockPointDao();
         pointService.setPointDao(pointDao);
         service.setPointService(pointService);

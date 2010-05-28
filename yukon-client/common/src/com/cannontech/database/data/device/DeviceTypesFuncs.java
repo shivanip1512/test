@@ -20,6 +20,8 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.DBPersistent;
@@ -29,7 +31,6 @@ import com.cannontech.database.db.device.DeviceMCT400Series;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * This type was created in VisualAge.
@@ -1190,7 +1191,9 @@ public static Object changeType (String newType,
 						   PointTypes.PT_OFFSET_TOTAL_KWH,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KWH,
 						   0.1, StateGroupUtils.STATEGROUP_ANALOG,
-						   PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+						   PointUnit.DEFAULT_DECIMAL_PLACES,
+						   PointArchiveType.NONE,
+						   PointArchiveInterval.ZERO) ).execute();
 				}
 				
 				if(!blinkCountExists)	
@@ -1203,7 +1206,9 @@ public static Object changeType (String newType,
 						   PointTypes.PT_OFFSET_BLINK_COUNT,
 						   com.cannontech.database.data.point.PointUnits.UOMID_COUNTS,
 						   1.0, StateGroupUtils.STATEGROUP_ANALOG,
-						   PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+						   PointUnit.DEFAULT_DECIMAL_PLACES,
+						   PointArchiveType.NONE,
+						   PointArchiveInterval.ZERO) ).execute();
 				}
 				
 				if(!loadProfileExists)
@@ -1216,7 +1221,9 @@ public static Object changeType (String newType,
 						   PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND,
 						   com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						   0.1, StateGroupUtils.STATEGROUP_ANALOG,
-						   PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+						   PointUnit.DEFAULT_DECIMAL_PLACES,
+						   PointArchiveType.NONE,
+						   PointArchiveInterval.ZERO) ).execute();
 				}
 				
 				Transaction.createTransaction(Transaction.INSERT,  
@@ -1227,7 +1234,9 @@ public static Object changeType (String newType,
 						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) ).execute();
 		   	
                 if(!peakKWExists) {
     				Transaction.createTransaction(Transaction.INSERT, 
@@ -1238,7 +1247,9 @@ public static Object changeType (String newType,
     						PointTypes.PT_OFFSET_PEAK_KW_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_KW,
     						0.1,StateGroupUtils.STATEGROUP_ANALOG,
-                            PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                            PointUnit.DEFAULT_DECIMAL_PLACES,
+						    PointArchiveType.NONE,
+						    PointArchiveInterval.ZERO) ).execute();
                 }
 			
                 if(!maxVoltsExists) {
@@ -1250,7 +1261,9 @@ public static Object changeType (String newType,
     						PointTypes.PT_OFFSET_MAX_VOLT_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                            PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                            PointUnit.DEFAULT_DECIMAL_PLACES,
+						    PointArchiveType.NONE,
+						    PointArchiveInterval.ZERO) ).execute();
                 }
     			
                 if(!minVoltsExists) {
@@ -1262,7 +1275,9 @@ public static Object changeType (String newType,
     						PointTypes.PT_OFFSET_MIN_VOLT_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                            PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                            PointUnit.DEFAULT_DECIMAL_PLACES,
+						    PointArchiveType.NONE,
+						    PointArchiveInterval.ZERO) ).execute();
                 }
                 
 				Transaction.createTransaction(Transaction.INSERT, 
@@ -1273,7 +1288,9 @@ public static Object changeType (String newType,
 						PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
 						com.cannontech.database.data.point.PointUnits.UOMID_KW,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();			
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) ).execute();			
 			
 				Transaction.createTransaction(Transaction.INSERT, 
 					PointFactory.createDmdAccumPoint(
@@ -1283,7 +1300,9 @@ public static Object changeType (String newType,
 						PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) ).execute();
 			
 				Transaction.createTransaction(Transaction.INSERT, 
 					PointFactory.createDmdAccumPoint(
@@ -1293,7 +1312,9 @@ public static Object changeType (String newType,
 						PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
 						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
 						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) ).execute();
 			
                 if(!kWDemandExists) {
     				Transaction.createTransaction(Transaction.INSERT, 
@@ -1304,7 +1325,9 @@ public static Object changeType (String newType,
     						PointTypes.PT_OFFSET_KW_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_KW,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                            PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                            PointUnit.DEFAULT_DECIMAL_PLACES,
+						    PointArchiveType.NONE,
+						    PointArchiveInterval.ZERO) ).execute();
                 }
                 
                 if(!voltageExists) {
@@ -1316,7 +1339,9 @@ public static Object changeType (String newType,
     						PointTypes.PT_OFFSET_VOLTAGE_DEMAND,
     						com.cannontech.database.data.point.PointUnits.UOMID_VOLTS,
     						0.1, StateGroupUtils.STATEGROUP_ANALOG,
-                            PointUnit.DEFAULT_DECIMAL_PLACES) ).execute();
+                            PointUnit.DEFAULT_DECIMAL_PLACES,
+						    PointArchiveType.NONE,
+						    PointArchiveInterval.ZERO) ).execute();
                 }
                 
 				Transaction t2 =

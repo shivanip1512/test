@@ -1,10 +1,12 @@
 package com.cannontech.dbeditor.wizard.device.lmprogram;
 
-import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.ControlType;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.PointUnit;
@@ -186,8 +188,8 @@ public Object getValue(Object o)
         PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
         program.setPAObjectID(paoDao.getNextPaoId());
 
-    PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
-    PointBase point = pointService.createPoint(PointTypes.STATUS_POINT,
+    PointCreationService pointCreationService = (PointCreationService) YukonSpringHook.getBean("pointCreationService");
+    PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
                                                "Status",
                                                program.getPAObjectID(),
                                                1,
@@ -195,7 +197,9 @@ public Object getValue(Object o)
                                                0,
                                                StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
                                                PointUnit.DEFAULT_DECIMAL_PLACES,
-                                               ControlType.NONE);
+                                               ControlType.NONE,
+                                               PointArchiveType.NONE,
+                                               PointArchiveInterval.ZERO);
 
         SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
         persistant.addOwnerDBPersistent(program);

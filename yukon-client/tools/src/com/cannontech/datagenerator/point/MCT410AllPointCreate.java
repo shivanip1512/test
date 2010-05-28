@@ -11,6 +11,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -88,7 +90,9 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding Voltage LP: PointId " + pointID + " to Device: " + litePaobject.getPaoName() );
 				addCount++;
 			}
@@ -105,7 +109,9 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_KW,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding Peak kW: PointId " + pointID  + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -122,7 +128,9 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding Max Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -139,7 +147,9 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) );
 		
 				CTILogger.info("Adding Min Volts: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
@@ -157,7 +167,9 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_KW,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding kW: PointId " + pointID + " to Device: " + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -174,7 +186,9 @@ public class MCT410AllPointCreate extends PointCreate
 						PointUnits.UOMID_VOLTS,
 						multiplier,
 						StateGroupUtils.STATEGROUP_ANALOG,
-                        PointUnit.DEFAULT_DECIMAL_PLACES) );
+                        PointUnit.DEFAULT_DECIMAL_PLACES,
+					    PointArchiveType.NONE,
+					    PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding Voltage: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -191,7 +205,9 @@ public class MCT410AllPointCreate extends PointCreate
 					   PointUnits.UOMID_KW,
 					   multiplier,
 					   StateGroupUtils.STATEGROUP_ANALOG,
-                       PointUnit.DEFAULT_DECIMAL_PLACES) );
+                       PointUnit.DEFAULT_DECIMAL_PLACES,
+					   PointArchiveType.NONE,
+					   PointArchiveInterval.ZERO) );
 				CTILogger.info("Adding kW-LP: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -207,7 +223,9 @@ public class MCT410AllPointCreate extends PointCreate
 					   PointUnits.UOMID_KWH,
 					   multiplier,
 					   StateGroupUtils.STATEGROUP_ANALOG,
-                       PointUnit.DEFAULT_DECIMAL_PLACES) );
+                       PointUnit.DEFAULT_DECIMAL_PLACES,
+                       PointArchiveType.NONE,
+                       PointArchiveInterval.ZERO) );
 			    CTILogger.info("Adding kWh: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
@@ -224,7 +242,9 @@ public class MCT410AllPointCreate extends PointCreate
 						   PointUnits.UOMID_COUNTS,
 						   1.0,
 						   StateGroupUtils.STATEGROUP_ANALOG,
-                           PointUnit.DEFAULT_DECIMAL_PLACES) );
+                           PointUnit.DEFAULT_DECIMAL_PLACES,
+						   PointArchiveType.NONE,
+						   PointArchiveInterval.ZERO) );
 				    CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 					addCount++;
 			}

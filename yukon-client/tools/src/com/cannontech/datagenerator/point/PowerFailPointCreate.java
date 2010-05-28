@@ -13,6 +13,8 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
@@ -75,7 +77,9 @@ public class PowerFailPointCreate extends PointCreate
 					   PointUnits.UOMID_COUNTS,
 					   1.0,
 					   StateGroupUtils.STATEGROUP_ANALOG,
-                       PointUnit.DEFAULT_DECIMAL_PLACES) );
+                       PointUnit.DEFAULT_DECIMAL_PLACES,
+                       PointArchiveType.NONE,
+                       PointArchiveInterval.ZERO) );
 			CTILogger.info("Adding Blink Count: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 			
 			++addCount;

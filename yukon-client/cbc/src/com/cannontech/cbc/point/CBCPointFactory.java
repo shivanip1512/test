@@ -18,6 +18,8 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.AccumPointParams;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPointParams;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointParams;
@@ -207,7 +209,9 @@ public class CBCPointFactory {
                                                        ((AnalogPointParams) param).getUofm(),
                                                        ((AnalogPointParams) param).getMult(), 
                                                        StateGroupUtils.STATEGROUP_ANALOG,
-                                                       PointUnit.DEFAULT_DECIMAL_PLACES);
+                                                       PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                       PointArchiveType.NONE,
+                                                       PointArchiveInterval.ZERO);
 
                 break;
 
@@ -222,7 +226,9 @@ public class CBCPointFactory {
                                                            ((AccumPointParams) param).getUofm(),
                                                            ((AccumPointParams) param).getMult(), 
                                                            StateGroupUtils.STATEGROUP_ANALOG,
-                                                           PointUnit.DEFAULT_DECIMAL_PLACES);
+                                                           PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                           PointArchiveType.NONE,
+                                                           PointArchiveInterval.ZERO);
 
                 PointUnit punit = new PointUnit(point.getPoint().getPointID(),
                                                 new Integer(PointUnits.UOMID_COUNTS),

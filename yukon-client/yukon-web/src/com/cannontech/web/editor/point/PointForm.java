@@ -33,6 +33,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointBase;
@@ -496,9 +497,9 @@ public class PointForm extends DBEditorForm
         if( ev == null || ev.getNewValue() == null ) return;
 
         String newVal = ev.getNewValue().toString();
-        isArchiveInterEnabled =  ( newVal.equalsIgnoreCase(PointTypes.ARCHIVE_ON_TIMER) 
+        isArchiveInterEnabled =  ( newVal.equalsIgnoreCase(PointArchiveType.ON_TIMER.getPointArchiveTypeName()) 
                                     ||
-                                    newVal.equalsIgnoreCase(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE) 
+                                    newVal.equalsIgnoreCase(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName()) 
                                   );
     }   
 
@@ -671,9 +672,9 @@ public class PointForm extends DBEditorForm
         Point point = getPointBase().getPoint();
         if (point.getPointType().equalsIgnoreCase( pointType)) {
             if (point.isArchiveStatusData()) 
-        		point.setArchiveType(PointTypes.ARCHIVE_ON_CHANGE);
+        		point.setArchiveType(PointArchiveType.ON_CHANGE.getPointArchiveTypeName());
             else
-                point.setArchiveType(PointTypes.ARCHIVE_NONE);
+                point.setArchiveType(PointArchiveType.NONE.getPointArchiveTypeName());
                 
         }
     }

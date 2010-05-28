@@ -1,15 +1,17 @@
 package com.cannontech.dbeditor.editor.point;
 
-import java.awt.Dimension;
 import java.util.List;
-import javax.swing.*;
+
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.field.JCSpinField;
 
@@ -59,9 +61,9 @@ public void archiveTypeComboBox_ActionPerformed(java.awt.event.ActionEvent actio
 {
     fireInputUpdate();
 
-    if( ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointTypes.ARCHIVE_NONE) ||
-            ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointTypes.ARCHIVE_ON_CHANGE) ||
-            ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointTypes.ARCHIVE_ON_UPDATE) )
+    if( ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointArchiveType.NONE.getPointArchiveTypeName()) ||
+            ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointArchiveType.ON_CHANGE.getPointArchiveTypeName()) ||
+            ((String)getArchiveTypeComboBox().getSelectedItem()).equalsIgnoreCase(PointArchiveType.ON_UPDATE.getPointArchiveTypeName()) )
     {
         getArchiveIntervalLabel().setEnabled(false);
         getArchiveIntervalComboBox().setEnabled(false);
@@ -435,7 +437,7 @@ public Object getValue(Object val) {
     
     point.getPointUnit().setUomID( new Integer(uOfMeasureID) );
     if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0)
-        point.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
+        point.getPoint().setArchiveType(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName());
     else
         point.getPoint().setArchiveType((String)getArchiveTypeComboBox().getSelectedItem());
     point.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
@@ -512,10 +514,10 @@ private void initialize() {
     }
 
     //Load the Archive Type combo box with default possible values
-    getArchiveTypeComboBox().addItem(PointTypes.ARCHIVE_NONE);
-    getArchiveTypeComboBox().addItem(PointTypes.ARCHIVE_ON_CHANGE);
-    getArchiveTypeComboBox().addItem(PointTypes.ARCHIVE_ON_TIMER);
-    getArchiveTypeComboBox().addItem(PointTypes.ARCHIVE_ON_UPDATE);
+    getArchiveTypeComboBox().addItem(PointArchiveType.NONE.getPointArchiveTypeName());
+    getArchiveTypeComboBox().addItem(PointArchiveType.ON_CHANGE.getPointArchiveTypeName());
+    getArchiveTypeComboBox().addItem(PointArchiveType.ON_TIMER.getPointArchiveTypeName());
+    getArchiveTypeComboBox().addItem(PointArchiveType.ON_UPDATE.getPointArchiveTypeName());
     getArchiveTypeComboBox().addItem("On Timer Or Update"); 
     
     //Load the Archive Interval combo box with default possible values
@@ -586,7 +588,7 @@ public void setValue(Object val) {
 
     int uOfMeasureID = point.getPointUnit().getUomID().intValue();
     String archiveType = point.getPoint().getArchiveType();
-    if(archiveType.compareTo(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE) == 0)
+    if(archiveType.compareTo(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName()) == 0)
         archiveType = "On Timer Or Update";
     Integer archiveInteger = point.getPoint().getArchiveInterval();
 
