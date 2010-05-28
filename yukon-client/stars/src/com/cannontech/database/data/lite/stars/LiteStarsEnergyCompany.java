@@ -574,7 +574,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             listDB.setWhereIsList( dftList.getWhereIsList() );
             listDB.setListName( listName );
             listDB.setUserUpdateAvailable( dftList.getUserUpdateAvailable() );
-            list.setEnergyCompanyID( getEnergyCompanyID() );
+            listDB.setEnergyCompanyId( getEnergyCompanyID() );
             
             list = Transaction.createTransaction(Transaction.INSERT, list).execute();
             listDB = list.getYukonSelectionList();
@@ -2041,17 +2041,14 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     private void initSelectionLists() {
-    	
-    	ECToGenericMapping[] items = 
-    		ECToGenericMapping.getAllMappingItems( 
-    				getEnergyCompanyID(), YukonSelectionList.TABLE_NAME );
-        if (items != null) {
-            for (ECToGenericMapping item : items) {
-                YukonSelectionList yukonSelectionList = 
-                	yukonListDao.getYukonSelectionList(item.getItemID());
-                selectionListMap.put(yukonSelectionList.getListName(), yukonSelectionList);
-            }
+
+        List<YukonSelectionList> energyCompanySelectionList = 
+            yukonListDao.getSelectionListByEnergyCompanyId(getEnergyCompanyID());
+        
+        for (YukonSelectionList yukonSelectionList : energyCompanySelectionList) {
+            selectionListMap.put(yukonSelectionList.getListName(), yukonSelectionList);
         }
+
     }
     
     private void initApplianceCategories(){

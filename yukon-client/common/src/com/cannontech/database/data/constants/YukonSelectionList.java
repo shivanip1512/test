@@ -15,7 +15,6 @@ import com.cannontech.database.db.DBPersistent;
 public class YukonSelectionList extends DBPersistent {
 	
 	private com.cannontech.database.db.constants.YukonSelectionList yukonSelectionList = null;
-	private Integer energyCompanyID = null;
 	
 	public YukonSelectionList() {
 		super();
@@ -34,34 +33,13 @@ public class YukonSelectionList extends DBPersistent {
 	 * @see com.cannontech.database.db.DBPersistent#add()
 	 */
 	public void add() throws SQLException {
-    	if (getEnergyCompanyID() == null)
-    		throw new java.sql.SQLException("Add: setEnergyCompanyID() must be called before this function");
-    	
     	getYukonSelectionList().add();
-        
-    	// Add to mapping table
-    	Object[] addValues = {
-    		getEnergyCompanyID(),
-    		getYukonSelectionList().getListID(),
-    		com.cannontech.database.db.constants.YukonSelectionList.TABLE_NAME
-    	};
-    	add("ECToGenericMapping", addValues);
 	}
 
 	/**
 	 * @see com.cannontech.database.db.DBPersistent#delete()
 	 */
 	public void delete() throws SQLException {
-    	// delete from mapping table
-    	String[] constraintColumns = {
-    		"ItemID", "MappingCategory"
-    	};
-    	Object[] constraintValues = {
-    		getYukonSelectionList().getListID(),
-    		com.cannontech.database.db.constants.YukonSelectionList.TABLE_NAME
-    	};
-    	delete("ECToGenericMapping", constraintColumns, constraintValues);
-    	
     	// Delete all selection list entries
     	com.cannontech.database.db.constants.YukonListEntry.deleteAllListEntries(
     			getYukonSelectionList().getListID(), getDbConnection() );
@@ -84,14 +62,6 @@ public class YukonSelectionList extends DBPersistent {
 	}
 
 	/**
-	 * Returns the energyCompanyID.
-	 * @return Integer
-	 */
-	public Integer getEnergyCompanyID() {
-		return energyCompanyID;
-	}
-
-	/**
 	 * Returns the yukonSelectionList.
 	 * @return com.cannontech.database.db.constants.YukonSelectionList
 	 */
@@ -99,14 +69,6 @@ public class YukonSelectionList extends DBPersistent {
 		if (yukonSelectionList == null)
 			yukonSelectionList = new com.cannontech.database.db.constants.YukonSelectionList();
 		return yukonSelectionList;
-	}
-
-	/**
-	 * Sets the energyCompanyID.
-	 * @param energyCompanyID The energyCompanyID to set
-	 */
-	public void setEnergyCompanyID(Integer energyCompanyID) {
-		this.energyCompanyID = energyCompanyID;
 	}
 
 	/**

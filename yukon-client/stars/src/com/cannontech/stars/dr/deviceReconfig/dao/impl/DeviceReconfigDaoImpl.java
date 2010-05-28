@@ -22,12 +22,12 @@ public class DeviceReconfigDaoImpl implements DeviceReconfigDao {
 	public List<DeviceReconfigDeviceType> getDeviceTypes(int energyCompanyId) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT yle.* FROM YukonSelectionList ysl");
-		sql.append("JOIN ectogenericmapping ecgm ON (ecgm.ItemId = ysl.ListId AND ecgm.MappingCategory = 'YukonSelectionList')");
-		sql.append("JOIN YukonListEntry yle ON (yle.ListId = ysl.ListId)");
+		sql.append("SELECT YLE.* ");
+		sql.append("FROM YukonSelectionList YSL");
+		sql.append("JOIN YukonListEntry YLE ON YLE.ListId = YSL.ListId");
 		sql.append("WHERE ListName = 'DeviceType'");
-		sql.append("AND ecgm.EnergyCompanyId").eq(energyCompanyId);
-		sql.append("ORDER BY yle.EntryText");
+		sql.append("AND YSL.EnergyCompanyId").eq(energyCompanyId);
+		sql.append("ORDER BY YLE.EntryText");
 		
 		List<YukonListEntry> yukonListEntries = yukonJdbcTemplate.query(sql, new YukonListEntryRowMapper());
 		List<DeviceReconfigDeviceType> deviceTypes = Lists.newArrayListWithCapacity(yukonListEntries.size());

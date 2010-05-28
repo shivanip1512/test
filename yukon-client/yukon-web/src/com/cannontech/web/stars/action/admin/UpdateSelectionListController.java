@@ -72,6 +72,7 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setOrdering( ordering );
                     listDB.setSelectionLabel( label );
                     listDB.setWhereIsList( whereIsList );
+                    listDB.setEnergyCompanyId(energyCompany.getEnergyCompanyID());
                     
                     listDB = (com.cannontech.database.db.constants.YukonSelectionList)
                             Transaction.createTransaction( Transaction.UPDATE, listDB ).execute();
@@ -89,7 +90,7 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                     listDB.setWhereIsList( whereIsList );
                     listDB.setListName( listName );
                     listDB.setUserUpdateAvailable( StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonSelectionList(listName).getUserUpdateAvailable() );
-                    list.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+                    listDB.setEnergyCompanyId( energyCompany.getEnergyCompanyID() );
                     
                     list = (com.cannontech.database.data.constants.YukonSelectionList)
                             Transaction.createTransaction(Transaction.INSERT, list).execute();

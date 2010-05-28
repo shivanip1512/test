@@ -146,9 +146,7 @@
   <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl" >
      <property name="databaseCache" ref="databaseCache"/>      
   </bean>
-  <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" >
-     <property name="jdbcTemplate" ref="jdbcTemplate"/>
-  </bean>
+  <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" />
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
      <property name="databaseCache" ref="databaseCache"/>
      <property name="userPaoPermissionDao" ref="userPaoPermissionDao" />

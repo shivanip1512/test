@@ -1,5 +1,6 @@
 package com.cannontech.core.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -59,4 +60,6 @@ public interface YukonListDao {
     public Map<Integer,YukonSelectionList> getYukonSelectionLists();
     
     public Map<Integer,YukonListEntry> getYukonListEntries();
+
+    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(Integer energyCompanyID);
 }

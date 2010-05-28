@@ -17,12 +17,7 @@ public class YukonListEntry
 	private String entryText = null;
 	private int yukonDefID = 0;
 
-	//contains instaces of com.cannontech.common.constants.YukonSelectionList
-	//private Vector yukonSelectionList = null;
-	
-	
 	public static final String TABLE_NAME = "YukonListEntry";
-
 
 	/**
 	 * Constructor for YukonListEntry.
@@ -70,18 +65,6 @@ public class YukonListEntry
 	public int getYukonDefID() {
 		return yukonDefID;
 	}
-
-//	/**
-//	 * Returns the yukonSelectionList.
-//	 * @return Vector
-//	 */
-//	public Vector getYukonSelectionList() 
-//	{		
-//		if( yukonSelectionList == null )
-//			yukonSelectionList = new Vector(5);
-//
-//		return yukonSelectionList;
-//	}
 
 	/**
 	 * Sets the entryID.

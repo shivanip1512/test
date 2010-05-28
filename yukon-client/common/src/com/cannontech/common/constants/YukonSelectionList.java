@@ -19,6 +19,7 @@ public class YukonSelectionList {
 	private String whereIsList = null;
 	private String listName = null;
 	private String userUpdateAvailable = null;
+	private Integer energyCompanyId = null;
 	
 	private List<YukonListEntry> yukonListEntries = null;
 	
@@ -88,6 +89,14 @@ public class YukonSelectionList {
 		return whereIsList;
 	}
 
+	public Integer getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+	
+	public void setEnergyCompanyId(Integer energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
+	
 	/**
 	 * Sets the listID.
 	 * @param listID The listID to set

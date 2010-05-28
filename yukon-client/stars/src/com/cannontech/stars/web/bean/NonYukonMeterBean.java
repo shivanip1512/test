@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -18,6 +19,7 @@ import com.cannontech.database.data.stars.hardware.MeterHardwareBase;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.google.common.collect.Lists;
 
 
 public class NonYukonMeterBean 
@@ -78,7 +80,7 @@ public class NonYukonMeterBean
         if(availableMeterTypes == null)
         {
             availableMeterTypes = new YukonSelectionList();
-            ArrayList tempList = new ArrayList();
+            List<YukonListEntry> tempList = Lists.newArrayList();
             tempList.add(energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT));
             availableMeterTypes.setYukonListEntries(tempList);
         }

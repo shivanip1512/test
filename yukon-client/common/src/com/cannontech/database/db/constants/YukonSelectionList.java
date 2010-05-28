@@ -22,6 +22,7 @@ public class YukonSelectionList extends DBPersistent {
 	private String whereIsList = "";
 	private String listName = "";
 	private String userUpdateAvailable = "";
+	private Integer energyCompanyId = null;
 	
 	public static final String TABLE_NAME = "YukonSelectionList";
 	
@@ -29,7 +30,7 @@ public class YukonSelectionList extends DBPersistent {
 	
 	public static final String[] SETTER_COLUMNS = {
 		"Ordering", "SelectionLabel", "WhereIsList",
-		"ListName", "UserUpdateAvailable"
+		"ListName", "UserUpdateAvailable", "EnergyCompanyId"
 	};
 	
 	public static final String GET_NEXT_LIST_ID_SQL = 
@@ -48,7 +49,7 @@ public class YukonSelectionList extends DBPersistent {
 			
 		Object[] addValues = {
 			getListID(), getOrdering(), getSelectionLabel(), getWhereIsList(),
-			getListName(), getUserUpdateAvailable()
+			getListName(), getUserUpdateAvailable(), getEnergyCompanyId()
 		};
 		
 		add( TABLE_NAME, addValues );
@@ -78,6 +79,7 @@ public class YukonSelectionList extends DBPersistent {
 			setWhereIsList( (String) results[2] );
 			setListName( (String) results[3] );
 			setUserUpdateAvailable( (String) results[4] );
+			setEnergyCompanyId( (Integer) results[5] );
 		}
 		else
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -90,7 +92,7 @@ public class YukonSelectionList extends DBPersistent {
 		Object[] constraintValues = { getListID() };
 		Object[] setValues = {
 			getOrdering(), getSelectionLabel(), getWhereIsList(),
-			getListName(), getUserUpdateAvailable()
+			getListName(), getUserUpdateAvailable(), getEnergyCompanyId()
 		};
 		
 		update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
@@ -217,5 +219,13 @@ public class YukonSelectionList extends DBPersistent {
 	public void setWhereIsList(String whereIsList) {
 		this.whereIsList = whereIsList;
 	}
+
+    public Integer getEnergyCompanyId() {
+        return energyCompanyId;
+    }
+
+    public void setEnergyCompanyId(Integer energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
 
 }

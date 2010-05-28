@@ -415,6 +415,7 @@
         <data name="SelectionLabel"/>
         <data name="WhereIsList"/>
         <data name="UserUpdateAvailable"/>
+        <identifier name="EnergyCompanyId" tableRef="EnergyCompany" refType="MANY_TO_ONE"/>
     </table>
     
     <table name="YukonUser">

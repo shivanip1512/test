@@ -1142,26 +1142,33 @@ public class StarsLiteFactory {
 		cEntry.setYukonDefID( entry.getYukonDefID().intValue() );
 	}
 	
-	public static com.cannontech.database.db.constants.YukonSelectionList createYukonSelectionList(com.cannontech.common.constants.YukonSelectionList cList) {
-		com.cannontech.database.db.constants.YukonSelectionList list = new com.cannontech.database.db.constants.YukonSelectionList();
-		list.setListID( new Integer(cList.getListID()) );
-		list.setOrdering( cList.getOrdering() );
-		list.setSelectionLabel( cList.getSelectionLabel() );
-		list.setWhereIsList( cList.getWhereIsList() );
-		list.setListName( cList.getListName() );
-		list.setUserUpdateAvailable( cList.getUserUpdateAvailable() );
+	public static com.cannontech.database.db.constants.YukonSelectionList 
+	    createYukonSelectionList(com.cannontech.common.constants.YukonSelectionList cList) {
+
+	    com.cannontech.database.db.constants.YukonSelectionList list = 
+	        new com.cannontech.database.db.constants.YukonSelectionList();
+
+	    list.setListID(new Integer(cList.getListID()));
+        list.setOrdering(cList.getOrdering());
+        list.setSelectionLabel(cList.getSelectionLabel());
+        list.setWhereIsList(cList.getWhereIsList());
+        list.setListName(cList.getListName());
+        list.setUserUpdateAvailable(cList.getUserUpdateAvailable());
+        list.setEnergyCompanyId(cList.getEnergyCompanyId());
 		
 		return list;
 	}
 	
 	public static void setConstantYukonSelectionList(
-			com.cannontech.common.constants.YukonSelectionList cList, com.cannontech.database.db.constants.YukonSelectionList list) {
-		cList.setListID( list.getListID().intValue() );
-		cList.setOrdering( list.getOrdering() );
-		cList.setSelectionLabel( list.getSelectionLabel() );
-		cList.setWhereIsList( list.getWhereIsList() );
-		cList.setListName( list.getListName() );
-		cList.setUserUpdateAvailable( list.getUserUpdateAvailable() );
+			com.cannontech.common.constants.YukonSelectionList cList, 
+			com.cannontech.database.db.constants.YukonSelectionList list) {
+        cList.setListID(list.getListID().intValue());
+        cList.setOrdering(list.getOrdering());
+        cList.setSelectionLabel(list.getSelectionLabel());
+        cList.setWhereIsList(list.getWhereIsList());
+        cList.setListName(list.getListName());
+        cList.setUserUpdateAvailable(list.getUserUpdateAvailable());
+        cList.setEnergyCompanyId(list.getEnergyCompanyId());
 	}
 
 	

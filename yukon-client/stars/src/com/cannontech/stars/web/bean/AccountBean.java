@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.stars.event.EventAccount;
 
