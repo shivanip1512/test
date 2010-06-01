@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/1/2010 1:59:24 PM                          */
+/* Created on:     6/1/2010 2:56:19 PM                          */
 /*==============================================================*/
 
 
@@ -1083,6 +1083,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index YukonRole.Indx_YukRol_Nm
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonSelectionList')
+            and   name  = 'Indx_YSL_ListName_ECId_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonSelectionList.Indx_YSL_ListName_ECId_UNQ
 go
 
 if exists (select 1
@@ -7748,75 +7757,7 @@ create table ECToGenericMapping (
 )
 go
 
-insert into ectogenericmapping values (-1,-1,'LMThermostatSchedule');
-insert into ectogenericmapping values (-1, 1001, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1002, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1003, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1004, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1005, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1006, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1007, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1008, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1009, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1010, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1011, 'YukonSelectionList');
-insert into ectogenericmapping values (-1, 1012, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1013, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1014, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1015, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1016, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1017, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1018, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1019, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1020, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1021, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1022, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1023, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1024, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1025, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1026, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1027, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1028, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1029, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1030, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1031, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1032, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1033, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1034, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1035, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1036, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1037, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1038, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1039, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1040, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1041, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1042, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1043, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1044, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1045, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1046, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1047, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1048, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1050, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1051, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1052, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1053, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1054, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1055, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1056, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1057, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1058, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1059, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1060, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1061, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1062, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1063, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1064, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1065, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1066, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1067, 'YukonSelectionList');
-insert into ECToGenericMapping values (-1, 1068, 'YukonSelectionList');
-Insert into ECToGenericMapping values (-1, 1071, 'YukonSelectionList');
+INSERT INTO ECToGenericMapping VALUES(-1,-1,'LMThermostatSchedule');
 
 /*==============================================================*/
 /* Table: ECToInventoryMapping                                  */
@@ -12747,88 +12688,96 @@ create table YukonSelectionList (
    WhereIsList          varchar(100)         not null,
    ListName             varchar(40)          not null,
    UserUpdateAvailable  varchar(1)           not null,
+   EnergyCompanyId      numeric              null,
    constraint PK_YUKONSELECTIONLIST primary key (ListID)
 )
 go
 
-insert into YukonSelectionList values( 0, 'N', '(none)', '(none)', '(none)', 'N' );
-insert into YukonSelectionList values( 1, 'A', 'Contact', 'DBEditor contact type list', 'ContactType', 'N' );
+INSERT INTO YukonSelectionList VALUES( 0,'N','(none)','(none)','(none)','N',null);
+INSERT INTO YukonSelectionList VALUES( 1,'A','Contact','DBEditor contact type list','ContactType','N',null);
 
-insert into YukonSelectionList values (100, 'A', 'Calc Functions', 'DBEditor calc point functions', 'CalcFunctions', 'N' );
+INSERT INTO YukonSelectionList VALUES(100,'A','Calc Functions','DBEditor calc point functions','CalcFunctions','N',null);
 
-insert into YukonSelectionList values (1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N');
-insert into YukonSelectionList values (1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N');
-insert into YukonSelectionList values (1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N');
-insert into YukonSelectionList values (1004,'A','(none)','Device voltage selection','DeviceVoltage','Y');
-insert into YukonSelectionList values (1005,'A','(none)','Device type selection','DeviceType','Y');
-insert into YukonSelectionList values (1006,'N','(none)','Hardware status selection','DeviceStatus','Y');
-insert into YukonSelectionList values (1007,'A','(none)','Appliance category','ApplianceCategory','N');
-insert into YukonSelectionList values (1008,'A','(none)','Call type selection','CallType','Y');
-insert into YukonSelectionList values (1009,'A','(none)','Service type selection','ServiceType','Y');
-insert into YukonSelectionList values (1010,'N','(none)','Service request status','ServiceStatus','N');
-insert into YukonSelectionList values (1011,'N','(none)','Search by selection','SearchBy','N');
-insert into YukonSelectionList values (1012,'A','(none)','Appliance manufacturer selection','Manufacturer','Y');
-insert into YukonSelectionList values (1013,'A','(none)','Appliance location selection','ApplianceLocation','Y');
-insert into YukonSelectionList values (1014,'N','(none)','Chance of control selection','ChanceOfControl','Y');
-insert into YukonSelectionList values (1015,'N','(none)','Thermostat settings time of week selection','TimeOfWeek','N');
-insert into YukonSelectionList values (1016,'N','(none)','Question type selection','QuestionType','N');
-insert into YukonSelectionList values (1017,'N','(none)','Answer type selection','AnswerType','N');
-insert into YukonSelectionList values (1018,'N','(none)','Thermostat mode selection','ThermostatMode','N');
-insert into YukonSelectionList values (1019,'N','(none)','Thermostat fan state selection','ThermostatFanState','N');
-insert into YukonSelectionList values (1020,'O','(none)','Customer FAQ groups','CustomerFAQGroup','N');
-insert into YukonSelectionList values (1021,'N','(none)','Residence type selection','ResidenceType','Y');
-insert into YukonSelectionList values (1022,'N','(none)','Construction material selection','ConstructionMaterial','Y');
-insert into YukonSelectionList values (1023,'N','(none)','Decade built selection','DecadeBuilt','Y');
-insert into YukonSelectionList values (1024,'N','(none)','Square feet selection','SquareFeet','Y');
-insert into YukonSelectionList values (1025,'N','(none)','Insulation depth selection','InsulationDepth','Y');
-insert into YukonSelectionList values (1026,'N','(none)','General condition selection','GeneralCondition','Y');
-insert into YukonSelectionList values (1027,'N','(none)','Main cooling system selection','CoolingSystem','Y');
-insert into YukonSelectionList values (1028,'N','(none)','Main heating system selection','HeatingSystem','Y');
-insert into YukonSelectionList values (1029,'N','(none)','Number of occupants selection','NumberOfOccupants','Y');
-insert into YukonSelectionList values (1030,'N','(none)','Ownership type selection','OwnershipType','Y');
-insert into YukonSelectionList values (1031,'N','(none)','Main fuel type selection','FuelType','Y');
-insert into YukonSelectionList values (1032,'N','(none)','AC Tonnage selection','ACTonnage','Y');
-insert into YukonSelectionList values (1033,'N','(none)','AC type selection','ACType','Y');
-insert into YukonSelectionList values (1034,'N','(none)','Water heater number of gallons selection','WHNumberOfGallons','Y');
-insert into YukonSelectionList values (1035,'N','(none)','Water heater energy source selection','WHEnergySource','Y');
-insert into YukonSelectionList values (1036,'N','(none)','Dual fuel switch over type selection','DFSwitchOverType','Y');
-insert into YukonSelectionList values (1037,'N','(none)','Dual fuel secondary source selection','DFSecondarySource','Y');
-insert into YukonSelectionList values (1038,'N','(none)','Grain dryer type selection','GrainDryerType','Y');
-insert into YukonSelectionList values (1039,'N','(none)','Grain dryer bin size selection','GDBinSize','Y');
-insert into YukonSelectionList values (1040,'N','(none)','Grain dryer blower energy source selection','GDEnergySource','Y');
-insert into YukonSelectionList values (1041,'N','(none)','Grain dryer blower horse power selection','GDHorsePower','Y');
-insert into YukonSelectionList values (1042,'N','(none)','Grain dryer blower heat source selection','GDHeatSource','Y');
-insert into YukonSelectionList values (1043,'N','(none)','Storage heat type selection','StorageHeatType','Y');
-insert into YukonSelectionList values (1044,'N','(none)','Heat pump type selection','HeatPumpType','Y');
-insert into YukonSelectionList values (1045,'N','(none)','Heat pump standby source selection','HPStandbySource','Y');
-insert into YukonSelectionList values (1046,'N','(none)','Irrigation type selection','IrrigationType','Y');
-insert into YukonSelectionList values (1047,'N','(none)','Irrigation soil type selection','IRRSoilType','Y');
-insert into YukonSelectionList values (1048,'N','(none)','Device location selection','DeviceLocation','N');
-insert into YukonSelectionList values (1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N');
-insert into YukonSelectionList values (1051,'N','(none)','Hardware Inventory search by selection','InvSearchBy','N');
-insert into YukonSelectionList values (1052,'N','(none)','Hardware Inventory sort by selection','InvSortBy','N');
-insert into YukonSelectionList values (1053,'N','(none)','Hardware Inventory filter by selection','InvFilterBy','N');
-insert into YukonSelectionList values (1054,'N','(none)','Service order search by selection','SOSearchBy','N');
-insert into YukonSelectionList values (1055,'N','(none)','Service order sort by selection','SOSortBy','N');
-insert into YukonSelectionList values (1056,'N','(none)','Service order filter by selection','SOFilterBy','N');
-insert into YukonSelectionList values (1057,'N','(none)','Generator transfer switch type selection','GENTransferSwitchType','Y');
-insert into YukonSelectionList values (1058,'N','(none)','Generator transfer switch manufacturer selection','GENTransferSwitchMfg','Y');
-insert into YukonSelectionList values (1059,'N','(none)','Irrigation horse power selection','IRRHorsePower','Y');
-insert into YukonSelectionList values (1060,'N','(none)','Irrigation energy source selection','IRREnergySource','Y');
-insert into YukonSelectionList values (1061,'N','(none)','Irrigation meter location selection','IRRMeterLocation','Y');
-insert into YukonSelectionList values (1062,'N','(none)','Irrigation meter voltage selection','IRRMeterVoltage','Y');
-insert into YukonSelectionList values (1063,'N','(none)','Water heater location selection','WHLocation','Y');
-insert into YukonSelectionList values (1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y');
-insert into YukonSelectionList values (1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y');
-insert into YukonSelectionList values (1066,'A','(none)','Energy Company Settlement Types','Settlement','Y');
-insert into yukonselectionlist values (1067, 'A', '(none)', 'System category types for Event Logging in STARS', 'EventSystemCategory', 'N');
-insert into yukonselectionlist values (1068, 'A', '(none)', 'Action types for Customer Account events in STARS', 'EventAccountActions', 'N');
-insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Types','CICustomerType','N');
-INSERT INTO YukonSelectionList VALUES (1072,'N','(none)','Cap Bank Editor','Controller Type','N');
-INSERT INTO YukonSelectionList VALUES (1073,'N','(none)','Cap Bank Editor','Switch Manufacturer','N');
-INSERT INTO YukonSelectionList VALUES (1074,'N','(none)','Cap Bank Editor','Type of Switch','N'); 
+INSERT INTO YukonSelectionList VALUES(1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N',-1);
+INSERT INTO YukonSelectionList VALUES(1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N',-1);
+INSERT INTO YukonSelectionList VALUES(1003,'A','(none)','Not visible, defines inventory device category','InventoryCategory','N',-1);
+INSERT INTO YukonSelectionList VALUES(1004,'A','(none)','Device voltage selection','DeviceVoltage','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1005,'A','(none)','Device type selection','DeviceType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1006,'N','(none)','Hardware status selection','DeviceStatus','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1007,'A','(none)','Appliance category','ApplianceCategory','N',-1);
+INSERT INTO YukonSelectionList VALUES(1008,'A','(none)','Call type selection','CallType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1009,'A','(none)','Service type selection','ServiceType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1010,'N','(none)','Service request status','ServiceStatus','N',-1);
+INSERT INTO YukonSelectionList VALUES(1011,'N','(none)','Search by selection','SearchBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1012,'A','(none)','Appliance manufacturer selection','Manufacturer','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1013,'A','(none)','Appliance location selection','ApplianceLocation','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1014,'N','(none)','Chance of control selection','ChanceOfControl','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1015,'N','(none)','Thermostat settings time of week selection','TimeOfWeek','N',-1);
+INSERT INTO YukonSelectionList VALUES(1016,'N','(none)','Question type selection','QuestionType','N',-1);
+INSERT INTO YukonSelectionList VALUES(1017,'N','(none)','Answer type selection','AnswerType','N',-1);
+INSERT INTO YukonSelectionList VALUES(1018,'N','(none)','Thermostat mode selection','ThermostatMode','N',-1);
+INSERT INTO YukonSelectionList VALUES(1019,'N','(none)','Thermostat fan state selection','ThermostatFanState','N',-1);
+INSERT INTO YukonSelectionList VALUES(1020,'O','(none)','Customer FAQ groups','CustomerFAQGroup','N',-1);
+INSERT INTO YukonSelectionList VALUES(1021,'N','(none)','Residence type selection','ResidenceType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1022,'N','(none)','Construction material selection','ConstructionMaterial','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1023,'N','(none)','Decade built selection','DecadeBuilt','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1024,'N','(none)','Square feet selection','SquareFeet','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1025,'N','(none)','Insulation depth selection','InsulationDepth','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1026,'N','(none)','General condition selection','GeneralCondition','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1027,'N','(none)','Main cooling system selection','CoolingSystem','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1028,'N','(none)','Main heating system selection','HeatingSystem','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1029,'N','(none)','Number of occupants selection','NumberOfOccupants','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1030,'N','(none)','Ownership type selection','OwnershipType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1031,'N','(none)','Main fuel type selection','FuelType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1032,'N','(none)','AC Tonnage selection','ACTonnage','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1033,'N','(none)','AC type selection','ACType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1034,'N','(none)','Water heater number of gallons selection','WHNumberOfGallons','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1035,'N','(none)','Water heater energy source selection','WHEnergySource','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1036,'N','(none)','Dual fuel switch over type selection','DFSwitchOverType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1037,'N','(none)','Dual fuel secondary source selection','DFSecondarySource','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1038,'N','(none)','Grain dryer type selection','GrainDryerType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1039,'N','(none)','Grain dryer bin size selection','GDBinSize','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1040,'N','(none)','Grain dryer blower energy source selection','GDEnergySource','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1041,'N','(none)','Grain dryer blower horse power selection','GDHorsePower','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1042,'N','(none)','Grain dryer blower heat source selection','GDHeatSource','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1043,'N','(none)','Storage heat type selection','StorageHeatType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1044,'N','(none)','Heat pump type selection','HeatPumpType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1045,'N','(none)','Heat pump standby source selection','HPStandbySource','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1046,'N','(none)','Irrigation type selection','IrrigationType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1047,'N','(none)','Irrigation soil type selection','IRRSoilType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1048,'N','(none)','Device location selection','DeviceLocation','N',-1);
+INSERT INTO YukonSelectionList VALUES(1050,'N','(none)','Gateway end device data description','GatewayEndDeviceDataDesc','N',-1);
+INSERT INTO YukonSelectionList VALUES(1051,'N','(none)','Hardware Inventory search by selection','InvSearchBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1052,'N','(none)','Hardware Inventory sort by selection','InvSortBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1053,'N','(none)','Hardware Inventory filter by selection','InvFilterBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1054,'N','(none)','Service order search by selection','SOSearchBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1055,'N','(none)','Service order sort by selection','SOSortBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1056,'N','(none)','Service order filter by selection','SOFilterBy','N',-1);
+INSERT INTO YukonSelectionList VALUES(1057,'N','(none)','Generator transfer switch type selection','GENTransferSwitchType','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1058,'N','(none)','Generator transfer switch manufacturer selection','GENTransferSwitchMfg','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1059,'N','(none)','Irrigation horse power selection','IRRHorsePower','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1060,'N','(none)','Irrigation energy source selection','IRREnergySource','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1061,'N','(none)','Irrigation meter location selection','IRRMeterLocation','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1062,'N','(none)','Irrigation meter voltage selection','IRRMeterVoltage','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1063,'N','(none)','Water heater location selection','WHLocation','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1064,'N','(none)','Heat pump size selection','HeatPumpSize','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1065,'A','(none)','Customer account rate schedule selection','RateSchedule','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1066,'A','(none)','Energy Company Settlement Types','Settlement','Y',-1);
+INSERT INTO YukonSelectionList VALUES(1067,'A','(none)','System category types for Event Logging in STARS', 'EventSystemCategory', 'N',-1);
+INSERT INTO YukonSelectionList VALUES(1068,'A','(none)','Action types for Customer Account events in STARS', 'EventAccountActions', 'N',-1);
+INSERT INTO YukonSelectionList VALUES(1071,'A','(none)','Commercial Customer Types','CICustomerType','N',-1);
+INSERT INTO YukonSelectionList VALUES(1072,'N','(none)','Cap Bank Editor','Controller Type','N',null);
+INSERT INTO YukonSelectionList VALUES(1073,'N','(none)','Cap Bank Editor','Switch Manufacturer','N',null);
+INSERT INTO YukonSelectionList VALUES(1074,'N','(none)','Cap Bank Editor','Type of Switch','N',null);
 
-insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
+/*==============================================================*/
+/* Index: Indx_YSL_ListName_ECId_UNQ                            */
+/*==============================================================*/
+create unique index Indx_YSL_ListName_ECId_UNQ on YukonSelectionList (
+ListName ASC,
+EnergyCompanyId ASC
+)
+go
 
 /*==============================================================*/
 /* Table: YukonServices                                         */

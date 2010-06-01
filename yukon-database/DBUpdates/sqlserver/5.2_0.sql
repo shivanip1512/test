@@ -50,6 +50,28 @@ INSERT INTO State VALUES( -11, 0, 'Connected', 0, 6 , 0);
 INSERT INTO State VALUES( -11, 1, 'Disconnected', 1, 6 , 0);
 /* End YUK-8741 */
 
+/* Start YUK-8733 */
+ALTER TABLE YukonSelectionList
+ADD EnergyCompanyId NUMERIC;
+
+UPDATE YukonSelectionList
+SET EnergyCompanyId = (SELECT ECTGM.EnergyCompanyId
+                       FROM ECToGenericMapping ECTGM
+                       WHERE ECTGM.MappingCategory = 'YukonSelectionList'
+                       AND ECTGM.ItemId = YukonSelectionList.ListId);
+
+DELETE FROM ECToGenericMapping
+WHERE MappingCategory = 'YukonSelectionList';
+
+DELETE FROM YukonSelectionList
+WHERE ListId = 2000;
+
+CREATE UNIQUE INDEX Indx_YSL_ListName_ECId_UNQ ON YukonSelectionList(
+    ListName ASC,
+    EnergyCompanyId ASC
+);
+/* End YUK-8733 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
