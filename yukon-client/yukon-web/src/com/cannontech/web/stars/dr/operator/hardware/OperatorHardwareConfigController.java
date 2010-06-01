@@ -42,8 +42,8 @@ import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
 import com.cannontech.user.YukonUserContext;
@@ -190,7 +190,7 @@ public class OperatorHardwareConfigController {
             */
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
-            UpdateLMHardwareConfigAction.updateLMHardwareConfig(hardwareConfig,
+            ServletUtils.updateLMHardwareConfig(hardwareConfig,
                 liteHw, userContext.getYukonUser().getUserID(), energyCompany);
         } catch (WebClientException wce) {
             MessageSourceResolvable errorMessage = YukonMessageSourceResolvable.createDefaultWithoutCode(wce.getMessage());

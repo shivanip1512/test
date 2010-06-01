@@ -75,10 +75,10 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
+import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.UpdateLMHardwareAction;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -382,12 +382,13 @@ public class StarsAdminUtil {
 		com.cannontech.database.data.stars.report.ServiceCompany servCompany =
 				new com.cannontech.database.data.stars.report.ServiceCompany();
 		StarsLiteFactory.setServiceCompany( servCompany, liteCompany );
+
+		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
 		
 		Transaction.createTransaction( Transaction.DELETE, servCompany ).execute();
 		
 		energyCompany.deleteServiceCompany( companyID );
 		
-		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 	
@@ -884,7 +885,7 @@ public class StarsAdminUtil {
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 				if (starsAcctInfo != null) {
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					UpdateLMHardwareAction.parseResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
+					ServletUtils.removeRouteResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
 				}
 			}
 		}

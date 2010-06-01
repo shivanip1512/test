@@ -24,7 +24,6 @@
 				<prop key="/servlet/StarsAdmin">starsAdmin</prop>
 				<prop key="/servlet/SOAPClient">soapClient</prop>
 				<prop key="/servlet/InventoryManager">inventoryManager</prop>
-				<prop key="/servlet/WorkOrderManager">workOrderManager</prop>
 				<prop key="/servlet/StarsPWordRequest">starsPWordRequest</prop>
 				<prop key="/servlet/ImportManager">importManager</prop>
 				<prop key="/hardware/deviceactivation">deviceActivationController</prop>
@@ -55,12 +54,6 @@
 		<property name="defaultBeanName"><value>Default</value></property>
 	</bean>
 	
-	<bean id="workOrderManager" class="com.cannontech.web.stars.StarsWorkOrderActionController">
-		<property name="prefix"><value>workorder</value></property>
-        <property name="defaultBeanName"><value>Default</value></property>
-		<property name="switchContextService" ref="switchContextService"/>
-	</bean>
-
 	<bean id="starsPWordRequest" class="com.cannontech.web.stars.StarsPWordRequestController">
 		<property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
 	</bean>

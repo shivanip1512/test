@@ -35,7 +35,6 @@ import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -258,13 +257,13 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
     			*/
     				
                 if (sendConfig) {
-    				YukonSwitchCommandAction.fileWriteConfigCommand(company, liteHw, false, options);
+                    ServletUtils.fileWriteConfigCommand(company, liteHw, false, options);
     				
     				if (liteHw.getAccountID() > 0) {
     					StarsCustAccountInformation starsAcctInfo = company.getStarsCustAccountInformation( liteHw.getAccountID() );
     					if (starsAcctInfo != null) {
     						StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, company );
-    						YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
+    						ServletUtils.populateInventoryFields( starsAcctInfo, starsInv );
     					}
     				}
     			}

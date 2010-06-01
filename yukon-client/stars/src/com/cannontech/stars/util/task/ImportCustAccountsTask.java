@@ -232,6 +232,14 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 	}
 	
+	private static String[] prepareFields(int numFields) {
+        String[] fields = new String[ numFields ];
+        for (int i = 0; i < numFields; i++)
+            fields[i] = "";
+        
+        return fields;
+    }
+	
 	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, File custFile, File hwFile, String email, boolean preScan, Integer userID) 
     {
 		this.energyCompany = energyCompany;
@@ -478,7 +486,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						continue;
 					}
 
-					String[] custFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_ACCOUNT_FIELDS );
+					String[] custFields = prepareFields( ImportManagerUtil.NUM_ACCOUNT_FIELDS );
 					custFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 					setCustomerFields( custFields, columns, custColIdx );
 
@@ -667,7 +675,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								appFieldsList = new ArrayList<String[]>();
 						}
 						
-						String[] hwFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
+						String[] hwFields = prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
 						hwFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 						setHardwareFields( hwFields, columns, hwColIdx );
 						
@@ -714,7 +722,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 						String[] appFields = null;
 						if (hwColIdx[COL_APP_TYPE] != -1) {
-							appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
+							appFields = prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
 							setApplianceFields( appFields, columns, hwColIdx );
 							
 							if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) &&
@@ -906,7 +914,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						continue;
 					}
 
-					String[] hwFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
+					String[] hwFields = prepareFields( ImportManagerUtil.NUM_INV_FIELDS );
 					hwFields[ImportManagerUtil.IDX_LINE_NUM] = String.valueOf(lineNo);
 					setHardwareFields( hwFields, columns, hwColIdx );
 					
@@ -994,7 +1002,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
 					String[] appFields = null;
 					if (hwColIdx[COL_APP_TYPE] != -1) {
-						appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
+						appFields = prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
 						setApplianceFields( appFields, columns, hwColIdx );
 						if (preScan && appFieldsList == null)
 							appFieldsList = new ArrayList<String[]>();
@@ -1422,7 +1430,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     private void programSignUp(String[] hwFields, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo, 
             LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception {
         if(appFields == null)
-            appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
+            appFields = prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
         try {
             EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
             EnrollmentEnum enrollType = EnrollmentEnum.ENROLL;

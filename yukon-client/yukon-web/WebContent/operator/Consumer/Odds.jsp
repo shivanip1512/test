@@ -30,7 +30,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center">
-              <% String header = "PROGRAMS - odds for control"; %>
+              <% String header = "PROGRAMS - ODDS FOR CONTROL"; %>
               <%@ include file="include/InfoSearchBar2.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>

@@ -66,23 +66,16 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.DeviceType;
-import com.cannontech.stars.xml.serialize.ExpressCom;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
 import com.cannontech.stars.xml.serialize.LMHardware;
 import com.cannontech.stars.xml.serialize.MCT;
-import com.cannontech.stars.xml.serialize.SA205;
-import com.cannontech.stars.xml.serialize.SA305;
-import com.cannontech.stars.xml.serialize.SASimple;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInv;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfoDto;
 import com.cannontech.stars.xml.serialize.TwoWayLcrSetupInfoDtoFactory;
-import com.cannontech.stars.xml.serialize.VersaCom;
 import com.cannontech.stars.xml.serialize.Voltage;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.IDatabaseCache;
@@ -376,23 +369,23 @@ public class InventoryManagerUtil {
 		if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
         {
 			if(writeToFile)
-                YukonSwitchCommandAction.fileWriteConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+                ServletUtils.fileWriteConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
             else    
-                YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+                ServletUtils.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
         }
         else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
         {
             if(writeToFile)
-                YukonSwitchCommandAction.fileWriteDisableCommand( energyCompany, liteHw, null );
+                ServletUtils.fileWriteDisableCommand( energyCompany, liteHw, null );
             else
-                YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
+                ServletUtils.sendDisableCommand( energyCompany, liteHw, null );
         }
 		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
         {
             if(writeToFile)
-                YukonSwitchCommandAction.fileWriteEnableCommand( energyCompany, liteHw, null );
+                ServletUtils.fileWriteEnableCommand( energyCompany, liteHw, null );
             else
-                YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
+                ServletUtils.sendEnableCommand( energyCompany, liteHw, null );
         }
 		
 		SwitchCommandQueue.getInstance().removeCommand( cmd.getInventoryID() );
@@ -402,131 +395,11 @@ public class InventoryManagerUtil {
 			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 			if (starsAcctInfo != null) {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-				YukonSwitchCommandAction.parseResponse( starsAcctInfo, starsInv );
+				ServletUtils.populateInventoryFields( starsAcctInfo, starsInv );
 			}
 		}
 	}
     
-	public static void setStarsLMConfiguration(StarsLMConfiguration starsCfg, HttpServletRequest req) throws WebClientException {
-		String[] clps = req.getParameterValues( "ColdLoadPickup" );
-		String[] tds = req.getParameterValues( "TamperDetect" );
-		
-		if (clps != null && clps.length > 0) {
-			String clp = clps[0];
-			for (int i = 1; i < clps.length; i++)
-				clp += "," + clps[i];
-			starsCfg.setColdLoadPickup( clp );
-		}
-		
-		if (tds != null && tds.length > 0) {
-			String td = tds[0];
-			for (int i = 1; i < tds.length; i++)
-				td += "," + tds[i];
-			starsCfg.setTamperDetect( td );
-		}
-		
-		if (req.getParameter("XCOM_SPID") != null) {
-			ExpressCom xcom = new ExpressCom();
-			
-			xcom.setServiceProvider( ServletUtils.parseNumber(req.getParameter("XCOM_SPID"), 0, 65534, "SPID") );
-			xcom.setGEO( ServletUtils.parseNumber(req.getParameter("XCOM_GEO"), 0, 65534, 0, "GEO") );
-			xcom.setSubstation( ServletUtils.parseNumber(req.getParameter("XCOM_SUB"), 0, 65534, 0, "SUB") );
-			xcom.setZip( ServletUtils.parseNumber(req.getParameter("XCOM_ZIP"), 0, 16777214, 0, "ZIP") );
-			xcom.setUserAddress( ServletUtils.parseNumber(req.getParameter("XCOM_USER"), 0, 65534, 0, "USER") );
-			
-			String[] feeders = req.getParameterValues( "XCOM_FEED" );
-			int feeder = 0;
-			if (feeders != null) {
-				for (int i = 0; i < feeders.length; i++)
-					feeder += Integer.parseInt( feeders[i] );
-			}
-			xcom.setFeeder( feeder );
-			
-			String program = "";
-			String[] programs = req.getParameterValues("XCOM_Program");
-			if (programs != null) {
-			    for (int i = 0; i < programs.length; i++) {
-			        ServletUtils.parseNumber(programs[i], 0, 254, 0, "Program" );
-			        program += programs[i].trim();
-			        if (i < programs.length - 1) program += ",";
-			    }
-			}
-			xcom.setProgram( program );
-			
-			String splinter = "";
-			String[] splinters = req.getParameterValues("XCOM_Splinter");
-			if (splinters != null) {
-			    for (int i = 0; i < splinters.length; i++) {
-			        ServletUtils.parseNumber(splinters[i], 0, 254, 0, "Splinter" );
-			        splinter += splinters[i].trim();
-			        if (i < splinters.length - 1) splinter += ",";
-			    }
-			}
-			xcom.setSplinter( splinter );
-			
-			starsCfg.setExpressCom( xcom );
-		}
-		else if (req.getParameter("VCOM_Utility") != null) {
-			VersaCom vcom = new VersaCom();
-			
-			vcom.setUtility( ServletUtils.parseNumber(req.getParameter("VCOM_Utility"), 0, 255, "Utility") );
-			vcom.setSection( ServletUtils.parseNumber(req.getParameter("VCOM_Section"), 1, 254, 0, "Section") );
-			
-			String[] classAddrs = req.getParameterValues( "VCOM_Class" );
-			int classAddr = 0;
-			if (classAddrs != null) {
-				for (int i = 0; i < classAddrs.length; i++)
-					classAddr += Integer.parseInt( classAddrs[i] );
-			}
-			vcom.setClassAddress( classAddr );
-			
-			String[] divisions = req.getParameterValues( "VCOM_Division" );
-			int division = 0;
-			if (divisions != null) {
-				for (int i = 0; i < divisions.length; i++)
-					division += Integer.parseInt( divisions[i] );
-			}
-			vcom.setDivision( division );
-			
-			starsCfg.setVersaCom( vcom );
-		}
-		else if (req.getParameter("SA205_Slot1") != null) {
-			SA205 sa205 = new SA205();
-			
-			sa205.setSlot1( ServletUtils.parseNumber(req.getParameter("SA205_Slot1"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot2( ServletUtils.parseNumber(req.getParameter("SA205_Slot2"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot3( ServletUtils.parseNumber(req.getParameter("SA205_Slot3"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot4( ServletUtils.parseNumber(req.getParameter("SA205_Slot4"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot5( ServletUtils.parseNumber(req.getParameter("SA205_Slot5"), 0, 4095, 0, "Slot Address") );
-			sa205.setSlot6( ServletUtils.parseNumber(req.getParameter("SA205_Slot6"), 0, 4095, 0, "Slot Address") );
-			
-			starsCfg.setSA205( sa205 );
-		}
-		else if (req.getParameter("SA305_Utility") != null) {
-			SA305 sa305 = new SA305();
-			
-			sa305.setUtility( ServletUtils.parseNumber(req.getParameter("SA305_Utility"), 0, 15, "Utility") );
-			sa305.setGroup( ServletUtils.parseNumber(req.getParameter("SA305_Group"), 0, 63, 0, "Group") );
-			sa305.setDivision( ServletUtils.parseNumber(req.getParameter("SA305_Division"), 0, 63, 0, "Division") );
-			sa305.setSubstation( ServletUtils.parseNumber(req.getParameter("SA305_Substation"), 0, 1023, 0, "Substation") );
-			
-			int rateFam = new Integer(req.getParameter("SA305_RateRate")).intValue() / 16;
-			int rateMem = new Integer(req.getParameter("SA305_RateRate")).intValue() % 16;
-			sa305.setRateFamily( ServletUtils.parseNumber(new Integer(rateFam).toString(), 0, 7, "Rate Family") );
-			sa305.setRateMember( ServletUtils.parseNumber(new Integer(rateMem).toString(), 0, 15, "Rate Member") );
-			//Rate Hierarchy should not be on the config page; it is part of the control command only
-			sa305.setRateHierarchy(0);
-			//sa305.setRateHierarchy( ServletUtils.parseNumber(req.getParameter("SA305_RateHierarchy"), 0, 1, "Rate Hierarchy") );
-			
-			starsCfg.setSA305( sa305 );
-		}
-		else if (req.getParameter("Simple_Address") != null) {
-			SASimple simple = new SASimple();
-			simple.setOperationalAddress( req.getParameter("Simple_Address") );
-			starsCfg.setSASimple( simple );
-		}
-	}
-	
 	public static String getSNRange(Long snFrom, Long snTo) {
 		if (snFrom == null && snTo == null)
 			return null;
