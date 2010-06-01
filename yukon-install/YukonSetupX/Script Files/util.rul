@@ -82,7 +82,6 @@ begin
 	for i = 0 to 10
 		if (ServiceExistsService(sServiceNameArray(i))) then
 			sRegKey = "SYSTEM\\CurrentControlSet\\Services\\" + sServiceNameArray(i);
-			sTemp = sServiceSettings(i);
 			nResult = RegDBSetKeyValueEx(sRegKey, "Start", REGDB_NUMBER, sServiceSettings(i), -1);
 			if(nResult < 0) then
 				MessageBox ("Unable to save service settings: " + sServiceNameArray(i) + ".", SEVERE);
