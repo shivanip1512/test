@@ -43,6 +43,13 @@ ALTER TABLE PointAlarming
     DROP COLUMN RecipientId;
 /* End YUK-8727 */ 
 
+/* Start YUK-8741 */
+INSERT INTO StateGroup VALUES( -11, 'Comm Status State', 'Status' );
+INSERT INTO State VALUES( -11,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES( -11, 0, 'Connected', 0, 6 , 0);
+INSERT INTO State VALUES( -11, 1, 'Disconnected', 1, 6 , 0);
+/* End YUK-8741 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

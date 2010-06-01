@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/28/2010 10:24:35 AM                        */
+/* Created on:     6/1/2010 1:59:24 PM                          */
 /*==============================================================*/
 
 
@@ -10375,6 +10375,9 @@ create table STATE (
 )
 go
 
+INSERT INTO State VALUES(-11,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES(-11, 0, 'Connected', 0, 6 , 0);
+INSERT INTO State VALUES(-11, 1, 'Disconnected', 1, 6 , 0);
 INSERT INTO State VALUES(-10, 0, 'Unknown', 0, 6, 0);
 INSERT INTO State VALUES(-10, 1, 'A', 1, 6, 0);
 INSERT INTO State VALUES(-10, 2, 'B', 10, 6, 0);
@@ -10387,14 +10390,16 @@ INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
 INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
-insert into state values(-7, 0, 'Normal',0,6,0);
-insert into state values(-7, 1, 'NonCriticalFailure',1,6,0);
-insert into state values(-7, 2, 'CriticalFailure',2,6,0);
-insert into state values(-7, 3, 'Unresponsive',3,6,0);
-insert into state values(-6, 0, 'Confirmed Disconnected', 1, 6, 0);
-insert into state values(-6, 1, 'Connected', 0, 6, 0);
-insert into state values(-6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
-insert into state values(-6, 3, 'Connect Armed', 5, 6, 0);
+INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
+INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
+INSERT INTO State VALUES(-7, 0, 'Normal',0,6,0);
+INSERT INTO State VALUES(-7, 1, 'NonCriticalFailure',1,6,0);
+INSERT INTO State VALUES(-7, 2, 'CriticalFailure',2,6,0);
+INSERT INTO State VALUES(-7, 3, 'Unresponsive',3,6,0);
+INSERT INTO State VALUES(-6, 0, 'Confirmed Disconnected', 1, 6, 0);
+INSERT INTO State VALUES(-6, 1, 'Connected', 0, 6, 0);
+INSERT INTO State VALUES(-6, 2, 'Unconfirmed Disconnected', 3, 6, 0);
+INSERT INTO State VALUES(-6, 3, 'Connect Armed', 5, 6, 0);
 INSERT INTO State VALUES(-5, 0, 'Events', 2, 6, 0);
 INSERT INTO State VALUES(-5, 1, 'Priority 1', 1, 6, 0);
 INSERT INTO State VALUES(-5, 2, 'Priority 2', 4, 6, 0);
@@ -10442,8 +10447,6 @@ INSERT INTO State VALUES( 6, 2, 'Pending',7, 6 , 0);
 INSERT INTO State VALUES( 6, 3, 'Alt - Enabled', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 0, 'Verify All', 2, 6 , 0);
 INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
-INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
-INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
 
 /*==============================================================*/
 /* Index: Indx_StateRaw                                         */
@@ -10464,22 +10467,23 @@ create table STATEGROUP (
 )
 go
 
+INSERT INTO StateGroup VALUES(-11, 'Comm Status State', 'Status'); 
 INSERT INTO StateGroup VALUES(-10, 'PhaseStatus', 'Status');
-INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status' );
+INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status');
 INSERT INTO StateGroup VALUES(-8, 'TwoStateActive', 'Status');
 INSERT INTO stategroup VALUES(-7, 'Thread Monitor', 'Status');
 INSERT INTO stategroup VALUES(-6, '410 Disconnect', 'Status');
 INSERT INTO StateGroup VALUES(-5, 'Event Priority', 'System' );
-INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator' );
-INSERT INTO StateGroup VALUES(-3, 'DefaultCalculated', 'Calculated' );
-INSERT INTO StateGroup VALUES(-1, 'DefaultAnalog', 'Analog' );
-INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System' );
-INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status' );
-INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status' );
-INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status' );
-INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
-INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
-INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
+INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator');
+INSERT INTO StateGroup VALUES(-3, 'DefaultCalculated', 'Calculated');
+INSERT INTO StateGroup VALUES(-1, 'DefaultAnalog', 'Analog');
+INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System');
+INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status');
+INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status');
+INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status');
+INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status');
+INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status');
+INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status');
 
 /*==============================================================*/
 /* Index: Indx_STATEGRP_Nme                                     */
