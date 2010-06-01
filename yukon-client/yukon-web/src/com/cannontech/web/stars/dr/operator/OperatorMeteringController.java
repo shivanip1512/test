@@ -65,6 +65,12 @@ public class OperatorMeteringController {
 			return "redirect:selectTrends";
 		}
 		
+		// if no gdefid is specified redirect with the first gdefid for the account. This will avoid the GraphBean trying to display it's cached gdefid or gdefid=-1. 
+		if (gdefid == null && customerGraphs.size() > 0) {
+			modelMap.addAttribute("gdefid", customerGraphs.get(0).getGraphDefinitionId());
+			return "redirect:viewTrend";
+		}
+		
 		List<CustomerGraphWrapper> customerGraphWrappers = Lists.newArrayListWithCapacity(customerGraphs.size());
 		for (CustomerGraph customerGraph :customerGraphs) {
 			String graphName = customerGraphDao.getGraphName(customerGraph.getGraphDefinitionId());

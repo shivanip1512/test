@@ -18,7 +18,7 @@ if (graphBean == null) {
 	graphBean = (GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 }
 
-graphBean.setGdefid((request.getParameter("gdefid") == null ? 1 : Integer.parseInt(request.getParameter("gdefid"))));
+graphBean.setGdefid((request.getParameter("gdefid") == null ? -1 : Integer.parseInt(request.getParameter("gdefid")))); // default to gdefid -1 so no graph is displayed.
 graphBean.setPage((request.getParameter("page") == null ? 1 : Integer.parseInt(request.getParameter("page"))));
 	
 final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -95,6 +95,7 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 								
 							<%}	else { // "graph" is default %>
 								<cti:url var="graphGeneratorUrl" value="/servlet/GraphGenerator">
+									<cti:param name="action" value="EncodeGraph"/>
 									<cti:param name="action" value="EncodeGraph"/>
 								</cti:url>
 								<img id="theGraph" src="${graphGeneratorUrl}"> 
