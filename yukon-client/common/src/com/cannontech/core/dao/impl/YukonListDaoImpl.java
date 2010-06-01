@@ -128,7 +128,10 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
                 // This value has to get a string and create an Integer due to the
                 // energyCompanyId possibly being null.
-                selectionList.setEnergyCompanyId(new Integer(rs.getString("EnergyCompanyId")));
+                String energyCompanyIdStr = rs.getString("EnergyCompanyId");
+                if (energyCompanyIdStr != null) {
+                    selectionList.setEnergyCompanyId(new Integer(energyCompanyIdStr));
+                }
                 
                 List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
                 selectionList.setYukonListEntries(allListEntries);
