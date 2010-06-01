@@ -10,7 +10,7 @@ public enum OperatorAccountSearchBy implements DisplayableEnum {
     SERIAL_NUMBER,
     MAP_NUMBER,
     ADDRESS,
-    ALT_TRACING_NUMBER,
+    ALT_TRACKING_NUMBER,
     COMPANY;
 
     @Override

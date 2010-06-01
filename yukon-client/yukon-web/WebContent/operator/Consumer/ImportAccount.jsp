@@ -31,9 +31,49 @@
           <td  valign="top" width="101">&nbsp;</td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" height="400" valign="top" bgcolor="#FFFFFF">
+			<div align="right">
+				<form id="searchForm" action="/spring/stars/operator/account/search" method="get">
+					<div style="padding-top:8px;padding-bottom:8px;">
+						<select name="searchBy" onchange="$('accountSearchValue').value = ''">
+							<option value="ACCOUNT_NUMBER">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.ACCOUNT_NUMBER" />
+							</option>
+							<option value="PHONE_NUMBER">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.PHONE_NUMBER" />
+							</option>
+							<option value="LAST_NAME">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.LAST_NAME" />
+							</option>
+							<option value="SERIAL_NUMBER">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.SERIAL_NUMBER" />
+							</option>
+							<option value="MAP_NUMBER">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.MAP_NUMBER" />
+							</option>
+							<option value="ADDRESS">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.ADDRESS" />
+							</option>
+							<option value="ALT_TRACKING_NUMBER">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.ALT_TRACKING_NUMBER" />
+							</option>
+							<option value="COMPANY">
+								<cti:msg key="yukon.web.modules.operator.accountSearchByEnum.COMPANY" />
+							</option>
+						</select>
+						<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}" />
+						<input type="submit" value="Search" />
+					</div>
+				</form>
+			</div>
+			<br />
             <div align="center"> 
               <% String header = "IMPORT ACCOUNT DATA"; %>
-              <%@ include file="include/InfoSearchBar2.jspf" %>
+              	<table width="100%" border="0" cellspacing="0" cellpadding="3">
+  					<tr> 
+    					<td align="center" class="TitleHeader"><%= header %></td>
+  					</tr>
+				</table>
+				<br />
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg.replaceAll(System.getProperty("line.separator"), "<br>") + "</span><br>"); %>
 			  <form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/ImportManager" enctype="multipart/form-data">

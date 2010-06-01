@@ -16,7 +16,7 @@
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.SERIAL_NUMBER">Serial Number</entry>
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.MAP_NUMBER">Map Number</entry>
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.ADDRESS">Address</entry>
-	<entry key="yukon.web.modules.operator.accountSearchByEnum.ALT_TRACING_NUMBER">Alt Tracking Number</entry>
+	<entry key="yukon.web.modules.operator.accountSearchByEnum.ALT_TRACKING_NUMBER">Alt Tracking Number</entry>
 	<entry key="yukon.web.modules.operator.accountSearchByEnum.COMPANY">Company</entry>
 	
 	<!-- OperatorGeneralSearchServiceImpl -->

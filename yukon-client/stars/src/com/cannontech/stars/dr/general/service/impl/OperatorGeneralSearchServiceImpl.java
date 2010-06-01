@@ -98,7 +98,7 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
 	        }
 	        
 	        // by alternate tracking number
-	        else if (searchBy == OperatorAccountSearchBy.ALT_TRACING_NUMBER) {
+	        else if (searchBy == OperatorAccountSearchBy.ALT_TRACKING_NUMBER) {
 	        	accountIds = operatorAccountSearchDao.getAccountIdsByAltTrackingNumber(searchValue, searchEnergyCompanyIds);
 	        }
 	        
