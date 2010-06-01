@@ -138,7 +138,7 @@
                 		<tr>
                 			<td class="normalBoldLabel">DEVICE_GROUP_PREFIX</td>
                 			<td>The full path of the group to be prefixed to the group name value in each row.<br><br>
-                				Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meter/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
+                				Example: If the header is <b>DEVICE_GROUP_PREFIX:prefix=/Meters/Collection</b>, and the value in the row is <b>A</b>, then the device will be added to <b>/Meters/Collection/A</b>.<br><br>
                 				In addition, the device will be removed from all other groups under <b>/Meters/Collection<b>.<br><br>
                 			</td>
                 			<td></td>
