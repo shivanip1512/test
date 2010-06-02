@@ -17,8 +17,8 @@
 	}
 	String feederName = "null";
 	String subName = "null";
-	Integer substationID = null;
-	Integer areaID = null;
+	int substationID = 0;
+	int areaID = 0;
 	if( feederID != null){
 		Integer fid = Integer.valueOf(feederID);
 		Feeder feederobj = capControlCache.getFeeder(fid);
