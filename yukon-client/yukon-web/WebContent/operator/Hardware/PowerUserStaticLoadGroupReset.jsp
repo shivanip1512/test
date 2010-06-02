@@ -12,7 +12,6 @@
     <jsp:setProperty name="resultSetBean" property="htmlStyle" value="<%= InventoryBean.HTML_STYLE_INVENTORY_SET %>"/>
     <jsp:setProperty name="resultSetBean" property="page" value="1"/>
     <jsp:setProperty name="resultSetBean" property="referer" value="<%= session.getAttribute(ServletUtils.ATT_REFERRER) %>"/>
-    <% resultSetBean.resetInventoryList(); %>
 <% } %>
 
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
@@ -137,7 +136,6 @@
                                 if (inventorySet != null) {
                                     resultSetBean.setInventorySet(inventorySet);
                                 %>
-                                    <%= resultSetBean.getHTML(request) %> 
                                 <% } %>
                             </td> 
                         </c:when>

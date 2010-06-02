@@ -65,6 +65,7 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.ContactNotification;
+import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -292,6 +293,16 @@ public class ServletUtils {
         } catch (TransactionException e) {
             CTILogger.error(e.getMessage(), e);
         }
+    }
+    
+    public static String getApplianceDescription(StarsEnrollmentPrograms categories, StarsAppliance  appliance) {
+        for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
+            StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
+            if (category.getApplianceCategoryID() == appliance.getApplianceCategoryID())
+                return category.getDescription();
+        }
+        
+        return "(none)";
     }
 
     public static void sendEnableCommand(LiteStarsEnergyCompany energyCompany,

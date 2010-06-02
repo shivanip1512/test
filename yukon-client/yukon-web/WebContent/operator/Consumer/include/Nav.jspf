@@ -449,7 +449,7 @@
           </cti:checkMultiProperty>
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ %>"> 
 <%
-	String faqLink = ServletUtils.getCustomerFAQLink(user, liteEC);
+	String faqLink = ServletUtils.getCustomerFAQLink(liteEC);
 	if (faqLink != null) {
 %>
           <tr>
