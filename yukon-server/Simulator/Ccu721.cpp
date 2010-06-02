@@ -219,14 +219,14 @@ error_t Ccu721::extractRequestInfo_Dtran(const bytes &command_data, request_info
 
     info.dtran.message.assign(command_data.begin(), command_data.end());
 
-    queue_entry::request_info &request = info.dtran.data.request;
+    queue_entry::request_info &request = info.dtran.bookkeeperEntry.request;
 
-    info.dtran.data.sequence = command_data[index] | command_data[index + 1] << 8;
-    info.dtran.data.request.bus = command_data[index + 2] & 0x07;
-    info.dtran.data.request.broadcast = command_data[index + 2] & 0x10;
-    info.dtran.data.request.dlcType = command_data[index + 2] & 0xe0;
-    info.dtran.data.request.stagesToFollow = command_data[index + 3];
-    info.dtran.data.request.length = command_data[index + 4];
+    info.dtran.bookkeeperEntry.sequence = command_data[index] | command_data[index + 1] << 8;
+    info.dtran.bookkeeperEntry.request.bus = command_data[index + 2] & 0x07;
+    info.dtran.bookkeeperEntry.request.broadcast = command_data[index + 2] & 0x10;
+    info.dtran.bookkeeperEntry.request.dlcType = command_data[index + 2] & 0xe0;
+    info.dtran.bookkeeperEntry.request.stagesToFollow = command_data[index + 3];
+    info.dtran.bookkeeperEntry.request.length = command_data[index + 4];
 
     switch( command_data[index + 5] & 0xf0 )
     {
@@ -251,7 +251,7 @@ error_t Ccu721::extractRequestInfo_Dtran(const bytes &command_data, request_info
             bytes b_word_buf = bytes(command_data.begin() + (index + 4), command_data.begin() + (index + 11));
 
             // Create it and store it in the holder.
-            EmetconWord::restoreWords(command_data,b_word_holder);
+            EmetconWord::restoreWords(b_word_buf,b_word_holder);
 
             const EmetconWordB &bWord = *boost::static_pointer_cast<const EmetconWordB>(b_word_holder[0]);
 
@@ -625,7 +625,7 @@ error_t Ccu721::extractQueueEntry(const bytes &command_data, int index, int next
                 bytes b_word_buf = bytes(command_data.begin() + (index + 4), command_data.begin() + (index + 11));
 
                 // Create it and store it in the holder.
-                EmetconWord::restoreWords(command_data,b_word_holder);
+                EmetconWord::restoreWords(b_word_buf,b_word_holder);
 
                 const EmetconWordB &bWord = *boost::static_pointer_cast<const EmetconWordB>(b_word_holder[0]);
 
@@ -1065,17 +1065,17 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
     bytes request_buf;
     byte_appender request_oitr(request_buf);
 
-    request.info.dtran.data.request.b_word.serialize(request_oitr);
-    for each ( const EmetconWordC &cword in request.info.dtran.data.request.c_words )
+    request.info.dtran.bookkeeperEntry.request.b_word.serialize(request_oitr);
+    for each ( const EmetconWordC &cword in request.info.dtran.bookkeeperEntry.request.c_words )
     {
         cword.serialize(request_oitr);
     }
 
-    reply.info.dtran.sequence = request.info.dtran.data.sequence;
+    reply.info.dtran.sequence = request.info.dtran.bookkeeperEntry.sequence;
 
-    Sleep(dlc_time(request_buf.size() * 8) * (request.info.dtran.data.request.stagesToFollow + 1));
+    Sleep(dlc_time(request_buf.size() * 8) * (request.info.dtran.bookkeeperEntry.request.stagesToFollow + 1));
 
-    if( !request.info.dtran.data.request.b_word.words_to_follow )
+    if( !request.info.dtran.bookkeeperEntry.request.b_word.words_to_follow )
     {
         Grid.oneWayCommand(request_buf);
     }
@@ -1086,7 +1086,7 @@ error_t Ccu721::processDtranRequest(const idlc_request &request, idlc_reply &rep
 
         Grid.twoWayCommand(request_buf, reply_buf);
 
-        Sleep(dlc_time(reply_buf.size() * 8) * (request.info.dtran.data.request.stagesToFollow + 1));
+        Sleep(dlc_time(reply_buf.size() * 8) * (request.info.dtran.bookkeeperEntry.request.stagesToFollow + 1));
 
         words_t reply_words;
 

@@ -144,15 +144,9 @@ private:
             CtiTime arrival;
     
             bool broadcast;
-    
-            //unsigned address;
             unsigned bus;
-            //unsigned repeater_fixed;
-            //unsigned repeater_variable;
-            //unsigned function_code;
             unsigned length;
             unsigned stagesToFollow;
-    
             unsigned short dlcType;
     
             EmetconWord::WordTypes word_type;
@@ -322,7 +316,7 @@ private:
 
         struct dtran_info
         {
-            queue_entry data;
+            queue_entry bookkeeperEntry;
             bytes message;
 
         } dtran;
