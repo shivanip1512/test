@@ -17,12 +17,17 @@
 	}
 	String feederName = "null";
 	String subName = "null";
+	Integer substationID = null;
+	Integer areaID = null;
 	if( feederID != null){
 		Integer fid = Integer.valueOf(feederID);
 		Feeder feederobj = capControlCache.getFeeder(fid);
 		feederName = feederobj.getCcName();
 		SubBus sub = capControlCache.getSubBus(feederobj.getParentID());
 		subName = sub.getCcName();
+		substationID = sub.getParentID();
+		SubStation substation = capControlCache.getSubstation(substationID);
+		areaID = substation.getParentID();
 	}
 %>
 
@@ -35,8 +40,7 @@
 	
 	<div style="text-align: center;font-weight: bold;">CapBank moved to <%= feederName %> on <%= subName %>. </div>
 	<% if( subbusID != null ) {%>
-		<div style="text-align: center;"><a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subbusID %>&redirectURL=/capcontrol/feeders.jsp">Return to OneLine</a></div>
-
+		<div style="text-align: center;"><a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subbusID %>&redirectURL=/spring/capcontrol/tier/feeders?isSpecialArea=false&subStationId=<%=substationID %>&areaId=<%=areaID %>">Return to OneLine</a></div>
 	<%} %>
 </form>
 </div>
