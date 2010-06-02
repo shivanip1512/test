@@ -80,7 +80,8 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 	
 	   if( (str = com.cannontech.database.db.route.RepeaterRoute.isRepeaterUsed(theID)) != null )
 	   {
-	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the route named '"+ str + "'") );
+	      dbRes.getDescriptionMsg().append( new StringBuffer(CR_LF + "because it is utilized by the route named '"+ str + "'"
+	                                                         + CR_LF + "Please check the Repeater Setup tab for the route named '"+ str + "'") );
 	      return DBDeletionDao.STATUS_DISALLOW;
 	   }
 	   
@@ -123,7 +124,8 @@ public class DBDeletionDaoImpl implements DBDeletionDao
 		
 		if( (str = RouteBase.hasRepeater(theID)) != null )
 		{
-			dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the repeater named '"+ str + "'");
+			dbRes.getDescriptionMsg().append(CR_LF + "because it is utilized by the repeater named '"+ str + "'"
+			                                 + CR_LF + "Please check the Repeater Setup tab for this route.");
 			return DBDeletionDao.STATUS_DISALLOW;
 		}
 		
