@@ -68,8 +68,6 @@ string     dbPassword("yukon");
 IM_EX_CTIBASE string     VanGoghMachine("127.0.0.1");     // Connect locally if we don't know any better
 IM_EX_CTIBASE string     NotificationMachine("127.0.0.1");     // Connect locally if we don't know any better
 IM_EX_CTIBASE INT        NotificationPort = NOTIFICATIONNEXUS;
-IM_EX_CTIBASE string     gSMTPServer("mail");
-IM_EX_CTIBASE string     gEmailFrom;
 IM_EX_CTIBASE string     gLogDirectory("\\yukon\\server\\log");
 IM_EX_CTIBASE bool          gLogPorts = false;
 IM_EX_CTIBASE bool          gOptimizeVersacom = false;
@@ -80,7 +78,6 @@ IM_EX_CTIBASE INT           Double = {FALSE};
 IM_EX_CTIBASE INT           useVersacomTypeFourControl = 0;  // Jeesh if you can't figure this out...
 IM_EX_CTIBASE INT           ModemConnectionTimeout = 60;     // Modem Connection Timeout in seconds (60 def.)
 IM_EX_CTIBASE int           gMaxDBConnectionCount = 10;      // Maximum number of DB connections to allow to remain open.
-IM_EX_CTIBASE bool          gIDLCEchoSuppression  = false;   // Eat up IDLC echoes on the comm channel (usually from satellite, etc)
 IM_EX_CTIBASE bool          gDNPVerbose = false;
 IM_EX_CTIBASE UINT          gDNPInternalRetries = 2;
 IM_EX_CTIBASE bool          gDNPOfflineNonUpdated = false;
@@ -321,41 +318,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         ModemConnectionTimeout = 60;
         if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to 60 seconds" << endl;
-    }
-
-    if( !(str = gConfigParms.getValueAsString("YUKON_SMTP_SERVER")).empty() )
-    {
-        gSMTPServer = str.c_str();
-        if(DebugLevel & 0x0001) cout << "SMTP Server set to " << gSMTPServer << endl;
-    }
-    else
-    {
-        gSMTPServer = "mail";
-        if(DebugLevel & 0x0001) cout << "SMTP Server defaulted to " << gSMTPServer << endl;
-        if(DebugLevel & 0x0001) cout << "  Use YUKON_SMTP_SERVER to set SMTP Server" << endl;
-    }
-
-    if( !(str = gConfigParms.getValueAsString("YUKON_EMAIL_FROM")).empty() )
-    {
-        gEmailFrom = str;
-        if(DebugLevel & 0x0001) cout << "Sent email is from " << gEmailFrom << endl;
-    }
-    else
-    {
-        CHAR buf[UNLEN+1];
-        DWORD len = sizeof(buf)-1;
-
-        if(!GetUserName(buf, &len))
-        {
-            gEmailFrom = "notification@yukon_master.com";
-        }
-        else
-        {
-            gEmailFrom = string(buf);
-        }
-
-        if(DebugLevel & 0x0001) cout << "Sent email from address defaulted to current logged user" << gEmailFrom << endl;
-        if(DebugLevel & 0x0001) cout << "  Use YUKON_EMAIL_FROM to set reply address" << endl;
     }
 
     gLogDirectory = gConfigParms.getValueAsPath("LOG_DIRECTORY", "server\\log");

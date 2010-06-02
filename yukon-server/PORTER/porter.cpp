@@ -1739,16 +1739,6 @@ void LoadPorterGlobals(void)
     }
 
 
-    if(!(Temp = gConfigParms.getValueAsString("PORTER_IDLC_ECHO_SUPPRESSION")).empty())
-    {
-        std::transform(Temp.begin(), Temp.end(), Temp.begin(), ::tolower);
-
-        if( Temp == "true" || Temp == "yes")
-        {
-            gIDLCEchoSuppression = true;
-        }
-    }
-
     if(!(Temp = gConfigParms.getValueAsString("PORTER_CCU_DELAY_FILE")).empty())
     {
         gDelayDatFile = Temp;

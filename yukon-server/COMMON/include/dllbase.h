@@ -76,9 +76,7 @@ IM_EX_CTIBASE extern RWMutexLock       coutMux;
 IM_EX_CTIBASE extern string      VanGoghMachine;
 IM_EX_CTIBASE extern string      NotificationMachine;
 IM_EX_CTIBASE extern int         NotificationPort;
-IM_EX_CTIBASE extern string      gSMTPServer;
 IM_EX_CTIBASE extern string      gLogDirectory;
-IM_EX_CTIBASE extern string      gEmailFrom;
 
 IM_EX_CTIBASE extern bool           gLogPorts;                    // Write port data to portname.dayofmonth
 IM_EX_CTIBASE extern bool           gDoPrefix;                    // Attach a prefix to TAP transmissions
@@ -89,7 +87,6 @@ IM_EX_CTIBASE extern int            useVersacomTypeFourControl;   // Jeesh if yo
 IM_EX_CTIBASE extern int            gMaxDBConnectionCount;        // Maximum number of DB connections to allow to remain open.
 
 IM_EX_CTIBASE extern int            ModemConnectionTimeout;      // Modem Connection Timeout in seconds (60 def.)
-IM_EX_CTIBASE extern bool           gIDLCEchoSuppression;
 IM_EX_CTIBASE extern bool           gDNPVerbose;
 IM_EX_CTIBASE extern UINT           gDNPInternalRetries;
 IM_EX_CTIBASE extern bool           gDNPOfflineNonUpdated;

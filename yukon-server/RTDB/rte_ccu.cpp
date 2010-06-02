@@ -55,9 +55,6 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
                                 list< OUTMESS* >         &outList)
 {
     INT      status = NORMAL;
-    CHAR     temp[80];
-
-    BASEDLL_IMPORT extern CTINEXUS PorterNexus;
 
     if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
     {
@@ -71,7 +68,7 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
             OutMessage->Port     = _transmitterDevice->getPortID();
             OutMessage->Remote   = _transmitterDevice->getAddress();    // This is the DLC address if the CCU.
 
-            if( NoQueing || isForeignCcuPort(OutMessage->Port) )
+            if( NoQueing || isForeignCcuPort(OutMessage->Port) || _transmitterDevice->hasExclusions() )
             {
                 OutMessage->EventCode |=  DTRAN;
                 OutMessage->EventCode &= ~QUEUED;
@@ -519,7 +516,6 @@ INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
     string      resultString;
     string      byteString;
     BSTRUCT        BSt;
-    VSTRUCT        VSt;
 
     unsigned cwordCount = 0;
 
