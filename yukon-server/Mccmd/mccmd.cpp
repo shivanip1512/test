@@ -86,7 +86,7 @@ RWThread MessageThr;
 CtiTime gLastReturnMessageReceived(0UL);
 
 // Used to distinguish unique requests/responses to/from pil
-unsigned char gUserMessageID = 0;
+unsigned short gUserMessageID = 0;
 
 void _MessageThrFunc()
 {
@@ -1691,9 +1691,6 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 
     if( timeout != 0 ) // don't bother if we don't want responses
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-        InQueueStore.insertKeyAndValue(msgid, queue_ptr);
-
         if( jobId > 0 )
         {
             requestLogId = SynchronizedIdGen("DeviceReadRequestLog", 1);
@@ -1726,10 +1723,21 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         multi_req->getData().push_back(req);
     }
 
-    PILConnection->WriteConnQue(multi_req);
-
-    if( timeout == 0 ) // Not waiting for responses so we're done
+    if( timeout == 0 ) // We dont care about responses, dont set up the queue, send the message and exit.
+    {
+        PILConnection->WriteConnQue(multi_req);
         return TCL_OK;
+    }
+    else // We do care about responses, set up the queue, send the message and continue.
+    {
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
+            InQueueStore.insertKeyAndValue(msgid, queue_ptr);
+            // Note from this point on, no early return is allowed as this queue must be un-initialized.
+        }
+
+        PILConnection->WriteConnQue(multi_req);
+    }
 
     CtiTime start;
     CtiTime lastPorterCountTime;
