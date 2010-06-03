@@ -138,7 +138,7 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         sql.append("and p.pointid = cAction.pointid ");
         sql.append("and cAction.actionId = cOutcome.actionId ");
         sql.append("and cAction.actionid > 0 ");
-        sql.append("and (cAction.text like 'Open sent,%' or cAction.text like 'Close sent,%') ");
+        sql.append("and (cAction.text like 'Open Sent,%' or cAction.text like 'Close Sent,%') ");
         sql.append("and (cOutcome.text like 'Var:%') ");
         sql.append("and ypSB.paobjectid = cAction.subID ");
         sql.append("and ypF.paobjectid = cAction.feederID ");

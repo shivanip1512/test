@@ -2,7 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -104,13 +103,13 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
         sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from cceventlog where datetime > ").appendArgument(new java.sql.Timestamp(getStartDate().getTime()));
         sql.append(" and datetime < ").appendArgument(new java.sql.Timestamp(getStopDate().getTime()));
-        sql.append(" and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
+        sql.append(" and (text like '%Close Sent,%' or text like '%Open Sent,%' )) op ");
         sql.append("left join (select el.logid opid, min(el2.logid) confid from cceventlog el ");
         sql.append("join cceventlog el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
         sql.append("from cceventlog a, cceventlog b where a.pointid = b.pointid ");
-        sql.append("and (a.text like '%Close sent,%' or a.text like '%Open sent,%') and (b.text like '%Close sent,%' or b.text like '%Open sent,%')  ");
+        sql.append("and (a.text like '%Close Sent,%' or a.text like '%Open Sent,%') and (b.text like '%Close Sent,%' or b.text like '%Open Sent,%')  ");
         sql.append("and b.logid > a.logid group by a.logid) el3 on el3.aid = el.logid ");
-        sql.append("where (el.text like '%Close sent,%'  or el.text like '%Open sent,%') and el2.text like 'Var: %' ");
+        sql.append("where (el.text like '%Close Sent,%'  or el.text like '%Open Sent,%') and el2.text like 'Var: %' ");
         sql.append("and el2.logid > el.logid and (el2.logid < el3.next_aid  or el3.next_aid is null) ");
         sql.append("group by el.logid ) aaa on op.logid = aaa.opid group by op.logid ) OpConf ");
         sql.append("join cceventlog el on el.logid = opConf.oid left join cceventlog el2 on el2.logid = opConf.cid ");

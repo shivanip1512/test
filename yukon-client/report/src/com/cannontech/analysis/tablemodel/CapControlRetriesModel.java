@@ -119,7 +119,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("group by pointid) el ");
         sql.append("join point p on p.pointid = el.pointid ");
         sql.append("join (select pointid, count(*) ct from cceventlog ");
-        sql.append("where (text like '%Open sent%' or text like '%Close sent%') ");
+        sql.append("where (text like '%Open Sent%' or text like '%Close Sent%') ");
         sql.append("and datetime > ? ");
         sql.append("and datetime <= ? ");
         sql.append("group by pointid) el2 on el2.pointid = el.pointid ");
