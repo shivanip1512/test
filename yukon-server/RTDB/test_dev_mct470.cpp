@@ -59,14 +59,9 @@ unsigned long build_gmt_seconds(const utc34_checker_expected_time &e)
     const CtiTime local_time(CtiDate(e.day, e.month, e.year), e.hour, e.minute);
 
     //  ...  however, we really wanted the parameters interpreted as if they were GMT.
-    //  To adjust the time back, we have to play a trick with the underlying seconds.
-
-    //  ::asGMT adds local_offset again to give GMT wall-clock time, which is not
-    //    what we want.  However, we can use that to our advantage:
-    //        local_offset = local_time.asGMT()           - local_time
-    //        local_offset = local_time + local_offset    - local_time
-    //        local_offset =              local_offset
-    const int local_offset = local_time.asGMT().seconds() - local_time.seconds();
+    //  To adjust the time back, we need the offset between the local_time and the same
+    //  time expressed in GMT.
+    const int local_offset = local_time.secondOffsetToGMT();
 
     //  GMT = local_time - local_offset
     return local_time.seconds() - local_offset;

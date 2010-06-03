@@ -189,6 +189,23 @@ CtiDate CtiTime::date() const
     }
     return cd;
 }
+
+CtiDate CtiTime::dateGMT() const
+{
+    CtiDate cd(CtiDate::not_a_date);
+    if(!is_special()){
+        struct tm ctm;
+        ctm = *gmtime(&_seconds);
+        cd = CtiDate( ctm.tm_mday, ctm.tm_mon+1, ctm.tm_year+1900);
+        //cd = CtiDate( this);
+    } else if(is_neg_infinity()) {
+        cd = CtiDate(CtiDate::neg_infin);
+    } else if(is_pos_infinity()) {
+        cd = CtiDate(CtiDate::pos_infin);
+    }
+    return cd;
+}
+
 int CtiTime::day() const
 {
     if(!is_special()){
@@ -197,9 +214,18 @@ int CtiTime::day() const
         return ctm.tm_mday;
     }
     return -1;
-
-
 }
+
+int CtiTime::dayGMT() const
+{
+    if(!is_special()){
+        struct tm ctm;
+        ctm = *gmtime(&_seconds);
+        return ctm.tm_mday;
+    }
+    return -1;
+}
+
 int CtiTime::second()  const
 {
     if(!is_special()){
@@ -210,6 +236,15 @@ int CtiTime::second()  const
     return -1;
 }
 
+int CtiTime::secondGMT()  const
+{
+    if(!is_special()){
+        struct tm ctm;
+        ctm = *gmtime(&_seconds);
+        return ctm.tm_sec;
+    }
+    return -1;
+}
 
 int CtiTime::minute()  const
 {
@@ -220,6 +255,7 @@ int CtiTime::minute()  const
     }
     return -1;
 }
+
 int CtiTime::minuteGMT()  const
 {
     if(!is_special()){
@@ -229,7 +265,6 @@ int CtiTime::minuteGMT()  const
     }
     return -1;
 }
-
 
 int CtiTime::hour()  const
 {
@@ -254,22 +289,6 @@ int CtiTime::hourGMT()  const
 ctitime_t CtiTime::seconds() const
 {
     return _seconds;
-}
-
-CtiTime CtiTime::asGMT() const
-{
-    CtiTime t(*this);
-
-    //  need to determine if we were in DST or not
-    tm ctm = *localtime(&_seconds);
-
-    _TIME_ZONE_INFORMATION tzinfo;
-    GetTimeZoneInformation(&tzinfo);
-
-    //  Biases are in minutes
-    t.addSeconds((tzinfo.Bias + (ctm.tm_isdst?tzinfo.DaylightBias:tzinfo.StandardBias)) * SECONDS_PER_MINUTE );
-
-    return t;
 }
 
 /**
@@ -392,6 +411,32 @@ string CtiTime::asString()  const
 #endif
 }
 
+string CtiTime::asGMTString()  const
+{
+    if(!isValid()){
+        return string("not-a-time");
+    } else if(is_neg_infinity()){
+        return string("neg-infinity");
+    } else if(is_pos_infinity()){
+        return string("pos-infinity");
+    }
+
+    //  date format "mm/dd/yyyy HH:MM:SS" - 19 chars needed, plus null
+    char time_str[20];
+
+    strftime(time_str, 20, "%m/%d/%Y %H:%M:%S", gmtime(&_seconds));
+    time_str[19] = 0;
+
+#if 0
+    std::stringstream ss;
+    ss.imbue(std::locale::classic());
+    ss << s;
+    return ss.str();
+#else
+    return string(time_str);
+#endif
+}
+
 struct tm* CtiTime::gmtime_r(const time_t *tod){
     struct thread_tm* ss = new thread_tm(thread_tm::gm, tod);
     tm_value.reset(ss);
@@ -484,4 +529,20 @@ std::ostream& operator<< (std::ostream& s, const CtiTime& t)
     return s;
 }
 
+/*
+    Returns the number of seconds of offset between the local time and the same time expressed in GMT.
+        Q: How many seconds between (for example) 01/01/2010 00:00:00 GMT and 01/01/2010 00:00:00 CST
+        A:  21600
+        Q: How many seconds between (for example) 07/01/2010 00:00:00 GMT and 07/01/2010 00:00:00 CDT
+        A:  18000
+*/
+long CtiTime::secondOffsetToGMT() const
+{
+    tm ctm = *localtime(&_seconds);
+
+    _TIME_ZONE_INFORMATION tzinfo;
+    GetTimeZoneInformation(&tzinfo);
+
+    return (tzinfo.Bias + (ctm.tm_isdst ? tzinfo.DaylightBias : tzinfo.StandardBias)) * SECONDS_PER_MINUTE;
+}
 

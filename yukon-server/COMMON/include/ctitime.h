@@ -58,18 +58,19 @@ public:
     CtiTime& operator += (const int secs);
     CtiTime& operator -= (const int secs);
 
-
-    CtiTime  asGMT() const;
     static CtiTime fromLocalSeconds(const unsigned long local_seconds);
 
     int day() const;
+    int dayGMT() const;
     int second() const;
+    int secondGMT() const;
     ctitime_t seconds() const;
     int minute() const;
     int minuteGMT()const;
     int hour() const;
     int hourGMT() const;
     CtiDate date() const;
+    CtiDate dateGMT() const;
 
     void extract(struct tm*) const;
     unsigned long toRwSeconds() const;
@@ -80,8 +81,10 @@ public:
     bool is_neg_infinity() const;
     bool is_pos_infinity() const;
 
+    long secondOffsetToGMT() const;
 
     std::string asString() const;
+    std::string asGMTString() const;
 
     CtiTime addDays(const int days, bool DSTflag = true);
 

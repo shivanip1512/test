@@ -118,6 +118,9 @@ private:
     int _timefmt;
 
     ULONG _meterServerTimeDifference;
+
+    bool meterTimeIsGMT() const;
+
 public:
 
    CtiAnsiTable52(int timefmat  );

@@ -402,105 +402,138 @@ BOOST_AUTO_TEST_CASE(test_ctitime_fromLocalSeconds)
     BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[14]), CtiTime::fromLocalSeconds(mkLocalSeconds(tc2009[14])).seconds());
 }
 
-/*
-BOOST_AUTO_TEST_CASE(test_ctitime_asGMT)
+
+BOOST_AUTO_TEST_CASE(test_ctitime_GMT_conversions)
 {
-    //  hard-coded assumptions for our local timezone (Central Time)
-    const int standard_offset = -6 * 3600;
-    const int daylight_offset = -5 * 3600;
+    // Wed Jan 20th, 2010 at 12:00:00 CST == Wed Jan 20th, 2010 at 18:00:00 GMT
 
-    //  =====  2009 test cases  =====
-    time_parts tc2009[11] =
-    {
-        { 2009,  1,  1,  0,  0,  0, standard_offset },  //  known ST date
+    CtiTime theTime( CtiDate( 20, 1, 2010),  12,  0,  0  );
 
-        { 2009,  3,  7,  0,  0,  0, standard_offset },  //  standard -> daylight-saving-time transition
-        { 2009,  3,  8,  1, 59, 59, standard_offset },  //
-        { 2009,  3,  8,  3,  0,  0, daylight_offset },  //
-        { 2009,  3,  9,  0,  0,  0, daylight_offset },  //
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 18               , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
 
-        { 2009,  7,  1,  0,  0,  0, daylight_offset },  //  known DST date
 
-        { 2009, 10, 31,  0,  0,  0, daylight_offset },  //  daylight-saving-time -> standard transition
-        { 2009, 11,  1,  0, 59, 59, daylight_offset },  //
-        { 2009, 11,  1,  3,  0,  0, standard_offset },  //
-        { 2009, 11,  2,  0,  0,  0, standard_offset },  //
+    // Wed Jan 20th, 2010 at 22:00:00 CST == Thu Jan 21st, 2010 at 04:00:00 GMT
 
-        { 2009, 12, 31,  0,  0,  0, standard_offset }   //  known ST date
-    };
+    theTime = CtiTime(CtiDate( 20, 1, 2010),  22,  0,  0  );
 
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 0]), mkGmtSeconds(tc2009[ 0]).asGMT().seconds() + tc2009[ 0].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 1]), mkGmtSeconds(tc2009[ 1]).asGMT().seconds() + tc2009[ 1].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 2]), mkGmtSeconds(tc2009[ 2]).asGMT().seconds() + tc2009[ 2].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 3]), mkGmtSeconds(tc2009[ 3]).asGMT().seconds() + tc2009[ 3].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 4]), mkGmtSeconds(tc2009[ 4]).asGMT().seconds() + tc2009[ 4].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 5]), mkGmtSeconds(tc2009[ 5]).asGMT().seconds() + tc2009[ 5].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 6]), mkGmtSeconds(tc2009[ 6]).asGMT().seconds() + tc2009[ 6].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 7]), mkGmtSeconds(tc2009[ 7]).asGMT().seconds() + tc2009[ 7].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 8]), mkGmtSeconds(tc2009[ 8]).asGMT().seconds() + tc2009[ 8].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[ 9]), mkGmtSeconds(tc2009[ 9]).asGMT().seconds() + tc2009[ 9].expected_offset);
-    BOOST_CHECK_EQUAL(mkGmtSeconds(tc2009[10]), mkGmtSeconds(tc2009[10]).asGMT().seconds() + tc2009[10].expected_offset);
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().month()         );
+    BOOST_CHECK_EQUAL( 21               , theTime.dateGMT().dayOfMonth()    );
+    BOOST_CHECK_EQUAL( 2010             , theTime.dateGMT().year()          );
+    BOOST_CHECK_EQUAL( 4                , theTime.dateGMT().weekDay()       );      // 4 == Thursday
+    BOOST_CHECK_EQUAL( 4                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
 
-    //  Historical (pre-2007) dates are not supported yet.
-    //  =====  2006 test cases  =====
-    time_parts tc2006[11] =
-    {
-        { 2006,  1,  1,  0,  0,  0, standard_offset },  //  known ST date
 
-        { 2006,  4,  1,  0,  0,  0, standard_offset },  //  standard -> daylight-saving-time transition
-        { 2006,  4,  2,  1, 59, 59, standard_offset },  //
-        { 2006,  4,  2,  3,  0,  0, daylight_offset },  //
-        { 2006,  4,  3,  0,  0,  0, daylight_offset },  //
+    // Sun Jan 31st, 2010 at 20:00:00 CST == Mon Feb 1st, 2010 at 02:00:00 GMT
 
-        { 2006,  7,  1,  0,  0,  0, daylight_offset },  //  known DST date
+    theTime = CtiTime(CtiDate( 31, 1, 2010),  20,  0,  0  );
 
-        { 2006, 10, 28,  0,  0,  0, daylight_offset },  //  daylight-saving-time -> standard transition
-        { 2006, 10, 29,  0, 59, 59, daylight_offset },  //
-        { 2006, 10, 29,  3,  0,  0, standard_offset },  //
-        { 2006, 10, 30,  0,  0,  0, standard_offset },  //
+    BOOST_CHECK_EQUAL( 2                , theTime.dateGMT().month()         );
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().dayOfMonth()    );
+    BOOST_CHECK_EQUAL( 2010             , theTime.dateGMT().year()          );
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().weekDay()       );      // 1 == Monday
+    BOOST_CHECK_EQUAL( 2                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
 
-        { 2006, 12, 31,  0,  0,  0, standard_offset }   //  known ST date
-    };
 
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 0]).seconds(), mkCtiTime(tc2006[ 0]).asGMT().seconds() + tc2006[ 0].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 1]).seconds(), mkCtiTime(tc2006[ 1]).asGMT().seconds() + tc2006[ 1].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 2]).seconds(), mkCtiTime(tc2006[ 2]).asGMT().seconds() + tc2006[ 2].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 3]).seconds(), mkCtiTime(tc2006[ 3]).asGMT().seconds() + tc2006[ 3].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 4]).seconds(), mkCtiTime(tc2006[ 4]).asGMT().seconds() + tc2006[ 4].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 5]).seconds(), mkCtiTime(tc2006[ 5]).asGMT().seconds() + tc2006[ 5].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 6]).seconds(), mkCtiTime(tc2006[ 6]).asGMT().seconds() + tc2006[ 6].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 7]).seconds(), mkCtiTime(tc2006[ 7]).asGMT().seconds() + tc2006[ 7].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 8]).seconds(), mkCtiTime(tc2006[ 8]).asGMT().seconds() + tc2006[ 8].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[ 9]).seconds(), mkCtiTime(tc2006[ 9]).asGMT().seconds() + tc2006[ 9].expected_offset);
-    BOOST_CHECK_EQUAL(mkCtiTime(tc2006[10]).seconds(), mkCtiTime(tc2006[10]).asGMT().seconds() + tc2006[10].expected_offset);
+    // Sun Mar 14th, 2010 at 1:00:00 CST == Sun Mar 14th, 2010 at 7:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  1,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 7                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 1:59:59 CST == Sun Mar 14th, 2010 at 7:59:59 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  1,  59,  59  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 7                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 59               , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 3:00:00 CDT == Sun Mar 14th, 2010 at 8:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  3,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 8                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Mar 14th, 2010 at 4:00:00 CDT == Sun Mar 14th, 2010 at 9:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 3, 2010),  4,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 9                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Wed July 14th, 2010 at 12:00:00 CDT == Wed July 14th, 2010 at 17:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 14, 7, 2010),  12,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 17               , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Nov 7th, 2010 at 00:59:59 CDT == Sun Nov 7th, 2010 at 5:59:59 GMT
+
+    theTime = CtiTime(CtiDate( 7, 11, 2010),  0, 59, 59  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 5                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 59               , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 59               , theTime.secondGMT()   );
+
+    /* 
+        Can't test for the overlapping hour between 1:00 and 2:00 CDT.  Software assumes it is in CST.
+    */
+
+    // Sun Nov 7th, 2010 at 1:00:00 CST == Sun Nov 7th, 2010 at 7:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 7, 11, 2010),  1,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 7                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Sun Nov 7th, 2010 at 4:00:00 CDT == Sun Nov 7th, 2010 at 10:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 7, 11, 2010),  4,  0,  0  );
+
+    BOOST_CHECK_EQUAL( theTime.date()   , theTime.dateGMT()     );
+    BOOST_CHECK_EQUAL( 10               , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
+
+
+    // Fri Dec 31st, 2010 at 22:00:00 CDT == Sat Jan 1st, 2011 at 4:00:00 GMT
+
+    theTime = CtiTime(CtiDate( 31, 12, 2010),  22,  0,  0  );
+
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().month()         );
+    BOOST_CHECK_EQUAL( 1                , theTime.dateGMT().dayOfMonth()    );
+    BOOST_CHECK_EQUAL( 2011             , theTime.dateGMT().year()          );
+    BOOST_CHECK_EQUAL( 6                , theTime.dateGMT().weekDay()       );      // 6 == Saturday
+    BOOST_CHECK_EQUAL( 4                , theTime.hourGMT()     );
+    BOOST_CHECK_EQUAL( 0                , theTime.minuteGMT()   );
+    BOOST_CHECK_EQUAL( 0                , theTime.secondGMT()   );
 }
-*/
-
-/*
-BOOST_AUTO_TEST_CASE(test_locale)
-{
-    using namespace boost::gregorian;
-    using namespace boost::posix_time;
-    std::stringstream ss;
-    CtiDate d1(5,1,2002);
-    CtiTime t1(d1, 12, 10, 5);
-
-    std::locale global = std::locale::classic();
-    ss.imbue(global);
-    ss << t1.asString();
-    std::cout << "using default locale: " << ss.str() << std::endl;
-}*/
-
-//test_suite*
-//init_unit_test_suite( int /*argc*/, char* /*argv*/[] ) {
-//    test_suite* test= BOOST_TEST_SUITE( "Test CtiTime" );
-//    test->add( BOOST_TEST_CASE( test_rwtime_methods )) ;
-//    test->add( BOOST_TEST_CASE( test_ctitime_methods )) ;
-//    test->add( BOOST_TEST_CASE( test_ctitime_operators ));
-//    test->add( BOOST_TEST_CASE( test_ctitime_specials ));
-//    test->add( BOOST_TEST_CASE( test_locale ) );
-//    test->add( BOOST_TEST_CASE( test_ctitime_DST ) );
-//    return test;
-//}
-
 

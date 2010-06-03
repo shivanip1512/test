@@ -149,15 +149,11 @@ void CtiDeviceGateway::sendtm_Clock (BYTE hour, BYTE minute)
 void CtiDeviceGateway::sendGMTClock (BYTE hour, BYTE minute)
 {
     TM_CLOCK tm_Clock;
-    struct tm *newtime;
     CtiTime now;
-    CtiDate today(now.asGMT());
-
-    //  Unused... ?  mskf 20070910
-    //  string gmt_str = today.asString() + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
+    CtiDate today(now.dateGMT());
 
     tm_Clock.Type    = htons (TYPE_GMTTM_CLOCK);
-    tm_Clock.tm_sec  = now.second();
+    tm_Clock.tm_sec  = now.secondGMT();
     tm_Clock.tm_min  = now.minuteGMT();
     tm_Clock.tm_hour = now.hourGMT();
     tm_Clock.tm_mday = today.dayOfMonth();

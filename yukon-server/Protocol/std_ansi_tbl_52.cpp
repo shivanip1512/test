@@ -143,9 +143,9 @@ void CtiAnsiTable52::printResult( const string& deviceName )
         dout << "                    - greenwich meantime flag "<<(bool)clock_table.time_date_qual.gmt_flag<<endl;
         dout << "                     - time zone applied flag "<<(bool)clock_table.time_date_qual.tm_zn_applied_flag<<endl;
         dout << "         - daylight savings time applied flag "<<(bool)clock_table.time_date_qual.dst_applied_flag<<endl;
-        if ( isCalendarValid() && clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
+        if ( isCalendarValid() && meterTimeIsGMT() )
         {
-            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asGMT().asString()<<endl;
+            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asGMTString()<<endl;
         }
         else
         {
@@ -162,21 +162,19 @@ bool CtiAnsiTable52::isCalendarValid()
     return CtiTime(clock_table.clock_calendar).isValid();
 }
 
+bool CtiAnsiTable52::meterTimeIsGMT() const
+{
+    return clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag;
+}
 
 CtiTime CtiAnsiTable52::getClkCldrTime()
 {
-    CtiTime meterTime = CtiTime(clock_table.clock_calendar);
-
-    if (clock_table.time_date_qual.tm_zn_applied_flag && !clock_table.time_date_qual.gmt_flag)
-    {   
-        meterTime = meterTime.asGMT();
-    }
-    return meterTime;
+    return CtiTime(clock_table.clock_calendar);
 }
 
 CtiDate CtiAnsiTable52::getClkCldrDate()
 {
-    return getClkCldrTime().date();
+    return meterTimeIsGMT() ? getClkCldrTime().dateGMT() : getClkCldrTime().date();
 }
 
 int CtiAnsiTable52::getClkCldrYear()
@@ -191,6 +189,7 @@ int CtiAnsiTable52::getClkCldrMon()
 {
     if (!isCalendarValid())
         return 0;
+
     return (int)getClkCldrDate().month();
 }
 
@@ -198,6 +197,7 @@ int CtiAnsiTable52::getClkCldrDay()
 {
     if (!isCalendarValid())
         return 0;
+
     return (int)getClkCldrDate().dayOfMonth();
 }
 
@@ -206,7 +206,7 @@ int CtiAnsiTable52::getClkCldrHour()
     if (!isCalendarValid())
         return 0;
 
-     return (int)getClkCldrTime().hour();
+    return meterTimeIsGMT() ? getClkCldrTime().hourGMT() : getClkCldrTime().hour();
 }
 
 int CtiAnsiTable52::getClkCldrMin()
@@ -214,7 +214,7 @@ int CtiAnsiTable52::getClkCldrMin()
     if (!isCalendarValid())
         return 0;
 
-    return (int)getClkCldrTime().minute();
+    return meterTimeIsGMT() ? getClkCldrTime().minuteGMT() : getClkCldrTime().minute();
 }
 
 int CtiAnsiTable52::getClkCldrSec()
@@ -222,7 +222,7 @@ int CtiAnsiTable52::getClkCldrSec()
     if (!isCalendarValid())
         return 0;
 
-    return (int)getClkCldrTime().second();
+    return meterTimeIsGMT() ? getClkCldrTime().secondGMT() : getClkCldrTime().second();
 }
 
 ULONG CtiAnsiTable52::getMeterServerTimeDifference()

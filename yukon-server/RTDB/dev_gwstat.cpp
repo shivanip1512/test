@@ -4162,13 +4162,11 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     {
         try
         {
-            CtiDate gmtdate( now.asGMT() );
             // Always record one of these
             tstamp.setSerialNumber(getDeviceSerialNumber());
             tstamp.setHardwareType(TYPE_ENERGYPRO);
             tstamp.setDataType(ID_TIMESTAMP);
-            string gmt_str = gmtdate.asString() + " " + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
-            tstamp.setDataValue( gmt_str );
+            tstamp.setDataValue( now.asGMTString() + " GMT" );
 
             ged.Update();
             tstamp.Update();

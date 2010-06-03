@@ -356,7 +356,7 @@ void CtiAnsiTable64::printResult( const string& deviceName )
                 dout << "  **B*L*O*C*K** : "<<index<<endl;
                 if (_timeZoneApplied)
                 {
-                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asGMT()<<endl;
+                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asGMTString()<<endl;
                 }
                 else
                 {
