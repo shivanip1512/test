@@ -2083,14 +2083,14 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     {
         store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Close,
                                                                        capBank, TRUE);
-        textInfo += "Close sent, ";
+        textInfo += "Close Sent, ";
         textInfo += typeOfControl;
     }
     else
     {
         store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Open,
                                                                        capBank, TRUE);
-        textInfo += "Open sent, ";
+        textInfo += "Open Sent, ";
         textInfo += typeOfControl;
     }
     capBank->setControlStatusQuality(CC_AbnormalQuality);
@@ -6894,12 +6894,12 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
     {
         case 0:
             {
-                text += "Open sent, ";
+                text += "Open Sent, ";
             }
             break;
         case 1:
             {
-                text += "Close sent, ";
+                text += "Close Sent, ";
             }
             break;
         case 2:

@@ -8700,16 +8700,16 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 
                     if (subbusId != 0)
                     {
-                        selector.where( (ccEventLogTable["text"].like("Open sent%") ||
-                                    ccEventLogTable["text"].like("Close sent%") ) &&
+                        selector.where( (ccEventLogTable["text"].like("Open Sent%") ||
+                                    ccEventLogTable["text"].like("Close Sent%") ) &&
                                     ccEventLogTable["subid"]==subbusId  &&
                                     (ccEventLogTable["datetime"] > toRWDBDT(lastSendTime - fallBackConstant) &&
                                     ccEventLogTable["datetime"] <= toRWDBDT(timeNow - fallBackConstant) ) );
                     }
                     else
                     {
-                        selector.where( (ccEventLogTable["text"].like("Open sent%") ||
-                                    ccEventLogTable["text"].like("Close sent%") ) &&
+                        selector.where( (ccEventLogTable["text"].like("Open Sent%") ||
+                                    ccEventLogTable["text"].like("Close Sent%") ) &&
                                     ccEventLogTable["feederid"]==feederId  &&
                                     (ccEventLogTable["datetime"] > toRWDBDT(lastSendTime - fallBackConstant) &&
                                     ccEventLogTable["datetime"] <= toRWDBDT(timeNow - fallBackConstant) ) );
