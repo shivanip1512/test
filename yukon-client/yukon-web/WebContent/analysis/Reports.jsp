@@ -209,20 +209,21 @@ function checkDates(){
 function makeFirstSelectedFilterValueVisible() {
 	
 	var listbox = $('selectFilterValues');	
-	var selectedOptions = new Array();
-	y=0;
-		for (x=0;x<listbox.options.length;x++){
-		if (listbox.options[x].selected){
-				selectedOptions[y]=x;
-				y++;
-		}
-		} 
-	listbox.selectedIndex=0;//this and next line prompt the listbox to 'wake up' 
-	listbox.options[0].selected=false; 
-	for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
-		listbox.options[selectedOptions[y]].selected=true;//select the options required 
-	}
-	
+    if(listbox != null) {
+    	var selectedOptions = new Array();
+    	y=0;
+    		for (x=0;x<listbox.options.length;x++){
+    		if (listbox.options[x].selected){
+    				selectedOptions[y]=x;
+    				y++;
+    		}
+    		} 
+    	listbox.selectedIndex=0;//this and next line prompt the listbox to 'wake up' 
+    	listbox.options[0].selected=false; 
+    	for (y=selectedOptions.length-1;y>-1;y--){//start from the end and work backwards so first selected item is the one scrolled to. 
+    		listbox.options[selectedOptions[y]].selected=true;//select the options required 
+    	}
+    }
 }
 
 </script>
@@ -239,7 +240,7 @@ function makeFirstSelectedFilterValueVisible() {
 	
 	final ReportModelBase<?> model = REPORT_BEAN.getModel();
     final ReportController controller = REPORT_BEAN.getReportController();
-    boolean supportPdf = controller.supportsPdf();
+    boolean supportPdf = controller == null ? true : controller.supportsPdf();
 %>
 
 	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">

@@ -52,6 +52,6 @@ public class ReportControllerAdapter extends ReportControllerBase  {
     }
     
     public boolean supportsPdf() {
-        return report.supportsPdf();
+        return getReport().supportsPdf();
     }
 }
