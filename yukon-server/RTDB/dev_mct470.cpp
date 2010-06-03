@@ -4205,7 +4205,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase + 1 ) //Currently we only support frozen rate A
                 {
                     insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset,
-                                      ReturnMsg, pi, pointname, CtiTime(), 1.0, tags);
+                                      ReturnMsg, pi, "Frozen " + pointname, CtiTime(), 1.0, tags);
                 }
 
                 pi        = getData(DSt->Message + 5, 3, ValueType_IED);
@@ -4234,7 +4234,7 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
                 if( parse.getFlags() & CMD_FLAG_FROZEN && pointOffset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
                 {
                     insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset,
-                                      ReturnMsg, pi, pointname, peak_time);
+                                      ReturnMsg, pi, "Frozen " + pointname, peak_time);
                 }
             }
         }
@@ -4277,7 +4277,7 @@ int CtiDeviceMCT470::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParse
         insertPointDataReport(AnalogPointType, consumption_offset, ReturnMsg, consumption_value, consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
         if( parse.getFlags() & CMD_FLAG_FROZEN && consumption_offset == (PointOffset_TOU_KWBase + 1) ) //Currently we only support frozen rate A
         {
-            insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset, ReturnMsg, consumption_value, consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
+            insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + 1 + PointOffset_FrozenPointOffset, ReturnMsg, consumption_value, "Frozen " + consumption_name, consumption_timestamp, 1.0, TAG_POINT_MUST_ARCHIVE);
         }
     }
 
@@ -4305,7 +4305,7 @@ int CtiDeviceMCT470::decodeGetValueIEDPrecannedTable11Peak(const CtiCommandParse
         insertPointDataReport(AnalogPointType, demand_offset, ReturnMsg, demand_value, demand_name, demand_timestamp);
         if( parse.getFlags() & CMD_FLAG_FROZEN && demand_offset == PointOffset_TOU_KWBase ) //Currently we only support frozen rate A
         {
-            insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, ReturnMsg, demand_value, demand_name, demand_timestamp);
+            insertPointDataReport(AnalogPointType, PointOffset_TOU_KWBase + PointOffset_FrozenPointOffset, ReturnMsg, demand_value, "Frozen " + demand_name, demand_timestamp);
         }
     }
 

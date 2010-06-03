@@ -2070,17 +2070,13 @@ bool CtiDeviceSingle::isDeviceAddressGlobal()
 }
 
 
-bool CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
+void CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname, const CtiTime &timestamp, double default_multiplier, int tags)
 {
-    bool pointdata_inserted = false;
     string pointname;
     CtiPointSPtr p;
-    CtiPointDataMsg *pdm = 0;
 
     if( p = getDevicePointOffsetTypeEqual(offset, type) )
     {
-        pointname = p->getName();
-
         if( p->isNumeric() )
         {
             pi.value = boost::static_pointer_cast<CtiPointNumeric>(p)->computeValueForUOM(pi.value);
@@ -2088,7 +2084,7 @@ bool CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, Cti
 
         if( pi.quality != InvalidQuality )
         {
-            pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), valueReport(p, pi, timestamp).c_str());
+            CtiPointDataMsg *pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), valueReport(p, pi, timestamp).c_str());
 
             if( is_valid_time(timestamp) )
             {
@@ -2104,35 +2100,37 @@ bool CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, Cti
 
             rm->PointData().push_back(pdm);
 
-            pointdata_inserted = true;
+            return;
         }
+
+        pointname = p->getName();
     }
     else
     {
         pointname = default_pointname;
+        pi.value *= default_multiplier;
     }
 
-    //  if there's no default pointname, we don't insert a message if the point doesn't exist
-    if( !pointdata_inserted && !pointname.empty() )
+    //  if the point doesn't exist and there's no default pointname, we don't insert a message
+    if( p || !pointname.empty() )
     {
         string result_string = rm->ResultString();
 
         if( !result_string.empty() )  result_string += "\n";
 
-        if( p )
+        result_string += valueReport(pointname, pi, timestamp);
+
+        if( !p )
         {
-            result_string += valueReport(p->getName().data(), pi, timestamp, false);
-        }
-        else
-        {
-            pi.value *= default_multiplier;
-            result_string += valueReport(pointname, pi, timestamp);
+            result_string += " (point not in DB:";
+            result_string += desolvePointType(type);
+            result_string += " ";
+            result_string += CtiNumStr(offset);
+            result_string += ")";
         }
 
-        rm->setResultString(result_string.c_str());
+        rm->setResultString(result_string);
     }
-
-    return pointdata_inserted;
 }
 
 
@@ -2184,7 +2182,7 @@ string CtiDeviceSingle::valueReport(const CtiPointSPtr p, const point_info &pi, 
 }
 
 
-string CtiDeviceSingle::valueReport(const string &pointname, const point_info &pi, const CtiTime &t, bool undefined) const
+string CtiDeviceSingle::valueReport(const string &pointname, const point_info &pi, const CtiTime &t) const
 {
     string report;
 
@@ -2210,11 +2208,6 @@ string CtiDeviceSingle::valueReport(const string &pointname, const point_info &p
         report += " [";
         report += pi.description;
         report += "]";
-    }
-
-    if( undefined )
-    {
-        report += " (point not in DB)";
     }
 
     return report;

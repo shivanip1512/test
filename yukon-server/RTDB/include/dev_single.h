@@ -125,10 +125,10 @@ protected:
     virtual CtiTime getDeviceDawnOfTime() const       { return CtiTime(CtiTime::neg_infin); }
     virtual bool is_valid_time(const CtiTime) const   { return false; }
 
-    string valueReport(const CtiPointSPtr p,    const point_info &pi, const CtiTime &t = YUKONEOT) const;
-    string valueReport(const string &pointname, const point_info &pi, const CtiTime &t = YUKONEOT, bool undefined = true) const;
+    std::string valueReport(const CtiPointSPtr p,         const point_info &pi, const CtiTime &t = YUKONEOT) const;
+    std::string valueReport(const std::string &pointname, const point_info &pi, const CtiTime &t) const;
 
-    virtual bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
+    virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const std::string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0);
 
 private:
 

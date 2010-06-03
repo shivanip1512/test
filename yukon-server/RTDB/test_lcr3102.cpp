@@ -50,11 +50,10 @@ private:
 public:
 
     // Note that this always overwrites
-    virtual bool insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0)
+    virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0)
     {
         point_results.erase(offset);
         point_results.insert(std::make_pair(offset, pi));
-        return true;
     }
 
     point_info test_getPointResults(int offset)

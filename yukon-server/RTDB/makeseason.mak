@@ -526,6 +526,38 @@ dev_fmu.obj:	yukon.h precompiled.h ctidbgmem.h cparms.h rwutil.h \
 		exchange.h msg_ptreg.h msg_reg.h queue.h prot_base.h xfer.h \
 		tbl_dialup.h tbl_direct.h tbl_dv_ied.h verification_objects.h \
 		msg_cmd.h porter.h devicetypes.h ctistring.h
+dev_focus.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h \
+		mutex.h dlldefs.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
+		cticonnect.h netports.h dsm2err.h words.h devicetypes.h \
+		logger.h thread.h CtiPCPtrQueue.h dev_focus.h dev_meter.h \
+		tbl_metergrp.h vcomdefs.h dbmemobject.h dllbase.h dbaccess.h \
+		sema.h resolvers.h pointtypes.h db_entry_defines.h dev_ied.h \
+		dev_remote.h dev_single.h dev_base.h boostutil.h cmdparse.h \
+		ctitokenizer.h parsevalue.h counter.h dev_exclusion.h \
+		tbl_paoexclusion.h rte_base.h ctibase.h ctinexus.h message.h \
+		collectable.h rwutil.h boost_time.h tbl_pao_lite.h \
+		tbl_rtcomm.h desolvers.h msg_signal.h tbl_base.h tbl_stats.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pointdefs.h pt_base.h \
+		pt_dyn_base.h tbl_pt_base.h tbl_pt_property.h \
+		tbl_pt_trigger.h msg_pcrequest.h msg_pcreturn.h msg_multi.h \
+		msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
+		exchange.h msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h prot_base.h xfer.h tbl_dialup.h tbl_direct.h \
+		tbl_dv_ied.h dev_sentinel.h prot_ansi_sentinel.h prot_ansi.h \
+		ansi_application.h ansi_datalink.h ansi_billing_table.h \
+		std_ansi_tbl_base.h std_ansi_tbl_00.h std_ansi_tbl_01.h \
+		std_ansi_tbl_08.h std_ansi_tbl_10.h std_ansi_tbl_11.h \
+		std_ansi_tbl_12.h std_ansi_tbl_13.h std_ansi_tbl_14.h \
+		std_ansi_tbl_15.h std_ansi_tbl_16.h std_ansi_tbl_21.h \
+		std_ansi_tbl_22.h std_ansi_tbl_23.h std_ansi_tbl_25.h \
+		std_ansi_tbl_27.h std_ansi_tbl_28.h std_ansi_tbl_31.h \
+		std_ansi_tbl_32.h std_ansi_tbl_33.h std_ansi_tbl_51.h \
+		std_ansi_tbl_52.h std_ansi_tbl_61.h std_ansi_tbl_62.h \
+		std_ansi_tbl_63.h std_ansi_tbl_64.h dllyukon.h \
+		prot_ansi_focus.h pt_analog.h pt_numeric.h tbl_pt_unit.h \
+		tbl_unitmeasure.h tbl_pt_analog.h pt_status.h tbl_pt_status.h \
+		ctidate.h
 dev_fulcrum.obj:	yukon.h precompiled.h ctidbgmem.h ctidate.h dlldefs.h \
 		logger.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
@@ -2454,15 +2486,16 @@ slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		std_ansi_tbl_62.h std_ansi_tbl_63.h std_ansi_tbl_64.h \
 		ansi_kv2_mtable_000.h ansi_kv2_mtable_070.h \
 		ansi_kv2_mtable_110.h dllyukon.h dev_sentinel.h \
-		prot_ansi_sentinel.h dev_mark_v.h prot_transdata.h \
-		transdata_application.h transdata_tracker.h \
-		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
-		dev_repeater800.h dev_repeater.h dev_rtc.h tbl_dv_rtc.h \
-		dev_sixnet.h prot_sixnet.h rte_macro.h tbl_rtmacro.h \
-		rte_ccu.h rte_xcu.h smartmap.h readers_writer_lock.h \
-		tbl_rtcarrier.h tbl_rtrepeater.h rte_versacom.h \
-		tbl_rtversacom.h master.h rte_expresscom.h dev_fmu.h \
-		dev_xml.h rtdb.h hashkey.h hash_functions.h slctdev.h
+		prot_ansi_sentinel.h dev_focus.h prot_ansi_focus.h \
+		dev_mark_v.h prot_transdata.h transdata_application.h \
+		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
+		transdata_data.h msg_cmd.h dev_repeater800.h dev_repeater.h \
+		dev_rtc.h tbl_dv_rtc.h dev_sixnet.h prot_sixnet.h rte_macro.h \
+		tbl_rtmacro.h rte_ccu.h rte_xcu.h smartmap.h \
+		readers_writer_lock.h tbl_rtcarrier.h tbl_rtrepeater.h \
+		rte_versacom.h tbl_rtversacom.h master.h rte_expresscom.h \
+		dev_fmu.h dev_xml.h rtdb.h hashkey.h hash_functions.h \
+		slctdev.h
 slctpnt.obj:	yukon.h precompiled.h ctidbgmem.h rtdb.h dlldefs.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
