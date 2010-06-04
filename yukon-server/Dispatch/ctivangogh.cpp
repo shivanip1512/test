@@ -1850,7 +1850,7 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                     || (pDyn->getQuality() == UnintializedQuality && aPD.getQuality() != UnintializedQuality) )
                 {
                     {
-                        // Set the point in memory to the current value.  Archive if an archive is pending.
+                        // Set the point in memory to the current value.
                         // Do not update with an older time unless we are in the forced condition or if
                         // the point has never been updated (uninit quality)
                         pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~SIGNAL_MANAGER_MASK) | _signalManager.getTagMask(aPD.getId()));
@@ -2602,7 +2602,8 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, const Cti
         if(Msg.getTags() & TAG_POINT_DATA_TIMESTAMP_VALID)
         {
             bTimestampMatters = true;
-            if((Msg.getTime() > pDyn->getTimeStamp()) || (Msg.getTime() == pDyn->getTimeStamp() && Msg.getMillis() != pDyn->getTimeStampMillis()))
+            if((Msg.getTime() > pDyn->getTimeStamp()) || (Msg.getTime() == pDyn->getTimeStamp() && Msg.getMillis() != pDyn->getTimeStampMillis())
+               || (pDyn->getQuality() == UnintializedQuality && Msg.getQuality() != UnintializedQuality))
             {
                 // The timestamp is changed, OR the FORCE bit is set, then the SOE data has been tweaked.
                 bTimestampChange = true;
