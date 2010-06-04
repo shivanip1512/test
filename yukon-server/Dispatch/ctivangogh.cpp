@@ -1846,27 +1846,14 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
             {
                 bool isNew = isPointDataNewInformation( aPD, pDyn );    // This must be checked before the setPoint() method is called.
 
-                if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) )
+                if( aPD.getTime() >= pDyn->getTimeStamp() || (aPD.getTags() & TAG_POINT_FORCE_UPDATE) 
+                    || (pDyn->getQuality() == UnintializedQuality && aPD.getQuality() != UnintializedQuality) )
                 {
-                    /* This cannot ever happen due to the check above JMO 5/23/2006
-                    if( pDyn->getDispatch().getTags() & MASK_ANY_SERVICE_DISABLE ) // (MASK_ANY_SERVICE_DISABLE | MASK_ANY_CONTROL_DISABLE) )
-                    {
-                        // This one cannot go unless manual tag is set.
-                        if(aPD.getQuality() == ManualQuality)
-                        {
-                            pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~MASK_ANY_ALARM) | _signalManager.getTagMask(aPD.getId()) );
-                        }
-                    }
-                    else*/
                     {
                         // Set the point in memory to the current value.  Archive if an archive is pending.
-                        // Do not update with an older time!
-                        // Unless we are in the forced condition
+                        // Do not update with an older time unless we are in the forced condition or if
+                        // the point has never been updated (uninit quality)
                         pDyn->setPoint(aPD.getTime(), aPD.getMillis(), aPD.getValue(), aPD.getQuality(), (aPD.getTags() & ~SIGNAL_MANAGER_MASK) | _signalManager.getTagMask(aPD.getId()));
-                        /*if( TriggerMgr.isATriggerPoint(TempPoint->getPointID()) )
-                        {
-                            sendPointTriggers( aPD , TempPoint );
-                        }*/
                     }
                 }
 
