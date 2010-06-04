@@ -22,7 +22,6 @@ class IVVCAlgorithm
         virtual void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<long>& pointIds, std::set<long>& requestPoints);
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
-        double calculatePowerFactor(const double varValue, const double wattValue);
         double calculateVf(const PointValueMap &voltages);
         int calculateVte(const PointValueMap &voltages, const double Vmin, const double Vrm, const double Vmax);
         double calculateBusWeight(const double Kv, const double Vf,

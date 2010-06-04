@@ -266,44 +266,6 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
 }
 
 
-BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_power_factor_calculation)
-{
-    struct test_IVVCAlgorithm : public IVVCAlgorithm
-    {
-        test_IVVCAlgorithm() : IVVCAlgorithm( PointDataRequestFactoryPtr( new PointDataRequestFactory ) ) {  }
-
-        double test_calculatePowerFactor(const double varValue, const double wattValue)
-        {
-            return calculatePowerFactor(varValue, wattValue);
-        }
-    };
-
-    test_IVVCAlgorithm  _algorithm;
-
-    // check to 6 significant digits (rounded)
-
-    BOOST_CHECK_CLOSE( 1.000000 , _algorithm.test_calculatePowerFactor(     0,  6000 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 0.000000 , _algorithm.test_calculatePowerFactor( -1500,     0 ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.000000 , _algorithm.test_calculatePowerFactor( -1500,     0 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 0.986394 , _algorithm.test_calculatePowerFactor(  1000,  6000 ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.986394 , _algorithm.test_calculatePowerFactor( -1000,  6000 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 0.970143 , _algorithm.test_calculatePowerFactor(  1500,  6000 ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.970143 , _algorithm.test_calculatePowerFactor( -1500,  6000 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 0.977189 , _algorithm.test_calculatePowerFactor(  1234,  5678 ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.977189 , _algorithm.test_calculatePowerFactor( -1234,  5678 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 0.924276 , _algorithm.test_calculatePowerFactor(  2345,  5678 ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.924276 , _algorithm.test_calculatePowerFactor( -2345,  5678 ) , 0.0001 );
-
-    BOOST_CHECK_CLOSE( 0.707107 , _algorithm.test_calculatePowerFactor(  6000,  6000 ) , 0.0001 );
-    BOOST_CHECK_CLOSE( 0.707107 , _algorithm.test_calculatePowerFactor( -6000,  6000 ) , 0.0001 );
-}
-
-
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculation)
 {
     struct test_IVVCAlgorithm : public IVVCAlgorithm

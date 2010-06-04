@@ -701,12 +701,6 @@ int IVVCAlgorithm::calculateVte(const PointValueMap &voltages, const double Vmin
 }
 
 
-double IVVCAlgorithm::calculatePowerFactor(const double varValue, const double wattValue)
-{
-    return wattValue / std::sqrt( std::pow(varValue, 2.0) + std::pow(wattValue, 2.0) );
-}
-
-
 double IVVCAlgorithm::calculateBusWeight(const double Kv, const double Vf, const double Kp, const double powerFactor, const double targetPowerFactor)
 {
     // convert from [-1.0, 1.0] to [0.0, 2.0]
@@ -867,7 +861,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         pointValues.erase(pointId);
     }//At this point we have removed the var and watt points. Only volt points remain.
 
-    double PFBus = calculatePowerFactor(varValue, wattValue);
+    double PFBus = subbus->calculatePowerFactor(varValue, wattValue);
 
     //calculate potential tap operation
     int tapOp = calculateVte(pointValues,
@@ -997,7 +991,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                    }
                 }
 
-                state->_estimated[currentBank->getPaoId()].powerFactor = calculatePowerFactor(estVarValue, wattValue);
+                state->_estimated[currentBank->getPaoId()].powerFactor = subbus->calculatePowerFactor(estVarValue, wattValue);
 
                 //calculate estimated weight of the bus if current bank switches state
                 state->_estimated[currentBank->getPaoId()].busWeight =
@@ -1143,7 +1137,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
 
 /*
-   Takes a WATT value and a desired POWER FACTOR value [ range: 0.0 to 200.0 ].
+   Takes a WATT value and a desired POWER FACTOR value [ range: -100.0 to 100.0 ].
    Returns the VARs required to produce the given PF with the given Watts.
 */
 double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double wattValue)
@@ -1152,9 +1146,19 @@ double IVVCAlgorithm::calculateTargetPFVars(const double targetPF, const double 
 
    double pf = std::abs( targetPF ) / 100.0;
 
-   // Compute VARs needed to meet desired power factor.
+   // Do some range checking and validation
 
-   double vars = ( wattValue / pf ) * std::sqrt( 1.0 - std::pow( pf, 2.0 ) );
+   if ( pf > 1.0 )
+   {
+       pf = 1.0;    // Clamp inside the range [0.0 , 1.0].
+   }
+
+   double vars = std::numeric_limits<double>::max();    // No power factor implies no watts and/or infinite vars.
+
+   if ( pf != 0.0 )
+   {
+       vars = ( wattValue / pf ) * std::sqrt( 1.0 - std::pow( pf, 2.0 ) );
+   }
 
    // If we have a leading power factor our VARs are negative.  Lagging VARs are positive.
 
