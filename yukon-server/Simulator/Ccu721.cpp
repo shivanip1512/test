@@ -248,7 +248,7 @@ error_t Ccu721::extractRequestInfo_Dtran(const bytes &command_data, request_info
             words_t b_word_holder;  // Something to hold the B Word
 
             // Grab the 7 bytes of data we need to create the B Word
-            bytes b_word_buf = bytes(command_data.begin() + (index + 4), command_data.begin() + (index + 11));
+            bytes b_word_buf = bytes(command_data.begin() + (index + 5), command_data.begin() + (index + 12));
 
             // Create it and store it in the holder.
             EmetconWord::restoreWords(b_word_buf,b_word_holder);
