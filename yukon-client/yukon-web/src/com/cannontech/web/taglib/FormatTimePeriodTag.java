@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.core.service.DurationFormattingService;
-import com.cannontech.core.service.DurationFormattingService.DurationFormat;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
 
 @Configurable(value = "formatTimePeriodTagPrototype", autowire = Autowire.BY_NAME)
 public class FormatTimePeriodTag extends YukonTagSupport {

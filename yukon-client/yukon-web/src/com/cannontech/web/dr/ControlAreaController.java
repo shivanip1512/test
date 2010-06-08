@@ -35,7 +35,7 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DurationFormattingService;
-import com.cannontech.core.service.DurationFormattingService.DurationFormat;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.DemandResponseBackingField;
 import com.cannontech.dr.controlarea.filter.PriorityFilter;

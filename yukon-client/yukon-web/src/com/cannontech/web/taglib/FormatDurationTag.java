@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.core.service.DurationFormattingService;
-import com.cannontech.core.service.DurationFormattingService.DurationFormat;
+import com.cannontech.core.service.durationFormatter.DurationFormat;
 
 @Configurable(value = "formatDurationTagPrototype", autowire = Autowire.BY_NAME)
 public class FormatDurationTag extends YukonTagSupport {
@@ -31,6 +31,8 @@ public class FormatDurationTag extends YukonTagSupport {
 
     private Date endDate;
     private boolean isEndDateSet = false;
+    
+    private Boolean roundRightmostUp = null;
 
     @Override
     public void doTag() throws JspException, IOException {
@@ -39,12 +41,19 @@ public class FormatDurationTag extends YukonTagSupport {
         	throw new JspException("type is not set.");
         
         DurationFormat durationFormat = DurationFormat.valueOf(type);
+        
+        // use durationFormat defaulting rounding if roundRightmostUp parameter was not used
+        boolean useRoundRightmostUp = durationFormat.getRoundRightmostUpDefault();
+        if (roundRightmostUp != null) {
+        	useRoundRightmostUp = roundRightmostUp.booleanValue();
+        }
+        
         String formattedDuration;
         if (areDatesSet){
-        	formattedDuration = durationFormattingService.formatDuration(startDate, endDate, durationFormat, getUserContext());
+        	formattedDuration = durationFormattingService.formatDuration(startDate, endDate, durationFormat, useRoundRightmostUp, getUserContext());
         } else {
             if (isValueSet){
-                formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
+                formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, useRoundRightmostUp, getUserContext());
             } else {
                 throw new JspException("both possible value types were not set");
             }
@@ -82,6 +91,10 @@ public class FormatDurationTag extends YukonTagSupport {
         this.var = var;
         this.isVarSet = true;
     }
+    
+    public void setRoundRightmostUp(Boolean roundRightmostUp) {
+		this.roundRightmostUp = roundRightmostUp;
+	}
     
     @Autowired
     public void setDurationFormattingService(DurationFormattingService durationFormattingService) {
