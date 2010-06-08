@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
 
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -33,7 +35,28 @@ public class StrategyController {
     @RequestMapping
     public String strategies(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
         List<CapControlStrategy> strategies = strategyDao.getAllStrategies();
-        mav.addAttribute("strategies", strategies);
+        
+        int itemsPerPage = 25;
+        int currentPage = 1;
+        
+        String temp = request.getParameter("itemsPerPage");
+        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
+        
+        temp = request.getParameter("page");
+        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+        
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int toIndex = startIndex + itemsPerPage;
+        int numberOfResults = strategies.size();
+        
+        if(numberOfResults < toIndex) toIndex = numberOfResults;
+        strategies = strategies.subList(startIndex, toIndex);
+        
+        SearchResult<CapControlStrategy> result = new SearchResult<CapControlStrategy>();
+        result.setResultList(strategies);
+        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+        mav.addAttribute("searchResult", result);
+        mav.addAttribute("strategies", result.getResultList());
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         mav.addAttribute("hasEditingRole", hasEditingRole);

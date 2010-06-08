@@ -15,7 +15,15 @@
 		}
 	</script>
 	
-	<cti:standardMenu/>
+	<c:choose>
+		<c:when test="${isSpecialArea}">
+			<cti:standardMenu menuSelection="view|specialareas"/>
+		</c:when>
+		<c:otherwise>
+			<cti:standardMenu />
+		</c:otherwise>
+	</c:choose>
+	
 	<!-- DIV element for the non flyover type popups -->
 	<ct:simplePopup onClose="closeTierPopup()" title="Comments:" id="tierPopup" styleClass="thinBorder">
         <div id="popupBody"></div>

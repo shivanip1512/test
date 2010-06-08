@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -128,6 +130,31 @@ public class BankMoveController {
                 }
             }
         }
+        
+        int itemsPerPage = 25;
+        int currentPage = 1;
+        
+        String temp = request.getParameter("itemsPerPage");
+        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
+        
+        temp = request.getParameter("page");
+        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+        
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int toIndex = startIndex + itemsPerPage;
+        int numberOfResults = movedCaps.size();
+        
+        if(numberOfResults < toIndex) toIndex = numberOfResults;
+        movedCaps = movedCaps.subList(startIndex, toIndex);
+        
+        SearchResult<MovedBank> result = new SearchResult<MovedBank>();
+        result.setResultList(movedCaps);
+        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+        mav.addObject("searchResult", result);
+        mav.addObject("itemList", result.getResultList());
+        
+        mav.addObject("isFiltered", false);
+        
         
         mav.addObject("movedCaps", movedCaps);
         

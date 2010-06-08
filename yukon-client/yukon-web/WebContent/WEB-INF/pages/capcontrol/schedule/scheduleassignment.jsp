@@ -22,6 +22,7 @@
 	<cti:crumbLink title="Schedule Assignments"/>
 </cti:breadCrumbs>
 
+<cti:url var="baseUrl" value="/spring/capcontrol/schedule/scheduleAssignments" />
 
 <script type="text/javascript" language="JavaScript">
 var firstRun = true;
@@ -111,35 +112,6 @@ function selectionChange() {
 	var schedChosen = visibleSchedName != "All Schedules";
 	var commandChosen = visibleCommandName != "All Commands";
 
-	for (var i=0; i < rows.length; i++) {
-		var row = rows[i];
-		var hidden = false;
-		var cells = row.getElementsByTagName('td');
-
-		if(cells[0].id == 'schedRow') {
-
-			if (!hidden && schedChosen) {
-				var rowSchedName = cells[1].innerHTML;
-				if(rowSchedName != visibleSchedName) {
-					hidden = true;
-				}
-			}
-	
-			if (!hidden && commandChosen) {
-				var rowCommand = cells[4].innerHTML;
-				if(rowCommand != visibleCommandName) {
-					hidden = true;
-				}
-			}
-	
-			if (hidden) {
-				row.hide();
-			} else {
-				row.show();
-			}
-		}
-	}
-
 	setAddPaoLink(schedChosen && commandChosen);
 }
 
@@ -147,12 +119,79 @@ Event.observe(window, 'load', function() {
 	selectionChange();
 	$('paoTable').show();
 });
+
+function clearFilter() {
+	window.location = '${baseUrl}';
+}
+
 </script>
-    
+
+<%-- Filtering popup --%>
+<tags:simplePopup id="filterPopup" title="Schedule Assignment Filters">
+	<form name="filterForm" action="">
+		<table>
+			<tr>
+				<td>
+					Schedules:
+					<br /><br />
+				</td>
+				<td> 
+					<select name="schedule" id="scheduleSelection">
+						<option value="All">All Schedules</option>
+						<c:forEach var="aSchedule" items="${scheduleList}">
+							<c:choose>
+								<c:when test="${param.schedule != aSchedule.scheduleName}">
+									<option value="${aSchedule.scheduleName}">${aSchedule.scheduleName}</option> 
+								</c:when>
+								<c:when test="${param.schedule == aSchedule.scheduleName}">
+									<option value="${aSchedule.scheduleName}" selected="selected">${aSchedule.scheduleName}</option>
+								</c:when>
+							</c:choose>
+						</c:forEach>
+					</select>
+					<br /><br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					Commands:
+				</td>
+				<td>
+					<select name="command" id="commandSelection">
+						<option value="All">All Commands</option>
+						<c:forEach var="aCommand" items="${commandList}">
+							<c:choose>
+								<c:when test="${param.command == 'All'}">
+									<option value="${aCommand}">${aCommand.commandName}</option>
+								</c:when>
+								<c:otherwise>
+									<c:choose>
+										<c:when test="${param.command != aCommand}">
+											<option value="${aCommand}">${aCommand.commandName}</option>
+										</c:when>
+										<c:when test="${param.command == aCommand}">>
+											<option value="${aCommand}" selected="selected">${aCommand.commandName}</option>
+										</c:when>
+									</c:choose>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					</select>
+				</td>
+			</tr>
+		</table>
+		<br />
+		<div style="text-align:right">
+			<input type="submit" value="Filter" />
+			<input type="button" value="Clear Filters" onclick="javascript:clearFilter()" />
+		</div>
+	</form>
+</tags:simplePopup>
+
     <div id="paoTable" style="display:none;">
 		<form id="myForm" method="post" action="addPao">
 			
-			<span id="pickerDisabled">Select a Schedule and Command to continue.</span>
+			<span id="pickerDisabled">Select a Schedule and Command to add entry.</span>
 			<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 				<span id="pickerEnabled">
                     <tags:pickerDialog id="cbcSubBusPicker" type="cbcSubBusPicker"
@@ -161,8 +200,8 @@ Event.observe(window, 'load', function() {
 	            </span>
             </cti:checkProperty>
 			<br>
-			
-			<SELECT name="scheduleSelection" id="schedSelect" onChange="selectionChange()" >
+
+	<SELECT name="scheduleSelection" id="schedSelect" onChange="selectionChange()" >
 				<option value="All">All Schedules</option>
 				<c:forEach var="schedule" items="${scheduleList}">
 					<c:choose>
@@ -200,43 +239,51 @@ Event.observe(window, 'load', function() {
         
 		<div id="errorElement" style="text-align:center;color:red;font-weight:bold;"></div>
 		
-		<table class="resultsTable smallPadding" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
-		<thead>
-			<tr id="header">
-				<th>Schedule</th>
-				<th>Last Run Time</th>
-				<th>Next Run Time</th>
-				<th>Command</th>
-				<th>Device</th>
-				<th>Disable OvUv</th>
-			</tr>
-			</thead>
-			<tbody id="tableBody">
-			<c:forEach var="item" items="${itemList}">
-				<tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}" >
-					<td id="schedRow" style="display:none"/>
-					<td>
-                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                            <img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
-                        </cti:checkProperty>
-                        
-                        <c:out value="${item.scheduleName}" />
-                    </td>
-					<td><cti:formatDate value="${item.lastRunTime}" type="DATEHM" /></td>
-					<td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
-					<td><c:out value="${item.commandName}" /></td>
-					<td><c:out value="${item.deviceName}" /></td>
-					<td>
-                        <select id="disableOvUvSelect" onchange="setOvUv(${item.eventId}, this.selectedIndex)">
-                            <option value="Y" <c:if test="${item.disableOvUv == 'Y'}">selected="selected"</c:if>>Y</option>
-                            <option value="N" <c:if test="${item.disableOvUv == 'N'}">selected="selected"</c:if>>N</option>
-                        </select>
-					</td>
-				</tr>
-				
-			</c:forEach>
-			</tbody>
-		</table>
+		<tags:pagedBox title="Strategies" searchResult="${searchResult}"
+		filterDialog="filterPopup" baseUrl="${baseUrl}"
+		isFiltered="${isFiltered}" showAllUrl="${baseUrl}">
+			
+			<c:choose>
+				<c:when test="${searchResult.hitCount == 0}">
+					No items to display.
+				</c:when>
+				<c:otherwise>
+					<table class="compactResultsTable smallPadding" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
+					<thead>
+						<tr id="header">
+							<th>Schedule</th>
+							<th>Last Run Time</th>
+							<th>Next Run Time</th>
+							<th>Command</th>
+							<th>Device</th>
+							<th>Disable OvUv</th>
+						</tr>
+						</thead>
+						<tbody id="tableBody">
+						<c:forEach var="item" items="${itemList}">
+							<tr class="<tags:alternateRow odd="" even="altRow"/>" id="s_${item.eventId}" >
+								<td>
+			                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+			                        	<img src="/WebConfig/yukon/Icons/delete.gif" class="pointer" onclick="removeScheduleCommand(${item.eventId})">
+			                    	</cti:checkProperty>
+			                        
+			                        <c:out value="${item.scheduleName}" />
+			                    </td>
+								<td><cti:formatDate value="${item.lastRunTime}" type="DATEHM" /></td>
+								<td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
+								<td><c:out value="${item.commandName}" /></td>
+								<td><c:out value="${item.deviceName}" /></td>
+								<td>
+			                        <input type=checkbox onclick="setOvUv(${item.eventId}, Number(!this.checked))" 
+			                        	<c:if test="${item.disableOvUv == 'Y'}">checked</c:if> />
+								</td>
+							</tr>
+						</c:forEach>
+						</tbody>
+					</table>
+				</c:otherwise>
+			</c:choose>
+		</tags:pagedBox>
     </div>
     <br>
 </cti:standardPage>

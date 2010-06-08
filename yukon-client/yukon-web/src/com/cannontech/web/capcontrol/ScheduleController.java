@@ -2,11 +2,13 @@ package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
 
 import com.cannontech.capcontrol.ScheduleCommand;
+import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.bulk.filter.service.FilterService;
+import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -25,6 +31,9 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.capcontrol.filter.ScheduleAssignmentCommandFilter;
+import com.cannontech.web.capcontrol.filter.ScheduleAssignmentFilter;
+import com.cannontech.web.capcontrol.filter.ScheduleAssignmentRowMapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.JsonView;
 
@@ -36,18 +45,54 @@ public class ScheduleController {
     
 	private PaoScheduleDao paoScheduleDao = null;
 	private RolePropertyDao rolePropertyDao = null;
+	private FilterService filterService = null;
 	
 	@RequestMapping
-	public String scheduleAssignments(ModelMap mav) {
-                
+	public String scheduleAssignments(HttpServletRequest request, ModelMap mav) {        
         List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
-		mav.addAttribute("scheduleList",schedList);
-        
+        Collections.sort(schedList);
         mav.addAttribute("commandList", ScheduleCommand.values());
+		mav.addAttribute("scheduleList", schedList);
 		
-		List<PaoScheduleAssignment> paosOnSchedule = paoScheduleDao.getAllScheduleAssignments();
-		Collections.sort(paosOnSchedule);
-		mav.addAttribute("itemList",paosOnSchedule);
+		//Get items per page and start index
+        int itemsPerPage = 25;
+        int currentPage = 1;
+        String temp = request.getParameter("itemsPerPage");
+        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
+        temp = request.getParameter("page");
+        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        
+		//Create filters
+		boolean isFiltered = false;
+		String filterByCommand = request.getParameter("command");
+		String filterBySchedule = request.getParameter("schedule");
+		List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
+		if(StringUtils.isNotEmpty(filterByCommand) && !filterByCommand.equals("All")){
+		    filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.valueOf(filterByCommand)));
+		    isFiltered = true;
+		}
+		if(StringUtils.isNotEmpty(filterBySchedule) && !filterBySchedule.equals("All")){
+		    filters.add(new ScheduleAssignmentFilter(filterBySchedule));
+		    isFiltered = true;
+		}
+		mav.addAttribute("isFiltered", isFiltered);
+		UiFilter<PaoScheduleAssignment> filter = UiFilterList.wrap(filters);
+		
+		Comparator<PaoScheduleAssignment> sorter = new Comparator<PaoScheduleAssignment>(){
+		    public int compare(PaoScheduleAssignment assignment1, PaoScheduleAssignment assignment2){
+		        return assignment1.compareTo(assignment2);
+		    }
+		};
+		
+		ScheduleAssignmentRowMapper rowMapper = new ScheduleAssignmentRowMapper();
+		
+		//Filter, sort and get search results
+		SearchResult<PaoScheduleAssignment> result = 
+		    filterService.filter(filter, sorter, startIndex, itemsPerPage, rowMapper);
+		
+        mav.addAttribute("searchResult", result);
+        mav.addAttribute("itemList", result.getResultList());
         
 		return "schedule/scheduleassignment.jsp";
     }
@@ -56,9 +101,27 @@ public class ScheduleController {
     public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
 	    boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
 	    mav.addAttribute("hasEditingRole", hasEditingRole);
-        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
+	    List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
         Collections.sort(schedList);
-        mav.addAttribute("scheduleList",schedList);
+        
+        int itemsPerPage = 25;
+        int currentPage = 1;
+        String temp = request.getParameter("itemsPerPage");
+        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
+        temp = request.getParameter("page");
+        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int toIndex = startIndex + itemsPerPage;
+        int numberOfResults = schedList.size();
+        
+        if(numberOfResults < toIndex) toIndex = numberOfResults;
+        schedList = schedList.subList(startIndex, toIndex);
+        
+        SearchResult<PAOSchedule> result = new SearchResult<PAOSchedule>();
+        result.setResultList(schedList);
+        result.setBounds(startIndex, itemsPerPage, numberOfResults);
+        mav.addAttribute("searchResult", result);
+        mav.addAttribute("scheduleList", result.getResultList());
         
         long startOfTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
         mav.addAttribute("startOfTime", startOfTime);
@@ -179,4 +242,9 @@ public class ScheduleController {
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
+	
+	@Autowired
+	public void setFilterService(FilterService filterService){
+	    this.filterService = filterService;
+	}
 }

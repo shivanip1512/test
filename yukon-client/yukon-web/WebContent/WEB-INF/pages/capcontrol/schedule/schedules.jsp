@@ -47,73 +47,87 @@
 		<cti:crumbLink title="Schedules"/>
 	</cti:breadCrumbs>
 	<div id="errorElement" style="text-align: center; color: red;font-weight: bold;"></div>
-	<table class="resultsTable smallPadding" id="scheduleTable" width="90%" border="0"
-		cellspacing="0" cellpadding="3" align="center">
-		<thead>
-			<tr id="header">
-				<th>Schedule</th>
-				<th>Last Run Time</th>
-				<th>Next Run Time</th>
-				<th>Interval</th>
-				<th>Disabled</th>
-			</tr>
-		</thead>
-		<tbody id="tableBody">
-			<c:forEach var="item" items="${scheduleList}">
-				<tr class="<tags:alternateRow odd="" even="altRow"/>"
-					id="s_${item.scheduleID}">
-					<td nowrap="nowrap">
-                        <c:choose>
-                            <c:when test="${hasEditingRole}">
-                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" class="imgLink">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
-                                </a>
-                                <a href="javascript:removeSchedule(${item.scheduleID}, '${item.scheduleName}');" class="imgLink">
-                                    <img src="/WebConfig/yukon/Icons/delete.gif " class="rAlign editImg pointer">
-                                </a>
-                            </c:when>
-                            <c:otherwise>
-                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" class="imgLink">
-                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
-                                </a>
-                            </c:otherwise>
-                        </c:choose>
-                        
-                        <c:out value="${item.scheduleName}" />
-                    </td>
-					<td>
-                        <c:choose>
-                            <c:when test="${item.lastRunTime.time <= startOfTime}">
-                                ---
-                            </c:when>
-                            <c:otherwise>
-                                <cti:formatDate value="${item.lastRunTime}" type="DATEHM" />
-                            </c:otherwise>
-                        </c:choose>
-					</td>
-					<td>
-                        <c:choose>
-                            <c:when test="${item.nextRunTime.time <= startOfTime}">
-                                ---
-                            </c:when>
-                            <c:otherwise>
-                                <cti:formatDate value="${item.nextRunTime}" type="DATEHM" />
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-					<td><c:out value="${item.intervalRateString}" /></td>
-					<td>
-                        <c:choose>
-							<c:when test="${item.disabled}">
-	                                Yes
-	                        </c:when>
-							<c:otherwise>
-	                                No
-	                        </c:otherwise>
-                        </c:choose>
-					</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+	
+	<tags:pagedBox title="Schedules" searchResult="${searchResult}"
+	filterDialog="" baseUrl="/spring/capcontrol/schedule/schedules"
+	isFiltered="false" showAllUrl="/spring/capcontrol/schedule/schedules">
+	
+	<c:choose>
+		<c:when test="${searchResult.hitCount == 0}">
+			No items to display.
+		</c:when>
+		<c:otherwise>
+			<table class="compactResultsTable smallPadding" id="scheduleTable" width="90%" border="0"
+				cellspacing="0" cellpadding="3" align="center">
+				<thead>
+					<tr id="header">
+						<th>Schedule</th>
+						<th>Last Run Time</th>
+						<th>Next Run Time</th>
+						<th>Interval</th>
+						<th>Disabled</th>
+					</tr>
+				</thead>
+				<tbody id="tableBody">
+					<c:forEach var="item" items="${scheduleList}">
+						<tr class="<tags:alternateRow odd="" even="altRow"/>"
+							id="s_${item.scheduleID}">
+							<td nowrap="nowrap">
+		                        <c:choose>
+		                            <c:when test="${hasEditingRole}">
+		                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" class="imgLink">
+		                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
+		                                </a>
+		                                <a href="javascript:removeSchedule(${item.scheduleID}, '${item.scheduleName}');" class="imgLink">
+		                                    <img src="/WebConfig/yukon/Icons/delete.gif " class="rAlign editImg pointer">
+		                                </a>
+		                            </c:when>
+		                            <c:otherwise>
+		                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.scheduleID}" class="imgLink">
+		                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
+		                                </a>
+		                            </c:otherwise>
+		                        </c:choose>
+		                        
+		                        <c:out value="${item.scheduleName}" />
+		                    </td>
+							<td>
+		                        <c:choose>
+		                            <c:when test="${item.lastRunTime.time <= startOfTime}">
+		                                ---
+		                            </c:when>
+		                            <c:otherwise>
+		                                <cti:formatDate value="${item.lastRunTime}" type="DATEHM" />
+		                            </c:otherwise>
+		                        </c:choose>
+							</td>
+							<td>
+		                        <c:choose>
+		                            <c:when test="${item.nextRunTime.time <= startOfTime}">
+		                                ---
+		                            </c:when>
+		                            <c:otherwise>
+		                                <cti:formatDate value="${item.nextRunTime}" type="DATEHM" />
+		                            </c:otherwise>
+		                        </c:choose>
+		                    </td>
+							<td><c:out value="${item.intervalRateString}" /></td>
+							<td>
+		                        <c:choose>
+									<c:when test="${item.disabled}">
+			                                Yes
+			                        </c:when>
+									<c:otherwise>
+			                                No
+			                        </c:otherwise>
+		                        </c:choose>
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
+			</table>
+		</c:otherwise>
+	</c:choose>
+	
+	</tags:pagedBox>
 </cti:standardPage>

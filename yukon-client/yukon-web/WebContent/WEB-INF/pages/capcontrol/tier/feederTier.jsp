@@ -723,7 +723,7 @@
     	                    <c:if test="${hasCapbankControl}">
     							<c:choose>
     							<c:when test="${viewableCapBank.capBankDevice.bankMoved}">
-    			                    class="warning" ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}', event);" 
+    			                    class="warning pointer" ${popupEvent}="getCapBankTempMoveBack('${thisCapBankId}', event);" 
     		                    </c:when>
     		                    <c:otherwise>
     		                        onmouseover="statusMsgAbove(this, 'Click here to fully move or temporarily move this CapBank from its current parent feeder');"

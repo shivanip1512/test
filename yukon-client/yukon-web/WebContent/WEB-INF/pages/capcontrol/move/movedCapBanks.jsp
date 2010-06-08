@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:standardPage title="Temp Move Report" module="capcontrol">
 
 	<script type="text/javascript">
@@ -25,25 +26,34 @@
 		<cti:crumbLink title="Recent Cap Bank Moves"/>
 	</cti:breadCrumbs>
 
-    <div class="scrollLarge">
-        <h4>Moved Cap Banks</h4>
-		<table id="movedCBTable" class="resultsTable activeResultsTable" align="center">
-               <tr class="columnHeader lAlign">
-                <th>Recent Feeder</th>
-                <th>Original Feeder</th>
-                <th>Cap Bank</th>
-            </tr>
-			<c:forEach var="movedCapbank" items="${movedCaps}">
-				<tr id="tr_cap_${movedCapbank.capbank.ccId}" class="<ct:alternateRow odd="" even="altRow"/>">
-					<td id="${movedCapbank.capbank.ccName}">
-                           <a href="javascript:void(0);" style="color: #F09100;cursor: help;" ${popupEvent}="getCapBankTempMoveBack('${movedCapbank.capbank.ccId}', event)">
-                               ${movedCapbank.currentFeederName}
-                           </a>
-                       </td>
-					<td>${movedCapbank.originalFeederName}</td>
-					<td>${movedCapbank.capbank.ccName}</td>
-				</tr>
-			</c:forEach>
-		</table>
-	</div>
+	<tags:pagedBox title="Moved Cap Banks" searchResult="${searchResult}"
+		filterDialog="" baseUrl="${movedCapBanksUrl}"
+		isFiltered="false" showAllUrl="${movedCapBanksUrl}">
+			
+		<c:choose>
+			<c:when test="${searchResult.hitCount == 0}">
+				No items to display.
+			</c:when>
+			<c:otherwise>
+				<table id="movedCBTable" class="compactResultsTable activeResultsTable" align="center">
+		               <tr class="columnHeader lAlign">
+		                <th>Recent Feeder</th>
+		                <th>Original Feeder</th>
+		                <th>Cap Bank</th>
+		            </tr>
+					<c:forEach var="movedCapbank" items="${movedCaps}">
+						<tr id="tr_cap_${movedCapbank.capbank.ccId}" class="<ct:alternateRow odd="" even="altRow"/>">
+							<td id="${movedCapbank.capbank.ccName}">
+		                           <a href="javascript:void(0);" style="color: #F09100;cursor: pointer;" onclick="getCapBankTempMoveBack('${movedCapbank.capbank.ccId}', event)">
+		                               ${movedCapbank.currentFeederName}
+		                           </a>
+		                       </td>
+							<td>${movedCapbank.originalFeederName}</td>
+							<td>${movedCapbank.capbank.ccName}</td>
+						</tr>
+					</c:forEach>
+				</table>
+			</c:otherwise>
+		</c:choose>
+	</tags:pagedBox>
 </cti:standardPage>
