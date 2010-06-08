@@ -132,14 +132,14 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
 			}
 		}
 		// seconds to minutes
-		if (durationFieldTypeList.contains(DurationFieldType.seconds()) && durationFieldTypeList.contains(DurationFieldType.minutes())) {
+		else if (durationFieldTypeList.contains(DurationFieldType.seconds()) && durationFieldTypeList.contains(DurationFieldType.minutes())) {
 			if (period.getSeconds() >= 30) {
 				period = period.minusSeconds(period.getSeconds());
 				period = period.plusMinutes(1);
 			}
 		}
 		// minutes to hours
-		if (durationFieldTypeList.contains(DurationFieldType.minutes()) && durationFieldTypeList.contains(DurationFieldType.hours())) {
+		else if (durationFieldTypeList.contains(DurationFieldType.minutes()) && durationFieldTypeList.contains(DurationFieldType.hours())) {
 			if (period.getMinutes() >= 30) {
 				period = period.minusMinutes(period.getMinutes());
     			period = period.plusHours(1);
