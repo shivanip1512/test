@@ -260,11 +260,11 @@ public class CBCSelectionLists {
 	};
 
 	private static final SelectItem[] ptArchiveType =  {
-		new SelectItem(PointArchiveType.NONE.getPointArchiveTypeName(), PointArchiveType.NONE.getPointArchiveTypeName()),
-		new SelectItem(PointArchiveType.ON_CHANGE.getPointArchiveTypeName(), PointArchiveType.ON_CHANGE.getPointArchiveTypeName()),
-		new SelectItem(PointArchiveType.ON_TIMER.getPointArchiveTypeName(), PointArchiveType.ON_TIMER.getPointArchiveTypeName()),
-		new SelectItem(PointArchiveType.ON_UPDATE.getPointArchiveTypeName(), PointArchiveType.ON_UPDATE.getPointArchiveTypeName()),
-		new SelectItem(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName(), "On Timer Or Update")
+		new SelectItem(PointArchiveType.NONE.getPointArchiveTypeName(), PointArchiveType.NONE.getDisplayName()),
+		new SelectItem(PointArchiveType.ON_CHANGE.getPointArchiveTypeName(), PointArchiveType.ON_CHANGE.getDisplayName()),
+		new SelectItem(PointArchiveType.ON_TIMER.getPointArchiveTypeName(), PointArchiveType.ON_TIMER.getDisplayName()),
+		new SelectItem(PointArchiveType.ON_UPDATE.getPointArchiveTypeName(), PointArchiveType.ON_UPDATE.getDisplayName()),
+		new SelectItem(PointArchiveType.ON_TIMER_OR_UPDATE.getPointArchiveTypeName(), PointArchiveType.ON_TIMER_OR_UPDATE.getDisplayName())
 	};
 
 	private static final SelectItem[] ptUpdateType =  {
