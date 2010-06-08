@@ -69,6 +69,17 @@ CREATE UNIQUE INDEX Indx_YSL_ListName_ECId_UNQ ON YukonSelectionList(
 );
 /* End YUK-8733 */
 
+/* Start YUK-8740 */
+/* @error ignore-begin */
+ALTER TABLE GraphCustomerList
+    DROP CONSTRAINT FK_GRAPHCUS_REFGRPHCS_CICUSTOM;
+
+ALTER TABLE GraphCustomerList
+    ADD CONSTRAINT FK_GrphCstLst_Cst FOREIGN KEY (CustomerId)
+        REFERENCES Customer (CustomerId);
+/* @error ignore-end */
+/* End YUK-8740 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
