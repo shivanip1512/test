@@ -60,6 +60,7 @@ public class DeviceReadingsController extends ReportControllerBase{
         String stopHour = ServletUtil.getParameter(request, "stopHour");
         String stopMinute = ServletUtil.getParameter(request, "stopMinute");
         String resultType = ServletUtil.getParameter(request, "resultType");
+        String disableFlag = ServletUtil.getParameter(request, "disableFlag");
         
         if(StringUtils.isNotBlank(attributeString)){
             Attribute attribute = BuiltInAttribute.valueOf(attributeString);
@@ -106,6 +107,11 @@ public class DeviceReadingsController extends ReportControllerBase{
             deviceReadingsModel.setRetrieveAll(all);
         }
         
+        if(StringUtils.isNotBlank(disableFlag)){
+            boolean includeDisabledDevices = disableFlag.equalsIgnoreCase("include");
+            deviceReadingsModel.setIncludeDisabledDevices(includeDisabledDevices);
+        }
+        
         deviceReadingsModel.setYukonUserContext(yukonUserContext);
     }
     
@@ -118,6 +124,20 @@ public class DeviceReadingsController extends ReportControllerBase{
         final StringBuilder sb = new StringBuilder();
         sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("    <tr>" + LINE_SEPARATOR);
+        
+        sb.append("      <td valign='top'>" + LINE_SEPARATOR);        
+        sb.append("        <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("          <tr>" + LINE_SEPARATOR);
+        sb.append("            <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
+        sb.append("          </tr>" + LINE_SEPARATOR);
+        sb.append("          <tr>" + LINE_SEPARATOR);
+        sb.append("            <td><input type='radio' name='disableFlag' value='include' checked>Include" + LINE_SEPARATOR);
+        sb.append("          </tr>" + LINE_SEPARATOR);
+        sb.append("          <tr>" + LINE_SEPARATOR);
+        sb.append("            <td><input type='radio' name='disableFlag' value='exclude'>Exclude" + LINE_SEPARATOR);
+        sb.append("          </tr>" + LINE_SEPARATOR);
+        sb.append("        </table>" + LINE_SEPARATOR);
+        sb.append("      </td>" + LINE_SEPARATOR);
         
         sb.append("        <td class='TitleHeader' style='padding-right: 5px;'>Data Attribute: </td>");
         sb.append("        <td class='main'>" + LINE_SEPARATOR);

@@ -69,10 +69,15 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	{
 		ORDER_BY_DEVICE_NAME, ORDER_BY_ROUTE_NAME, ORDER_BY_METER_NUMBER
 	};
+	
+	public final static int INCLUDE_DISABLED_DEVICE_STATUS = 0;
+	public final static int EXCLUDE_DISABLED_DEVICE_STATUS = 1;
+	private int disabledDeviceStatus = INCLUDE_DISABLED_DEVICE_STATUS; 
 
 	//servlet attributes/parameter strings
 	private static String ATT_METER_READ_TYPE = "meterReadType";
 	private static final String ATT_ORDER_BY = "orderBy";
+	private static final String ATT_DISABLED_DEVICE_STATUS = "disabledDeviceStatus";
 	
 	/**
 	 * 
@@ -117,37 +122,42 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	public void addDataRow(ResultSet rset)
 	{
 		try {
-            Meter meter = new Meter();
-            
-            int paobjectID = rset.getInt("paobjectId");
-            meter.setDeviceId(paobjectID);
-            String paoName = rset.getString("paoName");
-            meter.setName(paoName);
-            String type = rset.getString("type");
-            int deviceType = PAOGroups.getDeviceType(type);
-            meter.setType(deviceType);
-            meter.setTypeStr(type);
-            String disabledStr = rset.getString("disableFlag");
-            boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
-            meter.setDisabled(disabled);
-            String meterNumber = rset.getString("meterNumber");
-            meter.setMeterNumber(meterNumber);
-            String address = rset.getString("address");
-            meter.setAddress(address);
-            int routeID = rset.getInt("routeId");
-            meter.setRouteId(routeID);
-            String routeName = rset.getString("routeName");
-            meter.setRoute(routeName);
-            
-			Date ts = null;
-			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
-			{
-			    Timestamp timestamp = rset.getTimestamp("timestamp");
-			    ts = new Date(timestamp.getTime());
-			}
-			MeterAndPointData mpData = new MeterAndPointData(meter, ts);
-
-			getData().add(mpData);
+		    String disabledStr = rset.getString("disableFlag");
+		    boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
+		    
+		    
+		    if(getDisabledDeviceStatus() == INCLUDE_DISABLED_DEVICE_STATUS || !disabled)
+		    {
+    		    Meter meter = new Meter();
+                
+                int paobjectID = rset.getInt("paobjectId");
+                meter.setDeviceId(paobjectID);
+                String paoName = rset.getString("paoName");
+                meter.setName(paoName);
+                String type = rset.getString("type");
+                int deviceType = PAOGroups.getDeviceType(type);
+                meter.setType(deviceType);
+                meter.setTypeStr(type);
+                meter.setDisabled(disabled);
+                String meterNumber = rset.getString("meterNumber");
+                meter.setMeterNumber(meterNumber);
+                String address = rset.getString("address");
+                meter.setAddress(address);
+                int routeID = rset.getInt("routeId");
+                meter.setRouteId(routeID);
+                String routeName = rset.getString("routeName");
+                meter.setRoute(routeName);
+                
+    			Date ts = null;
+    			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
+    			{
+    			    Timestamp timestamp = rset.getTimestamp("timestamp");
+    			    ts = new Date(timestamp.getTime());
+    			}
+    			MeterAndPointData mpData = new MeterAndPointData(meter, ts);
+    
+    			getData().add(mpData);
+		    }
 		}
 		catch(SQLException e)
 		{
@@ -449,6 +459,15 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		}		
 		meterReadType = i;
 	}
+	
+	public int getDisabledDeviceStatus() {
+        return disabledDeviceStatus;
+    }
+
+    public void setDisabledDeviceStatus(int disabledDeviceStatus) {
+        this.disabledDeviceStatus = disabledDeviceStatus;
+    }
+
 	@Override
 	public String getHTMLOptionsTable()
 	{
@@ -487,8 +506,21 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		}
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
-
-
+        
+        sb.append("    <td valign='top'>" + LINE_SEPARATOR);        
+        sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td><input type='radio' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='" + INCLUDE_DISABLED_DEVICE_STATUS + "' checked>Include" + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("        <tr>" + LINE_SEPARATOR);
+        sb.append("          <td><input type='radio' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='" + EXCLUDE_DISABLED_DEVICE_STATUS + "'>Exclude" + LINE_SEPARATOR);
+        sb.append("        </tr>" + LINE_SEPARATOR);
+        sb.append("      </table>" + LINE_SEPARATOR);
+        sb.append("    </td>" + LINE_SEPARATOR);
+        
         sb.append("    <td valign='middle'>" + LINE_SEPARATOR);
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
@@ -522,7 +554,13 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 				setOrderBy(Integer.valueOf(param).intValue());
 			else
 				setOrderBy(ORDER_BY_DEVICE_NAME);
-		}
+			
+			param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+			if( param != null)
+			    setDisabledDeviceStatus(Integer.valueOf(param).intValue());
+			else
+			    setDisabledDeviceStatus(INCLUDE_DISABLED_DEVICE_STATUS);
+		}		
 	}
 
 	@Override

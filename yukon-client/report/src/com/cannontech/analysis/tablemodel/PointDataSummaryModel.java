@@ -22,6 +22,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
@@ -210,6 +211,11 @@ public class PointDataSummaryModel extends ReportModelBase
 		ORDER_BY_DEVICE_NAME, ORDER_BY_METER_NUMBER, ORDER_BY_PHYSICAL_ADDRESS 
 	};
 
+    public final static int INCLUDE_DISABLED_DEVICE_STATUS = 0;
+    public final static int EXCLUDE_DISABLED_DEVICE_STATUS = 1;
+    private int disabledDeviceStatus = INCLUDE_DISABLED_DEVICE_STATUS;
+    private static final String ATT_DISABLED_DEVICE_STATUS = "disabledDeviceStatus";
+
 	@SuppressWarnings("unchecked")
     public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
 	{
@@ -307,6 +313,7 @@ public class PointDataSummaryModel extends ReportModelBase
 		if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE) {
             sql.append(", DLP.LOADPROFILEDEMANDRATE, DLP.VOLTAGEDMDRATE, DLP.LASTINTERVALDEMANDRATE, DLP.VOLTAGEDMDINTERVAL ");
         }
+		sql.append(", PAO.DISABLEFLAG ");
 		
         sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
         sql.append(" left outer join DEVICEMETERGROUP DMG on PAO.PAOBJECTID = DMG.DEVICEID ");
@@ -431,36 +438,43 @@ public class PointDataSummaryModel extends ReportModelBase
                     Double value = new Double(rset.getDouble(10));
                     Integer quality = new Integer(rset.getInt(11));
 
-                    lpDemandRate = null;
-                    voltageDemandRate = null;
-                    liDemandRate = null;
-                    voltageDemandInterval = null;
-                    if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)					
+                    
+                    String disabledStr = rset.getString("disableFlag");
+                    boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
+                    
+                    if(getDisabledDeviceStatus() == INCLUDE_DISABLED_DEVICE_STATUS || !disabled)
                     {
-                        lpDemandRate = String.valueOf( rset.getInt(12));
-                        voltageDemandRate = String.valueOf(rset.getInt(13));
-                        liDemandRate = String.valueOf(rset.getInt(14));
-                        voltageDemandInterval = String.valueOf(rset.getInt(15));
+                        lpDemandRate = null;
+                        voltageDemandRate = null;
+                        liDemandRate = null;
+                        voltageDemandInterval = null;
+                        if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE)					
+                        {
+                            lpDemandRate = String.valueOf( rset.getInt(12));
+                            voltageDemandRate = String.valueOf(rset.getInt(13));
+                            liDemandRate = String.valueOf(rset.getInt(14));
+                            voltageDemandInterval = String.valueOf(rset.getInt(15));
+                        }
+    
+                        Meter meter = new Meter();
+                        meter.setDeviceId(paobjectID);
+                        meter.setName(paoName);
+                        if (address != null)
+                            meter.setAddress(address);
+                        meter.setTypeStr(paoType);
+    
+                        if (meterNumber != null) {
+                            meter.setMeterNumber(meterNumber);
+                        }
+    
+                        MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, new Date(ts.getTime()), value, quality);
+    
+                        LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
+                        getData().add(lpMeterData);
+                        tempMPDataVector.add(mpData);
+                        currentPointid = pointID.intValue();
+                        countData++;
                     }
-
-                    Meter meter = new Meter();
-                    meter.setDeviceId(paobjectID);
-                    meter.setName(paoName);
-                    if (address != null)
-                        meter.setAddress(address);
-                    meter.setTypeStr(paoType);
-
-                    if (meterNumber != null) {
-                        meter.setMeterNumber(meterNumber);
-                    }
-
-                    MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, new Date(ts.getTime()), value, quality);
-
-                    LPMeterData lpMeterData = new LPMeterData(mpData, liDemandRate, voltageDemandInterval, lpDemandRate, voltageDemandRate);
-                    getData().add(lpMeterData);
-                    tempMPDataVector.add(mpData);
-                    currentPointid = pointID.intValue();
-                    countData++;
                 }
                 //Add last PointID's summary data
                 loadSummaryData(new Integer(currentPointid), tempMPDataVector);
@@ -1086,6 +1100,22 @@ public class PointDataSummaryModel extends ReportModelBase
 		}
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
+		
+		html += "    <td valign='top'>" + LINE_SEPARATOR;
+        html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td><input type='radio' name='"+ATT_DISABLED_DEVICE_STATUS+"' value='" + INCLUDE_DISABLED_DEVICE_STATUS + "' checked>Include" + LINE_SEPARATOR;
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td><input type='radio' name='"+ATT_DISABLED_DEVICE_STATUS+"' value='" + EXCLUDE_DISABLED_DEVICE_STATUS + "'>Exclude" + LINE_SEPARATOR;
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+        html += "    </td>" + LINE_SEPARATOR;
 
 		html += "  </tr>" + LINE_SEPARATOR;
 		html += "</table>" + LINE_SEPARATOR;
@@ -1114,6 +1144,12 @@ public class PointDataSummaryModel extends ReportModelBase
 			    setShowDetails(param.equalsIgnoreCase("true")?true:false);
 			else 
 			    setShowDetails(false);
+			
+			param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+			if( param != null)
+			    setDisabledDeviceStatus(Integer.valueOf(param).intValue());
+			else
+			    setDisabledDeviceStatus(INCLUDE_DISABLED_DEVICE_STATUS);
 		}
 	}
     /**
@@ -1131,5 +1167,13 @@ public class PointDataSummaryModel extends ReportModelBase
     public void setShowDetails(boolean showDetails)
     {
         this.showDetails = showDetails;
+    }
+    
+    public int getDisabledDeviceStatus() {
+        return disabledDeviceStatus;
+    }
+
+    public void setDisabledDeviceStatus(int disabledDeviceStatus) {
+        this.disabledDeviceStatus = disabledDeviceStatus;
     }
 }

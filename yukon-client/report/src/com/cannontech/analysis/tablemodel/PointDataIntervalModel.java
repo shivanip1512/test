@@ -18,6 +18,7 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -85,10 +86,15 @@ public class PointDataIntervalModel extends ReportModelBase
 	{
 		ORDER_BY_TIMESTAMP, ORDER_BY_VALUE
 	};
+	
+	public final static int INCLUDE_DISABLED_DEVICE_STATUS = 0;
+    public final static int EXCLUDE_DISABLED_DEVICE_STATUS = 1;
+    private int disabledDeviceStatus = INCLUDE_DISABLED_DEVICE_STATUS; 
 
 	//servlet attributes/parameter strings
 	private static final String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
+	private static final String ATT_DISABLED_DEVICE_STATUS = "disabledDeviceStatus";
 	/**
 	 * Default Constructor
 	 */
@@ -137,23 +143,30 @@ public class PointDataIntervalModel extends ReportModelBase
 	 */
 	public void addDataRow(ResultSet rset) throws SQLException
 	{
-	    int pointID = rset.getInt(1);
-	    Timestamp ts = rset.getTimestamp(2);
-	    GregorianCalendar cal = new GregorianCalendar();
-	    cal.setTimeInMillis(ts.getTime());
-	    int quality = rset.getInt(3);
-	    double value = rset.getDouble(4);
-	    String pointName = rset.getString(5);
-	    String paoName = rset.getString(6);
-	    int paobjectID = rset.getInt(7);
-
-	    //Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
-	    Meter meter = new Meter();
-	    meter.setDeviceId(paobjectID);
-	    meter.setName(paoName);
-	    MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
-	                                                     cal.getTime(), new Double(value), new Integer(quality));
-	    getData().add(mpData);	
+	    
+	    String disabledStr = rset.getString("disableFlag");
+        boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
+	    
+        if(getDisabledDeviceStatus() == INCLUDE_DISABLED_DEVICE_STATUS || !disabled)
+        {
+    	    int pointID = rset.getInt(1);
+    	    Timestamp ts = rset.getTimestamp(2);
+    	    GregorianCalendar cal = new GregorianCalendar();
+    	    cal.setTimeInMillis(ts.getTime());
+    	    int quality = rset.getInt(3);
+    	    double value = rset.getDouble(4);
+    	    String pointName = rset.getString(5);
+    	    String paoName = rset.getString(6);
+    	    int paobjectID = rset.getInt(7);
+    
+    	    //Using only a partially loaded lPao because that is all the information this report cares about.  Maybe a bad decision?!
+    	    Meter meter = new Meter();
+    	    meter.setDeviceId(paobjectID);
+    	    meter.setName(paoName);
+    	    MeterAndPointData mpData = new MeterAndPointData(meter, new Integer(pointID), pointName, 
+    	                                                     cal.getTime(), new Double(value), new Integer(quality));
+    	    getData().add(mpData);
+        }
 	}
 
 	/**
@@ -163,7 +176,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	public SqlFragmentSource buildSQLStatement()
 	{
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID ");
+	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID, PAO.DISABLEFLAG ");
 	    sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 	    sql.append(" WHERE P.POINTID = RPH.POINTID ");
 	    sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
@@ -459,8 +472,24 @@ public class PointDataIntervalModel extends ReportModelBase
 		}
 		html += "      </table>" + LINE_SEPARATOR;
 		html += "    </td>" + LINE_SEPARATOR;
-		html += "  </tr>" + LINE_SEPARATOR;
+        
+        html += "    <td valign='top'>" + LINE_SEPARATOR;
+        html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td><input type='radio' name='" +ATT_DISABLED_DEVICE_STATUS + "' value='" + INCLUDE_DISABLED_DEVICE_STATUS + "' checked>Include" + LINE_SEPARATOR;
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+        html += "        <tr>" + LINE_SEPARATOR;
+        html += "          <td><input type='radio' name='" +ATT_DISABLED_DEVICE_STATUS + "' value='" + EXCLUDE_DISABLED_DEVICE_STATUS + "'>Exclude" + LINE_SEPARATOR;
+        html += "          </td>" + LINE_SEPARATOR;
+        html += "        </tr>" + LINE_SEPARATOR;
+		html += "      </table>" + LINE_SEPARATOR;
+		html += "    </td>" + LINE_SEPARATOR;
 		
+		html += "  </tr>" + LINE_SEPARATOR;
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
@@ -511,6 +540,11 @@ public class PointDataIntervalModel extends ReportModelBase
 				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
 				setStopDate(cal.getTime());
 			}
+			param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+			 if( param != null)
+	                setDisabledDeviceStatus(Integer.valueOf(param).intValue());
+	            else
+	                setDisabledDeviceStatus(INCLUDE_DISABLED_DEVICE_STATUS);
 		}
 	}
 	
@@ -518,4 +552,13 @@ public class PointDataIntervalModel extends ReportModelBase
 	public boolean useStartStopTimes() {
 	    return true;
 	}
+	
+    public int getDisabledDeviceStatus() {
+        return disabledDeviceStatus;
+    }
+
+    public void setDisabledDeviceStatus(int disabledDeviceStatus) {
+        this.disabledDeviceStatus = disabledDeviceStatus;
+    }
+
 }
