@@ -8,9 +8,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Chronology;
+import org.joda.time.Duration;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadableInstant;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -73,6 +76,37 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     	FormattedDurationTemplate template = new FormattedDurationTemplate(periodGenerator);
     	return template.getFormattedDuration(type, roundRightmostUp, yukonUserContext);
 	}
+
+    // FORMAT DURATION - START/END, DEFAULT ROUNDING
+    @Override
+    public String formatDuration(ReadableInstant startDate, ReadableInstant endDate, 
+                                  DurationFormat type, YukonUserContext yukonUserContext) {
+        return formatDuration(startDate, endDate, type, type.getRoundRightmostUpDefault(), 
+                               yukonUserContext);
+    }
+    
+    // FORMAT DURATION - START/END, ROUNDING PARAM
+    @Override
+    public String formatDuration(final ReadableInstant startDate, 
+                                  final ReadableInstant endDate, 
+                                  DurationFormat type, 
+                                  boolean roundRightmostUp,
+                                  final YukonUserContext yukonUserContext) {
+        
+        PeriodGenerator periodGenerator = new PeriodGenerator() {
+            @Override
+            public Period generatePeriod(PeriodType periodType) {
+                Chronology chronology = ISOChronology.getInstance(yukonUserContext.getJodaTimeZone());
+                ReadableDuration duration = new Duration(startDate, endDate);
+                Period period = new Period(duration, periodType, chronology);
+                return period;
+            }
+        };
+        
+        FormattedDurationTemplate template = new FormattedDurationTemplate(periodGenerator);
+        return template.getFormattedDuration(type, roundRightmostUp, yukonUserContext);
+    }
+
     
     // TEMPLATE
     private class FormattedDurationTemplate {
@@ -265,4 +299,5 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
     }
+
 }

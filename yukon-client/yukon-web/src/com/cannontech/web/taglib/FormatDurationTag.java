@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.jsp.JspException;
 
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -26,10 +27,10 @@ public class FormatDurationTag extends YukonTagSupport {
     private String type;
     private boolean isTypeSet = false;
     
-    private Date startDate;
+    private Object startDate; // Date or ReadableInstant
     private boolean isStartDateSet = false;
 
-    private Date endDate;
+    private Object endDate;  // Date or ReadableInstant
     private boolean isEndDateSet = false;
     
     private Boolean roundRightmostUp = null;
@@ -45,12 +46,29 @@ public class FormatDurationTag extends YukonTagSupport {
         // use durationFormat defaulting rounding if roundRightmostUp parameter was not used
         boolean useRoundRightmostUp = durationFormat.getRoundRightmostUpDefault();
         if (roundRightmostUp != null) {
-        	useRoundRightmostUp = roundRightmostUp.booleanValue();
+            useRoundRightmostUp = roundRightmostUp.booleanValue();
         }
         
-        String formattedDuration;
+        String formattedDuration = null;
         if (areDatesSet){
-        	formattedDuration = durationFormattingService.formatDuration(startDate, endDate, durationFormat, useRoundRightmostUp, getUserContext());
+
+            if (startDate instanceof Date &&
+                endDate instanceof Date) {
+                formattedDuration = durationFormattingService.formatDuration((Date)startDate, 
+                                                                             (Date)endDate, 
+                                                                             durationFormat, 
+                                                                             useRoundRightmostUp, 
+                                                                             getUserContext());
+
+            } else if (startDate instanceof ReadableInstant && 
+                        endDate instanceof ReadableInstant) {
+                formattedDuration = 
+                    durationFormattingService.formatDuration((ReadableInstant)startDate, 
+                                                             (ReadableInstant)endDate, 
+                                                             durationFormat, 
+                                                             useRoundRightmostUp, 
+                                                             getUserContext());
+            }
         } else {
             if (isValueSet){
                 formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, useRoundRightmostUp, getUserContext());
@@ -72,12 +90,12 @@ public class FormatDurationTag extends YukonTagSupport {
         this.isValueSet = true;
     }
     
-    public void setStartDate(Date startDate) {
+    public void setStartDate(Object startDate) {
     	this.startDate = startDate;
     	this.isStartDateSet = true;
     }
     
-    public void setEndDate(Date endDate) {
+    public void setEndDate(Object endDate) {
     	this.endDate = endDate;
     	this.isEndDateSet = true;
     }
