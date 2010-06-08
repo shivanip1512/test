@@ -39,6 +39,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.YukonJdbcOperations;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -71,6 +72,7 @@ public final class PaoDaoImpl implements PaoDao {
 
     private JdbcOperations jdbcOps;
     private YukonJdbcOperations yukonJdbcOperations;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
     private AuthDao authDao;
@@ -235,15 +237,28 @@ public final class PaoDaoImpl implements PaoDao {
     
     @Override
     public Map<Integer, String> getYukonPAONames(Collection<Integer> ids) {
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("select paobjectid,paoname from yukonpaobject where paobjectid in (");
-        sqlBuilder.append(ids);
-        sqlBuilder.append(")");
-        String sql = sqlBuilder.toString();
         
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
+        
+        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT paobjectid, paoname");
+        sqlBuilder.append("FROM yukonpaobject");
+        sqlBuilder.append("WHERE paobjectid").in(ids);
+
         final Map<Integer, String> resultMap = new HashMap<Integer, String>();
         
-        jdbcOps.query(sql, new RowCallbackHandler() {
+        template.query(new SqlFragmentGenerator<Integer>() {
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT paobjectid, paoname");
+                sql.append("FROM yukonpaobject");
+                sql.append("WHERE paobjectid").in(subList);
+                
+                return sql;
+            }
+        }, 
+        ids, 
+        new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 Integer key = rs.getInt("paobjectid");
@@ -533,6 +548,11 @@ public final class PaoDaoImpl implements PaoDao {
     @Autowired
     public void setYukonJdbcOperations(YukonJdbcOperations yukonJdbcOperations) {
         this.yukonJdbcOperations = yukonJdbcOperations;
+    }
+    
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     public List getAllSubsForUser(LiteYukonUser user) {
