@@ -1905,9 +1905,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		String displayTitle = YC_TITLE;
 		setTitle(displayTitle);
 
-		if (selectedItem == null)
-		{
-			getYC().setDeviceType(null);
+		if (selectedItem == null) {
+		    if( ModelFactory.isEditableSerial(getModelType())) {
+		        getYC().setDeviceType(savedDevType);
+		    } else {
+		        getYC().setDeviceType(null);
+		    }
 			return;
 		}
 	
