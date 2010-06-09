@@ -98,6 +98,7 @@
 
 <script type="text/javascript">
    var so = new SWFObject("${amSrc}", "dataGraph", "${swfWidth}", "${swfHeight}", "8", "#FFFFFF");
+   so.addParam("wmode", "opaque");
    so.useExpressInstall('${expressInstallSrc}');
    so.write("${uniqueId}");
 </script>
