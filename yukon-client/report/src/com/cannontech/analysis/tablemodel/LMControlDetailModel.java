@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.joda.time.DateTime;
 
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -25,13 +25,15 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
+import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.cannontech.user.YukonUserContext;
 
 public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> implements EnergyCompanyModelAttributes {
     private int energyCompanyId;
     private Set<Integer> programIds;
     private String accountNumbers;
-    private LiteYukonUser liteUser;
+    private YukonUserContext yukonUserContext;
     
     private CustomerAccountDao customerAccountDao = (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao");
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
@@ -77,6 +79,11 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         Validate.notNull(getStartDate(), "Start date must not be null");
         Validate.notNull(getStopDate(), "End date must not be null");
 
+        DateTime startDateTime = 
+            new DateTime(getStartDate(), yukonUserContext.getJodaTimeZone());
+        DateTime stopDateTime = 
+            new DateTime(getStopDate(), yukonUserContext.getJodaTimeZone());
+        
         /*Normal LMControlHistory data is useless to me without the active restore being considered and actual control
          *ranges being assembled out of individual events.  May have to do something unpleasant.
          */
@@ -88,8 +95,12 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
             String[] accountNumbersArr = accountNumbers.split(";");
             for (String accountNumber : accountNumbersArr) {
                 try {
-                    CustomerAccount custAccount = customerAccountDao.getByAccountNumber(accountNumber, liteUser);
-                    CustomerAccountWithNames customerAccountWithNames = customerAccountDao.getAccountWithNamesByCustomerId(custAccount.getCustomerId(), energyCompanyId);
+                    CustomerAccount custAccount = 
+                        customerAccountDao.getByAccountNumber(accountNumber, 
+                                                              yukonUserContext.getYukonUser());
+                    CustomerAccountWithNames customerAccountWithNames = 
+                        customerAccountDao.getAccountWithNamesByCustomerId(custAccount.getCustomerId(), 
+                                                                           energyCompanyId);
                     accounts.add(customerAccountWithNames);
                 } catch(NotFoundException ex) {
                     // No results from the given accountNumber.  
@@ -102,7 +113,8 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                                                                             getStartDate(),
                                                                             getStopDate());
         }
-        List<LiteYukonPAObject> restrictedPrograms = ReportFuncs.getRestrictedPrograms(liteUser);
+        List<LiteYukonPAObject> restrictedPrograms = 
+            ReportFuncs.getRestrictedPrograms(yukonUserContext.getYukonUser());
         data = new ArrayList<ModelRow>(accounts.size());
         for (CustomerAccountWithNames account : accounts) {
             try {
@@ -129,27 +141,46 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                             
                             StarsLMControlHistory allControlEventsForAGroup = groupIdToSTARSControlHistory.get(groupId);
                             if(allControlEventsForAGroup == null) {
-                                allControlEventsForAGroup = LMControlHistoryUtil.getSTARSFormattedLMControlHistory(groupId, getStartDate(), energyCompanyId);
+                                allControlEventsForAGroup = 
+                                    LMControlHistoryUtil.getSTARSFormattedLMControlHistory(groupId, 
+                                                                                           startDateTime,
+                                                                                           energyCompanyId);
                                 groupIdToSTARSControlHistory.put(groupId, allControlEventsForAGroup);
                             }
                             
                             List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
                             List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
                             
-                            long[] controlTotals = LMControlHistoryUtil.calculateCumulativeCustomerControlValues(allControlEventsForAGroup, getStartDate(), getStopDate(), enrollments, optOuts);
-                            row.controlHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_TIME] / 3600));
-                            row.totalOptOutHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_TIME] / 3600000));
-                            row.totalOptOutHoursDuringControl = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_DURING_OPTOUT_TIME] / 3600000));
-                            row.optOutEvents = new Integer(Long.valueOf(controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_EVENTS]).toString());
+                            CustomerControlTotals controlTotals = 
+                                LMControlHistoryUtil
+                                    .calculateCumulativeCustomerControlValues(allControlEventsForAGroup,
+                                                                              startDateTime,
+                                                                              stopDateTime,
+                                                                              enrollments,
+                                                                              optOuts);
+
+                            row.controlHours = 
+                                new Double(decFormat.format(1.0 * controlTotals.getTotalControlTime().getMillis() / 3600000));
+                            row.totalOptOutHours = 
+                                new Double(decFormat.format(1.0 * controlTotals.getTotalOptOutTime().getMillis() / 3600000));
+                            row.totalOptOutHoursDuringControl = 
+                                new Double(decFormat.format(1.0 * controlTotals.getTotalControlDuringOptOutTime().getMillis() / 3600000));
+                            row.optOutEvents = controlTotals.getTotalOptOutEvents();
                             
                             /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
                              * this group, and the last enrollment stop we can find for this group.
                              */
-                            if(enrollments.size() > 0) {
-                                if(enrollments.get(0).getGroupEnrollStart() != null)
-                                    row.enrollmentStart = enrollments.get(0).getGroupEnrollStart();
-                                if(enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null)
-                                row.enrollmentStop = enrollments.get(enrollments.size() - 1).getGroupEnrollStop();
+                            if (enrollments.size() > 0) {
+                                if (enrollments.get(0).getGroupEnrollStart() != null) {
+                                    row.enrollmentStart = 
+                                        new DateTime(enrollments.get(0).getGroupEnrollStart(),
+                                                     yukonUserContext.getJodaTimeZone()).toDate();
+                                }
+                                if (enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null) {
+                                    row.enrollmentStop = 
+                                        new DateTime(enrollments.get(enrollments.size() - 1).getGroupEnrollStop(),
+                                                      yukonUserContext.getJodaTimeZone()).toDate();
+                                }
                             }
                             
                             data.add(row);
@@ -161,7 +192,6 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                 CTILogger.error("Unable to generate row of report for account " + account.getAccountNumber(), e);
             }
         }
-        //----------------------------------------------------------------------------------
     }
     
     public void setEnergyCompanyId(int energyCompanyId) {
@@ -181,11 +211,13 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     public void setAccountNumbers(String accountNumbers) {
         this.accountNumbers = accountNumbers;
     }
+
+    public YukonUserContext getYukonUserContext() {
+        return yukonUserContext;
+    }
+
+    public void setYukonUserContext(YukonUserContext yukonUserContext) {
+        this.yukonUserContext = yukonUserContext;
+    }
    
-    public LiteYukonUser getLiteUser() {
-        return liteUser;
-    }
-    public void setLiteUser(LiteYukonUser liteUser) {
-        this.liteUser = liteUser;
-    }
 }
