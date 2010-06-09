@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.optout.service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.Duration;
 import org.joda.time.ReadableInstant;
@@ -55,7 +56,7 @@ public class OptOutRequest {
     	}
     	
     	// Converts the duration in hours to a duration
-    	Duration optOutDuration = new Duration(durationInHours*360*1000);
+    	Duration optOutDuration = new Duration(TimeUnit.HOURS.toMillis(durationInHours));
     	
     	ReadableInstant stopDate = startDate.toInstant().plus(optOutDuration);
     	

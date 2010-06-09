@@ -12,8 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -66,7 +69,8 @@ public class StarsDatabaseCache implements DBChangeListener {
 
     public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
-	private static final int CTRL_HIST_CACHE_INVALID_INTERVAL = 7;	// 7 days
+	private static final Duration CTRL_HIST_CACHE_INVALID_INTERVAL = 
+	    new Duration(TimeUnit.DAYS.toMillis(7));	// 7 days
 	
     // Array of all the energy companies (LiteStarsEnergyCompany)
 	private List<LiteStarsEnergyCompany> energyCompanies = null;
@@ -619,9 +623,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 		if (lmCtrlHist == null) lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		
 		if (startDateTime != null &&
-			(startDateTime.isBefore(lmCtrlHist.getLastSearchedStartTime()) ||
-			(startDateTime.toDate().getTime() - lmCtrlHist.getLastSearchedStopTime()) * 0.001 / 3600 / 24 > CTRL_HIST_CACHE_INVALID_INTERVAL))
-		{
+			 (startDateTime.isBefore(lmCtrlHist.getLastSearchedStartTime()) ||
+			   (new Duration(new Instant(lmCtrlHist.getLastSearchedStopTime()),
+			                 startDateTime).isLongerThan(CTRL_HIST_CACHE_INVALID_INTERVAL)))) {
 			// Clear the cached control history if the request date is earlier than the cache start date,
 			// or it is later than the cache stop date and the interval is too long.
 			lmCtrlHist = new LiteStarsLMControlHistory( groupID );

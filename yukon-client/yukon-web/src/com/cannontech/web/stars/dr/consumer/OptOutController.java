@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -269,7 +270,7 @@ public class OptOutController extends AbstractConsumerController {
                                               // startDates.
         } else {
             optOutRequest.setStartDate(new Instant(startDateObj));
-            optOutRequest.setDurationInHours(durationInDays * 24);
+            optOutRequest.setDurationInHours((int)TimeUnit.DAYS.toHours(durationInDays));
         }
         optOutRequest.setInventoryIdList(inventoryIds);
         optOutRequest.setQuestions(questionList);

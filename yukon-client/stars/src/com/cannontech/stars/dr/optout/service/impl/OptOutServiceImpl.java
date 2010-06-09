@@ -318,6 +318,8 @@ public class OptOutServiceImpl implements OptOutService {
 	public void cancelOptOut(List<Integer> eventIdList, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
+	    ReadableInstant now = new Instant();
+	    
 		for(Integer eventId : eventIdList) {
 			
 			OptOutEvent event = optOutEventDao.getOptOutEventById(eventId);
@@ -329,7 +331,7 @@ public class OptOutServiceImpl implements OptOutService {
     		
 			OptOutEventState state = event.getState();
             if (OptOutEventState.START_OPT_OUT_SENT == state && 
-                event.getStopDate().isAfter(new Instant())) {
+                event.getStopDate().isAfter(now)) {
 				// The opt out is active and the stop date is after now
 				
 				this.sendCancelCommandAndNotification(
@@ -337,7 +339,7 @@ public class OptOutServiceImpl implements OptOutService {
 				
 				// Update event state
 				event.setState(OptOutEventState.CANCEL_SENT);
-				event.setStopDate(new Instant());
+				event.setStopDate(now);
 				optOutEventDao.save(event, OptOutAction.CANCEL, user);
 				
 				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
@@ -347,7 +349,7 @@ public class OptOutServiceImpl implements OptOutService {
 				
 				// Cancel the scheduled opt out
 				event.setState(OptOutEventState.SCHEDULE_CANCELED);
-				event.setScheduledDate(new Instant());
+				event.setScheduledDate(now);
 				// No need to update start/stop date;
 				// SCHEDULE_CANCELED entries are ignored by OptOut Counts logic, OptOut history WS calls
 				// Control history is calculated from actual LMHardwareControlGroup entries.

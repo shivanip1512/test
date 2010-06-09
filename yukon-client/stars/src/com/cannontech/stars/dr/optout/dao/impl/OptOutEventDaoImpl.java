@@ -152,8 +152,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("FROM OptOutEvent ");
 		sql.append("WHERE InventoryId").eq(inventoryId);
 		sql.append("    AND CustomerAccountId").eq(customerAccountId);
-		sql.append("    AND StartDate <= ").appendArgument(now);
-		sql.append("    AND StopDate > ").appendArgument(now);
+		sql.append("    AND StartDate").lte(now);
+		sql.append("    AND StopDate").gt(now);
 		sql.append("    AND EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
 		
 		try {
@@ -320,8 +320,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		// or CANCEL_SENT
 		SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
-        sql.append("FROM OptOutEvent ");
-        sql.append("WHERE StartDate <=").appendArgument(new Instant());
+        sql.append("FROM OptOutEvent");
+        sql.append("WHERE StartDate").lte(new Instant());
         sql.append("    AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
         sql.append("         OR EventState").eq(OptOutEventState.CANCEL_SENT.toString()).append(")");
         sql.append("    AND InventoryId").eq(inventoryId);
@@ -345,7 +345,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("WHERE InventoryId ").eq(inventoryId);
 		sql.append("    AND CustomerAccountId ").eq(customerAccountId);
 		sql.append("    AND EventState ").eq(OptOutEventState.SCHEDULED.toString());
-		sql.append("    AND StartDate > ").appendArgument(new Instant());
+		sql.append("    AND StartDate ").gt(new Instant());
 		
 		OptOutEvent event = null;
 		try {
@@ -370,8 +370,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("WHERE InventoryId ").eq(inventoryId);
 		sql.append("    AND CustomerAccountId ").eq(customerAccountId);
 		sql.append("    AND EventState ").eq(OptOutEventState.SCHEDULED.toString());
-		sql.append("    AND StartDate <= ").appendArgument(now);
-		sql.append("    AND StopDate > ").appendArgument(now);
+		sql.append("    AND StartDate ").lte(now);
+		sql.append("    AND StopDate ").gt(now);
 		
 		OptOutEvent event = null;
 		try {
@@ -392,7 +392,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("FROM OptOutEvent ");
 		sql.append("WHERE CustomerAccountId ").eq(customerAccountId);
 		sql.append("    AND EventState ").eq(OptOutEventState.SCHEDULED.toString());
-		sql.append("    AND StartDate > ").appendArgument(new Instant());
+		sql.append("    AND StartDate ").gt(new Instant());
 		
 		List<OptOutEvent> eventList = 
 		    yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
@@ -407,7 +407,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("FROM OptOutEvent ooe");
 		sql.append("JOIN ECToAccountMapping ectam ON ectam.AccountId = ooe.CustomerAccountId");
 		sql.append("WHERE ooe.EventState ").eq(OptOutEventState.SCHEDULED.toString());
-		sql.append("	AND ooe.StartDate > ").appendArgument(new Instant());
+		sql.append("	AND ooe.StartDate ").gt(new Instant());
 		sql.append("	AND ectam.EnergyCompanyId ").eq(energyCompany.getEnergyCompanyID());
 		
 		List<OptOutEvent> eventList = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
@@ -564,8 +564,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("FROM OptOutEvent ooe");
 		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
 		sql.append("WHERE ooe.EventState ").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
-		sql.append("	AND ooe.StartDate <= ").appendArgument(now);
-		sql.append("	AND ooe.StopDate >= ").appendArgument(now);
+		sql.append("	AND ooe.StartDate ").lte(now);
+		sql.append("	AND ooe.StopDate ").gte(now);
 		sql.append("	AND ectam.EnergyCompanyId ").eq(energyCompany.getEnergyCompanyID());
 		
 		List<OptOutEvent> optOutEvents = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
@@ -655,8 +655,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("SELECT *");
 		sql.append("FROM OptOutEvent");
 		sql.append("WHERE EventState ").eq(OptOutEventState.SCHEDULED.toString());
-		sql.append("	AND StartDate <= ").appendArgument(now);
-		sql.append("	AND StopDate > ").appendArgument(now);
+		sql.append("	AND StartDate ").lte(now);
+		sql.append("	AND StopDate ").gt(now);
 		
 		List<OptOutEvent> scheduledOptOuts = 
 		    yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
@@ -669,7 +669,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LogUserId");
         sql.append("FROM OptOutEventLog ");
-        sql.append("WHERE OptOutEventId =").appendArgument(optOutEventId);
+        sql.append("WHERE OptOutEventId ").eq(optOutEventId);
         sql.append("ORDER BY LogDate ASC ");
 		
         List<Integer> userIds = yukonJdbcTemplate.queryForLimitedResults(sql, new IntegerRowMapper(), 1);
