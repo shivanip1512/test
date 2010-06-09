@@ -2,8 +2,6 @@ package com.cannontech.stars.dr.optout.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +11,11 @@ import javax.mail.internet.AddressException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -180,25 +183,24 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
         final int durationInHours = holder.request.getDurationInHours();
         if (durationInHours <= 0) return null;
         
-        final Calendar cal = dateFormattingService.getCalendar(holder.yukonUserContext);
-        Date optOutDate = holder.request.getStartDate();
+        ReadableInstant optOutStartInstant = holder.request.getStartDate();
+        DateTime optOutDateTime = 
+            new DateTime(optOutStartInstant, holder.yukonUserContext.getJodaTimeZone());
         
-        if (optOutDate == null) {
-            optOutDate = cal.getTime();
-        } else {
-            cal.setTime(optOutDate);
+        if (optOutStartInstant == null) {
+            optOutStartInstant = new Instant();
         }
 
-        cal.add( Calendar.HOUR_OF_DAY, durationInHours);
-        Date reenableDate = cal.getTime();
+        ReadableDuration optOutDuration = new Duration(durationInHours*360*1000); 
+        DateTime reenableDate = optOutDateTime.plus(optOutDuration);
         
-        String formattedOptOutDate = dateFormattingService.format(optOutDate, 
-                                                                      DateFormatEnum.DATEHM,
-                                                                      holder.yukonUserContext);
+        String formattedOptOutDate = dateFormattingService.format(optOutStartInstant, 
+                                                                  DateFormatEnum.DATEHM,
+                                                                  holder.yukonUserContext);
         
         String formattedReenableDate = dateFormattingService.format(reenableDate,
-                                                                        DateFormatEnum.DATEHM,
-                                                                        holder.yukonUserContext);
+                                                                    DateFormatEnum.DATEHM,
+                                                                    holder.yukonUserContext);
         
         LiteStarsCustAccountInformation liteAcctInfo = 
             starsCustAccountInformationDao.getById(holder.customerAccount.getAccountId(),

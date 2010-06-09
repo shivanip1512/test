@@ -413,7 +413,7 @@ public class OperatorProgramOptOutOperatorController {
                 optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
             } else {
                 DateTime startDateTime = optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-                optOutRequest.setStartDate(startDateTime.toDate());
+                optOutRequest.setStartDate(startDateTime);
                 optOutRequest.setDurationInHours(optOutBackingBean.getDurationInDays() * 24);
             }
 

@@ -1,11 +1,11 @@
 package com.cannontech.web.stars.dr.operator.optout;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -252,21 +252,21 @@ public class OptOutAdminController {
      */
     public static class ScheduledOptOutEventDto {
     	
-    	private Date startDate;
-    	private Date stopDate;
+    	private ReadableInstant startDate;
+    	private ReadableInstant stopDate;
     	private String accountNumber;
     	private String serialNumber;
 		
-    	public Date getStartDate() {
+    	public ReadableInstant getStartDate() {
 			return startDate;
 		}
-		public void setStartDate(Date startDate) {
+		public void setStartDate(ReadableInstant startDate) {
 			this.startDate = startDate;
 		}
-		public Date getStopDate() {
+		public ReadableInstant getStopDate() {
 			return stopDate;
 		}
-		public void setStopDate(Date stopDate) {
+		public void setStopDate(ReadableInstant stopDate) {
 			this.stopDate = stopDate;
 		}
 		public String getAccountNumber() {

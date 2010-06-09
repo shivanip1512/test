@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -18,6 +20,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -79,17 +83,17 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		// Add or Update opt out event
 		Integer inventoryId = event.getInventoryId();
 		Integer customerAccountId = event.getCustomerAccountId();
-		Date scheduledDate = event.getScheduledDate();
-		Date startDate = event.getStartDate();
-		Date stopDate = event.getStopDate();
+		ReadableInstant scheduledDate = event.getScheduledDate();
+		ReadableInstant startDate = event.getStartDate();
+		ReadableInstant stopDate = event.getStopDate();
 		String eventCounts = event.getEventCounts().toString();
 
 		yukonJdbcTemplate.update(eventSql.toString(), 
 				inventoryId, 
 				customerAccountId,
-				scheduledDate,
-				startDate,
-				stopDate,
+				SqlStatementBuilder.convertArgumentToJdbcObject(scheduledDate),
+				SqlStatementBuilder.convertArgumentToJdbcObject(startDate),
+				SqlStatementBuilder.convertArgumentToJdbcObject(stopDate),
 				eventCounts,
 				event.getState().toString(),
 				event.getEventId());
@@ -121,7 +125,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		
 		int logId = nextValueHelper.getNextValue("OptOutEventLog");
 		optOutLog.setLogId(logId);
-		optOutLog.setLogDate(new Date());
+		optOutLog.setLogDate(new Instant());
 		
 		yukonJdbcTemplate.update(
 				logSql.toString(), 
@@ -129,9 +133,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				optOutLog.getInventoryId(),
 				optOutLog.getCustomerAccountId(),
 				optOutLog.getAction().toString(),
-				optOutLog.getLogDate(),
-				optOutLog.getStartDate(),
-				optOutLog.getStopDate(),
+				SqlStatementBuilder.convertArgumentToJdbcObject(optOutLog.getLogDate()),
+				SqlStatementBuilder.convertArgumentToJdbcObject(optOutLog.getStartDate()),
+				SqlStatementBuilder.convertArgumentToJdbcObject(optOutLog.getStopDate()),
 				optOutLog.getUserId(),
 				optOutLog.getEventId(),
 				optOutLog.getEventCounts().toString());
@@ -141,26 +145,19 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	public boolean isOptedOut(int inventoryId, int customerAccountId) {
 
+        ReadableInstant now = new Instant();
+        
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
 		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE InventoryId = ? ");
-		sql.append("	AND CustomerAccountId = ? ");
-		sql.append("	AND StartDate <= ? ");
-		sql.append("	AND StopDate > ? ");
-		sql.append("	AND EventState = ? ");
-		
-		Date now = new Date();
+		sql.append("WHERE InventoryId").eq(inventoryId);
+		sql.append("    AND CustomerAccountId").eq(customerAccountId);
+		sql.append("    AND StartDate <= ").appendArgument(now);
+		sql.append("    AND StopDate > ").appendArgument(now);
+		sql.append("    AND EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
 		
 		try {
-			yukonJdbcTemplate.queryForObject(
-						sql.toString(), 
-						new OptOutEventRowMapper(), 
-						inventoryId,
-						customerAccountId,
-						now,
-						now,
-						OptOutEventState.START_OPT_OUT_SENT.toString());
+			yukonJdbcTemplate.queryForObject(sql, new OptOutEventRowMapper());
 		} catch (EmptyResultDataAccessException e) {
 			return false;
 		}
@@ -219,19 +216,18 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	    sql.append("WHERE optOutEventId").in(eventIds);
 	    sql.append("ORDER BY optOutEventId, logDate");
 
-	    ParameterizedRowMapper<OptOutLog> rowMapper =
-	        new ParameterizedRowMapper<OptOutLog>() {
+	    YukonRowMapper<OptOutLog> rowMapper =
+	        new YukonRowMapper<OptOutLog>() {
                 @Override
-                public OptOutLog mapRow(ResultSet rs, int rowNum)
-                        throws SQLException {
+                public OptOutLog mapRow(YukonResultSet rs) throws SQLException {
                     OptOutLog retVal = new OptOutLog();
                     retVal.setLogId(rs.getInt("optOutEventLogId"));
                     retVal.setInventoryId(rs.getInt("inventoryId"));
                     retVal.setCustomerAccountId(rs.getInt("customerAccountId"));
                     retVal.setAction(OptOutAction.valueOf(rs.getString("eventAction")));
-                    retVal.setLogDate(rs.getTimestamp("logDate"));
-                    retVal.setStartDate(rs.getTimestamp("eventStartDate"));
-                    retVal.setStopDate(rs.getTimestamp("eventStopDate"));
+                    retVal.setLogDate(rs.getInstant("logDate"));
+                    retVal.setStartDate(rs.getInstant("eventStartDate"));
+                    retVal.setStopDate(rs.getInstant("eventStopDate"));
                     retVal.setUserId(rs.getInt("logUserId"));
                     retVal.setUsername(rs.getString("username"));
                     retVal.setEventId(rs.getInt("optOutEventId"));
@@ -307,12 +303,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
 		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE OptOutEventId = ? ");
+		sql.append("WHERE OptOutEventId").eq(eventId);
 		
-		OptOutEvent event = yukonJdbcTemplate.queryForObject(
-													sql.toString(), 
-													new OptOutEventRowMapper(), 
-													eventId);
+		OptOutEvent event = yukonJdbcTemplate.queryForObject(sql, new OptOutEventRowMapper());
 		
 		return event;
 	}
@@ -328,14 +321,15 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM OptOutEvent ");
-        sql.append("WHERE StartDate <=").appendArgument(new Date());
-        sql.append("AND (EventState =").appendArgument(OptOutEventState.START_OPT_OUT_SENT.toString());
-        sql.append("      OR EventState =").appendArgument(OptOutEventState.CANCEL_SENT.toString()).append(")");
-        sql.append("AND InventoryId =").appendArgument(inventoryId);
-        sql.append("AND CustomerAccountId =").appendArgument(customerAccountId);
+        sql.append("WHERE StartDate <=").appendArgument(new Instant());
+        sql.append("    AND (EventState").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
+        sql.append("         OR EventState").eq(OptOutEventState.CANCEL_SENT.toString()).append(")");
+        sql.append("    AND InventoryId").eq(inventoryId);
+        sql.append("    AND CustomerAccountId").eq(customerAccountId);
         sql.append("ORDER BY StopDate DESC");
         
-        List<OptOutEvent> events = yukonJdbcTemplate.queryForLimitedResults(sql, new OptOutEventRowMapper(), 1);
+        List<OptOutEvent> events = 
+            yukonJdbcTemplate.queryForLimitedResults(sql, new OptOutEventRowMapper(), 1);
         OptOutEvent event = (events.size() > 0) ? events.get(0) : null;
 
         return event;
@@ -348,19 +342,14 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
 		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE InventoryId = ? ");
-		sql.append("	AND CustomerAccountId = ? ");
-		sql.append("	AND EventState = ? ");
-		sql.append("	AND StartDate > ? ");
+		sql.append("WHERE InventoryId ").eq(inventoryId);
+		sql.append("    AND CustomerAccountId ").eq(customerAccountId);
+		sql.append("    AND EventState ").eq(OptOutEventState.SCHEDULED.toString());
+		sql.append("    AND StartDate > ").appendArgument(new Instant());
 		
 		OptOutEvent event = null;
 		try {
-			event = yukonJdbcTemplate.queryForObject(sql.toString(), 
-													  new OptOutEventRowMapper(), 
-													  inventoryId,
-													  customerAccountId,
-													  OptOutEventState.SCHEDULED.toString(),
-													  new Date());
+			event = yukonJdbcTemplate.queryForObject(sql, new OptOutEventRowMapper());
 		} catch(EmptyResultDataAccessException e) {
 			// no scheduled event, return null
 			return null;
@@ -373,25 +362,20 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
 			int customerAccountId) {
 
+        ReadableInstant now = new Instant();
+	    
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
 		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE InventoryId = ? ");
-		sql.append("	AND CustomerAccountId = ? ");
-		sql.append("	AND EventState = ? ");
-		sql.append("	AND StartDate <= ? ");
-		sql.append("	AND StopDate > ? ");
+		sql.append("WHERE InventoryId ").eq(inventoryId);
+		sql.append("    AND CustomerAccountId ").eq(customerAccountId);
+		sql.append("    AND EventState ").eq(OptOutEventState.SCHEDULED.toString());
+		sql.append("    AND StartDate <= ").appendArgument(now);
+		sql.append("    AND StopDate > ").appendArgument(now);
 		
 		OptOutEvent event = null;
 		try {
-			Date now = new Date();
-			event = yukonJdbcTemplate.queryForObject(sql.toString(), 
-													  new OptOutEventRowMapper(), 
-													  inventoryId,
-													  customerAccountId,
-													  OptOutEventState.SCHEDULED.toString(),
-													  now,
-													  now);
+			event = yukonJdbcTemplate.queryForObject(sql, new OptOutEventRowMapper());
 		} catch(EmptyResultDataAccessException e) {
 			// no overdue scheduled event, return null
 			return null;
@@ -406,15 +390,12 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
 		sql.append("FROM OptOutEvent ");
-		sql.append("WHERE CustomerAccountId = ? ");
-		sql.append("	AND EventState = ? ");
-		sql.append("	AND StartDate > ? ");
+		sql.append("WHERE CustomerAccountId ").eq(customerAccountId);
+		sql.append("    AND EventState ").eq(OptOutEventState.SCHEDULED.toString());
+		sql.append("    AND StartDate > ").appendArgument(new Instant());
 		
-		List<OptOutEvent> eventList = yukonJdbcTemplate.query(sql.toString(),
-															new OptOutEventRowMapper(), 
-															customerAccountId,
-															OptOutEventState.SCHEDULED.toString(), 
-															new Date());
+		List<OptOutEvent> eventList = 
+		    yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return eventList;
 	}
 	
@@ -425,16 +406,11 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		sql.append("SELECT ooe.* ");
 		sql.append("FROM OptOutEvent ooe");
 		sql.append("JOIN ECToAccountMapping ectam ON ectam.AccountId = ooe.CustomerAccountId");
-		sql.append("WHERE ooe.EventState = ").appendArgument(OptOutEventState.SCHEDULED.toString());
-		sql.append("	AND ooe.StartDate > ").appendArgument(new Date());
-		sql.append("	AND ectam.EnergyCompanyId = ").appendArgument(
-																energyCompany.getEnergyCompanyID());
+		sql.append("WHERE ooe.EventState ").eq(OptOutEventState.SCHEDULED.toString());
+		sql.append("	AND ooe.StartDate > ").appendArgument(new Instant());
+		sql.append("	AND ectam.EnergyCompanyId ").eq(energyCompany.getEnergyCompanyID());
 		
-		List<OptOutEvent> eventList = yukonJdbcTemplate.query(
-				sql.getSql(),
-				new OptOutEventRowMapper(), 
-				sql.getArguments());
-		
+		List<OptOutEvent> eventList = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return eventList;
 	}
 
@@ -581,24 +557,18 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany) {
 
-		Date now = new Date();
+		ReadableInstant now = new Instant();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT ooe.*");
 		sql.append("FROM OptOutEvent ooe");
 		sql.append("	JOIN ECToAccountMapping ectam ON ooe.CustomerAccountId = ectam.AccountId");
-		sql.append("WHERE ooe.EventState = ?");
-		sql.append("	AND ooe.StartDate <= ?");
-		sql.append("	AND ooe.StopDate >= ?");
-		sql.append("	AND ectam.EnergyCompanyId = ?");
+		sql.append("WHERE ooe.EventState ").eq(OptOutEventState.START_OPT_OUT_SENT.toString());
+		sql.append("	AND ooe.StartDate <= ").appendArgument(now);
+		sql.append("	AND ooe.StopDate >= ").appendArgument(now);
+		sql.append("	AND ectam.EnergyCompanyId ").eq(energyCompany.getEnergyCompanyID());
 		
-		List<OptOutEvent> optOutEvents = yukonJdbcTemplate.query(sql.toString(), 
-												new OptOutEventRowMapper(), 
-												OptOutEventState.START_OPT_OUT_SENT.toString(),
-												now,
-												now,
-												energyCompany.getEnergyCompanyID());
-		
+		List<OptOutEvent> optOutEvents = yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return optOutEvents;
 	}
 	
@@ -679,21 +649,17 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	public List<OptOutEvent> getScheduledOptOutsToBeStarted() {
 		
-		Date now = new Date();
+		ReadableInstant now = new Instant();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT *");
 		sql.append("FROM OptOutEvent");
-		sql.append("WHERE EventState = ?");
-		sql.append("	AND StartDate <= ?");
-		sql.append("	AND StopDate > ?");
+		sql.append("WHERE EventState ").eq(OptOutEventState.SCHEDULED.toString());
+		sql.append("	AND StartDate <= ").appendArgument(now);
+		sql.append("	AND StopDate > ").appendArgument(now);
 		
-		List<OptOutEvent> scheduledOptOuts = yukonJdbcTemplate.query(sql.toString(), 
-														new OptOutEventRowMapper(), 
-														OptOutEventState.SCHEDULED.toString(),
-														now,
-														now);
-		
+		List<OptOutEvent> scheduledOptOuts = 
+		    yukonJdbcTemplate.query(sql, new OptOutEventRowMapper());
 		return scheduledOptOuts;
 	}
 	
@@ -716,18 +682,18 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	 * Helper class to map a result set row into an OptOutEvent
 	 */
 	private class OptOutEventRowMapper implements
-			ParameterizedRowMapper<OptOutEvent> {
+			YukonRowMapper<OptOutEvent> {
 
 		@Override
-		public OptOutEvent mapRow(ResultSet rs, int rowNum) throws SQLException {
+		public OptOutEvent mapRow(YukonResultSet rs) throws SQLException {
 
 			OptOutEvent event = new OptOutEvent();
 			event.setEventId(rs.getInt("OptOutEventId"));
 			event.setInventoryId(rs.getInt("InventoryId"));
 			event.setCustomerAccountId(rs.getInt("CustomerAccountId"));
-			event.setScheduledDate(rs.getTimestamp("ScheduledDate"));
-			event.setStartDate(rs.getTimestamp("StartDate"));
-			event.setStopDate(rs.getTimestamp("StopDate"));
+			event.setScheduledDate(rs.getInstant("ScheduledDate"));
+			event.setStartDate(rs.getInstant("StartDate"));
+			event.setStopDate(rs.getInstant("StopDate"));
 			
 			String eventCountsString = rs.getString("EventCounts");
 			OptOutCounts eventCounts = OptOutCounts.valueOf(eventCountsString);

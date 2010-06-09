@@ -2,7 +2,6 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -10,6 +9,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -102,7 +102,7 @@ public class OptOutCleanupService implements InitializingBean {
     	optOutRequest.setQuestions(questionList);
     	
     	// Update event start to get duration (in case we missed this opt out by more than an hour)
-    	event.setStartDate(new Date());
+    	event.setStartDate(new Instant());
     	optOutRequest.setDurationInHours(event.getDurationInHours());
     	optOutRequest.setEventId(event.getEventId());
     	

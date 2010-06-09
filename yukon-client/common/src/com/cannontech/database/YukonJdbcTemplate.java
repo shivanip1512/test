@@ -70,6 +70,16 @@ public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         return rse.getResult();
     }
 
+    public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, 
+                                               YukonRowMapper<T> rm, 
+                                               int maxResults) throws DataAccessException {
+        
+        MaxListResultSetExtractor<T> rse = 
+            new MaxListResultSetExtractor<T>(new YukonRowMapperAdapter<T>(rm), maxResults);
+        getJdbcOperations().query(sql.getSql(), sql.getArguments(), rse);
+        return rse.getResult();
+    }
+    
     @Override
     public <T> void query(SqlFragmentSource sql, ParameterizedRowMapper<T> rm, Collection<? super T> result)
     throws DataAccessException {

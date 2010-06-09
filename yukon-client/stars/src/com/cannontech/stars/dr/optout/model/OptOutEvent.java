@@ -1,10 +1,9 @@
 package com.cannontech.stars.dr.optout.model;
 
-import java.util.Date;
-
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import org.joda.time.ReadableInstant;
 
 /**
  * Model object which represents an Opt out event
@@ -14,9 +13,9 @@ public class OptOutEvent {
 	private Integer eventId;
 	private Integer customerAccountId;
 	private Integer inventoryId;
-	private Date scheduledDate;
-	private Date startDate;
-	private Date stopDate;
+	private ReadableInstant scheduledDate;
+	private ReadableInstant startDate;
+	private ReadableInstant stopDate;
 	private OptOutCounts eventCounts;
 	private OptOutEventState state;
 
@@ -44,27 +43,27 @@ public class OptOutEvent {
 		this.inventoryId = inventoryId;
 	}
 
-	public Date getScheduledDate() {
+	public ReadableInstant getScheduledDate() {
 		return scheduledDate;
 	}
 	
-	public void setScheduledDate(Date scheduledDate) {
+	public void setScheduledDate(ReadableInstant scheduledDate) {
 		this.scheduledDate = scheduledDate;
 	}
 	
-	public Date getStartDate() {
+	public ReadableInstant getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(ReadableInstant startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getStopDate() {
+	public ReadableInstant getStopDate() {
 		return stopDate;
 	}
 
-	public void setStopDate(Date stopDate) {
+	public void setStopDate(ReadableInstant stopDate) {
 		this.stopDate = stopDate;
 	}
 
@@ -91,7 +90,7 @@ public class OptOutEvent {
 		}
 
 		// Use Joda to get correct duration in hours
-		Period period = new Period(startDate.getTime(), stopDate.getTime(), PeriodType.time());
+		Period period = new Period(startDate, stopDate, PeriodType.time());
 		
 		return period.get(DurationFieldType.hours());
 	}

@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
@@ -121,9 +123,9 @@ public class OptOutServiceImpl implements OptOutService {
 		int customerAccountId = customerAccount.getAccountId();
 		final LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
 		List<Integer> inventoryIdList = request.getInventoryIdList();
-		Date startDate = request.getStartDate();
+		ReadableInstant startDate = request.getStartDate();
 		boolean startNow = false;
-		Date now = new Date();
+		ReadableInstant now = new Instant();
 		if(startDate == null) {
 			// Start now
 			request.setStartDate(now);
@@ -232,9 +234,8 @@ public class OptOutServiceImpl implements OptOutService {
     		
 	    	// Log the event
 	    	StringBuffer logMsg = new StringBuffer();
-	    	logMsg.append("Start Date/Time:" + StarsUtils.formatDate(
-																event.getStartDate(), 
-																energyCompany.getDefaultTimeZone()));
+	    	logMsg.append("Start Date/Time:" + new DateTime(event.getStartDate(), 
+															energyCompany.getDefaultDateTimeZone()));
 	    	logMsg.append(", Duration:" + ServletUtils.getDurationFromHours(
 	    			event.getDurationInHours()));
 	    	logMsg.append(", Serial #:" + inventory.getManufacturerSerialNumber());
@@ -283,7 +284,7 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
 			
-			int newDuration = TimeUtil.differenceInHours(new Date(), lastEvent.getStopDate());
+			int newDuration = TimeUtil.differenceInHours(new Instant(), lastEvent.getStopDate());
 			
 			OptOutRequest request = new OptOutRequest();
 			request.setInventoryIdList(Collections.singletonList(inventoryId));
@@ -327,7 +328,8 @@ public class OptOutServiceImpl implements OptOutService {
     		CustomerAccount customerAccount = customerAccountDao.getAccountByInventoryId(inventoryId);
     		
 			OptOutEventState state = event.getState();
-			if(OptOutEventState.START_OPT_OUT_SENT == state && event.getStopDate().after(new Date())) {
+            if (OptOutEventState.START_OPT_OUT_SENT == state && 
+                event.getStopDate().isAfter(new Instant())) {
 				// The opt out is active and the stop date is after now
 				
 				this.sendCancelCommandAndNotification(
@@ -335,7 +337,7 @@ public class OptOutServiceImpl implements OptOutService {
 				
 				// Update event state
 				event.setState(OptOutEventState.CANCEL_SENT);
-				event.setStopDate(new Date());
+				event.setStopDate(new Instant());
 				optOutEventDao.save(event, OptOutAction.CANCEL, user);
 				
 				this.cancelLMHardwareControlGroupOptOut(inventoryId, customerAccount, event, user);
@@ -345,7 +347,7 @@ public class OptOutServiceImpl implements OptOutService {
 				
 				// Cancel the scheduled opt out
 				event.setState(OptOutEventState.SCHEDULE_CANCELED);
-				event.setScheduledDate(new Date());
+				event.setScheduledDate(new Instant());
 				// No need to update start/stop date;
 				// SCHEDULE_CANCELED entries are ignored by OptOut Counts logic, OptOut history WS calls
 				// Control history is calculated from actual LMHardwareControlGroup entries.
@@ -425,7 +427,7 @@ public class OptOutServiceImpl implements OptOutService {
 			
 			// Update event state
 			event.setState(OptOutEventState.CANCEL_SENT);
-			event.setStopDate(new Date());
+			event.setStopDate(new Instant());
 			
 			// Update the count state to don't count since we force-canceled this opt out
 			event.setEventCounts(OptOutCounts.DONT_COUNT);
