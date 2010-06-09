@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.ReadableInstant;
+
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.program.service.ProgramEnrollment;
@@ -85,7 +87,7 @@ public interface EnrollmentDao {
 	 * @param loadGroupId
 	 * @return
 	 */
-	public Date findCurrentEnrollmentStartDate(int inventoryId, int loadGroupId);
+	public ReadableInstant findCurrentEnrollmentStartDate(int inventoryId, int loadGroupId);
 
     /**
      * Determine if the given inventory item is in service.

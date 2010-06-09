@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.ActivityLogger;
@@ -923,7 +924,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
                                                                                                         programId,
                                                                                                         customerAccountId);
-        boolean isProgramEnrolled = ControlGroupUtil.isEnrolled(entryList, new Date());
+        boolean isProgramEnrolled = ControlGroupUtil.isEnrolled(entryList, new Instant());
         return isProgramEnrolled;
     }
     

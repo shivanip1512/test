@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -16,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.DateRowMapper;
+import com.cannontech.database.InstantRowMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.program.dao.ProgramRowMapper;
@@ -191,17 +195,14 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT lmhcg.* ");
 		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("WHERE lmhcg.ProgramId = ?");
-		sql.append("	AND lmhcg.Type = ?");
-		sql.append("	AND lmhcg.OptOutStart <= ?");
-		sql.append("	AND (lmhcg.OptOutStop IS NULL OR lmhcg.OptOutStop >= ?)");
+		sql.append("WHERE lmhcg.ProgramId ").eq(program.getProgramId());
+		sql.append("	AND lmhcg.Type ").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
+		sql.append("	AND lmhcg.OptOutStart <= ").appendArgument(stopDate);
+		sql.append("	AND (lmhcg.OptOutStop IS NULL ");
+		sql.append("         OR lmhcg.OptOutStop >= ").appendArgument(startDate).append(")");
 		
 		List<LMHardwareControlGroup> history = 
-			yukonJdbcTemplate.query(sql.toString(), new LMHardwareControlGroupRowMapper(), 
-				program.getProgramId(),
-				LMHardwareControlGroup.OPT_OUT_ENTRY,
-				stopDate,
-				startDate);
+			yukonJdbcTemplate.query(sql, new LMHardwareControlGroupRowMapper());
 
 		return history;
 	}
@@ -238,24 +239,21 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return programIdCountMap;
 	}
     
-	public Date findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
+	public ReadableInstant findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
 	    
-	    Date now = new Date();
+	    ReadableInstant now = new Instant();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LMHCG.GroupEnrollStart ");
         sql.append("FROM LMHardwareControlGroup LMHCG");
-        sql.append("WHERE LMHCG.InventoryId = ?");
-        sql.append("AND LMHCG.LmGroupId = ?");
-        sql.append("AND LMHCG.GroupEnrollStart <= ?");
+        sql.append("WHERE LMHCG.InventoryId ").eq(inventoryId);
+        sql.append("AND LMHCG.LmGroupId ").eq(lmGroupId);
+        sql.append("AND LMHCG.GroupEnrollStart <= ").appendArgument(now);
         sql.append("AND LMHCG.GroupEnrollStop IS NULL");
 
         try {
-        	Date startDate = yukonJdbcTemplate.queryForObject(sql.toString(), 
-                                                              new DateRowMapper(), 
-                                                              inventoryId,
-                                                              lmGroupId,
-                                                              now);
+        	ReadableInstant startDate = 
+        	    yukonJdbcTemplate.queryForObject(sql, new InstantRowMapper());
         	return startDate;
         } catch (EmptyResultDataAccessException e){
         	return null;
@@ -303,18 +301,19 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         return oldConfigInfoRowMapper;
     }
     
-    private class LMHardwareControlGroupRowMapper implements ParameterizedRowMapper<LMHardwareControlGroup> {
+    private class LMHardwareControlGroupRowMapper 
+                        implements YukonRowMapper<LMHardwareControlGroup> {
         
-    	public LMHardwareControlGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+    	public LMHardwareControlGroup mapRow(YukonResultSet rs) throws SQLException {
             LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
             hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryId"));
             hardwareControlGroup.setInventoryId(rs.getInt("InventoryId"));
             hardwareControlGroup.setLmGroupId(rs.getInt("LMGroupId"));
             hardwareControlGroup.setAccountId(rs.getInt("AccountId"));
-            hardwareControlGroup.setGroupEnrollStart(rs.getTimestamp("GroupEnrollStart"));
-            hardwareControlGroup.setGroupEnrollStop(rs.getTimestamp("GroupEnrollStop"));
-            hardwareControlGroup.setOptOutStart(rs.getTimestamp("OptOutStart"));
-            hardwareControlGroup.setOptOutStop(rs.getTimestamp("OptOutStop"));
+            hardwareControlGroup.setGroupEnrollStart(rs.getInstant("GroupEnrollStart"));
+            hardwareControlGroup.setGroupEnrollStop(rs.getInstant("GroupEnrollStop"));
+            hardwareControlGroup.setOptOutStart(rs.getInstant("OptOutStart"));
+            hardwareControlGroup.setOptOutStop(rs.getInstant("OptOutStop"));
             hardwareControlGroup.setType(rs.getInt("Type"));
             hardwareControlGroup.setRelay(rs.getInt("Relay"));
             hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
