@@ -209,7 +209,7 @@ function checkDates(){
 function makeFirstSelectedFilterValueVisible() {
 	
 	var listbox = $('selectFilterValues');	
-    if(listbox != null) {
+    if(listbox) {
     	var selectedOptions = new Array();
     	y=0;
     		for (x=0;x<listbox.options.length;x++){
