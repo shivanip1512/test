@@ -7,6 +7,7 @@ import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.user.YukonUserContext;
 
 public interface ScenarioService {
@@ -14,6 +15,6 @@ public interface ScenarioService {
             YukonUserContext userContext, UiFilter<ControllablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count);
 
-    public List<ControllablePao> findScenariosForProgram(int programId);
+    public List<Scenario> findScenariosForProgram(int programId);
 
 }

@@ -23,6 +23,7 @@ import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
@@ -298,7 +299,7 @@ public class LoadControlServiceImpl implements LoadControlService {
 	@Override
     public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
         
-		List<ControllablePao> allScenarios = scenarioDao.getAllScenarios();
+		List<Scenario> allScenarios = scenarioDao.getAllScenarios();
 		List<ScenarioProgramStartingGears> allScenarioProgramStartingGears = Lists.newArrayListWithExpectedSize(allScenarios.size());
 		
 		for (ControllablePao scenario : allScenarios) {

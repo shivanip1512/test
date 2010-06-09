@@ -69,7 +69,7 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
-    public List<ControllablePao> findScenariosForProgram(int programId) {
+    public List<Scenario> findScenariosForProgram(int programId) {
         return scenarioDao.findScenariosForProgram(programId);
     }
 

@@ -34,6 +34,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -1011,7 +1012,7 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 		boolean error = false;
 		for(LiteYukonPAObject program : lite)
 		{
-		    List<ControllablePao> scenarios = scenarioDao.findScenariosForProgram(program.getYukonID());
+		    List<Scenario> scenarios = scenarioDao.findScenariosForProgram(program.getYukonID());
 		    if(scenarios.size() > 0)
 		    {
 		        error = true;

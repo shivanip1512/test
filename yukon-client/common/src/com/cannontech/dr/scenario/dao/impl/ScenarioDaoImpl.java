@@ -12,7 +12,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcOperations;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
@@ -28,19 +27,19 @@ public class ScenarioDaoImpl implements ScenarioDao {
         "LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId "+
         "WHERE PAO.Type = '"+ PaoType.LM_SCENARIO.getDatabaseRepresentation() +"' ";
 
-    private final static ParameterizedRowMapper<ControllablePao> scenarioRowMapper =
-        new ParameterizedRowMapper<ControllablePao>() {
+    private final static ParameterizedRowMapper<Scenario> scenarioRowMapper =
+        new ParameterizedRowMapper<Scenario>() {
         @Override
-        public ControllablePao mapRow(ResultSet rs, int rowNum)
+        public Scenario mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_SCENARIO);
             String paoName = rs.getString("paoName");
             int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
-            ControllablePao retVal = new Scenario(paoId,
-                                                  paoName,
-                                                  scenarioProgramCount);
+            Scenario retVal = new Scenario(paoId,
+                                           paoName,
+                                           scenarioProgramCount);
             
             return retVal;
         }
@@ -60,22 +59,6 @@ public class ScenarioDaoImpl implements ScenarioDao {
         }
     };
 
-    private final static ParameterizedRowMapper<Scenario> scenariosRowMapper =
-        new ParameterizedRowMapper<Scenario>() {
-        @Override
-        public Scenario mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-            PaoIdentifier paoId = new PaoIdentifier(rs.getInt("PAObjectId"),
-                                                    PaoType.LM_SCENARIO);
-            String paoName = rs.getString("PAOName");
-            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
-
-            Scenario scenario = new Scenario(paoId, paoName, scenarioProgramCount);
-            
-            return scenario;
-        }};
-
-        
     @Override
     public Scenario getScenario(int scenarioId) {
         SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
@@ -83,13 +66,13 @@ public class ScenarioDaoImpl implements ScenarioDao {
         sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
 
         Scenario scenario = yukonJdbcOperations.queryForObject(sql,
-                                                               scenariosRowMapper);
+                                                               scenarioRowMapper);
         
         return scenario;
     }
     
     @Override
-    public List<ControllablePao> getAllScenarios() {
+    public List<Scenario> getAllScenarios() {
     	
     	SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
         sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
@@ -98,7 +81,7 @@ public class ScenarioDaoImpl implements ScenarioDao {
     }
 
     @Override
-    public List<ControllablePao> findScenariosForProgram(int programId) {
+    public List<Scenario> findScenariosForProgram(int programId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
         sql.append("AND PAO.PAObjectId IN (SELECT ScenarioId ");
