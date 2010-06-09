@@ -15,12 +15,22 @@ import javax.swing.KeyStroke;
 
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.gui.util.TreeFindPanel;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.ControlType;
+import com.cannontech.database.data.point.PointArchiveInterval;
+import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.lm.LMControlAreaProgram;
 import com.cannontech.database.db.device.lm.LMProgram;
+import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
 import com.cannontech.dr.scenario.dao.impl.ScenarioDaoImpl;
@@ -656,6 +666,32 @@ public Object getValue(Object o)
 		controlArea.getLmControlAreaProgramVector().add(row.getProgramList());
 	}
 
+    // Create Status point
+    if(controlArea.getPAObjectID() == null){
+        PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");
+        controlArea.setPAObjectID(paoDao.getNextPaoId());
+
+        PointCreationService pointCreationService = 
+            (PointCreationService) YukonSpringHook.getBean("pointCreationService");
+        PointBase point = pointCreationService.createPoint(PointTypes.STATUS_POINT,
+                                                           "Status",
+                                                           controlArea.getPAObjectID(),
+                                                           1,
+                                                           0.0,
+                                                           0,
+                                                           StateGroupUtils.STATEGROUP_TWO_STATE_ACTIVE,
+                                                           PointUnit.DEFAULT_DECIMAL_PLACES,
+                                                           ControlType.NONE,
+                                                           PointArchiveType.NONE,
+                                                           PointArchiveInterval.ZERO);
+
+        SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
+        persistant.addOwnerDBPersistent(controlArea);
+        persistant.addDBPersistent(point);
+        
+        return persistant;
+    }
+	
 	return o;
 }
 /**
