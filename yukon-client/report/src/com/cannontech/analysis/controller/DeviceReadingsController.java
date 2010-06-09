@@ -108,8 +108,7 @@ public class DeviceReadingsController extends ReportControllerBase{
         }
         
         if(StringUtils.isNotBlank(disableFlag)){
-            boolean includeDisabledDevices = disableFlag.equalsIgnoreCase("include");
-            deviceReadingsModel.setIncludeDisabledDevices(includeDisabledDevices);
+            deviceReadingsModel.setExcludeDisabledDevices(disableFlag.equalsIgnoreCase("true"));
         }
         
         deviceReadingsModel.setYukonUserContext(yukonUserContext);
@@ -131,10 +130,7 @@ public class DeviceReadingsController extends ReportControllerBase{
         sb.append("            <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("          </tr>" + LINE_SEPARATOR);
         sb.append("          <tr>" + LINE_SEPARATOR);
-        sb.append("            <td><input type='radio' name='disableFlag' value='include' checked>Include" + LINE_SEPARATOR);
-        sb.append("          </tr>" + LINE_SEPARATOR);
-        sb.append("          <tr>" + LINE_SEPARATOR);
-        sb.append("            <td><input type='radio' name='disableFlag' value='exclude'>Exclude" + LINE_SEPARATOR);
+        sb.append("            <td><input type='Checkbox' name='disableFlag' value='true'>Exclude Disabled Devices" + LINE_SEPARATOR);
         sb.append("          </tr>" + LINE_SEPARATOR);
         sb.append("        </table>" + LINE_SEPARATOR);
         sb.append("      </td>" + LINE_SEPARATOR);

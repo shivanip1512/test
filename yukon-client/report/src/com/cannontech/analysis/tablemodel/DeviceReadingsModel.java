@@ -60,7 +60,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
 
     private boolean getAll = true;
 
-    private boolean includeDisabledDevices = true;
+    private boolean excludeDisabledDevices = false;
 
     private DeviceDao deviceDao;
 
@@ -129,7 +129,9 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                         sql.append("  and rph.Timestamp > ").appendArgument(getStartDate());
                         sql.append("  and rph.Timestamp <= ").appendArgument(getStopDate());
                         sql.append("  and yp.PAObjectID in (").appendArgumentList(subList).append(") ");
-                        sql.append(includeDisabledDevices ? "" : "  and yp.DisableFlag = 'N' ");
+                        if (excludeDisabledDevices) {
+                            sql.append("   and yp.DisableFlag").eq("N");
+                        }
                         sql.append("order by deviceName, dateTime desc");
                     }else {
                         sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
@@ -142,7 +144,9 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                         sql.append("  where p.PointOffset = ").appendArgument(pointIdentifier.getOffset());
                         sql.append("    and p.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
                         sql.append("    and yp.PAObjectID in (").appendArgumentList(subList).append(")");
-                        sql.append(includeDisabledDevices ? "" : "  and yp.DisableFlag = 'N' ");
+                        if (excludeDisabledDevices) {
+                            sql.append("    and yp.DisableFlag").eq("N");
+                        }
                         sql.append("  group by p.PointId");
                         sql.append(") lastReading");
                         sql.append("  join RawPointHistory rph on lastReading.pointId = rph.pointId and lastReading.dateTime = rph.TIMESTAMP");
@@ -260,7 +264,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         this.pointFormattingService = pointFormattingService;
     }
 
-    public void setIncludeDisabledDevices(boolean includeDisabledDevices) {
-        this.includeDisabledDevices = includeDisabledDevices;
+    public void setExcludeDisabledDevices(boolean excludeDisabledDevices) {
+        this.excludeDisabledDevices = excludeDisabledDevices;
     }
 }

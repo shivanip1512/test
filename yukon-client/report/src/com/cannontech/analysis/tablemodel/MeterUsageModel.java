@@ -52,12 +52,10 @@ public class MeterUsageModel extends ReportModelBase
     private String previousDevice = null;
 
     /** Class fields */
-    public final static int INCLUDE_DISABLED_DEVICE_STATUS = 0;
-    public final static int EXCLUDE_DISABLED_DEVICE_STATUS = 1;
-    private int disabledDeviceStatus = INCLUDE_DISABLED_DEVICE_STATUS; 
+    private boolean excludeDisabledDevices = false; 
     
     //servlet attributes/parameter strings
-    private static final String ATT_DISABLED_DEVICE_STATUS = "disabledDeviceStatus";
+    private static final String ATT_DISABLED_DEVICE_STATUS = "excludeDisabledDevices";
 
     static public class MeterUsageRow {
         public String deviceName;
@@ -97,35 +95,28 @@ public class MeterUsageModel extends ReportModelBase
     public void addDataRow(ResultSet rset) throws SQLException
     {
 	    MeterUsageRow meterUsage = new MeterUsageRow();
-	    
-	    String disabledStr = rset.getString("disableFlag");
-        boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
-        
-        if(getDisabledDeviceStatus() == INCLUDE_DISABLED_DEVICE_STATUS || !disabled)
-        {
-    	    meterUsage.deviceName = rset.getString(1);
-    	    meterUsage.meterNumber = rset.getString(2);
-    	    meterUsage.timestamp = rset.getTimestamp(3);
-    	    meterUsage.reading = new Double(rset.getInt(4));
-    
-    	    if(previousDevice != null) {
-    	        if( !meterUsage.deviceName.equals(previousDevice)) {
-    	            previousReading = null;
-    	        }
-    	    }
-    
-    	    meterUsage.previousReading = previousReading;
-    
-    	    if(previousReading != null) {
-    	        meterUsage.totalUsage = meterUsage.reading - previousReading;
-    	    }else {
-    	        meterUsage.totalUsage = null;
-    	    }
-    
-    	    getData().add(meterUsage);
-    	    previousReading = meterUsage.reading;
-    	    previousDevice = meterUsage.deviceName;
-        }
+	    meterUsage.deviceName = rset.getString(1);
+	    meterUsage.meterNumber = rset.getString(2);
+	    meterUsage.timestamp = rset.getTimestamp(3);
+	    meterUsage.reading = new Double(rset.getInt(4));
+
+	    if(previousDevice != null) {
+	        if( !meterUsage.deviceName.equals(previousDevice)) {
+	            previousReading = null;
+	        }
+	    }
+
+	    meterUsage.previousReading = previousReading;
+
+	    if(previousReading != null) {
+	        meterUsage.totalUsage = meterUsage.reading - previousReading;
+	    }else {
+	        meterUsage.totalUsage = null;
+	    }
+
+	    getData().add(meterUsage);
+	    previousReading = meterUsage.reading;
+	    previousDevice = meterUsage.deviceName;
     }
     
     /**
@@ -144,6 +135,9 @@ public class MeterUsageModel extends ReportModelBase
 		sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 		sql.append(" AND P.POINTOFFSET = 1 ");
 		sql.append(" AND P.POINTTYPE = 'PulseAccumulator' ");
+		if( excludeDisabledDevices) {
+		    sql.append(" AND PAO.DISABLEFLAG").eq("N");
+		}
 			
 		// Use paoIDs in query if they exist			
 		if( getPaoIDs() != null && getPaoIDs().length > 0) {
@@ -299,23 +293,12 @@ public class MeterUsageModel extends ReportModelBase
         sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='radio' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='" + INCLUDE_DISABLED_DEVICE_STATUS + "' checked>Include" + LINE_SEPARATOR);
-        sb.append("        </tr>" + LINE_SEPARATOR);
-        sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='radio' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='" + EXCLUDE_DISABLED_DEVICE_STATUS + "'>Exclude" + LINE_SEPARATOR);
+        sb.append("          <td><input type='checkbox' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='true'>Exclude Disabled Devices" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
         
 	    return sb.toString();
-    }
-
-    public int getDisabledDeviceStatus() {
-        return disabledDeviceStatus;
-    }
-
-    public void setDisabledDeviceStatus(int disabledDeviceStatus) {
-        this.disabledDeviceStatus = disabledDeviceStatus;
     }
     
     @Override
@@ -325,10 +308,9 @@ public class MeterUsageModel extends ReportModelBase
         if( req != null)
         {
             String param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
-            if( param != null)
-                setDisabledDeviceStatus(Integer.valueOf(param).intValue());
-            else
-                setDisabledDeviceStatus(INCLUDE_DISABLED_DEVICE_STATUS);
+            if( param != null) {
+                excludeDisabledDevices = param.equalsIgnoreCase("true");
+            }
         }       
     }
 }
