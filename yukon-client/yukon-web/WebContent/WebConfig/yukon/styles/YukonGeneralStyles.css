@@ -918,6 +918,7 @@ table.rowHighlighting tr:hover td {
 
 .editable:hover {
     background-color: lemonchiffon;
+    cursor: text;
 }
 
 #startMultipleProgramsOverridePrograms .override {

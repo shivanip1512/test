@@ -135,7 +135,7 @@
                                                 value="<spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody>">
                                             <a href="#" onclick="updateComment(${comment.id})">Save</a> <a href="#" onclick="cancelUpdate(${comment.id})">Cancel</a>
                                         </div>
-                                        <div id="comment_${comment.id}" class="pointer" title="Click to edit." 
+                                        <div id="comment_${comment.id}" title="Click to edit." 
                                         <c:if test="${modifyPermission}">onclick="editComment(${comment.id})"</c:if>><spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody></div>
                                     </td>
                                     <td>${comment.userName}</td>
