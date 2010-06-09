@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.hardware.model;
 
-import java.util.Date;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.user.UserUtils;
 
@@ -9,10 +9,10 @@ public class LMHardwareControlGroup implements Cloneable{
     private int inventoryId;
     private int lmGroupId;
     private int accountId;
-    private Date groupEnrollStart;
-    private Date groupEnrollStop;
-    private Date optOutStart;
-    private Date optOutStop;
+    private ReadableInstant groupEnrollStart;
+    private ReadableInstant groupEnrollStop;
+    private ReadableInstant optOutStart;
+    private ReadableInstant optOutStop;
     private int type;
     private int relay;
     private int userIdFirstAction;
@@ -65,14 +65,18 @@ public class LMHardwareControlGroup implements Cloneable{
         hardwareControlGroup.setInventoryId(this.inventoryId);
         hardwareControlGroup.setLmGroupId(this.lmGroupId);
         hardwareControlGroup.setAccountId(this.accountId);
-        if(this.groupEnrollStart != null)
-            hardwareControlGroup.setGroupEnrollStart((Date)this.groupEnrollStart.clone());
-        if(this.groupEnrollStop != null)
-        	hardwareControlGroup.setGroupEnrollStop((Date)this.groupEnrollStop.clone());
-        if(this.optOutStart != null)
-            hardwareControlGroup.setOptOutStart((Date)this.optOutStart.clone());
-        if(this.optOutStop != null)
-            hardwareControlGroup.setOptOutStop((Date)this.optOutStop.clone());
+        if (this.groupEnrollStart != null) {
+            hardwareControlGroup.setGroupEnrollStart(this.groupEnrollStart);
+        }
+        if (this.groupEnrollStop != null) {
+        	hardwareControlGroup.setGroupEnrollStop(this.groupEnrollStop);
+        }
+        if (this.optOutStart != null) {
+            hardwareControlGroup.setOptOutStart(this.optOutStart);
+        }
+        if (this.optOutStop != null) {
+            hardwareControlGroup.setOptOutStop(this.optOutStop);
+        }
         hardwareControlGroup.setType(this.type);
         hardwareControlGroup.setRelay(this.relay);
         hardwareControlGroup.setUserIdFirstAction(this.userIdFirstAction);
@@ -105,19 +109,19 @@ public class LMHardwareControlGroup implements Cloneable{
         this.controlEntryId = controlEntryId;
     }
 
-    public Date getGroupEnrollStart() {
+    public ReadableInstant getGroupEnrollStart() {
         return groupEnrollStart;
     }
 
-    public void setGroupEnrollStart(Date groupEnrollStart) {
+    public void setGroupEnrollStart(ReadableInstant groupEnrollStart) {
         this.groupEnrollStart = groupEnrollStart;
     }
 
-    public Date getGroupEnrollStop() {
+    public ReadableInstant getGroupEnrollStop() {
         return groupEnrollStop;
     }
 
-    public void setGroupEnrollStop(Date groupEnrollStop) {
+    public void setGroupEnrollStop(ReadableInstant groupEnrollStop) {
         this.groupEnrollStop = groupEnrollStop;
     }
 
@@ -129,25 +133,26 @@ public class LMHardwareControlGroup implements Cloneable{
         this.lmGroupId = lmGroupId;
     }
 
-    public Date getOptOutStart() {
+    public ReadableInstant getOptOutStart() {
         return optOutStart;
     }
 
-    public void setOptOutStart(Date optOutStart) {
+    public void setOptOutStart(ReadableInstant optOutStart) {
         this.optOutStart = optOutStart;
     }
 
-    public Date getOptOutStop() {
+    public ReadableInstant getOptOutStop() {
         return optOutStop;
     }
 
-    public void setOptOutStop(Date optOutStop) {
+    public void setOptOutStop(ReadableInstant optOutStop) {
         this.optOutStop = optOutStop;
     }
 
     public int getProgramId() {
         return programId;
     }
+    
     public void setProgramId(int programId) {
         this.programId = programId;
     }

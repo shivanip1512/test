@@ -8,16 +8,20 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
@@ -31,27 +35,8 @@ import com.google.common.collect.Lists;
 public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao, InitializingBean {
     private static final String removeSql;
     private static final String selectAllSql;
-    private static final String selectById;
-    private static final String selectByLMGroupId;
-    private static final String selectByInventoryId;
-    private static final String selectByAccountId;
-    private static final String selectByLMGroupIdAndAccountIdAndType; 
-    private static final String selectByEnrollStartRange;
-    private static final String selectByEnrollStopRange;
-    private static final String selectByOptOutStartRange;
-    private static final String selectByOptOutStopRange;
-    private static final String selectCurrentEnrollmentByAccountId;
-    private static final String selectCurrentEnrollmentByInventoryIdAndAccountId;
-    private static final String selectCurrentEnrollmentByProgramIdAndAccountId;
-    private static final String selectCurrentOptOutsByProgramIdAndAccountId;
-    private static final String selectCurrentOptOutsByInventoryIdProgramIdAndAccountId;
-    private static final String selectByInventoryIdAndAccountIdAndType;
-    private static final String selectByInventoryIdAndGroupIdAndAccountId;
-    private static final String selectByInventoryIdAndGroupIdAndAccountIdAndType;
-    private static final String selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId;
-    private static final String selectAllByEnergyCompanyId;
-    private static final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private static final YukonRowMapper<LMHardwareControlGroup> rowMapper;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<LMHardwareControlGroup> template;
     
@@ -70,49 +55,11 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
                 "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction, ProgramId FROM " + TABLE_NAME;
     
-        selectById = selectAllSql + " WHERE ControlEntryId = ?";
-        
-        selectByLMGroupId = selectAllSql + " WHERE LMGroupId = ?";
-        
-        selectByInventoryId = selectAllSql + " WHERE InventoryId = ?";
-        
-        selectByAccountId = selectAllSql + " WHERE AccountId = ?";
-        
         selectDistinctGroupIdByAccountId = "SELECT DISTINCT LMGroupId FROM " + TABLE_NAME + " WHERE AccountId = ?";
-        
-        selectByLMGroupIdAndAccountIdAndType = selectAllSql + " WHERE LMGroupId = ? AND AccountId = ? AND Type = ? ORDER BY GroupEnrollStart";
-        
-        selectByEnrollStartRange = selectAllSql + " WHERE GroupEnrollStart > ? AND GroupEnrollStart <= ?";
-        
-        selectByEnrollStopRange = selectAllSql + " WHERE GroupEnrollStop > ? AND GroupEnrollStop <= ?";
-        
-        selectByOptOutStartRange = selectAllSql + " WHERE OptOutStart > ? AND OptOutStart <= ?";
-        
-        selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
-        
-        selectCurrentEnrollmentByAccountId = selectAllSql + " WHERE AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
-        
-        selectCurrentEnrollmentByInventoryIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
-        
-        selectCurrentEnrollmentByProgramIdAndAccountId = selectAllSql + " WHERE ProgramId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";        
-        
-        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND ProgramId = ? AND AccountId = ? AND GroupEnrollStop IS NULL AND NOT GroupEnrollStart IS NULL";
-        
-        selectCurrentOptOutsByProgramIdAndAccountId = selectAllSql + " WHERE ProgramId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
-        
-        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND ProgramId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
-        
-        selectByInventoryIdAndAccountIdAndType = selectAllSql + " WHERE InventoryId = ? AND AccountId = ? AND Type = ?";
-        
-        selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND LMGroupId = ? AND AccountId = ?";
-        
-        selectByInventoryIdAndGroupIdAndAccountIdAndType = selectAllSql + " WHERE InventoryId = ? AND LMGroupId = ? AND AccountId = ? AND Type = ?";
         
         selectOldInventoryConfigInfo = "SELECT InventoryId, ApplianceId, AddressingGroupId, LoadNumber FROM LMHardwareConfiguration WHERE InventoryId = ?";
         
         selectOldInventoryLoadGroupConfigInfo = "SELECT InventoryId, ApplianceId, AddressingGroupId, LoadNumber FROM LMHardwareConfiguration WHERE InventoryId = ? and AddressingGroupId = ?";
-        
-        selectAllByEnergyCompanyId = selectAllSql + " WHERE AccountId IN (SELECT AccountId FROM ECToGenericMapping WHERE EnergyCompanyId = ?) ORDER BY AccountId";
         
         rowMapper = LMHardwareControlGroupDaoImpl.createRowMapper();
         
@@ -129,7 +76,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final LMHardwareControlGroup hardwareControlGroup) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql, hardwareControlGroup.getControlEntryId());
+        int rowsAffected = 
+            yukonJdbcTemplate.update(removeSql, hardwareControlGroup.getControlEntryId());
         boolean result = (rowsAffected == 1);
         return result;
     }
@@ -149,7 +97,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         unenrollHardwareSQL.append("AND NOT groupEnrollStart IS NULL");
         unenrollHardwareSQL.append("AND groupEnrollStop IS NULL");
         Date now = new Date();
-        simpleJdbcTemplate.update(unenrollHardwareSQL.toString(), now, inventoryId);
+        yukonJdbcTemplate.update(unenrollHardwareSQL.toString(), now, inventoryId);
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -162,7 +110,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         histEnrollOptOutSql.append(", UserIDSecondAction =").appendArgument(user.getUserID());
         histEnrollOptOutSql.append("WHERE ProgramId =").appendArgument(programId);
         histEnrollOptOutSql.append("AND (GroupEnrollStop IS NOT NULL OR OptOutStop IS NOT NULL)");
-        simpleJdbcTemplate.update(histEnrollOptOutSql.getSql(), histEnrollOptOutSql.getArguments());        
+        yukonJdbcTemplate.update(histEnrollOptOutSql.getSql(), histEnrollOptOutSql.getArguments());        
 
         //Reset current OptOut entries        
         SqlStatementBuilder currentOptOutSql = new SqlStatementBuilder();
@@ -172,7 +120,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         currentOptOutSql.append(", OptOutStop =").appendArgument(new Date());
         currentOptOutSql.append("WHERE ProgramId =").appendArgument(programId);
         currentOptOutSql.append("AND OptOutStart IS NOT NULL AND OptOutStop IS NULL");
-        simpleJdbcTemplate.update(currentOptOutSql.getSql(), currentOptOutSql.getArguments());
+        yukonJdbcTemplate.update(currentOptOutSql.getSql(), currentOptOutSql.getArguments());
         
         //Reset current Enrollment entries        
         SqlStatementBuilder currentEnrollSql = new SqlStatementBuilder();
@@ -182,11 +130,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         currentEnrollSql.append(", GroupEnrollStop =").appendArgument(new Date());
         currentEnrollSql.append("WHERE ProgramId =").appendArgument(programId);
         currentEnrollSql.append("AND GroupEnrollStart IS NOT NULL AND GroupEnrollStop IS NULL");
-        simpleJdbcTemplate.update(currentEnrollSql.getSql(), currentEnrollSql.getArguments());        
+        yukonJdbcTemplate.update(currentEnrollSql.getSql(), currentEnrollSql.getArguments());        
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Date stopDate) {
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
+                             ReadableInstant stopDate) {
         
         SqlStatementBuilder optOutSQL = new SqlStatementBuilder();
         optOutSQL.append("UPDATE LMHardwareControlGroup");
@@ -194,127 +143,233 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         optOutSQL.append("WHERE InventoryId = ? AND AccountId = ?");
         optOutSQL.append("AND NOT OptOutStart IS NULL");
         optOutSQL.append("AND OptOutStop IS NULL");
-        simpleJdbcTemplate.update(optOutSQL.toString(), stopDate, currentUser.getUserID(), inventoryId, accountId);
+        yukonJdbcTemplate.update(optOutSQL.toString(), stopDate, currentUser.getUserID(), 
+                                 inventoryId, accountId);
     }    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMHardwareControlGroup getById(final int controlEntryId) {
-        LMHardwareControlGroup hardwareControlGroup = simpleJdbcTemplate.queryForObject(selectById, rowMapper, controlEntryId);
-        return hardwareControlGroup;
+        SqlStatementBuilder selectById = new SqlStatementBuilder(selectAllSql);
+        selectById.append("WHERE ControlEntryId").eq(controlEntryId);
+
+        return yukonJdbcTemplate.queryForObject(selectById, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByLMGroupId(final int groupId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupId, rowMapper, groupId);
-        return list;
+        SqlStatementBuilder selectByLMGroupId = new SqlStatementBuilder(selectAllSql);
+        selectByLMGroupId.append("WHERE LMGroupId").eq(groupId);
+
+        return yukonJdbcTemplate.query(selectByLMGroupId, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByInventoryId(final int inventoryId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryId, rowMapper, inventoryId);
-        return list;
+        SqlStatementBuilder selectByInventoryId = new SqlStatementBuilder(selectAllSql);
+        selectByInventoryId.append("WHERE InventoryId").eq(inventoryId);
+        
+        return yukonJdbcTemplate.query(selectByInventoryId, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByAccountId(final int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByAccountId, rowMapper, accountId);
-        return list;
+        SqlStatementBuilder selectByAccountId = new SqlStatementBuilder(selectAllSql);
+        selectByAccountId.append("WHERE AccountId").eq(accountId);
+
+        return yukonJdbcTemplate.query(selectByAccountId, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getDistinctGroupIdsByAccountId(final int accountId) {
-        List<Integer> list = simpleJdbcTemplate.query(selectDistinctGroupIdByAccountId, groupIdRowMapper, accountId);
+        List<Integer> list = 
+            yukonJdbcTemplate.query(selectDistinctGroupIdByAccountId, groupIdRowMapper, accountId);
         return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByEnrollmentStartDateRange(Date first, Date second) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByEnrollStartRange, rowMapper, first, second);
-        return list;
+        SqlStatementBuilder selectByEnrollStartRange = new SqlStatementBuilder(selectAllSql);
+        selectByEnrollStartRange.append("WHERE GroupEnrollStart > ").appendArgument(first);
+        selectByEnrollStartRange.append("AND GroupEnrollStart <= ").appendArgument(second);
+
+        return yukonJdbcTemplate.query(selectByEnrollStartRange, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByEnrollmentStopDateRange(Date first, Date second) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByEnrollStopRange, rowMapper, first, second);
-        return list;
+        SqlStatementBuilder selectByEnrollStopRange = new SqlStatementBuilder(selectAllSql);
+        selectByEnrollStopRange.append("WHERE GroupEnrollStop > ").appendArgument(first);
+        selectByEnrollStopRange.append("AND GroupEnrollStop <= ").appendArgument(second);
+
+        return yukonJdbcTemplate.query(selectByEnrollStopRange, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByOptOutStartDateRange(Date first, Date second) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByOptOutStartRange, rowMapper, first, second);
-        return list;
+        SqlStatementBuilder selectByOptOutStartRange = new SqlStatementBuilder(selectAllSql);
+        selectByOptOutStartRange.append("WHERE OptOutStart > ").appendArgument(first);
+        selectByOptOutStartRange.append("AND OptOutStart <= ").appendArgument(second);
+        
+        return yukonJdbcTemplate.query(selectByOptOutStartRange, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getByOptOutStopDateRange(Date first, Date second) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByOptOutStopRange, rowMapper, first, second);
-        return list;
+        SqlStatementBuilder selectByOptOutStopRange = new SqlStatementBuilder(selectAllSql);
+        selectByOptOutStopRange.append("WHERE OptOutStop > ").appendArgument(first);
+        selectByOptOutStopRange.append("AND OptOutStop <= ").appendArgument(second);
+        
+        return yukonJdbcTemplate.query(selectByOptOutStopRange, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, int accountId, int type) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupIdAndAccountIdAndType, rowMapper, lmGroupId, accountId, type);
-        return list;
+    public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, 
+                                                                           int accountId, 
+                                                                           int type) {
+        SqlStatementBuilder selectByLMGroupIdAndAccountIdAndType = 
+            new SqlStatementBuilder(selectAllSql);
+        selectByLMGroupIdAndAccountIdAndType.append("WHERE LMGroupId").eq(lmGroupId);
+        selectByLMGroupIdAndAccountIdAndType.append("AND AccountId").eq(accountId);
+        selectByLMGroupIdAndAccountIdAndType.append("AND Type").eq(type);
+        selectByLMGroupIdAndAccountIdAndType.append("ORDER BY GroupEnrollStart");
+
+        return yukonJdbcTemplate.query(selectByLMGroupIdAndAccountIdAndType, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, int accountId, int type) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper, inventoryId, accountId, type);
-        return list;
+    public List<LMHardwareControlGroup> getByInventoryIdAndAccountIdAndType(int inventoryId, 
+                                                                             int accountId, 
+                                                                             int type) {
+        SqlStatementBuilder selectByInventoryIdAndAccountIdAndType = 
+            new SqlStatementBuilder(selectAllSql);
+        selectByInventoryIdAndAccountIdAndType.append("WHERE InventoryId").eq(inventoryId);
+        selectByInventoryIdAndAccountIdAndType.append("AND AccountId").eq(accountId);
+        selectByInventoryIdAndAccountIdAndType.append("AND Type").eq(type);
+
+        return yukonJdbcTemplate.query(selectByInventoryIdAndAccountIdAndType, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountId, rowMapper, inventoryId, lmGroupId, accountId);
-        return list;
+    public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, 
+                                                                                int lmGroupId, 
+                                                                                int accountId) {
+
+        SqlStatementBuilder selectByInventoryIdAndGroupIdAndAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectByInventoryIdAndGroupIdAndAccountId.append("WHERE InventoryId").eq(inventoryId);
+        selectByInventoryIdAndGroupIdAndAccountId.append("AND LMGroupId").eq(lmGroupId);
+        selectByInventoryIdAndGroupIdAndAccountId.append("AND AccountId").eq(accountId);
+        
+        return yukonJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountId, rowMapper);
     }
     
-    public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper, inventoryId, lmGroupId, accountId, type);
-        return list;
+    public List<LMHardwareControlGroup> 
+                getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, 
+                                                              int accountId, int type) {
+        SqlStatementBuilder selectByInventoryIdAndGroupIdAndAccountIdAndType = 
+            new SqlStatementBuilder(selectAllSql);
+        selectByInventoryIdAndGroupIdAndAccountIdAndType.append("WHERE InventoryId").eq(inventoryId);
+        selectByInventoryIdAndGroupIdAndAccountIdAndType.append("AND LMGroupId").eq(lmGroupId);
+        selectByInventoryIdAndGroupIdAndAccountIdAndType.append("AND AccountId").eq(accountId);
+        selectByInventoryIdAndGroupIdAndAccountIdAndType.append("AND Type").eq(type);
+        
+        return yukonJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper);
     }
 
     public List<LMHardwareControlGroup> getCurrentEnrollmentByAccountId(int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByAccountId, rowMapper, accountId);
-        return list;
+        SqlStatementBuilder selectCurrentEnrollmentByAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectCurrentEnrollmentByAccountId.append("WHERE AccountId").eq(accountId);
+        selectCurrentEnrollmentByAccountId.append("AND GroupEnrollStop IS NULL");
+        selectCurrentEnrollmentByAccountId.append("AND NOT GroupEnrollStart IS NULL");
+        
+        return yukonJdbcTemplate.query(selectCurrentEnrollmentByAccountId, rowMapper);
     }    
     
-    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
-            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper, inventoryId, accountId);
-            return list;
+    public List<LMHardwareControlGroup> 
+                getCurrentEnrollmentByInventoryIdAndAccountId(int inventoryId, int accountId) {
+        SqlStatementBuilder selectCurrentEnrollmentByInventoryIdAndAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectCurrentEnrollmentByInventoryIdAndAccountId.append("WHERE InventoryId").eq(inventoryId);
+        selectCurrentEnrollmentByInventoryIdAndAccountId.append("AND AccountId").eq(accountId);
+        selectCurrentEnrollmentByInventoryIdAndAccountId.append("AND GroupEnrollStop IS NULL");
+        selectCurrentEnrollmentByInventoryIdAndAccountId.append("AND NOT GroupEnrollStart IS NULL");
+        
+        return yukonJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdAndAccountId, rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<LMHardwareControlGroup> getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper, programId, accountId);
-        return list;
+    public List<LMHardwareControlGroup> 
+                getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
+        SqlStatementBuilder selectCurrentEnrollmentByProgramIdAndAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectCurrentEnrollmentByProgramIdAndAccountId.append("WHERE ProgramId").eq(programId);
+        selectCurrentEnrollmentByProgramIdAndAccountId.append("AND AccountId").eq(accountId);
+        selectCurrentEnrollmentByProgramIdAndAccountId.append("AND GroupEnrollStop IS NULL");
+        selectCurrentEnrollmentByProgramIdAndAccountId.append("AND NOT GroupEnrollStart IS NULL");
+        
+        return yukonJdbcTemplate.query(selectCurrentEnrollmentByProgramIdAndAccountId, rowMapper);
     }      
 
-    public List<LMHardwareControlGroup> getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
-        return list;
+    public List<LMHardwareControlGroup> 
+                getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(int inventoryId, 
+                                                                          int programId, 
+                                                                          int accountId) {
+        SqlStatementBuilder selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("WHERE InventoryId").eq(inventoryId);
+        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND ProgramId").eq(programId);
+        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND AccountId").eq(accountId);
+        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND GroupEnrollStop IS NULL");
+        selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId.append("AND NOT GroupEnrollStart IS NULL");
+
+        return yukonJdbcTemplate.query(selectCurrentEnrollmentByInventoryIdProgramIdAndAccountId, rowMapper);
     }    
     
-    public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByProgramIdAndAccountId, rowMapper, programId, accountId);
-        return list;
+    public List<LMHardwareControlGroup> getCurrentOptOutByProgramIdAndAccountId(int programId, 
+                                                                                 int accountId) {
+        SqlStatementBuilder selectCurrentOptOutsByProgramIdAndAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectCurrentOptOutsByProgramIdAndAccountId.append("WHERE ProgramId").eq(programId);
+        selectCurrentOptOutsByProgramIdAndAccountId.append("AND AccountId").eq(accountId);
+        selectCurrentOptOutsByProgramIdAndAccountId.append("AND OptOutStop IS NULL");
+        selectCurrentOptOutsByProgramIdAndAccountId.append("AND NOT OptOutStart IS NULL");
+
+        return yukonJdbcTemplate.query(selectCurrentOptOutsByProgramIdAndAccountId, rowMapper);
     }
     
-    public List<LMHardwareControlGroup> getCurrentOptOutByInventoryIdProgramIdAndAccountId(int inventoryId, int programId, int accountId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByInventoryIdProgramIdAndAccountId, rowMapper, inventoryId, programId, accountId);
-        return list;
+    public List<LMHardwareControlGroup> 
+                getCurrentOptOutByInventoryIdProgramIdAndAccountId(int inventoryId, int programId, 
+                                                                   int accountId) {
+        SqlStatementBuilder selectCurrentOptOutsByInventoryIdProgramIdAndAccountId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId.append("WHERE InventoryId").eq(inventoryId);
+        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId.append("AND ProgramId").eq(programId);
+        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId.append("AND AccountId").eq(accountId);
+        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId.append("AND OptOutStop IS NULL");
+        selectCurrentOptOutsByInventoryIdProgramIdAndAccountId.append("AND NOT OptOutStart IS NULL");
+
+        return yukonJdbcTemplate.query(selectCurrentOptOutsByInventoryIdProgramIdAndAccountId, rowMapper);
     }    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getAll() {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
-        return list;
+        return yukonJdbcTemplate.query(new SqlStatementBuilder(selectAllSql), rowMapper);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> getAllByEnergyCompanyId(int energyCompanyId) {
-        List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper, energyCompanyId);
-        return list;
+        SqlStatementBuilder selectAccountId = new SqlStatementBuilder();
+        selectAccountId.append("SELECT AccountId");
+        selectAccountId.append("FROM ECToGenericMapping");
+        selectAccountId.append("WHERE EnergyCompanyId").eq(energyCompanyId);
+
+        SqlStatementBuilder selectAllByEnergyCompanyId = 
+            new SqlStatementBuilder(selectAllSql);
+        selectAllByEnergyCompanyId.append("WHERE AccountId IN (").append(selectAccountId).append(")");
+        selectAllByEnergyCompanyId.append("ORDER BY AccountId");
+                
+        return yukonJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper);
     }
 
     @Override
@@ -382,22 +437,22 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
                 }
         };
         List<HardwareConfigAction> retVal =
-            simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
+            yukonJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
         return retVal;
     }
 
-    private static final ParameterizedRowMapper<LMHardwareControlGroup> createRowMapper() {
-        final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper = new ParameterizedRowMapper<LMHardwareControlGroup>() {
-            public LMHardwareControlGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private static final YukonRowMapper<LMHardwareControlGroup> createRowMapper() {
+        final YukonRowMapper<LMHardwareControlGroup> rowMapper = new YukonRowMapper<LMHardwareControlGroup>() {
+            public LMHardwareControlGroup mapRow(YukonResultSet rs) throws SQLException {
                 LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
                 hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryId"));
                 hardwareControlGroup.setInventoryId(rs.getInt("InventoryId"));
                 hardwareControlGroup.setLmGroupId(rs.getInt("LMGroupId"));
                 hardwareControlGroup.setAccountId(rs.getInt("AccountId"));
-                hardwareControlGroup.setGroupEnrollStart(rs.getTimestamp("GroupEnrollStart"));
-                hardwareControlGroup.setGroupEnrollStop(rs.getTimestamp("GroupEnrollStop"));
-                hardwareControlGroup.setOptOutStart(rs.getTimestamp("OptOutStart"));
-                hardwareControlGroup.setOptOutStop(rs.getTimestamp("OptOutStop"));
+                hardwareControlGroup.setGroupEnrollStart(rs.getInstant("GroupEnrollStart"));
+                hardwareControlGroup.setGroupEnrollStop(rs.getInstant("GroupEnrollStop"));
+                hardwareControlGroup.setOptOutStart(rs.getInstant("OptOutStart"));
+                hardwareControlGroup.setOptOutStop(rs.getInstant("OptOutStop"));
                 hardwareControlGroup.setType(rs.getInt("Type"));
                 hardwareControlGroup.setRelay(rs.getInt("Relay"));
                 hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
@@ -460,24 +515,25 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         this.nextValueHelper = nextValueHelper;
     }
 
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId) {
-        List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryConfigInfo, oldControlInfoRowMapper, inventoryId);
+        List<LMHardwareConfiguration> list = yukonJdbcTemplate.query(selectOldInventoryConfigInfo, oldControlInfoRowMapper, inventoryId);
         return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId) {
-        List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryLoadGroupConfigInfo, oldControlInfoRowMapper, inventoryId, lmGroupId);
+        List<LMHardwareConfiguration> list = yukonJdbcTemplate.query(selectOldInventoryLoadGroupConfigInfo, oldControlInfoRowMapper, inventoryId, lmGroupId);
         return list;
     }
 
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(simpleJdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName(TABLE_NAME);
         template.withPrimaryKeyField("controlEntryId");
         template.withFieldMapper(controlGroupFieldMapper); 

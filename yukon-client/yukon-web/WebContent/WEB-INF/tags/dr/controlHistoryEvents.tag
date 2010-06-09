@@ -22,12 +22,13 @@
                 <th><i18n:inline key=".controlDuration" /></th>
               </tr>
 
+              <tags:alternateRowReset/>
               <c:forEach var="event" items="${controlHistoryEventList}">
                 <tr class="<tags:alternateRow odd='' even='altRow'/>">
                   <td class="nowrapping" width="33%"><cti:formatDate  value="${event.startDate}" type="BOTH"/></td>
                   <td class="nowrapping" width="33%"><cti:formatDate  value="${event.endDate}" type="BOTH"/></td>
                   <td class="nowrapping" width="33%"><cti:formatDuration type="HM" startDate="${event.startDate}" endDate="${event.endDate}" /></td>
-                  <c:set var="totalDuration" value="${event.duration + totalDuration}" />
+                  <c:set var="totalDuration" value="${event.duration.millis + totalDuration}" />
                 </tr>
               </c:forEach>
   
@@ -35,7 +36,7 @@
                 <tr>
                   <td width="33%"></td>
                   <td width="33%"></td>
-                  <td width="33%" class="nowrapping" style="font-weight: bold"><cti:formatDuration type="HM" value="${totalDuration *1000}"/></td>
+                  <td width="33%" class="nowrapping" style="font-weight: bold"><cti:formatDuration type="HM" value="${totalDuration}"/></td>
                 </tr>
               </c:if>
             </table>	

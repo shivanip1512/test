@@ -3,6 +3,8 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.ReadableInstant;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
@@ -18,7 +20,8 @@ public interface LMHardwareControlGroupDao {
     
     public void unenrollHardware(int inventoryId);
     
-    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, Date stopDate);    
+    public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
+                             ReadableInstant stopDate);    
     
     public void resetEntriesForProgram(int programId, LiteYukonUser user);    
     

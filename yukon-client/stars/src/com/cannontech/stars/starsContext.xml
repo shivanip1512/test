@@ -92,7 +92,6 @@
         class="com.cannontech.database.cache.StarsDatabaseCache"
         init-method="init">
         <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
-        <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
     </bean>
 
     <bean id="accountCheckerService" class="com.cannontech.stars.core.service.impl.AccountCheckerServiceImpl"/>
@@ -125,7 +124,6 @@
 	<bean id="lmHardwareControlGroupDao"
         class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 	
     <bean id="customerAccountDao"

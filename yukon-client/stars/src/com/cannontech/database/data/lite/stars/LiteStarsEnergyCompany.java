@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.joda.time.DateTimeZone;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
@@ -390,6 +391,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
             timeZone = systemDateFormattingService.getSystemTimeZone();
         }
         return timeZone;
+    }
+    
+    public DateTimeZone getDefaultDateTimeZone() {
+        return DateTimeZone.forTimeZone(getDefaultTimeZone()); 
     }
     
     public String getAdminEmailAddress() {

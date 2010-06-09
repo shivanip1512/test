@@ -2,10 +2,11 @@ package com.cannontech.stars.dr.controlhistory.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -49,7 +50,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             List<ControlHistoryEvent> controlHistoryEventList = toEventList(starsLMControlHistory);
             for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
                 if (lastControlHistoryEvent == null ||
-                    controlHistoryEvent.getEndDate().after(lastControlHistoryEvent.getEndDate())) {
+                    controlHistoryEvent.getEndDate().isAfter(lastControlHistoryEvent.getEndDate())) {
                     lastControlHistoryEvent = controlHistoryEvent;
                 }
             }
@@ -80,8 +81,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                                                           holder.inventoryId,
                                                           customerAccountId,
                                                           starsControlPeriod,
-                                                          yukonUserContext.getTimeZone(),
-                                                          yukonUserContext.getYukonUser());
+                                                          yukonUserContext);
         
         removeInvalidEnrollmentControlHistory(controlHistory, holder);
 
@@ -112,29 +112,32 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
      * @param holder
      */
     private void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
-                                                       Holder holder) {
-        Date enrollmentStartDate = enrollmentDao.findCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
+                                                         Holder holder) {
+        ReadableInstant enrollmentStartInstant = 
+            enrollmentDao.findCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
 
         // The inventory is not currently enrolled.  Remove all the past control history.
-        if (enrollmentStartDate == null){
+        if (enrollmentStartInstant == null){
             controlHistory.removeAllControlHistory();
         }
         
         List<com.cannontech.stars.xml.serialize.ControlHistory> removeControlHistoryList = Lists.newArrayList();
         for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
             com.cannontech.stars.xml.serialize.ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);
-            Date controlHistoryStartDate = controlHistoryEntry.getStartDateTime();
-            if (controlHistoryStartDate.before(enrollmentStartDate) ){
-                Date controlHistoryEndDate = DateUtils.addSeconds(controlHistoryStartDate, controlHistoryEntry.getControlDuration());
+            DateTime controlHistoryStartDateTime = controlHistoryEntry.getStartDateTime();
+            if (controlHistoryStartDateTime.isBefore(enrollmentStartInstant) ){
+                DateTime controlHistoryEndDateTime = 
+                    controlHistoryStartDateTime.plus(controlHistoryEntry.getControlDuration());
 
                 // Remove any control history that was before the hardware was ever enrolled
-                if (controlHistoryEndDate.before(enrollmentStartDate)) {
+                if (controlHistoryEndDateTime.isBefore(enrollmentStartInstant)) {
                     removeControlHistoryList.add(controlHistoryEntry);
                     
                 // Update any control history that was already started when the hardware was enrolled
                 } else {
-                    int newDuration = calculateNewDuration(controlHistoryEntry, enrollmentStartDate);
-                    controlHistoryEntry.setStartDateTime(enrollmentStartDate);
+                    Duration newDuration = calculateNewDuration(controlHistoryEntry, enrollmentStartInstant);
+                    controlHistoryEntry.setStartDateTime(new DateTime(enrollmentStartInstant,
+                                                                      controlHistoryStartDateTime.getZone()));
                     controlHistoryEntry.setControlDuration(newDuration);
                 }
             }
@@ -145,14 +148,14 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         }
     }
 
-    private int calculateNewDuration(com.cannontech.stars.xml.serialize.ControlHistory controlHistoryEntry,
-                                      Date enrollmentStartDate) {
-        int result;
+    private Duration calculateNewDuration(com.cannontech.stars.xml.serialize.ControlHistory controlHistoryEntry,
+                                           ReadableInstant enrollmentStartDate) {
         
-        Long startTimeDifference = controlHistoryEntry.getStartDateTime().getTime() - enrollmentStartDate.getTime();
-        result = controlHistoryEntry.getControlDuration() - startTimeDifference.intValue();
+        Duration startTimeDifference = 
+            new Duration(enrollmentStartDate, controlHistoryEntry.getStartDateTime());
         
-        return result;
+        return controlHistoryEntry.getControlDuration().minus(startTimeDifference);
+
     }
 
     @Override
@@ -164,14 +167,13 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         for (int j = controlHistory.getControlHistoryCount() - 1; j >= 0; j--) {
             com.cannontech.stars.xml.serialize.ControlHistory history = controlHistory.getControlHistory(j);
 
-            Date startDate = history.getStartDateTime();
-            int durationInSeconds = history.getControlDuration();
-            Date endDate = DateUtils.addSeconds(startDate, durationInSeconds);
+            DateTime startDateTime = history.getStartDateTime();
+            DateTime endDateTime = startDateTime.plus(history.getControlDuration());
             
             final ControlHistoryEvent event = new ControlHistoryEvent();
-            event.setDuration(durationInSeconds);
-            event.setStartDate(startDate);
-            event.setEndDate(endDate);
+            event.setDuration(history.getControlDuration());
+            event.setStartDate(startDateTime);
+            event.setEndDate(endDateTime);
             eventList.add(event);
         }  
 

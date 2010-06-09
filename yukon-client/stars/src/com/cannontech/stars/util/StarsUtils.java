@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -233,23 +235,32 @@ public class StarsUtils {
 		return tokens;
 	}
 	
-	public static boolean isDateBefore(Date date1, Date date2) {
-		long time1 = (date1 != null)? date1.getTime() : System.currentTimeMillis();
-		long time2 = (date2 != null)? date2.getTime() : System.currentTimeMillis();
-		return (time1 + DATE_ACCURACY < time2);
-	}
-	
-	public static boolean isDateAfter(Date date1, Date date2) {
-		long time1 = (date1 != null)? date1.getTime() : System.currentTimeMillis();
-		long time2 = (date2 != null)? date2.getTime() : System.currentTimeMillis();
-		return (time1 - DATE_ACCURACY > time2);
-	}
-	
-	public static boolean isDateEqual(Date date1, Date date2) {
-		long time1 = (date1 != null)? date1.getTime() : System.currentTimeMillis();
-		long time2 = (date2 != null)? date2.getTime() : System.currentTimeMillis();
-		return Math.abs(time1 - time2) <= DATE_ACCURACY;
-	}
+	/**
+	 * Compares two readableInstants to see if the first readableInstant is before the
+	 * second readableInstant.  This method will also treat any null readableInstants 
+	 * as an instant of right now.
+	 */
+	public static boolean isReadableInsantBefore(ReadableInstant readableInstant1, 
+                                                    ReadableInstant readableInstant2) {
+	    ReadableInstant now = new Instant();
+        ReadableInstant ri1 = (readableInstant1 != null) ? readableInstant1 : now;
+        ReadableInstant ri2 = (readableInstant2 != null) ? readableInstant2 : now;
+        return (ri1.isBefore(ri2));
+    }
+
+	/**
+     * Compares two readableInstants to see if the first readableInstant is equal to the
+     * second readableInstant.  This method will also treat any null readableInstants 
+     * as an instant of right now.
+     */
+    public static boolean isReadableInsantEqual(ReadableInstant readableInstant1, 
+                                                   ReadableInstant readableInstant2) {
+        ReadableInstant now = new Instant();
+        ReadableInstant ri1 = (readableInstant1 != null) ? readableInstant1 : now;
+        ReadableInstant ri2 = (readableInstant2 != null) ? readableInstant2 : now;
+        
+        return ri1.isEqual(ri2);
+    }
 
 	public static String getNotification(LiteContactNotification liteNotif) {
 		String notification = (liteNotif == null)? null : liteNotif.getNotification();

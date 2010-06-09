@@ -1,14 +1,16 @@
 package com.cannontech.stars.dr.controlhistory.service.impl;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import junit.framework.Assert;
 
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
@@ -16,7 +18,8 @@ import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 
 public class ControlHistoryServiceImplTest {
-    private static final DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+    private static final DateTimeFormatter dateTimeFormmater = 
+        DateTimeFormat.forPattern("HH:mm:ss");
     private final ControlHistoryService service = new ControlHistoryServiceImpl();
 
     /**
@@ -31,9 +34,9 @@ public class ControlHistoryServiceImplTest {
         final int controlHistorySize = 3;
         final int controlHistroyEventSize = 1;
         
-        int totalDurationExpected = 900; // 15 minutes
-        Date startDate = formatter.parse("02:00:00");
-        Date endDate = formatter.parse("02:15:00");
+        ReadableDuration totalDurationExpected = new Duration(900000); // 15 minutes
+        DateTime startDate = dateTimeFormmater.parseDateTime("02:00:00");
+        DateTime endDate = dateTimeFormmater.parseDateTime("02:15:00");
         
         List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(controlHistorySize);
         for (int x = 0; x < controlHistorySize; x++) {
@@ -52,7 +55,7 @@ public class ControlHistoryServiceImplTest {
             controlHistoryList.add(controlHistory);
         }
 
-        int totalDurationResult = service.calculateTotalDuration(controlHistoryList);
+        ReadableDuration totalDurationResult = service.calculateTotalDuration(controlHistoryList);
         Assert.assertEquals("Total Duration was not 15 minutes", totalDurationResult, totalDurationExpected);
     }
     
@@ -68,19 +71,19 @@ public class ControlHistoryServiceImplTest {
         List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(3);
         
         ControlHistoryEvent eventForDevice1 = new ControlHistoryEvent();
-        eventForDevice1.setDuration(7200); // 2 hours
-        eventForDevice1.setStartDate(formatter.parse("02:00:00"));
-        eventForDevice1.setEndDate(formatter.parse("04:00:00"));
+        eventForDevice1.setDuration(new Duration(7200000)); // 2 hours
+        eventForDevice1.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
+        eventForDevice1.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
         
         ControlHistoryEvent eventForDevice2 = new ControlHistoryEvent();
-        eventForDevice2.setDuration(7200); // 2 hours
-        eventForDevice2.setStartDate(formatter.parse("03:00:00"));
-        eventForDevice2.setEndDate(formatter.parse("06:00:00"));
+        eventForDevice2.setDuration(new Duration(7200000)); // 2 hours
+        eventForDevice2.setStartDate(dateTimeFormmater.parseDateTime("03:00:00"));
+        eventForDevice2.setEndDate(dateTimeFormmater.parseDateTime("06:00:00"));
         
         ControlHistoryEvent eventForDevice3 = new ControlHistoryEvent();
-        eventForDevice3.setDuration(6300); // 1 hour, 45 minutes
-        eventForDevice3.setStartDate(formatter.parse("02:15:00"));
-        eventForDevice3.setEndDate(formatter.parse("04:00:00"));
+        eventForDevice3.setDuration(new Duration(6300000)); // 1 hour, 45 minutes
+        eventForDevice3.setStartDate(dateTimeFormmater.parseDateTime("02:15:00"));
+        eventForDevice3.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
         
         ControlHistory controlHistoryForDevice1 = new ControlHistory();
         controlHistoryForDevice1.setCurrentHistory(Arrays.asList(eventForDevice1));
@@ -95,8 +98,8 @@ public class ControlHistoryServiceImplTest {
         controlHistoryList.add(controlHistoryForDevice2);
         controlHistoryList.add(controlHistoryForDevice3);
         
-        int totalDurationExpected = 14400; // 4 hours
-        int totalDurationResult = service.calculateTotalDuration(controlHistoryList);
+        ReadableDuration totalDurationExpected = new Duration(14400000); // 4 hours
+        ReadableDuration totalDurationResult = service.calculateTotalDuration(controlHistoryList);
         Assert.assertEquals("Total Duration was not 4 hours", totalDurationResult, totalDurationExpected);
     }
     
@@ -113,29 +116,29 @@ public class ControlHistoryServiceImplTest {
         List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(4);
         
         ControlHistoryEvent eventForDevice1Window1 = new ControlHistoryEvent();
-        eventForDevice1Window1.setDuration(7200); // 2 hours
-        eventForDevice1Window1.setStartDate(formatter.parse("02:00:00"));
-        eventForDevice1Window1.setEndDate(formatter.parse("04:00:00"));
+        eventForDevice1Window1.setDuration(new Duration(7200000)); // 2 hours
+        eventForDevice1Window1.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
+        eventForDevice1Window1.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
         
         ControlHistoryEvent eventForDevice1Window2 = new ControlHistoryEvent();
-        eventForDevice1Window2.setDuration(3600); // 1 hour
-        eventForDevice1Window2.setStartDate(formatter.parse("06:00:00"));
-        eventForDevice1Window2.setEndDate(formatter.parse("07:00:00"));
+        eventForDevice1Window2.setDuration(new Duration(3600000)); // 1 hour
+        eventForDevice1Window2.setStartDate(dateTimeFormmater.parseDateTime("06:00:00"));
+        eventForDevice1Window2.setEndDate(dateTimeFormmater.parseDateTime("07:00:00"));
         
         ControlHistoryEvent eventForDevice2 = new ControlHistoryEvent();
-        eventForDevice2.setDuration(3600); // 1 hour
-        eventForDevice2.setStartDate(formatter.parse("06:30:00"));
-        eventForDevice2.setEndDate(formatter.parse("07:30:00"));
+        eventForDevice2.setDuration(new Duration(3600000)); // 1 hour
+        eventForDevice2.setStartDate(dateTimeFormmater.parseDateTime("06:30:00"));
+        eventForDevice2.setEndDate(dateTimeFormmater.parseDateTime("07:30:00"));
         
         ControlHistoryEvent eventForDevice3 = new ControlHistoryEvent();
-        eventForDevice3.setDuration(8100); // 2 hours, 15 minutes
-        eventForDevice3.setStartDate(formatter.parse("02:00:00"));
-        eventForDevice3.setEndDate(formatter.parse("04:15:00"));
+        eventForDevice3.setDuration(new Duration(8100000)); // 2 hours, 15 minutes
+        eventForDevice3.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
+        eventForDevice3.setEndDate(dateTimeFormmater.parseDateTime("04:15:00"));
         
         ControlHistoryEvent eventForDevice4 = new ControlHistoryEvent();
-        eventForDevice4.setDuration(7200); // 2 hours
-        eventForDevice4.setStartDate(formatter.parse("02:00:00"));
-        eventForDevice4.setEndDate(formatter.parse("04:00:00"));
+        eventForDevice4.setDuration(new Duration(7200000)); // 2 hours
+        eventForDevice4.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
+        eventForDevice4.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
 
         List<ControlHistoryEvent> device1EventList = Arrays.asList(eventForDevice1Window1, eventForDevice1Window2);
         ControlHistory controlHistoryForDevice1 = new ControlHistory();
@@ -155,8 +158,8 @@ public class ControlHistoryServiceImplTest {
         controlHistoryList.add(controlHistoryForDevice3);
         controlHistoryList.add(controlHistoryForDevice4);
         
-        int totalDurationExpected = 13500; // 3 hours, 45 minutes
-        int totalDurationResult = service.calculateTotalDuration(controlHistoryList);
+        ReadableDuration totalDurationExpected = new Duration(13500000); // 3 hours, 45 minutes
+        ReadableDuration totalDurationResult = service.calculateTotalDuration(controlHistoryList);
         Assert.assertEquals("Total Duration was not 3 hours, 45 minutes", totalDurationResult, totalDurationExpected);
     }
     

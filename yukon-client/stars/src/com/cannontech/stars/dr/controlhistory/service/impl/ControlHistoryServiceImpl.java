@@ -3,16 +3,19 @@ package com.cannontech.stars.dr.controlhistory.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadableInstant;
 
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistoryStatus;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 
 public class ControlHistoryServiceImpl implements ControlHistoryService {
     private static final Comparator<ControlHistoryEvent> eventComparator;
@@ -39,12 +42,13 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         return true;
     }
     
-    public Map<Integer, Integer> calculateTotalDuration(final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
-        final Map<Integer, Integer> resultMap = new HashMap<Integer, Integer>(controlHistoryMap.size());
+    public Map<Integer, ReadableDuration> 
+                calculateTotalDuration(final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
+        final Map<Integer, ReadableDuration> resultMap = Maps.newHashMap();
         
         for (final Integer programId : controlHistoryMap.keySet()) {
             List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
-            int programTotalDuration = 0;
+            ReadableDuration programTotalDuration = Duration.ZERO;
             
             if (controlHistoryList == null) {
                 resultMap.put(programId, programTotalDuration);
@@ -58,8 +62,8 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         return resultMap;
     }
     
-    public Integer calculateTotalDuration(final List<ControlHistory> controlHistoryList) {
-        int programTotalDuration = 0;
+    public ReadableDuration calculateTotalDuration(final List<ControlHistory> controlHistoryList) {
+        ReadableDuration programTotalDuration = Duration.ZERO;
         
         final List<ControlHistoryEvent> programEventList = new ArrayList<ControlHistoryEvent>();
         for (final ControlHistory controlHistory : controlHistoryList) {
@@ -69,12 +73,12 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         // Sort the Collection by the startDate starting with the first Event.
         Collections.sort(programEventList, eventComparator);
 
-        Date lastStartDate = null;
-        Date lastEndDate = null;
+        ReadableInstant lastStartDate = null;
+        ReadableInstant lastEndDate = null;
         
         for (final ControlHistoryEvent event : programEventList) {
-            final Date eventStartDate = event.getStartDate();
-            final Date eventEndDate = event.getEndDate();
+            final ReadableInstant eventStartDate = event.getStartDate();
+            final ReadableInstant eventEndDate = event.getEndDate();
             
             if (lastStartDate == null && lastEndDate == null){
                 lastStartDate = eventStartDate;
@@ -82,24 +86,26 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             }
             
             // Found time gap, process previous event and reset startDate/endDate.
-            if (eventStartDate.after(lastEndDate)) {
-                long diff = lastEndDate.getTime() - lastStartDate.getTime();
-                programTotalDuration += diff;
+            if (eventStartDate.isAfter(lastEndDate)) {
+                ReadableDuration difference =
+                    new Duration(lastStartDate,lastEndDate);
+                programTotalDuration = programTotalDuration.toDuration().plus(difference);
                 
                 lastStartDate = eventStartDate;
                 lastEndDate = eventEndDate;
             }
             
             // Increasing the endDate for the last Event.
-            if (eventEndDate.after(lastEndDate)) {
+            if (eventEndDate.isAfter(lastEndDate)) {
                 lastEndDate = eventEndDate;
             }    
         }
         
         // Process the event that may have been missed in the last iteration.
         if (lastStartDate != null && lastEndDate != null) {
-            long diff = lastEndDate.getTime() - lastStartDate.getTime();
-            programTotalDuration += diff;
+            ReadableDuration difference = 
+                new Duration(lastStartDate, lastEndDate);
+            programTotalDuration = programTotalDuration.toDuration().plus(difference);
         }
         
         return programTotalDuration;

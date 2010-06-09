@@ -2,13 +2,14 @@ package com.cannontech.stars.dr.controlhistory.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.joda.time.Duration;
+import org.joda.time.Instant;
+import org.joda.time.ReadableDuration;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -87,11 +88,11 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                 controlHistory.setDisplayName(displayName);
 
                 ControlHistorySummary programControlHistorySummary = new ControlHistorySummary();
-                Duration dailyTime = new Duration(starsLMControlHistory.getControlSummary().getDailyTime() * 1000);
+                ReadableDuration dailyTime = starsLMControlHistory.getControlSummary().getDailyTime();
                 programControlHistorySummary.setDailySummary(dailyTime);
-                Duration monthlyTime = new Duration(starsLMControlHistory.getControlSummary().getMonthlyTime() * 1000);
+                ReadableDuration monthlyTime = starsLMControlHistory.getControlSummary().getMonthlyTime();
                 programControlHistorySummary.setMonthlySummary(monthlyTime);
-                Duration yearlyTime = new Duration(starsLMControlHistory.getControlSummary().getAnnualTime() * 1000);
+                ReadableDuration yearlyTime = starsLMControlHistory.getControlSummary().getAnnualTime();
                 programControlHistorySummary.setYearlySummary(yearlyTime);
                 controlHistory.setProgramControlHistorySummary(programControlHistorySummary);
                 
@@ -158,7 +159,7 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
     
     private ControlHistoryStatus getCurrentControlStatus(ControlGroupHolder holder, 
                                                          ControlHistoryEvent lastControlHistoryEvent) {
-        final Date now = new Date();
+        final ReadableInstant now = new Instant();
         
         // Step 1 - NOT ENROLLED
         boolean isNotEnrolled = !ControlGroupUtil.isEnrolled(holder.enrolledList, now);

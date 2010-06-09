@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -43,7 +44,6 @@ import com.cannontech.database.db.web.YukonWebConfiguration;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
@@ -81,7 +81,6 @@ public class StarsDatabaseCache implements DBChangeListener {
 	private Map<Integer,LiteStarsLMControlHistory> lmCtrlHists = null;
 	
     private AsyncDynamicDataSource dataSource;
-    private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private ApplianceCategoryDao applianceCategoryDao;
     
     public StarsDatabaseCache() {
@@ -92,11 +91,6 @@ public class StarsDatabaseCache implements DBChangeListener {
         this.dataSource = dataSource;
     }
     
-    public void setStarsCustAccountInformationDao(
-            StarsCustAccountInformationDao starsCustAccountInformationDao) {
-        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
-    }
-
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;
@@ -614,7 +608,7 @@ public class StarsDatabaseCache implements DBChangeListener {
 	 * To get only the control summary, set start date to null; to get the complete control history,
 	 * set start date to new java.util.Date(0).
 	 */
-	public LiteStarsLMControlHistory getLMControlHistory(int groupID, Date startDate) {
+	public LiteStarsLMControlHistory getLMControlHistory(int groupID, DateTime startDateTime) {
 		/* STARS cannot assume that a zero group ID means no control history...should
 		 * still show something
 		 */
@@ -624,9 +618,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 				getLMCtrlHistMap().get( new Integer(groupID));
 		if (lmCtrlHist == null) lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		
-		if (startDate != null &&
-			(startDate.getTime() < lmCtrlHist.getLastSearchedStartTime() ||
-			(startDate.getTime() - lmCtrlHist.getLastSearchedStopTime()) * 0.001 / 3600 / 24 > CTRL_HIST_CACHE_INVALID_INTERVAL))
+		if (startDateTime != null &&
+			(startDateTime.isBefore(lmCtrlHist.getLastSearchedStartTime()) ||
+			(startDateTime.toDate().getTime() - lmCtrlHist.getLastSearchedStopTime()) * 0.001 / 3600 / 24 > CTRL_HIST_CACHE_INVALID_INTERVAL))
 		{
 			// Clear the cached control history if the request date is earlier than the cache start date,
 			// or it is later than the cache stop date and the interval is too long.
@@ -635,9 +629,9 @@ public class StarsDatabaseCache implements DBChangeListener {
 		
 		int lastSearchedID = LMControlHistoryUtil.getLastLMCtrlHistID();
 		
-		if (startDate != null) {
+		if (startDateTime != null) {
 			if (lmCtrlHist.getLmControlHistory() == null) {
-				Date dateFrom = StarsUtils.translateDate( startDate.getTime() );
+				Date dateFrom = StarsUtils.translateDate( startDateTime.toDate().getTime() );
 				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
 						LMControlHistoryUtil.getLMControlHistory( groupID, dateFrom, null );
 				
@@ -654,8 +648,8 @@ public class StarsDatabaseCache implements DBChangeListener {
 			}
 			
 			lmCtrlHist.setLastSearchedCtrlHistID( lastSearchedID );
-			if (startDate.getTime() < lmCtrlHist.getLastSearchedStartTime()) {
-				lmCtrlHist.setLastSearchedStartTime(startDate.getTime());
+			if (startDateTime.isBefore(lmCtrlHist.getLastSearchedStartTime())) {
+				lmCtrlHist.setLastSearchedStartTime(startDateTime.toDate().getTime());
 			}
 			lmCtrlHist.setLastSearchedStopTime( System.currentTimeMillis() );
 		}

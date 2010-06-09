@@ -1,40 +1,41 @@
 package com.cannontech.stars.dr.controlhistory.model;
 
-import java.util.Date;
+import org.joda.time.ReadableDuration;
+import org.joda.time.DateTime;
 
 public class ControlHistoryEvent {
-    private Date startDate;
-    private Date endDate;
-    private int duration;
+    private DateTime startDate;
+    private DateTime endDate;
+    private ReadableDuration duration;
     
     public ControlHistoryEvent() {
         
     }
 
-    public Date getStartDate() {
+    public DateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(DateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public DateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(DateTime endDate) {
         this.endDate = endDate;
     }
 
     /**
      * @return - duration is held in seconds
      */
-    public int getDuration() {
+    public ReadableDuration getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(ReadableDuration duration) {
         this.duration = duration;
     }
 
@@ -42,10 +43,11 @@ public class ControlHistoryEvent {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + duration;
+        result = prime * result
+                 + ((duration == null) ? 0 : duration.hashCode());
         result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
-        result = prime * result + ((startDate == null) ? 0
-                : startDate.hashCode());
+        result = prime * result
+                 + ((startDate == null) ? 0 : startDate.hashCode());
         return result;
     }
 
@@ -57,8 +59,11 @@ public class ControlHistoryEvent {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final ControlHistoryEvent other = (ControlHistoryEvent) obj;
-        if (duration != other.duration)
+        ControlHistoryEvent other = (ControlHistoryEvent) obj;
+        if (duration == null) {
+            if (other.duration != null)
+                return false;
+        } else if (!duration.equals(other.duration))
             return false;
         if (endDate == null) {
             if (other.endDate != null)
@@ -72,5 +77,4 @@ public class ControlHistoryEvent {
             return false;
         return true;
     }
-    
 }

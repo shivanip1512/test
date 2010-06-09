@@ -1,32 +1,31 @@
 package com.cannontech.stars.xml.serialize;
 
+import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
+
 public class ControlSummary {
-    private int dailyTime;
+    private ReadableDuration dailyTime = Duration.ZERO;
     private boolean hasDailyTime;
-    private int monthlyTime;
+    private ReadableDuration monthlyTime = Duration.ZERO;
     private boolean hasMonthlyTime;
-    private int seasonalTime;
+    private ReadableDuration seasonalTime = Duration.ZERO;
     private boolean hasSeasonalTime;
-    private int annualTime;
+    private ReadableDuration annualTime = Duration.ZERO;
     private boolean hasAnnualTime;
 
-    public ControlSummary() {
-
-    }
-
-    public int getAnnualTime() {
+    public ReadableDuration getAnnualTime() {
         return this.annualTime;
     } 
 
-    public int getDailyTime() {
+    public ReadableDuration getDailyTime() {
         return this.dailyTime;
     }
 
-    public int getMonthlyTime() {
+    public ReadableDuration getMonthlyTime() {
         return this.monthlyTime;
     } 
 
-    public int getSeasonalTime() {
+    public ReadableDuration getSeasonalTime() {
         return this.seasonalTime;
     } 
 
@@ -46,22 +45,22 @@ public class ControlSummary {
         return this.hasSeasonalTime;
     }
 
-    public void setAnnualTime(int annualTime) {
+    public void setAnnualTime(ReadableDuration annualTime) {
         this.annualTime = annualTime;
         this.hasAnnualTime = true;
     }
 
-    public void setDailyTime(int dailyTime) {
+    public void setDailyTime(ReadableDuration dailyTime) {
         this.dailyTime = dailyTime;
         this.hasDailyTime = true;
     }
 
-    public void setMonthlyTime(int monthlyTime) {
+    public void setMonthlyTime(ReadableDuration monthlyTime) {
         this.monthlyTime = monthlyTime;
         this.hasMonthlyTime = true;
     }
 
-    public void setSeasonalTime(int seasonalTime) {
+    public void setSeasonalTime(ReadableDuration seasonalTime) {
         this.seasonalTime = seasonalTime;
         this.hasSeasonalTime = true;
     }
