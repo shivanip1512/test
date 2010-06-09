@@ -93,6 +93,9 @@ protected:
         Memory_StatusPos            = 0x05,
         Memory_StatusLen            =    5,
 
+        Memory_MeterAlarmsPos       = 0x08,
+        Memory_MeterAlarmsLen       =    2,
+
         Memory_EventFlagsMask1Pos   = 0x0a,
         Memory_EventFlagsMask1Len   =    1,
 

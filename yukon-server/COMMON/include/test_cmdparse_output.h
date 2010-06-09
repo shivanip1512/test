@@ -98,6 +98,7 @@ std::string parse_asString[] = {
 "command=2:flags=0::analog=(none),1,1.000:analogoffset=(none),1,1.000:analogvalue=(none),3,3.000:type=versacom,0,0.000",
 "command=2:flags=0::kyz=(none),1,1.000:kyz_offset=(none),1,1.000:type=versacom,0,0.000",
 "command=4:flags=16::type=versacom,0,0.000",
+"command=4:flags=256::type=versacom,0,0.000",
 "command=4:flags=16::type=versacom,0,0.000",
 "command=2:flags=0::power=(none),1,1.000:reset=(none),1,1.000:type=versacom,0,0.000",
 "command=5:flags=0::rawloc=(none),147,147.000:type=versacom,0,0.000",

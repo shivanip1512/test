@@ -1510,7 +1510,14 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
         }
         if(CmdStr.contains(" reset"))
         {
-            setFlags(getFlags() | CMD_FLAG_PS_RESET);
+            if(CmdStr.contains(" alarms"))
+            {
+                setFlags(getFlags() | CMD_FLAG_PS_RESET_ALARMS);
+            }
+            else
+            {
+                setFlags(getFlags() | CMD_FLAG_PS_RESET);
+            }
         }
     }
     else

@@ -966,6 +966,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         }
 
         case Emetcon::PutStatus_Reset:
+        case Emetcon::PutStatus_ResetAlarms:
         case Emetcon::PutStatus_ResetOverride:
         case Emetcon::PutStatus_PeakOn:
         case Emetcon::PutStatus_PeakOff:
@@ -1896,6 +1897,13 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
             OutMessage->Buffer.BSt.Message[1] = 0;
             OutMessage->Buffer.BSt.Message[2] = 0;
         }
+    }
+    else if( parse.getFlags() & CMD_FLAG_PS_RESET_ALARMS && getType() == TYPEMCT410 )
+    {
+        function = Emetcon::PutStatus_ResetAlarms;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+        OutMessage->Buffer.BSt.Message[0] = 0;
+        OutMessage->Buffer.BSt.Message[1] = 0;
     }
     else if( parse.getFlags() & CMD_FLAG_PS_RESETOVERRIDE )
     {

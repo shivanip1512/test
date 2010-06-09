@@ -440,6 +440,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetConfig_Thresholds,       Emetcon::IO_Read,           Memory_ThresholdsPos,           Memory_ThresholdsLen));
     cs.insert(CommandStore(Emetcon::GetValue_PFCount,           Emetcon::IO_Read,           Memory_PowerfailCountPos,       Memory_PowerfailCountLen));
     cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write,          Command_Reset,                  0));
+    cs.insert(CommandStore(Emetcon::PutStatus_ResetAlarms,      Emetcon::IO_Write,          Memory_MeterAlarmsPos,          Memory_MeterAlarmsLen));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,              0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,              0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write,          Command_FreezeVoltageOne,       0));

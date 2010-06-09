@@ -91,6 +91,7 @@ public:
 
         // PutStatus Commands
         PutStatus_Reset,
+        PutStatus_ResetAlarms,
         PutStatus_FreezeOne,
         PutStatus_FreezeTwo,
         PutStatus_FreezeVoltageOne,

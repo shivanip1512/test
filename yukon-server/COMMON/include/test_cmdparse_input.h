@@ -98,6 +98,7 @@ std::string inputString[] = {
 "putvalue analog 1 3.14159",
 "putvalue kyz 1 1.234",
 "putstatus reset",
+"putstatus reset alarms",
 "putstatus powerfail reset",
 "putvalue powerfail reset",
 "getconfig raw start=0x93",
