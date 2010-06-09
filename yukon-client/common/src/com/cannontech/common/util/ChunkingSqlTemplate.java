@@ -3,6 +3,7 @@ package com.cannontech.common.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -39,6 +40,31 @@ public class ChunkingSqlTemplate {
 
         for (final String sql : queryList) {
             List<R> list = simpleJdbcTemplate.query(sql, rowMapper, args);
+            resultList.addAll(list);
+        }
+        
+        return resultList;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public <I, R> List<R> query(final SqlGenerator<I> sqlGenerator, final Iterable<I> input, final ResultSetExtractor rse, final Object... args) {
+
+        final List<I> tempInputList = Lists.newArrayList(input);
+        final List<R> resultList = new ArrayList<R>(tempInputList.size());
+        final List<String> queryList = new ArrayList<String>();
+        
+        int inputSize = tempInputList.size();
+        for (int start = 0; start < inputSize; start += chunkSize ) {
+            int nextToIndex = start + chunkSize;
+            int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
+            
+            List<I> subList = tempInputList.subList(start, toIndex);
+            String query = sqlGenerator.generate(subList);
+            queryList.add(query);
+        }
+
+        for (final String sql : queryList) {
+            List<R> list = (List<R>) simpleJdbcTemplate.getJdbcOperations().query(sql, args, rse);
             resultList.addAll(list);
         }
         

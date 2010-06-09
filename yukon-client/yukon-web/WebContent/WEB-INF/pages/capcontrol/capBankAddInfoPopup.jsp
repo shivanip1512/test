@@ -1,170 +1,87 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<cti:standardPage module="capcontrol" title="Cap Bank Addtional Info">
-	<jsp:directive.page import="com.cannontech.util.ParamUtil" />
-	<jsp:directive.page
-		import="com.cannontech.database.data.lite.LiteYukonPAObject" />
-	<jsp:directive.page import="com.cannontech.core.dao.DaoFactory" />
-	<jsp:directive.page
-		import="com.cannontech.database.db.capcontrol.CapBankAdditional" />
-	<jsp:directive.page import="com.cannontech.web.util.CBCDBUtil" />
-	<jsp:directive.page import="java.sql.Connection" />
 
-	<%
-	                CapBankAdditional addtional = (CapBankAdditional) request.getAttribute("capBankAdd");
-	                LiteYukonPAObject lite = (LiteYukonPAObject) request.getAttribute("lite");
-	%>
+<cti:standardPage title="Cap Bank capBankAdd Info" module="capcontrol_internal">
 
-	<h3>
-		<c:out value="<%=lite.getPaoName()%>" />
-	</h3>
 	<c:choose>
-		<c:when test="<%=addtional.getDeviceID() > 0%>">
-			<table>
-				<tr>
-					<td>
-						Maint Area ID
-					</td>
-					<td>
-						<%=addtional.getMaintAreaID()%>
-					</td>
+		<c:when test="${capBankAdd.deviceID > 0}">
+			<table class="compactResultsTable">
+                <tr>
+                    <th>Setting</th>
+                    <th>Value</th>
+                </tr>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Maint Area ID</td>
+					<td>${capBankAdd.maintAreaID}</td>
 				</tr>
-				<tr>
-					<td>
-						Pole Number
-					</td>
-					<td>
-						<%=addtional.getPoleNumber()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Pole Number</td>
+					<td>${capBankAdd.poleNumber}</td>
 				</tr>
-				<tr>
-					<td>
-						Latitude
-					</td>
-					<td>
-						<%=addtional.getLatit()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Latitude</td>
+					<td>${capBankAdd.latit}</td>
 				</tr>
-				<tr>
-					<td>
-						Longitude
-					</td>
-					<td>
-						<%=addtional.getLongtit()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Longitude</td>
+					<td>${capBankAdd.longtit}</td>
 				</tr>
-				<tr>
-					<td>
-						Cap Bank Configuration
-					</td>
-					<td>
-						<%=addtional.getCapBankConfig()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Cap Bank Configuration</td>
+					<td>${capBankAdd.capBankConfig}</td>
 				</tr>
-				<tr>
-					<td>
-						Communication Medium
-					</td>
-					<td>
-						<%=addtional.getCommMedium()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Communication Medium</td>
+					<td>${capBankAdd.commMedium}</td>
 				</tr>
-				<tr>
-					<td>
-						External Antenna
-					</td>
-					<td>
-						<%=addtional.getExtAntenna()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>External Antenna</td>
+					<td>${capBankAdd.extAntenna}</td>
 				</tr>
-				<tr>
-					<td>
-						Antenna Type
-					</td>
-					<td>
-						<%=addtional.getAntennaType()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Antenna Type</td>
+					<td>${capBankAdd.antennaType}</td>
 				</tr>
-				<tr>
-					<td>
-						Last Maintenance Visit
-					</td>
-					<td>
-						<%=addtional.getLastMaintVisit().toString()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Last Maintenance Visit</td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.lastMaintVisit}"/></td>
 				</tr>
-				<tr>
-					<td>
-						Last Inspection
-					</td>
-					<td>
-						<%=addtional.getLastInspVisit().toString()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Last Inspection</td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.lastInspVisit}"/></td>
 				</tr>
-				<tr>
-					<td>
-						Op Count Reset Date
-					</td>
-					<td>
-						<%=addtional.getOpCountResetDate()
-                                                .toString()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Op Count Reset Date</td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.opCountResetDate}"/></td>
 				</tr>
-				<tr>
-					<td>
-						Potential Transformer
-					</td>
-					<td>
-						<%=addtional.getPotentTransformer()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Potential Transformer</td>
+					<td>${capBankAdd.potentTransformer}</td>
 				</tr>
-				<tr>
-					<td>
-						Maintenance Request Pending
-					</td>
-					<td>
-						<%=addtional.getMaintReqPending()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Maintenance Request Pending</td>
+					<td>${capBankAdd.maintReqPending}</td>
 				</tr>
-				<tr>
-					<td>
-						Other Comments
-					</td>
-					<td>
-						<%=addtional.getOtherComments()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Other Comments</td>
+					<td>${capBankAdd.otherComments}</td>
 				</tr>
-				<tr>
-					<td>
-						Opteam Comments
-					</td>
-					<td>
-						<%=addtional.getOpTeamComments()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Opteam Comments</td>
+					<td>${capBankAdd.opTeamComments}</td>
 				</tr>
-				<tr>
-					<td>
-						CBC Install Date
-					</td>
-					<td>
-						<%=addtional.getCbcBattInstallDate()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>CBC Install Date</td>
+					<td><cti:formatDate type="DATE" value="${capBankAdd.cbcBattInstallDate}"/></td>
 				</tr>
-				<tr>
-					<td>
-						Cap Bank Map Address
-					</td>
-					<td>
-						<%=lite.getPaoDescription()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Cap Bank Map Address</td>
+					<td>${lite.paoDescription}</td>
 				</tr>
-				<tr>
-					<td>
-						Driving Directions
-					</td>
-					<td>
-						<%=addtional.getDriveDir()%>
-					</td>
+				<tr class="<tags:alternateRow odd="" even="altRow"/>">
+					<td>Driving Directions</td>
+					<td>${capBankAdd.driveDir}</td>
 				</tr>
 			</table>
 		</c:when>

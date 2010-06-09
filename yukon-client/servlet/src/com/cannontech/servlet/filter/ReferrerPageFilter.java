@@ -38,8 +38,7 @@ public class ReferrerPageFilter implements Filter {
             "/capcontrol/cbcPointTimestamps.jsp",
             "/capcontrol/standardPageWrapper.jsp",
             "/spring/capcontrol/move/bankMove",
-            "/spring/capcontrol/capAddInfo",
-            "/capcontrol/charts.jsp"};
+            "/spring/capcontrol/capAddInfo"};
     }
     /**
      * @see javax.servlet.Filter#init(FilterConfig)

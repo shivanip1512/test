@@ -1,4 +1,3 @@
-var manMsgID = 0;
 var menuPopUpWidth = 165;
 
 function checkPageExpire() {
@@ -61,20 +60,24 @@ function getLtcMenu(id, event) {
 }
 
 function getLtcPointsList(id) {
-	var url = '/spring/capcontrol/tier/popupmenu?menu=ltcPointList&ltcId=' +id;
-	new Ajax.Request(url, {
-        method: 'POST',
-        onSuccess: function(transport) {
-            var html = transport.responseText;
-            var body = $('ltcPopupBody');
-        	body.innerHTML = html;
-        	var popupDiv = $('ltcPointPopup');
-        	var ltcName = $('ltcName');
-        	var titleDiv = popupDiv.getElementsByClassName('boxContainer_title')[0];
-        	titleDiv.innerHTML = ltcName.value;
-        	popupDiv.show();
-        }
-    });
+	var url = '/spring/capcontrol/tier/popupmenu?menu=ltcPointList&ltcId=' + id;
+	var ltcNameAnchor = $('ltcName_' + id);
+	var title = ltcNameAnchor.innerHTML.strip();
+	openSimpleDialog('tierContentPopup', url, title, null, null, 'get');
+}
+
+function showComments(paoName, url) {
+	openSimpleDialog('tierContentPopup', url, 'Comments for ' + paoName, null, null, 'get');
+}
+
+function showCbcPointList(id, cbcName) {
+	var url = '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=' + id;
+	openSimpleDialog('tierContentPopup', url, 'CBC Points: ' + cbcName, null, null, 'get');
+}
+
+function showCapBankAddInfo(id, cbName) {
+	var url = '/spring/capcontrol/capAddInfo/view?paoId=' + id;
+	openSimpleDialog('tierContentPopup', url, 'Cap Bank Additional Information: ' + cbName, null, null, 'get');
 }
 
 function getLocalControlMenu(id, capBankType, objectType, event) {
@@ -150,6 +153,7 @@ function getMenuFromUrlLeft(url, event) {
         }
     });
 }
+
 function getMenuFromURLAbove(url, event) {
 	/*
 	 *  In IE the event does not pass through the ajax request
@@ -187,7 +191,7 @@ function getReasonMenuFromURL(url, event) {
 function showReasonPopup(html, up, x, y) {
 	var body = $('popupBody');
 	body.innerHTML = html;
-	var popupDiv = $('tierPopup');
+	var popupDiv = $('tierMenuPopup');
 	var paoName = $('commentPaoName');
 	var titleDiv = popupDiv.getElementsByClassName('boxContainer_title')[0];
 	titleDiv.innerHTML = 'Comments: ' + paoName.value;
@@ -207,7 +211,7 @@ function showReasonPopup(html, up, x, y) {
 function showMenuPopup(html, up, left, x, y) {
 	var body = $('popupBody');
 	body.innerHTML = html;
-	var popupDiv = $('tierPopup');
+	var popupDiv = $('tierMenuPopup');
 	var paoName = $('menuPaoName');
 	var titleDiv = popupDiv.getElementsByClassName('boxContainer_title')[0];
 	titleDiv.innerHTML = paoName.value;
@@ -232,13 +236,13 @@ function showMenuPopup(html, up, left, x, y) {
 }
 
 function closeTierPopup() {
-	var tierPopup = $('tierPopup');
+	var tierPopup = $('tierMenuPopup');
 	tierPopup.hide();
 }
 
-function closeLtcPointPopup() {
-	var ltcPointPopup = $('ltcPointPopup');
-	ltcPointPopup.hide();
+function closeTierContentPopup() {
+	var tierContentPopup = $('tierContentPopup');
+	tierContentPopup.hide();
 }
 
 function updateStateColorGenerator(id) {
@@ -422,25 +426,6 @@ function validateData( elemName )
 }
 
 // -------------------------------------------
-// Any javascript that is needed to init a page
-// -------------------------------------------
-function init()
-{   
-}
-
-// -------------------------------------------
-// A fun method that may come in handy. Uses the DOM to dynamically
-//  include javascript files. Better than writting out HTML!
-// -------------------------------------------
-function includeJSinJS( jsFileName )
-{
-    myscript = document.createElement('script');
-    myscript.type = 'text/javasript';
-    myscript.src = jsFileName; //'myscript.js'
-    document.getElementsByTagName('head')[0].appendChild(myscript);
-}
-
-// -------------------------------------------
 //checks all checkboxes that have the given itemName
 // -------------------------------------------
 function checkAll(chkAll, itemName)
@@ -469,40 +454,6 @@ function changeOptionStyle(t)
 }
 
 // -------------------------------------------
-//Returns true if the given elmInner element is inside
-// of the given elmOuter element.
-// -------------------------------------------
-function elementContains(elmOuter, elmInner)
-{
-  while (elmInner && elmInner != elmOuter)
-  {
-    elmInner = elmInner.parentNode;
-  }
-  if (elmInner == elmOuter)
-  {
-    return true;
-  }
-  return false;
-}
-
-// -------------------------------------------
-//Given a menu with multiple DIVs, this function will set only 1 DIV
-// to be visible at a time
-// -------------------------------------------
-function menuShow(menuDiv, visIndx)
-{
-    var subDiv = document.getElementById(menuDiv);
-    var currentMenus = subDiv.getElementsByTagName('div');
-
-    for( i = 0; i < currentMenus.length; i++ )
-    {
-        currentMenus[i].style.display = 'none';
-    }
-
-    currentMenus[visIndx].style.display = 'inline';
-}
-
-// -------------------------------------------
 //Allows a check box to control the visiblily of
 // a set of row <tr> elements
 // -------------------------------------------
@@ -515,31 +466,6 @@ function showRowElems( elemName, toggleName)
     for( i = 0; i < rows.length; i++ ) {
     	var row = rows[i];
         row.style.display = (visible ? '' : 'none');
-    }
-}
-
-// -------------------------------------------
-//Allows a boolean to control the visiblily of
-// a set of elements. If no boolean is given,
-// the state is toggled 
-// -------------------------------------------
-function showSubMenu( elemName, visible )
-{
-    var currentMenus = document.getElementsByName(elemName);
-    var toggle = visible != null;
-
-    for (i = 0; i < currentMenus.length; i++)
-    {
-        if( visible == null )
-        {
-            if( currentMenus[i].style.display == 'none' )
-                currentMenus[i].style.display = 'inline';
-            else
-                currentMenus[i].style.display = 'none';
-        }
-        else
-            currentMenus[i].style.display = 
-                (visible ? 'inline' : 'none');
     }
 }
 
@@ -561,74 +487,6 @@ function createURLreq( elems, initialURL, attrib ) {
         }
     }
     return initialURL;
-}
-
-function createResultMap(result) {
-    var map = new Hash();
-    for (var x = 0; x < result.length; x++) {
-        var value = result[x];
-        var key = getElementTextNS(result[x], 0, 'id');
-        map[key] = value;
-    }
-    return map;
-}
-
-// -------------------------------------------
-//	Callback function for the xml HTTP request to
-// return the entire result object.
-//	This popup will not close by itself, closing must be 
-// handled by the html of the body.
-// -------------------------------------------
-function processMenuReqClosable() 
-{
-    var xmlHTTPreq = getReq(manMsgID);
-
-    // only if req shows "complete" and HTTP code is "OK"
-    if( xmlHTTPreq != null
-        && getReq(manMsgID).req != null
-        && getReq(manMsgID).req.readyState == 4 
-        && getReq(manMsgID).req.status == 200 )
-    {    
-        var req = getReq(manMsgID).req;
-
-        //store the response of the request
-        response = req.responseText;
-
-        overlib( response, FULLHTML, STICKY, FIXX, 225, FIXY, 125);
-
-        //always do this
-        freeReq( manMsgID );        
-    }
-
-}
-
-// -------------------------------------------
-//Callback function for the xml HTTP request to
-// return the entire result object
-//
-// -------------------------------------------
-function processMenuReq() 
-{
-    var xmlHTTPreq = getReq(manMsgID);
-
-    // only if req shows "complete" and HTTP code is "OK"
-    if( xmlHTTPreq != null
-        && getReq(manMsgID).req != null
-        && getReq(manMsgID).req.readyState == 4 
-        && getReq(manMsgID).req.status == 200 )
-    {    
-        var req = getReq(manMsgID).req;
-
-        //store the response of the request
-        response = req.responseText;
-
-        overlib(
-            response, FULLHTML, STICKY, MOUSEOFF, FIXX, 225, FIXY, 225);
-
-        //always do this
-        freeReq( manMsgID );        
-    }
-
 }
 
 // -------------------------------------------
@@ -701,25 +559,6 @@ function showDynamicPopupAbove(elem, spanWidth) {
 // html is placed in the popup box and then the box is
 // made visible
 // -------------------------------------------
-function showPopUpChkBoxes( baseUrl ) {
-    if( baseUrl == null ){
-        return;
-	}
-    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
-    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-    var validElems = new Array();
-    getValidChecks( elemSubs, validElems );
-    getValidChecks( elemFdrs, validElems );
-    var url = createURLreq( validElems, baseUrl, 'value' );
-    manMsgID = loadXMLDoc(url, 'processMenuReqClosable');
-}
-
-// -------------------------------------------
-//Shows a sticky popup for the checked box elements
-// that are valid values AND that are checked. The returned
-// html is placed in the popup box and then the box is
-// made visible
-// -------------------------------------------
 function showRecentCmds( baseUrl )
 {
     if( baseUrl == null )
@@ -739,14 +578,6 @@ function showRecentCmds( baseUrl )
 
 function showRecentCmdsForSingle( baseUrl, id ){
 	window.location.href = baseUrl + '?value=' + id;
-}
-
-// -------------------------------------------
-//Simple post for a Wizard->Create action
-// -------------------------------------------
-function post( href )
-{
-    window.location = href;
 }
 
 // -------------------------------------------
@@ -787,40 +618,39 @@ function toggleImg( imgID ) {
 }
 
 function addLockButtonForButtonGroup (groupId, secs) {
-Event.observe(window, 'load', function() {
-var button_group = document.getElementById(groupId);
-var buttons = button_group.getElementsByTagName("input");
-
-for (var i=0; i<buttons.length; i++) {
-    var button_el =  buttons.item(i);
-    lock_buttons(button_el.id);
-}
-});
-
-if (secs != null)
+	Event.observe(window, 'load', function() {
+	var button_group = document.getElementById(groupId);
+	var buttons = button_group.getElementsByTagName("input");
+	
+	for (var i=0; i<buttons.length; i++) {
+	    var button_el =  buttons.item(i);
+	    lock_buttons(button_el.id);
+	}
+	});
+	
+	if (secs != null)
 	{
 		pause (secs * 1000);
 	}
 }
 
 function lock_buttons(el_id){
-var button_el = document.getElementById(el_id);
-var parent_el = document.getElementById(button_el.parentNode.id);
-var button_els = parent_el.getElementsByTagName("input");
-Event.observe(button_el, 'click', function () {
-for (var i=0; i < button_els.length; i++)
-{
- var current_button = document.getElementById(button_els.item(i).id);
- if (current_button.id != el_id) {
-    current_button.disabled = true;
-    }
- else {    
-    setTimeout("document.getElementById('" + el_id + "').disabled=true;", 1);
- }
-
-}
-
-});
+	var button_el = document.getElementById(el_id);
+	var parent_el = document.getElementById(button_el.parentNode.id);
+	var button_els = parent_el.getElementsByTagName("input");
+	Event.observe(button_el, 'click', function () {
+		for (var i=0; i < button_els.length; i++)
+		{
+			var current_button = document.getElementById(button_els.item(i).id);
+			if (current_button.id != el_id) {
+				current_button.disabled = true;
+			} else {    
+				setTimeout("document.getElementById('" + el_id + "').disabled=true;", 1);
+			}
+		
+		}
+	
+	});
 
 }
 
@@ -835,136 +665,129 @@ for (var i=0; i<buttons.length; i++) {
 }
 
 function pause(numberMillis) {
-        var now = new Date();
-        var exitTime = now.getTime() + numberMillis;
-        while (true) {
-            now = new Date();
-            if (now.getTime() > exitTime)
-                return;
-        }
+    var now = new Date();
+    var exitTime = now.getTime() + numberMillis;
+    while (true) {
+        now = new Date();
+        if (now.getTime() > exitTime)
+            return;
     }
+}
 
-    function applySubBusFilter(select){
-		var rows = $$('#subBusTable tr.altTableCell', '#subBusTable tr.tableCell');
-        var subBusNames = new Array();
-        if(select.options[select.selectedIndex].text == 'All SubBuses'){
-        	selectedSubBus = 'All SubBuses';
-        	for (var i=0; i < rows.length; i++) {
-	            var row = rows[i];
-            	row.setStyle({'display' : ''});
-            	var cells = row.getElementsByTagName('td');
-                var firstCell = cells[0];
-                var firstSpan = firstCell.getElementsByTagName('span')[0];
-                var subBusName = new String (firstSpan.innerHTML);
-                
-	            subBusNames.push(trim(subBusName));
-       		}
-       		$('feederFilter').selectedIndex = 0;
-       		applyFeederFilter(subBusNames);
-        }else{
-	        for (var i=0; i < rows.length; i++) {
-	            var row = rows[i];
-	            var cells = row.getElementsByTagName('td');
-	            var firstCell = cells[0];
-                var firstSpan = firstCell.getElementsByTagName('span')[0];
-                var subBusName = new String (firstSpan.innerHTML);
-	            
-	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
-	            //displayed name always contains a white space at the end
-	            if (trim(subBusName) == trim (selectedSubBus)){
-	                row.setStyle({'display' : ''});
-	                subBusNames.push(trim(subBusName));
-	            }else{
-	            	row.style.display = 'none';
-	            }
-	        }
-	        applyFeederFilter(subBusNames);
-        }
-    }
-    
-    function applyFeederSelectFilter(select){
-		var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
-        var feederNames = new Array();
-        var selectedFeeder = new String (select.options[select.selectedIndex].text);
-        
-        if(selectedFeeder == 'All Feeders'){
-        	for (var i=0; i < rows.length; i++) {
-	            var row = rows[i];
-            	row.setStyle({'display' : ''});
-            	var cells = row.getElementsByTagName('td');
-	            var fdr = cells[0];
-	            var spans = fdr.getElementsByTagName('span');
-	            var fdrName = new String (spans[1].innerHTML);
-	            feederNames.push(trim(fdrName));
-       		}
-       		applyCapBankFilter(feederNames);
-        }else{
-	        for (var i=0; i < rows.length; i++) {
-	            var row = rows[i];
-	            var cells = row.getElementsByTagName('td');
-	            var fdr = cells[0];
-	            var spans = fdr.getElementsByTagName('span');
-	            var fdrName = new String (spans[1].innerHTML);
-	            if (trim(fdrName) == trim (selectedFeeder)){
-	                row.setStyle({'display' : ''});
-	                feederNames.push(trim(fdrName));
-	            }else{
-	            	row.style.display = 'none';
-	            }
-	        }
-	        applyCapBankFilter(feederNames);
-        }
-    }
-    
-    function applyFeederFilter(subBusNames){
-    	var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
-        var feederNames = new Array();
+function applySubBusFilter(select){
+	var rows = $$('#subBusTable tr.altTableCell', '#subBusTable tr.tableCell');
+    var subBusNames = new Array();
+    if(select.options[select.selectedIndex].text == 'All SubBuses'){
+    	selectedSubBus = 'All SubBuses';
+    	for (var i=0; i < rows.length; i++) {
+            var row = rows[i];
+        	row.setStyle({'display' : ''});
+        	var cells = row.getElementsByTagName('td');
+            var firstCell = cells[0];
+            var firstSpan = firstCell.getElementsByTagName('span')[0];
+            var subBusName = new String (firstSpan.innerHTML);
+            
+            subBusNames.push(trim(subBusName));
+   		}
+   		$('feederFilter').selectedIndex = 0;
+   		applyFeederFilter(subBusNames);
+    }else{
         for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
             var firstCell = cells[0];
             var firstSpan = firstCell.getElementsByTagName('span')[0];
-            
             var subBusName = new String (firstSpan.innerHTML);
-            var index = subBusNames.indexOf(trim(subBusName));
+            
+            var selectedSubBus = new String (select.options[select.selectedIndex].text);
+            //displayed name always contains a white space at the end
+            if (trim(subBusName) == trim (selectedSubBus)){
+                row.setStyle({'display' : ''});
+                subBusNames.push(trim(subBusName));
+            }else{
+            	row.style.display = 'none';
+            }
+        }
+        applyFeederFilter(subBusNames);
+    }
+}
 
-			if(index > -1){
-				row.setStyle({'display' : ''});
-				var fdr = cells[0];
-				var spans = fdr.getElementsByTagName('span');
-				var fdrName = spans[1].innerHTML;
-				feederNames.push(trim(fdrName));
-			}else{
-				row.setStyle({'display' : 'none'});
-			}
+function applyFeederSelectFilter(select){
+	var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
+    var feederNames = new Array();
+    var selectedFeeder = new String (select.options[select.selectedIndex].text);
+    
+    if(selectedFeeder == 'All Feeders'){
+    	for (var i=0; i < rows.length; i++) {
+            var row = rows[i];
+        	row.setStyle({'display' : ''});
+        	var cells = row.getElementsByTagName('td');
+            var fdr = cells[0];
+            var spans = fdr.getElementsByTagName('span');
+            var fdrName = new String (spans[1].innerHTML);
+            feederNames.push(trim(fdrName));
+   		}
+   		applyCapBankFilter(feederNames);
+    }else{
+        for (var i=0; i < rows.length; i++) {
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var fdr = cells[0];
+            var spans = fdr.getElementsByTagName('span');
+            var fdrName = new String (spans[1].innerHTML);
+            if (trim(fdrName) == trim (selectedFeeder)){
+                row.setStyle({'display' : ''});
+                feederNames.push(trim(fdrName));
+            }else{
+            	row.style.display = 'none';
+            }
         }
         applyCapBankFilter(feederNames);
     }
-    
-    function applyCapBankFilter(feederNames){
-	    var rows = $$('#capBankTable tr.altTableCell', '#capBankTable tr.tableCell');
-    	for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-            var cells = row.getElementsByTagName('td');
-            var firstCell = cells[0];
-            var feederSpan = firstCell.getElementsByTagName('span')[0].firstChild;
-	        var fdrName = new String (feederSpan.innerHTML);
-    		var index = feederNames.indexOf(trim(fdrName));
-    		if(index > -1){
-				row.setStyle({'display' : ''});
-			}else{
-				row.setStyle({'display' : 'none'});
-			}
+}
+
+function applyFeederFilter(subBusNames){
+	var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
+    var feederNames = new Array();
+    for (var i=0; i < rows.length; i++) {
+        var row = rows[i];
+        var cells = row.getElementsByTagName('td');
+        var firstCell = cells[0];
+        var firstSpan = firstCell.getElementsByTagName('span')[0];
+        
+        var subBusName = new String (firstSpan.innerHTML);
+        var index = subBusNames.indexOf(trim(subBusName));
+
+		if(index > -1){
+			row.setStyle({'display' : ''});
+			var fdr = cells[0];
+			var spans = fdr.getElementsByTagName('span');
+			var fdrName = spans[1].innerHTML;
+			feederNames.push(trim(fdrName));
+		}else{
+			row.setStyle({'display' : 'none'});
 		}
     }
+    applyCapBankFilter(feederNames);
+}
 
-function isOnTheList (list, string) {
-    for(var i=0; i < list.length; i++) {
-        if (list[i] == string)
-            return true;
-    }
-return false;
-}   
+function applyCapBankFilter(feederNames){
+    var rows = $$('#capBankTable tr.altTableCell', '#capBankTable tr.tableCell');
+	for (var i=0; i < rows.length; i++) {
+        var row = rows[i];
+        var cells = row.getElementsByTagName('td');
+        var firstCell = cells[0];
+        var feederSpan = firstCell.getElementsByTagName('span')[0].firstChild;
+        var fdrName = new String (feederSpan.innerHTML);
+		var index = feederNames.indexOf(trim(fdrName));
+		if(index > -1){
+			row.setStyle({'display' : ''});
+		}else{
+			row.setStyle({'display' : 'none'});
+		}
+	}
+}
+
 /**
  * Remove white space from a string.
  */
@@ -979,93 +802,6 @@ if (Number.NaN != ret) {
         return true;
         }
 return false;
-}
-//old method that goes to retrieve the static SVG file
-function showStaticOneLine () {
-
-   var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
-   var validElems = new Array();
-   getValidChecks( elemSubs, validElems );
-   if ( validElems.length <= 0 ) {
-        alert('Select Substation To View');
-        return;
-        }
-    else {      
-        if (validElems.length > 1)
-            alert ("You can only copy 1 item at a time"); 
-         var anc_id = 'anc_' + validElems[0].getAttribute('value');        
-         //there is an id for the sub name
-         if (document.getElementById (anc_id)) {
-            var subName = document.getElementById (anc_id).innerText;
-            subName = subName.removeLeadTrailSpace();
-            var url = "/capcontrol/oneline/" + subName + ".html";
-            window.location.href = url;
-            }
-         else {
-            alert ("Couldn't open window - URL invalid");
-            return;         
-         }
-   }
-}
-function showOneLine () {
-   var currLoc = window.location.href;
-   var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
-   var validElems = new Array();
-   getValidChecks( elemSubs, validElems );
-   if ( validElems.length <= 0 ) {
-        alert('Please select a Substation Bus to view');
-        return;
-        }
-    else {      
-        if (validElems.length > 1){
-            alert ("You can only view 1 item at a time");
-            return;
-        }
-        var anc_id = 'anc_' + validElems[0].getAttribute('value');        
-        //there is an id for the sub name
-        if (document.getElementById (anc_id)) {
-           id = anc_id.split('_')[1];
-           url = "/capcontrol/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + currLoc;
-           post(url);
-           }
-        else {
-           alert ("Couldn't open window - URL invalid");
-           return;         
-        }
-   }
-}
-
-function  openConfirmWin (url) {
-    GreyBox.preloadGreyBoxImages();
-    return GB_show('One Line Report',url, 700, 700);
-}
-
-function removeSpaceFromEnd (string) {
-var retStr = new String (string);
-for (var i=string.length - 1; i >= 0; i --) {
-if (string.charAt(i) == ' ') {
-    retStr = string.substr (0, i); 
-    }
- else
-    break;            
-}
-return retStr;
-}
-
-function removeSpaceFromBeginning (string) {
-var retStr = new String (string);
-for (var i=0; i < string.length; i ++) {
-if (string.charAt(i) == ' ') {
-    retStr = string.substr (i+1, string.length ); 
-    }
- else
-    break;            
-}
-return retStr;
-}
-
-String.prototype.removeLeadTrailSpace = function () {
-    return new String ( removeSpaceFromBeginning ( removeSpaceFromEnd (this) ) );
 }
 
 function mouseX(evt) {

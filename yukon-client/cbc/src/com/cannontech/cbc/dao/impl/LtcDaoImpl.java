@@ -10,12 +10,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.cbc.dao.LtcDao;
+import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlGenerator;
@@ -132,7 +134,7 @@ public class LtcDaoImpl implements LtcDao {
     }
     
     @Override
-    public List<LiteCapControlObject> getOrphans() {
+    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
         ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
             public LiteCapControlObject mapRow(ResultSet rs, int rowNum) throws SQLException {
                 
@@ -159,9 +161,13 @@ public class LtcDaoImpl implements LtcDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, ltcIds, rowMapper);
+        }, ltcIds, new SearchCapControlObjectResultSetExtractor(rowMapper, start, count));
         
-        return unassignedLtcs;
+        SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        searchResult.setResultList(unassignedLtcs);
+        searchResult.setBounds(start, count, ltcIds.size());
+        
+        return searchResult;
     }
     
     @Override

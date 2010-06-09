@@ -1,5 +1,7 @@
 package com.cannontech.common.util;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +38,12 @@ public class ChunkingSqlTemplateTest {
                 return Arrays.toString(subList.toArray());
             }
         
-        }, fullSizeList, null);
+        }, fullSizeList, new ParameterizedRowMapper<String>() {
+
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return null;
+            }});
         
         int expectedChunkListSize = 3;
         int resultChunkListSize = resultList.size();

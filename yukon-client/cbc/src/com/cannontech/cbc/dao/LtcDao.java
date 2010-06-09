@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.database.TransactionException;
 
 public interface LtcDao {
@@ -27,7 +28,7 @@ public interface LtcDao {
      */
     public boolean delete(int id);
     
-    public List<LiteCapControlObject> getOrphans();
+    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
 
     /**
      * Returns the name of the Load Tap Changer assigned 

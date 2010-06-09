@@ -1,119 +1,111 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 <cti:standardPage title="${substation.ccName}" module="capcontrol">
-<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
-
-<cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
-<%@include file="/capcontrol/cbc_inc.jspf"%>
-
-<!-- necessary DIV element for the OverLIB popup library -->
-<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
-<!-- DIV element for the non flyover type popups -->
-<ct:simplePopup id="tierPopup" onClose="closeTierPopup()" title="Comments:" styleClass="thinBorder">
-    <div id="popupBody"></div>
-</ct:simplePopup>
-
-<ct:simplePopup id="ltcPointPopup" onClose="closeLtcPointPopup()" title="LTC Points">
-    <div id="ltcPopupBody"></div>
-</ct:simplePopup>
-
-<cti:standardMenu/>
-
-<cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
-	<cti:param name="areaId" value="${areaId}"/>
-	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
-</cti:url>
-
-<cti:breadCrumbs>
-	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
-	<c:choose>
-		<c:when test="${isSpecialArea}">
-		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
-		</c:when>
-		<c:otherwise>
-			<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
-		</c:otherwise>
-	</c:choose>
-
-    <cti:crumbLink url="${substationAddress}" title="${areaName}" />
-    <cti:crumbLink title="${substation.ccName}" />	
-
-</cti:breadCrumbs>
-
-<script type="text/javascript">
-    Event.observe(window, 'load', checkPageExpire);
+    <%@include file="/capcontrol/cbc_inc.jspf"%>
     
-    // These two functions are neccessary since IE does not support css :hover
-    function highLightRow(row) {
-        row = $(row);
-        row.addClassName('hover');
-    }
+    <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
     
-    function unHighLightRow(row){
-        row = $(row);
-        row.removeClassName('hover');
-    }   
+    <cti:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
     
-    // gathers ids of selected subbuses and feeders, appends to url as target param
-    // triggers call to greybox containing point chart(s)
-    function loadPointChartGreyBox(title, url) {
+    <cti:standardMenu/>
+    
+    <cti:url value="/spring/capcontrol/tier/substations" var="substationAddress">
+    	<cti:param name="areaId" value="${areaId}"/>
+    	<cti:param name="isSpecialArea" value="${isSpecialArea}"/>
+    </cti:url>
+    
+    <cti:breadCrumbs>
+    	<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
+    	<c:choose>
+    		<c:when test="${isSpecialArea}">
+    		  	<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Special Substation Areas" />
+    		</c:when>
+    		<c:otherwise>
+    			<cti:crumbLink url="/spring/capcontrol/tier/areas?isSpecialArea=${isSpecialArea}" title="Substation Areas" />
+    		</c:otherwise>
+    	</c:choose>
+    
+        <cti:crumbLink url="${substationAddress}" title="${areaName}" />
+        <cti:crumbLink title="${substation.ccName}" />	
+    
+    </cti:breadCrumbs>
+    
+    <script type="text/javascript">
+        Event.observe(window, 'load', checkPageExpire);
         
-        var elemBanks = document.getElementsByName('cti_chkbxBanks');
-        var bankElems = new Array();
-        getValidChecks( elemBanks, bankElems );
-        if (bankElems.length > 0) {
-            alert(title + ' is not available for a Capacitor Bank.\n\nChoose specific Substation Bus or Feeder within a Substation');
+        // These two functions are neccessary since IE does not support css :hover
+        function highLightRow(row) {
+            row = $(row);
+            row.addClassName('hover');
+        }
+        
+        function unHighLightRow(row){
+            row = $(row);
+            row.removeClassName('hover');
+        }   
+        
+        // gathers ids of selected subbuses and feeders, appends to url as target param
+        // triggers call to greybox containing point chart(s)
+        function loadPointChartGreyBox(title, url) {
+            
+            var elemBanks = document.getElementsByName('cti_chkbxBanks');
+            var bankElems = new Array();
+            getValidChecks( elemBanks, bankElems );
+            if (bankElems.length > 0) {
+                alert(title + ' is not available for a Capacitor Bank.\n\nChoose specific Substation Bus or Feeder within a Substation');
+                return void(0);
+            }
+            
+            var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
+            var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+            var validElems = new Array();
+            getValidChecks( elemSubs, validElems );
+            getValidChecks( elemFdrs, validElems );
+            
+            var targets = new Array()
+            for (var i = 0; i < validElems.length; i++) {
+                targets.push(validElems[i].getAttribute('value'))
+            }
+            
+            url += '&targets=' + targets.join(',');
+            
+            GB_showFullScreen(title, url, null);
             return void(0);
         }
-        
-        var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
-        var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-        var validElems = new Array();
-        getValidChecks( elemSubs, validElems );
-        getValidChecks( elemFdrs, validElems );
-        
-        var targets = new Array()
-        for (var i = 0; i < validElems.length; i++) {
-            targets.push(validElems[i].getAttribute('value'))
-        }
-        
-        url += '&targets=' + targets.join(',');
-        
-        GB_showFullScreen(title, url, null);
-        return void(0);
-    }
-
-	//returned when a cap bank menu is triggered to appear
-	function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color) {
-		return overlib (html, STICKY, WIDTH, width, HEIGHT, height, OFFSETX, offsetx, OFFSETY, offsety, MOUSEOFF, FULLHTML, ABOVE);
-	}
-	
-   	function onGreyBoxClose () {
-   		window.location.href = window.location.href;
-   	}
-
- </script>
-
-<input type="hidden" id="lastAccessedID" value="${lastAccessed}">
-<input type="hidden" id="fullURL" value="${fullURL}">
-<input type="hidden" id="paoId_${substation.ccId}" value="${substation.ccId}">
-<c:choose>
-    <c:when test="${hasEditingRole}">
-        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/pencil.gif"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/information.gif"/>
-    </c:otherwise>
-</c:choose>
-	<ct:abstractContainer type="box" title="Substation" hideEnabled="false">
+    
+    	//returned when a cap bank menu is triggered to appear
+    	function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color) {
+    		return overlib (html, STICKY, WIDTH, width, HEIGHT, height, OFFSETX, offsetx, OFFSETY, offsety, MOUSEOFF, FULLHTML, ABOVE);
+    	}
+    	
+       	function onGreyBoxClose () {
+       		window.location.href = window.location.href;
+       	}
+    
+     </script>
+    
+    <input type="hidden" id="lastAccessedID" value="${lastAccessed}">
+    <input type="hidden" id="fullURL" value="${fullURL}">
+    <input type="hidden" id="paoId_${substation.ccId}" value="${substation.ccId}">
+    
+    <c:choose>
+        <c:when test="${hasEditingRole}">
+            <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/pencil.gif"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="editInfoImage" value="/WebConfig/yukon/Icons/information.gif"/>
+        </c:otherwise>
+    </c:choose>
+    
+	<tags:abstractContainer type="box" title="Substation" hideEnabled="false">
 		<table id="substationTable" class="tierTable">
         
 			<tr>
-				<th class="lAlign">Substation Name</th>
-				<th class="lAlign">State</th>
+				<th>Substation Name</th>
+				<th>State</th>
 			</tr>
             
             <tr class="tableCell" id="tr_substation_${substation.ccId}">
@@ -153,11 +145,11 @@
             </tr>
 
 		</table>
-	</ct:abstractContainer>
+	</tags:abstractContainer>
 	
 	<br>
 
-	<ct:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true">
+	<tags:abstractContainer type="box" title="Substation Bus" hideEnabled="true" showInitially="true">
 
 		<table id="subBusTable" class="tierTable rowHighlighting">
 			<tr>
@@ -320,7 +312,7 @@
                                 <a title="Edit" href="/editor/cbcBase.jsf?type=2&amp;itemid=${viewableSubBus.ltcId}" class="tierIconLink">
                                     <img alt="Edit" class="tierImg" src="${editInfoImage}">
                                 </a>
-                                <a href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
+                                <a id="ltcName_${viewableSubBus.ltcId}" href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
                                 ${viewableSubBus.ltcName}
                                 </a>
                                 <a href="#" onclick="getLtcPointsList(${viewableSubBus.ltcId})" class="tierIconLink">
@@ -345,22 +337,22 @@
         				        </td>	
         			        </tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><span class="lIndent">Area: </span></td>
+        				        <td><span class="smallIndent">Area: </span></td>
         	                    <td>
-                                    <span class="lIndent">${areaName}</span>
+                                    <span class="smallIndent">${areaName}</span>
         		                    <span class="errorRed"><cti:capControlValue paoId="${substation.ccId}" type="SUBSTATION" format="SA_ENABLED" /></span>
         				        </td>
         					</tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><span class="lIndent">Control Method: </span></td>
+        				        <td><span class="smallIndent">Control Method: </span></td>
         				        <td>
-                                    <span class="lIndent">${viewableSubBus.subBus.controlMethod} (${viewableSubBus.subBus.controlUnits})</span>
+                                    <span class="smallIndent">${viewableSubBus.subBus.controlMethod} (${viewableSubBus.subBus.controlUnits})</span>
                                 </td>
         					</tr>
         			        <tr class="tableCellSnapShot" style="display: none;">
-        				        <td><span class="lIndent">Var Point: </span></td>
+        				        <td><span class="smallIndent">Var Point: </span></td>
         				        <td>
-                                    <span class="lIndent">
+                                    <span class="smallIndent">
                 				        <c:choose>
                 					        <c:when test="${viewableSubBus.varPoint != null}">${viewableSubBus.varPoint.pointName}</c:when>
                 					        <c:otherwise>(none)</c:otherwise>
@@ -369,9 +361,9 @@
                                 </td>
         					</tr>
         				    <tr class="tableCellSnapShot" style="display: none;">
-                                <td><span class="lIndent">Watt Point: </span></td>
+                                <td><span class="smallIndent">Watt Point: </span></td>
                                 <td>
-                                    <span class="lIndent">
+                                    <span class="smallIndent">
         			        	    <c:choose>
         					           <c:when test="${viewableSubBus.wattPoint != null}">${viewableSubBus.wattPoint.pointName}</c:when>
         					           <c:otherwise>(none)</c:otherwise>
@@ -380,8 +372,8 @@
                                 </td>
         					</tr>
         				    <tr class="tableCellSnapShot" style="display: none;">
-                                <td><span class="lIndent">Volt Point: </span></td>
-                                <td><span class="lIndent">
+                                <td><span class="smallIndent">Volt Point: </span></td>
+                                <td><span class="smallIndent">
             			        	<c:choose>
             					        <c:when test="${viewableSubBus.voltPoint != null}">${viewableSubBus.voltPoint.pointName}</c:when>
             					        <c:otherwise>(none)</c:otherwise>
@@ -396,11 +388,11 @@
     
     		</c:forEach>
 		</table>
-	</ct:abstractContainer>
+	</tags:abstractContainer>
 
 	<br>
 
-	<ct:abstractContainer type="box" title="Feeders" hideEnabled="true" showInitially="true">
+	<tags:abstractContainer type="box" title="Feeders" hideEnabled="true" showInitially="true">
 
 		<table id="fdrTable" class="tierTable rowHighlighting">
         	<tr>
@@ -545,11 +537,11 @@
 			</c:forEach>
 		</table>
 
-    </ct:abstractContainer>
+    </tags:abstractContainer>
 
 	<br>
 	
-	<ct:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true">
+	<tags:abstractContainer type="box" title="Capacitor Banks" hideEnabled="true" showInitially="true">
         <table id="capBankTable" class="tierTable rowHighlighting">
             <tr>
                 <th>
@@ -557,11 +549,11 @@
                     CBC Name
                 </th>
                 <th>CB Name (Order) 
-                    <img alt="Info" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
+                    <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif"
                         onmouseover="statusMsgAbove(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" >
                 </th>                    
                 <th>State 
-                    <img alt="Info" class="tierImg popupImg" src="/WebConfig/yukon/Icons/information.gif"
+                    <img alt="Info" class="tierImg helpImg" src="/WebConfig/yukon/Icons/information.gif"
                         onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column. <br>-V : Auto Volt Control (ovUv) is Disabled. <br>-U: CBC reported unsolicited state change. <br>-Q: CapBank state reflects abnormal data quality. <br>-CF: Communications Failure. <br>-P: Partial - phase imbalance. <br>-S: Significant - questionable var response on all phases.');">  
                 </th>
                 <th>Date/Time</th>
@@ -608,9 +600,7 @@
                         </c:choose>
     
                         <c:if test="${viewableCapBank.twoWayCbc}">
-                            <a href="#" onclick="return GB_show(' ', 
-                                '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&amp;cbcID=${viewableCapBank.controlDevice.liteID}',
-                                 500, 600)" class="tierIconLink">
+                            <a href="#" onclick="showCbcPointList(${viewableCapBank.controlDevice.liteID}, ${viewableCapBank.controlDevice.paoName})" class="tierIconLink">
                                 <img alt="Timestamps" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
                                     onmouseover="statusMsgAbove(this,'Click here to see the timestamp information for the cap bank controller device.');">
                            </a>
@@ -647,7 +637,7 @@
     						</c:otherwise>
     					</c:choose>
     					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-    					   <a href="#" class="tierIconLink" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)">
+    					   <a href="#" class="tierIconLink" onclick="showCapBankAddInfo(${thisCapBankId}, '${viewableCapBank.capBankDevice.ccName}')">
     					       <img alt="Additional Info" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
     					   </a>
     					</cti:checkRolesAndProperties>
@@ -750,7 +740,6 @@
             
 		<input type="hidden" id="lastUpdate" value="">
         
-	</ct:abstractContainer>
+	</tags:abstractContainer>
     <capTags:commandMsgDiv/>
-    <ct:disableUpdaterHighlights/>
 </cti:standardPage>

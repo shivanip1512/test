@@ -6,6 +6,7 @@ import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.search.SearchResult;
 
 public interface CapbankControllerDao {
 
@@ -27,6 +28,6 @@ public interface CapbankControllerDao {
 	public void changeSerialNumber(SimpleDevice device, int newSerialNumber);
 	
 	public List<Integer> getUnassignedControllerIds();
-	public List<LiteCapControlObject> getOrphans();
+	public SearchResult<LiteCapControlObject> getOrphans(final int start,final int count);
 	
 }

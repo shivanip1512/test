@@ -3,7 +3,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
-<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/InnerStyles.css" >
 <link rel="stylesheet" type="text/css" href="/capcontrol/css/base.css" >
 
 <script type="text/javascript" src="/JavaScript/prototype.js" ></script>
@@ -77,21 +76,21 @@ Event.observe(window, 'load', updateFeederBankInfo, false);
     
         <table id="innerTable" style="margin-left: 5%; margin-right: 5%; margin-bottom:2%; margin-top:2%;" border="0" cellspacing="0" cellpadding="0">
             <tr>
-               <td class="columnHeader" colspan="5">Move for: ${path}</td>
+               <td class="boldLabel" colspan="5">Move for: ${path}</td>
             </tr>
             <tr height="5px"/>
-            <tr class="columnHeader lAlign">
-                <td class="rAlign">
+            <tr class="boldLabel">
+                <td>
                     <input id="submitOne" type="button" value="Temp Move" 
                         onclick="setFeederIDinRedirectURL(getSelectedFeeder(),${oneline},${subBusId});postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip'), 'opt[5]', 0 );"/>
                 </td>
-                <td class="rAlign">
+                <td>
                     <input id="submitOne" type="button" value="Move" 
                         onclick="setFeederIDinRedirectURL(getSelectedFeeder(),${oneline},${subBusId});postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip'), 'opt[5]', 1 );"/>
                 </td>
-                <td class="rAlign">Display Order: <input type="text" id="txtDisplayOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
-                <td class="rAlign">Close Order: <input type="text" id="txtCloseOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
-                <td class="rAlign">Trip Order: <input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
+                <td>Display Order: <input type="text" id="txtDisplayOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
+                <td>Close Order: <input type="text" id="txtCloseOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
+                <td>Trip Order: <input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
             </tr>
         </table>   
         
@@ -106,12 +105,12 @@ Event.observe(window, 'load', updateFeederBankInfo, false);
                             <div class="tableCell" style="display:none" id="areaId${simpleArea.id}">
                                 <c:forEach var="simpleStation" items="${simpleArea.substations}">
                                     <div>       
-                                        <img class="lIndent" id="chkBxStation${simpleStation.id}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'stationId${simpleStation.id}' );toggleExpandImg( 'chkBxStation${simpleStation.id}');"/>
+                                        <img class="smallIndent" id="chkBxStation${simpleStation.id}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'stationId${simpleStation.id}' );toggleExpandImg( 'chkBxStation${simpleStation.id}');"/>
                                         ${simpleStation.name}
                                         <div class="tableCell" style="display:none" id="stationId${simpleStation.id}">
                                             <c:forEach var="simpleSubBus" items="${simpleStation.substationBuses}">
                                                 <div>
-                                                    <img class="llIndent" id="chkBxSub${simpleSubBus.id}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'subId${simpleSubBus.id}' );toggleExpandImg('chkBxSub${simpleSubBus.id}');"/>
+                                                    <img class="mediumIndent" id="chkBxSub${simpleSubBus.id}" src="/capcontrol/images/nav-plus.gif" onclick="showDiv( 'subId${simpleSubBus.id}' );toggleExpandImg('chkBxSub${simpleSubBus.id}');"/>
                                                     ${simpleSubBus.name}
                                                     <div class="altTableCell" style="display:none" id="subId${simpleSubBus.id}">
                                                         <c:forEach var="simpleFeeder" items="${simpleSubBus.feeders}">

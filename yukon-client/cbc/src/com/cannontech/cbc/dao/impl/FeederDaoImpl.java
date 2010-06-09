@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.FeederDao;
+import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -227,7 +229,7 @@ public class FeederDaoImpl implements FeederDao {
     }
 
 	@Override
-	public List<LiteCapControlObject> getOrphans() {
+	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
         List<Integer> ids = getUnassignedFeederIds();
 		
 		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
@@ -241,9 +243,13 @@ public class FeederDaoImpl implements FeederDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, ids, liteCapControlObjectRowMapper);
+        }, ids, new SearchCapControlObjectResultSetExtractor(liteCapControlObjectRowMapper, start, count));
 		
-		return unassignedObjects;
+		SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        searchResult.setResultList(unassignedObjects);
+        searchResult.setBounds(start, count, ids.size());
+        
+        return searchResult;
 	}
     
     /**

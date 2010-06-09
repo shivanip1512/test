@@ -25,6 +25,7 @@ import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.cbc.web.ParentStringPrinter;
 import com.cannontech.cbc.web.ParentStringPrinterFactory;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -44,6 +45,7 @@ import com.cannontech.web.lite.LiteBaseResults;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.yukon.cbc.StreamableCapObject;
+import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/search/*")
@@ -62,7 +64,17 @@ public class ResultsController {
     private LtcDao ltcDao; 
 
     @RequestMapping
-    public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user) {
+    public ModelAndView searchResults(HttpServletRequest request, LiteYukonUser user, Integer itemsPerPage, Integer page) {
+        
+        if(page == null){
+            page = 1;
+        }
+        if(itemsPerPage == null){
+            itemsPerPage = 25;
+        }
+        
+        int startIndex = (page - 1) * itemsPerPage;
+        
         final ModelAndView mav = new ModelAndView();
         ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
         String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
@@ -77,39 +89,42 @@ public class ResultsController {
         String label = srchCriteria;
         boolean orphan = true;
         
-        LiteWrapper[] items = new LiteWrapper[0];
-        List<LiteCapControlObject> ccObjects = null;
+        int hitCount = 0;
+        List<LiteWrapper> items = Lists.newArrayList();
+        SearchResult<LiteCapControlObject> ccObjects = null;
 
         if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
-            ccObjects = substationDao.getOrphans();
+            ccObjects = substationDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned Substations";
         }
         else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
-            ccObjects = substationBusDao.getOrphans();
+            ccObjects = substationBusDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned Substation Buses";
         }
         else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
-            ccObjects = feederDao.getOrphans();
+            ccObjects = feederDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned Feeders";
         }
         else if( CBCWebUtils.TYPE_ORPH_BANKS.equals(srchCriteria) ) {
-            ccObjects = capbankDao.getOrphans();
+            ccObjects = capbankDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned CapBanks";
         }
         else if( CBCWebUtils.TYPE_ORPH_CBCS.equals(srchCriteria) ) {
-            ccObjects = cbcDao.getOrphans();
+            ccObjects = cbcDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned CBCs";
         }
         else if( CBCWebUtils.TYPE_ORPH_LTCS.equals(srchCriteria) ) {
-            ccObjects = ltcDao.getOrphans();
+            ccObjects = ltcDao.getOrphans(startIndex, itemsPerPage);
             label = "Orphaned LTCs";
         }
         else {   
         	orphan = false;
             LiteBaseResults lbr = new LiteBaseResults();
             lbr.searchLiteObjects( srchCriteria );
-            items = lbr.getFoundItems();
+            items = lbr.getFoundItems(startIndex, itemsPerPage);
+            hitCount = lbr.getFoundItems().size();
         }
+        
         mav.addObject("label", label);
         
         List<ResultRow> rows = new ArrayList<ResultRow>();
@@ -132,7 +147,8 @@ public class ResultsController {
                 rows.add(row);
             }
         } else {
-            for(LiteCapControlObject item : ccObjects) {
+            hitCount = ccObjects.getHitCount();
+            for(LiteCapControlObject item : ccObjects.getResultList()) {
                 ResultRow row = new ResultRow();
                 row.setName(item.getName());
                 row.setItemId(item.getId());
@@ -155,14 +171,24 @@ public class ResultsController {
                 rows.add(row);
             }
         }
-            
+        
+        SearchResult<ResultRow> searchResult = new SearchResult<ResultRow>();
+        searchResult.setResultList(rows);
+        if(rows.isEmpty()) {
+            searchResult.setBounds(0, itemsPerPage, 0);
+        }
+        searchResult.setBounds(startIndex, itemsPerPage, hitCount);
+        
         mav.addObject("rows", rows);
-        mav.addObject("resultsFound", rows.size());
+        mav.addObject("searchResult", searchResult);
+        mav.addObject("itemsPerPage", itemsPerPage);
+        mav.addObject("resultsFound", hitCount);
         mav.setViewName("search/searchResults.jsp");
         
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
+        
         return mav;
     }
 

@@ -104,15 +104,19 @@ legend, .legendLikeLabel{
 }
 
 /* red */
-.alert, .errorResults, .complete {
+.alert, .errorResults {
 	color: #FF0000;
-	font-weight: bold;
 }
 
 /* green */
 .complete {
 	color: green;
 }
+
+.alert, .errorResults, .complete {
+	font-weight: bold;
+}
+
 
 .fieldSet {
     padding: 2px;

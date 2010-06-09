@@ -8,7 +8,6 @@ import com.cannontech.web.navigation.CtiNavObject;
 public class CBCNavigationUtil {
     
 	private static final String [] PAGES_TO_SKIP = {
-													"charts.jsp",
 													"standardPageWrapper.jsp",
 													"bankMove.jsp",
 													"moved.jsp",

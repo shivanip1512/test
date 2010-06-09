@@ -916,6 +916,10 @@ table.rowHighlighting tr:hover td {
     background-color: yellow;
 }
 
+td.cellHighlighting:hover {
+    background-color: yellow;
+}
+
 #startMultipleProgramsOverridePrograms .override {
 	white-space: nowrap;
 }
@@ -1077,7 +1081,8 @@ div.mediumSimplePopup {
 }
 
 span.radioLabel,
-span.checkBoxLabel {
+span.checkBoxLabel,
+span.textFieldLabel {
     padding-left: 5px;
 }
 
@@ -1095,4 +1100,9 @@ input.formSubmit,
 	font-family: Courier, Courier, monospace; 
 	font-size: 12px;
 	white-space: pre; 
+}
+
+div.compactResultsFooter {
+	border-top : 1px solid #CCCCCC;
+	padding : 3px 2px 2px;
 }

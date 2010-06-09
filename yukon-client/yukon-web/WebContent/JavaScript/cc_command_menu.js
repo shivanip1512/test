@@ -124,43 +124,6 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
 	});
 } 
 
-//attempt to use the current ctiTitledContainer tag
-function CTITitledContainer (t) {
-	this.title = t;
-}
-
-CTITitledContainer.prototype.startTag = function () {
-var start_tag = "  <table class='resizeRoundTable'>"; 
-    start_tag += "    <tr> "; 
-    start_tag += "      <td class='upperLeft'></td>";
-    start_tag += "      <td class='top'>";
-    start_tag += this.title;
-    start_tag += "</td>"; 
-	start_tag += "<td class='upperRight'></td>"; 
-    start_tag += "    </tr>"; 
-    start_tag += "    <tr>"; 
-    start_tag += "      <td class='leftSide'></td>"; 
-    start_tag += "<td>";
-
-return start_tag;
-};
-
-CTITitledContainer.prototype.endTag = function () {
-var endTag = "";
- 	endTag += "</td>"; 
-    endTag += "      <td class='rightSide'></td>"; 
-	endTag +=     "    </tr>"; 
-	endTag +=     "    <tr>"; 
-	endTag +=     "      <td class='lowerLeft'></td>"; 
-	endTag +=     "      <td class='bottom'></td>"; 
-	endTag +=     "      <td class='lowerRight'></td>"; 
-	endTag +=     "    </tr>"; 
-	endTag +=     "  </table>"; 
-	endTag +=     "";
-
-return endTag;
-};
-
 //function to display wheather the call to serlvlet went through
 //will pop up a div that has a header with 'cmd_name' with gray background
 //'msg' in the body that with 'color' for background

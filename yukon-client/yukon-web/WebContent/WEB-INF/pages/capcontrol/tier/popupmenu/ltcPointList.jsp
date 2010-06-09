@@ -20,7 +20,7 @@
             </tr>
             
             <c:forEach var="point" items="${mappings}">
-                <tr class="<tags:alternateRow odd="" even="altRow"/>" style="font-size: 10px">
+                <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td>
                         ${point.attribute.description}
                     </td>

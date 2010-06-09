@@ -21,7 +21,7 @@ var switchPointPicker = new PointPicker(
         <x:htmlTag value="fieldSet" styleClass="fieldSet">
             <x:htmlTag value="legend"><x:outputText value="Dual Bus Setup"/></x:htmlTag>
 
-			<x:selectBooleanCheckbox forceId="true"  styleClass="lAlign" id="enableDualBus" title="Disable Dual Bus" 
+			<x:selectBooleanCheckbox forceId="true" id="enableDualBus" title="Disable Dual Bus" 
                 rendered="#{capControlForm.editingAuthorized}"
                 value="#{capControlForm.enableDualBus}" onclick="submit();">
 				<h:outputText value="Enable Dual Bus" />

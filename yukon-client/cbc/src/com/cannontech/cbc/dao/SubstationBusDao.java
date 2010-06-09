@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.common.search.SearchResult;
 
 public interface SubstationBusDao {
     public void add( SubstationBus substationBus );
@@ -18,11 +19,14 @@ public interface SubstationBusDao {
     public int getParentId(SubstationBus subtationBus);
     
     public List<Integer> getAllUnassignedBuses ();
-    public List<LiteCapControlObject> getOrphans();
+    
+    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
     
     public boolean assignSubstationBus(Substation substation, SubstationBus substationBus);
+    
     public boolean assignSubstationBus(int substationId, int substationBusId);
 
     public boolean unassignSubstationBus(SubstationBus substationBus);
+    
     public boolean unassignSubstationBus(int substationBusId);
 }

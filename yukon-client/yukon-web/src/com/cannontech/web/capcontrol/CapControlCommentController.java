@@ -49,7 +49,7 @@ public class CapControlCommentController {
         commentDao.add(capControlcomment);
         
         model.addAttribute("paoId", paoId);
-        return "redirect:commentList";
+        return "redirect:paoComments";
     }
     
     @RequestMapping(method=RequestMethod.POST)
@@ -62,7 +62,7 @@ public class CapControlCommentController {
         commentDao.update(capControlComment);
         
         model.addAttribute("paoId", paoId);
-        return "redirect:commentList";
+        return "redirect:paoComments";
     }
     
     @RequestMapping(method=RequestMethod.POST)
@@ -74,7 +74,7 @@ public class CapControlCommentController {
         commentDao.remove(comment);
         
         model.addAttribute("paoId", paoId);
-        return "redirect:commentList";
+        return "redirect:paoComments";
     }
     
     @RequestMapping
@@ -98,17 +98,6 @@ public class CapControlCommentController {
         model.addAttribute("modifyPermission", modifyPermission);
         model.addAttribute("addPermission", addPermission);
         return "comments/commentsPage.jsp";
-    }
-    
-    @RequestMapping
-    public String commentList(int paoId, LiteYukonUser user, ModelMap model) {
-        List<CapControlComment> comments = commentDao.getAllCommentsByPao(paoId);
-        boolean modifyPermission = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.MODIFY_COMMENTS, user);
-        boolean addPermission = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADD_COMMENTS, user);
-        model.addAttribute("comments", comments);
-        model.addAttribute("modifyPermission", modifyPermission);
-        model.addAttribute("addPermission", addPermission);
-        return "comments/commentList.jsp";
     }
     
     @Autowired

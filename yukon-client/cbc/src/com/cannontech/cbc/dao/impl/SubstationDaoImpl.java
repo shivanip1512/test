@@ -10,11 +10,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.dao.SubstationDao;
 import com.cannontech.cbc.model.Area;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -217,7 +219,7 @@ public class SubstationDaoImpl implements SubstationDao {
     }
     
 	@Override
-	public List<LiteCapControlObject> getOrphans() {
+	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
         List<Integer> ids = getAllUnassignedSubstationIds();
 		
 		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
@@ -231,9 +233,13 @@ public class SubstationDaoImpl implements SubstationDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, ids, liteCapControlObjectRowMapper);
+        }, ids, new SearchCapControlObjectResultSetExtractor(liteCapControlObjectRowMapper, start, count));
 		
-		return unassignedObjects;
+		SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        searchResult.setResultList(unassignedObjects);
+        searchResult.setBounds(start, count, ids.size());
+        
+        return searchResult;
 	}
     
     public List<Integer> getAllSpecialAreaUnassignedSubstationIds (Integer areaId) {

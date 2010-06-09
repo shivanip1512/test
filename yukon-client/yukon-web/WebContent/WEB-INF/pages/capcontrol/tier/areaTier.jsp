@@ -5,8 +5,8 @@
 
 
 <cti:standardPage title="${title}" module="capcontrol">
-	
 	<%@include file="/capcontrol/cbc_inc.jspf"%>
+    
 	<script type="text/javascript" language="JavaScript">
 		// handles analysis links (which are not functional for a substation area - show error alert)
 		function loadPointChartGreyBox(title, url) {
@@ -23,11 +23,7 @@
 			<cti:standardMenu />
 		</c:otherwise>
 	</c:choose>
-	
-	<!-- DIV element for the non flyover type popups -->
-	<ct:simplePopup onClose="closeTierPopup()" title="Comments:" id="tierPopup" styleClass="thinBorder">
-        <div id="popupBody"></div>
-    </ct:simplePopup>
+    
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home"/>
 		<c:choose>
@@ -130,7 +126,7 @@
 						<table id="allAreas${thisAreaId}">
 							<c:forEach var="station" items="${viewableArea.subStations}">
 								<tr style="display: none;">
-									<td><span class="lIndent">${station.subStationName}</span></td>
+									<td><span class="smallIndent">${station.subStationName}</span></td>
 									<td align="right">${station.feederCount} Feeder(s)</td>
 									<td align="right">${station.capBankCount} Bank(s)</td>
 								</tr>

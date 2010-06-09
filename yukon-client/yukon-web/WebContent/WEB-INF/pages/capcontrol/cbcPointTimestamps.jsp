@@ -8,10 +8,10 @@
 
 	<center><span style="font-weight: bold; font-size: 16;">${paoName}</span></center>
 	
-	<div style="overflow: auto;">
+	<div style="overflow-y:auto;overflow-x:hidden;height:500px;">
 
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin: 4px;">
-			<tr style="text-align: left;">
+        <table class="compactResultsTable">
+			<tr>
 				<th>Point Name</th>
 				<th>Value</th>
 				<th>Timestamp</th>
@@ -19,7 +19,7 @@
 			
 			<tr>
 				<td style="font-weight: bold;">
-					<br>Analog
+					Analog
 				</td>
 			</tr>
 			<c:forEach var="point" items="${pointMap.ANALOG}">

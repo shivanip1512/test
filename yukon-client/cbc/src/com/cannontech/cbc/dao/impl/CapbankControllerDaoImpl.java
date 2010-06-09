@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.cbc.dao.CapbankControllerDao;
+import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
@@ -20,6 +21,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -309,7 +311,7 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
     }
 	
 	@Override
-	public List<LiteCapControlObject> getOrphans() {
+	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
 		List<Integer> cbcIds = getUnassignedControllerIds();
 		
 		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
@@ -323,9 +325,13 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, cbcIds, liteCapControlObjectRowMapper);
+        }, cbcIds, new SearchCapControlObjectResultSetExtractor(liteCapControlObjectRowMapper, start, count));
 		
-		return unassignedCbcs;
+		SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        searchResult.setResultList(unassignedCbcs);
+        searchResult.setBounds(start, count, cbcIds.size());
+		
+        return searchResult;
 	}
 	
 	/**

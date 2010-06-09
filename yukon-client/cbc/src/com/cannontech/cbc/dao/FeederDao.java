@@ -7,6 +7,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.cbc.model.Feeder;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.common.search.SearchResult;
 
 public interface FeederDao {
 
@@ -25,7 +26,9 @@ public interface FeederDao {
      *  to a SubBus.
      */
     public List<Integer> getUnassignedFeederIds();
-    public List<LiteCapControlObject> getOrphans();
+    
+    public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count);
+    
     /**
      * This method returns the SubBus ID that owns the given feeder ID.
      * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
@@ -34,8 +37,10 @@ public interface FeederDao {
     public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException;
     
     public boolean assignFeeder(SubstationBus substationBus, Feeder feeder);
+    
     public boolean assignFeeder(int substationBusId, int feederId);
 
     public boolean unassignFeeder(Feeder feeder);
+    
     public boolean unassignFeeder(int feederId);
 }

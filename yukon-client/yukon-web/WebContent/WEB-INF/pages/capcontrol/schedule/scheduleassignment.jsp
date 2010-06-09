@@ -240,8 +240,8 @@ function clearFilter() {
 		<div id="errorElement" style="text-align:center;color:red;font-weight:bold;"></div>
 		
 		<tags:pagedBox title="Strategies" searchResult="${searchResult}"
-		filterDialog="filterPopup" baseUrl="${baseUrl}"
-		isFiltered="${isFiltered}" showAllUrl="${baseUrl}">
+		    filterDialog="filterPopup" baseUrl="${baseUrl}"
+		    isFiltered="${isFiltered}" showAllUrl="${baseUrl}">
 			
 			<c:choose>
 				<c:when test="${searchResult.hitCount == 0}">

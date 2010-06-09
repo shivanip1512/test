@@ -55,68 +55,68 @@
     <div id="deletionResult" class="padded normalBoldLabel"></div>
     
     <tags:pagedBox title="Strategies" searchResult="${searchResult}"
-	filterDialog="" baseUrl="/spring/capcontrol/strategy/strategies"
-	isFiltered="false" showAllUrl="/spring/capcontrol/strategy/strategies">
-	    
-	    <c:choose>
-			<c:when test="${searchResult.hitCount == 0}">
-				No items to display.
-			</c:when>
-			<c:otherwise>
-			    <table class="compactResultsTable smallPadding" id="strategyTable" width="95%" align="center">
-			        <thead>
-			            <tr id="header">
-			                <th>Strategy Name</th>
-			                <th>Control Method</th>
-			                <th>Control Algorithm</th>
-			                <th>Start/Stop</th>
-			                <th>Interval</th>
-			                <th>Confirm Time</th>
-			                <th>Pass/Fail(%)</th>
-			                <th>Peak Settings</th>
-			                <th>Off Peak Settings</th>
-			            </tr>
-			        </thead>
-			        <tbody id="tableBody">
-			            <c:forEach var="item" items="${strategies}">
-			                <tr class="<tags:alternateRow odd="" even="altRow"/>"
-			                    id="s_${item.strategyID}">
-			                    <td nowrap="nowrap">
-			                        <c:choose>
-			                            <c:when test="${hasEditingRole}">
-			                                <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}" class="imgLink">
-			                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/pencil.gif" />
-			                                </a>
-			                                <a href="javascript:removeStrategy(${item.strategyID}, '<spring:escapeBody javaScriptEscape="true">${item.strategyName}</spring:escapeBody>');" class="imgLink">
-			                                    <img class="rAlign editImg pointer" src="/WebConfig/yukon/Icons/delete.gif">
-			                                </a>
-			                            </c:when>
-			                            <c:otherwise>
-			                                <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}" class="imgLink">
-			                                    <img class="rAlign editImg" src="/WebConfig/yukon/Icons/information.gif" />
-			                                </a>
-			                            </c:otherwise>
-			                        </c:choose>
-			                        
-			                        <c:out value="${item.strategyName}" />
-			                    </td>
-			                    <td><c:out value="${item.controlMethod}" /></td>
-			                    <td><c:out value="${item.controlUnits}" /></td>
-			                    <td>
-			                        <cti:formatDuration value="${item.peakStartTime * 1000}" type="HM_SHORT"/>
-			                        <c:out value="/"/>
-			                        <cti:formatDuration value="${item.peakStopTime * 1000}" type="HM_SHORT"/>
-			                    </td>
-			                    <td><c:out value="${item.controlIntervalString}"/></td>
-			                    <td><c:out value="${item.minResponseTimeString}"/></td>
-			                    <td><c:out value="${item.passFailPercentString}"/></td>
-			                    <td><c:out value="${item.peakSettingsString}"/></td>
-			                    <td><c:out value="${item.offPeakSettingsString}"/></td>
-			                </tr>
-			            </c:forEach>
-			        </tbody>
-			    </table>
-			</c:otherwise>
-		</c:choose>
+        filterDialog="" baseUrl="/spring/capcontrol/strategy/strategies"
+        isFiltered="false" showAllUrl="/spring/capcontrol/strategy/strategies">
+        
+        <c:choose>
+            <c:when test="${searchResult.hitCount == 0}">
+                No items to display.
+            </c:when>
+            <c:otherwise>
+                <table class="compactResultsTable smallPadding" id="strategyTable" width="95%" align="center">
+                    <thead>
+                        <tr id="header">
+                            <th>Strategy Name</th>
+                            <th>Control Method</th>
+                            <th>Control Algorithm</th>
+                            <th>Start/Stop</th>
+                            <th>Interval</th>
+                            <th>Confirm Time</th>
+                            <th>Pass/Fail(%)</th>
+                            <th>Peak Settings</th>
+                            <th>Off Peak Settings</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <c:forEach var="item" items="${strategies}">
+                            <tr class="<tags:alternateRow odd="" even="altRow"/>"
+                                id="s_${item.strategyID}">
+                                <td nowrap="nowrap">
+                                    <c:choose>
+                                        <c:when test="${hasEditingRole}">
+                                            <a href="/editor/cbcBase.jsf?type=5&itemid=${item.strategyID}" class="tierIconLink">
+                                                <img class="tierImg" src="/WebConfig/yukon/Icons/pencil.gif" />
+                                            </a>
+                                            <a href="javascript:removeStrategy(${item.strategyID}, '<spring:escapeBody javaScriptEscape="true">${item.strategyName}</spring:escapeBody>');" class="tierIconLink">
+                                                <img class="tierImg" src="/WebConfig/yukon/Icons/delete.gif">
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a href="/editor/cbcBase.jsf?type=3&itemid=${item.strategyID}" class="tierIconLink">
+                                                <img class="tierImg" src="/WebConfig/yukon/Icons/information.gif" />
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    
+                                    <c:out value="${item.strategyName}" />
+                                </td>
+                                <td><c:out value="${item.controlMethod}" /></td>
+                                <td><c:out value="${item.controlUnits}" /></td>
+                                <td>
+                                    <cti:formatDuration value="${item.peakStartTime * 1000}" type="HM_SHORT"/>
+                                    <c:out value="/"/>
+                                    <cti:formatDuration value="${item.peakStopTime * 1000}" type="HM_SHORT"/>
+                                </td>
+                                <td><c:out value="${item.controlIntervalString}"/></td>
+                                <td><c:out value="${item.minResponseTimeString}"/></td>
+                                <td><c:out value="${item.passFailPercentString}"/></td>
+                                <td><c:out value="${item.peakSettingsString}"/></td>
+                                <td><c:out value="${item.offPeakSettingsString}"/></td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </c:otherwise>
+        </c:choose>
     </tags:pagedBox>
 </cti:standardPage>

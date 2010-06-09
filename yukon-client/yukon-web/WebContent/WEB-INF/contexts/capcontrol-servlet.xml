@@ -71,9 +71,6 @@
         <property name="capControlCache" ref="capControlCache"/>
     </bean>
 
-	<bean id="capBankAdditionalController"
-		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
-
 	<bean id="cbcAjaxController"
 		class="com.cannontech.web.editor.CBCAjaxMultiActionController">
 		<property name="methodNameResolver">
@@ -117,6 +114,7 @@
 
     <bean id="scheduleController" class="com.cannontech.web.capcontrol.ScheduleController"/>
 	<bean id="tierController" class="com.cannontech.web.capcontrol.TierController"/>
+	<bean id="capBankAdditionalController" class="com.cannontech.web.capcontrol.CapBankAdditionalController"/>
 	<bean id="capControlCommentController" class="com.cannontech.web.capcontrol.CapControlCommentController"/>
 	<bean id="capBankWebController" class="com.cannontech.web.capcontrol.CapBankWebController"/>
 	<bean id="capControlImportController" class="com.cannontech.web.capcontrol.CapControlImportController"/>

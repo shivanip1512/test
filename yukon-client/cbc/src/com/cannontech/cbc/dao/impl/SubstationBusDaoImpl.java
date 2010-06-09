@@ -2,7 +2,7 @@ package com.cannontech.cbc.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,12 +11,14 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.Substation;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -243,7 +245,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 
 	@Override
-	public List<LiteCapControlObject> getOrphans() {
+	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
         List<Integer> ids = getAllUnassignedBuses();
 		
 		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
@@ -257,9 +259,13 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
                 String sql = sqlBuilder.toString();
                 return sql;
             }
-        }, ids, liteCapControlObjectRowMapper);
+        }, ids, new SearchCapControlObjectResultSetExtractor(liteCapControlObjectRowMapper, start, count));
 		
-		return unassignedObjects;
+		SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
+        searchResult.setResultList(unassignedObjects);
+        searchResult.setBounds(start, count, ids.size());
+        
+        return searchResult;
 	}
 	
     @Override
