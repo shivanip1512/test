@@ -61,13 +61,6 @@
 			document.mspForm.submit();
 		}
 
-		function cancelMspChanges()
-		{
-			document.mspForm.action = "/spring/multispeak/setup/home";
-			document.mspForm.submit();
-		}
-		
-
 	</script>
     
 	<h2>${pageTitle}</h2>
@@ -242,11 +235,10 @@
 			    <td>
 			      <input type="submit" name="MspSave" value="Save" class="formSubmit">
 			      <c:if test="${isCreateNew }">
-			      	<input type="submit" name="Cancel" value="Cancel" class="formSubmit" onclick="return cancelMspChanges()">
+			      	<input type="submit" name="Cancel" value="Cancel" class="formSubmit">
 			      </c:if>
 			    </td>			
 			</form>
-			
 				<c:if test="${!isCreateNew }">				  
 				<td>
 				  <form name="mspDeleteForm" method="post" action="/spring/multispeak/setup/delete">

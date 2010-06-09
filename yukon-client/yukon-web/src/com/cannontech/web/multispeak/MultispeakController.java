@@ -16,10 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DuplicateException;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -50,6 +50,8 @@ public class MultispeakController {
     private MspMeterSearchService mspMeterSearchService;
     
     private MultispeakVendor defaultMspVendor;
+
+    private static String RESULT_COLOR_ATT = "resultColor";
     
     // HOME
     @RequestMapping
@@ -66,31 +68,32 @@ public class MultispeakController {
             
             Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId");
             if( vendorId != null) {
-                try {
-                    mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-                } catch (NotFoundException e) {
-                    //Ignore if not found, default will be used.
-                }
+                mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             }
         }
         addSystemModelAndViewObjects(request, map, mspVendor);
         return "setup/msp_setup.jsp";
     }
 
+    // CANCEL
+    @RequestMapping(value = "save", method = RequestMethod.POST, params = "Cancel")
+    public String cancel() throws Exception {
+        return "redirect:home";
+    }
+
     // SAVE
-    @RequestMapping
-    public String save(HttpServletRequest request, ModelMap map) throws Exception {
+    @RequestMapping(value = "save", method = RequestMethod.POST, params = "!Cancel")
+    public String save(HttpServletRequest request, ModelMap map, FlashScope flashScope) throws Exception {
         
         MultispeakVendor mspVendor = buildMspVendor(request);
         
         //Validate the request parameters before continuing on.
-        boolean isValid = isValidMspRequest(request);
+        boolean isValid = isValidMspRequest(request, flashScope);
         if (isValid) {
             try {
                 boolean isCreateNew = ServletRequestUtils.getBooleanParameter(request, "isCreateNew", false);
-                addOrUpdateMspVendor(request, mspVendor, isCreateNew);
+                addOrUpdateMspVendor(request, mspVendor, flashScope, isCreateNew);
             } catch (DuplicateException e) {
-                FlashScope flashScope = new FlashScope(request);
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.exception",e.getMessage()));
             }
     
@@ -108,20 +111,17 @@ public class MultispeakController {
     
     // DELETE
     @RequestMapping
-    public String delete(HttpServletRequest request) throws Exception {
+    public String delete(HttpServletRequest request, FlashScope flashScope) throws Exception {
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
 
         if( defaultMspVendor.getVendorID().intValue() == vendorId.intValue()) {
-            FlashScope flashScope = new FlashScope(request);
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deleteDefaultMessage",defaultMspVendor.getCompanyName()));
         }else {
             MultispeakVendor deletedMspVendor = multispeakDao.getMultispeakVendor(vendorId);
             if( multispeakFuncs.isPrimaryCIS(deletedMspVendor)){
-                FlashScope flashScope = new FlashScope(request);
                 flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deletePrimaryMessage", deletedMspVendor.getCompanyName()));
             } else {
                 multispeakDao.deleteMultispeakVendor(vendorId);
-                FlashScope flashScope = new FlashScope(request);
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deleted", deletedMspVendor.getCompanyName()));
             }
         }
@@ -145,15 +145,15 @@ public class MultispeakController {
                         result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
                     }
                     map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, result);
-                    map.addAttribute("resultColor", "red");
+                    map.addAttribute(RESULT_COLOR_ATT, "red");
                 }
                 else {
                     map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
-                    map.addAttribute("resultColor", "blue");
+                    map.addAttribute(RESULT_COLOR_ATT, "blue");
                 }
             }catch (RemoteException re) {
                 map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
-                map.addAttribute("resultColor", "red");
+                map.addAttribute(RESULT_COLOR_ATT, "red");
             }
         }
 
@@ -182,16 +182,16 @@ public class MultispeakController {
                             resultStr += " * " + objects[i] + "\n";
                     }
                     map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
-                    map.addAttribute("resultColor", "blue");
+                    map.addAttribute(RESULT_COLOR_ATT, "blue");
                 }
                 else
                 {
                     map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
-                    map.addAttribute("resultColor", "red");
+                    map.addAttribute(RESULT_COLOR_ATT, "red");
                 }
             }catch (RemoteException re) {
                 map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
-                map.addAttribute("resultColor", "red");
+                map.addAttribute(RESULT_COLOR_ATT, "red");
             }
         }
         
@@ -258,9 +258,8 @@ public class MultispeakController {
      * @param mspVendor
      * @return boolean
      */
-    private boolean isValidMspRequest(HttpServletRequest request) {
+    private boolean isValidMspRequest(HttpServletRequest request, FlashScope flashScope) {
 
-        FlashScope flashScope = new FlashScope(request);
         List<MessageSourceResolvable> messages = new ArrayList<MessageSourceResolvable>();
 
         String param = request.getParameter("mspCompanyName");
@@ -308,15 +307,13 @@ public class MultispeakController {
      * @throws Exception
      * @throws DuplicateException
      */
-    private void addOrUpdateMspVendor(HttpServletRequest request, MultispeakVendor mspVendor, boolean add) throws Exception, DuplicateException {
+    private void addOrUpdateMspVendor(HttpServletRequest request, MultispeakVendor mspVendor, FlashScope flashScope, boolean add) throws Exception, DuplicateException {
 
         if (add) {
             multispeakDao.addMultispeakVendor(mspVendor);
-            FlashScope flashScope = new FlashScope(request);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.added", mspVendor.getCompanyName()));
         } else {
             multispeakDao.updateMultispeakVendor(mspVendor);
-            FlashScope flashScope = new FlashScope(request);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.updated", mspVendor.getCompanyName()));
 
             if(defaultMspVendor.getVendorID().intValue() == mspVendor.getVendorID().intValue()) {
@@ -409,7 +406,7 @@ public class MultispeakController {
         String resultMsg = ServletRequestUtils.getStringParameter(request, MultispeakDefines.MSP_RESULT_MSG, null);
         if (resultMsg != null) {
             map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultMsg);
-            map.addAttribute("resultColor", ServletRequestUtils.getStringParameter(request, "resultColor", "black"));
+            map.addAttribute(RESULT_COLOR_ATT, ServletRequestUtils.getStringParameter(request, RESULT_COLOR_ATT, "black"));
         }
     }
 
