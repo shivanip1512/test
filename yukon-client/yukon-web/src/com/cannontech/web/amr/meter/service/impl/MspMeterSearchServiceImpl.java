@@ -9,8 +9,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.search.model.MspSearchField;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -22,7 +20,6 @@ import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 
 public class MspMeterSearchServiceImpl implements MspMeterSearchService, InitializingBean {
 
-	private RolePropertyDao rolePropertyDao;
 	private MspObjectDao mspObjectDao;
 	private MultispeakFuncs multispeakFuncs;
 	private MultispeakDao multispeakDao;
@@ -43,17 +40,17 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService, Initial
 	
 	@Override
     public void afterPropertiesSet() throws Exception {
-	    loadMspSearchFields();
+	    int vendorId = multispeakFuncs.getPrimaryCIS();
+	    loadMspSearchFields(vendorId);
     }
 	
-	public void loadMspSearchFields() {
+	public void loadMspSearchFields(int vendorId) {
 	    //set to available mspSearchFields based on methods that vendor supports
         mspSearchFields = new ArrayList<MspSearchField>();
         
-        int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, null);
         if (vendorId > 0) {
             
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             List<String> mspMethodNames = mspObjectDao.getMspMethods(MultispeakDefines.CB_Server_STR, mspVendor);
             
             MspSearchField[] allMspSearchFields = MspSearchField.values();
@@ -75,11 +72,6 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService, Initial
         }
 	}
 	
-	@Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
     @Autowired
     public void setMspObjectDao(MspObjectDao mspObjectDao) {
 		this.mspObjectDao = mspObjectDao;

@@ -6,21 +6,20 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DuplicateException;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -37,10 +36,12 @@ import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@Controller
 @RequestMapping("/setup/*")
-public class MultispeakController extends MultiActionController implements InitializingBean {
+@Controller
+@CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
+public class MultispeakController {
     
     private MultispeakDao multispeakDao;
     private MultispeakFuncs multispeakFuncs;
@@ -51,19 +52,34 @@ public class MultispeakController extends MultiActionController implements Initi
     private MultispeakVendor defaultMspVendor;
     
     // HOME
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws Exception {
-       
-        ModelAndView mav = new ModelAndView("setup/msp_setup.jsp");
+    @RequestMapping
+    public String home(HttpServletRequest request, ModelMap map) throws Exception {
+
+        MultispeakVendor mspVendor = defaultMspVendor;
         
-        addSystemModelAndViewObjects(request, mav, defaultMspVendor);
-        
-        return mav;
+        // Look for "New" button, if found a new MultispeakVendor object will need to be used.
+        String newButton = ServletRequestUtils.getStringParameter(request, "New");
+        if(newButton != null) {
+            mspVendor = new MultispeakVendor();
+            map.addAttribute("isCreateNew", true);  //flag for altering form fields for create vs edit/view
+        } else {
+            
+            Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId");
+            if( vendorId != null) {
+                try {
+                    mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+                } catch (NotFoundException e) {
+                    //Ignore if not found, default will be used.
+                }
+            }
+        }
+        addSystemModelAndViewObjects(request, map, mspVendor);
+        return "setup/msp_setup.jsp";
     }
 
     // SAVE
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("setup/msp_setup.jsp");
+    @RequestMapping
+    public String save(HttpServletRequest request, ModelMap map) throws Exception {
         
         MultispeakVendor mspVendor = buildMspVendor(request);
         
@@ -79,28 +95,20 @@ public class MultispeakController extends MultiActionController implements Initi
             }
     
         } else {
+            //When not valid, return to the setup page so populated form data remains, do not redirect.
             boolean isCreateNew = ServletRequestUtils.getBooleanParameter(request, "isCreateNew", false);
-            mav.addObject("isCreateNew", isCreateNew);
+            map.addAttribute("isCreateNew", isCreateNew);
+            addSystemModelAndViewObjects(request, map, mspVendor);
+            return "setup/msp_setup.jsp";
         }
         
-        addSystemModelAndViewObjects(request, mav, mspVendor);
-        return mav;
-    }
-    
-    // CREATE
-    public ModelAndView create(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("setup/msp_setup.jsp");
-        
-        MultispeakVendor newMspVendor = new MultispeakVendor();
-        addSystemModelAndViewObjects(request, mav, newMspVendor);
-        mav.addObject("isCreateNew", true);
-        
-        return mav;
+        map.addAttribute("mspVendorId", mspVendor.getVendorID());
+        return "redirect:home";
     }
     
     // DELETE
-    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("redirect:/spring/multispeak/setup/home");
+    @RequestMapping
+    public String delete(HttpServletRequest request) throws Exception {
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
 
         if( defaultMspVendor.getVendorID().intValue() == vendorId.intValue()) {
@@ -117,25 +125,13 @@ public class MultispeakController extends MultiActionController implements Initi
                 flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.mspSetup.deleted", deletedMspVendor.getCompanyName()));
             }
         }
-        return mav;
+        return "redirect:home";
     }
-    
-    // CHANGEVENDOR
-    public ModelAndView changeVendor(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("setup/msp_setup.jsp");
-        Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-        addSystemModelAndViewObjects(request, mav, mspVendor);
-        
-        return mav;
 
-    }
-    
     // PINGURL
-    public ModelAndView pingURL(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping
+    public String pingURL(HttpServletRequest request, ModelMap map) throws Exception {
         
-        ModelAndView mav = new ModelAndView("setup/msp_setup.jsp");
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         
@@ -148,26 +144,27 @@ public class MultispeakController extends MultiActionController implements Initi
                     for (int i = 0; i < objects.length; i++) {
                         result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
                     }
-                    mav.addObject(MultispeakDefines.MSP_RESULT_MSG, result);
-                    mav.addObject("resultColor", "red");
+                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, result);
+                    map.addAttribute("resultColor", "red");
                 }
                 else {
-                    mav.addObject( MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
-                    mav.addObject("resultColor", "blue");
+                    map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
+                    map.addAttribute("resultColor", "blue");
                 }
             }catch (RemoteException re) {
-                mav.addObject( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
-                mav.addObject("resultColor", "red");
+                map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
+                map.addAttribute("resultColor", "red");
             }
         }
-        addSystemModelAndViewObjects(request, mav, mspVendor);
-        return mav;
+
+        map.addAttribute("mspVendorId", vendorId);
+        return "redirect:home";
     }
 
     // GETMETHODS
-    public ModelAndView getMethods(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @RequestMapping
+    public String getMethods(HttpServletRequest request, ModelMap map) throws Exception {
         
-        ModelAndView mav = new ModelAndView("setup/msp_setup.jsp");
         Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId", defaultMspVendor.getVendorID());
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
 
@@ -184,27 +181,27 @@ public class MultispeakController extends MultiActionController implements Initi
                         for (int i = 1; i < objects.length; i++)
                             resultStr += " * " + objects[i] + "\n";
                     }
-                    mav.addObject(MultispeakDefines.MSP_RESULT_MSG, resultStr);
-                    mav.addObject("resultColor", "blue");
+                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
+                    map.addAttribute("resultColor", "blue");
                 }
                 else
                 {
-                    mav.addObject(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
-                    mav.addObject("resultColor", "red");
+                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
+                    map.addAttribute("resultColor", "red");
                 }
             }catch (RemoteException re) {
-                mav.addObject( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
-                mav.addObject("resultColor", "red");
+                map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
+                map.addAttribute("resultColor", "red");
             }
         }
         
         // If we called getMethods on the primary CIS vendor, we should reload the search fields
         if( multispeakFuncs.isPrimaryCIS(mspVendor)) {
-            mspMeterSearchService.loadMspSearchFields();            
+            mspMeterSearchService.loadMspSearchFields(vendorId);            
         }
         
-        addSystemModelAndViewObjects(request, mav, mspVendor);
-        return mav;
+        map.addAttribute("mspVendorId", vendorId);
+        return "redirect:home";
     }
     
     /**
@@ -359,7 +356,8 @@ public class MultispeakController extends MultiActionController implements Initi
                                                 YukonRoleProperty.MSP_PRIMARY_CB_VENDORID.getPropertyId(),
                                                 String.valueOf(mspPrimaryCIS));
                 
-                mspMeterSearchService.loadMspSearchFields();
+                //reload the search field methods since primaryCIS has changed
+                mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAlias != mspPaoNameAlias) {
                 // update PaoName Alias
@@ -388,30 +386,35 @@ public class MultispeakController extends MultiActionController implements Initi
      * @param mspVendor - the mspVendor to add
      * @return
      */
-    private ModelAndView addSystemModelAndViewObjects(HttpServletRequest request, ModelAndView mav, MultispeakVendor mspVendor) {
+    private void addSystemModelAndViewObjects(HttpServletRequest request, ModelMap map, MultispeakVendor mspVendor) {
         
-        mav.addObject("mspVendor", mspVendor);
-        mav.addObject("mspVendorList", multispeakDao.getMultispeakVendors());        
-        mav.addObject("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
-        mav.addObject("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
+        map.addAttribute("mspVendorId", mspVendor.getVendorID());
+        map.addAttribute("mspVendor", mspVendor);
+        map.addAttribute("mspVendorList", multispeakDao.getMultispeakVendors());        
+        map.addAttribute("mspCISVendorList", multispeakDao.getMultispeakCISVendors());
+        map.addAttribute("possibleInterfaces", MultispeakDefines.getPossibleInterfaces(mspVendor));
         
         boolean showRoleProperties = (defaultMspVendor.getCompanyName().equals(mspVendor.getCompanyName()));
-        mav.addObject("showRoleProperties", showRoleProperties);
+        map.addAttribute("showRoleProperties", showRoleProperties);
         
         //  Try to get the values from the request first, then get from the system.
         //  If these values were just updated, the db change may not have been received/processed yet and 
         //    the values returned from multispeakFuncs may be outdated.
-        mav.addObject("primaryCIS", ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", multispeakFuncs.getPrimaryCIS()));
-        mav.addObject("paoNameAlias", ServletRequestUtils.getIntParameter(request, "mspPaoNameAlias", multispeakFuncs.getPaoNameAlias()));
+        map.addAttribute("primaryCIS", ServletRequestUtils.getIntParameter(request, "mspPrimaryCIS", multispeakFuncs.getPrimaryCIS()));
+        map.addAttribute("paoNameAlias", ServletRequestUtils.getIntParameter(request, "mspPaoNameAlias", multispeakFuncs.getPaoNameAlias()));
         String meterLookupField = request.getParameter("mspMeterLookupField");
-        mav.addObject("meterLookupField", meterLookupField != null ? 
+        map.addAttribute("meterLookupField", meterLookupField != null ? 
                                             MultispeakMeterLookupFieldEnum.valueOf(meterLookupField) : multispeakFuncs.getMeterLookupField());
 
-        return mav;
+        String resultMsg = ServletRequestUtils.getStringParameter(request, MultispeakDefines.MSP_RESULT_MSG, null);
+        if (resultMsg != null) {
+            map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultMsg);
+            map.addAttribute("resultColor", ServletRequestUtils.getStringParameter(request, "resultColor", "black"));
+        }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @PostConstruct 
+    public void init() throws Exception {
         defaultMspVendor = multispeakDao.getMultispeakVendor("Cannon", "");
     }
     

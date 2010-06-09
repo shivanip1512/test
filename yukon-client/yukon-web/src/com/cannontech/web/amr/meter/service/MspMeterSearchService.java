@@ -9,7 +9,7 @@ public interface MspMeterSearchService {
 	public List<MspFilterBy> getMspFilterByList();
 	
 	/**
-	 * Load the Msp Search Fields based on the primary CIS vendor.
+	 * Load the Msp Search Fields based on the vendorId.
 	 */
-	public void loadMspSearchFields();
+	public void loadMspSearchFields(int vendorId);
 }

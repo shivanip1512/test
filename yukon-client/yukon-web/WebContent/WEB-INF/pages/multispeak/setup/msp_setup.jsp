@@ -57,9 +57,16 @@
 		
 		function vendorChanged()
 		{
-			document.mspForm.action = "/spring/multispeak/setup/changeVendor";
+			document.mspForm.action = "/spring/multispeak/setup/home";
 			document.mspForm.submit();
 		}
+
+		function cancelMspChanges()
+		{
+			document.mspForm.action = "/spring/multispeak/setup/home";
+			document.mspForm.submit();
+		}
+		
 
 	</script>
     
@@ -86,14 +93,14 @@
 						<tags:nameValue name="Company Name">
 					      <select title="Select vendor" name="mspVendorId" onChange="vendorChanged();">
 						      <c:forEach var="mspVendorEntry" items="${mspVendorList}">
-						        <option <c:if test="${mspVendorEntry.vendorID == mspVendor.vendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
+						        <option <c:if test="${mspVendorEntry.vendorID == mspVendor.vendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <spring:escapeBody htmlEscape="true">${mspVendorEntry.companyName}</spring:escapeBody></option>
 						      </c:forEach>
 					      </select>
 						</tags:nameValue>
 					</c:otherwise>
 					</c:choose>
 					<tags:nameValue name="App Name">
-				      <input title="Enter the Application Name" type="text" name="mspAppName" value="${mspVendor.appName}">
+				      <input title="Enter the Application Name" type="text" name="mspAppName" value='<spring:escapeBody htmlEscape="true">${mspVendor.appName}</spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP UserName">
 				      <input title="Enter the Username" type="text" name="mspUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.userName}</spring:escapeBody>'>
@@ -102,13 +109,13 @@
 				      <input title="Enter the Password" type="text" name="mspPassword" value='<spring:escapeBody htmlEscape="true">${mspVendor.password}</spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP Max Return Records*">
-				      <input title="Enter the Max Return Records" type="text" name="mspMaxReturnRecords" value="${mspVendor.maxReturnRecords}">
+				      <input title="Enter the Max Return Records" type="text" name="mspMaxReturnRecords" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxReturnRecords}</spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP Request Message Timeout*">
-				      <input title="Enter the Request Message Timeout" type="text" name="mspRequestMessageTimeout" value="${mspVendor.requestMessageTimeout}">
+				      <input title="Enter the Request Message Timeout" type="text" name="mspRequestMessageTimeout" value='<spring:escapeBody htmlEscape="true">${mspVendor.requestMessageTimeout}</spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP Max Initiate Request Objects*">
-				      <input title="Enter the Max Initiate Request Objects" type="text" name="mspMaxInitiateRequestObjects" value="${mspVendor.maxInitiateRequestObjects}">
+				      <input title="Enter the Max Initiate Request Objects" type="text" name="mspMaxInitiateRequestObjects" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxInitiateRequestObjects}</spring:escapeBody>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP Template Name Default">
 				      <input title="Enter the Template Name Default" type="text" name="mspTemplateNameDefault" value='<spring:escapeBody htmlEscape="true">${mspVendor.templateNameDefault}</spring:escapeBody>'>
@@ -163,7 +170,7 @@
 
 				<span onMouseOver="window.status='Enter the MultiSpeak URL   EX: http://127.0.0.1:80/soap/ ';return true;" onMouseOut="window.status='';return true;">
 					MSP URL*
-					<input type="text" name="mspURL" size="35" value='<c:out value="${mspVendor.url}"/>'>
+					<input type="text" name="mspURL" size="35" value='<spring:escapeBody htmlEscape="true">${mspVendor.url}</spring:escapeBody>'>
 				</span>
 				
 				<table cellspacing="4">
@@ -221,7 +228,7 @@
 				        	<%-- results column --%>
 				        	<c:if test="${status.first}">
 				        		<td rowspan='${interfaceListLength}'>
-				          			<textarea cols="50" rows="${interfaceListLength * 2}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'><c:out value="${MSP_RESULT_MSG}"/></textarea>
+				          			<textarea cols="50" rows="${interfaceListLength * 2}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'><spring:escapeBody htmlEscape="true">${MSP_RESULT_MSG}</spring:escapeBody></textarea>
 				        		</td>
 				        	</c:if>
 				        	</c:if>
@@ -234,17 +241,22 @@
 			  <tr>
 			    <td>
 			      <input type="submit" name="MspSave" value="Save" class="formSubmit">
-			    </td>
+			      <c:if test="${isCreateNew }">
+			      	<input type="submit" name="Cancel" value="Cancel" class="formSubmit" onclick="return cancelMspChanges()">
+			      </c:if>
+			    </td>			
+			</form>
 			
-			</form>				  
+				<c:if test="${!isCreateNew }">				  
 				<td>
 				  <form name="mspDeleteForm" method="post" action="/spring/multispeak/setup/delete">
 				    <input type="hidden" name="mspVendorId" value="${mspVendor.vendorID}">
 				    <input type="submit" name="Delete" value="Delete" class="formSubmit" onclick="return confirmDelete()">
 				  </form>
 				</td>
+				</c:if>
 				<td>
-				  <form name="mspCreateForm" method="post" action="/spring/multispeak/setup/create">				      
+				  <form name="mspCreateForm" method="post" action="/spring/multispeak/setup/home">				      
 				    <input type="submit" name="New" value="New" class="formSubmit">
 				  </form>
 				</td>
