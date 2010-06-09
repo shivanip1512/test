@@ -22,7 +22,7 @@ public class YukonSelectionList extends DBPersistent {
 	private String whereIsList = "";
 	private String listName = "";
 	private String userUpdateAvailable = "";
-	private Integer energyCompanyId = null;
+	private Integer energyCompanyId = -1;
 	
 	public static final String TABLE_NAME = "YukonSelectionList";
 	

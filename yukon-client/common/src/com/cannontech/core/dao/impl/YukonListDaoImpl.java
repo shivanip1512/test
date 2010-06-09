@@ -21,6 +21,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonListEntryRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.util.Validator;
 
 /**
@@ -125,13 +127,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                 selectionList.setWhereIsList(rs.getString("WhereIsList"));
                 selectionList.setListName(rs.getString("ListName"));
                 selectionList.setUserUpdateAvailable(rs.getString("UserUpdateAvailable"));
-
-                // This value has to get a string and create an Integer due to the
-                // energyCompanyId possibly being null.
-                String energyCompanyIdStr = rs.getString("EnergyCompanyId");
-                if (energyCompanyIdStr != null) {
-                    selectionList.setEnergyCompanyId(new Integer(energyCompanyIdStr));
-                }
+                selectionList.setEnergyCompanyId(new Integer("EnergyCompanyId"));
                 
                 List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
                 selectionList.setYukonListEntries(allListEntries);
@@ -311,41 +307,34 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 	}
     
     @Override
-    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(Integer energyCompanyId) {
-        if (energyCompanyId == null) {
-            return null;
-        }
-        
+    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder(selectYukonSelectionListSql);
         sql.append("AND EnergyCompanyId").eq(energyCompanyId);
         
-        return yukonJdbcTemplate.query(sql, createRowMapper());
+        return yukonJdbcTemplate.query(sql, new YukonSelectionListRowMapper());
 
     }
 
-    private ParameterizedRowMapper<YukonSelectionList> createRowMapper() {
-        final ParameterizedRowMapper<YukonSelectionList> mapper = 
-            new ParameterizedRowMapper<YukonSelectionList>() {
-            
-            @Override
-            public YukonSelectionList mapRow(ResultSet rs, int rowNum) throws SQLException {
-                final YukonSelectionList selectionList = new YukonSelectionList();
-                
-                selectionList.setListID(rs.getInt("ListId"));
-                selectionList.setOrdering(rs.getString("Ordering"));
-                selectionList.setSelectionLabel(rs.getString("SelectionLabel"));
-                selectionList.setWhereIsList(rs.getString("WhereIsList"));
-                selectionList.setListName(rs.getString("ListName"));
-                selectionList.setUserUpdateAvailable(rs.getString("UserUpdateAvailable"));
-                selectionList.setEnergyCompanyId(new Integer(rs.getString("EnergyCompanyId")));
+    private class YukonSelectionListRowMapper implements YukonRowMapper<YukonSelectionList> {
 
-                List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
-                selectionList.setYukonListEntries(allListEntries);
-                
-                return selectionList;
-            }
-        };
-        return mapper;
+        @Override
+        public YukonSelectionList mapRow(YukonResultSet rs) throws SQLException {
+            final YukonSelectionList selectionList = new YukonSelectionList();
+            
+            selectionList.setListID(rs.getInt("ListId"));
+            selectionList.setOrdering(rs.getString("Ordering"));
+            selectionList.setSelectionLabel(rs.getString("SelectionLabel"));
+            selectionList.setWhereIsList(rs.getString("WhereIsList"));
+            selectionList.setListName(rs.getString("ListName"));
+            selectionList.setUserUpdateAvailable(rs.getString("UserUpdateAvailable"));
+            selectionList.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
+
+            List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
+            selectionList.setYukonListEntries(allListEntries);
+            
+            return selectionList;
+        }
+
     }
     
     @Autowired

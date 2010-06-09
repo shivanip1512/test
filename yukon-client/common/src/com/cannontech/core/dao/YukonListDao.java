@@ -61,5 +61,5 @@ public interface YukonListDao {
     
     public Map<Integer,YukonListEntry> getYukonListEntries();
 
-    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(Integer energyCompanyID);
+    public List<YukonSelectionList> getSelectionListByEnergyCompanyId(int energyCompanyId);
 }
