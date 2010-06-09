@@ -57,6 +57,17 @@ SET EnergyCompanyId = (SELECT ECTGM.EnergyCompanyId
                        WHERE ECTGM.MappingCategory = 'YukonSelectionList'
                        AND ECTGM.ItemId = YukonSelectionList.ListId);
 
+UPDATE YukonSelectionList
+SET EnergyCompanyId = -1
+WHERE EnergyCompanyId IS NULL;
+
+ALTER TABLE YukonSelectionList
+MODIFY EnergyCompanyId NUMBER NOT NULL;
+
+ALTER TABLE YukonSelectionList
+    ADD CONSTRAINT FK_YukonSelList_EnergyComp FOREIGN KEY (EnergyCompanyId)
+        REFERENCES EnergyCompany (EnergyCompanyId);
+
 DELETE FROM ECToGenericMapping
 WHERE MappingCategory = 'YukonSelectionList';
 

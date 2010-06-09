@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/1/2010 2:56:19 PM                          */
+/* Created on:     6/9/2010 10:29:56 AM                         */
 /*==============================================================*/
 
 
@@ -12693,10 +12693,10 @@ create table YukonSelectionList (
 )
 go
 
-INSERT INTO YukonSelectionList VALUES( 0,'N','(none)','(none)','(none)','N',null);
-INSERT INTO YukonSelectionList VALUES( 1,'A','Contact','DBEditor contact type list','ContactType','N',null);
+INSERT INTO YukonSelectionList VALUES( 0,'N','(none)','(none)','(none)','N',-1);
+INSERT INTO YukonSelectionList VALUES( 1,'A','Contact','DBEditor contact type list','ContactType','N',-1);
 
-INSERT INTO YukonSelectionList VALUES(100,'A','Calc Functions','DBEditor calc point functions','CalcFunctions','N',null);
+INSERT INTO YukonSelectionList VALUES(100,'A','Calc Functions','DBEditor calc point functions','CalcFunctions','N',-1);
 
 INSERT INTO YukonSelectionList VALUES(1001,'A','(none)','Not visible, list defines the event ids','LMCustomerEvent','N',-1);
 INSERT INTO YukonSelectionList VALUES(1002,'A','(none)','Not visible, defines possible event actions','LMCustomerAction','N',-1);
@@ -12766,9 +12766,9 @@ INSERT INTO YukonSelectionList VALUES(1066,'A','(none)','Energy Company Settleme
 INSERT INTO YukonSelectionList VALUES(1067,'A','(none)','System category types for Event Logging in STARS', 'EventSystemCategory', 'N',-1);
 INSERT INTO YukonSelectionList VALUES(1068,'A','(none)','Action types for Customer Account events in STARS', 'EventAccountActions', 'N',-1);
 INSERT INTO YukonSelectionList VALUES(1071,'A','(none)','Commercial Customer Types','CICustomerType','N',-1);
-INSERT INTO YukonSelectionList VALUES(1072,'N','(none)','Cap Bank Editor','Controller Type','N',null);
-INSERT INTO YukonSelectionList VALUES(1073,'N','(none)','Cap Bank Editor','Switch Manufacturer','N',null);
-INSERT INTO YukonSelectionList VALUES(1074,'N','(none)','Cap Bank Editor','Type of Switch','N',null);
+INSERT INTO YukonSelectionList VALUES(1072,'N','(none)','Cap Bank Editor','Controller Type','N',-1);
+INSERT INTO YukonSelectionList VALUES(1073,'N','(none)','Cap Bank Editor','Switch Manufacturer','N',-1);
+INSERT INTO YukonSelectionList VALUES(1074,'N','(none)','Cap Bank Editor','Type of Switch','N',-1);
 
 /*==============================================================*/
 /* Index: Indx_YSL_ListName_ECId_UNQ                            */
@@ -15972,6 +15972,11 @@ go
 alter table YukonRoleProperty
    add constraint FK_YkRlPrp_YkRle foreign key (RoleID)
       references YukonRole (RoleID)
+go
+
+alter table YukonSelectionList
+   add constraint FK_YukonSelList_EnergyComp foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 alter table YukonUserGroup
