@@ -58,3 +58,20 @@ table.popupButtonTable {
 table.popupButtonTable td {
     text-align: right;
 }
+
+table.bitTable {
+	border-collapse: collapse;
+}
+
+table.bitTable td, table.bitTable th {
+	width: 30px;
+	text-align: center;
+}
+
+table.bitTable td {
+	padding: 0px 0px 5px 0px;
+}
+
+table.bitTable th {
+	font-weight: bold;
+}

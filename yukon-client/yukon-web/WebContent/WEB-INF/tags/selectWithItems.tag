@@ -3,6 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
+<%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="items" required="true" type="java.lang.Object"%>
 <%@ attribute name="itemValue" required="true" type="java.lang.String"%>

@@ -1557,7 +1557,15 @@ public class StarsLiteFactory {
 		starsSub.setRouteID( liteSub.getRouteID() );
 		starsSub.setInherited( !energyCompany.getSubstations().contains(liteSub) );
 	}
-	
+
+    /**
+     * Given an instance of LiteLMConfiguration, create and return an instance
+     * of StarsLMConfiguration. This is a simple translation because these two
+     * objects contain the same data except that StarsLMConfiguration doesn't
+     * store the configurationId.
+     * @param liteCfg
+     * @return the new StarsLMConfiguration.
+     */
 	public static StarsLMConfiguration createStarsLMConfiguration(LiteLMConfiguration liteCfg) {
 		StarsLMConfiguration starsCfg = new StarsLMConfiguration();
 		

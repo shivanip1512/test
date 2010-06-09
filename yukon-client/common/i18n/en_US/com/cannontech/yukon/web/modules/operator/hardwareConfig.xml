@@ -15,21 +15,11 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.applianceCategory">Appliance Category</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.group">Group</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.relay">Relay</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.status">Status</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.inService.true">In Service</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.inService.false">Out of Service</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.noRelay">None</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.actions">Actions</entry>
-
-    <entry key="yukon.web.modules.operator.hardwareConfig.edit.hoverText">Edit enrollment details</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.edit.title">Edit Enrollment</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.imageUrl">/WebConfig/yukon/Icons/delete.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.hoverUrl">/WebConfig/yukon/Icons/delete_over.gif</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.unenroll.hoverText">Unenroll from this program</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.add">Add</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfig.addEnrollmentDialogTitle">Add Enrollment</entry>
 
     <entry key="yukon.web.modules.operator.hardwareConfig.otherDeviceActions.title">Other Device Actions</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.inService.true">This device is in service.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.inService.false">This device is out of service.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.otherDeviceActions.helpText">
         Enabling sends an “In Service” command to the device, allowing the device
         to respond to control messages.  Disabling sends an “Out of Service
@@ -45,16 +35,54 @@
     <entry key="yukon.web.modules.operator.hardwareConfig.enableCommandSent">Enable command sent.</entry>
     <entry key="yukon.web.modules.operator.hardwareConfig.enableCommandFailed">Enable command failed with error "{0}".</entry>
 
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.headerMessage">Select group and relay for {0}.</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.groupNotApplicable">Not Applicable</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.config">Config</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.config.description">Send device configuration out to the field device immediately.</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.saveToBatch">Save to Batch</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.saveToBatch.description">Queue up the device configuration to be sent to the field at a later time. (The default is midnight.)</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.saveConfigOnly">Save Config Only</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.saveConfigOnly.description">Save device configuration to the database only.  (No command is sent to the field device.)</entry>
-    <entry key="yukon.web.modules.operator.hardwareConfigEdit.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.groupNotApplicable">Not Applicable</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.config">Config</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.config.description">Send device configuration out to the field device immediately.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveToBatch">Save to Batch</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveToBatch.description">Queue up the device configuration to be sent to the field at a later time. (The default is midnight.)</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveConfigOnly">Save Config Only</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveConfigOnly.description">Save device configuration to the database only.  (No command is sent to the field device.)</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.cancel">Cancel</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.configComplete">Configuration saved and updated.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveToBatchComplete">Configuration saved to batch.</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.saveConfigOnlyComplete">Configuration saved to database (command not sent to device).</entry>
+
+    <!-- hardware addressing -->
+    <entry key="yukon.web.modules.operator.hardwareConfig.expressComAddresses.title">EXPRESSCOM Addresses</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.serviceProvider">Service Provider</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.geo">GEO</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.substation">Substation</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.feeder">Feeder</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.zip">ZIP</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.userAddress">User Address</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.versaComAddresses.title">VERSACOM Addresses</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.utility">Utility</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.section">Section</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.class">Class</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.division">Division</entry>
     
+    <entry key="yukon.web.modules.operator.hardwareConfig.slotAddresses.title">Slot Addresses</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.sa305Addresses.title">SA305 Addresses</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.utility">Utility</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.group">Group</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.rate">Rate</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.rateMember">Member</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.rateFamily">Family</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.operationalAddress.title">Operational Address</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.relays.title">Relays</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.relay">Relay</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.coldLoadPickup">Cold Load Pickup (seconds)</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.tamperDetect">Tamper Detect</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.program">Program</entry>
+    <entry key="yukon.web.modules.operator.hardwareConfig.splinter">Splinter</entry>
+
+    <entry key="yukon.web.modules.operator.hardwareConfig.typeMismatch.java.lang.Integer">Must be an integer.</entry>
+
     <!-- meterConfig -->
     <entry key="yukon.web.modules.operator.meterConfig.pageName">Meter Configuration</entry>
     <entry key="yukon.web.modules.operator.meterConfig.pageDescription">{0}</entry>
@@ -73,5 +101,5 @@
     <entry key="yukon.web.modules.operator.meterConfig.error.required.meterNumber">Meter Number Required</entry>
     <entry key="yukon.web.modules.operator.meterConfig.error.invalidRange.address">Valid range for {0} addresses is {1} to {2}.</entry>
     <entry key="yukon.web.modules.operator.meterConfig.error.nonNumeric">Address can only contain numeric characters.</entry>
-    
+
 </properties>

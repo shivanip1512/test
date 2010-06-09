@@ -16,13 +16,11 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.stars.dr.appliance.model.AssignedProgramName;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
-import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public class DisplayableInventoryEnrollmentDaoImpl implements
         DisplayableInventoryEnrollmentDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private EnrollmentDao enrollmentDao;
 
     private RowMapperWithBaseQuery<DisplayableInventoryEnrollment> rowMapper =
         new AbstractRowMapperWithBaseQuery<DisplayableInventoryEnrollment>() {
@@ -55,7 +53,6 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
         @Override
         public DisplayableInventoryEnrollment mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
-            int inventoryId = rs.getInt("inventoryId");
             int assignedProgramId = rs.getInt("assignedProgramId");
             int programId = rs.getInt("programId");
             AssignedProgramName name =
@@ -64,12 +61,11 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
             int loadGroupId = rs.getInt("lmGroupId");
             String loadGroupName = rs.getString("loadGroupName");
             int relay = rs.getInt("relay");
-            boolean inService = enrollmentDao.isInService(inventoryId);
 
             return new DisplayableInventoryEnrollment(assignedProgramId,
                                                       programId, name,
                                                       loadGroupId, loadGroupName,
-                                                      relay, inService);
+                                                      relay);
         }
     };
 
@@ -110,10 +106,5 @@ public class DisplayableInventoryEnrollmentDaoImpl implements
     @Autowired
     public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
         this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
-    @Autowired
-    public void setEnrollmentDao(EnrollmentDao enrollmentDao) {
-        this.enrollmentDao = enrollmentDao;
     }
 }

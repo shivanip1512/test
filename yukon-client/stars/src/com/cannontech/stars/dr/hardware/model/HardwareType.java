@@ -14,30 +14,30 @@ import com.google.common.collect.Sets;
 public enum HardwareType implements DatabaseRepresentationSource{
     /* These are real MCTs that exist as yukon paos. Because they are paos ie. MCT-470, MCT-410 ect.  they do not
      * have a yukon definition so it is defined as zero.*/
-    YUKON_METER(CtiUtilities.NONE_ZERO_ID, InventoryCategory.MCT, LMHardwareClass.METER),
-    
+    YUKON_METER(CtiUtilities.NONE_ZERO_ID, InventoryCategory.MCT, LMHardwareClass.METER, null),
+
     /* These are meters that only exist in stars in the MeterHardwareBase table. 
      * The yukon list entry text for their definition is 'MCT' which is unfortunate and should probably change.*/
-    NON_YUKON_METER(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, InventoryCategory.NON_YUKON_METER, LMHardwareClass.METER),
-    
+    NON_YUKON_METER(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT, InventoryCategory.NON_YUKON_METER, LMHardwareClass.METER, null),
+
     /* Switches */
-    LCR_5000_EXPRESSCOM(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    LCR_5000_VERSACOM(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    LCR_4000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    LCR_3000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    LCR_3102(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102, InventoryCategory.TWO_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    LCR_2000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    LCR_1000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    SA_205(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    SA_305(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH), 
-    SA_SIMPLE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH),
-    
+    LCR_5000_EXPRESSCOM(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.EXPRESSCOM),
+    LCR_5000_VERSACOM(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.VERSACOM),
+    LCR_4000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.VERSACOM),
+    LCR_3000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.VERSACOM),
+    LCR_3102(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102, InventoryCategory.TWO_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.EXPRESSCOM),
+    LCR_2000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.VERSACOM),
+    LCR_1000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, null),
+    SA_205(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.SA205),
+    SA_305(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.SA305),
+    SA_SIMPLE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.SWITCH, HardwareConfigType.SA_SIMPLE),
+
     /* Thermostats */
-    EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT), 
-    COMMERCIAL_EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT), 
-    EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT), 
-    UTILITY_PRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT), 
-    ENERGYPRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO, InventoryCategory.TWO_WAY_RECEIVER, LMHardwareClass.THERMOSTAT);
+    EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
+    COMMERCIAL_EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
+    EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
+    UTILITY_PRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO, InventoryCategory.ONE_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM),
+    ENERGYPRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO, InventoryCategory.TWO_WAY_RECEIVER, LMHardwareClass.THERMOSTAT, HardwareConfigType.EXPRESSCOM);
 
     // this key prefix can be found in the following file:
     // consumer.xml
@@ -46,11 +46,15 @@ public enum HardwareType implements DatabaseRepresentationSource{
     private int definitionId;
     private InventoryCategory inventoryCategory;
     private LMHardwareClass lmHardwareClass;
+    private HardwareConfigType hardwareConfigType;
 
-    private HardwareType(int definitionId, InventoryCategory inventoryCategory, LMHardwareClass lmHardwareClass) {
+    private HardwareType(int definitionId, InventoryCategory inventoryCategory,
+            LMHardwareClass lmHardwareClass,
+            HardwareConfigType hardwareConfigType) {
         this.definitionId = definitionId;
         this.inventoryCategory = inventoryCategory;
         this.lmHardwareClass = lmHardwareClass;
+        this.hardwareConfigType = hardwareConfigType;
     }
 
     public int getDefinitionId() {
@@ -64,7 +68,11 @@ public enum HardwareType implements DatabaseRepresentationSource{
     public LMHardwareClass getLMHardwareClass() {
         return lmHardwareClass;
     }
-    
+
+    public HardwareConfigType getHardwareConfigType() {
+        return hardwareConfigType;
+    }
+
     /**
      * Overloaded method to get the enum value for a definitionId
      * @param definitionId - Definition id to get enum for
@@ -132,17 +140,25 @@ public enum HardwareType implements DatabaseRepresentationSource{
     }
 
     public boolean isExpressCom() {
-        return definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM
-            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT
-            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT
-            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO
-            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_UTILITYPRO
-            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP
-            || definitionId == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3102;
+        return hardwareConfigType == HardwareConfigType.EXPRESSCOM;
     }
 
     public int getNumRelays() {
         return isExpressCom() ? 8 : 4;
+    }
+
+    public boolean isHasTamperDetect() {
+        return hardwareConfigType == HardwareConfigType.SA205
+            || hardwareConfigType == HardwareConfigType.SA305
+            || hardwareConfigType == HardwareConfigType.SA_SIMPLE;
+    }
+
+    public boolean isHasProgramSplinter() {
+        return hardwareConfigType == HardwareConfigType.EXPRESSCOM;
+    }
+
+    public boolean isConfigurable() {
+        return hardwareConfigType != HardwareConfigType.SA_SIMPLE;
     }
 
     /**

@@ -136,11 +136,6 @@ public class InventoryUtils {
 			|| hwConfigType == HW_CONFIG_TYPE_VERSACOM;
 	}
 	
-	public static boolean supportConfiguration(int devTypeID) {
-		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( devTypeID ).getYukonDefID();
-		return (devTypeDefID != YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE);
-	}
-	
 	public static boolean isAdditionalProtocol(int devTypeDefID) {
 		return (devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205
 			|| devTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305

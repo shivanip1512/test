@@ -1,31 +1,21 @@
 package com.cannontech.stars.xml.serialize;
 
 public class ExpressCom {
-    private int serviceProvider;
-    private boolean hasServiceProvider;
-    private int GEO;
-    private boolean hasGEO;
-    private int substation;
-    private boolean hasSubstation;
-    private int feeder;
-    private boolean hasFeeder;
-    private int zip;
-    private boolean hasZip;
-    private int userAddress;
-    private boolean hasUserAddress;
-    private String program;
-    private String splinter;
-
-    public ExpressCom() {
-
-    }
+    private int serviceProvider = 0;
+    private int geo = 0;
+    private int substation = 0;
+    private int feeder = 0;
+    private int zip = 0;
+    private int userAddress = 0;
+    private String program = null;
+    private String splinter = null;
 
     public int getFeeder() {
         return this.feeder;
     } 
 
     public int getGEO() {
-        return this.GEO;
+        return this.geo;
     }
 
     public String getProgram() {
@@ -52,38 +42,12 @@ public class ExpressCom {
         return this.zip;
     }
 
-    public boolean hasFeeder() {
-        return this.hasFeeder;
-    }
-
-    public boolean hasGEO() {
-        return this.hasGEO;
-    }
-
-    public boolean hasServiceProvider() {
-        return this.hasServiceProvider;
-    }
-
-    public boolean hasSubstation() {
-        return this.hasSubstation;
-    }
-
-    public boolean hasUserAddress() {
-        return this.hasUserAddress;
-    }
-
-    public boolean hasZip() {
-        return this.hasZip;
-    }
-
     public void setFeeder(int feeder) {
         this.feeder = feeder;
-        this.hasFeeder = true;
     }
 
-    public void setGEO(int GEO) {
-        this.GEO = GEO;
-        this.hasGEO = true;
+    public void setGEO(int geo) {
+        this.geo = geo;
     }
 
     public void setProgram(String program) {
@@ -92,7 +56,6 @@ public class ExpressCom {
 
     public void setServiceProvider(int serviceProvider) {
         this.serviceProvider = serviceProvider;
-        this.hasServiceProvider = true;
     }
 
     public void setSplinter(String splinter) {
@@ -101,17 +64,13 @@ public class ExpressCom {
 
     public void setSubstation(int substation) {
         this.substation = substation;
-        this.hasSubstation = true;
     }
 
     public void setUserAddress(int userAddress) {
         this.userAddress = userAddress;
-        this.hasUserAddress = true;
     }
 
     public void setZip(int zip) {
         this.zip = zip;
-        this.hasZip = true;
     } 
-
 }

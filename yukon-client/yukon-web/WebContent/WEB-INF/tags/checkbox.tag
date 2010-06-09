@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
+<%@ tag body-content="empty" %>
 <%@ attribute name="path" required="true" type="java.lang.String"%>
 <%@ attribute name="onclick" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>

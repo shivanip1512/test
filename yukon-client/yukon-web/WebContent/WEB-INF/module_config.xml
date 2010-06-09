@@ -1091,8 +1091,7 @@
                         </page>
                         <page name="hardwareConfig" type="DETAIL">
                             <menu>account|accounts</menu>
-                            <link>/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId=${inventoryId}</link>
-                            <labelArgument>${deviceLabel}</labelArgument>
+                            <labelArgument>${displayName}</labelArgument>
                         </page>
                         <page name="meterConfig" type="DETAIL">
                             <menu>account|accounts</menu>

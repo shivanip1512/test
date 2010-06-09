@@ -8,33 +8,9 @@ public class VersaCom {
     //--------------------------/
 
     private int _utility;
-
-    /**
-     * keeps track of state for field: _utility
-    **/
-    private boolean _has_utility;
-
     private int _section;
-
-    /**
-     * keeps track of state for field: _section
-    **/
-    private boolean _has_section;
-
     private int _classAddress;
-
-    /**
-     * keeps track of state for field: _classAddress
-    **/
-    private boolean _has_classAddress;
-
     private int _division;
-
-    /**
-     * keeps track of state for field: _division
-    **/
-    private boolean _has_division;
-
 
       //----------------/
      //- Constructors -/
@@ -90,34 +66,6 @@ public class VersaCom {
     } //-- int getUtility() 
 
     /**
-    **/
-    public boolean hasClassAddress()
-    {
-        return this._has_classAddress;
-    } //-- boolean hasClassAddress() 
-
-    /**
-    **/
-    public boolean hasDivision()
-    {
-        return this._has_division;
-    } //-- boolean hasDivision() 
-
-    /**
-    **/
-    public boolean hasSection()
-    {
-        return this._has_section;
-    } //-- boolean hasSection() 
-
-    /**
-    **/
-    public boolean hasUtility()
-    {
-        return this._has_utility;
-    } //-- boolean hasUtility() 
-
-    /**
      * Sets the value of field 'classAddress'.
      * 
      * @param classAddress the value of field 'classAddress'.
@@ -125,7 +73,6 @@ public class VersaCom {
     public void setClassAddress(int classAddress)
     {
         this._classAddress = classAddress;
-        this._has_classAddress = true;
     } //-- void setClassAddress(int) 
 
     /**
@@ -136,7 +83,6 @@ public class VersaCom {
     public void setDivision(int division)
     {
         this._division = division;
-        this._has_division = true;
     } //-- void setDivision(int) 
 
     /**
@@ -147,7 +93,6 @@ public class VersaCom {
     public void setSection(int section)
     {
         this._section = section;
-        this._has_section = true;
     } //-- void setSection(int) 
 
     /**
@@ -158,7 +103,6 @@ public class VersaCom {
     public void setUtility(int utility)
     {
         this._utility = utility;
-        this._has_utility = true;
     } //-- void setUtility(int) 
 
 }

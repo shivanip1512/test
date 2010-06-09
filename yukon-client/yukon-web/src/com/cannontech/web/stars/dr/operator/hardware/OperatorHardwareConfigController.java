@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.dr.operator.hardware;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,17 +14,22 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.DefaultMessageCodesResolver;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.pao.RouteTypes;
@@ -37,13 +44,15 @@ import com.cannontech.stars.dr.appliance.model.AssignedProgram;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
-import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
-import com.cannontech.stars.dr.program.service.ProgramEnrollment;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsInventories;
+import com.cannontech.stars.xml.serialize.StarsInventory;
+import com.cannontech.stars.xml.serialize.StarsLMConfiguration;
 import com.cannontech.stars.xml.serialize.StarsLMHardwareConfig;
 import com.cannontech.stars.xml.serialize.StarsUpdateLMHardwareConfig;
 import com.cannontech.user.YukonUserContext;
@@ -52,7 +61,13 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfigurationDto;
+import com.cannontech.web.stars.dr.operator.hardware.model.ProgramEnrollmentDto;
+import com.cannontech.web.stars.dr.operator.hardware.validator.ColdLoadPickupValidator;
+import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareConfigTypeValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator;
+import com.cannontech.web.stars.dr.operator.hardware.validator.ProgramSplinterValidator;
+import com.cannontech.web.stars.dr.operator.hardware.validator.TamperDetectValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -68,33 +83,100 @@ public class OperatorHardwareConfigController {
     private AssignedProgramDao assignedProgramDao;
     private RolePropertyDao rolePropertyDao;
     private EnrollmentDao enrollmentDao;
-    private EnrollmentHelperService enrollmentHelperService;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private HardwareConfigService hardwareConfigService;
     private ApplianceCategoryDao applianceCategoryDao;
     private MeterDao meterDao;
     private MeterConfigValidator meterConfigValidator;
     private PaoDao paoDao;
+    private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
+    private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
+    private ProgramSplinterValidator programSplinterValidator = new ProgramSplinterValidator();
 
     @RequestMapping
-    public String list(ModelMap model, int inventoryId,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+    public String edit(ModelMap model, int inventoryId,
+            YukonUserContext userContext, AccountInfoFragment accountInfo) {
+        AccountInfoFragmentHelper.setupModelMapBasics(accountInfo, model);
 
-        populateModel(model, inventoryId, userContext);
+        verifyHardwareIsForAccount(inventoryId, accountInfo);
+
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("displayName", hardware.getDisplayName());
+
+        HardwareConfigurationDto configuration = new HardwareConfigurationDto();
+        configuration.setAccountId(accountInfo.getAccountId());
+        configuration.setInventoryId(inventoryId);
+        boolean trackHardwareAddressing =
+            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
+                                          userContext.getYukonUser());
+        if (trackHardwareAddressing) {
+            // add the STARS LM configuration for the device to the model
+            LiteStarsEnergyCompany energyCompany =
+                StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());
+            StarsCustAccountInformation starsCustAccountInfo =
+                energyCompany.getStarsCustAccountInformation(accountInfo.getAccountId());
+            StarsInventories inventories = starsCustAccountInfo.getStarsInventories();
+            for (int index = 0; index < inventories.getStarsInventoryCount(); index++) {
+                StarsInventory inventory = inventories.getStarsInventory(index);
+                if (inventory.getInventoryID() == inventoryId) {
+                    StarsLMConfiguration starsConfig = inventory.getLMHardware().getStarsLMConfiguration();
+                    configuration.setStarsLMConfiguration(starsConfig,
+                                                   hardware.getHardwareType()); 
+                    break;
+                }
+            }
+        }
+
+        model.addAttribute("configuration", configuration);
+        return prepareForEdit(true, model, configuration, null, userContext, accountInfo);
+    }
+
+    private String prepareForEdit(boolean initConfig, ModelMap model,
+            @ModelAttribute("configuration") HardwareConfigurationDto configuration,
+            BindingResult bindingResult, YukonUserContext userContext,
+            AccountInfoFragment accountInfo) {
+        int inventoryId = configuration.getInventoryId();
+
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("hardware", hardware);
+        model.addAttribute("inService", enrollmentDao.isInService(inventoryId));
 
         List<DisplayableInventoryEnrollment> enrollments =
-            displayableInventoryEnrollmentDao.find(accountInfoFragment.getAccountId(),
-                                                   inventoryId);
+            displayableInventoryEnrollmentDao.find(accountInfo.getAccountId(), inventoryId);
+        Collections.sort(enrollments, new Comparator<DisplayableInventoryEnrollment>() {
+            @Override
+            public int compare(DisplayableInventoryEnrollment enrollment1,
+                    DisplayableInventoryEnrollment enrollment2) {
+                String displayName1 = enrollment1.getProgramName().getDisplayName();
+                String displayName2 = enrollment2.getProgramName().getDisplayName();
+                return displayName1.compareToIgnoreCase(displayName2);
+            }});
         model.addAttribute("enrollments", enrollments);
 
-        Set<Integer> assignedProgramIds = Sets.newHashSet();
+        Map<Integer, List<ControllablePao>> loadGroupsByProgramId = Maps.newHashMap();
+        model.addAttribute("loadGroupsByProgramId", loadGroupsByProgramId);
+        List<ProgramEnrollmentDto> programEnrollments =
+            Lists.newArrayListWithCapacity(enrollments.size());
+        Set<Integer> assignedProgramSet = Sets.newHashSet();
         for (DisplayableInventoryEnrollment enrollment : enrollments) {
-            assignedProgramIds.add(enrollment.getAssignedProgramId());
+            List<ControllablePao> loadGroups =
+                loadGroupDao.getForProgram(enrollment.getProgramId());
+            loadGroupsByProgramId.put(enrollment.getAssignedProgramId(), loadGroups);
+
+            ProgramEnrollmentDto programEnrollment = new ProgramEnrollmentDto();
+            programEnrollment.setAssignedProgramId(enrollment.getAssignedProgramId());
+            programEnrollment.setLoadGroupId(enrollment.getLoadGroupId());
+            programEnrollment.setRelay(enrollment.getRelay());
+            programEnrollments.add(programEnrollment);
+
+            assignedProgramSet.add(enrollment.getAssignedProgramId());
         }
         List<AssignedProgram> assignedProgramsList =
-            assignedProgramDao.getByIds(assignedProgramIds);
+            assignedProgramDao.getByIds(assignedProgramSet);
+        if (initConfig) {
+            configuration.setProgramEnrollments(programEnrollments);
+        }
+
         Set<Integer> applianceCategoryIds = Sets.newHashSet();
         Map<Integer, AssignedProgram> assignedPrograms = Maps.newHashMap();
         for (AssignedProgram assignedProgram : assignedProgramsList) {
@@ -106,147 +188,91 @@ public class OperatorHardwareConfigController {
 
         Map<Integer, ApplianceCategory> applianceCategories =
             applianceCategoryDao.getByApplianceCategoryIds(applianceCategoryIds);
-
         model.addAttribute("applianceCategories", applianceCategories);
-
-        return "operator/hardware/config/list.jsp";
-    }
-
-    @RequestMapping
-    public String edit(ModelMap model, int inventoryId, int assignedProgramId,
-            YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        populateModel(model, inventoryId, userContext);
-
-        AssignedProgram assignedProgram =
-            assignedProgramDao.getById(assignedProgramId);
-
-        DisplayableInventoryEnrollment enrollment =
-            displayableInventoryEnrollmentDao.find(accountInfoFragment.getAccountId(),
-                                                   inventoryId, assignedProgramId);
-        if (enrollment == null) {
-            enrollment =
-                new DisplayableInventoryEnrollment(assignedProgramId,
-                                                   assignedProgram.getProgramId(),
-                                                   assignedProgram.getName());
-        }
-        model.addAttribute("enrollment", enrollment);
-
-        List<ControllablePao> loadGroups =
-            loadGroupDao.getForProgram(enrollment.getProgramId());
-        model.addAttribute("loadGroups", loadGroups);
-
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
 
         return "operator/hardware/config/edit.jsp";
     }
-    
-    @RequestMapping
-    public String enroll(ModelMap model, HttpServletRequest request,
-            String action, int inventoryId, int assignedProgramId,
-            int loadGroupId, int relay, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
 
+    @RequestMapping
+    public String commit(ModelMap model,
+            @ModelAttribute("configuration") HardwareConfigurationDto configuration,
+            BindingResult bindingResult, YukonUserContext userContext,
+            AccountInfoFragment accountInfo, FlashScope flashScope) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+
+        int inventoryId = configuration.getInventoryId();
+        verifyHardwareIsForAccount(inventoryId, accountInfo);
+
+        String action = configuration.getAction();
         StarsUpdateLMHardwareConfig hardwareConfig = new StarsUpdateLMHardwareConfig();
         hardwareConfig.setInventoryID(inventoryId);
         hardwareConfig.setSaveToBatch("saveToBatch".equals(action));
         hardwareConfig.setSaveConfigOnly("saveConfigOnly".equals(action));
 
-        StarsLMHardwareConfig config = new StarsLMHardwareConfig();
-        config.setGroupID(loadGroupId);
-        config.setProgramID(assignedProgramId);
-        config.setLoadNumber(relay);
-        hardwareConfig.addStarsLMHardwareConfig(config);
-
-        // We need to add all other currently enrolled programs for this device
-        // or they will get unenrolled.
-        List<ProgramEnrollment> currentEnrollments =
-            enrollmentDao.getActiveEnrollmentsByInventoryId(accountInfoFragment.getAccountId(),
-                                                            inventoryId);
-        for (ProgramEnrollment currentEnrollment : currentEnrollments) {
-            if (currentEnrollment.getAssignedProgramId() != assignedProgramId) {
-                config = new StarsLMHardwareConfig();
-                config.setGroupID(currentEnrollment.getLmGroupId());
-                config.setProgramID(currentEnrollment.getAssignedProgramId());
-                config.setLoadNumber(currentEnrollment.getRelay());
-                hardwareConfig.addStarsLMHardwareConfig(config);
+        boolean trackHardwareAddressing =
+            rolePropertyDao.checkProperty(YukonRoleProperty.TRACK_HARDWARE_ADDRESSING,
+                                          userContext.getYukonUser());
+        for (ProgramEnrollmentDto programEnrollment: configuration.getProgramEnrollments()) {
+            StarsLMHardwareConfig starsConfig = new StarsLMHardwareConfig();
+            if (!trackHardwareAddressing) {
+                starsConfig.setGroupID(programEnrollment.getLoadGroupId());
             }
+            starsConfig.setProgramID(programEnrollment.getAssignedProgramId());
+            starsConfig.setLoadNumber(programEnrollment.getRelay());
+            hardwareConfig.addStarsLMHardwareConfig(starsConfig);
         }
 
         try {
-            /*
-             TODO:
-            if (request.getParameter("UseHardwareAddressing") != null) {
-                StarsLMConfiguration lmConfig = new StarsLMConfiguration();
-                InventoryManagerUtil.setStarsLMConfiguration(lmConfig, request);
-                hardwareConfig.setStarsLMConfiguration(lmConfig);
+            if (trackHardwareAddressing) {
+                HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+                HardwareConfigTypeValidator validator =
+                    HardwareConfigTypeValidator.getInstance(hardware.getHardwareType().getHardwareConfigType());
+                validator.validate(configuration, bindingResult);
+                coldLoadPickupValidator.validate(configuration, bindingResult);
+                if (hardware.getHardwareType().isHasTamperDetect()) {
+                    tamperDetectValidator.validate(configuration, bindingResult);
+                }
+                if (hardware.getHardwareType().isHasProgramSplinter()) {
+                    programSplinterValidator.validate(configuration, bindingResult);
+                }
+                if (bindingResult.hasErrors()) {
+                    return prepareForEdit(false, model, configuration,
+                                            bindingResult, userContext, accountInfo);
+                }
+                hardwareConfig.setStarsLMConfiguration(configuration.getStarsLMConfiguration(hardware.getHardwareType()));
             }
-            */
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
-            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfoFragment.getEnergyCompanyId());
+            LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());
             ServletUtils.updateLMHardwareConfig(hardwareConfig,
                 liteHw, userContext.getYukonUser().getUserID(), energyCompany);
+
+            HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+            MessageSourceResolvable confirmationMessage =
+                new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig." +
+                                                 action + "Complete",
+                                                 hardware.getDisplayName());
+            flashScope.setConfirm(confirmationMessage);
         } catch (WebClientException wce) {
             MessageSourceResolvable errorMessage = YukonMessageSourceResolvable.createDefaultWithoutCode(wce.getMessage());
             flashScope.setError(errorMessage);
-
-            return closeDialog(model);
         }
 
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
-        MessageSourceResolvable confirmationMessage =
-            new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.inventoryEnrolled",
-                                             hardware.getDisplayName(), assignedProgram.getDisplayName());
-        flashScope.setConfirm(confirmationMessage);
-
-        return closeDialog(model);
-    }
-
-    @RequestMapping
-    public String unenroll(ModelMap model, int inventoryId,
-            int assignedProgramId, YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        List<ProgramEnrollment> programEnrollments =
-            enrollmentDao.getActiveEnrollmentsByInventoryId(accountInfoFragment.getAccountId(),
-                                                            inventoryId);
-        for (ProgramEnrollment currentEnrollment : programEnrollments) {
-            if (currentEnrollment.getAssignedProgramId() == assignedProgramId) {
-                currentEnrollment.setEnroll(false);
-            }
-        }
-        enrollmentHelperService.updateProgramEnrollments(programEnrollments,
-                                                         accountInfoFragment.getAccountId(),
-                                                         userContext);
-
-        model.addAttribute("inventoryId", inventoryId);
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
-        MessageSourceResolvable confirmationMessage =
-            new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.inventoryUnenrolled",
-                                             hardware.getDisplayName(), assignedProgram.getDisplayName());
-        flashScope.setConfirm(confirmationMessage);
-        return "redirect:/spring/stars/operator/hardware/config/list";
+        return "redirect:/spring/stars/operator/hardware/config/edit?accountId=" +
+            accountInfo.getAccountId() + "&inventoryId=" + inventoryId;
     }
 
     @RequestMapping
     public String disable(ModelMap model, int inventoryId,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+            AccountInfoFragment accountInfo, FlashScope flashScope) {
+        verifyHardwareIsForAccount(inventoryId, accountInfo);
         model.addAttribute("inventoryId", inventoryId);
 
         try {
             hardwareConfigService.disable(inventoryId,
-                                          accountInfoFragment.getAccountId(),
-                                          accountInfoFragment.getEnergyCompanyId(),
+                                          accountInfo.getAccountId(),
+                                          accountInfo.getEnergyCompanyId(),
                                           userContext);
 
             MessageSourceResolvable confirmationMessage =
@@ -261,20 +287,20 @@ public class OperatorHardwareConfigController {
 
         return "redirect:/spring/stars/operator/hardware/config/list";
     }
-    
+
     @RequestMapping
     public String enable(ModelMap model, int inventoryId,
             YukonUserContext userContext,
-            AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
-        AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
+            AccountInfoFragment accountInfo, FlashScope flashScope) {
+        verifyHardwareIsForAccount(inventoryId, accountInfo);
         model.addAttribute("inventoryId", inventoryId);
-        
+
         try {
             hardwareConfigService.enable(inventoryId,
-                                         accountInfoFragment.getAccountId(),
-                                         accountInfoFragment.getEnergyCompanyId(),
+                                         accountInfo.getAccountId(),
+                                         accountInfo.getEnergyCompanyId(),
                                          userContext);
-            
+
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.enableCommandSent");
             flashScope.setConfirm(confirmationMessage);
@@ -284,53 +310,49 @@ public class OperatorHardwareConfigController {
                                                  wce.getMessage());
             flashScope.setError(errorMessage);
         }
-        
+
         return "redirect:/spring/stars/operator/hardware/config/list";
     }
-    
-    private String closeDialog(ModelMap model) {
-        model.addAttribute("popupId", "hardwareConfigEditDialog");
-        return "closePopup.jsp";
+
+    private void verifyHardwareIsForAccount(int inventoryId,
+            AccountInfoFragment accountInfo) {
+        LiteInventoryBase inventory = starsInventoryBaseDao.getByInventoryId(inventoryId);
+        if (inventory.getAccountID() != accountInfo.getAccountId()) {
+            throw new NotAuthorizedException("The device " + inventoryId +
+                                             " does not belong to account " +
+                                             accountInfo.getAccountId());
+        }
     }
 
-    private void populateModel(ModelMap model, int inventoryId,
-            YukonUserContext userContext) {
-        model.addAttribute("inventoryId", inventoryId);
-
-        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-        model.addAttribute("hardware", hardware);
-        model.addAttribute("deviceLabel", hardware.getDeviceLabel());
-    }
-    
     @RequestMapping
     public String meterConfig(ModelMap model, int meterId,
                               YukonUserContext userContext,
                               AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        
+
         setPageMode(model, userContext);
-        
+
         Meter meter = meterDao.getForId(meterId);
         model.addAttribute("meter", meter);
         model.addAttribute("displayName", meter.getName());
-        
+
         List<LiteYukonPAObject> routes = Lists.newArrayList(paoDao.getRoutesByType(new int[]{RouteTypes.ROUTE_CCU,RouteTypes.ROUTE_MACRO}));
         model.addAttribute("routes", routes);
-        
+
         return "operator/hardware/config/meterConfig.jsp";
     }
-    
+
     @RequestMapping
     public String updateMeterConfig(@ModelAttribute("meter") Meter meter, BindingResult bindingResult,
-                                 ModelMap model, 
+                                 ModelMap model,
                                  YukonUserContext userContext,
                                  HttpServletRequest request,
                                  FlashScope flashScope,
                                  AccountInfoFragment accountInfoFragment) {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
-        
+
         meterConfigValidator.validate(meter, bindingResult);
-        
+
         if(!bindingResult.hasErrors()) {
             meterDao.update(meter);
         } else {
@@ -340,11 +362,11 @@ public class OperatorHardwareConfigController {
             model.addAttribute("routes", routes);
             return "operator/hardware/config/meterConfig.jsp";
         }
-        
+
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig.meterConfigUpdated"));
         return "redirect:/spring/stars/operator/hardware/hardwareList";
     }
-    
+
     @RequestMapping(params="cancel")
     public String cancel(ModelMap modelMap,
                           AccountInfoFragment accountInfoFragment,
@@ -354,11 +376,33 @@ public class OperatorHardwareConfigController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:/spring/stars/operator/hardware/hardwareList";
     }
-    
+
     private void setPageMode(ModelMap modelMap, YukonUserContext userContext) {
-           boolean allowAccountEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
+           boolean allowAccountEditing =
+               rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                             userContext.getYukonUser());
            modelMap.addAttribute("mode", allowAccountEditing ? PageEditMode.EDIT : PageEditMode.VIEW);
-       }
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+        if (binder.getTarget() != null) {
+            DefaultMessageCodesResolver msgCodesResolver =
+                new DefaultMessageCodesResolver() {
+                    @Override
+                    protected String postProcessMessageCode(String code) {
+                        // Messages generated using YukonValidationUtils
+                        // can't use the prefix.
+                        if (code.startsWith("yukon.web.")) {
+                            return code;
+                        }
+                        return super.postProcessMessageCode(code);
+                    }
+            };
+            msgCodesResolver.setPrefix("yukon.web.modules.operator.hardwareConfig.");
+            binder.setMessageCodesResolver(msgCodesResolver);
+        }
+    }
 
     @Autowired
     public void setDisplayableInventoryEnrollmentDao(
@@ -375,7 +419,7 @@ public class OperatorHardwareConfigController {
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
     }
-    
+
     @Autowired
     public void setAssignedProgramDao(AssignedProgramDao assignedProgramDao) {
         this.assignedProgramDao = assignedProgramDao;
@@ -392,12 +436,6 @@ public class OperatorHardwareConfigController {
     }
 
     @Autowired
-    public void setEnrollmentHelperService(
-            EnrollmentHelperService enrollmentHelperService) {
-        this.enrollmentHelperService = enrollmentHelperService;
-    }
-
-    @Autowired
     public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
     }
@@ -411,17 +449,17 @@ public class OperatorHardwareConfigController {
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;
     }
-    
+
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
     }
-    
+
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
-    
+
     @Autowired
     public void setMeterConfigValidator(MeterConfigValidator meterConfigValidator) {
         this.meterConfigValidator = meterConfigValidator;

@@ -9,7 +9,7 @@
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
 <cti:url var="editUrl" value="/spring/stars/operator/hardware/hardwareEdit?accountId=${accountId}&amp;inventoryId="/>
-<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/list?accountId=${accountId}&amp;inventoryId="/>
+<cti:url var="editConfigUrl" value="/spring/stars/operator/hardware/config/edit?accountId=${accountId}&amp;inventoryId="/>
 <cti:url var="editMeterConfigUrl" value="/spring/stars/operator/hardware/config/meterConfig?accountId=${accountId}&amp;meterId="/>
 <cti:url var="editScheduleUrl" value="/spring/stars/operator/thermostatSchedule/view?accountId=${accountId}&amp;thermostatIds="/>
 <cti:url var="savedSchedulesUrl" value="/spring/stars/operator/thermostatSchedule/savedSchedules?accountId=${accountId}&amp;thermostatId="/>

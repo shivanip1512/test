@@ -5,72 +5,127 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 
+<cti:standardPage module="operator" page="hardwareConfig">
+<cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
-<cti:msgScope paths="modules.operator.hardwareConfigEdit,modules.operator.hardwareConfig">
+<!--  TODO: rename me -->
+<tags:simpleDialog id="hardwareConfigEditDialog"/>
 
-<h1 class="dialogQuestion"><i:inline key=".headerMessage" arguments="${enrollment.programName.programName}"/></h1>
+<c:set var="configurable" value="${hardware.hardwareType.configurable}"/>
+<cti:checkRolesAndProperties value="OPERATOR_DISABLE_SWITCH_SENDING">
+    <c:set var="configurable" value="false"/>
+</cti:checkRolesAndProperties>
 
-<cti:url var="submitUrl" value="/spring/stars/operator/hardware/config/enroll"/>
-<script type="text/javascript">
-submitForm = function(action) {
-	$('actionInput').value = action;
-    return submitFormViaAjax('hardwareConfigEditDialog', 'editForm', '${submitUrl}');
-}
-</script>
-<form id="editForm" action="${submitUrl}">
-    <input type="hidden" name="action" id="actionInput" value=""/>
-    <input type="hidden" name="accountId" value="${accountId}"/>
-    <input type="hidden" name="inventoryId" value="${param.inventoryId}"/>
-    <input type="hidden" name="assignedProgramId" value="${param.assignedProgramId}"/>
-    <tags:nameValueContainer2 id="editArea">
-        <tags:nameValue2 nameKey=".group">
-            <c:if test="${fn:length(loadGroups) == 0}">
-                <i:inline key=".groupNotApplicable"/>
+<cti:url var="submitUrl" value="/spring/stars/operator/hardware/config/commit"/>
+<form:form id="editForm" name="editForm" action="${submitUrl}" commandName="configuration">
+    <input id="actionInput" type="hidden" name="action" value=""/>
+    <tags:hidden path="accountId"/>
+    <tags:hidden path="inventoryId"/>
+
+    <tags:formElementContainer nameKey="enrolledPrograms">
+        <c:if test="${fn:length(enrollments) == 0}">
+            <i:inline key=".noEnrolledPrograms"/>
+        </c:if>
+        <c:if test="${fn:length(enrollments) > 0}">
+        <table class="compactResultsTable rowHighlighting">
+            <tr>
+                <th><i:inline key=".name"/></th>
+                <th><i:inline key=".applianceCategory"/></th>
+                <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                    <th><i:inline key=".group"/></th>
+                </cti:checkRolesAndProperties>
+                <th><i:inline key=".relay"/></th>
+            </tr>
+
+            <c:forEach var="enrollment" varStatus="status" items="${enrollments}">
+                <tags:hidden path="programEnrollments[${status.index}].assignedProgramId"/>
+                <c:set var="programId" value="${enrollment.assignedProgramId}"/>
+                <tr class="<tags:alternateRow odd="" even="altRow"/>">
+                    <td>
+                        <spring:escapeBody htmlEscape="true">
+                            ${enrollment.programName.programName}
+                        </spring:escapeBody>
+                    </td>
+                    <td>
+                        <spring:escapeBody htmlEscape="true">
+                            ${applianceCategories[assignedPrograms[enrollment.assignedProgramId].applianceCategoryId].name}
+                        </spring:escapeBody>
+                    </td>
+                    <cti:checkRolesAndProperties value="!TRACK_HARDWARE_ADDRESSING">
+                        <td>
+                            <c:set var="loadGroups" value="${loadGroupsByProgramId[programId]}"/>
+                            <c:if test="${fn:length(loadGroups) == 0}">
+                                <i:inline key=".groupNotApplicable"/>
+                            </c:if>
+                            <c:if test="${fn:length(loadGroups) > 0}">
+                                <tags:selectWithItems path="programEnrollments[${status.index}].loadGroupId"
+                                    items="${loadGroups}" itemLabel="name"
+                                    itemValue="paoIdentifier.paoId"/>
+                            </c:if>
+                        </td>
+                    </cti:checkRolesAndProperties>
+                    <td>
+                        <form:select path="programEnrollments[${status.index}].relay">
+                            <form:option value="0"><i:inline key=".noRelay"/></form:option>
+                            <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
+                                <form:option value="${relayNumber}">${relayNumber}</form:option>
+                            </c:forEach>
+                        </form:select>
+                    </td>
+            </c:forEach>
+        </table>
+        </c:if>
+    </tags:formElementContainer>
+
+    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+        <cti:checkRolesAndProperties value="TRACK_HARDWARE_ADDRESSING">
+            <br>
+            <dr:hardwareAddressingInfo/>
+        </cti:checkRolesAndProperties>
+    </cti:checkRolesAndProperties>
+
+    <div class="pageActionArea">
+        <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+            <c:if test="${fn:length(enrollments) > 0}">
+                <c:if test="${configurable}">
+                    <input type="submit" value="<cti:msg2 key=".config"/>"
+                           title="<cti:msg2 key=".config.description"/>"
+                           onclick="$('actionInput').value = 'config';"/>
+                    <input type="submit" value="<cti:msg2 key=".saveToBatch"/>"
+                           title="<cti:msg2 key=".saveToBatch.description"/>"
+                           onclick="$('actionInput').value = 'saveToBatch';"/>
+                </c:if>
+                <input type="submit" value="<cti:msg2 key=".saveConfigOnly"/>"
+                       title="<cti:msg2 key=".saveConfigOnly.description"/>"
+                       onclick="$('actionInput').value = 'saveConfigOnly';"/>
             </c:if>
-            <c:if test="${fn:length(loadGroups) > 0}">
-                <c:set var="selectedLoadGroupId" value="${enrollment.loadGroupId}"/>
-                <select name="loadGroupId">
-                    <c:forEach var="loadGroup" items="${loadGroups}">
-                        <c:set var="selected" value=""/>
-                        <c:if test="${selectedLoadGroupId == loadGroup.paoIdentifier.paoId}">
-                            <c:set var="selected" value=" selected=\"selected\""/>
-                        </c:if>
-                        <option value="${loadGroup.paoIdentifier.paoId}"${selected}>
-                            <spring:escapeBody htmlEscape="true">${loadGroup.name}</spring:escapeBody>
-                        </option>
-                    </c:forEach>
-                </select>
-            </c:if>
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".relay">
-            <select name="relay">
-                <option value="0"><i:inline key=".noRelay"/></option>
-                <c:forEach var="relayNumber" begin="1" end="${hardware.numRelays}">
-                    <c:set var="selected" value=""/>
-                    <c:if test="${relayNumber == enrollment.relay}">
-                        <c:set var="selected" value=" selected=\"selected\""/>
-                    </c:if>
-                    <option value="${relayNumber}"${selected}>${relayNumber}</option>
-                </c:forEach>
-            </select>
-        </tags:nameValue2>
-    </tags:nameValueContainer2>
-
-    <div class="actionArea">
-        <input type="button" value="<cti:msg2 key=".config"/>"
-               title="<cti:msg2 key=".config.description"/>"
-               onclick="submitForm('config')"/>
-        <input type="button" value="<cti:msg2 key=".saveToBatch"/>"
-               title="<cti:msg2 key=".saveToBatch.description"/>"
-               onclick="submitForm('saveToBatch')"/>
-        <input type="button" value="<cti:msg2 key=".saveConfigOnly"/>"
-               title="<cti:msg2 key=".saveConfigOnly.description"/>"
-               onclick="submitForm('saveConfigOnly')"/>
+        </cti:checkRolesAndProperties>
+        <cti:url var="cancelUrl" value="/spring/stars/operator/hardware/hardwareList">
+            <cti:param name="accountId" value="${accountId}"/>
+        </cti:url>
         <input type="button" value="<cti:msg2 key=".cancel"/>"
-               onclick="parent.$('hardwareConfigEditDialog').hide()"/>
+               onclick="window.location='${cancelUrl}'"/>
     </div>
+</form:form>
 
-</form>
+<c:if test="${configurable}">
+    <br>
+    <br>
+    <tags:boxContainer2 nameKey="otherDeviceActions">
+        <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
+           <cti:param name="accountId" value="${accountId}"/>
+           <cti:param name="inventoryId" value="${inventoryId}"/>
+        </cti:url>
+        <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'" class="formSubmit">
+        <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
+           <cti:param name="accountId" value="${accountId}"/>
+           <cti:param name="inventoryId" value="${inventoryId}"/>
+        </cti:url>
+        <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'" class="formSubmit">
+        <i:inline key=".inService.${inService}"/>
+    </tags:boxContainer2>
+</c:if>
 
-</cti:msgScope>
+</cti:standardPage>

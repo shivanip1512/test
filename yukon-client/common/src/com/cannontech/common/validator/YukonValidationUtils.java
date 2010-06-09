@@ -20,6 +20,23 @@ public class YukonValidationUtils extends ValidationUtils {
 		}
 	}
 
+    public static <T extends Comparable<T>> void checkRange(Errors errors,
+            String field, T fieldValue, T min, T max, boolean required) {
+        if (fieldValue == null) {
+            if (required) {
+                errors.rejectValue(field, "yukon.web.error.required",
+                                   "xxXXxx Field is required");
+            }
+            return;
+        }
+
+        if (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0) {
+            errors.rejectValue(field, "yukon.web.error.outOfRange",
+                               new Object[] { min, max },
+                               "xxXXxx Must be between " + min + " and " + max + ".");
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public static List<MessageSourceResolvable> errorsForBindingResult(
             BindingResult bindingResult) {

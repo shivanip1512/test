@@ -93,9 +93,4 @@ public class ConfigBean
     {
         return writeToFileAllowed;
     }
-
-    public void setWriteToFileAllowed(boolean writeToFileAllowed) 
-    {
-        this.writeToFileAllowed = writeToFileAllowed;
-    }
 }

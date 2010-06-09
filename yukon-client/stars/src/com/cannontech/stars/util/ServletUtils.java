@@ -1408,10 +1408,6 @@ public class ServletUtils {
         session.setAttribute( ATT_LAST_SUBMITTED_REQUEST, savedReq );
     }
 
-    public static String hideUnsetNumber(int num, int num_unset) {
-        return (num == num_unset) ? "" : String.valueOf(num);
-    }
-
     public static void newEnergyCompanySaveRequest(HttpServletRequest req, HttpSession session,
                                    String[] params) {
         Properties savedReq = new Properties();

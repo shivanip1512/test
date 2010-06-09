@@ -58,7 +58,11 @@ public class LMConfigurationSASimple extends DBPersistent {
 		Object[] results = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 		
 		if (results.length == SETTER_COLUMNS.length) {
-			setOperationalAddress( (String) results[0] );
+		    if (results[0] instanceof String) {
+                setOperationalAddress((String) results[0]);
+		    } else {
+		        setOperationalAddress((String) results[0].toString());
+		    }
 		}
 		else
 			throw new Error(getClass() + " - Incorrect number of results retrieved");

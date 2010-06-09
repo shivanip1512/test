@@ -6,7 +6,6 @@
  */
 package com.cannontech.database.data.lite.stars;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -426,7 +425,6 @@ public class LiteLMConfiguration extends LiteBase {
 
 	}
 	
-	private int configurationID = CtiUtilities.NONE_ZERO_ID;
 	private String coldLoadPickup = null;
 	private String tamperDetect = null;
 	
