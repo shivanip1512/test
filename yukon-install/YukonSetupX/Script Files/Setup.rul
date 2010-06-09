@@ -319,8 +319,7 @@ begin
 	Dialog_Services:
 	if (AreYukonServicesRunning()) then
 		MessageBox("Setup detected a Yukon service still running."
-				+ "\nPlease stop all Yukon services to continue.", WARNING);
-		goto Dialog_Services;	
+				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
 	endif;
 	
 	Dialog_Backup:
@@ -533,8 +532,7 @@ begin
     Dialog_Services:
 	if (AreYukonServicesRunning()) then
 		MessageBox("Setup detected a Yukon service still running."
-				+ "\nPlease stop all Yukon services to continue.", WARNING);
-		goto Dialog_Services;	
+				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
 	endif;
     
     Dialog_Backup:
@@ -657,8 +655,7 @@ Dlg_ObjDialogs:
 			Dialog_UninstServices:
 			if (AreYukonServicesRunning()) then
 				MessageBox("Setup detected a Yukon service running."
-						+ " Please stop all Yukon services to continue.", WARNING);
-				goto Dialog_UninstServices;	
+						+ " Please stop all Yukon services before continuing.", WARNING);	
 			endif;
 			Dialog_UninstBackup:
 			bOptYes = TRUE;
