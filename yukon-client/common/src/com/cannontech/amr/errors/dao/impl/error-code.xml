@@ -606,11 +606,46 @@
       returned when the carrier device is unable to communicate with the polyphase meter or other end device.
      <ul>
      <li>Attempt the command again</li>
-     <li>If possible, verify the phyisical connection between the carrier device and the IED</li>
+     <li>If possible, verify the physical connection between the carrier device and the IED</li>
      <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
      </ul>
   </troubleshooting>
 </error>
+
+<error code="98">
+	<category>Yukon System</category> 
+	<porter>Bad Nexus Specification</porter>
+    <description>A connection to the TCP-IP device could not be established or a current connection failed.</description>
+    <troubleshooting>
+		<ul>
+			<li>Attempt the command again</li>
+			<li>Confirm communication with TCP-IP devices by 'pinging' the IP address of the devices. Check the setup of all devices found unreachable.</li>
+			<li>Confirm the Yukon configuration of the TCP-IP device and communications port are correct.</li>
+			<li>Confirm the devices configuration is correct.</li> 
+			<li>Physical inspect any unreachable devices for hardware issues.</li>
+			<li>Contact 3rd parties to confirm operation of network.</li>
+			<li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+		</ul>
+	</troubleshooting>
+</error>
+
+<error code="99">
+	<category>Yukon System</category> 
+	<porter>Error Writing to Port</porter>
+    <description>A connection to the TCP-IP device could not be established or a current connection failed.</description>
+    <troubleshooting>
+		<ul>
+			<li>Attempt the command again</li>
+			<li>Confirm communication with TCP-IP devices by 'pinging' the IP address of the devices. Check the setup of all devices found unreachable.</li>
+			<li>Confirm the Yukon configuration of the TCP-IP device and communications port are correct.</li>
+			<li>Confirm the devices configuration is correct.</li> 
+			<li>Physical inspect any unreachable devices for hardware issues.</li>
+			<li>Contact 3rd parties to confirm operation of network.</li>
+			<li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+		</ul>
+	</troubleshooting>
+</error>
+
 <error code="100">
 	<category>Powerline Carrier</category> 
 	<porter>Bad BCH</porter>
