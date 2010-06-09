@@ -94,7 +94,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     private Resource inputFile = null;
     private Resource schemaFile = null;
-    private Resource customInputFile = new FileSystemResource(CtiUtilities.getYukonBase() + "\\Server\\Config\\paoDefinition.xml");
+    private Resource customInputFile = new FileSystemResource(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
     private Resource pointLegendFile = null;
     private UnitMeasureDao unitMeasureDao = null;
     private StateDao stateDao = null;
