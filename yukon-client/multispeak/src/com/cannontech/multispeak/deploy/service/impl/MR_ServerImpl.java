@@ -204,7 +204,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
     	        ReadableDevice device = MeterReadFactory.createMeterReadObject(meter);
-    	        device.populateWithCachedPointData(meter);
+    	        device.populateWithPointData(meter.getDeviceId());
     	        return device.getMeterRead();
             } catch (DynamicDataAccessException e) {
                 String message = "Connection to dispatch is invalid";

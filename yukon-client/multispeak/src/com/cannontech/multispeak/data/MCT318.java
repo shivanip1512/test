@@ -1,22 +1,30 @@
 package com.cannontech.multispeak.data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigInteger;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Class which represents billing data for an MCT318
  */
 public class MCT318 extends MeterReadBase {
 
-	@Override
-	public Set<Attribute> getMeterReadCompatibleAttributes() {
+    public void populate(int pointType, int pointOffSet, int uomID, Date dateTime, Double value) {
 
-		Set<Attribute> meterReadCompatibleAttributes = new HashSet<Attribute>();
-		meterReadCompatibleAttributes.add(BuiltInAttribute.USAGE);
-		meterReadCompatibleAttributes.add(BuiltInAttribute.PEAK_DEMAND);
-		return meterReadCompatibleAttributes;
-	}
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(dateTime.getTime());
+        
+        switch (pointType) {
+            case PointTypes.PULSE_ACCUMULATOR_POINT:
+                switch (pointOffSet) {
+                    case 1: // KWh
+                        getMeterRead().setReadingDate(calendar);
+                        getMeterRead().setPosKWh(new BigInteger(String.valueOf(value.intValue())));
+                        setPopulated(true);
+                        break;
+                }
+        }
+    }
 }

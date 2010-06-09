@@ -7,7 +7,7 @@
 package com.cannontech.multispeak.service.impl;
 
 import java.rmi.RemoteException;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -28,9 +27,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
-import com.cannontech.amr.deviceread.model.DisconnectState;
-import com.cannontech.amr.deviceread.service.DisconnectStatusService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
 import com.cannontech.amr.meter.search.model.FilterBy;
@@ -39,11 +35,6 @@ import com.cannontech.amr.meter.search.model.OrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.commands.CommandRequestExecutionType;
-import com.cannontech.common.device.commands.impl.WaitableCommandCompletionCallback;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -56,9 +47,6 @@ import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.search.SearchResult;
@@ -71,8 +59,6 @@ import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.SubstationDao;
 import com.cannontech.core.dao.SubstationToRouteMappingDao;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.core.service.SystemDateFormattingService;
-import com.cannontech.core.service.SystemDateFormattingService.DateFormatEnum;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
@@ -86,7 +72,6 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.block.impl.LoadFormattedBlockImpl;
 import com.cannontech.multispeak.block.impl.OutageFormattedBlockImpl;
@@ -104,15 +89,13 @@ import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
-import com.cannontech.multispeak.event.CommandResultHolderHandlingEvent;
+import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.BasicServerConnection;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 /**
  * @author stacey
@@ -139,11 +122,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private SubstationToRouteMappingDao substationToRouteMappingDao = null;
     private DeviceDao deviceDao = null;
     private MeterSearchDao meterSearchDao = null;
-    private MeterReadService meterReadService;
-    private DisconnectStatusService disconnectStatusService;
-    private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
-    private SystemDateFormattingService systemDateFormattingService;
-    private AttributeService attributeService;
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -220,115 +198,75 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 		}
 	}
 	
-	@Override
+    @Override
     public LoadActionCode CDMeterState(MultispeakVendor mspVendor, 
             com.cannontech.amr.meter.model.Meter meter,
-            String transactionID) throws RemoteException {
+            String transactionID) throws RemoteException
+    {
+        if ( ! porterConnection.isValid() ) {
+            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+        }
 
-		DisconnectState disconnectState = DisconnectState.UNKNOWN;
+        long id = generateMessageID();
+        CDStatusEvent event = new CDStatusEvent(mspVendor, id, transactionID);
+        
+        final String meterNumber = meter.getMeterNumber();
+        if (meter != null) {
+            event.setMeterNumber(meterNumber);
+            getEventsMap().put(new Long(id), event);
+            
+            CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
 
-		if (meter != null) {
+            String commandStr = "getstatus disconnect";
+            writePilRequest(meter, commandStr, id, 13);
+            mspObjectDao.logMSPActivity("getCDMeterState",
+            				"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
+            				mspVendor.getCompanyName());    
 
-			String meterNumber = meter.getMeterNumber();
-			CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
-			
-			if (!(attributeService.isAttributeSupported(meter, BuiltInAttribute.DISCONNECT_STATUS) && DeviceTypesFuncs.isDisconnectMCTOrHasCollar(new SimpleDevice(meter)))) {
-				
-				CTILogger.warn("Meter " + meterNumber + " does not support DISCONNECT_STATUS read for CDMeterState from " + mspVendor.getCompanyName());
-			
-			} else {
-				
-				// waitable callback
-				CollectingCommandCompletionCallback commandResultHolder = new CollectingCommandCompletionCallback();
-				WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(commandResultHolder);
-				
-				// read
-				meterReadService.readMeter(meter,
-						Collections.singleton(BuiltInAttribute.DISCONNECT_STATUS),
-						CommandRequestExecutionType.MSP_CD_METER_STATE_DISCONNECT_STATUS,
-						waitableCallback, 
-						UserUtils.getYukonUser());
-				
-				long timeoutSeconds = mspVendor.getRequestMessageTimeout() / 1000;
-				try {
-					
-					// handle result
-					waitableCallback.waitForCompletion(timeoutSeconds, timeoutSeconds);
-					disconnectState = disconnectStatusService.getDisconnectState(meter, commandResultHolder);
-					
-				} catch (InterruptedException e) {
-					CTILogger.info("Interrupted while waiting for disconnect status for meter " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
-				} catch (TimeoutException e) {
-					mspObjectDao.logMSPActivity("getCDMeterState", "Reading Timed out after " + timeoutSeconds + " seconds.  No reading collected.", mspVendor.getCompanyName());
-				}
-			}
-		}
-		
-		if (disconnectState == DisconnectState.CONFIRMED_DISCONNECTED || disconnectState == DisconnectState.UNCONFIRMED_DISCONNECTED) {
-			return LoadActionCode.Disconnect;
-		} else if (disconnectState == DisconnectState.CONNECTED) {
-			return LoadActionCode.Connect;
-		} else if (disconnectState == DisconnectState.CONNECT_ARMED) {
-			return LoadActionCode.Armed;
-		} else {
-			return LoadActionCode.Unknown;
-		}
-	}
+            synchronized (event) {
+                boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
+                if( timeout ) {
+                    
+                    event.setResultMessage("Reading Timed out after " + (mspVendor.getRequestMessageTimeout()/1000)+ " seconds.");
+                    mspObjectDao.logMSPActivity("getCDMeterState", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
+                    if(event.getLoadActionCode() == null)
+                        event.setLoadActionCode(LoadActionCode.Unknown);
+                }
+
+            }
+      }
+
+        return event.getLoadActionCode();
+    }
     
     @Override
-    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, com.cannontech.amr.meter.model.Meter meter, String transactionID) {
-    	
-    	CTILogger.info("Received " + meter.getMeterNumber() + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
-    	MeterReadEvent event = new MeterReadEvent(mspVendor, generateMessageID(), meter, transactionID);
-    	
-    	// waitable callback
-    	CollectingCommandCompletionCallback commandResultHolder = new CollectingCommandCompletionCallback();
-		WaitableCommandCompletionCallback<Object> waitableCallback = new WaitableCommandCompletionCallback<Object>(commandResultHolder);
-		Set<Attribute> attributesToRead = Sets.newHashSet();
-		
-		// usage
-		if (attributeService.isAttributeSupported(meter, BuiltInAttribute.USAGE)) {
-			attributesToRead.add(BuiltInAttribute.USAGE);
-        } else {
-        	mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "(ID:" + meter.getDeviceId() + ") MeterNumber (" + meter.getMeterNumber() + ") - USAGE attribute not supported, it will not be read.", mspVendor.getCompanyName());
-        }
-		
-		// peak demand
-		if (attributeService.isAttributeSupported(meter, BuiltInAttribute.PEAK_DEMAND)) {
-			attributesToRead.add(BuiltInAttribute.PEAK_DEMAND);
-		} else {
-        	mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "(ID:" + meter.getDeviceId() + ") MeterNumber (" + meter.getMeterNumber() + ") - PEAK_DEMAND attribute not supported, it will not be read.", mspVendor.getCompanyName());
-        }
+    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, 
+            com.cannontech.amr.meter.model.Meter meter,
+            String transactionID)
+    {
+    	long id = generateMessageID();      
+        MeterReadEvent event = new MeterReadEvent(mspVendor, id, meter, transactionID);
+        
+        getEventsMap().put(new Long(id), event);
+        String commandStr = "getvalue kwh";
+        if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+            commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
+        
+        final String meterNumber = meter.getMeterNumber();
+        CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
+        writePilRequest(meter, commandStr, id, 13);
+        mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
+						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
+						mspVendor.getCompanyName());
 
-		// ok to read?
-		if (attributesToRead.size() == 0) {
-			
-			mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "(ID:" + meter.getDeviceId() + ") MeterNumber (" + meter.getMeterNumber() + ") - No attributes supported.", mspVendor.getCompanyName());
-			
-		} else {
-			
-			// read
-			meterReadService.readMeter(meter,
-					attributesToRead,
-					CommandRequestExecutionType.MSP_LATEST_READING_INTERROGATE,
-					waitableCallback, 
-					UserUtils.getYukonUser());
-			
-			mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "(ID:" + meter.getDeviceId() + ") MeterNumber (" + meter.getMeterNumber() + ") - " + attributesToRead + " attribute(s) read", mspVendor.getCompanyName());
-			
-			long timeoutSeconds = mspVendor.getRequestMessageTimeout() / 1000;
-			try {
-				
-				// handle result
-				waitableCallback.waitForCompletion(timeoutSeconds, timeoutSeconds);
-				event.handleResult(meter, commandResultHolder);
-				
-			} catch (InterruptedException e) {
-				CTILogger.info("Interrupted while waiting for reading from meter " + meter.getMeterNumber() + " for getLatestReadingByMeterNo from " + mspVendor.getCompanyName());
-			} catch (TimeoutException e) {
-				mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meter.getMeterNumber() + ") - Reading Timed out after " + timeoutSeconds + " seconds.  No reading collected.", mspVendor.getCompanyName());
-			}
-		}
+        synchronized (event) {
+            boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
+            if( timeout ) {
+                mspObjectDao.logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
+                               (mspVendor.getRequestMessageTimeout()/1000) + 
+                               " seconds.  No reading collected.", mspVendor.getCompanyName());
+            }
+        }
 
         return event.getDevice().getMeterRead();
     }
@@ -378,45 +316,24 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         for (String meterNumber : meterNumbers) {
         	
+            com.cannontech.amr.meter.model.Meter meter;
             try {
-            	
-            	com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-            	MeterReadEvent event = new MeterReadEvent(vendor, generateMessageID(), meter, 0, transactionID);
-            	
-            	Map<Attribute, CallbackAndCreType> attributeRequestCallbacksMap = Maps.newHashMap();
-            	int returnMessagesCount = 0;
-            	
-            	// usage
-                if (attributeService.isAttributeSupported(meter, BuiltInAttribute.USAGE)) {
-                	CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-                	attributeRequestCallbacksMap.put(BuiltInAttribute.USAGE, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_METER_READ_EVENT_USAGE));
-                	returnMessagesCount++;
-                } else {
-                	errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.USAGE, "MeterReadEvent", vendor.getCompanyName()));
-                }
-                
-                // peak demand
-                if (attributeService.isAttributeSupported(meter, BuiltInAttribute.PEAK_DEMAND)) {
-                	CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-                	attributeRequestCallbacksMap.put(BuiltInAttribute.PEAK_DEMAND, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_METER_READ_EVENT_PEAK_DEMAND));
-                	returnMessagesCount++;
-                } else {
-                	errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.PEAK_DEMAND, "MeterReadEvent", vendor.getCompanyName()));
-                }
-            	
-                // EVENT RETURN MESSAGE COUNT
-                event.setReturnMessages(returnMessagesCount);
-                
-                if (returnMessagesCount == 0) {
-                	CTILogger.warn("No attributes supported for meter " + meterNumber + " for MeterReadEvent from " + vendor.getCompanyName() + ". A ReadingChangedNotification will not be sent.");
-                }
-                
-                // READ ATTRIBUTES
-                for (Attribute atttribute : attributeRequestCallbacksMap.keySet()) {
-                	CallbackAndCreType callbackAndCreType = attributeRequestCallbacksMap.get(atttribute);
-                	meterReadService.readMeter(meter, Collections.singleton(atttribute), callbackAndCreType.getCreType(), callbackAndCreType.getCallback(), UserUtils.getYukonUser());
-                }
+            	meter = meterDao.getForMeterNumber(meterNumber);
+ 	        	
+            	long id = generateMessageID();      
+ 	            MeterReadEvent event = new MeterReadEvent(vendor, id, meter, transactionID);
+ 	            getEventsMap().put(new Long(id), event);
+ 	                
+ 	            String commandStr = "getvalue kwh";
+ 	            if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+ 	            	commandStr = "getvalue peak"; // getvalue peak returns the peak kW and the total kWh
 
+ 	            writePilRequest(meter, commandStr, id, 13);
+
+ 	            //Second message (legacy but kept here for reminder.
+// 	            MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
+// 	            pilRequest.setCommandString("getvalue demand");
+// 	            porterConnection.write(pilRequest);
  	        } 
             catch (NotFoundException e) {
  	               
@@ -432,104 +349,53 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public synchronized ErrorObject[] blockMeterReadEvent(MultispeakVendor vendor, 
             String meterNumber, FormattedBlockService block, String transactionID)
     {
-    	
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
-        DateFormat lpCommandDateFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
         
         CTILogger.info("Received " + meterNumber+ " for BlockMeterReading from " + vendor.getCompanyName());
         
+        com.cannontech.amr.meter.model.Meter meter;
+        
         try {
-        	
-        	com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-        	BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, generateMessageID(), meter, block, 0, transactionID);
+        	meter = meterDao.getForMeterNumber(meterNumber);
             
-        	Map<CommandRequestDevice, CallbackAndCreType> commandRequestCallbacksMap = Maps.newHashMap();
-        	Map<Attribute, CallbackAndCreType> attributeRequestCallbacksMap = Maps.newHashMap();
-        	int returnMessagesCount = 0;
-        	
-        	// LOAD BLOCK TYPE
+        	long id = generateMessageID();
+            
         	if (block instanceof LoadFormattedBlockImpl){
-        		
-        		// load profile
-                if (attributeService.isAttributeSupported(meter, BuiltInAttribute.LOAD_PROFILE)) {
-                	
-	                String commandString = "getvalue lp channel 1 " + lpCommandDateFormatter.format(new Date());
-	                CommandRequestDevice commandRequest = new CommandRequestDevice();
-	                commandRequest.setDevice(new SimpleDevice(meter.getPaoIdentifier()));
-	                commandRequest.setCommand(commandString);
-	                
-	                CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-	                commandRequestCallbacksMap.put(commandRequest, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_LOAD_FORMATTED_BLOCK_EVENT_LOAD_PROFILE));
-	                returnMessagesCount++;
-                } else {
-                    errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.LOAD_PROFILE, "(Load) BlockMeterReading", vendor.getCompanyName()));
+        		int returnMessages = 0;
+                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+                String lpCommandStr = "getvalue lp channel 1 " + format.format(new Date());
+                returnMessages++;
+                String voltageProfileCommandStr = "getvalue lp channel 4 " + format.format(new Date());
+                returnMessages++;
+                
+                String commandStr = null;
+                if( DeviceTypesFuncs.isMCT410(meter.getType())) {
+                    commandStr = "getvalue demand";
+                    returnMessages++;
                 }
-        		
-                // voltage profile
-                if (attributeService.isAttributeSupported(meter, BuiltInAttribute.VOLTAGE_PROFILE)) {
-                	
-	                String commandString = "getvalue lp channel 4 " + lpCommandDateFormatter.format(new Date());
-	                CommandRequestDevice commandRequest = new CommandRequestDevice();
-	                commandRequest.setDevice(new SimpleDevice(meter.getPaoIdentifier()));
-	                commandRequest.setCommand(commandString);
-	                
-	                CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-	                commandRequestCallbacksMap.put(commandRequest, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_LOAD_FORMATTED_BLOCK_EVENT_VOLTAGE_PROFILE));
-	                returnMessagesCount++;
-                } else {
-                	errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.VOLTAGE_PROFILE, "(Load) BlockMeterReading", vendor.getCompanyName()));
+                else if (DeviceTypesFuncs.isMCT430(meter.getType()) ||
+                        DeviceTypesFuncs.isMCT470(meter.getType())) {
+                    commandStr = "getvalue ied kvar";
+                    returnMessages++;
                 }
                 
-                // voltage
-                if (attributeService.isAttributeSupported(meter, BuiltInAttribute.VOLTAGE)) {
-                	CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-                	attributeRequestCallbacksMap.put(BuiltInAttribute.VOLTAGE, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_LOAD_FORMATTED_BLOCK_EVENT_VOLTAGE));
-                	returnMessagesCount++;
-                } else {
-                	errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.VOLTAGE, "(Load) BlockMeterReading", vendor.getCompanyName()));
-                }
+                BlockMeterReadEvent event = 
+                    new BlockMeterReadEvent(vendor, id, meter, block, returnMessages, transactionID);
+                getEventsMap().put(new Long(id), event);
+
+                writePilRequest(meter, lpCommandStr, id, 13);
+                writePilRequest(meter, voltageProfileCommandStr, id, 13);
+                if( commandStr != null)
+                    writePilRequest(meter, commandStr, id, 13);
+            }
+            else if ( block instanceof OutageFormattedBlockImpl) {
                 
-                // kvar
-                if (attributeService.isAttributeSupported(meter, BuiltInAttribute.KVAR)) {
-                	CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-                	attributeRequestCallbacksMap.put(BuiltInAttribute.KVAR, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_LOAD_FORMATTED_BLOCK_EVENT_KVAR));
-                	returnMessagesCount++;
-                } else {
-                	errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.KVAR, "(Load) BlockMeterReading", vendor.getCompanyName()));
-                }
-                
-        	// OUTAGE BLOCK TYPE
-        	} else if (block instanceof OutageFormattedBlockImpl) {
-                
-        		// blink count
-        		if (attributeService.isAttributeSupported(meter, BuiltInAttribute.BLINK_COUNT)) {
-        			CollectingCommandCompletionCallback callback = getNewCommandResultHolderHandlingEventCallback(event, meter);
-	            	attributeRequestCallbacksMap.put(BuiltInAttribute.BLINK_COUNT, new CallbackAndCreType(callback, CommandRequestExecutionType.MSP_OUTAGE_FORMATTED_BLOCK_EVENT_BLINK_COUNT));
-	            	returnMessagesCount++;
-        		} else {
-        			errorObjects.add(getAttributeNotSupportedByMeterErrorObj(meterNumber, BuiltInAttribute.BLINK_COUNT, "(Outage) BlockMeterReading (Outage)", vendor.getCompanyName()));
-        		}
+                BlockMeterReadEvent event = 
+                    new BlockMeterReadEvent(vendor, id, meter, block, transactionID);
+                getEventsMap().put(new Long(id), event);
+                String commandStr = "getvalue demand";
+                writePilRequest(meter, commandStr, id, 13);
             }
-        	
-        	// EVENT RETURN MESSAGE COUNT
-            event.setReturnMessages(returnMessagesCount);
-            
-            if (returnMessagesCount == 0) {
-            	CTILogger.warn("No attributes supported for meter " + meterNumber + " for BlockMeterReading from " + vendor.getCompanyName() + ". An EA_Server_FormattedBlockNotification will not be sent.");
-            }
-            
-            // SEND COMMANDS
-            for (CommandRequestDevice request : commandRequestCallbacksMap.keySet()) {
-            	CallbackAndCreType callbackAndCreType = commandRequestCallbacksMap.get(request);
-            	commandRequestDeviceExecutor.execute(Collections.singletonList(request), callbackAndCreType.getCallback(), callbackAndCreType.getCreType(), UserUtils.getYukonUser());
-            }
-            
-            // READ ATTRIBUTES
-            for (Attribute atttribute : attributeRequestCallbacksMap.keySet()) {
-            	CallbackAndCreType callbackAndCreType = attributeRequestCallbacksMap.get(atttribute);
-            	meterReadService.readMeter(meter, Collections.singleton(atttribute), callbackAndCreType.getCreType(), callbackAndCreType.getCallback(), UserUtils.getYukonUser());
-            }
-        	
         } 
         catch (NotFoundException e) {
                
@@ -538,40 +404,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
         
         return mspObjectDao.toErrorObject(errorObjects);
-    }
-    
-    private ErrorObject getAttributeNotSupportedByMeterErrorObj(String meterNumber, Attribute attribute, String method, String userName) {
-    	return mspObjectDao.getErrorObject(meterNumber, attribute.getDescription() + " read not supported by meter.", "Meter", method, userName);
-    }
-    
-    private CollectingCommandCompletionCallback getNewCommandResultHolderHandlingEventCallback(final CommandResultHolderHandlingEvent event, final com.cannontech.amr.meter.model.Meter meter) {
-    
-		CollectingCommandCompletionCallback callback = new CollectingCommandCompletionCallback() {
-			@Override
-	        protected void doComplete() {
-				event.handleResult(meter, this);
-	        };
-	    };
-	    
-	    return callback;
-    }
-    
-    private class CallbackAndCreType {
-    	
-    	private CollectingCommandCompletionCallback callback;
-    	private CommandRequestExecutionType creType;
-    	
-    	public CallbackAndCreType(CollectingCommandCompletionCallback callback, CommandRequestExecutionType creType) {
-    		this.callback = callback;
-    		this.creType = creType;
-    	}
-    	
-    	public CollectingCommandCompletionCallback getCallback() {
-			return callback;
-		}
-    	public CommandRequestExecutionType getCreType() {
-			return creType;
-		}
     }
     
     @Override
@@ -664,6 +496,29 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         porterConnection.write(pilRequest);
     }
     
+    /**
+     * Returns true if event processes without timing out, false if event times out.
+     * @param event
+     * @return
+     */
+    private boolean waitOnEvent(MultispeakEvent event, long timeout) {
+        
+        long millisTimeOut = 0; //
+        while (!event.isPopulated() && millisTimeOut < timeout)  //quit after timeout
+        {
+            try {
+                Thread.sleep(10);
+                millisTimeOut += 10;
+            } catch (InterruptedException e) {
+                CTILogger.error(e);
+            }
+        }
+        if( millisTimeOut >= timeout) {// this broke the loop, more than likely, have to kill it sometime
+            return false;
+        }
+        return true;
+    }
+
 	private static Map<Long,MultispeakEvent> getEventsMap() {
 		return eventsMap;
 	}
@@ -1935,24 +1790,4 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public void setMeterSearchDao(MeterSearchDao meterSearchDao) {
         this.meterSearchDao = meterSearchDao;
     }
-    @Autowired
-    public void setMeterReadService(MeterReadService meterReadService) {
-		this.meterReadService = meterReadService;
-	}
-    @Autowired
-    public void setDisconnectStatusService(DisconnectStatusService disconnectStatusService) {
-		this.disconnectStatusService = disconnectStatusService;
-	}
-    @Autowired
-    public void setCommandRequestDeviceExecutor(CommandRequestDeviceExecutor commandRequestDeviceExecutor) {
-		this.commandRequestDeviceExecutor = commandRequestDeviceExecutor;
-	}
-    @Autowired
-    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
-		this.systemDateFormattingService = systemDateFormattingService;
-	}
-    @Autowired
-    public void setAttributeService(AttributeService attributeService) {
-		this.attributeService = attributeService;
-	}
 }

@@ -1,17 +1,13 @@
 package com.cannontech.multispeak.data;
 
-import java.math.BigDecimal;
-import java.util.GregorianCalendar;
+import java.util.Date;
+import java.util.List;
 
-import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dynamic.RichPointData;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.spring.YukonSpringHook;
@@ -20,8 +16,6 @@ import com.cannontech.spring.YukonSpringHook;
  * The base class for all BillableDevices
  */
 public abstract class MeterReadBase implements ReadableDevice{
-	
-	private AttributeDynamicDataSource attrDynamicDataSource = YukonSpringHook.getBean("attrDynamicDataSource", AttributeDynamicDataSource.class);
 
     private MeterRead meterRead;
     private boolean populated = false;
@@ -42,81 +36,8 @@ public abstract class MeterReadBase implements ReadableDevice{
     }
     
     @Override
-	public void populate(Meter meter, RichPointData richPointData) {
-		
-		for (Attribute attribute : getMeterReadCompatibleAttributes()) {
-			populateByPointValue(meter, richPointData, attribute);
-		}
-	}
-    
-    /**
-     * Check point data is valid in general.
-     * Check that point data for given attribute is valid match before setting values on MeterRead.
-     */
-    private void populateByPointValue(Meter meter, RichPointData richPointData, Attribute attribute) {
-		
-    	// general checks
-    	if (richPointData == null) {
-			return;
-		}
+    abstract public void populate(int pointType, int pointOffSet, int uomID, Date dateTime, Double value);
 
-		if (richPointData.getPointValue().getPointQuality().getQuality() == PointQuality.Uninitialized.getQuality()) {
-			return;
-		}
-    	
-		// check point is for attribute
-		AttributeService attributeService = (AttributeService)YukonSpringHook.getBean("attributeService");
-		try {
-		    boolean isPointForAttribute = attributeService.isPointAttribute(richPointData.getPaoPointIdentifier(), attribute);
-		    if(isPointForAttribute){
-		    	populate(meter, richPointData, attribute);
-		    	return;
-		    }
-		} catch (IllegalArgumentException e) {
-		    CTILogger.debug(e);
-		} catch (NotFoundException e){
-		    CTILogger.error(e);
-		}
-	}
-    
-    /**
-     * Direct point data to correct setters on the MeterRead based on attribute type is has been verified as
-     */
-    private void populate(Meter meter, RichPointData richPointData, Attribute attribute) {
-		
-		if (attribute.equals(BuiltInAttribute.USAGE)) {
-			setUsage(meter, richPointData);
-		} else if (attribute.equals(BuiltInAttribute.PEAK_DEMAND)) {
-			setPeakDemand(meter, richPointData);
-		} else {
-			throw new IllegalArgumentException("Attribute " + attribute.toString() + " is not supported.");
-		}
-    }
-    
-    // USAGE
-    protected void setUsage(Meter meter, RichPointData richPointData) {
-        
-    	getMeterRead().setReadingDate(calendarForPointData(richPointData));
-        getMeterRead().setPosKWh(new BigDecimal(richPointData.getPointValue().getValue()).toBigInteger());
-        setPopulated(true);
-    }
-    
-    // PEAK_DEMAND
-    protected void setPeakDemand(Meter meter, RichPointData richPointData) {
-    	
-    	getMeterRead().setKW(new Float(richPointData.getPointValue().getValue()));
-        getMeterRead().setKWDateTime(calendarForPointData(richPointData));
-        setPopulated(true);
-    }
-    
-    // calendar helper
-    private GregorianCalendar calendarForPointData(RichPointData richPointData) {
-    	
-    	GregorianCalendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(richPointData.getPointValue().getPointDataTimeStamp().getTime());
-        return calendar;
-    }
-    
     @Override
     public boolean isPopulated()
     {
@@ -130,12 +51,14 @@ public abstract class MeterReadBase implements ReadableDevice{
     }
     
     @Override
-    public void populateWithCachedPointData(Meter meter) {
-    	
-    	for (Attribute attribute : getMeterReadCompatibleAttributes()) {
-    		
-    		RichPointData richPointData = attrDynamicDataSource.getRichPointData(meter, attribute);
-    		populate(meter, richPointData);
-    	}
+    public void populateWithPointData(int deviceID) {
+        List<LitePoint> litePoints = (YukonSpringHook.getBean("pointDao", PointDao.class)).getLitePointsByPaObjectId(deviceID);
+        DynamicDataSource dds = YukonSpringHook.getBean("dynamicDataSource", DynamicDataSource.class);
+        
+        for (LitePoint litePoint : litePoints) {
+            PointValueQualityHolder pointData = dds.getPointValue(litePoint.getPointID());
+            if( pointData != null && pointData.getPointQuality() != PointQuality.Uninitialized)
+                populate(litePoint.getPointType(), litePoint.getPointOffset(), litePoint.getUofmID(), pointData.getPointDataTimeStamp(), pointData.getValue());
+        }
     }
 }

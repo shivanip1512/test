@@ -1,35 +1,29 @@
 package com.cannontech.multispeak.data;
 
-import java.util.Set;
+import java.util.Date;
 
-import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 
 /**
  * Interface to be implemented for each type of billable device
  */
 public interface ReadableDevice {
-	
-	/**
-	 * Set of attributes that the device supports and that map to point data that the MeterRead has setters for.
-	 */
-	public Set<Attribute> getMeterReadCompatibleAttributes();
 
-	/**
-     * Populate the MeterRead object with meter and richPointData data.
-     * @param meter
-     * @param richPointData
+    /**
+     * Method to load the (MSP) MeterRead object with data collected from the database or physical reads.
+     * @param pointType - the type of point
+     * @param pointOffSet - the point's offset
+     * @param uomID - the point's unit of measure id
+     * @param dateTime - the Date of the reading for the point.
+     * @param value - the value of the reading for the point
      */
-	public void populate(Meter meter, RichPointData richPointData);
-	
+    public void populate(int pointType, int pointOffSet, int uomID, Date dateTime, Double value);
+
     /**
      * Method to load the (MSP) MeterRead object with the data in PointData cache..
      * @param deviceID
      */
-    public void populateWithCachedPointData(Meter meter);
-    
+    public void populateWithPointData(int deviceID);
     /**
      * Returns true if any read data has been populated
      * @return
