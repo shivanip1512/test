@@ -149,7 +149,7 @@ ERRSTRUCT CTIErrors[] = {
     { TCPREADERROR,         TCPREADERROR_TXT,          TCPREADERROR_TYPE          },
     { ADDRESSERROR,         ADDRESSERROR_TXT,          ADDRESSERROR_TYPE          },
     { ALPHABUFFERERROR,     ALPHABUFFERERROR_TXT,      ALPHABUFFERERROR_TYPE      }, // 93
-    { 94,                   BLANK_TXT,                 NORMAL                     },
+    { MISCONFIG,            MISCONFIG_TXT,             MISCONFIG_TYPE             },
     { 95,                   BLANK_TXT,                 NORMAL                     },
     { 96,                   BLANK_TXT,                 NORMAL                     },
     { 97,                   BLANK_TXT,                 NORMAL                     },

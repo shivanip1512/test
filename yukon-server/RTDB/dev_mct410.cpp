@@ -462,6 +462,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
                                                                                                                             + Memory_Holiday2Len
                                                                                                                             + Memory_Holiday3Len));
     cs.insert(CommandStore(Emetcon::PutConfig_Options,          Emetcon::IO_Function_Write, FuncWrite_ConfigAlarmMaskPos,   FuncWrite_ConfigAlarmMaskLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_AutoReconnect,    Emetcon::IO_Function_Write, FuncWrite_ConfigPos,            FuncWrite_ConfigLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Outage,           Emetcon::IO_Write,          Memory_OutageCyclesPos,         Memory_OutageCyclesLen));
     cs.insert(CommandStore(Emetcon::PutConfig_TimeAdjustTolerance, Emetcon::IO_Write,       Memory_TimeAdjustTolPos,        Memory_TimeAdjustTolLen));
 
@@ -1327,6 +1328,54 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
 
             returnErrorMessage(MISPARAM, OutMessage, retList,
                                "Invalid request: Config Byte needs to be specified");
+        }
+
+    }
+    else if(parse.isKeyValid("autoreconnect_enable"))
+    {
+        if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration))
+        {
+            // the config byte is needed for the autoreconnect command
+            // sending a getconfig model message and returning an error to 
+            // reissue the autoreconnect command
+            CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+
+            if( getOperation(Emetcon::GetConfig_Model, interest_om->Buffer.BSt) )
+            {
+                interest_om->Sequence = Emetcon::GetConfig_Model;
+
+                //  make this return message disappear so it doesn't confuse the client
+                interest_om->Request.Connection = 0;
+
+                outList.push_back(interest_om);
+            }
+            else
+            {
+                delete interest_om;
+            }
+            nRet  = ExecutionComplete;
+
+            returnErrorMessage(MISCONFIG, OutMessage, retList,
+                               "Invalid request: Config Byte has been requested.  Reissue autoreconnect command.");
+        }
+        else
+        {
+            function = Emetcon::PutConfig_AutoReconnect;
+            getOperation(function, OutMessage->Buffer.BSt);
+            OutMessage->Buffer.BSt.Message[0] = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration);
+            //bit 2 is the disable reconnect button
+            //when this bit is set, the disconnect does not require a button to be pressed to reconnect the meter
+            if(parse.getiValue("autoreconnect_enable"))
+            {
+                OutMessage->Buffer.BSt.Message[0] |= 0x04;
+            }
+            else
+            {
+                OutMessage->Buffer.BSt.Message[0] &= 0xFB;
+            }
+
+            OutMessage->Sequence = Emetcon::PutConfig_AutoReconnect;
+            found = true;
         }
 
     }

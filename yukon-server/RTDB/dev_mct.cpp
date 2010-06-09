@@ -949,6 +949,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_PhaseDetectClear:
         case Emetcon::PutConfig_PhaseDetect:
         case Emetcon::PutConfig_AlarmMask:
+        case Emetcon::PutConfig_AutoReconnect:
         {
             status = decodePutConfig(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -3577,6 +3578,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             case Emetcon::PutConfig_Options:                    resultString = getName() + " / options sent";           break;
             case Emetcon::PutConfig_PhaseDetectClear:           resultString = getName() + " / Phase Detect flag clear sent";       break;
             case Emetcon::PutConfig_PhaseDetect:                resultString = getName() + " / Phase Detect test settings sent";    break;
+            case Emetcon::PutConfig_AutoReconnect:              resultString = getName() + " / Autoreconnect settings sent";    break;
 
             case Emetcon::PutConfig_Install:
             {

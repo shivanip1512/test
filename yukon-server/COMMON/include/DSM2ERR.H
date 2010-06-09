@@ -312,6 +312,9 @@ IM_EX_CTIBASE std::string FormatError(USHORT Error);
 #define ALPHABUFFERERROR        93
 #define ALPHABUFFERERROR_TXT    "Bad Data Buffer for IED"
 #define ALPHABUFFERERROR_TYPE   ERRTYPESYSTEM
+#define MISCONFIG               94
+#define MISCONFIG_TXT           "Missing Required Configuration Entry"
+#define MISCONFIG_TYPE          ERRTYPESYSTEM
 
 #define BADSOCK                 98
 #define BADSOCK_TXT             "Bad Nexus Specification"

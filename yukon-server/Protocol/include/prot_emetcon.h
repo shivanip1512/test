@@ -165,6 +165,7 @@ public:
         PutConfig_DST,
         PutConfig_Holiday,
         PutConfig_Options,
+        PutConfig_AutoReconnect,
         PutConfig_Outage,
         PutConfig_OutageThreshold,
         PutConfig_TimeAdjustTolerance,

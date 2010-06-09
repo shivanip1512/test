@@ -207,5 +207,7 @@ std::string inputString[] = {
 "putconfig emetcon parameters ratio 290 display 5x1 test 7 errors disable",
 "putconfig emetcon parameters ratio 25 display 5x1 test 10 errors disable",
 "putconfig emetcon parameters ratio 25 display 6x1 test 10 errors disable",
+"putconfig emetcon autoreconnect enable",
+"putconfig emetcon autoreconnect disable",
 };
 

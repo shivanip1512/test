@@ -2596,6 +2596,14 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 _cmd["alarm_mask_meter"] =  CtiParseValue( flag );
             }
         }
+        if(CmdStr.contains(" autoreconnect enable"))
+        {
+            _cmd["autoreconnect_enable"] = CtiParseValue( true );
+        }
+        if(CmdStr.contains(" autoreconnect disable"))
+        {
+            _cmd["autoreconnect_enable"] = CtiParseValue( false );
+        }
 
         if(CmdStr.contains(" raw"))
         {

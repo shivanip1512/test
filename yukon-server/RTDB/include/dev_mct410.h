@@ -268,6 +268,9 @@ protected:
         FuncRead_DisconnectStatusPos = 0xfe,
         FuncRead_DisconnectStatusLen =    1,
 
+        FuncWrite_ConfigPos          = 0x01,
+        FuncWrite_ConfigLen          = 1,
+
         FuncWrite_ConfigAlarmMaskPos = 0x01,
         FuncWrite_ConfigAlarmMaskLen = 5,
 
