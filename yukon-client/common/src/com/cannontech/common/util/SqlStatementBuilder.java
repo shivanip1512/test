@@ -237,15 +237,26 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
 
     private void addArgument(Object argument) {
+        arguments.add(convertArgumentToJdbcObject(argument));
+    }
+    
+    /** 
+     * This method takes in a java object and tries to convert it over to a database
+     * friendly representation of the object.
+     * 
+     * @param argument - A java object
+     * @return - A Sql friendly object
+     */
+    public static Object convertArgumentToJdbcObject(Object argument) {
         if (argument instanceof DatabaseRepresentationSource) {
-            arguments.add(((DatabaseRepresentationSource) argument).getDatabaseRepresentation());
+            return ((DatabaseRepresentationSource) argument).getDatabaseRepresentation();
         } else if (argument instanceof Enum<?>) {
             Enum<?> e = (Enum<?>) argument;
-            arguments.add(e.name());
+            return e.name();
         } else if (argument instanceof ReadableInstant) {
-            arguments.add(((ReadableInstant) argument).toInstant().toDate());
+            return ((ReadableInstant) argument).toInstant().toDate();
         } else {
-            arguments.add(argument);
+            return argument;
         }
     }
     

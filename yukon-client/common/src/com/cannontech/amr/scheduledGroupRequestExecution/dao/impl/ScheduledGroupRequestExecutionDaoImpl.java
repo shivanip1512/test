@@ -384,7 +384,9 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     };
     
 	public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair>(simpleJdbcTemplate, nextValueHelper);
+        template = 
+            new SimpleTableAccessTemplate<ScheduledGroupRequestExecutionPair>(yukonJdbcTemplate, 
+                                                                               nextValueHelper);
         template.withTableName("ScheduledGrpCommandRequest");
         template.withPrimaryKeyField("CommandRequestExecContextId");
         template.withFieldMapper(fieldMapper); 

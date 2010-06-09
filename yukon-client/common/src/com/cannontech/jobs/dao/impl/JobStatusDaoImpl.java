@@ -5,14 +5,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.model.JobState;
@@ -20,7 +21,7 @@ import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.YukonJob;
 
 public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
-    protected SimpleJdbcOperations jdbcTemplate;
+    protected YukonJdbcTemplate yukonJdbcTemplate;
     protected NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<JobStatus<?>> template;
     private YukonJobBaseRowMapper yukonJobBaseRowMapper;
@@ -72,8 +73,10 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         sql.append("join Job j on js.jobid = j.jobid");
         sql.append("where startTime < ? and stopTime > ?");
         sql.append("order by startTime " + (reverse ? "desc" : ""));
-        JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
-        List<JobStatus<YukonJob>> resultList = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, lateLimit, earlyLimit);
+        JobStatusRowMapper<YukonJob> jobStatusRowMapper = 
+            new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+        List<JobStatus<YukonJob>> resultList = 
+            yukonJdbcTemplate.query(sql.toString(), jobStatusRowMapper, lateLimit, earlyLimit);
         return resultList;
     }
     
@@ -85,8 +88,10 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         sql.append("join Job j on js.jobid = j.jobid");
         sql.append("where js.jobid = ?");
         sql.append("order by js.startTime desc");
-        JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
-        List<JobStatus<YukonJob>> results = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobId);
+        JobStatusRowMapper<YukonJob> jobStatusRowMapper = 
+            new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+        List<JobStatus<YukonJob>> results = 
+            yukonJdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobId);
         
         if (results.size() == 0) {
         	return null;
@@ -105,7 +110,8 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
             sql.append("JOIN Job j ON js.jobid = j.jobid");
             sql.append("WHERE js.jobid = ?");
             sql.append("AND js.JobState = ?");
-            result = jdbcTemplate.queryForObject(sql.toString(), Date.class, jobId, JobState.COMPLETED.name());
+            result = yukonJdbcTemplate.queryForObject(sql.toString(), Date.class, jobId, 
+                                                      JobState.COMPLETED.name());
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -113,15 +119,15 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
     }
     
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<JobStatus<?>>(jdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<JobStatus<?>>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("JobStatus");
         template.withPrimaryKeyField("jobStatusId");
         template.withFieldMapper(jobStatusFieldMapper); 
     }
     
-    @Required
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Required

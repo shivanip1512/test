@@ -6,6 +6,9 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+
+import org.joda.time.Instant;
 
 public class YukonResultSet {
     private ResultSet rs;
@@ -42,9 +45,9 @@ public class YukonResultSet {
         return rs.getBlob(columnLabel);
     }
 
-    public boolean getBoolean(String columnLabel) throws SQLException {
-        return rs.getBoolean(columnLabel);
-    }
+//    public boolean getBoolean(String columnLabel) throws SQLException {
+//        return rs.getBoolean(columnLabel);
+//    }
 
     public byte getByte(String columnLabel) throws SQLException {
         return rs.getByte(columnLabel);
@@ -105,6 +108,14 @@ public class YukonResultSet {
 //    public Timestamp getTimestamp(String columnLabel) throws SQLException {
 //        return rs.getTimestamp(columnLabel);
 //    }
+    
+    public Instant getInstant(String columnLabel) throws SQLException {
+        Timestamp timestamp = rs.getTimestamp(columnLabel);
+        if (timestamp == null) {
+            return null;
+        }
+        return new Instant(timestamp);
+    }
 
     public boolean wasNull() throws SQLException {
         return rs.wasNull();

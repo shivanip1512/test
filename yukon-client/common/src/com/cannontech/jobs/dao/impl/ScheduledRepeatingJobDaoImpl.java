@@ -65,7 +65,8 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         
         jobRowMapper = getJobRowMapper();
         
-        template = new SimpleTableAccessTemplate<ScheduledRepeatingJob>(jdbcTemplate, nextValueHelper);
+        template = 
+            new SimpleTableAccessTemplate<ScheduledRepeatingJob>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("JobScheduledRepeating");
         template.withPrimaryKeyField("jobId");
         template.withFieldMapper(jobFieldMapper); 
@@ -77,7 +78,7 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
             "FROM JobScheduledRepeating JSR " +
             "JOIN Job J on J.JobId = JSR.JobId";
         
-        List<ScheduledRepeatingJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
+        List<ScheduledRepeatingJob> jobList = yukonJdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledRepeatingJob> jobSet = new HashSet<ScheduledRepeatingJob>(jobList);
         
         return jobSet;
@@ -90,7 +91,8 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
             "join Job on Job.jobId = jsr.jobId " +
             "where Job.beanName = ?";
         
-        List<ScheduledRepeatingJob> jobList = jdbcTemplate.query(sql, jobRowMapper, definition.getName());
+        List<ScheduledRepeatingJob> jobList = 
+            yukonJdbcTemplate.query(sql, jobRowMapper, definition.getName());
         Set<ScheduledRepeatingJob> jobSet = new HashSet<ScheduledRepeatingJob>(jobList);
         
         return jobSet;
@@ -104,9 +106,12 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         sql.append("join Job j on jsr.jobId = j.jobId");
         sql.append("where jobState = ?");
         String jobState = JobState.STARTED.name();
-        JobStatusRowMapper<ScheduledRepeatingJob> jobStatusRowMapper = new JobStatusRowMapper<ScheduledRepeatingJob>(jobRowMapper);
-        List<JobStatus<ScheduledRepeatingJob>> resultList = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobState);
-        HashSet<JobStatus<ScheduledRepeatingJob>> resultSet = new HashSet<JobStatus<ScheduledRepeatingJob>>(resultList);
+        JobStatusRowMapper<ScheduledRepeatingJob> jobStatusRowMapper = 
+            new JobStatusRowMapper<ScheduledRepeatingJob>(jobRowMapper);
+        List<JobStatus<ScheduledRepeatingJob>> resultList = 
+            yukonJdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobState);
+        HashSet<JobStatus<ScheduledRepeatingJob>> resultSet = 
+            new HashSet<JobStatus<ScheduledRepeatingJob>>(resultList);
         return resultSet;
     }
 
@@ -128,7 +133,7 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
             "FROM JobScheduledRepeating jsr " +
             "JOIN Job ON Job.jobId = jsr.jobId " +
             "WHERE Job.jobId = ?";
-        ScheduledRepeatingJob job = jdbcTemplate.queryForObject(sql, mapper, id);
+        ScheduledRepeatingJob job = yukonJdbcTemplate.queryForObject(sql, mapper, id);
         
         return job;
     }

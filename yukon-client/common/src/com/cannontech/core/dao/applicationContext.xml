@@ -56,7 +56,6 @@
   	<property name="contactDao" ref="contactDao"/>
   	<property name="yukonUserDao" ref="yukonUserDao"/>
     <property name="databaseCache" ref="databaseCache"/>
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
   <bean id="demandResponseDao" class="com.cannontech.core.dao.impl.DemandResponseDaoImpl">
     <property name="yukonJdbcTemplate" ref="simpleJdbcTemplate" />
@@ -93,7 +92,6 @@
   </bean>
   <bean id="lmControlHistoryDao" class="com.cannontech.core.dao.impl.LMControlHistoryDaoImpl" >
     <property name="nextValueHelper" ref="nextValueHelper" />  
-    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   <bean id="lmDao" class="com.cannontech.core.dao.impl.LMDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>    

@@ -11,21 +11,22 @@ import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public final class SimpleTableAccessTemplate<T> {
 
     private String tableName;
-    private final SimpleJdbcOperations jdbcTemplate;
+    private final YukonJdbcTemplate yukonJdbcTemplate;
     private FieldMapper<T> fieldMapper;
     private final NextValueHelper nextValueHelper;
     private String primaryKeyField;
     private Integer primaryKeyValidOver = null;
 
-    public SimpleTableAccessTemplate(final SimpleJdbcOperations jdbcTemplate, final NextValueHelper nextValueHelper) {
-        this.jdbcTemplate = jdbcTemplate;
+    public SimpleTableAccessTemplate(final YukonJdbcTemplate yukonJdbcTemplate, 
+                                      final NextValueHelper nextValueHelper) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
         this.nextValueHelper = nextValueHelper;
     }
 
@@ -108,7 +109,7 @@ public final class SimpleTableAccessTemplate<T> {
         
         PreparedStatementSetter pss = createPreparedStatementSetter(parameterSource, fieldNameList);
         
-        jdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
+        yukonJdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
         fieldMapper.setPrimaryKey(object, nextId);
     }
     
@@ -150,17 +151,21 @@ public final class SimpleTableAccessTemplate<T> {
         // get property setter
         PreparedStatementSetter pss = createPreparedStatementSetter(parameterSource, fieldNameList);
         
-        jdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
+        yukonJdbcTemplate.getJdbcOperations().update(sql.toString(), pss);
     }
 
-    private PreparedStatementSetter createPreparedStatementSetter(final MapSqlParameterSource parameterSource, final List<String> fieldNameList) {
+    private PreparedStatementSetter createPreparedStatementSetter(final MapSqlParameterSource parameterSource, 
+                                                                   final List<String> fieldNameList) {
         PreparedStatementSetter pss = new PreparedStatementSetter() {
+            
+            @Override
             public void setValues(PreparedStatement ps) throws SQLException {
                 int position = 1;
                 for (String fieldName : fieldNameList) {
                     Object value = parameterSource.getValue(fieldName);
+                    Object jdbcValue = SqlStatementBuilder.convertArgumentToJdbcObject(value);
                     int sqlType = parameterSource.getSqlType(fieldName);
-                    StatementCreatorUtils.setParameterValue(ps, position++, sqlType, null, value);
+                    StatementCreatorUtils.setParameterValue(ps, position++, sqlType, null, jdbcValue);
                 }
             }
 

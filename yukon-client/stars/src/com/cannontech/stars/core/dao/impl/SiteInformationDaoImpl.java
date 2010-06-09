@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.CtiUtilities;
@@ -17,13 +16,14 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.SiteInformationDao;
 
 public class SiteInformationDaoImpl implements SiteInformationDao, InitializingBean {
     
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private SimpleTableAccessTemplate<LiteSiteInformation> siteInfoTemplate;
     private NextValueHelper nextValueHelper;
     private static String TABLE_NAME = "SiteInformation";
@@ -61,7 +61,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SiteId, Feeder, Pole, TransformerSize, ServiceVoltage, SubstationId");
         sql.append("FROM SiteInformation WHERE SiteId = ?");
-        LiteSiteInformation siteInfo = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, siteInfoId); 
+        LiteSiteInformation siteInfo = yukonJdbcTemplate.queryForObject(sql.toString(), rowMapper, siteInfoId); 
         return siteInfo;
     }
     
@@ -86,7 +86,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SubstationId FROM Substation WHERE SubstationName = ?");
         try {
-            int subId = simpleJdbcTemplate.queryForInt(sql.toString(), subName);
+            int subId = yukonJdbcTemplate.queryForInt(sql.toString(), subName);
             return subId;
         }catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find SubstationId for name: " + subName);
@@ -98,7 +98,7 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT SubstationName FROM Substation WHERE SubstationId = ?");
         try {
-            String subName = simpleJdbcTemplate.queryForObject(sql.toString(), String.class, subId);
+            String subName = yukonJdbcTemplate.queryForObject(sql.toString(), String.class, subId);
             return subName;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find SubstationName for Id: " + subId);
@@ -126,8 +126,8 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Autowired
@@ -136,7 +136,8 @@ public class SiteInformationDaoImpl implements SiteInformationDao, InitializingB
     }
     
     public void afterPropertiesSet() throws Exception {
-        siteInfoTemplate = new SimpleTableAccessTemplate<LiteSiteInformation>(simpleJdbcTemplate, nextValueHelper);
+        siteInfoTemplate = 
+            new SimpleTableAccessTemplate<LiteSiteInformation>(yukonJdbcTemplate, nextValueHelper);
         siteInfoTemplate.withTableName(TABLE_NAME);
         siteInfoTemplate.withPrimaryKeyField("SiteId");
         siteInfoTemplate.withFieldMapper(siteInfoFieldMapper); 

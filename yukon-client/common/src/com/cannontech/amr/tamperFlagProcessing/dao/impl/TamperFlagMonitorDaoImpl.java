@@ -10,7 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +20,13 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.TamperFlagMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, InitializingBean  {
 
 	private static final ParameterizedRowMapper<TamperFlagMonitor> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<TamperFlagMonitor> template;
     
@@ -61,7 +61,8 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     	TamperFlagMonitor tamperFlagMonitor = null;
     	
     	try {
-    		tamperFlagMonitor = simpleJdbcTemplate.queryForObject(selectById, rowMapper, tamperFlagMonitorId);
+    		tamperFlagMonitor = 
+    		    yukonJdbcTemplate.queryForObject(selectById, rowMapper, tamperFlagMonitorId);
     	} catch (EmptyResultDataAccessException e) {
     		throw new TamperFlagMonitorNotFoundException();
     	}
@@ -71,19 +72,19 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     
     public boolean processorExistsWithName(String name) {
 
-    	int c = simpleJdbcTemplate.queryForInt(selectCountByName, name);
+    	int c = yukonJdbcTemplate.queryForInt(selectCountByName, name);
     	
     	return c > 0;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<TamperFlagMonitor> getAll() {
-        return simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        return yukonJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
     }
     
     public boolean delete(int tamperFlagMonitorId) {
     	
-    	return simpleJdbcTemplate.update(deleteById, tamperFlagMonitorId) > 0;
+    	return yukonJdbcTemplate.update(deleteById, tamperFlagMonitorId) > 0;
     }
     
     private static final ParameterizedRowMapper<TamperFlagMonitor> createRowMapper() {
@@ -116,15 +117,16 @@ public class TamperFlagMonitorDaoImpl implements TamperFlagMonitorDao, Initializ
     };
     
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<TamperFlagMonitor>(simpleJdbcTemplate, nextValueHelper);
+        template = 
+           new SimpleTableAccessTemplate<TamperFlagMonitor>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("TamperFlagMonitor");
         template.withPrimaryKeyField("TamperFlagMonitorId");
         template.withFieldMapper(tamperFlagMonitorFieldMapper); 
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {

@@ -62,7 +62,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         };
         
         template =
-            new SimpleTableAccessTemplate<ScheduledOneTimeJob>(jdbcTemplate, nextValueHelper);
+            new SimpleTableAccessTemplate<ScheduledOneTimeJob>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("JobScheduledOneTime");
         template.withPrimaryKeyField("jobId");
         template.withFieldMapper(jobFieldMapper);
@@ -72,7 +72,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         String sql =
             "select * " + "from JobScheduledOneTime jsr " + "join Job on Job.jobId = jsr.jobId";
 
-        List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
+        List<ScheduledOneTimeJob> jobList = yukonJdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
 
         return jobSet;
@@ -85,7 +85,8 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
             "join Job on Job.jobId = jsr.jobId " +
             "where Job.beanName = ?";
 
-        List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper, definition.getName());
+        List<ScheduledOneTimeJob> jobList = 
+            yukonJdbcTemplate.query(sql, jobRowMapper, definition.getName());
         Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
         
         return jobSet;
@@ -100,7 +101,9 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         sql.append("where jobState = ?");
         String jobState = JobState.STARTED.name();
         List<JobStatus<ScheduledOneTimeJob>> resultList =
-            jdbcTemplate.query(sql.toString(), new JobStatusRowMapper<ScheduledOneTimeJob>(jobRowMapper), jobState);
+            yukonJdbcTemplate.query(sql.toString(), 
+                                    new JobStatusRowMapper<ScheduledOneTimeJob>(jobRowMapper), 
+                                    jobState);
         HashSet<JobStatus<ScheduledOneTimeJob>> resultSet =
             new HashSet<JobStatus<ScheduledOneTimeJob>>(resultList);
         return resultSet;
@@ -115,7 +118,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         sql.append("left join JobStatus js on js.jobid = j.jobid");
         sql.append("where js.jobid is null");
         List<ScheduledOneTimeJob> resultList =
-            jdbcTemplate.query(sql.toString(), jobRowMapper);
+            yukonJdbcTemplate.query(sql.toString(), jobRowMapper);
         HashSet<ScheduledOneTimeJob> resultSet =
             new HashSet<ScheduledOneTimeJob>(resultList);
         return resultSet;
@@ -139,7 +142,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
             "FROM JobScheduledOneTime jso " +
             "JOIN Job ON Job.jobId = jso.jobId " +
             "WHERE Job.jobId = ?";
-        ScheduledOneTimeJob job = jdbcTemplate.queryForObject(sql, mapper, id);
+        ScheduledOneTimeJob job = yukonJdbcTemplate.queryForObject(sql, mapper, id);
         
         return job;
     }

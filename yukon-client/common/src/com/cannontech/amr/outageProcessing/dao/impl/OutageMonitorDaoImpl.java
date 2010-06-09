@@ -10,7 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +20,13 @@ import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.OutageMonitorNotFoundException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean  {
 
 	private static final ParameterizedRowMapper<OutageMonitor> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<OutageMonitor> template;
     
@@ -62,7 +62,7 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     	OutageMonitor outageMonitor = null;
     	
     	try {
-    		outageMonitor = simpleJdbcTemplate.queryForObject(selectById, rowMapper, outageMonitorId);
+    		outageMonitor = yukonJdbcTemplate.queryForObject(selectById, rowMapper, outageMonitorId);
     	} catch (EmptyResultDataAccessException e) {
     		throw new OutageMonitorNotFoundException();
     	}
@@ -72,19 +72,19 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     
     public boolean processorExistsWithName(String name) {
 
-    	int c = simpleJdbcTemplate.queryForInt(selectCountByName, name);
+    	int c = yukonJdbcTemplate.queryForInt(selectCountByName, name);
     	
     	return c > 0;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<OutageMonitor> getAll() {
-        return simpleJdbcTemplate.query(selectAllSql, rowMapper);
+        return yukonJdbcTemplate.query(selectAllSql, rowMapper);
     }
     
     public boolean delete(int outageMonitorId) {
     	
-    	return simpleJdbcTemplate.update(deleteById, outageMonitorId) > 0;
+    	return yukonJdbcTemplate.update(deleteById, outageMonitorId) > 0;
     }
     
     private static final ParameterizedRowMapper<OutageMonitor> createRowMapper() {
@@ -122,15 +122,15 @@ public class OutageMonitorDaoImpl implements OutageMonitorDao, InitializingBean 
     };
     
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<OutageMonitor>(simpleJdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<OutageMonitor>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName(TABLE_NAME);
         template.withPrimaryKeyField("OutageMonitorId");
         template.withFieldMapper(outageMonitorFieldMapper); 
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {

@@ -7,15 +7,16 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.db.device.lm.LMControlHistory;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -26,7 +27,7 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao, Initializin
     private static final String selectByStartRange;
     private static final String selectByPAObjectIdAndStartRange;
     private static final ParameterizedRowMapper<LMControlHistory> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<LMControlHistory> template;
     
@@ -54,31 +55,31 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao, Initializin
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LMControlHistory getById(final int lmCtrlHistId) throws DataAccessException {
-        LMControlHistory lmControlHistory = simpleJdbcTemplate.queryForObject(selectById, rowMapper, lmCtrlHistId);
+        LMControlHistory lmControlHistory = yukonJdbcTemplate.queryForObject(selectById, rowMapper, lmCtrlHistId);
         return lmControlHistory;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getByPAObjectId(final int paObjectId) {
-        List<LMControlHistory> list = simpleJdbcTemplate.query(selectByPAObjectId, rowMapper, paObjectId);
+        List<LMControlHistory> list = yukonJdbcTemplate.query(selectByPAObjectId, rowMapper, paObjectId);
         return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getByPAObjectIdAndStartDateRange(final int paObjectId, Date firstDate, Date secondDate) {
-        List<LMControlHistory> list = simpleJdbcTemplate.query(selectByPAObjectIdAndStartRange, rowMapper, paObjectId, firstDate, secondDate);
+        List<LMControlHistory> list = yukonJdbcTemplate.query(selectByPAObjectIdAndStartRange, rowMapper, paObjectId, firstDate, secondDate);
         return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getByStartDateRange(Date firstDate, Date secondDate) {
-        List<LMControlHistory> list = simpleJdbcTemplate.query(selectByStartRange, rowMapper, firstDate, secondDate);
+        List<LMControlHistory> list = yukonJdbcTemplate.query(selectByStartRange, rowMapper, firstDate, secondDate);
         return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMControlHistory> getAll() {
-        List<LMControlHistory> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+        List<LMControlHistory> list = yukonJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
         return list;
     }
     
@@ -132,12 +133,14 @@ public class LMControlHistoryDaoImpl implements LMControlHistoryDao, Initializin
         this.nextValueHelper = nextValueHelper;
     }
 
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    @Autowired
+    public void setYukonJdbcTemplate(final YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<LMControlHistory>(simpleJdbcTemplate, nextValueHelper);
+        template = 
+            new SimpleTableAccessTemplate<LMControlHistory>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName(TABLE_NAME);
         template.withPrimaryKeyField("lmCtrlHistId");
         template.withFieldMapper(lmControlHistoryFieldMapper); 

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -29,6 +28,7 @@ import com.cannontech.database.AbstractRowCallbackHandler;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -49,7 +49,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     private YukonUserDao yukonUserDao;    
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private GraphCustomerListDao graphCustomerListDao;
     private DeviceCustomerListDao deviceCustomerListDao;
     private static final String CUSTOMER_TABLE_NAME = "Customer";
@@ -168,13 +168,13 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         }
 
         String deleteCustomerNotifGroupMap = "DELETE FROM CustomerNotifGroupMap WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(deleteCustomerNotifGroupMap, customerId);
+        yukonJdbcTemplate.update(deleteCustomerNotifGroupMap, customerId);
         boolean isCICustomer = isCICustomer(customerId);
         if(isCICustomer) {
             deleteCICustomer(customerId);
         }
         String delete = "DELETE FROM Customer WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(delete, customerId);
+        yukonJdbcTemplate.update(delete, customerId);
         
         /*
          * Delete primary contact
@@ -188,21 +188,21 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     @Override
     public void deleteCICustomer(Integer customerId) {
         String sql = "DELETE FROM EnergyCompanyCustomerList WHERE CustomerID = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        yukonJdbcTemplate.update(sql, customerId);
         sql = "DELETE FROM LMEnergyExchangeHourlyCustomer WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        yukonJdbcTemplate.update(sql, customerId);
         sql = "DELETE FROM LMEnergyExchangeCustomerReply WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        yukonJdbcTemplate.update(sql, customerId);
         sql = "DELETE FROM LMCurtailCustomerActivity WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        yukonJdbcTemplate.update(sql, customerId);
         sql = "DELETE FROM CICustomerPointData WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        yukonJdbcTemplate.update(sql, customerId);
         sql = "DELETE FROM CustomerBaseLinePoint WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql, customerId);
+        yukonJdbcTemplate.update(sql, customerId);
         
         int companyAddressId = getAddressIdForCICustomer(customerId);
         String delete = "DELETE FROM CICustomerBase WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(delete, customerId);
+        yukonJdbcTemplate.update(delete, customerId);
         if(companyAddressId > CtiUtilities.NONE_ZERO_ID) {
             addressDao.remove(companyAddressId);
         }
@@ -211,14 +211,14 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     @Override
     public int getAddressIdForCICustomer(int customerId) {
         String sql = "SELECT MainAddressId from CICustomerBase WHERE CustomerId = ?";
-        int addressId = simpleJdbcTemplate.queryForInt(sql, customerId);
+        int addressId = yukonJdbcTemplate.queryForInt(sql, customerId);
         return addressId;
     }
     
     @Override
     public boolean isCICustomer(Integer customerId) {
         String sql = "SELECT CustomerTypeId FROM Customer WHERE CustomerId = ?";
-        Integer type = simpleJdbcTemplate.queryForInt(sql, customerId);
+        Integer type = yukonJdbcTemplate.queryForInt(sql, customerId);
         if(type == CustomerTypes.CUSTOMER_CI) {
             return true;
         }
@@ -234,7 +234,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("LEFT JOIN ECToAccountMapping ectam ON ca.AccountId = ectam.AccountId");
         sql.append("WHERE c.CustomerId = ?");
 
-        LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql.getSql(),
+        LiteCustomer customer = yukonJdbcTemplate.queryForObject(sql.getSql(),
                                                                   new TypeAwareCustomerRowMapper(),
                                                                   customerId);
 
@@ -256,7 +256,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("WHERE c.CustomerId =").appendArgument(customerId);
         sql.append("ORDER BY cn.Ordering");
 
-        List<CustomerInformation> customerInfo = simpleJdbcTemplate.query(sql.getSql(),
+        List<CustomerInformation> customerInfo = yukonJdbcTemplate.query(sql.getSql(),
                                                                   new CustomerInformationRowMapper(),
                                                                   sql.getArguments());
 
@@ -331,7 +331,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append(" WHERE cu.PrimaryContactId = c.ContactId");
         sql.append(" AND c.LoginId = ?");
 
-        int customerId = simpleJdbcTemplate.queryForInt(sql.toString(), userId);
+        int customerId = yukonJdbcTemplate.queryForInt(sql.toString(), userId);
         LiteCustomer customer = this.getLiteCustomer(customerId);
 
         return customer;
@@ -348,7 +348,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         sql.append("ORDER BY CompanyName");
 
         final CiCustomerRowMapper customerRowMapper = new CiCustomerRowMapper();
-        simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), new AbstractRowCallbackHandler() {
+        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), new AbstractRowCallbackHandler() {
             public void processRow(ResultSet rs, int rowNum) throws SQLException {
                 LiteCICustomer lc = customerRowMapper.mapRow(rs, rowNum);
                 try {
@@ -365,7 +365,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         final SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
         sql.append("FROM CICustomerBase");
-        int result = simpleJdbcTemplate.queryForInt(sql.getSql());
+        int result = yukonJdbcTemplate.queryForInt(sql.getSql());
         return result;
     }
     
@@ -448,7 +448,7 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     @Override
     public void setTempForCustomer(int customerId, String temp) {
         String sql = "UPDATE Customer SET TemperatureUnit = ? WHERE CustomerId = ?";
-        simpleJdbcTemplate.update(sql.toString(), temp ,customerId);
+        yukonJdbcTemplate.update(sql.toString(), temp ,customerId);
     }
     
     @Override
@@ -488,8 +488,9 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
         this.yukonUserDao = yukonUserDao;
     }
 
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Autowired
@@ -518,13 +519,13 @@ public final class CustomerDaoImpl implements CustomerDao, InitializingBean {
     }
     
     public void afterPropertiesSet() throws Exception {
-        liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(simpleJdbcTemplate, nextValueHelper);
+        liteCustomerTemplate = new SimpleTableAccessTemplate<LiteCustomer>(yukonJdbcTemplate, nextValueHelper);
         liteCustomerTemplate.withTableName(CUSTOMER_TABLE_NAME);
         liteCustomerTemplate.withPrimaryKeyField("CustomerId");
         liteCustomerTemplate.withFieldMapper(customerFieldMapper);
         liteCustomerTemplate.withPrimaryKeyValidOver(-1);
         
-        liteCICustomerTemplate = new SimpleTableAccessTemplate<LiteCICustomer>(simpleJdbcTemplate, nextValueHelper);
+        liteCICustomerTemplate = new SimpleTableAccessTemplate<LiteCICustomer>(yukonJdbcTemplate, nextValueHelper);
         liteCICustomerTemplate.withTableName(CI_CUSTOMER_TABLE_NAME);
         liteCICustomerTemplate.withPrimaryKeyField("CustomerId");
         liteCICustomerTemplate.withFieldMapper(ciCustomerFieldMapper); 

@@ -12,7 +12,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +25,7 @@ import com.cannontech.common.validation.model.ValidationMonitor;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -35,7 +35,7 @@ import com.google.common.collect.SetMultimap;
 public class ValidationMonitorDaoImpl implements ValidationMonitorDao, InitializingBean  {
 
     private static final ParameterizedRowMapper<ValidationMonitor> rowMapper;
-    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<ValidationMonitor> template;
     private DeviceGroupService deviceGroupService;
@@ -79,9 +79,13 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public ValidationMonitor getById(int validationMonitorId) throws ValidationMonitorNotFoundException {
         ValidationMonitor validationMonitor = null;
-        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM ValidationMonitor WHERE ValidationMonitorId = ").appendArgument(validationMonitorId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * ");
+        sql.append("FROM ValidationMonitor ");
+        sql.append("WHERE ValidationMonitorId ").eq(validationMonitorId);
+
         try {
-            validationMonitor = simpleJdbcTemplate.queryForObject(sql.getSql(), rowMapper, sql.getArguments());
+            validationMonitor = yukonJdbcTemplate.queryForObject(sql, rowMapper);
         } catch (EmptyResultDataAccessException e) {
             throw new ValidationMonitorNotFoundException();
         }
@@ -91,8 +95,12 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     
     @Override
     public boolean processorExistsWithName(String name) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT COUNT(*) FROM ValidationMonitor WHERE ValidationMonitorName = ").appendArgument(name);
-        int c = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) ");
+        sql.append("FROM ValidationMonitor ");
+        sql.append("WHERE ValidationMonitorName ").eq(name);
+        
+        int c = yukonJdbcTemplate.queryForInt(sql);
         
         return c > 0;
     }
@@ -100,14 +108,20 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<ValidationMonitor> getAll() {
-        SqlStatementBuilder sql = new SqlStatementBuilder("SELECT * FROM ValidationMonitor");
-        return simpleJdbcTemplate.query(sql.getSql(), rowMapper, sql.getArguments());
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * ");
+        sql.append("FROM ValidationMonitor");
+        
+        return yukonJdbcTemplate.query(sql, rowMapper);
     }
     
     @Override
     public boolean delete(int validationMonitorId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder("DELETE FROM ValidationMonitor WHERE ValidationMonitorId = ").appendArgument(validationMonitorId);
-        return simpleJdbcTemplate.update(sql.getSql(), sql.getArguments()) > 0;
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM ValidationMonitor ");
+        sql.append("WHERE ValidationMonitorId ").eq(validationMonitorId);
+        
+        return yukonJdbcTemplate.update(sql) > 0;
     }
     
     private static final ParameterizedRowMapper<ValidationMonitor> createRowMapper() {
@@ -153,7 +167,8 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     };
     
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<ValidationMonitor>(simpleJdbcTemplate, nextValueHelper);
+        template = 
+            new SimpleTableAccessTemplate<ValidationMonitor>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("ValidationMonitor");
         template.withPrimaryKeyField("ValidationMonitorId");
         template.withFieldMapper(validationMonitorFieldMapper); 
@@ -165,8 +180,8 @@ public class ValidationMonitorDaoImpl implements ValidationMonitorDao, Initializ
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
     
     @Autowired

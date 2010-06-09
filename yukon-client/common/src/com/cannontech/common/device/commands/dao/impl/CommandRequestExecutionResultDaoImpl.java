@@ -24,7 +24,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecutionResultDao, InitializingBean {
 
 	private static final RowAndFieldMapper<CommandRequestExecutionResult> rowAndFieldMapper;
-    private YukonJdbcTemplate simpleJdbcTemplate;
+    private YukonJdbcTemplate yukonJdbcTemplate;
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<CommandRequestExecutionResult> template;
     
@@ -63,7 +63,8 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         
         sql.append("ORDER BY CompleteTime");
         
-        List<CommandRequestExecutionResult> list = simpleJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
+        List<CommandRequestExecutionResult> list = 
+            yukonJdbcTemplate.query(sql.getSql(), rowAndFieldMapper, sql.getArguments());
         return list;
 	}
     
@@ -76,21 +77,22 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 	        }
 	    };
 	    
-    	List<Integer> resultIds = simpleJdbcTemplate.query(selectResultIdsById, mapper, commandRequestExecutionId);
+    	List<Integer> resultIds = 
+    	    yukonJdbcTemplate.query(selectResultIdsById, mapper, commandRequestExecutionId);
     	return resultIds;
     }
     
     // GET RESULT COUNT BY CRE ID
     public int getCountByExecutionId(int commandRequestExecutionId) {
-    	return simpleJdbcTemplate.queryForInt(selectCountById, commandRequestExecutionId);
+    	return yukonJdbcTemplate.queryForInt(selectCountById, commandRequestExecutionId);
     }
     
     public int getSucessCountByExecutionId(int commandRequestExecutionId) {
-    	return simpleJdbcTemplate.queryForInt(selectSuccessCountById, commandRequestExecutionId);
+    	return yukonJdbcTemplate.queryForInt(selectSuccessCountById, commandRequestExecutionId);
     }
     
 	public int getFailCountByExecutionId(int commandRequestExecutionId) {
-		return simpleJdbcTemplate.queryForInt(selectFailCountById, commandRequestExecutionId);
+		return yukonJdbcTemplate.queryForInt(selectFailCountById, commandRequestExecutionId);
 	}
 	
 	private SqlStatementBuilder getBaseDeviceSqlForExecutionId(int commandRequestExecutionId) {
@@ -104,31 +106,32 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
 
 	public List<PaoIdentifier> getDeviceIdsByExecutionId(int commandRequestExecutionId) {
 	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
-		return simpleJdbcTemplate.query(sql, new YukonPaoRowMapper());
+		return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
 	}
 
 	public List<PaoIdentifier> getSucessDeviceIdsByExecutionId(int commandRequestExecutionId) {
 	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
 	    sql.append("  AND CRER.ErrorCode = 0");
-		return simpleJdbcTemplate.query(sql, new YukonPaoRowMapper());
+		return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
 	}
 	public List<PaoIdentifier> getFailDeviceIdsByExecutionId(int commandRequestExecutionId) {
 	    SqlStatementBuilder sql = getBaseDeviceSqlForExecutionId(commandRequestExecutionId);
 	    sql.append("  AND CRER.ErrorCode > 0");
-		return simpleJdbcTemplate.query(sql, new YukonPaoRowMapper());
+		return yukonJdbcTemplate.query(sql, new YukonPaoRowMapper());
 	}
     
     
     public void afterPropertiesSet() throws Exception {
-    	template = new SimpleTableAccessTemplate<CommandRequestExecutionResult>(simpleJdbcTemplate, nextValueHelper);
+    	template = new SimpleTableAccessTemplate<CommandRequestExecutionResult>(yukonJdbcTemplate,
+    	                                                                        nextValueHelper);
     	template.withTableName("CommandRequestExecResult");
     	template.withPrimaryKeyField("CommandRequestExecResultId");
     	template.withFieldMapper(rowAndFieldMapper); 
     }
     
     @Autowired
-    public void setSimpleJdbcTemplate(YukonJdbcTemplate simpleJdbcTemplate) {
-		this.simpleJdbcTemplate = simpleJdbcTemplate;
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+		this.yukonJdbcTemplate = yukonJdbcTemplate;
 	}
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {

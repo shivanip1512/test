@@ -3,19 +3,20 @@ package com.cannontech.jobs.dao.impl;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.model.YukonJob;
 
 public class JobDaoBase implements InitializingBean {
-    protected SimpleJdbcOperations jdbcTemplate;
+    protected YukonJdbcTemplate yukonJdbcTemplate;
     
     private FieldMapper<YukonJob> jobFieldMapper = new FieldMapper<YukonJob>() {
 
@@ -53,7 +54,7 @@ public class JobDaoBase implements InitializingBean {
 
 
     public void afterPropertiesSet() throws Exception {
-        template = new SimpleTableAccessTemplate<YukonJob>(jdbcTemplate, nextValueHelper);
+        template = new SimpleTableAccessTemplate<YukonJob>(yukonJdbcTemplate, nextValueHelper);
         template.withTableName("Job");
         template.withPrimaryKeyField("jobId");
         template.withFieldMapper(jobFieldMapper);
@@ -70,7 +71,7 @@ public class JobDaoBase implements InitializingBean {
         SqlStatementBuilder deleteSql = new SqlStatementBuilder();
         deleteSql.append("delete from JobProperty");
         deleteSql.append("where jobId = ?");
-        jdbcTemplate.update(deleteSql.toString(), job.getId());
+        yukonJdbcTemplate.update(deleteSql.toString(), job.getId());
         
         
         // create JobProperty entries
@@ -83,7 +84,7 @@ public class JobDaoBase implements InitializingBean {
             int jobId = job.getId();
             String name = jobProperty.getKey();
             String value = jobProperty.getValue();
-            jdbcTemplate.update(insertSql.toString(), jobPropertyId, jobId, name, value);
+            yukonJdbcTemplate.update(insertSql.toString(), jobPropertyId, jobId, name, value);
         }
     }
 
@@ -93,9 +94,9 @@ public class JobDaoBase implements InitializingBean {
         reInsertProperties(job);
     }
     
-    @Required
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
     }
 
     @Required

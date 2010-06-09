@@ -15,7 +15,6 @@
     </bean>
 
     <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
@@ -28,20 +27,17 @@
     </bean>
     
     <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
         <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
     </bean>
     
     <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
 
     <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
