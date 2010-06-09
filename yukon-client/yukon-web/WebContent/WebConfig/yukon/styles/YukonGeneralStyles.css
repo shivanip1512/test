@@ -916,8 +916,8 @@ table.rowHighlighting tr:hover td {
     background-color: yellow;
 }
 
-td.cellHighlighting:hover {
-    background-color: yellow;
+.editable:hover {
+    background-color: lemonchiffon;
 }
 
 #startMultipleProgramsOverridePrograms .override {

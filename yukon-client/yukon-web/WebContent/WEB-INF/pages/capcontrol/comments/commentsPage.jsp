@@ -127,7 +127,7 @@
                         
                             <c:forEach var="comment" items="${comments}">
                                 <tr id="commentRow_${comment.id}" class="<tags:alternateRow odd="" even="altRow"/>">
-                                    <td class="cellHighlighting">
+                                    <td class="editable">
                                         <div id="editCommentSpan_${comment.id}" style="display: none;">
                                             <input id="editComment_${comment.id}" type="text" 
                                                 style="margin-right: 5px;width:350px;" 
