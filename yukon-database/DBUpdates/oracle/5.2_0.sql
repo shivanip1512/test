@@ -133,3 +133,4 @@ WHERE RolePropertyId IN (-90000, -40172, -40134, -40133, -40117, -20892,
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
 /**************************************************************/ 
+INSERT INTO CTIDatabase VALUES ('5.2', 'Matt K', '10-JUN-2010', 'Latest Update', 0);
