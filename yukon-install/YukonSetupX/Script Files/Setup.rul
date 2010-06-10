@@ -356,7 +356,7 @@ begin
 	SaveServiceSettings();
 	
 	//set installer to update all features that are currently installed
-	FeatureUpdate("");
+	FeatureReinstall("");
 	
 	//prepare for file transfer
 	SetStatusWindow(0, "");
