@@ -29,11 +29,11 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
     case CTRL_BREAK_EVENT:
+    case CTRL_LOGOFF_EVENT:
         {
             gQuit = true;
             return TRUE;
         }
-    case CTRL_LOGOFF_EVENT:
     default:
         {
             return FALSE;
