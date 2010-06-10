@@ -34,6 +34,7 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
             gQuit = true;
             return TRUE;
         }
+
     default:
         {
             return FALSE;
@@ -93,9 +94,9 @@ void CtiSimulatorService::Run()
    // set service as running Now
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
-   SetStatus(SERVICE_STOP_PENDING, 50, 40000 );
-
    _simulatorThread.join();
+
+   SetStatus(SERVICE_STOP_PENDING, 50, 40000 );
 }
 
 void CtiSimulatorService::ParseArgs(DWORD argc, LPTSTR* argv)
