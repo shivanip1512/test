@@ -344,6 +344,10 @@ begin
 		goto Dialog_Backup;
 	endif;
 	
+	//Try to stop all the services, just in case we have a really
+	//incompetent user who ignored the warning
+	StopYukonServices();
+	
 	//replace the pre-5.0 DB cparms if they exist in master.cfg
 	sMasterConfig = TARGETDIR + "\\Server\\Config\\master.cfg";
 	ReplaceStringInFile(sMasterConfig, "DB_RWDBDLL", "DB_TYPE");
@@ -356,7 +360,7 @@ begin
 	SaveServiceSettings();
 	
 	//set installer to update all features that are currently installed
-	FeatureReinstall("");
+	FeatureReinstall();
 	
 	//prepare for file transfer
 	SetStatusWindow(0, "");

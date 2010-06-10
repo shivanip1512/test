@@ -271,6 +271,15 @@ begin
 end;
 
 //------------------------------------------------------------
+// Convenience function to stop Yukon services
+//------------------------------------------------------------
+export prototype StopYukonServices();
+function StopYukonServices()
+begin
+	StartYukonServices(FALSE);
+end;
+
+//------------------------------------------------------------
 // Helper function that searches the specified file for the
 // "search" string and replaces all instances with the 
 // "replace" string.
