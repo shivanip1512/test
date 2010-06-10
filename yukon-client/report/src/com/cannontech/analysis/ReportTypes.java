@@ -1,9 +1,3 @@
-/*
- * Created on Feb 2, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.analysis;
 
 import java.util.Vector;
@@ -13,42 +7,63 @@ import com.cannontech.analysis.tablemodel.*;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 
-/**
- * @author snebben
- *
- */
 public enum ReportTypes {
     
-    SYSTEM_LOG("System Log", SystemLogModel.class, ReportGroup.ADMINISTRATIVE),
-    POINT_DATA_INTERVAL("Point Data Interval", PointDataIntervalModel.class, ReportGroup.ADMINISTRATIVE),
-    POINT_DATA_SUMMARY("Point Data Summary", PointDataSummaryModel.class, ReportGroup.ADMINISTRATIVE),  //Peaks/Usage
-    DEVICE_READINGS("Device Readings", DeviceReadingsController.class, ReportGroup.ADMINISTRATIVE),
-    DEVICE_READ_STATISTICS_SUMMARY("Device Read Statistics Summary (31 day)", DeviceReadStatisticsSummaryController.class, ReportGroup.ADMINISTRATIVE),
-    
-    CARRIER_DATA("Carrier Data", CarrierDBModel.class, ReportGroup.DATABASE),
-    CARRIER_ROUTE_MACRO_DATA("Carrier Route Macro Data", RouteMacroModel.class, ReportGroup.DATABASE),
-    CARRIER_ROUTE_DATA("Carrier Route Data", RouteDBModel.class, ReportGroup.DATABASE),
-    REPEATER_ROLE_COLLISION("Repeater Role Collision", RepeaterRoleCollisionModel.class, ReportGroup.DATABASE),
-    
-    METER_READ("Meter Reads", MeterReadModel.class, ReportGroup.METERING),
-    METER_OUTAGE_LOG("Meter Outages Log", MeterOutageModel.class, ReportGroup.METERING),
-    METER_OUTAGE_COUNT("Meter Outage Counts", MeterOutageCountModel.class, ReportGroup.METERING),
-    METER_DISCONNECT_STATUS("Meter Disconnect Status", DisconnectModel.class, ReportGroup.METERING),
-    LP_SETUP_DATA("Load Profile Setup Data", LPSetupDBModel.class, ReportGroup.METERING),
-    LP_POINT_DATA_SUMMARY("LP Point Data Summary", LPDataSummaryModel.class, ReportGroup.METERING),
-    SCHEDULED_METER_READS("Scheduled Meter Reads", ScheduledMeterReadModel.class, ReportGroup.METERING),
-    METER_USAGE("Meter Usage", MeterUsageModel.class, ReportGroup.METERING),
+    SYSTEM_LOG("System Log", SystemLogModel.class, ReportGroup.ADMINISTRATIVE,
+        "Detailed report of actions, including username and time, which have occurred in the Yukon database."),
+    POINT_DATA_INTERVAL("Point Data Interval", PointDataIntervalModel.class, ReportGroup.ADMINISTRATIVE,
+        "Detailed report of archived point data values, timestamp, and quality."),
+    POINT_DATA_SUMMARY("Point Data Summary", PointDataSummaryModel.class, ReportGroup.ADMINISTRATIVE,  
+        "Summary report of archived point data values and timestamps; includes 6 peaks and lows per point."), //Peaks/Usage
+    DEVICE_READINGS("Device Readings", DeviceReadingsController.class, ReportGroup.ADMINISTRATIVE,
+        "Details report of archived point data values and timestamps, based on attribute selection."),
+    DEVICE_READ_STATISTICS_SUMMARY("Device Read Statistics Summary (31 day)", DeviceReadStatisticsSummaryController.class, ReportGroup.ADMINISTRATIVE,
+        "Summary report of percentage of devices with archived readings over selected dates; aggregated by device group."),
+        
+    CARRIER_DATA("Carrier Data", CarrierDBModel.class, ReportGroup.DATABASE,
+        "Utility report for Carrier devices; includes name, disabled status, type, meter number, address, and route."),
+    CARRIER_ROUTE_MACRO_DATA("Carrier Route Macro Data", RouteMacroModel.class, ReportGroup.DATABASE,
+        "Utility report for macro routes; includes assigned routes, transmitters, CCU bus numbers, CCU amp use, fixed and variable bits."),
+    CARRIER_ROUTE_DATA("Carrier Route Data", RouteDBModel.class, ReportGroup.DATABASE,
+        "Utility report identifying routes and meter assignments; includes meter name, meter number, address, and type."),
+    REPEATER_ROLE_COLLISION("Repeater Role Collision", RepeaterRoleCollisionModel.class, ReportGroup.DATABASE,
+        "Utility report identifying routes with same fixed and variable bits."),
+        
+    METER_READ("Meter Reads", MeterReadModel.class, ReportGroup.METERING,
+        "Detailed report of successful or missed meter reads, based on the latest archived point for a meter."),
+    METER_OUTAGE_LOG("Meter Outages Log", MeterOutageModel.class, ReportGroup.METERING,
+        "Detailed report of archived outage log data per meter; includes meter information, time and duration of outage."),
+    METER_OUTAGE_COUNT("Meter Outage Counts", MeterOutageCountModel.class, ReportGroup.METERING,
+        "Detailed report of archived blink counts by meter; includes time, values, and delta (count) between readings."),
+    METER_DISCONNECT_STATUS("Meter Disconnect Status", DisconnectModel.class, ReportGroup.METERING,
+        "Detailed report of archived disconnect status by meter; includes meter information, collar address, time, and disconnect status."),
+    LP_SETUP_DATA("Load Profile Setup Data", LPSetupDBModel.class, ReportGroup.METERING,
+        "Utility report for meters and profile configurations; includes meter information and profile intervals (as defined in meter setup)."),
+    LP_POINT_DATA_SUMMARY("LP Point Data Summary", LPDataSummaryModel.class, ReportGroup.METERING,
+        "Summary report of archived profile point data values and timestamps; includes 6 peaks and lows per point."),      
+    SCHEDULED_METER_READS("Scheduled Meter Reads (MACS)", ScheduledMeterReadModel.class, ReportGroup.METERING,
+        "Detailed report of MACS schedules; includes schedule start/stop; request start/stop, and status codes for meters processed."),
+    METER_USAGE("Meter Usage", MeterUsageModel.class, ReportGroup.METERING,
+        "Detailed report of archived kWh readings and calculated usage (delta between readings)."),
     MCT_CONFIG("MCT 430/470 Config To Device", MCTConfigController.class, ReportGroup.METERING,
-               "Report showing 430/470 mcts, config assignments and profile and demand rates."),
-    DISCONNECT_COLLAR_DATA("Disconnect Collar Data", DisconnectCollarController.class, ReportGroup.METERING),
-    SCAN_RATE_SETUP_DATA("Scan Rate Setup Data", ScanRateSetupDBModel.class, ReportGroup.METERING),
-    
-    LM_SYSTEM_LOG("Load Management System Log", LMControlLogModel.class, ReportGroup.LOAD_MANAGEMENT),
-    LG_ACCOUNTING("Load Group Accounting", LoadGroupModel.class, ReportGroup.LOAD_MANAGEMENT),
-    LM_DAILY_PEAKS("Load Management Daily Peaks", DailyPeaksModel.class, ReportGroup.LOAD_MANAGEMENT),
-    LOAD_CONTROL_VERIFICATION("Load Control Verification", LoadControlVerificationModel.class, ReportGroup.LOAD_MANAGEMENT),
-    LCR3102Data("LCR 3102 Data", LCR3102DataController.class, ReportGroup.LOAD_MANAGEMENT),
-    PROGRAM_AND_GEAR_CONTROL("Program and Gear Control", ProgramAndGearControlController.class, ReportGroup.LOAD_MANAGEMENT),
+        "Utility report identifying 430/470 MCT meters and configuration assignments; meter information, profile and demand rates."),
+    DISCONNECT_COLLAR_DATA("Disconnect Collar Data", DisconnectCollarController.class, ReportGroup.METERING,
+        "Utility report for meters with disconnect collar assignments; includes meter information and collar address."),
+    SCAN_RATE_SETUP_DATA("Scan Rate Setup Data", ScanRateSetupDBModel.class, ReportGroup.METERING,
+        "Utility report for meters and scanning configurations; includes meter information and scan intervals (as defined in meter setup)."),
+        
+    LM_SYSTEM_LOG("Load Management System Log", LMControlLogModel.class, ReportGroup.LOAD_MANAGEMENT,
+        "Detailed report of load management actions, including username and time, which have occurred in the Yukon database."),
+    LG_ACCOUNTING("Load Group Accounting", LoadGroupModel.class, ReportGroup.LOAD_MANAGEMENT,
+        "Detailed report of load control events; includes control start/stop times, duration, and aggregated control durations."),
+    LM_DAILY_PEAKS("Load Management Daily Peaks", DailyPeaksModel.class, ReportGroup.LOAD_MANAGEMENT,
+        "Detailed report of control area peak point data; includes peak and off peak values, quality, and time."),
+    LOAD_CONTROL_VERIFICATION("Load Control Verification", LoadControlVerificationModel.class, ReportGroup.LOAD_MANAGEMENT,
+        "Utility report for verifying a transmitter sent or a receiver accepted a load control command."),
+    LCR3102Data("LCR 3102 Data", LCR3102DataController.class, ReportGroup.LOAD_MANAGEMENT,
+        "Detailed report of archived point data from LCR3102 devices; includes serial number, route, run time load, relay shed time, relay, and timestamp."),
+    PROGRAM_AND_GEAR_CONTROL("Program and Gear Control", ProgramAndGearControlController.class, ReportGroup.LOAD_MANAGEMENT,
+        "Detailed report of load program, control area, or control scenario control events; includes gear information."),
     
     /* Cap Control Reports */
 	// Administrative
@@ -57,11 +72,11 @@ public enum ReportTypes {
     CBC_INVENTORY("CBC Inventory", CBCInventoryController.class, ReportGroup.CAP_CONTROL,
         "Detailed report showing cbc information and attached parent objects."),
     CBC_SPECIALAREA_ASSIGNMENT("CBC Special Area Assignment ", CBCSpecialAreaAssignmentController.class, ReportGroup.CAP_CONTROL,
-        "Report showing the special area assignment for cbc's."),
+        "Report showing the special area assignment for a cbc."),
     STRATEGY_ASSIGNMENT("Strategy Assignment ", StrategyAssignmentController.class, ReportGroup.CAP_CONTROL,
         "Report showing the devices assigned to each strategy."),
     CAP_CONTROL_UNSOLICITED_MESSAGES("Unsolicited Messages", CapControlUnsolicitedMessagesController.class, ReportGroup.CAP_CONTROL,
-        "Report showing unsolicited messages recieved form cbc's."),
+        "Report showing unsolicited messages received from a cbc."),
     CAP_CONTROL_DISABLED_DEVICES("Disabled Devices", CapControlDisabledDevicesController.class, ReportGroup.CAP_CONTROL,
         "Report showing disabled capcontrol devices."),
     CAP_CONTROL_MAINTENANCE_PENDING("Maintenance Pending", CapControlMaintenancePendingController.class, ReportGroup.CAP_CONTROL,
@@ -74,14 +89,14 @@ public enum ReportTypes {
     CAP_CONTROL_SCHEDULE_ACTIVITY("Schedule Activity", CapControlEventLogModel.class, ReportGroup.CAP_CONTROL,
         "Detailed report of ending bank status activity or all schedule activity"),
     CAP_CONTROL_SCHEDULE_DETAIL("Schedule Detail", CapControlScheduleDetailController.class, ReportGroup.CAP_CONTROL,
-        "Detailed report showing all capcontrol schedules and thier specifics."),
+        "Detailed report showing all capcontrol schedules and their specifics."),
     CAP_CONTROL_TIME_CONTROLLED_CAPBANKS("Time Controlled Cap Banks", TimeControlledCapBanksController.class, ReportGroup.CAP_CONTROL,
         "Report showing all time controlled capbanks."),
     // Performance
     CAP_CONTROL_CURRENT_STATUS("Current Status", CapControlCurrentStatusModel.class, ReportGroup.CAP_CONTROL,
         "Detailed report of cap bank statuses, based on var response information"),
     CAP_CONTROL_STATE_COMPARISON("State Comparisons", CapControlStateComparisonController.class, ReportGroup.CAP_CONTROL,
-        "Detailed report showing a comparison of capbank states set by var response against its two way cbc reported state."),
+        "Detailed report showing a comparison of capbank states set by var response against its two-way cbc reported state."),
     CAP_CONTROL_NEW_ACTIVITY("New Activity", CapControlNewActivityModel.class, ReportGroup.CAP_CONTROL,
         "Detailed report of capbank activity, including manual and automated controls, operation outcomes, and capcontrol database changes."),
     CAP_CONTROL_OPERATIONS("Operations", CapControlOperationsController.class, ReportGroup.CAP_CONTROL,
@@ -102,32 +117,49 @@ public enum ReportTypes {
         "Report showing the var imbalance on execution."),
     /*END of Cap Control Reports*/
             
-    COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
-    DEVICE_REQUEST_DETAIL("Device Request Detail", DeviceRequestDetailController.class, ReportGroup.STATISTICAL),
+    COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL,
+        "Detailed report of communication statistics by device."),
+    DEVICE_REQUEST_DETAIL("Device Request Detail", DeviceRequestDetailController.class, ReportGroup.STATISTICAL,
+        "Detailed report of data requests by devices."),
     //STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
     //STATISTIC_HISTORY_DEVICE_DATA("Historical Daily Device Statistics", StatisticHistoryDeviceModel.class, ReportGroup.STATISTICAL),
     //STATISTIC_HISTORY_TRANSMITTER_DATA("Historical Daily Transmitter Statistics", StatisticHistoryTransmitterModel.class, ReportGroup.STATISTICAL),
     
-    EC_ACTIVITY_LOG_SUMMARY("Energy Company Activity Log Summary", ActivityModel.class, ReportGroup.STARS),
-    EC_ACTIVITY_LOG_DETAIL("Energy Company Activity Log Detail", ActivityDetailModel.class, ReportGroup.STARS),
-    PROGRAM_DETAIL("Program Detail", ProgramDetailModel.class, ReportGroup.STARS),
-    EC_WORK_ORDER("Work Order", WorkOrderModel.class, ReportGroup.STARS),
-    STARS_LM_SUMMARY("STARS Load Management Summary", StarsLMSummaryModel.class, ReportGroup.STARS),
-    STARS_LM_DETAIL("STARS Load Management Detail", StarsLMDetailModel.class, ReportGroup.STARS),
-    LM_CONTROL_SUMMARY("Customer Control Summary", LMControlSummaryController.class, ReportGroup.STARS),
-    LM_CONTROL_DETAIL("Customer Control Detail", LMControlDetailController.class, ReportGroup.STARS),
+    EC_ACTIVITY_LOG_SUMMARY("Energy Company Activity Log Summary", ActivityModel.class, ReportGroup.STARS,
+        "Summary report of energy company activity; includes aggregate count by contact name, username, account number, and action."),
+    EC_ACTIVITY_LOG_DETAIL("Energy Company Activity Log Detail", ActivityDetailModel.class, ReportGroup.STARS,
+        "Detailed report of energy company activity; includes timestamp, contact name, username, account number, and action."),
+    PROGRAM_DETAIL("Program Detail", ProgramDetailModel.class, ReportGroup.STARS,
+        "Detailed report of program and account assignments; includes contact name, account number, and status."),
+    EC_WORK_ORDER("Work Order", WorkOrderModel.class, ReportGroup.STARS,
+        "Individual work orders, formatted as a working document."),
+    STARS_LM_SUMMARY("STARS Load Management Summary", StarsLMSummaryModel.class, ReportGroup.STARS,
+        "Summary report of hardware assigned to load groups; includes number of receivers in group and number out of service."),
+    STARS_LM_DETAIL("STARS Load Management Detail", StarsLMDetailModel.class, ReportGroup.STARS,
+        "Detailed report of hardware assigned to load groups; includes account information, device type, and status."),
+    LM_CONTROL_SUMMARY("Customer Control Summary", LMControlSummaryController.class, ReportGroup.STARS,
+        "Summary report of totalized control information for load programs."),
+    LM_CONTROL_DETAIL("Customer Control Detail", LMControlDetailController.class, ReportGroup.STARS,
+        "Detailed report of accounts and program enrollment."),
     //TODO  STARS_AMR_SUMMARY("STARS AMR Summary", StarsAMRSummaryModel.class, ReportGroup.STARS),
-    STARS_AMR_DETAIL("STARS AMR Detail", StarsAMRDetailModel.class, ReportGroup.STARS),
+    STARS_AMR_DETAIL("STARS AMR Detail", StarsAMRDetailModel.class, ReportGroup.STARS,
+        "Detailed report of meters assigned to customers; includes account information, meter information, and latest archived kWh."),
     
     // commercial curtailment
-    CCURT_EVENT_SUMMARY("Event Summary", CurtailmentEventSummaryController.class, ReportGroup.CCURT),
-    CCURT_INTERRUPTION_SUMMARY("Interruption Summary", CurtailmentInterruptionSummaryController.class, ReportGroup.CCURT),
+    CCURT_EVENT_SUMMARY("Event Summary", CurtailmentEventSummaryController.class, ReportGroup.CCURT,
+        "Detail report of curtailment events for C&I customers."),
+    CCURT_INTERRUPTION_SUMMARY("Interruption Summary", CurtailmentInterruptionSummaryController.class, ReportGroup.CCURT,
+        "Summary report of curtailment by customer; includes contract hours, remaining hours, used hours, and curtailment setup information."),
     
         //Custom Settlement data.  Determined by EnergyCompanyID
-    HECO_LMEVENT_SUMMARY("LM Event Summary", HECO_LMEventSummaryModel.class, null),
-    HECO_MONTHLY_BILLING("Monthly Billing Settlement", HECO_MonthlyBillingSettlementModel.class, null),
-    HECO_CUSTOMER_MONTHLY_BILLING("Customer Monthly Billing Settlement", HECO_CustomerMonthlyBillingSettlementModel.class, null),
-    HECO_DSMIS("DSMIS Settlement", HECO_DSMISModel.class, null);
+    HECO_LMEVENT_SUMMARY("LM Event Summary", HECO_LMEventSummaryModel.class, null,
+        "LM Event Summary."),
+    HECO_MONTHLY_BILLING("Monthly Billing Settlement", HECO_MonthlyBillingSettlementModel.class, null,
+        "Monthly Billing Settlement."),
+    HECO_CUSTOMER_MONTHLY_BILLING("Customer Monthly Billing Settlement", HECO_CustomerMonthlyBillingSettlementModel.class, null,
+        "Customer Monthly Billing Settlement."),
+    HECO_DSMIS("DSMIS Settlement", HECO_DSMISModel.class, null,
+        "DSMIS Settlement.");
 
     
     @SuppressWarnings("unchecked")
