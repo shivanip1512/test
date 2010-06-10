@@ -611,6 +611,21 @@
      </ul>
   </troubleshooting>
 </error>
+<error code="94">
+	<category>Yukon System</category> 
+	<porter>Missing Required Configuration Entry</porter>
+    <description>The device was unable to complete the requested command.</description>
+        <troubleshooting>
+      This is a yukon system error that is associated with using mct device configuration information.  The error is 
+      returned when the mct device does not have configuration information stored already in the database.  An attempt 
+      to retrieve the configuration information should be should be made.
+     <ul>
+     <li>Attempt the command again</li>
+     <li>If possible, verify the physical connection between the carrier device and the IED</li>
+     <li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
+     </ul>
+  </troubleshooting>
+</error>
 
 <error code="98">
 	<category>Yukon System</category> 
