@@ -127,7 +127,7 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                 selectionList.setWhereIsList(rs.getString("WhereIsList"));
                 selectionList.setListName(rs.getString("ListName"));
                 selectionList.setUserUpdateAvailable(rs.getString("UserUpdateAvailable"));
-                selectionList.setEnergyCompanyId(new Integer("EnergyCompanyId"));
+                selectionList.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
                 
                 List<YukonListEntry> allListEntries = getAllListEntries(selectionList);
                 selectionList.setYukonListEntries(allListEntries);
