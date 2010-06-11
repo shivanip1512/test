@@ -241,7 +241,6 @@ public enum YukonRoleProperty {
     
     CURTAILMENT_LABEL(CI_CURTAILMENT, com.cannontech.roles.operator.CICurtailmentRole.CURTAILMENT_LABEL, stringType()),
 
-    OPERATOR_CONSUMER_INFO_ACCOUNT_GENERAL(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL, booleanType()),
     OPERATOR_CONSUMER_INFO_ACCOUNT_RESIDENCE(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE, booleanType()),
     OPERATOR_CONSUMER_INFO_ACCOUNT_CALL_TRACKING(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING, booleanType()),
     OPERATOR_CONSUMER_INFO_METERING_INTERVAL_DATA(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA, booleanType()),

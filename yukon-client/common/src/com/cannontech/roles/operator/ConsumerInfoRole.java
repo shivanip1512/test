@@ -8,7 +8,6 @@ import com.cannontech.roles.OperatorRoleDefs;
 public interface ConsumerInfoRole {
 	public static final int ROLEID = OperatorRoleDefs.CONSUMER_INFO_ROLEID;
 	
-	public static final int CONSUMER_INFO_ACCOUNT_GENERAL = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 1;
 	public static final int CONSUMER_INFO_ACCOUNT_RESIDENCE = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 2;
 	public static final int CONSUMER_INFO_ACCOUNT_CALL_TRACKING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 3;
 	public static final int CONSUMER_INFO_METERING_INTERVAL_DATA = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 4;
