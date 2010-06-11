@@ -86,6 +86,7 @@
         <webClassPathEntry>/third-party/mx4j-tools.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/ojdbc6.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/org.osgi.core-4.1.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/org.springframework.integration-1.0.3.RELEASE.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/org.springframework.integration.adapter-1.0.3.RELEASE.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/org.springframework.integration.jms-1.0.3.RELEASE.jar</webClassPathEntry>
