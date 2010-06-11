@@ -96,7 +96,6 @@ final SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
 							<%}	else { // "graph" is default %>
 								<cti:url var="graphGeneratorUrl" value="/servlet/GraphGenerator">
 									<cti:param name="action" value="EncodeGraph"/>
-									<cti:param name="action" value="EncodeGraph"/>
 								</cti:url>
 								<img id="theGraph" src="${graphGeneratorUrl}"> 
 							<%}
