@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -181,7 +180,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
 	}
     
     private String getMessageBody(Holder holder) {
-        final int durationInHours = holder.request.getDurationInHours();
+        final long durationInHours = holder.request.getDurationInHours();
         if (durationInHours <= 0) return null;
         
         ReadableInstant optOutStartInstant = holder.request.getStartDate();
@@ -192,7 +191,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
             optOutStartInstant = new Instant();
         }
 
-        ReadableDuration optOutDuration = new Duration(TimeUnit.HOURS.toMillis(durationInHours)); 
+        ReadableDuration optOutDuration = Duration.standardHours(durationInHours); 
         DateTime reenableDate = optOutDateTime.plus(optOutDuration);
         
         String formattedOptOutDate = dateFormattingService.format(optOutStartInstant, 

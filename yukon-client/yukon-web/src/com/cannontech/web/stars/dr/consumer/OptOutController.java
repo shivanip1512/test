@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -270,7 +270,7 @@ public class OptOutController extends AbstractConsumerController {
                                               // startDates.
         } else {
             optOutRequest.setStartDate(new Instant(startDateObj));
-            optOutRequest.setDurationInHours((int)TimeUnit.DAYS.toHours(durationInDays));
+            optOutRequest.setDurationInHours(Days.days(durationInDays).toStandardHours().getHours());
         }
         optOutRequest.setInventoryIdList(inventoryIds);
         optOutRequest.setQuestions(questionList);

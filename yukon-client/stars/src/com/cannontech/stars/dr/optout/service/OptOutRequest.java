@@ -1,7 +1,6 @@
 package com.cannontech.stars.dr.optout.service;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.joda.time.Duration;
 import org.joda.time.ReadableInstant;
@@ -13,7 +12,7 @@ import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
  */
 public class OptOutRequest {
     private ReadableInstant startDate;
-    private int durationInHours;
+    private long durationInHours;
     private List<Integer> inventoryIdList;
     private List<ScheduledOptOutQuestion> questions;
     private Integer eventId;
@@ -26,7 +25,7 @@ public class OptOutRequest {
         this.startDate = startDate;
     }
     
-    public int getDurationInHours() {
+    public long getDurationInHours() {
         return durationInHours;
     }
     
@@ -56,7 +55,7 @@ public class OptOutRequest {
     	}
     	
     	// Converts the duration in hours to a duration
-    	Duration optOutDuration = new Duration(TimeUnit.HOURS.toMillis(durationInHours));
+    	Duration optOutDuration = Duration.standardHours(durationInHours);
     	
     	ReadableInstant stopDate = startDate.toInstant().plus(optOutDuration);
     	
