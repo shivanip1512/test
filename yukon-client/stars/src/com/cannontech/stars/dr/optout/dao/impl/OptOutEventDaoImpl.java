@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.optout.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -13,9 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.IntegerRowMapper;
@@ -41,6 +46,7 @@ import com.cannontech.stars.dr.optout.model.OptOutLog;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.model.Program;
+import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -202,47 +208,71 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Transactional(readOnly=true)
     public Multimap<Integer, OptOutLog> getOptOutEventDetails(
             Iterable<OptOutEventDto> optOutEvents) {
-	    List<Integer> eventIds = Lists.newArrayList();
-	    for (OptOutEventDto event : optOutEvents) {
-	        eventIds.add(event.getEventId());
-	    }
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT optOutEventLogId, inventoryId, customerAccountId,");
+                sql.append(    "eventAction, logDate, eventStartDate, eventStopDate,");
+                sql.append(    "logUserId, username, optOutEventId, eventCounts");
+                sql.append("FROM optOutEventLog");
+                sql.append(    "JOIN yukonUser on userId = logUserId");
+                sql.append("WHERE optOutEventId").in(subList);
+                sql.append("ORDER BY optOutEventId DESC, logDate DESC");
+                return sql;
+            }
+        };
 
-	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT optOutEventLogId, inventoryId, customerAccountId,");
-	    sql.append(    "eventAction, logDate, eventStartDate, eventStopDate,");
-	    sql.append(    "logUserId, username, optOutEventId, eventCounts");
-	    sql.append("FROM optOutEventLog");
-        sql.append(    "JOIN yukonUser on userId = logUserId");
-	    sql.append("WHERE optOutEventId").in(eventIds);
-	    sql.append("ORDER BY optOutEventId, logDate");
+        final ParameterizedRowMapper<OptOutLog> rowMapper = new ParameterizedRowMapper<OptOutLog>() {
+            @Override
+            public OptOutLog mapRow(ResultSet rs, int rowNum)
+                    throws SQLException {
+                OptOutLog value = new OptOutLog();
+                value.setLogId(rs.getInt("optOutEventLogId"));
+                value.setInventoryId(rs.getInt("inventoryId"));
+                value.setCustomerAccountId(rs.getInt("customerAccountId"));
+                value.setAction(OptOutAction.valueOf(rs.getString("eventAction")));
+                Timestamp timestamp = rs.getTimestamp("logDate");
+                value.setLogDate(timestamp == null ? null
+                        : new Instant(timestamp));
+                timestamp = rs.getTimestamp("eventStartDate");
+                value.setStartDate(timestamp == null ? null
+                        : new Instant(timestamp));
+                timestamp = rs.getTimestamp("eventStopDate");
+                value.setStopDate(timestamp == null ? null
+                        : new Instant(timestamp));
+                value.setUserId(rs.getInt("logUserId"));
+                value.setUsername(rs.getString("username"));
+                value.setEventId(rs.getInt("optOutEventId"));
+                value.setEventCounts(OptOutCounts.valueOf(rs.getString("eventCounts")));
+                return value;
+            }
+        };
 
-	    YukonRowMapper<OptOutLog> rowMapper =
-	        new YukonRowMapper<OptOutLog>() {
-                @Override
-                public OptOutLog mapRow(YukonResultSet rs) throws SQLException {
-                    OptOutLog retVal = new OptOutLog();
-                    retVal.setLogId(rs.getInt("optOutEventLogId"));
-                    retVal.setInventoryId(rs.getInt("inventoryId"));
-                    retVal.setCustomerAccountId(rs.getInt("customerAccountId"));
-                    retVal.setAction(OptOutAction.valueOf(rs.getString("eventAction")));
-                    retVal.setLogDate(rs.getInstant("logDate"));
-                    retVal.setStartDate(rs.getInstant("eventStartDate"));
-                    retVal.setStopDate(rs.getInstant("eventStopDate"));
-                    retVal.setUserId(rs.getInt("logUserId"));
-                    retVal.setUsername(rs.getString("username"));
-                    retVal.setEventId(rs.getInt("optOutEventId"));
-                    retVal.setEventCounts(OptOutCounts.valueOf(rs.getString("eventCounts")));
-                    return retVal;
-                }};
-	    List<OptOutLog> logs = yukonJdbcTemplate.query(sql, rowMapper);
+        Function<OptOutEventDto, Integer> typeMapper = new Function<OptOutEventDto, Integer>() {
+            @Override
+            public Integer apply(OptOutEventDto from) {
+                return from.getEventId();
+            }
+        };
 
-	    Multimap<Integer, OptOutLog> retVal = ArrayListMultimap.create();
-        for (OptOutLog log : logs) {
-            retVal.put(log.getEventId(), log);
-        }
+        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
+
+        final Multimap<Integer, OptOutLog> retVal = ArrayListMultimap.create();
+	    chunkingTemplate.query(sqlGenerator, 
+                               Lists.transform(Lists.newArrayList(optOutEvents), typeMapper), 
+                               new RowCallbackHandler() {
+
+            private int row = 0;
+
+            public void processRow(ResultSet rs) throws SQLException {
+                OptOutLog optOutLog = rowMapper.mapRow(rs, row++);
+                retVal.put(optOutLog.getEventId(), optOutLog);
+            }
+        });
 	    return retVal;
-    }
-
+	}
+	
     @Override
 	@Transactional
 	public List<OverrideHistory> getOptOutHistoryForAccount(int accountId,
