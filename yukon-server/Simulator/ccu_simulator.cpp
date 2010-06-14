@@ -50,8 +50,8 @@ int SimulatorMainFunction(int argc, char **argv);
 bool getPorts(vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
-void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger);
-void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger);
+void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortLogger &logger);
+void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, PortLogger &logger);
 template<class CcuType>
 bool validRequest(SocketComms &socket_interface);
 
@@ -233,7 +233,7 @@ void CcuPort(int portNumber, int strategy)
     {
         logger.log("Accepted connection");
 
-        startRequestHandler(newSocket, strategy, logger);
+        startRequestHandler(newSocket, strategy, portNumber, logger);
     }
 
     logger.log("Thread exiting");
@@ -242,7 +242,7 @@ void CcuPort(int portNumber, int strategy)
 }
 
 
-void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
+void startRequestHandler(CTINEXUS &mySocket, int strategy, int portNumber, PortLogger &logger)
 {
     CtiTime now;
 
@@ -274,7 +274,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
     {
         try
         {
-            handleRequests(socket_interface, strategy, logger);
+            handleRequests(socket_interface, strategy, portNumber, logger);
         }
         catch(...)
         {
@@ -283,7 +283,7 @@ void startRequestHandler(CTINEXUS &mySocket, int strategy, PortLogger &logger)
     }
 }
 
-void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &logger)
+void handleRequests(SocketComms &socket_interface, int strategy, int portNumber, PortLogger &logger)
 {
     std::map<int, PlcTransmitter *> ccu_list;
     bytes peek_buf;
@@ -312,24 +312,27 @@ void handleRequests(SocketComms &socket_interface, int strategy, PortLogger &log
 
             if( ccu_list.find(ccu_address) == ccu_list.end() )
             {
-                stringstream ss;
-                ss << ccu_address;
+                stringstream ss_address, ss_port;
+                ss_address << ccu_address;
+                ss_port    << portNumber;
                 // Device is either a 711 or 721, but isn't yet in the ccu_list.
                 // We need to find from the database (if possible) what type of device
                 // this is and create it, then add it to the map.
                 const string sql_Ccu721 =   "SELECT DISTINCT Y.TYPE "
-                                            "FROM YukonPAObject Y, DEVICE V, DeviceAddress A "
-                                            "WHERE A.DeviceID = V.DEVICEID AND "
-                                            "V.DEVICEID = Y.PAObjectID AND "
-                                            "Y.TYPE = 'CCU-721' AND "
-                                            "A.SlaveAddress = " + ss.str();
+                                            "FROM YukonPAObject Y, DEVICE V, DeviceAddress A, PORTTERMINALSERVER P, "
+                                                "DeviceDirectCommSettings D "
+                                            "WHERE A.DeviceID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
+                                                "Y.TYPE = 'CCU-721' AND A.SlaveAddress = " + ss_address.str() + " AND "
+                                                "D.PORTID = P.PORTID AND Y.PAObjectID = D.DEVICEID AND "
+                                                "P.SOCKETPORTNUMBER = " + ss_port.str();
 
                 const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
-                                            "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, DeviceAddress A "
-                                            "WHERE D.DEVICEID = V.DEVICEID AND "
-                                            "V.DEVICEID = Y.PAObjectID AND "
-                                            "Y.TYPE = 'CCU-711' AND "
-                                            "D.ADDRESS = " + ss.str();
+                                            "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, PORTTERMINALSERVER P, "
+                                                "DeviceDirectCommSettings S "
+                                            "WHERE D.DEVICEID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
+                                                "Y.TYPE = 'CCU-711' AND D.ADDRESS = " + ss_address.str() + " AND "
+                                                "S.PORTID = P.PORTID AND Y.PAObjectID = S.DEVICEID AND "
+                                                "P.SOCKETPORTNUMBER = " + ss_port.str();
     
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
                 RWDBConnection conn = getConnection();
