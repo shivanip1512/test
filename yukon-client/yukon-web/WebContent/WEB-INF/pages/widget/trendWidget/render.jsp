@@ -28,6 +28,10 @@
 		</c:if>
 		
 		<%-- THE CHART --%>
+        <%-- 
+        max-width set to 525 because that is the largest width the chart can be with IE 
+        still able to print the whole width of the chart 
+        --%>
 		<div style="height: 250px; max-width: 525px;">
 			<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" interval="${interval}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"></tags:trend>
 		</div>
