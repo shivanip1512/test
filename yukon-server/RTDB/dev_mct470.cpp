@@ -2790,15 +2790,15 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 
         double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
         long channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig1);
-        long peakKwResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution1);
-        long lastIntervalDemandResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution1);
-        long lpResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution1);
+        double peakKwResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution1);
+        double lastIntervalDemandResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution1);
+        double lpResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution1);
 
         double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
         long channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig2);
-        long peakKwResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution2);
-        long lastIntervalDemandResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution2);
-        long lpResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution2);
+        double peakKwResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution2);
+        double lastIntervalDemandResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution2);
+        double lpResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution2);
 
         long spid = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_AddressServiceProviderID);
 
@@ -2817,12 +2817,12 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 
         if (   channel1 == std::numeric_limits<long>::min()
             || channel2 == std::numeric_limits<long>::min()
-            || peakKwResolution1 == std::numeric_limits<long>::min()
-            || lastIntervalDemandResolution1 == std::numeric_limits<long>::min()
-            || lpResolution1 == std::numeric_limits<long>::min()
-            || peakKwResolution2 == std::numeric_limits<long>::min()
-            || lastIntervalDemandResolution2 == std::numeric_limits<long>::min()
-            || lpResolution2 == std::numeric_limits<long>::min())
+            || peakKwResolution1 == std::numeric_limits<double>::min()
+            || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
+            || lpResolution1 == std::numeric_limits<double>::min()
+            || peakKwResolution2 == std::numeric_limits<double>::min()
+            || lastIntervalDemandResolution2 == std::numeric_limits<double>::min()
+            || lpResolution2 == std::numeric_limits<double>::min())
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -2890,24 +2890,24 @@ int CtiDeviceMCT470::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq,CtiC
 
         multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
         channel1 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig3);
-        peakKwResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution3);
-        lastIntervalDemandResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution3);
-        lpResolution1 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution3);
+        peakKwResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution3);
+        lastIntervalDemandResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution3);
+        lpResolution1 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution3);
 
         multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
         channel2 = deviceConfig->getLongValueFromKey(MCTStrings::ChannelConfig4);
-        peakKwResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::PeakKwResolution4);
-        lastIntervalDemandResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LastIntervalDemandResolution4);
-        lpResolution2 = deviceConfig->getLongValueFromKey(MCTStrings::LoadProfileResolution4);
+        peakKwResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::PeakKwResolution4);
+        lastIntervalDemandResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LastIntervalDemandResolution4);
+        lpResolution2 = deviceConfig->getFloatValueFromKey(MCTStrings::LoadProfileResolution4);
 
         if (   channel1 == std::numeric_limits<long>::min()
             || channel2 == std::numeric_limits<long>::min()
-            || peakKwResolution1 == std::numeric_limits<long>::min()
-            || lastIntervalDemandResolution1 == std::numeric_limits<long>::min()
-            || lpResolution1 == std::numeric_limits<long>::min()
-            || peakKwResolution2 == std::numeric_limits<long>::min()
-            || lastIntervalDemandResolution2 == std::numeric_limits<long>::min()
-            || lpResolution2 == std::numeric_limits<long>::min())
+            || peakKwResolution1 == std::numeric_limits<double>::min()
+            || lastIntervalDemandResolution1 == std::numeric_limits<double>::min()
+            || lpResolution1 == std::numeric_limits<double>::min()
+            || peakKwResolution2 == std::numeric_limits<double>::min()
+            || lastIntervalDemandResolution2 == std::numeric_limits<double>::min()
+            || lpResolution2 == std::numeric_limits<double>::min())
         {
             if( getMCTDebugLevel(DebugLevel_Configs) )
             {
@@ -5497,6 +5497,7 @@ long CtiDeviceMCT470::resolveScheduleName(const string & scheduleName)
 
 unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution)
 {
+    bool defaultUsed = false;
     unsigned char resolutionByte;
     unsigned char lpByte;
     unsigned char peakKwByte;
@@ -5516,7 +5517,13 @@ unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double
             lpByte = 3;
             break;
         default:
-            lpByte = 1;//default
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unexpected value of " << lpResolution << " for Load Profile Resolution\n";
+                dout << CtiTime() << " Using default value of 10Wh for Resolution Byte Calculation." << endl;
+            }
+            defaultUsed = true;
+            lpByte = 1;
             break;
     }
 
@@ -5530,7 +5537,13 @@ unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double
             peakKwByte = 1;
             break;
         default:
-            peakKwByte = 0;//default
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unexpected value of " << peakKwResolution << " for Peak KW Resolution.\n";
+                dout << CtiTime() << " Using default value of 10Wh for Resolution Byte Calculation." << endl;
+            }
+            defaultUsed = true;
+            peakKwByte = 0;
             break;
     }
 
@@ -5550,7 +5563,13 @@ unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double
             lastIntrvlByte = 3;
             break;
         default:
-            lastIntrvlByte = 0;//default
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unexpected value of " << lastIntervalDemandResolution << " for Last Interval Demand Resolution.\n";
+                dout << CtiTime() << " Using default value of 10Wh for Resolution Byte Calculation." << endl;
+            }
+            defaultUsed = true;
+            lastIntrvlByte = 0;
             break;
     }
 
@@ -5558,10 +5577,16 @@ unsigned char CtiDeviceMCT470::computeResolutionByte(double lpResolution, double
     resolutionByte |= (peakKwByte & 0x01) << 3;
     resolutionByte |= (lastIntrvlByte & 0x07) << 4;
 
+    if (defaultUsed == true)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " A default value was used to compute the Resolution Byte, the result is: " << (int)resolutionByte << endl;
+    }
+
     return resolutionByte;
 }
 
-int CtiDeviceMCT470::setupRatioBytesBasedOnMeterType(int channel, double multiplier, long peakKwResolution, long lastIntervalDemandResolution, long lpResolution, unsigned int &ratio, unsigned int &kRatio)
+int CtiDeviceMCT470::setupRatioBytesBasedOnMeterType(int channel, double multiplier, double peakKwResolution, double lastIntervalDemandResolution, double lpResolution, unsigned int &ratio, unsigned int &kRatio)
 {
     int nRet = NORMAL;
     int meterType = channel & 0x03;

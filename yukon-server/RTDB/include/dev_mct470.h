@@ -140,8 +140,7 @@ private:
     void getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue);
     int sendDNPConfigMessages(int startMCTID,  list< OUTMESS * > &outList, OUTMESS *&OutMessage, string &dataA, string &dataB, CtiTableDynamicPaoInfo::PaoInfoKeys key, bool force, bool verifyOnly);
 
-    int setupRatioBytesBasedOnMeterType(int channel, double multiplier, long peakKwResolution, long lastIntervalDemandResolution, long lpResolution, unsigned int &ratio, unsigned int &kRatio);
-    unsigned char computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution);
+    int setupRatioBytesBasedOnMeterType(int channel, double multiplier, double peakKwResolution, double lastIntervalDemandResolution, double lpResolution, unsigned int &ratio, unsigned int &kRatio);
     bool computeMultiplierFactors(double multiplier, unsigned &numerator, unsigned &denominator) const;
     string describeChannel(unsigned char channel_config) const;
 
@@ -460,6 +459,8 @@ protected:
     bool isPrecannedTableCurrent() const;
 
     unsigned long convertTimestamp(unsigned long timestamp, const CtiDate &current_date=CtiDate()) const;
+
+    unsigned char computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution);
 
     virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );

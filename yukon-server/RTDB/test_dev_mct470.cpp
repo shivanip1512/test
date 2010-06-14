@@ -22,6 +22,11 @@ public:
     {
         return convertTimestamp(timestamp, current_date);
     }
+
+    unsigned char test_computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution)
+    {
+        return computeResolutionByte(lpResolution,peakKwResolution,lastIntervalDemandResolution);
+    }
 };
 
 
@@ -321,4 +326,34 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
     //  to finish out this unit test, we will need to override getDevicePointOffsetTypeEqual()
     //    to report back voltage points for the decode
 
+}
+
+/**
+ * Testing a few cases of the computeResolutionByte function.
+ */
+BOOST_AUTO_TEST_CASE(test_dev_mct470_computeResolutionByte)
+{
+    using Cti::Protocol::Emetcon;
+    test_CtiDeviceMCT470 dev;
+
+    double lpResolution = 0.1;
+    double peakKwResolution = 1.0;
+    double lastIntervalDemandResolution = 1.0;
+    unsigned char resultByte = dev.test_computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
+    BOOST_CHECK_EQUAL(0x1b, resultByte);
+    std::cout << (int)resultByte << std::endl;
+
+    lpResolution = 1.0;
+    peakKwResolution = 10.0;
+    lastIntervalDemandResolution = 1.0;
+    resultByte = dev.test_computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
+    BOOST_CHECK_EQUAL(0x12, resultByte);
+    std::cout << (int)resultByte << std::endl;
+
+    lpResolution = 1.0;
+    peakKwResolution = 10.0;
+    lastIntervalDemandResolution = 0.1;
+    resultByte = dev.test_computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
+    BOOST_CHECK_EQUAL(0x22, resultByte);
+    std::cout << (int)resultByte << std::endl;
 }
