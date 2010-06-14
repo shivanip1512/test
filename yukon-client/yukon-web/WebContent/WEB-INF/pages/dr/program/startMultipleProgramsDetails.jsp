@@ -6,8 +6,10 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <script type="text/javascript">
-
-targetPrograms = ${cti:jsonString(targetGearMap)}
+autoObserveConstraintsAllowed = ${autoObserveConstraintsAllowed};
+checkConstraintsAllowed = ${checkConstraintsAllowed};
+targetPrograms = ${cti:jsonString(targetGearMap)};
+numPrograms = ${fn:length(programs)};
 
 submitForm = function() {
     combineDateAndTimeFields('startDate');
@@ -32,9 +34,9 @@ scheduleStopChecked = function() {
 
 updateSubmitButtons = function() {
     var autoObservingConstraints = false;
-    if (${autoObserveConstraintsAllowed}) {
+    if (autoObserveConstraintsAllowed) {
         autoObservingConstraints = true;
-        if (${checkConstraintsAllowed}) {
+        if (checkConstraintsAllowed) {
             autoObservingConstraints = $('autoObserveConstraints').checked;
         }
     }
@@ -50,7 +52,7 @@ updateSubmitButtons = function() {
 
 allProgramsChecked = function() {
     allChecked = $('allProgramsCheckbox').checked;
-    for (index = 0; index < ${fn:length(programs)}; index++) {
+    for (index = 0; index < numPrograms; index++) {
         $('startProgramCheckbox' + index).checked = allChecked;
     }
     gearChanged();
@@ -58,7 +60,7 @@ allProgramsChecked = function() {
 
 updateAllProgramsChecked = function() {
     allChecked = true;
-    for (index = 0; index < ${fn:length(programs)}; index++) {
+    for (index = 0; index < numPrograms; index++) {
         allChecked &= $('startProgramCheckbox' + index).checked;
         if (!allChecked) break;
     }
@@ -77,7 +79,7 @@ singleProgramChecked = function(boxChecked) {
 gearChanged = function() {
     var adjustButtonShown = false;
 
-    for (index = 0; index < ${fn:length(programs)}; index++) {
+    for (index = 0; index < numPrograms; index++) {
         var gearNum = $('programStartInfo'+index+'.gearNumber').value;
         var programChecked = $('startProgramCheckbox'+index).checked;
         if (targetPrograms[index][gearNum] &&
