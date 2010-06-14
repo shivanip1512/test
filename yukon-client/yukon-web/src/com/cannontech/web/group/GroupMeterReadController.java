@@ -253,6 +253,26 @@ public class GroupMeterReadController extends MultiActionController {
 		return mav;
 	}
 	
+    public ModelAndView errorsList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		
+		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
+		GroupMeterReadResult result = groupMeterReadService.getResult(resultKey);
+		
+		ModelAndView mav = new ModelAndView("commander/errorsList.jsp");
+		mav.addObject("result", result);
+		return mav;
+    }
+	
+	public ModelAndView successList(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		
+		String resultKey = ServletRequestUtils.getRequiredStringParameter(request, "resultKey");
+		GroupMeterReadResult result = groupMeterReadService.getResult(resultKey);
+		
+		ModelAndView mav = new ModelAndView("commander/successList.jsp");
+		mav.addObject("result", result);
+		return mav;
+    }
+	
     private String makeSelectedAttributeStrsParameter(Set<Attribute> attributeParameters) {
         return StringUtils.join(attributeParameters, ",");
     }

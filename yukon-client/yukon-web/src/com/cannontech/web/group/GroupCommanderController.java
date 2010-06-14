@@ -338,6 +338,13 @@ public class GroupCommanderController implements InitializingBean {
         
         return mav;
     }
+    
+    @RequestMapping({"errorsList", "successList"})
+    public void results(String resultKey, ModelMap map) {
+        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
+        
+        map.addAttribute("result", result);
+    }
 
     @Resource(name="groupCommanderSuccessResultDefinition")
     public void setSuccessReportDefinition(SimpleYukonReportDefinition<GroupCommanderSuccessResultsModel> successReportDefinition) {

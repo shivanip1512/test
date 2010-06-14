@@ -40,6 +40,28 @@
     <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
     
     <script type="text/javascript">
+        
+        function refreshResults(kind, theDiv) {
+
+            if (theDiv.visible()) {
+            
+                var url = '/spring/group/groupMeterRead/' + kind;
+                
+                var params = $H();
+                params['resultKey'] = '${resultWrapper.result.key}';
+            
+                var updater = new Ajax.Updater (theDiv, url, {
+              
+                  'parameters': params,
+                  
+                  'onSuccess': function(response) {
+                               },
+                  
+                  'onException': function(response) {
+                               }
+                });
+            }
+        }
     
     </script>
     
@@ -116,6 +138,11 @@
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.successCollection}" />
             
+            <%-- success list --%>
+            <div style="height:8px;"></div>
+            <a href="javascript:void(0);" onclick="$('successResultsDiv${resultKey}').toggle();refreshResults('successList', $('successResultsDiv${resultKey}'));" class="small">View Results</a>
+            <div id="successResultsDiv${resultKey}" style="display:none;"></div>
+            
         </div>
     
     
@@ -130,6 +157,11 @@
                 <cti:mapParam value="${resultWrapper.result.failureCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${resultWrapper.result.failureCollection}" />
+            
+            <%-- errors list --%>
+            <div style="height:8px;"></div>
+            <a href="javascript:void(0);" onclick="$('errorsResultsDiv${resultKey}').toggle();refreshResults('errorsList', $('errorsResultsDiv${resultKey}'));" class="small">View Failure Reasons</a>
+            <div id="errorsResultsDiv${resultKey}" style="display:none;"></div>
         
         </div> 
         

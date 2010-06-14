@@ -35,6 +35,28 @@
                 }
             };
         }
+
+        function refreshResults(kind, theDiv) {
+
+            if (theDiv.visible()) {
+            
+                var url = '/spring/group/commander/' + kind;
+                
+                var params = $H();
+                params['resultKey'] = '${result.key}';
+            
+                var updater = new Ajax.Updater (theDiv, url, {
+              
+                  'parameters': params,
+                  
+                  'onSuccess': function(response) {
+                               },
+                  
+                  'onException': function(response) {
+                               }
+                });
+            }
+        }
     
     </script>
     
@@ -116,6 +138,11 @@
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
             
+            <%-- success list --%>
+            <div style="height:8px;"></div>
+            <a href="javascript:void(0);" onclick="$('successResultsDiv${result.key}').toggle();refreshResults('successList', $('successResultsDiv${result.key}'));" class="small">View Results</a>
+            <div id="successResultsDiv${result.key}" style="display:none;"></div>
+            
         </div>
     
     
@@ -138,6 +165,11 @@
                 <cti:mapParam value="${result.failureCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
+            
+            <%-- errors list --%>
+            <div style="height:8px;"></div>
+            <a href="javascript:void(0);" onclick="$('errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', $('errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
+            <div id="errorsResultsDiv${result.key}" style="display:none;"></div>
             
         </div> 
         
