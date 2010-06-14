@@ -1,18 +1,19 @@
 package com.cannontech.core.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Chronology;
 import org.joda.time.Duration;
+import org.joda.time.DurationField;
 import org.joda.time.DurationFieldType;
+import org.joda.time.Interval;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
-import org.joda.time.ReadableDuration;
 import org.joda.time.ReadableInstant;
 import org.joda.time.chrono.ISOChronology;
 import org.joda.time.format.PeriodFormatter;
@@ -30,105 +31,108 @@ import com.google.common.collect.Lists;
 public strictfp class DurationFormattingServiceImpl implements DurationFormattingService {
     
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
+	
+	private static final char SYMBOL_DELIM = '%';
     
-    private static Pattern symbolPattern = Pattern.compile("^(.*?)(%(?:[YDMHS]|MO)(?:_ABBR|_FULL)?%)(.*)$");
-    
-    // FORMAT DURATION - DEFAULT ROUNDING
-    public String formatDuration(long durationValue, TimeUnit durationUnit, DurationFormat type, YukonUserContext yukonUserContext) {
-    	return formatDuration(durationValue, durationUnit, type, type.getRoundRightmostUpDefault(), yukonUserContext);
-    }
-    
-    // FORMAT DURATION - ROUNDING PARAM
-    public String formatDuration(final long durationValue, final TimeUnit durationUnit, DurationFormat type, boolean roundRightmostUp, YukonUserContext yukonUserContext) {
+    // DURATION VALUE
+    public String formatDuration(final long durationValue, final TimeUnit durationUnit, final DurationFormat type, final YukonUserContext yukonUserContext) {
     	
     	PeriodGenerator periodGenerator = new PeriodGenerator() {
 			@Override
 			public Period generatePeriod(PeriodType periodType) {
 				long durationMillis = TimeUnit.MILLISECONDS.convert(durationValue, durationUnit);
-		    	Period period = new Period(durationMillis, periodType);
+		    	Duration duration = new Duration(durationMillis);
+		    	Period period = periodGenerate(duration, periodType, type.getRoundingMode(), yukonUserContext);
 		    	return period;
 			}
 		};
     	
-    	FormattedDurationTemplate template = new FormattedDurationTemplate(periodGenerator);
-    	return template.getFormattedDuration(type, roundRightmostUp, yukonUserContext);
+		return getFormattedDuration(type, periodGenerator, yukonUserContext);
     }
     
-    // FORMAT DURATION - START/END, DEFAULT ROUNDING
+    // START/END DATE
     @Override
-	public String formatDuration(Date startDate, Date endDate, DurationFormat type, YukonUserContext yukonUserContext) {
-    	return formatDuration(startDate, endDate, type, type.getRoundRightmostUpDefault(), yukonUserContext);
-	}
-    
-    // FORMAT DURATION - START/END, ROUNDING PARAM
-    @Override
-	public String formatDuration(final Date startDate, final Date endDate, DurationFormat type, boolean roundRightmostUp, final YukonUserContext yukonUserContext) {
+	public String formatDuration(final Date startDate, final Date endDate, final DurationFormat type, final YukonUserContext yukonUserContext) {
 		
     	PeriodGenerator periodGenerator = new PeriodGenerator() {
 			@Override
 			public Period generatePeriod(PeriodType periodType) {
-				Chronology chronology = ISOChronology.getInstance(yukonUserContext.getJodaTimeZone());
-		    	Period period = new Period(startDate.getTime(), endDate.getTime(), periodType, chronology);
+		    	Interval interval = new Interval(startDate.getTime(), endDate.getTime());
+            	Period period = periodGenerate(interval.getStart(), interval.toDuration(), periodType, type.getRoundingMode(), yukonUserContext);
 		    	return period;
 			}
 		};
     	
-    	FormattedDurationTemplate template = new FormattedDurationTemplate(periodGenerator);
-    	return template.getFormattedDuration(type, roundRightmostUp, yukonUserContext);
+		return getFormattedDuration(type, periodGenerator, yukonUserContext);
 	}
 
-    // FORMAT DURATION - START/END, DEFAULT ROUNDING
+    // START/END READABLE INSTANT
     @Override
-    public String formatDuration(ReadableInstant startDate, ReadableInstant endDate, 
-                                  DurationFormat type, YukonUserContext yukonUserContext) {
-        return formatDuration(startDate, endDate, type, type.getRoundRightmostUpDefault(), 
-                               yukonUserContext);
-    }
-    
-    // FORMAT DURATION - START/END, ROUNDING PARAM
-    @Override
-    public String formatDuration(final ReadableInstant startDate, 
-                                  final ReadableInstant endDate, 
-                                  DurationFormat type, 
-                                  boolean roundRightmostUp,
-                                  final YukonUserContext yukonUserContext) {
+    public String formatDuration(final ReadableInstant startDate, final ReadableInstant endDate, final DurationFormat type, final YukonUserContext yukonUserContext) {
         
         PeriodGenerator periodGenerator = new PeriodGenerator() {
             @Override
             public Period generatePeriod(PeriodType periodType) {
-                Chronology chronology = ISOChronology.getInstance(yukonUserContext.getJodaTimeZone());
-                ReadableDuration duration = new Duration(startDate, endDate);
-                Period period = new Period(duration, periodType, chronology);
+            	Interval interval = new Interval(startDate, endDate);
+            	Period period = periodGenerate(interval.getStart(), interval.toDuration(), periodType, type.getRoundingMode(), yukonUserContext);
                 return period;
             }
         };
         
-        FormattedDurationTemplate template = new FormattedDurationTemplate(periodGenerator);
-        return template.getFormattedDuration(type, roundRightmostUp, yukonUserContext);
+        return getFormattedDuration(type, periodGenerator, yukonUserContext);
+    }
+    
+    private String getFormattedDuration(DurationFormat type, PeriodGenerator periodGenerator, YukonUserContext yukonUserContext) {
+    	
+    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
+    	
+		// init builder
+		PeriodFormatterBuilder periodFormatterBuilder = new PeriodFormatterBuilder();
+		periodFormatterBuilder.printZeroAlways();
+		
+		// parse Format
+        String format = messageSourceAccessor.getMessage(type); 
+    	List<String> parsedFormat = parseFormat(format);
+		
+    	// Get durationFieldTypesList
+    	List<DurationFieldType> durationFieldTypesList = Lists.newArrayList();
+    	for (String subFormat : parsedFormat) {
+    	
+    		if (StringUtils.isEmpty(subFormat)) {
+				continue;
+			}
+    		
+    		// apply symbol appender 
+    		if (isDurationFormatSymbolSubstring(subFormat)) {
+    		
+    			String symbolStr = subFormat.substring(1, subFormat.length() -1);
+    			DurationFormatSymbol symbol = DurationFormatSymbol.valueOf(String.valueOf(symbolStr));
+    			durationFieldTypesList.add(symbol.getDurationFieldType());
+    		
+    			String singularSuffix = messageSourceAccessor.getMessage(symbol.getSingularSuffixKey());
+				String pluralSuffix = messageSourceAccessor.getMessage(symbol.getPluralSuffixKey());
+				symbol.applyAppenderToBuilder(periodFormatterBuilder, singularSuffix, pluralSuffix);
+    		
+			// append literal
+    		} else {
+    			periodFormatterBuilder.appendLiteral(subFormat);
+    		}
+    	}
+		
+    	// period - only create a Period that supports the DurationFieldTypes we intend to display in the formated string
+    	// Using a Period with all the standard fields will cause the millis to get dispersed from left to right and we may lose them if those left side fields are not used in the format.
+    	PeriodType periodType = PeriodType.forFields(durationFieldTypesList.toArray(new DurationFieldType[durationFieldTypesList.size()]));
+		
+    	// formatter
+		PeriodFormatter periodFormatter = periodFormatterBuilder.toFormatter().withLocale(yukonUserContext.getLocale());
+    	Period period = periodGenerator.generatePeriod(periodType);
+    	
+    	// format
+    	StringBuffer out = new StringBuffer();
+    	periodFormatter.printTo(out, period);
+    	return out.toString();
     }
 
-    
-    // TEMPLATE
-    private class FormattedDurationTemplate {
-    	
-    	private PeriodGenerator periodGenerator;
-    	
-    	public FormattedDurationTemplate(PeriodGenerator periodGenerator) {
-    		this.periodGenerator = periodGenerator;
-    	}
-    	
-    	public String getFormattedDuration(DurationFormat type, boolean roundRightmostUp, YukonUserContext yukonUserContext) {
-    		
-    		List<String> parsedFormat = getParsedFormat(type, yukonUserContext);
-        	List<DurationFieldType> durationFieldTypeList = getDurationFieldTypeList(parsedFormat);
-        	PeriodType periodType = createPeriodType(durationFieldTypeList, roundRightmostUp);
-        	PeriodFormatter periodFormatter = createPeriodFormatter(parsedFormat, yukonUserContext);
-        	
-        	Period period = periodGenerator.generatePeriod(periodType);
-        	
-        	return getFormattedString(periodFormatter, period, durationFieldTypeList, roundRightmostUp);
-    	}
-    }
     
     private interface PeriodGenerator {
     	public Period generatePeriod(PeriodType periodType);
@@ -137,162 +141,84 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     
     // HELPERS
     /**
-     * Does final cleanup work on the period and uses the formatter to output as a string.
+     * Break the raw format string into substrings of symbols and literals
      */
-    private String getFormattedString(PeriodFormatter periodFormatter, Period period, List<DurationFieldType> durationFieldTypeList, boolean roundRightmostUp) {
+    private static List<String> parseFormat(String format) {
     	
-    	if (roundRightmostUp) {
-    		period = roundPeriod(period, durationFieldTypeList);
-    	}
-    	
-    	period = period.normalizedStandard(period.getPeriodType());
-    	
-    	// format
-    	StringBuffer out = new StringBuffer();
-    	periodFormatter.printTo(out, period);
-    	return out.toString();
-    }
-    
-    /**
-     * Adjusts the period to round up rightmost duration field if the period also support the field to it immediate left.
-     */
-    private Period roundPeriod(Period period, List<DurationFieldType> durationFieldTypeList) {
-    	
-    	// milliseconds to seconds
-		if (durationFieldTypeList.contains(DurationFieldType.millis()) && durationFieldTypeList.contains(DurationFieldType.seconds())) {
-			if (period.getMillis() >= 500) {
-				period = period.minusMillis(period.getMillis());
-				period = period.plusSeconds(1);
-			}
-		}
-		// seconds to minutes
-		else if (durationFieldTypeList.contains(DurationFieldType.seconds()) && durationFieldTypeList.contains(DurationFieldType.minutes())) {
-			if (period.getSeconds() >= 30) {
-				period = period.minusSeconds(period.getSeconds());
-				period = period.plusMinutes(1);
-			}
-		}
-		// minutes to hours
-		else if (durationFieldTypeList.contains(DurationFieldType.minutes()) && durationFieldTypeList.contains(DurationFieldType.hours())) {
-			if (period.getMinutes() >= 30) {
-				period = period.minusMinutes(period.getMinutes());
-    			period = period.plusHours(1);
-			}
-		}
-		
-		return period;
-    }
-    
-    /**
-     * Creates PeriodFormatter by using a PeriodFormatterBuilder and the "instructions" contained in the parsed format.
-     */
-    private PeriodFormatter createPeriodFormatter(List<String> parsedFormat, YukonUserContext yukonUserContext) {
-    
-    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-    	
-	    PeriodFormatterBuilder periodFormatterBuilder = new PeriodFormatterBuilder();
-		periodFormatterBuilder.printZeroAlways();
-	    
-		// builder loop
-		for (String subFormat : parsedFormat) {
-			
-			if (StringUtils.isEmpty(subFormat)) {
-				continue;
-			}
-			
-			// process symbol
-			if (isDurationFormatSymbolSubstring(subFormat)) {
-				
-				DurationFormatSymbol symbol = DurationFormatSymbol.valueOf(String.valueOf(subFormat.substring(1, subFormat.length() - 1)));
-				
-				String singularSuffix = messageSourceAccessor.getMessage(symbol.getSingularSuffixKey());
-				String pluralSuffix = messageSourceAccessor.getMessage(symbol.getPluralSuffixKey());
-				symbol.applyAppenderToBuilder(periodFormatterBuilder, singularSuffix, pluralSuffix);
-			
-			// append plain text
-			} else {
-				periodFormatterBuilder.appendLiteral(subFormat);
-			}
-		}
-		
-		PeriodFormatter formatter = periodFormatterBuilder.toFormatter().withLocale(yukonUserContext.getLocale());
-		return formatter;
-    }
-    
-    /**
-     * Gets the format string for the DurationFormat and parses it into an intermediate "instructions" list.
-     */
-    private List<String> getParsedFormat(DurationFormat type, YukonUserContext yukonUserContext) {
-    	
-    	MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-        String format = messageSourceAccessor.getMessage(type); 
-        
-    	List<String> subFormats = Lists.newArrayList();
-    	return parseFormat(subFormats, format);
-    }
-    
-    /**
-     * Creates a Period type that only contains those duration fields that the format requires. 
-     * An additional field may be added to the right to maintain precision needed for rounding.
-     */
-    private PeriodType createPeriodType(List<DurationFieldType> durationFieldTypeList, boolean roundRightmostUp) {
-    	
-    	// round - create a duration field to the right of the rightmost field. 
-    	// This is required to create room for the extra millis that would otherwise be truncated from Period. 
-    	// We want to preserve these millis to determine if we have enough to round up.
-    	if (roundRightmostUp) {
+    	List<String> parsedFormat = Lists.newArrayList();
+    	StringBuffer temp = new StringBuffer();
+    	boolean inDelim = false;
+    	for (char c : format.toCharArray()) {
     		
-    		if (durationFieldTypeList.contains(DurationFieldType.seconds())) {
-    			durationFieldTypeList.add(DurationFieldType.millis());
-    		} else if (durationFieldTypeList.contains(DurationFieldType.minutes())) {
-    			durationFieldTypeList.add(DurationFieldType.seconds());
-    		} else if (durationFieldTypeList.contains(DurationFieldType.hours())) {
-    			durationFieldTypeList.add(DurationFieldType.minutes());
+    		if (c == SYMBOL_DELIM && !inDelim) {
+    			parsedFormat.add(temp.toString());
+    			temp = new StringBuffer();
+    			temp.append(c);
+    			inDelim = true;
+    		} else if (c == SYMBOL_DELIM && inDelim) {
+    			temp.append(c);
+    			parsedFormat.add(temp.toString());
+    			temp = new StringBuffer();
+    			inDelim = false;
+    		} else {
+    			temp.append(c);
     		}
     	}
+    	parsedFormat.add(temp.toString());
     	
-    	// period - only create a Period that supports the DurationFieldTypes we intend to display in the formated string
-    	// Using a Period with all the standard fields will cause the millis to get dispersed from left to right and we may lose them if those left side fields are not used in the format.
-    	PeriodType periodType = PeriodType.forFields(durationFieldTypeList.toArray(new DurationFieldType[durationFieldTypeList.size()]));
-    	
-    	return periodType;
-    }
-    
-    /**
-     * Loops over the parsed format instructions and determines which DurationFieldTypes the Period will need to support.
-     */
-    private List<DurationFieldType> getDurationFieldTypeList(List<String> parsedFormat) {
-    	
-    	List<DurationFieldType> durationFieldTypesList = Lists.newArrayList();
-    	for (String subFormat : parsedFormat) {
-    		if (isDurationFormatSymbolSubstring(subFormat)) {
-    			DurationFormatSymbol symbol = DurationFormatSymbol.valueOf(String.valueOf(subFormat.substring(1, subFormat.length() - 1)));
-    			durationFieldTypesList.add(symbol.getDurationFieldType());
-    		}
-    	}
-    	return durationFieldTypesList;
-    }
-    
-    /**
-     * Recursively applies a grouping regular expression to break the format string into format tokens and literals.
-     */
-    private static List<String> parseFormat(List<String> partsList, String remainder) {
-		Matcher m = symbolPattern.matcher(remainder);
-		if (m.matches()) {
-			partsList.add(m.group(1));
-			partsList.add(m.group(2));
-			partsList = parseFormat(partsList, m.group(3));
-		} else {
-			partsList.add(remainder);
-		}
-		return partsList;
+    	return parsedFormat;
 	}
     
     private boolean isDurationFormatSymbolSubstring(String s) {
-    	if (StringUtils.isNotBlank(s) && s.charAt(0) == '%' && s.charAt(s.length() - 1) == '%') {
-			return true;
+
+    	if (s.length() >= 3 && s.charAt(0) == SYMBOL_DELIM && s.charAt(s.length() - 1) == SYMBOL_DELIM) {
+    		try {
+    			DurationFormatSymbol.valueOf(s.substring(1, s.length() -1));
+    			return true;
+    		} catch (IllegalArgumentException e) {
+    			// fall through
+    		}
     	}
     	return false;
+    }
+    
+    private static Period adjustPeriod(Period period, Duration duration, PeriodType periodType, RoundingMode roundingMode) {
+    	
+        DurationFieldType lastFieldType = periodType.getFieldType(periodType.size() - 1);
+        ISOChronology chrono = ISOChronology.getInstanceUTC(); // probably want to pass this in too
+        DurationField lastField = lastFieldType.getField(chrono);
+        long lastUnitMillis = lastField.getUnitMillis();
+        
+        BigDecimal bigDuration = new BigDecimal(duration.getMillis());
+        BigDecimal bigMillis = new BigDecimal(lastUnitMillis);
+        
+        BigDecimal remainder = bigDuration.remainder(bigMillis);
+        BigDecimal adjustment = remainder.divide(bigMillis, 0, roundingMode);
+        
+        // the normalize on here deals with redistribution of millis after rounding. Ex: 59s 500ms -> 1m 0s 0m 0ms
+        Period result = period.withFieldAdded(lastFieldType, adjustment.toBigIntegerExact().intValue()).normalizedStandard(periodType);
+        return result;
+    }
+    
+    private static Period periodGenerate(Duration duration, PeriodType periodType, RoundingMode roundingMode, YukonUserContext yukonUserContext) {
+    	
+    	// normalizing is only useful here because it gives us days and weeks, no other benefit
+        Period normalizedStandard = new Period(duration, periodType, getChronologyForUser(yukonUserContext)).normalizedStandard(periodType);
+        Period result = adjustPeriod(normalizedStandard, duration, periodType, roundingMode);
+        return result;
+    }
+    
+    private static Period periodGenerate(ReadableInstant startTime, Duration duration, PeriodType periodType, RoundingMode roundingMode, YukonUserContext yukonUserContext) {
+    	
+    	Interval interval = new Interval(startTime, duration);
+        Period period = new Period(interval, periodType, getChronologyForUser(yukonUserContext));
+        Period result = adjustPeriod(period, duration, periodType, roundingMode);
+        return result;
+    }
+
+    
+    private static Chronology getChronologyForUser(YukonUserContext yukonUserContext) {
+    	return ISOChronology.getInstance(yukonUserContext.getJodaTimeZone());
     }
     
     @Autowired

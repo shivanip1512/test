@@ -33,8 +33,6 @@ public class FormatDurationTag extends YukonTagSupport {
     private Object endDate;  // Date or ReadableInstant
     private boolean isEndDateSet = false;
     
-    private Boolean roundRightmostUp = null;
-
     @Override
     public void doTag() throws JspException, IOException {
     	boolean areDatesSet = (isStartDateSet && isEndDateSet);
@@ -42,12 +40,6 @@ public class FormatDurationTag extends YukonTagSupport {
         	throw new JspException("type is not set.");
         
         DurationFormat durationFormat = DurationFormat.valueOf(type);
-        
-        // use durationFormat defaulting rounding if roundRightmostUp parameter was not used
-        boolean useRoundRightmostUp = durationFormat.getRoundRightmostUpDefault();
-        if (roundRightmostUp != null) {
-            useRoundRightmostUp = roundRightmostUp.booleanValue();
-        }
         
         String formattedDuration = null;
         if (areDatesSet){
@@ -57,7 +49,6 @@ public class FormatDurationTag extends YukonTagSupport {
                 formattedDuration = durationFormattingService.formatDuration((Date)startDate, 
                                                                              (Date)endDate, 
                                                                              durationFormat, 
-                                                                             useRoundRightmostUp, 
                                                                              getUserContext());
 
             } else if (startDate instanceof ReadableInstant && 
@@ -66,12 +57,11 @@ public class FormatDurationTag extends YukonTagSupport {
                     durationFormattingService.formatDuration((ReadableInstant)startDate, 
                                                              (ReadableInstant)endDate, 
                                                              durationFormat, 
-                                                             useRoundRightmostUp, 
                                                              getUserContext());
             }
         } else {
             if (isValueSet){
-                formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, useRoundRightmostUp, getUserContext());
+                formattedDuration = durationFormattingService.formatDuration(value, TimeUnit.MILLISECONDS, durationFormat, getUserContext());
             } else {
                 throw new JspException("both possible value types were not set");
             }
@@ -109,10 +99,6 @@ public class FormatDurationTag extends YukonTagSupport {
         this.var = var;
         this.isVarSet = true;
     }
-    
-    public void setRoundRightmostUp(Boolean roundRightmostUp) {
-		this.roundRightmostUp = roundRightmostUp;
-	}
     
     @Autowired
     public void setDurationFormattingService(DurationFormattingService durationFormattingService) {

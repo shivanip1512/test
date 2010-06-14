@@ -935,11 +935,6 @@
         <required>true</required>
         <rtexprvalue>true</rtexprvalue>
     </attribute>
-    <attribute>
-        <name>roundRightmostUp</name>
-        <required>false</required>
-        <rtexprvalue>true</rtexprvalue>
-    </attribute>
   </tag>
 
   <tag>
