@@ -25,7 +25,7 @@ public class YukonValidationUtils extends ValidationUtils {
         if (fieldValue == null) {
             if (required) {
                 errors.rejectValue(field, "yukon.web.error.required",
-                                   "xxXXxx Field is required");
+                                   "Field is required");
             }
             return;
         }
@@ -33,7 +33,7 @@ public class YukonValidationUtils extends ValidationUtils {
         if (fieldValue.compareTo(min) < 0 || fieldValue.compareTo(max) > 0) {
             errors.rejectValue(field, "yukon.web.error.outOfRange",
                                new Object[] { min, max },
-                               "xxXXxx Must be between " + min + " and " + max + ".");
+                               "Must be between " + min + " and " + max + ".");
         }
     }
 

@@ -10,9 +10,6 @@
 <cti:standardPage module="operator" page="hardwareConfig">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/hardware.css"/>
 
-<!--  TODO: rename me -->
-<tags:simpleDialog id="hardwareConfigEditDialog"/>
-
 <c:set var="configurable" value="${hardware.hardwareType.configurable}"/>
 <cti:checkRolesAndProperties value="OPERATOR_DISABLE_SWITCH_SENDING">
     <c:set var="configurable" value="false"/>
@@ -116,15 +113,20 @@
     <tags:boxContainer2 nameKey="otherDeviceActions">
         <cti:url var="disableUrl" value="/spring/stars/operator/hardware/config/disable">
            <cti:param name="accountId" value="${accountId}"/>
-           <cti:param name="inventoryId" value="${inventoryId}"/>
+           <cti:param name="inventoryId" value="${param.inventoryId}"/>
         </cti:url>
         <input type="button" value="<cti:msg2 key=".disable"/>" onclick="window.location='${disableUrl}'" class="formSubmit">
         <cti:url var="enableUrl" value="/spring/stars/operator/hardware/config/enable">
            <cti:param name="accountId" value="${accountId}"/>
-           <cti:param name="inventoryId" value="${inventoryId}"/>
+           <cti:param name="inventoryId" value="${param.inventoryId}"/>
         </cti:url>
         <input type="button" value="<cti:msg2 key=".enable"/>" onclick="window.location='${enableUrl}'" class="formSubmit">
-        <i:inline key=".inService.${inService}"/>
+        <c:if test="${inService}">
+            <i:inline key=".inService"/>
+        </c:if>
+        <c:if test="${!inService}">
+            <i:inline key=".outOfService"/>
+        </c:if>
     </tags:boxContainer2>
 </c:if>
 

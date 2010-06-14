@@ -267,6 +267,7 @@ public class OperatorHardwareConfigController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
         verifyHardwareIsForAccount(inventoryId, accountInfo);
+        model.addAttribute("accountId", accountInfo.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
 
         try {
@@ -285,7 +286,7 @@ public class OperatorHardwareConfigController {
             flashScope.setError(errorMessage);
         }
 
-        return "redirect:/spring/stars/operator/hardware/config/list";
+        return "redirect:/spring/stars/operator/hardware/config/edit";
     }
 
     @RequestMapping
@@ -293,6 +294,7 @@ public class OperatorHardwareConfigController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
         verifyHardwareIsForAccount(inventoryId, accountInfo);
+        model.addAttribute("accountId", accountInfo.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
 
         try {
@@ -311,7 +313,7 @@ public class OperatorHardwareConfigController {
             flashScope.setError(errorMessage);
         }
 
-        return "redirect:/spring/stars/operator/hardware/config/list";
+        return "redirect:/spring/stars/operator/hardware/config/edit";
     }
 
     private void verifyHardwareIsForAccount(int inventoryId,
