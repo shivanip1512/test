@@ -133,7 +133,7 @@
                                                 style="margin-right: 5px;width:350px;" 
                                                 name="editCommentInput" onKeyPress="return updateOrCancel(event, ${comment.id})" 
                                                 value="<spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody>">
-                                            <a href="#" onclick="updateComment(${comment.id})">Save</a> <a href="#" onclick="cancelUpdate(${comment.id})">Cancel</a>
+                                            <a href="javascript:updateComment(${comment.id})">Save</a> <a href="javascript:cancelUpdate(${comment.id})">Cancel</a>
                                         </div>
                                         <div id="comment_${comment.id}" title="Click to edit." 
                                         <c:if test="${modifyPermission}">onclick="editComment(${comment.id})"</c:if>><spring:escapeBody htmlEscape="true">${comment.comment}</spring:escapeBody></div>
@@ -165,7 +165,7 @@
             <span class="textFieldLabel">
                 <input type="text" id="newCommentInput" onKeyPress="return addOrCancel(event)">
             </span>
-            <span class="textFieldLabel"><a href="#" onclick="addComment()">Save</a> <a href="#" onclick="hideNewRow()">Cancel</a></span>
+            <span class="textFieldLabel"><a href="javascript:addComment()">Save</a> <a href="javascript:hideNewRow()">Cancel</a></span>
         </div>
         <div class="compactResultsFooter">
             <span title="Click to add a comment" class="pointer" onmouseover="javascript:$('addCommentImgInput').src='${addOver}'" onmouseout="javascript:$('addCommentImgInput').src='${add}'">

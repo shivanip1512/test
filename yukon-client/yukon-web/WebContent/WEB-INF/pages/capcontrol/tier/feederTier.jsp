@@ -315,7 +315,7 @@
                                 <a id="ltcName_${viewableSubBus.ltcId}" href="javascript:void(0);" ${popupEvent}="getLtcMenu('${viewableSubBus.ltcId}', event);">
                                 ${viewableSubBus.ltcName}
                                 </a>
-                                <a href="#" onclick="getLtcPointsList(${viewableSubBus.ltcId})" class="tierIconLink">
+                                <a href="javascript:getLtcPointsList(${viewableSubBus.ltcId})" class="tierIconLink">
                                     <img alt="View Points" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
                                         onmouseover="statusMsgAbove(this,'Click here to see the point values for the ltc device.');">
                                </a>
@@ -600,7 +600,7 @@
                         </c:choose>
     
                         <c:if test="${viewableCapBank.twoWayCbc}">
-                            <a href="#" onclick="showCbcPointList(${viewableCapBank.controlDevice.liteID}, ${viewableCapBank.controlDevice.paoName})" class="tierIconLink">
+                            <a href="javascript:showCbcPointList(${viewableCapBank.controlDevice.liteID}, ${viewableCapBank.controlDevice.paoName})" class="tierIconLink">
                                 <img alt="Timestamps" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
                                     onmouseover="statusMsgAbove(this,'Click here to see the timestamp information for the cap bank controller device.');">
                            </a>
@@ -637,7 +637,7 @@
     						</c:otherwise>
     					</c:choose>
     					<cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-    					   <a href="#" class="tierIconLink" onclick="showCapBankAddInfo(${thisCapBankId}, '${viewableCapBank.capBankDevice.ccName}')">
+    					   <a href="javascript:showCapBankAddInfo(${thisCapBankId}, '${viewableCapBank.capBankDevice.ccName}')" class="tierIconLink">
     					       <img alt="Additional Info" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" onmouseover="statusMsgAbove(this, 'Click to see additional information for the cap bank.');">
     					   </a>
     					</cti:checkRolesAndProperties>
@@ -741,5 +741,4 @@
 		<input type="hidden" id="lastUpdate" value="">
         
 	</tags:abstractContainer>
-    <capTags:commandMsgDiv/>
 </cti:standardPage>

@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 <%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 
@@ -57,7 +57,7 @@
 	    </c:otherwise>
     </c:choose>
 	
-	<ct:abstractContainer type="box" hideEnabled="false" title="${title}" id="last_titled_container">
+	<tags:abstractContainer type="box" hideEnabled="false" title="${title}" id="last_titled_container">
 		<table id="areaTable" class="tierTable">
 			<thead>
     			<tr>
@@ -74,7 +74,7 @@
         	<tbody>
         		<c:forEach var="viewableArea" items="${ccAreas}">
         			<c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
-        			<tr class="<ct:alternateRow odd="" even="altRow"/>">
+        			<tr class="<tags:alternateRow odd="" even="altRow"/>">
 	        			<td>
 							<input type="image" id="showAreas${thisAreaId}" src="/capcontrol/images/nav-plus.gif"
 								 onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;" class="tierImg">
@@ -141,11 +141,7 @@
         	
         </table>
 
-	</ct:abstractContainer>
-	
-	<capTags:commandMsgDiv/>
-
-    <ct:disableUpdaterHighlights/>
+	</tags:abstractContainer>
 	
 	<script type="text/javascript" language="JavaScript">
 		//register the event handler for the system command

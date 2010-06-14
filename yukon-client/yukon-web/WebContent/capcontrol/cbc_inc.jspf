@@ -4,6 +4,7 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 <!-- Check CapControl Role Access -->
 <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
@@ -59,3 +60,5 @@
 <tags:simplePopup id="tierMenuPopup" onClose="closeTierPopup()" title="" styleClass="thinBorder">
     <div id="popupBody"></div>
 </tags:simplePopup>
+
+<capTags:commandMsgDiv/>

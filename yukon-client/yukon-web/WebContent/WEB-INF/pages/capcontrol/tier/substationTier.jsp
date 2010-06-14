@@ -112,7 +112,4 @@
     
     </tags:abstractContainer>
 
-    <capTags:commandMsgDiv/>
-
-    <tags:disableUpdaterHighlights/>
 </cti:standardPage>
