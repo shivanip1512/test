@@ -240,11 +240,6 @@ public final class PaoDaoImpl implements PaoDao {
         
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
         
-        SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-        sqlBuilder.append("SELECT paobjectid, paoname");
-        sqlBuilder.append("FROM yukonpaobject");
-        sqlBuilder.append("WHERE paobjectid").in(ids);
-
         final Map<Integer, String> resultMap = new HashMap<Integer, String>();
         
         template.query(new SqlFragmentGenerator<Integer>() {
