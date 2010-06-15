@@ -211,34 +211,35 @@ CtiTime CtiMCScheduler::scheduleManualStart(const CtiTime& now,
     const string& state = sched.getCurrentState();
     const CtiTime& man_start = sched.getManualStartTime();
 
-    if( man_start.isValid() && state == CtiMCSchedule::Waiting )
+    if( man_start.isValid() )
     {
-        if( man_start > now )
+        if ( state == CtiMCSchedule::Waiting || state == CtiMCSchedule::Pending )
         {
-            pending_event.timestamp = now;
-            start_event.timestamp = man_start;
+            if( man_start > now )
+            {
+                pending_event.timestamp = now;
+                start_event.timestamp = man_start;
+            }
+            else
+            {
+                start_event.timestamp = now;
+            }
+    
+            if( pending_event.timestamp.isValid() ) {
+                addEvent(sched, pending_event);
+                sched.setCurrentStopTime(_invalid_time);
+            }
+    
+            if( start_event.timestamp.isValid() ) {
+                addEvent(sched, start_event);
+                sched.setCurrentStopTime(_invalid_time);
+            }
+    
+            return start_event.timestamp;
         }
-        else
-        {
-            start_event.timestamp = now;
-        }
-
-        if( pending_event.timestamp.isValid() ) {
-            addEvent(sched, pending_event);
-            sched.setCurrentStopTime(_invalid_time);
-        }
-
-        if( start_event.timestamp.isValid() ) {
-            addEvent(sched, start_event);
-            sched.setCurrentStopTime(_invalid_time);
-        }
-
-        return start_event.timestamp;
     }
-    else
-    {
-        return _invalid_time;
-    }
+
+    return _invalid_time;
 }
 
 CtiTime CtiMCScheduler::scheduleManualStop(const CtiTime& now,
