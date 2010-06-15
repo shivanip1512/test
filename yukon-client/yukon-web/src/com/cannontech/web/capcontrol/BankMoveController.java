@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,7 +16,6 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -40,7 +39,6 @@ import com.cannontech.yukon.cbc.SubStation;
 public class BankMoveController {
     
     private FilterCacheFactory cacheFactory;
-    private RolePropertyDao rolePropertyDao;
     
     @RequestMapping
     public ModelAndView bankMove(HttpServletRequest request, LiteYukonUser user) {
@@ -111,11 +109,6 @@ public class BankMoveController {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final CBCDisplay cbcDisplay = new CBCDisplay(userContext);
         CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(userContext.getYukonUser());
-        String popupEvent = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.POPUP_APPEAR_STYLE, userContext.getYukonUser());
-        if (popupEvent == null) {
-            popupEvent = "onclick";
-        }
-        mav.addObject("popupEvent", popupEvent);
         
         List<CCArea> areas = filterCapControlCache.getCbcAreas();
         List<MovedBank> movedCaps = new ArrayList<MovedBank>();   
@@ -131,14 +124,8 @@ public class BankMoveController {
             }
         }
         
-        int itemsPerPage = 25;
-        int currentPage = 1;
-        
-        String temp = request.getParameter("itemsPerPage");
-        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
-        
-        temp = request.getParameter("page");
-        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
@@ -165,10 +152,5 @@ public class BankMoveController {
     @Autowired
     public void setFilterCacheFactory (FilterCacheFactory filterCacheFactory) {
         this.cacheFactory = filterCacheFactory;
-    }
-    
-    @Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-        this.rolePropertyDao = rolePropertyDao;
     }
 }

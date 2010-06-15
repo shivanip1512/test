@@ -5,10 +5,10 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
@@ -36,15 +36,8 @@ public class StrategyController {
     public String strategies(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {
         List<CapControlStrategy> strategies = strategyDao.getAllStrategies();
         
-        int itemsPerPage = 25;
-        int currentPage = 1;
-        
-        String temp = request.getParameter("itemsPerPage");
-        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
-        
-        temp = request.getParameter("page");
-        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
-        
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = strategies.size();

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.View;
@@ -55,12 +56,8 @@ public class ScheduleController {
 		mav.addAttribute("scheduleList", schedList);
 		
 		//Get items per page and start index
-        int itemsPerPage = 25;
-        int currentPage = 1;
-        String temp = request.getParameter("itemsPerPage");
-        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
-        temp = request.getParameter("page");
-        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+		int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+		int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         
 		//Create filters
@@ -104,12 +101,8 @@ public class ScheduleController {
 	    List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
         Collections.sort(schedList);
         
-        int itemsPerPage = 25;
-        int currentPage = 1;
-        String temp = request.getParameter("itemsPerPage");
-        if(!StringUtils.isEmpty(temp)) itemsPerPage = Integer.valueOf(temp);
-        temp = request.getParameter("page");
-        if(!StringUtils.isEmpty(temp)) currentPage = Integer.valueOf(temp);
+        int itemsPerPage = ServletRequestUtils.getIntParameter(request, "itemsPerPage", 25);
+        int currentPage = ServletRequestUtils.getIntParameter(request, "page", 1);
         int startIndex = (currentPage - 1) * itemsPerPage;
         int toIndex = startIndex + itemsPerPage;
         int numberOfResults = schedList.size();

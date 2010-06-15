@@ -129,27 +129,18 @@ function clearFilter() {
 <%-- Filtering popup --%>
 <tags:simplePopup id="filterPopup" title="Schedule Assignment Filters">
 	<form name="filterForm" action="">
-		<table>
+		<table class="filterSelection">
 			<tr>
 				<td>
 					Schedules:
-					<br /><br />
 				</td>
 				<td> 
 					<select name="schedule" id="scheduleSelection">
 						<option value="All">All Schedules</option>
 						<c:forEach var="aSchedule" items="${scheduleList}">
-							<c:choose>
-								<c:when test="${param.schedule != aSchedule.scheduleName}">
-									<option value="${aSchedule.scheduleName}">${aSchedule.scheduleName}</option> 
-								</c:when>
-								<c:when test="${param.schedule == aSchedule.scheduleName}">
-									<option value="${aSchedule.scheduleName}" selected="selected">${aSchedule.scheduleName}</option>
-								</c:when>
-							</c:choose>
+								<option value="${aSchedule.scheduleName}" <c:if test="${param.schedule == aSchedule.scheduleName}">selected="selected" </c:if> > ${aSchedule.scheduleName}</option>
 						</c:forEach>
 					</select>
-					<br /><br />
 				</td>
 			</tr>
 			<tr>
@@ -165,14 +156,7 @@ function clearFilter() {
 									<option value="${aCommand}">${aCommand.commandName}</option>
 								</c:when>
 								<c:otherwise>
-									<c:choose>
-										<c:when test="${param.command != aCommand}">
-											<option value="${aCommand}">${aCommand.commandName}</option>
-										</c:when>
-										<c:when test="${param.command == aCommand}">>
-											<option value="${aCommand}" selected="selected">${aCommand.commandName}</option>
-										</c:when>
-									</c:choose>
+									<option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${aCommand.commandName}</option>
 								</c:otherwise>
 							</c:choose>
 						</c:forEach>
@@ -183,7 +167,7 @@ function clearFilter() {
 		<br />
 		<div style="text-align:right">
 			<input type="submit" value="Filter" />
-			<input type="button" value="Clear Filters" onclick="javascript:clearFilter()" />
+			<input type="button" class="formSubmit" value="Clear Filters" onclick="javascript:clearFilter()" />
 		</div>
 	</form>
 </tags:simplePopup>
@@ -248,7 +232,7 @@ function clearFilter() {
 					No items to display.
 				</c:when>
 				<c:otherwise>
-					<table class="compactResultsTable smallPadding" id="scheduledTable" width="90%" border="0" cellspacing="0" cellpadding="3" align="center">
+					<table class="compactResultsTable smallPadding" id="scheduledTable" align="center">
 					<thead>
 						<tr id="header">
 							<th>Schedule</th>

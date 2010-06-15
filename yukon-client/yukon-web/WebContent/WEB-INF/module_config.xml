@@ -624,7 +624,7 @@
     <search bean="capControlSearchProducer" />
     
     <skin name="STANDARD" />
-    <css file="/css/base.css" />
+    <css file="/capcontrol/css/base.css" />
     <css file="/WebConfig/yukon/styles/capcontrollogos.css" />
   </module>
 
