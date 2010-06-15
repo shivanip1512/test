@@ -75,7 +75,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	//servlet attributes/parameter strings
 	private static String ATT_METER_READ_TYPE = "meterReadType";
 	private static final String ATT_ORDER_BY = "orderBy";
-	private static final String ATT_DISABLED_DEVICE_STATUS = "excludeDisabledDevices";
+	private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 	
 	/**
 	 * 
@@ -185,7 +185,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             sql.append("      JOIN Point sP on sRPH.pointId = sP.pointId");
             sql.append("    WHERE timestamp > ").appendArgument(getStartDate());
             sql.append("      AND timestamp <= ").appendArgument(getStopDate());
-            if( excludeDisabledDevices) {
+            if (excludeDisabledDevices) {
                 sql.append("    AND PAO.DISABLEFLAG").eq("N");
             }
             sql.appendFragment(buildWhereClause("sP.paobjectId"));
@@ -200,7 +200,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             sql.append("    WHERE timestamp > ").appendArgument(getStartDate());
             sql.append("      AND timestamp <= ").appendArgument(getStopDate());
             sql.append("  )");
-            if( excludeDisabledDevices) {
+            if (excludeDisabledDevices) {
                 sql.append("    AND PAO.DISABLEFLAG").eq("N");
             }
             sql.appendFragment(buildWhereClause("pao.paobjectid"));
@@ -503,7 +503,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='checkbox' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='true'>Exclude Disabled Devices" + LINE_SEPARATOR);
+        sb.append("          <td><input type='checkbox' name='" + ATT_EXCLUDE_DISABLED_DEVICES +"' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
@@ -542,9 +542,9 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 			else
 				setOrderBy(ORDER_BY_DEVICE_NAME);
 			
-			param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+			param = req.getParameter(ATT_EXCLUDE_DISABLED_DEVICES);
 			if( param != null)
-			    excludeDisabledDevices = param.equalsIgnoreCase("true");
+			    excludeDisabledDevices = CtiUtilities.isTrue(param);
 		}		
 	}
 

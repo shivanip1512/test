@@ -19,8 +19,8 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -234,6 +234,10 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         this.yukonUserContext = context;
     }
 
+    public void setExcludeDisabledDevices(boolean excludeDisabledDevices) {
+        this.excludeDisabledDevices = excludeDisabledDevices;
+    }
+    
     @Required
     public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
@@ -262,9 +266,5 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     @Required
     public void setPointFormattingService(PointFormattingService pointFormattingService){
         this.pointFormattingService = pointFormattingService;
-    }
-
-    public void setExcludeDisabledDevices(boolean excludeDisabledDevices) {
-        this.excludeDisabledDevices = excludeDisabledDevices;
     }
 }

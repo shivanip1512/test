@@ -212,7 +212,7 @@ public class PointDataSummaryModel extends ReportModelBase
 	};
 
     private boolean excludeDisabledDevices = false;
-    private static final String ATT_DISABLED_DEVICE_STATUS = "excludeDisabledDevices";
+    private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 
 	@SuppressWarnings("unchecked")
     public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
@@ -311,7 +311,6 @@ public class PointDataSummaryModel extends ReportModelBase
 		if (getPointType() == LOAD_PROFILE_POINT_TYPE || getPointType() == DEMAND_ACC_POINT_TYPE) {
             sql.append(", DLP.LOADPROFILEDEMANDRATE, DLP.VOLTAGEDMDRATE, DLP.LASTINTERVALDEMANDRATE, DLP.VOLTAGEDMDINTERVAL ");
         }
-		sql.append(", PAO.DISABLEFLAG ");
 		
         sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
         sql.append(" left outer join DEVICEMETERGROUP DMG on PAO.PAOBJECTID = DMG.DEVICEID ");
@@ -349,7 +348,7 @@ public class PointDataSummaryModel extends ReportModelBase
 			sql.append(" OR P.POINTTYPE = ").appendArgument(PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT));
 			sql.append(" )");
 		}
-		if( excludeDisabledDevices) {
+		if (excludeDisabledDevices) {
 		    sql.append(" AND PAO.DISABLEFLAG").eq("N");
 		}
 		//Use paoIDs in query if they exist
@@ -1101,7 +1100,7 @@ public class PointDataSummaryModel extends ReportModelBase
         html += "          <td class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;        
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td><input type='checkbox' name='"+ATT_DISABLED_DEVICE_STATUS+"' value='true'>Exclude Disabled Devices" + LINE_SEPARATOR;
+        html += "          <td><input type='checkbox' name='"+ATT_EXCLUDE_DISABLED_DEVICES+"' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR;
         html += "          </td>" + LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;
 		html += "      </table>" + LINE_SEPARATOR;
@@ -1135,9 +1134,9 @@ public class PointDataSummaryModel extends ReportModelBase
 			else 
 			    setShowDetails(false);
 			
-			param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+			param = req.getParameter(ATT_EXCLUDE_DISABLED_DEVICES);
 			if( param != null) {
-			    excludeDisabledDevices = param.equalsIgnoreCase("true");
+			    excludeDisabledDevices = CtiUtilities.isTrue(param);
 			}
 		}
 	}

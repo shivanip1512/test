@@ -92,7 +92,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	//servlet attributes/parameter strings
 	private static final String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
-	private static final String ATT_DISABLED_DEVICE_STATUS = "excludeDisabledDevices";
+	private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 	/**
 	 * Default Constructor
 	 */
@@ -140,11 +140,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	 * @throws SQLException 
 	 */
 	public void addDataRow(ResultSet rset) throws SQLException
-	{
-	    
-	    String disabledStr = rset.getString("disableFlag");
-        boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
-	    
+	{	    
 	    int pointID = rset.getInt(1);
 	    Timestamp ts = rset.getTimestamp(2);
 	    GregorianCalendar cal = new GregorianCalendar();
@@ -171,13 +167,13 @@ public class PointDataIntervalModel extends ReportModelBase
 	public SqlFragmentSource buildSQLStatement()
 	{
 	    SqlStatementBuilder sql = new SqlStatementBuilder();
-	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID, PAO.DISABLEFLAG ");
+	    sql.append("SELECT DISTINCT RPH.POINTID, RPH.TIMESTAMP, RPH.QUALITY, RPH.VALUE, P.POINTNAME, PAO.PAONAME, PAO.PAOBJECTID ");
 	    sql.append(" FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
 	    sql.append(" WHERE P.POINTID = RPH.POINTID ");
 	    sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 	    sql.append(" AND TIMESTAMP > ").appendArgument(getStartDate());
 	    sql.append(" AND TIMESTAMP <= ").appendArgument(getStopDate());
-	    if( excludeDisabledDevices) {
+	    if (excludeDisabledDevices) {
 	        sql.append(" AND PAO.DISABLEFLAG").eq("N");
 	    }
 
@@ -477,7 +473,7 @@ public class PointDataIntervalModel extends ReportModelBase
         html += "          <td class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;        
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td><input type='checkbox' name='" +ATT_DISABLED_DEVICE_STATUS + "' value='true'>Exclude Disabled Devices" + LINE_SEPARATOR;
+        html += "          <td><input type='checkbox' name='" +ATT_EXCLUDE_DISABLED_DEVICES + "' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR;
         html += "          </td>" + LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;
 		html += "      </table>" + LINE_SEPARATOR;
@@ -534,9 +530,9 @@ public class PointDataIntervalModel extends ReportModelBase
 				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
 				setStopDate(cal.getTime());
 			}
-			param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+			param = req.getParameter(ATT_EXCLUDE_DISABLED_DEVICES);
     		if( param != null) {
-    		    excludeDisabledDevices = param.equalsIgnoreCase("true");
+    		    excludeDisabledDevices = CtiUtilities.isTrue(param);
     		}
 		}
 	}

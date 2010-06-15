@@ -12,14 +12,10 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
-import com.cannontech.spring.YukonSpringHook;
 
 public class MeterUsageModel extends ReportModelBase
 {
@@ -55,7 +51,7 @@ public class MeterUsageModel extends ReportModelBase
     private boolean excludeDisabledDevices = false; 
     
     //servlet attributes/parameter strings
-    private static final String ATT_DISABLED_DEVICE_STATUS = "excludeDisabledDevices";
+    private static final String ATT_EXCLUDE_DISABLED_DEVICES = "excludeDisabledDevices";
 
     static public class MeterUsageRow {
         public String deviceName;
@@ -126,7 +122,7 @@ public class MeterUsageModel extends ReportModelBase
 	public SqlFragmentSource buildSQLStatement()
 	{
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT DISTINCT PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE, PAO.DISABLEFLAG");
+		sql.append("SELECT DISTINCT PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE");
 		sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, ");
 		sql.append(" POINT P join RAWPOINTHISTORY RPH ");
 		sql.append(" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ").appendArgument(getStartDate());
@@ -135,7 +131,7 @@ public class MeterUsageModel extends ReportModelBase
 		sql.append(" AND P.PAOBJECTID = PAO.PAOBJECTID ");
 		sql.append(" AND P.POINTOFFSET = 1 ");
 		sql.append(" AND P.POINTTYPE = 'PulseAccumulator' ");
-		if( excludeDisabledDevices) {
+		if (excludeDisabledDevices) {
 		    sql.append(" AND PAO.DISABLEFLAG").eq("N");
 		}
 			
@@ -286,6 +282,8 @@ public class MeterUsageModel extends ReportModelBase
     public String getHTMLOptionsTable()
     {
 	    final StringBuilder sb = new StringBuilder();
+	    sb.append("<table style='padding: 10px;' class='TableCell'>" + LINE_SEPARATOR);
+        sb.append("  <tr>" + LINE_SEPARATOR);
 
         sb.append("    <td valign='top'>" + LINE_SEPARATOR);        
         sb.append("      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR);
@@ -293,10 +291,13 @@ public class MeterUsageModel extends ReportModelBase
         sb.append("          <td valign='top' class='TitleHeader'>Disabled Devices</td>" +LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='checkbox' name='" + ATT_DISABLED_DEVICE_STATUS +"' value='true'>Exclude Disabled Devices" + LINE_SEPARATOR);
+        sb.append("          <td><input type='checkbox' name='" + ATT_EXCLUDE_DISABLED_DEVICES +"' value='true'> Exclude Disabled Devices" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
+        
+        sb.append("  </tr>" + LINE_SEPARATOR);
+        sb.append("</table>" + LINE_SEPARATOR);
         
 	    return sb.toString();
     }
@@ -307,9 +308,9 @@ public class MeterUsageModel extends ReportModelBase
         super.setParameters(req);
         if( req != null)
         {
-            String param = req.getParameter(ATT_DISABLED_DEVICE_STATUS);
+            String param = req.getParameter(ATT_EXCLUDE_DISABLED_DEVICES);
             if( param != null) {
-                excludeDisabledDevices = param.equalsIgnoreCase("true");
+                excludeDisabledDevices = CtiUtilities.isTrue(param);
             }
         }       
     }
