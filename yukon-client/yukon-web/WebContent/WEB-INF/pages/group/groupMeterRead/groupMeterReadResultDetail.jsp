@@ -50,16 +50,7 @@
                 var params = $H();
                 params['resultKey'] = '${resultWrapper.result.key}';
             
-                var updater = new Ajax.Updater (theDiv, url, {
-              
-                  'parameters': params,
-                  
-                  'onSuccess': function(response) {
-                               },
-                  
-                  'onException': function(response) {
-                               }
-                });
+                var updater = new Ajax.Updater (theDiv, url, {'parameters': params});
             }
         }
     
