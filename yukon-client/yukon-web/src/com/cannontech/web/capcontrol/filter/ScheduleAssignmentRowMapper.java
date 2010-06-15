@@ -16,9 +16,11 @@ public class ScheduleAssignmentRowMapper extends
     public SqlFragmentSource getBaseQuery() {
         SqlStatementBuilder builder = new SqlStatementBuilder();
         builder.append("SELECT sa.EventID, sa.ScheduleID, s.ScheduleName, s.NextRunTime,");
-        builder.append("s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv");
-        builder.append("FROM PAOScheduleAssignment sa, PAOSchedule s, YukonPAObject po");
-        builder.append("WHERE s.ScheduleID = sa.ScheduleID AND sa.PaoID = po.PAObjectID");
+        builder.append(  "s.LastRunTime, sa.PaoID, po.PAOName, sa.Command, sa.disableOvUv");
+        builder.append("FROM PAOScheduleAssignment sa");
+        builder.append(  "JOIN PAOSchedule s on s.ScheduleID = sa.ScheduleID");
+        builder.append(  "JOIN YukonPAObject po on sa.PaoID = po.PAObjectID");
+        //builder.append("WHERE 1=1");
         return builder;
     }
 
@@ -47,5 +49,9 @@ public class ScheduleAssignmentRowMapper extends
         
         return assignment;
     }
-
+    
+    @Override
+    public boolean needsWhere(){
+        return true;
+    }
 }
