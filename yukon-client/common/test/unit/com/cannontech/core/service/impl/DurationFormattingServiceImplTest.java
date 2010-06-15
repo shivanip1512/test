@@ -1,12 +1,14 @@
 package com.cannontech.core.service.impl;
 
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.DurationFieldType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ImmutableSet;
 
 public class DurationFormattingServiceImplTest {
     private DurationFormattingService service;
@@ -87,8 +90,16 @@ public class DurationFormattingServiceImplTest {
         YukonUserContextMessageSourceResolverMock messageSourceResolver = new YukonUserContextMessageSourceResolverMock();
         messageSourceResolver.setMessageSource(messageSource);
         
+        Set<DurationFieldType> unsupportedFieldsForDurationBasedFormatting = ImmutableSet.of(DurationFieldType.centuries(), 
+				DurationFieldType.eras(), 
+				DurationFieldType.halfdays(), 
+				DurationFieldType.months(), 
+				DurationFieldType.weekyears(), 
+				DurationFieldType.years());
+        
         DurationFormattingServiceImpl serviceImpl = new DurationFormattingServiceImpl();
         serviceImpl.setMessageSourceResolver(messageSourceResolver);
+        serviceImpl.setUnsupportedFieldsForDurationBasedFormatting(unsupportedFieldsForDurationBasedFormatting);
         service = serviceImpl;
         
         
@@ -103,9 +114,6 @@ public class DurationFormattingServiceImplTest {
     @Test
     public void test_format_YMODHMS() {
         
-    	String expected;
-        String result;
-        
         long millis = 0;
         
         millis += TimeUnit.MILLISECONDS.convert(12, TimeUnit.SECONDS);
@@ -115,10 +123,15 @@ public class DurationFormattingServiceImplTest {
         millis += TimeUnit.MILLISECONDS.convert((30 * 8), TimeUnit.DAYS);
         millis += TimeUnit.MILLISECONDS.convert((365 * 2), TimeUnit.DAYS);
         
-        // this is expected. when using straight millis, only precise fields are populated
-        expected = "0 years 0 months 979 days 10 hours 11 minutes 12 seconds";
-        result = service.formatDuration(millis, TimeUnit.MILLISECONDS, DurationFormat.YMODHMS, userContext);
-        Assert.assertEquals(expected, result);
+        // when using a duration only precise fields are populated and this would be the result.
+        // "0 years 0 months 979 days 10 hours 11 minutes 12 seconds";
+        // the service rejects imprecise fields when using a duration and this should throw an exception.
+        try {
+        	service.formatDuration(millis, TimeUnit.MILLISECONDS, DurationFormat.YMODHMS, userContext);
+        	Assert.fail("Service should not have accepted imprecise duration fields.");
+        } catch (IllegalArgumentException e) {
+        	// expected, pass
+        }
     }
     
     @Test

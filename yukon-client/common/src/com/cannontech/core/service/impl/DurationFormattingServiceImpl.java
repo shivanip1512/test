@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Chronology;
@@ -26,6 +29,7 @@ import com.cannontech.core.service.durationFormatter.DurationFormat;
 import com.cannontech.core.service.durationFormatter.DurationFormatSymbol;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 public strictfp class DurationFormattingServiceImpl implements DurationFormattingService {
@@ -33,13 +37,30 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
 	private YukonUserContextMessageSourceResolver messageSourceResolver;
 	
 	private static final char SYMBOL_DELIM = '%';
-    
+	
+	private Set<DurationFieldType> unsupportedFieldsForDurationBasedFormatting;
+	
+	@PostConstruct
+	public void init() {
+		
+		unsupportedFieldsForDurationBasedFormatting = ImmutableSet.of(DurationFieldType.centuries(), 
+																	DurationFieldType.eras(), 
+																	DurationFieldType.halfdays(), 
+																	DurationFieldType.months(), 
+																	DurationFieldType.weekyears(), 
+																	DurationFieldType.years());
+		
+	}
+
     // DURATION VALUE
     public String formatDuration(final long durationValue, final TimeUnit durationUnit, final DurationFormat type, final YukonUserContext yukonUserContext) {
     	
     	PeriodGenerator periodGenerator = new PeriodGenerator() {
 			@Override
 			public Period generatePeriod(PeriodType periodType) {
+				
+				checkPeriodTypeForUnsupportedDurationFields(periodType);
+				
 				long durationMillis = TimeUnit.MILLISECONDS.convert(durationValue, durationUnit);
 		    	Duration duration = new Duration(durationMillis);
 		    	Period period = periodGenerate(duration, periodType, type.getRoundingMode(), yukonUserContext);
@@ -182,6 +203,16 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     	return false;
     }
     
+    // imprecise duration fields are not supported when using a duration for formatting.
+	// only a true interval populates these imprecise fields.
+	private void checkPeriodTypeForUnsupportedDurationFields(PeriodType periodType) throws IllegalArgumentException {
+		for (DurationFieldType durationFieldType : unsupportedFieldsForDurationBasedFormatting) {
+			if (periodType.indexOf(durationFieldType) != -1) {
+				throw new IllegalArgumentException(durationFieldType + " is not supported for this type of formatting.");
+			}
+		}
+	}
+    
     private static Period adjustPeriod(Period period, Duration duration, PeriodType periodType, RoundingMode roundingMode) {
     	
         DurationFieldType lastFieldType = periodType.getFieldType(periodType.size() - 1);
@@ -220,6 +251,10 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
     private static Chronology getChronologyForUser(YukonUserContext yukonUserContext) {
     	return ISOChronology.getInstance(yukonUserContext.getJodaTimeZone());
     }
+    
+    public void setUnsupportedFieldsForDurationBasedFormatting(Set<DurationFieldType> unsupportedFieldsForDurationBasedFormatting) {
+		this.unsupportedFieldsForDurationBasedFormatting = unsupportedFieldsForDurationBasedFormatting;
+	}
     
     @Autowired
     public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
