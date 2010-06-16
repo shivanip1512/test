@@ -389,7 +389,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 ProgramDao programDao = 
                     YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
                 Program program = programDao.getByProgramId(liteApp.getProgramID());
-                String programName = program.getProgramName();
+                String programName = program.getProgramPaoName();
 
                 LMHardwareBaseDao lmHardwareBaseDao = 
                     YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
