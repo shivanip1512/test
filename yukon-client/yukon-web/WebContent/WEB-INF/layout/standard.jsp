@@ -105,15 +105,6 @@ Generated at <cti:formatDate type="FULL" value="${currentTime}"/>
 </tags:simplePopup>
 <tags:dataUpdateEnabler/>
 <cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
-<c:if test="${confirmDialogUsed}">
-    <cti:msg2 var="confirmDialogTitle" key="yukon.web.layout.standard.confirmDialog.title"/>
-    <tags:simplePopup title="${confirmDialogTitle}" id="confirmDialog">
-        <span id="confirmDialogQuestion"></span>
-        <div class="actionArea">
-            <input type="button" class="ok" value="<cti:msg2 key="yukon.web.layout.standard.confirmDialog.ok"/>"/>
-            <input type="button" value="<cti:msg2 key="yukon.web.layout.standard.confirmDialog.cancel"/>" onclick="$('confirmDialog').hide()"/>
-        </div>
-    </tags:simplePopup>
-</c:if>
+
 </body>
 </html>

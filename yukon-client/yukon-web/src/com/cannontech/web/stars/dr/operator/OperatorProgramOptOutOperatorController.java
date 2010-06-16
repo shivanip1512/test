@@ -43,6 +43,8 @@ import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
@@ -84,6 +86,7 @@ public class OperatorProgramOptOutOperatorController {
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
+    private InventoryDao inventoryDao;
 
     @RequestMapping
     public String view(YukonUserContext yukonUserContext, 
@@ -432,6 +435,21 @@ public class OperatorProgramOptOutOperatorController {
     }
 
     @RequestMapping
+    public String confirmCancelOptOut(int eventId, int inventoryId,
+            ModelMap model, YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+
+        CustomerAccount customerAccount =
+            customerAccountDao.getById(accountInfoFragment.getAccountId());
+        checkEventAgainstAccount(eventId, customerAccount);
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("hardware", hardware);
+        return "operator/program/optOut/confirmCancelOptOut.jsp";
+    }
+
+    @RequestMapping
     public String cancelOptOut(Integer eventId,
                                 FlashScope flashScope,
                                 ModelMap modelMap,
@@ -453,7 +471,23 @@ public class OperatorProgramOptOutOperatorController {
                               "yukon.web.modules.operator.optOut.main.cancelOptOut.successText"));
         
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
-        return "redirect:view";
+        return closeDialog(modelMap);
+    }
+
+    @RequestMapping
+    public String confirmAllowAnother(int inventoryId, ModelMap model,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+
+        CustomerAccount customerAccount =
+            customerAccountDao.getById(accountInfoFragment.getAccountId());
+        checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
+                                     customerAccount);
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("hardware", hardware);
+        return "operator/program/optOut/confirmAllowAnother.jsp";
     }
 
     @RequestMapping
@@ -477,11 +511,27 @@ public class OperatorProgramOptOutOperatorController {
                                "yukon.web.modules.operator.optOut.main.allowOne.successText"));
                
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
-        return "redirect:view";
+        return closeDialog(modelMap);
     }
-    
+
     @RequestMapping
-    public String repeat(Integer inventoryId,
+    public String confirmResend(int inventoryId, ModelMap model,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+
+        CustomerAccount customerAccount =
+            customerAccountDao.getById(accountInfoFragment.getAccountId());
+        checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
+                                     customerAccount);
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("hardware", hardware);
+        return "operator/program/optOut/confirmResend.jsp";
+    }
+
+    @RequestMapping
+    public String resend(Integer inventoryId,
                           FlashScope flashScope,
                           ModelMap modelMap,
                           YukonUserContext yukonUserContext,
@@ -504,9 +554,25 @@ public class OperatorProgramOptOutOperatorController {
                                "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
                
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
-        return "redirect:view";
+        return closeDialog(modelMap);
     }
-    
+
+    @RequestMapping
+    public String confirmResetToLimit(int inventoryId, ModelMap model,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+
+        CustomerAccount customerAccount =
+            customerAccountDao.getById(accountInfoFragment.getAccountId());
+        checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
+                                     customerAccount);
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("hardware", hardware);
+        return "operator/program/optOut/confirmResetToLimit.jsp";
+    }
+
     @RequestMapping
     public String resetToLimit(Integer inventoryId, 
                                 FlashScope flashScope,
@@ -528,7 +594,7 @@ public class OperatorProgramOptOutOperatorController {
                                "yukon.web.modules.operator.optOut.main.resetToLimit.successText"));
                
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
-        return "redirect:view";
+        return closeDialog(modelMap);
     }
 
     @RequestMapping(params="cancel")
@@ -540,7 +606,7 @@ public class OperatorProgramOptOutOperatorController {
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         return "redirect:view";
     }
-    
+
     /**
      * This method builds up the basic modelMap entries for an optOutPage
      */
@@ -605,7 +671,12 @@ public class OperatorProgramOptOutOperatorController {
                                     "startDate", 
                                     datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext));
     }
-    
+
+    private String closeDialog(ModelMap model) {
+        model.addAttribute("popupId", "confirmDialog");
+        return "closePopup.jsp";
+    }
+
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
         this.optOutService = optOutService;
@@ -661,5 +732,10 @@ public class OperatorProgramOptOutOperatorController {
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+
+    @Autowired
+    public void setInventoryDao(InventoryDao inventoryDao) {
+        this.inventoryDao = inventoryDao;
     }
 }

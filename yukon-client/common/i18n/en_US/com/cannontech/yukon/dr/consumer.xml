@@ -400,7 +400,7 @@
     <entry key="yukon.dr.consumer.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
 
     <!-- confirmCancle.jsp -->
-    <entry key="yukon.dr.consumer.optout.confirmCancel.question">Are you sue you want to cancel the opt out for {0}?</entry>
+    <entry key="yukon.dr.consumer.optout.confirmCancel.question">Are you sure you want to cancel the opt out for {0}?</entry>
     <entry key="yukon.dr.consumer.optout.cancelOptOut">Cancel Opt Out</entry>
     <entry key="yukon.dr.consumer.optout.noCancelOptOut">Don't Cancel Opt Out</entry>
 

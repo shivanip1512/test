@@ -10,6 +10,17 @@
 	
 	<cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 
+    <cti:url var="deleteUrl" value="/spring/stars/operator/account/accountDelete">
+        <cti:param name="accountId" value="${accountId}"/>
+    </cti:url>
+    <i:simplePopup titleKey=".confirmDeleteDialogTitle" id="confirmDeleteDialog">
+        <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
+        <div class="actionArea">
+            <input type="button" value="<cti:msg2 key=".confirmDeleteOk"/>" onclick="window.location='${deleteUrl}'"/>
+            <input type="button" value="<cti:msg2 key=".confirmDeleteCancel"/>" onclick="$('confirmDeleteDialog').hide()"/>
+        </div>
+    </i:simplePopup>
+
     <script type="text/javascript">
 
     	alignTableColumnsByTable('#customerContactTable', '#serviceInformationTable');
@@ -215,15 +226,11 @@
     	</cti:dataGrid>
 
     	<%-- BUTTONS --%>
-        <cti:url var="deleteUrl" value="/spring/stars/operator/account/accountDelete">
-            <cti:param name="accountId" value="${accountId}"/>
-        </cti:url>
     	<cti:displayForPageEditModes modes="EDIT">
 	    	<br>
 		    <tags:slowInput2 formId="updateForm" key="save"/>
-		    <tags:confirmDialogImg key=".delete" href="${deleteUrl}" linkType="button">
-		        <cti:msg2 key=".confirmDelete" arguments="${accountGeneral.accountDto.accountNumber}"/>
-		    </tags:confirmDialogImg>
+		    <button type="button"
+                    onclick="$('confirmDeleteDialog').show()"><cti:msg2 key=".delete"/></button>
 	    </cti:displayForPageEditModes>
 	    
 	</form:form>

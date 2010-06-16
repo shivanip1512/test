@@ -9,6 +9,9 @@
 
 <cti:standardPage module="operator" page="optOut.main">
 
+<cti:msg2 var="confirmDialogTitle" key=".confirmDialogTitle"/>
+<tags:simpleDialog id="confirmDialog" title="${confirmDialogTitle}"/>
+
 <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
     <!-- Helper Popup -->
     <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
@@ -129,25 +132,22 @@
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
                         <td valign="top">
     
-                            <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/cancelOptOut">
+                            <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/confirmCancelOptOut">
                                 <cti:param name="accountId" value="${accountId}"/>
-                                <cti:param name="eventId" value="${optOut.eventId}" />
+                                <cti:param name="eventId" value="${optOut.eventId}"/>
+                                <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}"/>
                             </cti:url>
-                            <tags:confirmDialogImg key="cancelOptOut" href="${cancelOptOutUrl}">
-                                <cti:msg2 key=".cancelOptOut.confirm" arguments="${optOut.inventory.displayName}"/>
-                            </tags:confirmDialogImg>
-    
+                            <cti:img key="cancelOptOut"
+                                href="javascript:openSimpleDialog('confirmDialog', '${cancelOptOutUrl}')"/>                        
+
                             <c:choose>
                                 <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                    <cti:url var="resendOptOutUrl" value="/spring/stars/operator/program/optOut/repeat">
+                                    <cti:url var="resendUrl" value="/spring/stars/operator/program/optOut/confirmResend">
                                         <cti:param name="accountId" value="${accountId}"/>
                                         <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
-                                        <cti:param name="eventId" value="${optOut.eventId}" />
                                     </cti:url>
-
-                                    <tags:confirmDialogImg key="resendOptOut" href="${resendOptOutUrl}">
-                                        <cti:msg2 key=".resendOptOut.confirm" arguments="${optOut.inventory.displayName}"/>
-                                    </tags:confirmDialogImg>
+                                    <cti:img key="resendOptOut"
+                                        href="javascript:openSimpleDialog('confirmDialog', '${resendUrl}')"/>                        
                                 </c:when>
                                 <c:otherwise>
                                     <cti:img key="resendOptOutDisabled"/>
@@ -205,27 +205,24 @@
                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
                         <td>
                             <c:if test="${!noOptOutLimits}">
-                        
-                                <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
+                                <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/confirmAllowAnother">
                                     <cti:param name="accountId" value="${accountId}"/>
                                     <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                                 </cti:url>
-                                <tags:confirmDialogImg key="allowOne" href="${allowAnotherUrl}">
-                                    <cti:msg2 key=".allowOne.confirm" arguments="${inventory.displayName}"/>
-                                </tags:confirmDialogImg>
+                                <cti:img key="allowOne"
+                                    href="javascript:openSimpleDialog('confirmDialog', '${allowAnotherUrl}')"/>                        
 
                                 <c:choose>
             	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
                                         <cti:img key="resetToLimitDisabled"/>
             	                    </c:when>
             	                    <c:otherwise> 
-                                        <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
+                                        <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/confirmResetToLimit">
                                             <cti:param name="accountId" value="${accountId}"/>
                                             <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                                         </cti:url>
-                                        <tags:confirmDialogImg key="resetToLimit" href="${resetToLimitUrl}">
-                                            <cti:msg2 key=".resetToLimit.confirm" arguments="${inventory.displayName}"/>
-                                        </tags:confirmDialogImg>
+                                        <cti:img key="resetToLimit"
+                                            href="javascript:openSimpleDialog('confirmDialog', '${resetToLimitUrl}')"/>                        
               	                   </c:otherwise>
             	                </c:choose>
                                                  
