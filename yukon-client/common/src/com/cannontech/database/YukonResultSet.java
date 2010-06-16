@@ -45,10 +45,6 @@ public class YukonResultSet {
         return rs.getBlob(columnLabel);
     }
 
-//    public boolean getBoolean(String columnLabel) throws SQLException {
-//        return rs.getBoolean(columnLabel);
-//    }
-
     public byte getByte(String columnLabel) throws SQLException {
         return rs.getByte(columnLabel);
     }
@@ -56,14 +52,6 @@ public class YukonResultSet {
     public byte[] getBytes(String columnLabel) throws SQLException {
         return rs.getBytes(columnLabel);
     }
-
-//    public Date getDate(String columnLabel, Calendar cal) throws SQLException {
-//        return rs.getDate(columnLabel, cal);
-//    }
-//
-//    public Date getDate(String columnLabel) throws SQLException {
-//        return rs.getDate(columnLabel);
-//    }
 
     public double getDouble(String columnLabel) throws SQLException {
         return rs.getDouble(columnLabel);
@@ -89,26 +77,6 @@ public class YukonResultSet {
         return rs.getString(columnLabel);
     }
 
-//    public Time getTime(String columnLabel, Calendar cal) throws SQLException {
-//        return rs.getTime(columnLabel, cal);
-//    }
-//
-//    public Time getTime(String columnLabel) throws SQLException {
-//        return rs.getTime(columnLabel);
-//    }
-//
-//    public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
-//        return rs.getTimestamp(columnIndex, cal);
-//    }
-//
-//    public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
-//        return rs.getTimestamp(columnLabel, cal);
-//    }
-//
-//    public Timestamp getTimestamp(String columnLabel) throws SQLException {
-//        return rs.getTimestamp(columnLabel);
-//    }
-    
     public Instant getInstant(String columnLabel) throws SQLException {
         Timestamp timestamp = rs.getTimestamp(columnLabel);
         if (timestamp == null) {
