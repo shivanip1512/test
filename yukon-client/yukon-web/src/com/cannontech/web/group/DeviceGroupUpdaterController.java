@@ -36,11 +36,14 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.csv.CSVReader;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/updater/*")
+@CheckRoleProperty(YukonRoleProperty.BULK_UPDATE_OPERATION)
 public class DeviceGroupUpdaterController {
 	
 	private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory;

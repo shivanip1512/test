@@ -269,6 +269,7 @@
             </option>
             <option name="updater">
               <link>/spring/group/updater/upload</link>
+			  <requireRoleProperty value="BULK_UPDATE_OPERATION" />
             </option>
           </options>
         </option>
