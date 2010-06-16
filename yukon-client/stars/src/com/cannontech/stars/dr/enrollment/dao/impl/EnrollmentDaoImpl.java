@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
-import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -195,11 +194,11 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT lmhcg.* ");
 		sql.append("FROM LMHardwareControlGroup lmhcg");
-		sql.append("WHERE lmhcg.ProgramId ").eq(program.getProgramId());
-		sql.append("	AND lmhcg.Type ").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
-		sql.append("	AND lmhcg.OptOutStart <= ").appendArgument(stopDate);
-		sql.append("	AND (lmhcg.OptOutStop IS NULL ");
-		sql.append("         OR lmhcg.OptOutStop >= ").appendArgument(startDate).append(")");
+		sql.append("WHERE lmhcg.ProgramId").eq(program.getProgramId());
+		sql.append("	AND lmhcg.Type").eq(LMHardwareControlGroup.OPT_OUT_ENTRY);
+		sql.append("	AND lmhcg.OptOutStart").lte(stopDate);
+		sql.append("	AND (lmhcg.OptOutStop IS NULL");
+		sql.append("         OR lmhcg.OptOutStop").gte(startDate).append(")");
 		
 		List<LMHardwareControlGroup> history = 
 			yukonJdbcTemplate.query(sql, new LMHardwareControlGroupRowMapper());
@@ -239,20 +238,20 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
 		return programIdCountMap;
 	}
     
-	public ReadableInstant findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
+	public Instant findCurrentEnrollmentStartDate(int inventoryId, int lmGroupId) {
 	    
-	    ReadableInstant now = new Instant();
+	    Instant now = new Instant();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LMHCG.GroupEnrollStart ");
         sql.append("FROM LMHardwareControlGroup LMHCG");
         sql.append("WHERE LMHCG.InventoryId ").eq(inventoryId);
         sql.append("AND LMHCG.LmGroupId ").eq(lmGroupId);
-        sql.append("AND LMHCG.GroupEnrollStart <= ").appendArgument(now);
+        sql.append("AND LMHCG.GroupEnrollStart").lte(now);
         sql.append("AND LMHCG.GroupEnrollStop IS NULL");
 
         try {
-        	ReadableInstant startDate = 
+        	Instant startDate = 
         	    yukonJdbcTemplate.queryForObject(sql, new InstantRowMapper());
         	return startDate;
         } catch (EmptyResultDataAccessException e){
