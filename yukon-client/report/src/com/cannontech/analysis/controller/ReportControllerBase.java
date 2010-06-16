@@ -11,6 +11,7 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.DatedModelAttributes;
 import com.cannontech.analysis.tablemodel.EnergyCompanyModelAttributes;
+import com.cannontech.analysis.tablemodel.UserContextModelAttributes;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -66,6 +67,11 @@ public abstract class ReportControllerBase implements ReportController {
                 datedModel.setStopDate(ServletUtil.parseDateStringLiberally(param, tz));
             }
 
+        }
+        
+        if (model instanceof UserContextModelAttributes){
+            UserContextModelAttributes commonModel = (UserContextModelAttributes)model;
+            commonModel.setUserContext(YukonUserContextUtils.getYukonUserContext(req));
         }
     }
     

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
-import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.analysis.ReportFuncs;
@@ -31,10 +31,11 @@ import com.cannontech.stars.util.model.CustomerControlTotals;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.user.YukonUserContext;
 
-public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSummaryModel.ModelRow> implements EnergyCompanyModelAttributes {
+public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSummaryModel.ModelRow> 
+                                     implements EnergyCompanyModelAttributes, UserContextModelAttributes{
     private int energyCompanyId;
     private Set<Integer> programIds;
-    private YukonUserContext yukonUserContext;
+    private YukonUserContext userContext;
     
     private final int ENROLLED_CUSTOMERS = 0;
     private final int TOTAL_CONTROL_HOURS = 1;
@@ -86,10 +87,10 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         Validate.notNull(getStartDate(), "Start date must not be null");
         Validate.notNull(getStopDate(), "End date must not be null");
 
-        DateTime startDateTime = 
-            new DateTime(getStartDate(), yukonUserContext.getJodaTimeZone());
-        DateTime stopDateTime = 
-            new DateTime(getStopDate(), yukonUserContext.getJodaTimeZone());
+        Instant startDateTime = 
+            new Instant(getStartDate());
+        Instant stopDateTime = 
+            new Instant(getStopDate());
         
         List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
         List<CustomerAccountWithNames> accountsFromSQL = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
@@ -117,7 +118,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         data = new ArrayList<ModelRow>(ecPrograms.size());
         HashMap<Integer, Double[]> programTotals = new HashMap<Integer, Double[]>();
         List<LiteYukonPAObject> restrictedPrograms = 
-            ReportFuncs.getRestrictedPrograms(yukonUserContext.getYukonUser());
+            ReportFuncs.getRestrictedPrograms(userContext.getYukonUser());
         for (CustomerAccountWithNames account : accountsFromSQL) {
             try{
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
@@ -172,13 +173,23 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                                                               stopDateTime,
                                                                               enrollments,
                                                                               optOuts);
-
+                            
+                            double oneHour = Duration.standardHours(1).getMillis();
+                            double totalControlHours =
+                                controlTotals.getTotalControlTime().getMillis()/oneHour;
                             totals[TOTAL_CONTROL_HOURS] += 
-                                new Double(decFormat.format(1.0 * controlTotals.getTotalControlTime().getMillis() / 3600000));
+                                new Double(decFormat.format(1.0 * totalControlHours));
+
+                            double totalOptOutHours = 
+                                controlTotals.getTotalOptOutTime().getMillis()/oneHour;
                             totals[TOTAL_OPT_OUT_HOURS] += 
-                                new Double(decFormat.format(1.0 * controlTotals.getTotalOptOutTime().getMillis() / 3600000));
+                                new Double(decFormat.format(1.0 * totalOptOutHours));
+
+                            double totalOptOutHoursDuringControl = 
+                                controlTotals.getTotalControlDuringOptOutTime().getMillis()/oneHour;
                             totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL] += 
-                                new Double(decFormat.format(1.0 * controlTotals.getTotalControlDuringOptOutTime().getMillis() / 3600000));
+                                new Double(decFormat.format(1.0 * totalOptOutHoursDuringControl));
+
                             totals[TOTAL_OPT_OUT_EVENTS] += controlTotals.getTotalOptOutEvents();
                             
                             for(LMHardwareControlGroup enrollment : enrollments) {
@@ -231,6 +242,11 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         this.energyCompanyId = energyCompanyId;
     }
 
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
+    }
+
+    
     public Set<Integer> getProgramIds() {
         return programIds;
     }
@@ -239,12 +255,5 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         this.programIds = programIds;
     }
 
-    public YukonUserContext getYukonUserContext() {
-        return yukonUserContext;
-    }
-
-    public void setYukonUserContext(YukonUserContext yukonUserContext) {
-        this.yukonUserContext = yukonUserContext;
-    }
     
 }

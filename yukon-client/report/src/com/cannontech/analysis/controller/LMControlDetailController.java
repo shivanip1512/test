@@ -13,7 +13,6 @@ import com.cannontech.analysis.tablemodel.LMControlDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.util.StringUtils;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.google.common.collect.Sets;
 
 public class LMControlDetailController extends ReportControllerBase {
@@ -59,7 +58,6 @@ public class LMControlDetailController extends ReportControllerBase {
         EnergyCompanyModelAttributes ecModel = (EnergyCompanyModelAttributes)model;
         super.setRequestParameters(request);
         lmControlDetailModel.setAccountNumbers(request.getParameter("accountNumbers"));
-        lmControlDetailModel.setYukonUserContext(YukonUserContextUtils.getYukonUserContext(request));
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
         	

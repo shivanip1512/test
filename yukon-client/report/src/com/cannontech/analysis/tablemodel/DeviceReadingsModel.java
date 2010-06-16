@@ -40,7 +40,8 @@ import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
-public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadingsModel.ModelRow> {
+public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadingsModel.ModelRow> 
+                                   implements UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadingsModel.class);
 
@@ -66,7 +67,7 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
 
     private PointFormattingService pointFormattingService;
 
-    private YukonUserContext yukonUserContext;
+    private YukonUserContext userContext;
 
     static public class ModelRow {
         public String deviceName;
@@ -176,7 +177,9 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
                     builder.withType(PointTypes.getType(pointtype));
                     builder.withValue(doubleValue.doubleValue());
                     PointValueQualityHolder pointValueQualityHolder = builder.build();
-                    row.value = cachingPointFormattingService.getValueString(pointValueQualityHolder, Format.SHORT, yukonUserContext);
+                    row.value = 
+                        cachingPointFormattingService.getValueString(pointValueQualityHolder, 
+                                                                     Format.SHORT, userContext);
                     return row;
                 }
             });
@@ -230,8 +233,12 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         this.deviceFilter = idsSet;
     }
 
-    public void setYukonUserContext(YukonUserContext context){
-        this.yukonUserContext = context;
+    public void setUserContext(YukonUserContext userContext){
+        this.userContext = userContext;
+    }
+    
+    public YukonUserContext getUserContext() {
+        return userContext;
     }
 
     public void setExcludeDisabledDevices(boolean excludeDisabledDevices) {

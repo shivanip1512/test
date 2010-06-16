@@ -3,10 +3,10 @@ package com.cannontech.stars.util.model;
 import org.joda.time.Duration;
 
 public class CustomerControlTotals {
-    Duration totalControlTime = Duration.ZERO;
-    Duration totalOptOutTime = Duration.ZERO;
-    Duration totalControlDuringOptOutTime = Duration.ZERO;
-    int totalOptOutEvents = 0;
+    private Duration totalControlTime = Duration.ZERO;
+    private Duration totalOptOutTime = Duration.ZERO;
+    private Duration totalControlDuringOptOutTime = Duration.ZERO;
+    private int totalOptOutEvents = 0;
     
     public Duration getTotalControlTime() {
         return totalControlTime;
