@@ -1,10 +1,10 @@
 package com.cannontech.stars.xml.serialize;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.joda.time.Duration;
 
 public class ControlHistory {
-    private DateTime startDateTime;
+    private Instant startInstant;
     private Duration controlDuration;
     private boolean hasControlDuration;
     private boolean currentlyControlling = true;
@@ -13,13 +13,13 @@ public class ControlHistory {
 
     }
 
-    public DateTime getStartDateTime() {
-        return startDateTime;
+    public Instant getStartInstant() {
+        return startInstant;
     }
-    public void setStartDateTime(DateTime startDateTime) {
-        this.startDateTime = startDateTime;
+    public void setStartInstant(Instant startInstant) {
+        this.startInstant = startInstant;
     }
-
+    
     public Duration getControlDuration() {
         return controlDuration;
     }

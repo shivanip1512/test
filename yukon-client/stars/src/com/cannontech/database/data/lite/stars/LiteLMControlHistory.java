@@ -1,7 +1,6 @@
 package com.cannontech.database.data.lite.stars;
 
 import org.joda.time.Instant;
-import org.joda.time.ReadableInstant;
 
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
@@ -93,10 +92,10 @@ public class LiteLMControlHistory extends LiteBase {
 	}
 
 	/**
-	 * Returns a Joda ReadableInstant from the stored long startDateTime.
+	 * Returns a Joda Instant from the stored long startDateTime.
 	 * @return
 	 */
-	public ReadableInstant getStartDateReadableInstant() {
+	public Instant getStartDateInstant() {
 	    return new Instant(startDateTime);
 	}
 	
@@ -189,10 +188,10 @@ public class LiteLMControlHistory extends LiteBase {
 	}
 
    /**
-     * Returns a Joda ReadableInstant from the stored long startDateTime.
+     * Returns a Joda Instant from the stored long startDateTime.
      * @return
      */
-    public ReadableInstant getStopDateReadableInstant() {
+    public Instant getStopDateInstant() {
         return new Instant(stopDateTime);
     }
 	

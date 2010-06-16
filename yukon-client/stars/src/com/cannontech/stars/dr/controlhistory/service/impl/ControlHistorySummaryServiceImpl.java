@@ -57,7 +57,7 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
                                                                                        userContext));
 
         for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
-            results = controlHistoryEvent.getDuration().toDuration().plus(results);
+            results = controlHistoryEvent.getDuration().plus(results);
         }
         
         return results;

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Duration;
-import org.joda.time.ReadableDuration;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
@@ -42,13 +41,13 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         return true;
     }
     
-    public Map<Integer, ReadableDuration> 
+    public Map<Integer, Duration> 
                 calculateTotalDuration(final ListMultimap<Integer, ControlHistory> controlHistoryMap) {
-        final Map<Integer, ReadableDuration> resultMap = Maps.newHashMap();
+        final Map<Integer, Duration> resultMap = Maps.newHashMap();
         
         for (final Integer programId : controlHistoryMap.keySet()) {
             List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
-            ReadableDuration programTotalDuration = Duration.ZERO;
+            Duration programTotalDuration = Duration.ZERO;
             
             if (controlHistoryList == null) {
                 resultMap.put(programId, programTotalDuration);
@@ -62,8 +61,8 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         return resultMap;
     }
     
-    public ReadableDuration calculateTotalDuration(final List<ControlHistory> controlHistoryList) {
-        ReadableDuration programTotalDuration = Duration.ZERO;
+    public Duration calculateTotalDuration(final List<ControlHistory> controlHistoryList) {
+        Duration programTotalDuration = Duration.ZERO;
         
         final List<ControlHistoryEvent> programEventList = new ArrayList<ControlHistoryEvent>();
         for (final ControlHistory controlHistory : controlHistoryList) {
@@ -87,7 +86,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             
             // Found time gap, process previous event and reset startDate/endDate.
             if (eventStartDate.isAfter(lastEndDate)) {
-                ReadableDuration difference =
+                Duration difference =
                     new Duration(lastStartDate,lastEndDate);
                 programTotalDuration = programTotalDuration.toDuration().plus(difference);
                 
@@ -103,7 +102,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         
         // Process the event that may have been missed in the last iteration.
         if (lastStartDate != null && lastEndDate != null) {
-            ReadableDuration difference = 
+            Duration difference = 
                 new Duration(lastStartDate, lastEndDate);
             programTotalDuration = programTotalDuration.toDuration().plus(difference);
         }

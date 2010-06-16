@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.ReadableDuration;
-import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -88,11 +87,11 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                 controlHistory.setDisplayName(displayName);
 
                 ControlHistorySummary programControlHistorySummary = new ControlHistorySummary();
-                ReadableDuration dailyTime = starsLMControlHistory.getControlSummary().getDailyTime();
+                Duration dailyTime = starsLMControlHistory.getControlSummary().getDailyTime();
                 programControlHistorySummary.setDailySummary(dailyTime);
-                ReadableDuration monthlyTime = starsLMControlHistory.getControlSummary().getMonthlyTime();
+                Duration monthlyTime = starsLMControlHistory.getControlSummary().getMonthlyTime();
                 programControlHistorySummary.setMonthlySummary(monthlyTime);
-                ReadableDuration yearlyTime = starsLMControlHistory.getControlSummary().getAnnualTime();
+                Duration yearlyTime = starsLMControlHistory.getControlSummary().getAnnualTime();
                 programControlHistorySummary.setYearlySummary(yearlyTime);
                 controlHistory.setProgramControlHistorySummary(programControlHistorySummary);
                 
@@ -159,7 +158,7 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
     
     private ControlHistoryStatus getCurrentControlStatus(ControlGroupHolder holder, 
                                                          ControlHistoryEvent lastControlHistoryEvent) {
-        final ReadableInstant now = new Instant();
+        final Instant now = new Instant();
         
         // Step 1 - NOT ENROLLED
         boolean isNotEnrolled = !ControlGroupUtil.isEnrolled(holder.enrolledList, now);

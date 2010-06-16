@@ -25,8 +25,8 @@
               <tags:alternateRowReset/>
               <c:forEach var="event" items="${controlHistoryEventList}">
                 <tr class="<tags:alternateRow odd='' even='altRow'/>">
-                  <td class="nowrapping" width="33%"><cti:formatDate  value="${event.startDate}" type="BOTH"/></td>
-                  <td class="nowrapping" width="33%"><cti:formatDate  value="${event.endDate}" type="BOTH"/></td>
+                  <td class="nowrapping" width="33%"><cti:formatDate value="${event.startDate}" type="BOTH"/></td>
+                  <td class="nowrapping" width="33%"><cti:formatDate value="${event.endDate}" type="BOTH"/></td>
                   <td class="nowrapping" width="33%"><cti:formatDuration type="HM" startDate="${event.startDate}" endDate="${event.endDate}" /></td>
                   <c:set var="totalDuration" value="${event.duration.millis + totalDuration}" />
                 </tr>

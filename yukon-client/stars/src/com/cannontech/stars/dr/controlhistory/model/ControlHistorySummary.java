@@ -1,30 +1,30 @@
 package com.cannontech.stars.dr.controlhistory.model;
 
-import org.joda.time.ReadableDuration;
+import org.joda.time.Duration;
 
 public class ControlHistorySummary {
-    private ReadableDuration dailySummary;
-    private ReadableDuration monthlySummary;
-    private ReadableDuration yearlySummary;
+    private Duration dailySummary;
+    private Duration monthlySummary;
+    private Duration yearlySummary;
     
-    public ReadableDuration getDailySummary() {
+    public Duration getDailySummary() {
         return dailySummary;
     }
-    public void setDailySummary(ReadableDuration dailySummary) {
+    public void setDailySummary(Duration dailySummary) {
         this.dailySummary = dailySummary;
     }
     
-    public ReadableDuration getMonthlySummary() {
+    public Duration getMonthlySummary() {
         return monthlySummary;
     }
-    public void setMonthlySummary(ReadableDuration monthlySummary) {
+    public void setMonthlySummary(Duration monthlySummary) {
         this.monthlySummary = monthlySummary;
     }
     
-    public ReadableDuration getYearlySummary() {
+    public Duration getYearlySummary() {
         return yearlySummary;
     }
-    public void setYearlySummary(ReadableDuration yearlySummary) {
+    public void setYearlySummary(Duration yearlySummary) {
         this.yearlySummary = yearlySummary;
     }
     

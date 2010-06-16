@@ -6,8 +6,9 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
+import org.joda.time.Minutes;
 import org.joda.time.ReadableDuration;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -34,9 +35,9 @@ public class ControlHistoryServiceImplTest {
         final int controlHistorySize = 3;
         final int controlHistroyEventSize = 1;
         
-        ReadableDuration totalDurationExpected = new Duration(900000); // 15 minutes
-        DateTime startDate = dateTimeFormmater.parseDateTime("02:00:00");
-        DateTime endDate = dateTimeFormmater.parseDateTime("02:15:00");
+        Duration totalDurationExpected = Minutes.minutes(15).toStandardDuration();
+        Instant startDate = dateTimeFormmater.parseDateTime("02:00:00").toInstant();
+        Instant endDate = dateTimeFormmater.parseDateTime("02:15:00").toInstant();
         
         List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(controlHistorySize);
         for (int x = 0; x < controlHistorySize; x++) {
@@ -72,18 +73,18 @@ public class ControlHistoryServiceImplTest {
         
         ControlHistoryEvent eventForDevice1 = new ControlHistoryEvent();
         eventForDevice1.setDuration(new Duration(7200000)); // 2 hours
-        eventForDevice1.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
-        eventForDevice1.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
+        eventForDevice1.setStartDate(dateTimeFormmater.parseDateTime("02:00:00").toInstant());
+        eventForDevice1.setEndDate(dateTimeFormmater.parseDateTime("04:00:00").toInstant());
         
         ControlHistoryEvent eventForDevice2 = new ControlHistoryEvent();
         eventForDevice2.setDuration(new Duration(7200000)); // 2 hours
-        eventForDevice2.setStartDate(dateTimeFormmater.parseDateTime("03:00:00"));
-        eventForDevice2.setEndDate(dateTimeFormmater.parseDateTime("06:00:00"));
+        eventForDevice2.setStartDate(dateTimeFormmater.parseDateTime("03:00:00").toInstant());
+        eventForDevice2.setEndDate(dateTimeFormmater.parseDateTime("06:00:00").toInstant());
         
         ControlHistoryEvent eventForDevice3 = new ControlHistoryEvent();
         eventForDevice3.setDuration(new Duration(6300000)); // 1 hour, 45 minutes
-        eventForDevice3.setStartDate(dateTimeFormmater.parseDateTime("02:15:00"));
-        eventForDevice3.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
+        eventForDevice3.setStartDate(dateTimeFormmater.parseDateTime("02:15:00").toInstant());
+        eventForDevice3.setEndDate(dateTimeFormmater.parseDateTime("04:00:00").toInstant());
         
         ControlHistory controlHistoryForDevice1 = new ControlHistory();
         controlHistoryForDevice1.setCurrentHistory(Arrays.asList(eventForDevice1));
@@ -117,28 +118,28 @@ public class ControlHistoryServiceImplTest {
         
         ControlHistoryEvent eventForDevice1Window1 = new ControlHistoryEvent();
         eventForDevice1Window1.setDuration(new Duration(7200000)); // 2 hours
-        eventForDevice1Window1.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
-        eventForDevice1Window1.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
+        eventForDevice1Window1.setStartDate(dateTimeFormmater.parseDateTime("02:00:00").toInstant());
+        eventForDevice1Window1.setEndDate(dateTimeFormmater.parseDateTime("04:00:00").toInstant());
         
         ControlHistoryEvent eventForDevice1Window2 = new ControlHistoryEvent();
         eventForDevice1Window2.setDuration(new Duration(3600000)); // 1 hour
-        eventForDevice1Window2.setStartDate(dateTimeFormmater.parseDateTime("06:00:00"));
-        eventForDevice1Window2.setEndDate(dateTimeFormmater.parseDateTime("07:00:00"));
+        eventForDevice1Window2.setStartDate(dateTimeFormmater.parseDateTime("06:00:00").toInstant());
+        eventForDevice1Window2.setEndDate(dateTimeFormmater.parseDateTime("07:00:00").toInstant());
         
         ControlHistoryEvent eventForDevice2 = new ControlHistoryEvent();
         eventForDevice2.setDuration(new Duration(3600000)); // 1 hour
-        eventForDevice2.setStartDate(dateTimeFormmater.parseDateTime("06:30:00"));
-        eventForDevice2.setEndDate(dateTimeFormmater.parseDateTime("07:30:00"));
+        eventForDevice2.setStartDate(dateTimeFormmater.parseDateTime("06:30:00").toInstant());
+        eventForDevice2.setEndDate(dateTimeFormmater.parseDateTime("07:30:00").toInstant());
         
         ControlHistoryEvent eventForDevice3 = new ControlHistoryEvent();
         eventForDevice3.setDuration(new Duration(8100000)); // 2 hours, 15 minutes
-        eventForDevice3.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
-        eventForDevice3.setEndDate(dateTimeFormmater.parseDateTime("04:15:00"));
+        eventForDevice3.setStartDate(dateTimeFormmater.parseDateTime("02:00:00").toInstant());
+        eventForDevice3.setEndDate(dateTimeFormmater.parseDateTime("04:15:00").toInstant());
         
         ControlHistoryEvent eventForDevice4 = new ControlHistoryEvent();
         eventForDevice4.setDuration(new Duration(7200000)); // 2 hours
-        eventForDevice4.setStartDate(dateTimeFormmater.parseDateTime("02:00:00"));
-        eventForDevice4.setEndDate(dateTimeFormmater.parseDateTime("04:00:00"));
+        eventForDevice4.setStartDate(dateTimeFormmater.parseDateTime("02:00:00").toInstant());
+        eventForDevice4.setEndDate(dateTimeFormmater.parseDateTime("04:00:00").toInstant());
 
         List<ControlHistoryEvent> device1EventList = Arrays.asList(eventForDevice1Window1, eventForDevice1Window2);
         ControlHistory controlHistoryForDevice1 = new ControlHistory();

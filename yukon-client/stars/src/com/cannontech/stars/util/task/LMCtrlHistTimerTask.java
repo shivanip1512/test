@@ -8,6 +8,8 @@ package com.cannontech.stars.util.task;
 
 import java.util.Date;
 
+import org.joda.time.Minutes;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.util.LMControlHistoryUtil;
 
@@ -19,7 +21,8 @@ import com.cannontech.stars.util.LMControlHistoryUtil;
  */
 public class LMCtrlHistTimerTask extends StarsTimerTask {
 	
-	public static final long TIMER_PERIOD = 1000 * 60 * 5;	// 5 minutes
+    public static final long TIMER_PERIOD = 
+        Minutes.minutes(5).toStandardDuration().getMillis();
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.StarsTimerTask#isFixedRate()

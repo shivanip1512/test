@@ -100,7 +100,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     		messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(type.getFormatKey());
     	DateTimeFormatter formatter = DateTimeFormat.forPattern(format);
     	DateTimeZone dateTimeZone = userContext.getJodaTimeZone();
-    	formatter.withZone(dateTimeZone);
+    	formatter = formatter.withZone(dateTimeZone);
         
         return formatter;
     }

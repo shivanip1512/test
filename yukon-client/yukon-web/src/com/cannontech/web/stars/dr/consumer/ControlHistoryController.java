@@ -3,7 +3,7 @@ package com.cannontech.web.stars.dr.consumer;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.ReadableDuration;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -47,7 +47,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
 
-        Map<Integer, ReadableDuration> totalDurationMap = 
+        Map<Integer, Duration> totalDurationMap = 
             controlHistoryService.calculateTotalDuration(controlHistoryMap);
         map.addAttribute("totalDurationMap", totalDurationMap);
         
@@ -78,7 +78,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         
         List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
         
-        ReadableDuration totalDuration = controlHistoryService.calculateTotalDuration(controlHistoryList);
+        Duration totalDuration = controlHistoryService.calculateTotalDuration(controlHistoryList);
         map.addAttribute("totalDuration", totalDuration);
 
         ControlPeriod[] controlPeriods = ControlPeriod.values();

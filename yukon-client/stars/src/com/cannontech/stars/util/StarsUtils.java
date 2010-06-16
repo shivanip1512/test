@@ -98,12 +98,10 @@ public class StarsUtils {
 	private static final java.text.SimpleDateFormat dateTimeFormat =
 			new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
 	
-	private static final long DATE_ACCURACY = 1000;	// 1000 milli-seconds
-
 	/**
 	 * Return date in the format of MM/dd/yy HH:mm in the specified time zone
 	 */
-	public static String formatDate(Date date, TimeZone tz) {
+    public static String formatDate(Date date, TimeZone tz) {
 		if (tz != null)
 			dateTimeFormat.setTimeZone( tz );
 		else

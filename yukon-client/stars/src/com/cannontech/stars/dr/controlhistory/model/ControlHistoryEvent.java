@@ -1,41 +1,41 @@
 package com.cannontech.stars.dr.controlhistory.model;
 
-import org.joda.time.ReadableDuration;
-import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 
 public class ControlHistoryEvent {
-    private DateTime startDate;
-    private DateTime endDate;
-    private ReadableDuration duration;
+    private Instant startDate;
+    private Instant endDate;
+    private Duration duration;
     
     public ControlHistoryEvent() {
         
     }
 
-    public DateTime getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(DateTime startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
 
-    public DateTime getEndDate() {
+    public Instant getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(DateTime endDate) {
+    public void setEndDate(Instant endDate) {
         this.endDate = endDate;
     }
 
     /**
      * @return - duration is held in seconds
      */
-    public ReadableDuration getDuration() {
+    public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(ReadableDuration duration) {
+    public void setDuration(Duration duration) {
         this.duration = duration;
     }
 

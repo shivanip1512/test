@@ -57,7 +57,6 @@ import com.cannontech.stars.dr.account.service.AccountService;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
-import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.stars.service.StarsControllableDeviceDTOConverter;
 import com.cannontech.stars.service.UpdatableAccountConverter;
 import com.cannontech.stars.util.ServerUtils;
@@ -225,8 +224,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		YukonSpringHook.getBean("starsControllableDeviceHelper", StarsControllableDeviceHelper.class);
 	private final EnrollmentHelperService enrollmentHelperService = 
         YukonSpringHook.getBean("enrollmentService", EnrollmentHelperService.class);	
-	private final ProgramService programService = 
-	    YukonSpringHook.getBean("starsProgramService", ProgramService.class);
 	
 	public ImportCustAccountsTask() {
 		

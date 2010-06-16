@@ -6,10 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
+import com.google.common.base.Function;
+import com.google.common.collect.Ordering;
 
 public final class ControlGroupUtil {
     private static Comparator<LMHardwareControlGroup> enrollmentComparator;
@@ -21,26 +24,19 @@ public final class ControlGroupUtil {
     
     static {
         
-        enrollmentComparator = new Comparator<LMHardwareControlGroup>() {
-            @Override
-            public int compare(LMHardwareControlGroup o1, LMHardwareControlGroup o2) {
-                ReadableInstant ri1 = o1.getGroupEnrollStart();
-                ReadableInstant ri2 = o2.getGroupEnrollStart();
-                if (hasBothNullDates(ri1, ri2)) return 0;
-                return ri1.compareTo(ri2);
-            }
-
-        };
+        enrollmentComparator =
+            Ordering.natural().nullsFirst().onResultOf(new Function<LMHardwareControlGroup, Instant>() {
+                public Instant apply(LMHardwareControlGroup lmHardwarecontrolGroup) {
+                    return lmHardwarecontrolGroup.getGroupEnrollStart();
+                }
+            });
         
-        optOutComparator = new Comparator<LMHardwareControlGroup>() {
-            @Override
-            public int compare(LMHardwareControlGroup o1, LMHardwareControlGroup o2) {
-                ReadableInstant ri1 = o1.getOptOutStart();
-                ReadableInstant ri2 = o2.getOptOutStart();
-                if (hasBothNullDates(ri1, ri2)) return 0;
-                return ri1.compareTo(ri2);
-            }
-        };
+        optOutComparator = 
+            Ordering.natural().nullsFirst().onResultOf(new Function<LMHardwareControlGroup, Instant>() {
+                public Instant apply(LMHardwareControlGroup lmHardwarecontrolGroup) {
+                    return lmHardwarecontrolGroup.getOptOutStart();
+                }
+            });
         
     }
 

@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
-import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -40,7 +39,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     .getCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(inventoryId, 
                                                                                programId, 
                                                                                accountId);
-            ReadableInstant now = new Instant();
+            Instant now = new Instant();
 
             // Clear all the opt outs for the enrolled inventory
             if (optOutEventDao.isOptedOut(inventoryId, accountId)) {
@@ -82,7 +81,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         boolean enrollmentEnded = false;
         try {
-            ReadableInstant now = new Instant();
+            Instant now = new Instant();
             
             List<LMHardwareControlGroup> currentEnrollmentList = 
             	lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, accountId);
@@ -120,7 +119,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     
     @Override
     public void startOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
-                              ReadableInstant startDate) {
+                              Instant startDate) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         List<LMHardwareControlGroup> currentEnrollmentList = 
             lmHardwareControlGroupDao.getCurrentEnrollmentByInventoryIdAndAccountId(inventoryId, accountId);
@@ -135,7 +134,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     
     @Override
     public boolean startOptOut(int inventoryId, int loadGroupId, int accountId, int programId, 
-                                 LiteYukonUser currentUser, ReadableInstant startDate) {
+                                 LiteYukonUser currentUser, Instant startDate) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         try {
@@ -151,7 +150,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     
     @Override
     public void stopOptOut(int inventoryId, int accountId, LiteYukonUser currentUser, 
-                             ReadableInstant stopDate) {
+                             Instant stopDate) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         try {
             lmHardwareControlGroupDao.stopOptOut(inventoryId, accountId, currentUser, stopDate);
@@ -162,7 +161,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     
     @Override
     public boolean stopOptOut(int inventoryId, int loadGroupId, int accountId, int programId, 
-                                LiteYukonUser currentUser, ReadableInstant stopDate) {
+                                LiteYukonUser currentUser, Instant stopDate) {
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         List<LMHardwareControlGroup> controlInformationList;

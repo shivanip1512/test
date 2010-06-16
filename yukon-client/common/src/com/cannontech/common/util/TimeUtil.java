@@ -9,9 +9,7 @@ import org.apache.commons.lang.Validate;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.Duration;
 import org.joda.time.Hours;
-import org.joda.time.ReadableInstant;
 
 /**
  * This type really needs to be looked at before it is used
@@ -294,12 +292,6 @@ public static int differenceMinutes(Date from, Date to) {
     int millisPerMinute = (60 * 1000);
     return (int) (diffMillis / millisPerMinute);
 }
-
-    public static int differenceInHours(ReadableInstant from, ReadableInstant to) {
-        Duration diffMillis = new Duration(from, to);
-        int millisPerHour = (60 * 60 * 1000);
-        return (int) (diffMillis.getMillis() / millisPerHour);
-    }
 
     /**
      * Convert seconds of time into hh:mm:ss string.

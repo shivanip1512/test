@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -124,9 +124,9 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         List<com.cannontech.stars.xml.serialize.ControlHistory> removeControlHistoryList = Lists.newArrayList();
         for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
             com.cannontech.stars.xml.serialize.ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);
-            DateTime controlHistoryStartDateTime = controlHistoryEntry.getStartDateTime();
+            Instant controlHistoryStartDateTime = controlHistoryEntry.getStartInstant();
             if (controlHistoryStartDateTime.isBefore(enrollmentStartInstant) ){
-                DateTime controlHistoryEndDateTime = 
+                Instant controlHistoryEndDateTime = 
                     controlHistoryStartDateTime.plus(controlHistoryEntry.getControlDuration());
 
                 // Remove any control history that was before the hardware was ever enrolled
@@ -136,8 +136,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                 // Update any control history that was already started when the hardware was enrolled
                 } else {
                     Duration newDuration = calculateNewDuration(controlHistoryEntry, enrollmentStartInstant);
-                    controlHistoryEntry.setStartDateTime(new DateTime(enrollmentStartInstant,
-                                                                      controlHistoryStartDateTime.getZone()));
+                    controlHistoryEntry.setStartInstant(new Instant(enrollmentStartInstant));
                     controlHistoryEntry.setControlDuration(newDuration);
                 }
             }
@@ -152,7 +151,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                                            ReadableInstant enrollmentStartDate) {
         
         Duration startTimeDifference = 
-            new Duration(enrollmentStartDate, controlHistoryEntry.getStartDateTime());
+            new Duration(enrollmentStartDate, controlHistoryEntry.getStartInstant());
         
         return controlHistoryEntry.getControlDuration().minus(startTimeDifference);
 
@@ -167,8 +166,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         for (int j = controlHistory.getControlHistoryCount() - 1; j >= 0; j--) {
             com.cannontech.stars.xml.serialize.ControlHistory history = controlHistory.getControlHistory(j);
 
-            DateTime startDateTime = history.getStartDateTime();
-            DateTime endDateTime = startDateTime.plus(history.getControlDuration());
+            Instant startDateTime = history.getStartInstant();
+            Instant endDateTime = startDateTime.plus(history.getControlDuration());
             
             final ControlHistoryEvent event = new ControlHistoryEvent();
             event.setDuration(history.getControlDuration());

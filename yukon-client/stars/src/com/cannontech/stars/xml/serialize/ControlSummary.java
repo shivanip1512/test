@@ -1,31 +1,30 @@
 package com.cannontech.stars.xml.serialize;
 
 import org.joda.time.Duration;
-import org.joda.time.ReadableDuration;
 
 public class ControlSummary {
-    private ReadableDuration dailyTime = Duration.ZERO;
+    private Duration dailyTime = Duration.ZERO;
     private boolean hasDailyTime;
-    private ReadableDuration monthlyTime = Duration.ZERO;
+    private Duration monthlyTime = Duration.ZERO;
     private boolean hasMonthlyTime;
-    private ReadableDuration seasonalTime = Duration.ZERO;
+    private Duration seasonalTime = Duration.ZERO;
     private boolean hasSeasonalTime;
-    private ReadableDuration annualTime = Duration.ZERO;
+    private Duration annualTime = Duration.ZERO;
     private boolean hasAnnualTime;
 
-    public ReadableDuration getAnnualTime() {
+    public Duration getAnnualTime() {
         return this.annualTime;
     } 
 
-    public ReadableDuration getDailyTime() {
+    public Duration getDailyTime() {
         return this.dailyTime;
     }
 
-    public ReadableDuration getMonthlyTime() {
+    public Duration getMonthlyTime() {
         return this.monthlyTime;
     } 
 
-    public ReadableDuration getSeasonalTime() {
+    public Duration getSeasonalTime() {
         return this.seasonalTime;
     } 
 
@@ -45,22 +44,22 @@ public class ControlSummary {
         return this.hasSeasonalTime;
     }
 
-    public void setAnnualTime(ReadableDuration annualTime) {
+    public void setAnnualTime(Duration annualTime) {
         this.annualTime = annualTime;
         this.hasAnnualTime = true;
     }
 
-    public void setDailyTime(ReadableDuration dailyTime) {
+    public void setDailyTime(Duration dailyTime) {
         this.dailyTime = dailyTime;
         this.hasDailyTime = true;
     }
 
-    public void setMonthlyTime(ReadableDuration monthlyTime) {
+    public void setMonthlyTime(Duration monthlyTime) {
         this.monthlyTime = monthlyTime;
         this.hasMonthlyTime = true;
     }
 
-    public void setSeasonalTime(ReadableDuration seasonalTime) {
+    public void setSeasonalTime(Duration seasonalTime) {
         this.seasonalTime = seasonalTime;
         this.hasSeasonalTime = true;
     }
