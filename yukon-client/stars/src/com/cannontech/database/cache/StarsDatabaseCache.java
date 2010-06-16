@@ -12,11 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -68,9 +67,7 @@ import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 public class StarsDatabaseCache implements DBChangeListener {
 
     public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
-	
-	private static final Duration CTRL_HIST_CACHE_INVALID_INTERVAL = 
-	    new Duration(TimeUnit.DAYS.toMillis(7));	// 7 days
+	private static final Duration CTRL_HIST_CACHE_INVALID_INTERVAL = Duration.standardDays(7);
 	
     // Array of all the energy companies (LiteStarsEnergyCompany)
 	private List<LiteStarsEnergyCompany> energyCompanies = null;
@@ -612,12 +609,13 @@ public class StarsDatabaseCache implements DBChangeListener {
 	 * To get only the control summary, set start date to null; to get the complete control history,
 	 * set start date to new java.util.Date(0).
 	 */
-	public LiteStarsLMControlHistory getLMControlHistory(int groupID, DateTime startDateTime) {
+	public LiteStarsLMControlHistory getLMControlHistory(int groupID, ReadableInstant startReadableInstant) {
 		/* STARS cannot assume that a zero group ID means no control history...should
 		 * still show something
 		 */
 		//if (groupID == CtiUtilities.NONE_ZERO_ID) return null;
-		
+		Instant startDateTime = startReadableInstant.toInstant();
+	    
 		LiteStarsLMControlHistory lmCtrlHist =
 				getLMCtrlHistMap().get( new Integer(groupID));
 		if (lmCtrlHist == null) lmCtrlHist = new LiteStarsLMControlHistory( groupID );

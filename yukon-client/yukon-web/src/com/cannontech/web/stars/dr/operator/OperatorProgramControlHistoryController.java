@@ -3,7 +3,7 @@ package com.cannontech.web.stars.dr.operator;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.ReadableDuration;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -68,7 +68,7 @@ public class OperatorProgramControlHistoryController {
         	return viewName; // if there are no programs enrolled there is nothing more to show
         }
 
-        Map<Integer, ReadableDuration> totalDurationMap = 
+        Map<Integer, Duration> totalDurationMap = 
             controlHistoryService.calculateTotalDuration(controlHistoryMap);
         modelMap.addAttribute("totalDurationMap", totalDurationMap);
         

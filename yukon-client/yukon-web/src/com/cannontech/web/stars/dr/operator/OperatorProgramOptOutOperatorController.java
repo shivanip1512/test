@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -416,8 +417,11 @@ public class OperatorProgramOptOutOperatorController {
                 optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
             } else {
                 DateTime startDateTime = optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-                optOutRequest.setStartDate(startDateTime);
-                optOutRequest.setDurationInHours(optOutBackingBean.getDurationInDays() * 24);
+                optOutRequest.setStartDate(startDateTime.toInstant());
+                
+                int durationInHours = 
+                    Days.days(optOutBackingBean.getDurationInDays()).toStandardHours().getHours();
+                optOutRequest.setDurationInHours(durationInHours);
             }
 
             LiteYukonUser user = userContext.getYukonUser();

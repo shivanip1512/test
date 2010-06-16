@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.joda.time.Instant;
-import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -89,9 +88,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 		// Add or Update opt out event
 		Integer inventoryId = event.getInventoryId();
 		Integer customerAccountId = event.getCustomerAccountId();
-		ReadableInstant scheduledDate = event.getScheduledDate();
-		ReadableInstant startDate = event.getStartDate();
-		ReadableInstant stopDate = event.getStopDate();
+		Instant scheduledDate = event.getScheduledDate();
+		Instant startDate = event.getStartDate();
+		Instant stopDate = event.getStopDate();
 		String eventCounts = event.getEventCounts().toString();
 
 		yukonJdbcTemplate.update(eventSql.toString(), 
@@ -151,7 +150,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	public boolean isOptedOut(int inventoryId, int customerAccountId) {
 
-        ReadableInstant now = new Instant();
+        Instant now = new Instant();
         
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
@@ -392,7 +391,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	public OptOutEvent getOverdueScheduledOptOut(Integer inventoryId,
 			int customerAccountId) {
 
-        ReadableInstant now = new Instant();
+        Instant now = new Instant();
 	    
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT * ");
@@ -587,7 +586,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	public List<OptOutEvent> getAllCurrentOptOuts(LiteStarsEnergyCompany energyCompany) {
 
-		ReadableInstant now = new Instant();
+		Instant now = new Instant();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT ooe.*");
@@ -679,7 +678,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	public List<OptOutEvent> getScheduledOptOutsToBeStarted() {
 		
-		ReadableInstant now = new Instant();
+		Instant now = new Instant();
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
 		sql.append("SELECT *");

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.ReadableInstant;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -252,21 +252,21 @@ public class OptOutAdminController {
      */
     public static class ScheduledOptOutEventDto {
     	
-    	private ReadableInstant startDate;
-    	private ReadableInstant stopDate;
+    	private Instant startDate;
+    	private Instant stopDate;
     	private String accountNumber;
     	private String serialNumber;
 		
-    	public ReadableInstant getStartDate() {
+    	public Instant getStartDate() {
 			return startDate;
 		}
-		public void setStartDate(ReadableInstant startDate) {
+		public void setStartDate(Instant startDate) {
 			this.startDate = startDate;
 		}
-		public ReadableInstant getStopDate() {
+		public Instant getStopDate() {
 			return stopDate;
 		}
-		public void setStopDate(ReadableInstant stopDate) {
+		public void setStopDate(Instant stopDate) {
 			this.stopDate = stopDate;
 		}
 		public String getAccountNumber() {

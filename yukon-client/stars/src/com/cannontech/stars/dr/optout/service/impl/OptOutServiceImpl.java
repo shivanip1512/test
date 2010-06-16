@@ -20,8 +20,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Propagation;
@@ -90,7 +93,8 @@ import com.google.common.collect.Ordering;
 
 public class OptOutServiceImpl implements OptOutService {
 
-	private StarsInventoryBaseDao starsInventoryBaseDao;
+	private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");
+    private StarsInventoryBaseDao starsInventoryBaseDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutAdditionalDao optOutAdditionalDao;
 	private OptOutNotificationService optOutNotificationService;
@@ -125,7 +129,7 @@ public class OptOutServiceImpl implements OptOutService {
 		List<Integer> inventoryIdList = request.getInventoryIdList();
 		ReadableInstant startDate = request.getStartDate();
 		boolean startNow = false;
-		ReadableInstant now = new Instant();
+		Instant now = new Instant();
 		if(startDate == null) {
 			// Start now
 			request.setStartDate(now);
@@ -234,8 +238,10 @@ public class OptOutServiceImpl implements OptOutService {
     		
 	    	// Log the event
 	    	StringBuffer logMsg = new StringBuffer();
-	    	logMsg.append("Start Date/Time:" + new DateTime(event.getStartDate(), 
-															energyCompany.getDefaultDateTimeZone()));
+
+	    	DateTimeFormatter dateTimeFormatter = 
+	    	    logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
+	    	logMsg.append("Start Date/Time:" + dateTimeFormatter.print(event.getStartDate()));
 	    	logMsg.append(", Duration:" + ServletUtils.getDurationFromHours(
 	    			event.getDurationInHours()));
 	    	logMsg.append(", Serial #:" + inventory.getManufacturerSerialNumber());
@@ -278,13 +284,15 @@ public class OptOutServiceImpl implements OptOutService {
 
 		if (optedOut) {
 			
-			LiteStarsLMHardware inventory = 
+		    LiteStarsLMHardware inventory = 
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
 			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
 			
-			int newDuration = TimeUtil.differenceInHours(new Instant(), lastEvent.getStopDate());
+			Instant now = new Instant();
+			Duration optOutDuration = new Duration(now, lastEvent.getStopDate());
+			int newDuration = optOutDuration.toPeriod().toStandardHours().getHours();
 			
 			OptOutRequest request = new OptOutRequest();
 			request.setInventoryIdList(Collections.singletonList(inventoryId));
@@ -318,7 +326,7 @@ public class OptOutServiceImpl implements OptOutService {
 	public void cancelOptOut(List<Integer> eventIdList, LiteYukonUser user) 
 		throws CommandCompletionException {
 		
-	    ReadableInstant now = new Instant();
+	    Instant now = new Instant();
 	    
 		for(Integer eventId : eventIdList) {
 			

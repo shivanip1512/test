@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.optout.model;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
-import org.joda.time.ReadableInstant;
+import org.joda.time.Instant;
 
 /**
  * Model object which represents an Opt out event
@@ -13,9 +13,9 @@ public class OptOutEvent {
 	private Integer eventId;
 	private Integer customerAccountId;
 	private Integer inventoryId;
-	private ReadableInstant scheduledDate;
-	private ReadableInstant startDate;
-	private ReadableInstant stopDate;
+	private Instant scheduledDate;
+	private Instant startDate;
+	private Instant stopDate;
 	private OptOutCounts eventCounts;
 	private OptOutEventState state;
 
@@ -43,27 +43,27 @@ public class OptOutEvent {
 		this.inventoryId = inventoryId;
 	}
 
-	public ReadableInstant getScheduledDate() {
+	public Instant getScheduledDate() {
 		return scheduledDate;
 	}
 	
-	public void setScheduledDate(ReadableInstant scheduledDate) {
+	public void setScheduledDate(Instant scheduledDate) {
 		this.scheduledDate = scheduledDate;
 	}
 	
-	public ReadableInstant getStartDate() {
+	public Instant getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(ReadableInstant startDate) {
+	public void setStartDate(Instant startDate) {
 		this.startDate = startDate;
 	}
 
-	public ReadableInstant getStopDate() {
+	public Instant getStopDate() {
 		return stopDate;
 	}
 
-	public void setStopDate(ReadableInstant stopDate) {
+	public void setStopDate(Instant stopDate) {
 		this.stopDate = stopDate;
 	}
 

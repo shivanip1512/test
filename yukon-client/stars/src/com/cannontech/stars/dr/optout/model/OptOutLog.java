@@ -1,6 +1,6 @@
 package com.cannontech.stars.dr.optout.model;
 
-import org.joda.time.ReadableInstant;
+import org.joda.time.Instant;
 
 /**
  * Model object which represents and opt out log event
@@ -12,9 +12,9 @@ public class OptOutLog {
 	private Integer inventoryId;
 	private Integer customerAccountId;
 	private OptOutAction action;
-	private ReadableInstant logDate;
-	private ReadableInstant startDate;
-	private ReadableInstant stopDate;
+	private Instant logDate;
+	private Instant startDate;
+	private Instant stopDate;
 	private Integer userId;
 	private String username;
 	private Integer eventId;
@@ -52,27 +52,27 @@ public class OptOutLog {
 		this.action = action;
 	}
 
-	public ReadableInstant getLogDate() {
+	public Instant getLogDate() {
 		return logDate;
 	}
 
-	public void setLogDate(ReadableInstant logDate) {
+	public void setLogDate(Instant logDate) {
 		this.logDate = logDate;
 	}
 
-	public ReadableInstant getStartDate() {
+	public Instant getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(ReadableInstant startDate) {
+	public void setStartDate(Instant startDate) {
 		this.startDate = startDate;
 	}
 
-	public ReadableInstant getStopDate() {
+	public Instant getStopDate() {
 		return stopDate;
 	}
 
-	public void setStopDate(ReadableInstant stopDate) {
+	public void setStopDate(Instant stopDate) {
 		this.stopDate = stopDate;
 	}
 

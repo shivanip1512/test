@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.optout.service;
 import java.util.List;
 
 import org.joda.time.Duration;
-import org.joda.time.ReadableInstant;
+import org.joda.time.Instant;
 
 import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
 
@@ -11,17 +11,17 @@ import com.cannontech.stars.dr.optout.model.ScheduledOptOutQuestion;
  * Class which holds information about an Opt Out request
  */
 public class OptOutRequest {
-    private ReadableInstant startDate;
+    private Instant startDate;
     private long durationInHours;
     private List<Integer> inventoryIdList;
     private List<ScheduledOptOutQuestion> questions;
     private Integer eventId;
     
-    public ReadableInstant getStartDate() {
+    public Instant getStartDate() {
         return startDate;
     }
     
-    public void setStartDate(ReadableInstant startDate) {
+    public void setStartDate(Instant startDate) {
         this.startDate = startDate;
     }
     
@@ -29,7 +29,7 @@ public class OptOutRequest {
         return durationInHours;
     }
     
-    public void setDurationInHours(int durationInHours) {
+    public void setDurationInHours(long durationInHours) {
         this.durationInHours = durationInHours;
     }
     
@@ -49,7 +49,7 @@ public class OptOutRequest {
         this.questions = questions;
     }
     
-    public ReadableInstant getStopDate() {
+    public Instant getStopDate() {
     	if(startDate == null) {
     		return null;
     	}
@@ -57,7 +57,7 @@ public class OptOutRequest {
     	// Converts the duration in hours to a duration
     	Duration optOutDuration = Duration.standardHours(durationInHours);
     	
-    	ReadableInstant stopDate = startDate.toInstant().plus(optOutDuration);
+    	Instant stopDate = startDate.toInstant().plus(optOutDuration);
     	
     	return stopDate;
     }
