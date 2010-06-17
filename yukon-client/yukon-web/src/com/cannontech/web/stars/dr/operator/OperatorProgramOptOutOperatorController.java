@@ -421,7 +421,10 @@ public class OperatorProgramOptOutOperatorController {
                 Period optOutPeriod = Period.days(optOutBackingBean.getDurationInDays());
                 Interval optOutInterval = new Interval(startDateTime, optOutPeriod);
                 optOutRequest.setStartDate(startDateTime.toInstant());
-                optOutRequest.setDurationInHours(optOutInterval.toDuration().toPeriod().toStandardHours().getHours());
+                optOutRequest.setDurationInHours(optOutInterval.toDuration()
+                                                               .toPeriod()
+                                                               .toStandardHours()
+                                                               .getHours());
             }
 
             LiteYukonUser user = userContext.getYukonUser();
