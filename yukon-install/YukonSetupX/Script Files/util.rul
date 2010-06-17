@@ -52,7 +52,7 @@ string sServiceNameArray(11), sRegKey, sKeyValue;
 begin
 	PopulateServiceNameList(sServiceNameArray);
 	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
-	for i = 0 to 10
+	for i = 0 to SizeOf(sServiceNameArray)
 		if (ServiceExistsService(sServiceNameArray(i))) then
 			//get service start values from registry
 			sRegKey = "SYSTEM\\CurrentControlSet\\Services\\" + sServiceNameArray(i);
@@ -79,7 +79,7 @@ begin
 	PopulateServiceNameList(sServiceNameArray);
 	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
 	//write service start values to the registry
-	for i = 0 to 10
+	for i = 0 to SizeOf(sServiceNameArray)
 		if (ServiceExistsService(sServiceNameArray(i))) then
 			sRegKey = "SYSTEM\\CurrentControlSet\\Services\\" + sServiceNameArray(i);
 			nResult = RegDBSetKeyValueEx(sRegKey, "Start", REGDB_NUMBER, sServiceSettings(i), -1);
@@ -218,7 +218,7 @@ string sServiceNameArray(11);
 number i, nServiceState; 
 begin
 	PopulateServiceNameList(sServiceNameArray);
-	for i = 0 to 10
+	for i = 0 to SizeOf(sServiceNameArray)
 		if(ServiceExistsService(sServiceNameArray(i))) then
 			ServiceGetServiceState(sServiceNameArray(i), nServiceState);
 			if (nServiceState != SERVICE_STOPPED) then
@@ -248,7 +248,7 @@ begin
 		//start services
 		//this may take a moment, so give the user some feedback
 		SdShowMsg("Starting Yukon Services. This may take a moment.", TRUE);
-    	for i = 0 to 10
+    	for i = 0 to SizeOf(sServiceNameArray)
 			LaunchApplication(sCMD, "start \"" + sServiceNameArray(i) +"\"", "", SW_HIDE, 0, LAAW_OPTION_WAIT);
 		endfor;
 		//get out of "hidden" app-launch mode
@@ -259,7 +259,7 @@ begin
 	else
 	    //stop services
 	    SdShowMsg("Stopping Yukon Services.", TRUE);
-	    for i = 0 to 10
+	    for i = 0 to SizeOf(sServiceNameArray)
 			LaunchApplication(sCMD, "stop \"" + sServiceNameArray(i) +"\"", "", SW_HIDE, 0, LAAW_OPTION_WAIT);
 		endfor;
 		//get out of "hidden" app-launch mode

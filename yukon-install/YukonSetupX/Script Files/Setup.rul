@@ -344,8 +344,7 @@ begin
 		goto Dialog_Backup;
 	endif;
 	
-	//Try to stop all the services, just in case we have a really
-	//incompetent user who ignored the warning
+	//Try to stop all the services, just in case one's still running
 	StopYukonServices();
 	
 	//replace the pre-5.0 DB cparms if they exist in master.cfg
