@@ -290,6 +290,7 @@ CtiDeviceMCT410::point_info CtiDeviceMCT410::getData(const unsigned char *buf, i
     {
         case ValueType_Voltage:                     min_error = 0xffffffe0; break;
 
+        case ValueType_OutageCount:
         case ValueType_AccumulatorDelta:            min_error = 0xfffffffa; break;
 
         case ValueType_DynamicDemand:
@@ -3423,10 +3424,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     {
                         time_peak = (DSt->Message[5] << 8) | DSt->Message[6];
 
-                        point_info outage_count;
-
-                        outage_count.value   = (DSt->Message[7] << 8) | DSt->Message[8];
-                        outage_count.quality = NormalQuality;
+                        point_info outage_count = getData(DSt->Message + 7, 2, ValueType_OutageCount);
 
                         insertPointDataReport(PulseAccumulatorPointType, PointOffset_Accumulator_Powerfail, ReturnMsg,
                                               outage_count, "Blink Counter",  CtiTime(_daily_read_info.request.begin + 1));  //  add on 24 hours - end of day

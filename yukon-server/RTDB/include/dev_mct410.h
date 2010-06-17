@@ -322,6 +322,7 @@ protected:
         ValueType_FrozenDynamicDemand,
         ValueType_LoadProfile_Voltage,
         ValueType_LoadProfile_DynamicDemand,
+        ValueType_OutageCount
     };
 
     virtual point_info getDemandData(unsigned char *buf, int len, bool is_frozen_data) const;
