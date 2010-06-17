@@ -17,6 +17,8 @@ import net.sf.json.JSONArray;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joda.time.Days;
 import org.joda.time.Instant;
+import org.joda.time.Interval;
+import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -269,8 +271,11 @@ public class OptOutController extends AbstractConsumerController {
             optOutRequest.setStartDate(null); // Same day OptOut's have null
                                               // startDates.
         } else {
-            optOutRequest.setStartDate(new Instant(startDateObj));
-            optOutRequest.setDurationInHours(Days.days(durationInDays).toStandardHours().getHours());
+            Instant start = new Instant(startDateObj);
+            Period optOutPeriod = Days.days(durationInDays).toPeriod();
+            Interval optOutInterval = new Interval(start, optOutPeriod);
+            optOutRequest.setStartDate(start);
+            optOutRequest.setDurationInHours(optOutInterval.toPeriod().toStandardHours().getHours());
         }
         optOutRequest.setInventoryIdList(inventoryIds);
         optOutRequest.setQuestions(questionList);
