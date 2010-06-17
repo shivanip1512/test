@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.Period;
@@ -272,10 +271,13 @@ public class OptOutController extends AbstractConsumerController {
                                               // startDates.
         } else {
             Instant start = new Instant(startDateObj);
-            Period optOutPeriod = Days.days(durationInDays).toPeriod();
+            Period optOutPeriod = Period.days(durationInDays);
             Interval optOutInterval = new Interval(start, optOutPeriod);
             optOutRequest.setStartDate(start);
-            optOutRequest.setDurationInHours(optOutInterval.toPeriod().toStandardHours().getHours());
+            optOutRequest.setDurationInHours(optOutInterval.toDuration()
+                                                           .toPeriod()
+                                                           .toStandardHours()
+                                                           .getHours());
         }
         optOutRequest.setInventoryIdList(inventoryIds);
         optOutRequest.setQuestions(questionList);

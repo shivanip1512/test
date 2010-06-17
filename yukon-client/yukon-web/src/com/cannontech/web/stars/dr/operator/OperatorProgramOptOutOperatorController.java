@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
@@ -419,10 +418,10 @@ public class OperatorProgramOptOutOperatorController {
                 optOutRequest.setStartDate(null); // Same day OptOut's have null start dates
             } else {
                 DateTime startDateTime = optOutBackingBean.getStartDate().toDateTimeAtStartOfDay(userContext.getJodaTimeZone());
-                Period optOutPeriod = Days.days(optOutBackingBean.getDurationInDays()).toPeriod();
+                Period optOutPeriod = Period.days(optOutBackingBean.getDurationInDays());
                 Interval optOutInterval = new Interval(startDateTime, optOutPeriod);
                 optOutRequest.setStartDate(startDateTime.toInstant());
-                optOutRequest.setDurationInHours(optOutInterval.toPeriod().toStandardHours().getHours());
+                optOutRequest.setDurationInHours(optOutInterval.toDuration().toPeriod().toStandardHours().getHours());
             }
 
             LiteYukonUser user = userContext.getYukonUser();
