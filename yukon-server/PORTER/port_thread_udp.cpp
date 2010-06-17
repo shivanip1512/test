@@ -67,7 +67,7 @@ UdpPortHandler::UdpPortHandler( Ports::UdpPortSPtr &udp_port, CtiDeviceManager &
     _udp_socket(INVALID_SOCKET),
     _connected_port(0)
 {
-    _encodingFilter = EncodingFilterFactory::getEncodingFilter(udp_port);
+    loadEncodingFilter();
 }
 
 
@@ -252,6 +252,8 @@ void UdpPortHandler::updatePortProperties( void )
         {
             bindSocket();
         }
+
+        loadEncodingFilter();
     }
 }
 
@@ -800,6 +802,10 @@ u_long UdpPortHandler::string_to_ip(string ip_string)
     return ip;
 }
 
+void UdpPortHandler::loadEncodingFilter()
+{
+    _encodingFilter = EncodingFilterFactory::getEncodingFilter(_udp_port);
+}
 
 }
 }

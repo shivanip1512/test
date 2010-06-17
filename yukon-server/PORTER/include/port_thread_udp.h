@@ -72,6 +72,8 @@ private:
 
     static void sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, u_long ip, u_short port );
 
+    void loadEncodingFilter();
+
 protected:
 
     virtual std::string describePort( void ) const;
