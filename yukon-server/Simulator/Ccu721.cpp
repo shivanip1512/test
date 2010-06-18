@@ -809,6 +809,11 @@ error_t Ccu721::processRequest(const idlc_request &request, idlc_reply &reply)
             bytes info_buf;
             byte_appender info_inserter(info_buf);
 
+            if( error = updateStatusBytes() )
+            {
+                return "Error updating status bytes data / " + error;
+            }
+
             if( error = writeReplyInfo(reply.info, info_inserter) )
             {
                 return "Error writing IDLC reply info / " + error;
@@ -956,23 +961,35 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
             reply.info.loadBuffer.accepted  = _queue.pending.size() - pre_pending;
 
             _next_seq += reply.info.loadBuffer.accepted;
-
+            
+            /*
             if( !_queue.pending.empty() )
             {
-                _status.status_bytes |= 0x800;
+                // SSPEC Section 2.3.2.1 - 
+                //      Bit 3 of the first byte of the status bytes is "Transmit Buffer Has Data" bit.
+                //      Since the pending queue is not empty, we need to let porter know there is more data.
+                setStatusBit(Status_TransBufHasData);
+                //_status.status_bytes |= 0x800;
             }
-
+            */
             return error_t::success;
         }
         case Klondike_FreezeBuffer:
         {
             _bufferFrozen = true;
+
+            // SSPEC Section 2.3.2.1 - 
+            //      Bit 5 of the first byte of the status bytes is "Transmit Buffer Frozen" bit.
+            _status.status_bytes |= 0x2000;
             
             return error_t::success;
         }
         case Klondike_ThawBuffer:
         {
             _bufferFrozen = false;
+
+            // Undo the setting of bit 5 of the first byte of the status bytes to indicate the buffer's thaw.
+            _status.status_bytes &= 0xdfff;
 
             return error_t::success;
         }
@@ -996,15 +1013,18 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
                 bufferCount--;
             }
 
+            /*
             if( _queue.completed.empty() )
             {
-                _status.status_bytes &= 0xf7ff;
+                resetStatusBit(Status_RespBufHasData);
+                //_status.status_bytes &= 0xf7ff;
             }
             if( _queue.pending.empty() )
             {
-                _status.status_bytes &= 0xfeff;
+                resetStatusBit(Status_TransBufHasData);
+                //_status.status_bytes &= 0xfeff;
             }
-
+            */
             return error_t::success;
         }
         case Klondike_TimeSync:
@@ -1119,7 +1139,7 @@ void Ccu721::processQueue(PortLogger &logger)
     queue_info::pending_set::const_iterator pending_itr = _queue.pending.begin(),
                                             pending_end = _queue.pending.end();
 
-    while( pending_itr != pending_end && _queue.last_transmit < now )
+    while( pending_itr != pending_end && _queue.last_transmit < now && _queue.completed.size() < LoadBufferMaxSlots )
     {
         queue_entry entry = *pending_itr;
 
@@ -1136,7 +1156,7 @@ void Ccu721::processQueue(PortLogger &logger)
             copy(entry.request.c_words.begin(),
                  entry.request.c_words.end(),
                  EmetconWord::serializer(byte_appender(request_buf)));
-
+            
             Grid.oneWayCommand(request_buf);
 
             entry.result.completion_status = queue_entry::result_info::CompletionStatus_Successful;
@@ -1173,17 +1193,24 @@ void Ccu721::processQueue(PortLogger &logger)
 
         _queue.completed.insert(entry);
     }
-
+    /*
     if( !_queue.completed.empty() )
     {
-        _status.status_bytes |= 0x100;
+        setStatusBit(Status_RespBufHasData);
+        //_status.status_bytes |= 0x100;
+        if( _queue.completed.size() == LoadBufferMaxSlots )
+        {
+            setStatusBit(Status_RespBufFull);
+        }
     }
 
     if( _queue.pending.empty() )
     {
-        _status.status_bytes &= 0xf7ff;
+        resetStatusBit(Status_TransBufHasData);
+        //_status.status_bytes &= 0xf7ff;
         _queue.last_transmit = now;
     }
+    */
 }
 
 unsigned Ccu721::queue_request_dlc_time(const queue_entry::request_info &request)
@@ -1367,6 +1394,7 @@ string Ccu721::describeGeneralRequest(const request_info &info) const
                     }
                 }
             }
+            break;
         }
         case Klondike_FreezeBuffer:
         {
@@ -2287,6 +2315,73 @@ bool Ccu721::validateCommand(SocketComms &socket_interface)
             return false;
         }
     }
+}
+
+error_t Ccu721::setStatusBit(const StatusDescriptions &statusPos)
+{
+    _status.status_bytes |= statusPos;
+
+    return error_t::success;
+}
+
+error_t Ccu721::resetStatusBit(const StatusDescriptions &statusPos)
+{
+    unsigned short resetValue = Status_Invalid - statusPos;
+
+    _status.status_bytes &= resetValue;
+
+    return error_t::success;
+}
+
+error_t Ccu721::updateStatusBytes()
+{
+    // Bit 0 of Byte 1 of the Status Bytes.
+    if( !_queue.completed.empty() )
+    {
+        setStatusBit(Status_RespBufHasData);
+    }
+    else
+    {
+        resetStatusBit(Status_RespBufHasData);
+    }
+
+    // Bit 1 of Byte 1 of the Status Bytes.
+    // "Marked Data"
+
+    // Bit 3 of Byte 1 of the Status Bytes.
+    if( !_queue.pending.empty() )
+    {
+        setStatusBit(Status_TransBufHasData);
+    }
+    else
+    {
+        resetStatusBit(Status_TransBufHasData);
+    }
+
+    // Bit 5 of Byte 1 of the Status Bytes.
+    if( _bufferFrozen )
+    {
+        setStatusBit(Status_TransBufFrozen);
+    }
+    else
+    {
+        resetStatusBit(Status_TransBufFrozen);
+    }
+
+    // Bit 6 of Byte 1 of the Status Bytes.
+    // "Transmitting Dtran Message. Necessary?
+
+    // Bit 7 of Byte 1 of the Status Bytes.
+    if ( (_status.status_bytes & Status_TransBufHasData) && (_queue.completed.size() < LoadBufferMaxSlots) )
+    {
+        setStatusBit(Status_PLCTransBuf);
+    }
+    else
+    {
+        resetStatusBit(Status_PLCTransBuf);
+    }
+
+    return error_t::success;
 }
 
 }

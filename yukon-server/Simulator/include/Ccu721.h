@@ -109,7 +109,8 @@ private:
         Status_TransBufFull         = 0x1000,
         Status_TransBufFrozen       = 0x2000,
         Status_PLCTransDtran        = 0x4000,
-        Status_PLCTransBuf          = 0x8000
+        Status_PLCTransBuf          = 0x8000,
+        Status_Invalid              = 0xffff
     };
 
     struct queue_entry
@@ -462,6 +463,10 @@ private:
     error_t writeReplyStatus  (const unsigned short &status,  byte_appender &out_itr)       const;
     error_t writeIdlcCrc      (const bytes     &message, byte_appender &out_itr)            const;
 
+    error_t setStatusBit  (const StatusDescriptions &statusPos);
+    error_t resetStatusBit(const StatusDescriptions &statusPos);
+
+    error_t updateStatusBytes();
 };
 
 }
