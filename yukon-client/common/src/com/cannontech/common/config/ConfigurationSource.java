@@ -31,6 +31,7 @@ public interface ConfigurationSource {
     public int getRequiredInteger(String key) throws UnknownKeyException;
     
     public int getInteger(String key, int defaultValue);
+    public long getLong(String key, long defaultValue);
     
     /**
      * Returns boolean value of key from the configuration file. Returns a defaultValue if

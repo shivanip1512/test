@@ -97,6 +97,15 @@ public class MasterConfigMap implements ConfigurationSource {
     }
     
     @Override
+    public long getLong(String key, long defaultValue) {
+        String string = getString(key);
+        if (string == null) {
+            return defaultValue;
+        }
+        return Long.parseLong(string);
+    }
+    
+    @Override
     public boolean getBoolean(String key, boolean defaultValue) {
     	
     	if (!configMap.containsKey(key)) {

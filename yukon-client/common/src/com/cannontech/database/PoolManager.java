@@ -3,6 +3,8 @@ package com.cannontech.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
@@ -33,6 +35,15 @@ public class PoolManager {
         "net.sourceforge.jtds.jdbc.Driver", 
         "sun.jdbc.odbc.JdbcOdbcDriver" // only exists for backwards compatibility
     };
+    
+    private static final class ConnectionDescription {
+        public ConnectionDescription(String connectionUrl, DatabaseVendor type) {
+            this.connectionUrl = connectionUrl;
+            this.type = type;
+        }
+        String connectionUrl;
+        DatabaseVendor type;
+    }
 
     static private PoolManager instance;
 
@@ -44,49 +55,59 @@ public class PoolManager {
     private String primaryUser;
 	private BasicDataSource bds;
 	
-	enum Databases { UNKNOWN_DATABASE, ORACLE_DATABASE, MSSQL_DATABASE };
+	private enum DatabaseVendor { ORACLE_DATABASE, MSSQL_DATABASE };
 
     private PoolManager() {
         init();
     }
 
-    private String getConnectionUrl() {
+    private ConnectionDescription getConnectionUrl() {
         String jdbcUrl;
-        jdbcUrl = configSource.getString("DB_JAVA_URL");
-        if (StringUtils.isNotBlank(jdbcUrl)) {
-            log.debug("Using DB_JAVA_URL=" + jdbcUrl);
-            return jdbcUrl;
-        }
-        
         // otherwise, see what dll is setup
         
         String rwDllName = configSource.getString("DB_RWDBDLL");
         String dbTypeName = configSource.getString("DB_TYPE");
-        Databases dbType = Databases.UNKNOWN_DATABASE;
+        DatabaseVendor dbType = null;
         
         //This establishes the precedence of DB_TYPE over DB_RWDBDLL
-        if ("mssql".equalsIgnoreCase(dbTypeName))
-        	dbType = Databases.MSSQL_DATABASE;
-        else if ("oracle".equalsIgnoreCase(dbTypeName))
-        	dbType = Databases.ORACLE_DATABASE;
-        else if ("msq15d.dll".equalsIgnoreCase(rwDllName))
-        	dbType = Databases.MSSQL_DATABASE;
-        else if ("ora15d.dll".equalsIgnoreCase(rwDllName))
-        	dbType = Databases.ORACLE_DATABASE;
+        if ("mssql".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.MSSQL_DATABASE;
+        } else if ("oracle".equalsIgnoreCase(dbTypeName)) {
+            dbType = DatabaseVendor.ORACLE_DATABASE;
+        } else if ("msq15d.dll".equalsIgnoreCase(rwDllName)) {
+            dbType = DatabaseVendor.MSSQL_DATABASE;
+        } else if ("ora15d.dll".equalsIgnoreCase(rwDllName)) {
+            dbType = DatabaseVendor.ORACLE_DATABASE;
+        }
         
-        if (dbType == Databases.MSSQL_DATABASE) {
+        if (dbType == null) {
+            throw new BadConfigurationException("Unrecognized database type in master.cfg: " + dbTypeName);
+        }
+        
+        jdbcUrl = configSource.getString("DB_JAVA_URL");
+        if (StringUtils.isNotBlank(jdbcUrl)) {
+            log.debug("Using DB_JAVA_URL=" + jdbcUrl);
+            return new ConnectionDescription(jdbcUrl, dbType);
+        }
+        
+        if (dbType == DatabaseVendor.MSSQL_DATABASE) {
             // configure as microsoft
             // example: jdbc:jtds:sqlserver://mn1db02:1433;APPNAME=yukon-client;TDS=8.0
             StringBuilder url = new StringBuilder();
             url.append("jdbc:jtds:sqlserver://");
             String host = configSource.getRequiredString("DB_SQLSERVER");
+            Pattern pattern = Pattern.compile("([^\\\\]+)\\\\(.+)");
+            Matcher matcher = pattern.matcher(host);
+            if (matcher.matches()) {
+                host = matcher.group(1);
+            }
             url.append(host);
             url.append(":1433;APPNAME=yukon-client;TDS=8.0");
-            log.debug("Found msq15d.dll, url=" + url);
-            return url.toString();
+            log.debug("Found MSSQL, url=" + url);
+            return new ConnectionDescription(url.toString(), dbType);
         }
         
-        if (dbType == Databases.ORACLE_DATABASE) {
+        if (dbType == DatabaseVendor.ORACLE_DATABASE) {
             try {
                 // configure as Oracle
                 // example: jdbc:oracle:thin:@mn1db02:1521:xcel
@@ -98,22 +119,24 @@ public class PoolManager {
                 String tnsName = configSource.getRequiredString("DB_SQLSERVER");
                 url.append(tnsName);
                 
-                log.debug("Found ora15d.dll, url=" + url);
-                return url.toString();
+                log.debug("Found oracle, url=" + url);
+                return new ConnectionDescription(url.toString(), dbType);
             } catch (UnknownKeyException e) {
                 throw new BadConfigurationException("Cannot connect to Oracle without DB_SQLSERVER_HOST and DB_SQLSERVER being specified.", e);
             }
         }
         
-        throw new BadConfigurationException("Unrecognized DB_RWDBDLL in master.cfg: " + rwDllName);
+        //unreachable
+        throw new BadConfigurationException("Unable to generate connection URL");
     }
 
     private void createPools() {
         
         // see if we have some very specific settings
         registerDriver();
-
-        primaryUrl = getConnectionUrl();
+        
+        ConnectionDescription connectionDescription = getConnectionUrl();
+        primaryUrl = connectionDescription.connectionUrl;
         log.info("DB URL=" + primaryUrl);
 
         primaryUser = configSource.getRequiredString("DB_USERNAME");
@@ -121,14 +144,14 @@ public class PoolManager {
         String password = configSource.getRequiredString("DB_PASSWORD");
         
         String maxActiveConns = configSource.getString("DB_JAVA_MAXCONS");
-        int maxActive = CtiUtilities.isRunningAsClient() ? 4 : 15;
+        int maxActive = -1;
         if (StringUtils.isNotBlank(maxActiveConns)) {
             maxActive = Integer.valueOf(maxActiveConns);
         }
         log.info("DB maxActive=" + maxActive);
 
         String maxIdleConns = configSource.getString("DB_JAVA_MAXIDLECONS");
-        int maxIdle = maxActive;
+        int maxIdle = CtiUtilities.isRunningAsClient() ? 4 : 15;
         if (StringUtils.isNotBlank(maxIdleConns)) {
             maxIdle = Integer.valueOf(maxIdleConns);
         }
@@ -148,7 +171,15 @@ public class PoolManager {
         }
         log.info("DB initialSize=" + initialSize);
         
-        String validationQuery = configSource.getString("DB_JAVA_VALIDATION_QUERY", null);
+        String defaultValidationQuery;
+        switch (connectionDescription.type) {
+        case ORACLE_DATABASE:
+            defaultValidationQuery = "select 1 from dual";
+            break;
+        default:
+            defaultValidationQuery = "select 1";
+        }
+        String validationQuery = configSource.getString("DB_JAVA_VALIDATION_QUERY", defaultValidationQuery);
         log.info("DB validationQuery=" + validationQuery);
         
         boolean testOnBorrow = configSource.getBoolean("DB_JAVA_TEST_ON_BORROW", false);
@@ -156,6 +187,18 @@ public class PoolManager {
         
         boolean testOnReturn = configSource.getBoolean("DB_JAVA_TEST_ON_RETURN", false);
         log.info("DB testOnReturn=" + testOnReturn);
+        
+        boolean testWhileIdle = configSource.getBoolean("DB_JAVA_TEST_WHILE_IDLE", true);
+        log.info("DB testWhileIdle=" + testWhileIdle);
+        
+        long timeBetweenEvictionRunsMillis = configSource.getLong("DB_JAVA_TIME_BETWEEN_EVICTION_RUNS_MILLIS", TimeUnit.MINUTES.toMillis(2));
+        log.info("DB timeBetweenEvictionRunsMillis=" + timeBetweenEvictionRunsMillis);
+        
+        int numTestsPerEvictionRun = configSource.getInteger("DB_JAVA_NUM_TESTS_PER_EVICTION_RUN", 1);
+        log.info("DB numTestsPerEvictionRun=" + numTestsPerEvictionRun);
+        
+        long minEvictableIdleTimeMillis = configSource.getLong("DB_JAVA_MIN_EVICTABLE_IDLE_TIME_MILLIS", TimeUnit.MINUTES.toMillis(10)); 
+        log.info("DB minEvictableIdleTimeMillis=" + minEvictableIdleTimeMillis);
         
         bds = new BasicDataSource();
         bds.setUrl(primaryUrl);
@@ -169,6 +212,10 @@ public class PoolManager {
         bds.setValidationQuery(validationQuery);
         bds.setTestOnBorrow(testOnBorrow);
         bds.setTestOnReturn(testOnReturn);
+        bds.setTestWhileIdle(testWhileIdle);
+        bds.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+        bds.setNumTestsPerEvictionRun(numTestsPerEvictionRun);
+        bds.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
         log.debug("Created BasicDataSource:" + bds);
 
         DataSource actualDs = bds;

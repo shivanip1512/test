@@ -33,6 +33,9 @@ public class CayentaApiServiceTest {
 		public int getInteger(String key, int defaultValue) {
 			throw new UnsupportedOperationException();
 		}
+		public long getLong(String key, long defaultValue) {
+		    throw new UnsupportedOperationException();
+		}
 		@Override
 		public int getRequiredInteger(String key) throws UnknownKeyException {
 			return 0;
