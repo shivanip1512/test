@@ -207,5 +207,6 @@ std::string parse_asString[] = {
 "command=6:flags=0::display_resolution=5x1,-2147483648,0.000:display_test_duration=(none),10,10.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
 "command=6:flags=0::display_resolution=6x1,-2147483648,0.000:display_test_duration=(none),10,10.000:transformer_ratio=(none),25,25.000:type=emetcon,7,7.000",
 "command=6:flags=0::autoreconnect_enable=(none),1,1.000:type=emetcon,7,7.000",
-"command=6:flags=0::autoreconnect_enable=(none),0,0.000:type=emetcon,7,7.000"
+"command=6:flags=0::autoreconnect_enable=(none),0,0.000:type=emetcon,7,7.000",
+"command=1:flags=2147483680::group=/Meters/Collection/'Test Group',-1,-1.000:type=versacom,0,0.000"
 };

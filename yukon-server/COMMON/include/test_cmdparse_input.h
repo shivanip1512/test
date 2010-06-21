@@ -209,5 +209,6 @@ std::string inputString[] = {
 "putconfig emetcon parameters ratio 25 display 6x1 test 10 errors disable",
 "putconfig emetcon autoreconnect enable",
 "putconfig emetcon autoreconnect disable",
+"getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''",
 };
 

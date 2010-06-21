@@ -42,43 +42,17 @@ BOOST_AUTO_TEST_CASE(testString)
 
 BOOST_AUTO_TEST_CASE(testDeviceGroupQuotes)
 {
-    size_t nstart;
-    size_t nstop;
-
-    static const CtiString str_quoted_token("((\".*\")|('.*'))");
-    static const boost::regex re_grp    (CtiString("select group ")       + str_quoted_token);
-
     const string lead_trail_apos = "getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''";
     const string mid_apos        = "getvalue kwh update timeout 1800 select group '/Meters/Collection/Intern's Group'";
 
-    static const CtiString lead_trail_outcome = "'/Meters/Collection/'Test Group''";
-    static const CtiString mid_outcome        = "'/Meters/Collection/Intern's Group'";
+    CtiCommandParser leadTrailParser(lead_trail_apos);
+    CtiCommandParser midParser      (mid_apos);
 
-    CtiString CmdStr, lead_trail_token, mid_token;
+    static const CtiString lead_trail_outcome = "/Meters/Collection/'Test Group'";
+    static const CtiString mid_outcome        = "/Meters/Collection/Intern's Group";
 
-    {
-        CmdStr = lead_trail_apos;
-        lead_trail_token = CmdStr.match(re_grp);
-
-        nstart = lead_trail_token.index("group ", &nstop);
-        nstop += nstart;
-
-        lead_trail_token = lead_trail_token.match((const boost::regex)str_quoted_token, nstop);
-    }
-            
-    {
-        CmdStr = mid_apos;
-        mid_token        = CmdStr.match(re_grp);
-
-        nstart = mid_token.index("group ", &nstop);
-        nstop += nstart;
-
-        mid_token = mid_token.match((const boost::regex)str_quoted_token, nstop);
-    }
-
-    BOOST_CHECK_EQUAL(lead_trail_token, lead_trail_outcome);
-    BOOST_CHECK_EQUAL(mid_token, mid_outcome);
-        
+    BOOST_CHECK_EQUAL(leadTrailParser.getsValue("group"), lead_trail_outcome);
+    BOOST_CHECK_EQUAL(midParser.getsValue("group"), mid_outcome);
 }
 
 

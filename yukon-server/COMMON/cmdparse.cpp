@@ -21,7 +21,6 @@
 using namespace std;
 
 static const CtiString str_quoted_token("((\".*\")|('.*'))");
-//static const CtiString str_quoted_token("((\"[^\"]+\")|('[^']+'))");
 
 static const CtiString str_signed_num     ("(\\+|\\-)?([0-9]+)");
 static const CtiString str_num     ("([0-9]+)");
