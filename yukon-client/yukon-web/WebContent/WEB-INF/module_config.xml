@@ -771,6 +771,7 @@
           <options>
             <option name="device_group_sync">
               <link>/spring/multispeak/setup/deviceGroupSync/home</link>
+              <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
             </option>
           </options>
         </option>
@@ -780,10 +781,12 @@
     
     <pages>
 		<page name="deviceGroupSyncHome" type="BASIC">
+			<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
 			<menu>sync|device_group_sync</menu>
 			<link>/spring/multispeak/setup/deviceGroupSync/home</link>
 		</page>
 		<page name="deviceGroupSyncProgress" type="BASIC">
+			<requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
 			<menu>sync|device_group_sync</menu>
 			<link>/spring/multispeak/setup/deviceGroupSync/progress</link>
 		</page>

@@ -2,7 +2,6 @@ package com.cannontech.web.multispeak.deviceGroupSync;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -19,7 +18,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
-@Controller
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
 @RequestMapping("/setup/deviceGroupSync/*")
 public class MultispeakDeviceGroupSyncController {
