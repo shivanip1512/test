@@ -75,10 +75,10 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -885,7 +885,7 @@ public class StarsAdminUtil {
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 				if (starsAcctInfo != null) {
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-					ServletUtils.removeRouteResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
+					HardwareAction.removeRouteResponse( liteHw.getInventoryID(), starsInv, starsAcctInfo, null );
 				}
 			}
 		}

@@ -32,7 +32,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.util.ServerUtils;
-import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.web.action.AccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
 
 /**
@@ -148,7 +148,7 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 					
 					currentAction = "Deleting customer account id = " + accountID;
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( accountID, true );
-					ServletUtils.deleteCustomerAccount( liteAcctInfo, energyCompany );
+					AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 					
 					numAcctDeleted++;
 					if (isCanceled) {

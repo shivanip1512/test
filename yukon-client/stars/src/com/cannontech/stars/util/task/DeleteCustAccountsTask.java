@@ -9,8 +9,8 @@ package com.cannontech.stars.util.task;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.AccountAction;
 
 /**
  * @author yao
@@ -60,7 +60,7 @@ public class DeleteCustAccountsTask extends TimeConsumingTask {
 			try {
 				for (numAcctDeleted = 0; numAcctDeleted < accountIDs.length; numAcctDeleted++) {
 					liteAcctInfo = energyCompany.getCustAccountInformation( accountIDs[numAcctDeleted], true );
-					ServletUtils.deleteCustomerAccount( liteAcctInfo, energyCompany );
+					AccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 					
 					if (isCanceled) {
 						status = STATUS_CANCELED;

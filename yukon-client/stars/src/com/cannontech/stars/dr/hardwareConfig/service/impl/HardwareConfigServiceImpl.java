@@ -15,9 +15,9 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.user.YukonUserContext;
 
 public class HardwareConfigServiceImpl implements HardwareConfigService {
@@ -36,7 +36,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
             addSwitchCommand(energyCompanyId, accountId, inventoryId,
                              SwitchCommandQueue.SWITCH_COMMAND_DISABLE);
         } else {
-            ServletUtils.sendDisableCommand(energyCompany, liteHw, null);
+            YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, null);
         }
         logEvent(accountId, energyCompanyId,
                  liteHw.getManufacturerSerialNumber(),
@@ -53,7 +53,7 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
             addSwitchCommand(energyCompanyId, accountId, inventoryId,
                              SwitchCommandQueue.SWITCH_COMMAND_ENABLE);
         } else {
-            ServletUtils.sendEnableCommand(energyCompany, liteHw, null);
+            YukonSwitchCommandAction.sendEnableCommand(energyCompany, liteHw, null);
         }
         logEvent(accountId, energyCompanyId,
                  liteHw.getManufacturerSerialNumber(),

@@ -66,6 +66,7 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.DeviceStatus;
 import com.cannontech.stars.xml.serialize.DeviceType;
 import com.cannontech.stars.xml.serialize.InstallationCompany;
@@ -369,23 +370,23 @@ public class InventoryManagerUtil {
 		if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_CONFIGURE ))
         {
 			if(writeToFile)
-                ServletUtils.fileWriteConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+			    YukonSwitchCommandAction.fileWriteConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
             else    
-                ServletUtils.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
+                YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, cmd.getInfoString() );
         }
         else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_DISABLE ))
         {
             if(writeToFile)
-                ServletUtils.fileWriteDisableCommand( energyCompany, liteHw, null );
+                YukonSwitchCommandAction.fileWriteDisableCommand( energyCompany, liteHw, null );
             else
-                ServletUtils.sendDisableCommand( energyCompany, liteHw, null );
+                YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
         }
 		else if (cmd.getCommandType().equalsIgnoreCase( SwitchCommandQueue.SWITCH_COMMAND_ENABLE ))
         {
             if(writeToFile)
-                ServletUtils.fileWriteEnableCommand( energyCompany, liteHw, null );
+                YukonSwitchCommandAction.fileWriteEnableCommand( energyCompany, liteHw, null );
             else
-                ServletUtils.sendEnableCommand( energyCompany, liteHw, null );
+                YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
         }
 		
 		SwitchCommandQueue.getInstance().removeCommand( cmd.getInventoryID() );
@@ -395,7 +396,7 @@ public class InventoryManagerUtil {
 			StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( liteHw.getAccountID() );
 			if (starsAcctInfo != null) {
 				StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
-				ServletUtils.populateInventoryFields( starsAcctInfo, starsInv );
+				YukonSwitchCommandAction.populateInventoryFields( starsAcctInfo, starsInv );
 			}
 		}
 	}

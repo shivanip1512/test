@@ -407,7 +407,7 @@ public class NewCustAccountAction implements ActionBase {
 			/* Create yukon user */
 			int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
 			if (updateLogin != null)
-				userID = ServletUtils.createLogin( updateLogin, null, energyCompany, authTypeChanged ).getUserID();
+				userID = LoginAction.createLogin( updateLogin, null, energyCompany, authTypeChanged ).getUserID();
         	
 			/* Create contacts */
 			com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();

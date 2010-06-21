@@ -47,8 +47,8 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
-import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.web.action.HardwareAction;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -244,8 +244,7 @@ public class OperatorHardwareConfigController {
             }
             LiteStarsLMHardware liteHw = (LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());
-            ServletUtils.updateLMHardwareConfig(hardwareConfig,
-                liteHw, userContext.getYukonUser().getUserID(), energyCompany);
+            HardwareAction.updateLMHardwareConfig(hardwareConfig, liteHw, userContext.getYukonUser().getUserID(), energyCompany);
 
             HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
             MessageSourceResolvable confirmationMessage =

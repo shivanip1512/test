@@ -60,6 +60,8 @@ import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.web.action.HardwareAction;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.SULMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsOperation;
@@ -104,7 +106,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
             // Send out the config/disable command
             for (final LiteStarsLMHardware liteHw : hwsToConfig) {
-                boolean toConfig = ServletUtils.isToConfig(liteHw, liteCustomerAccount);
+                boolean toConfig = HardwareAction.isToConfig(liteHw, liteCustomerAccount);
 
                 if (toConfig) {
                     // Send the reenable command if hardware status is unavailable,
@@ -112,14 +114,14 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                     if (!useHardwareAddressing
                             && (StarsUtils.isOperator(user) && DaoFactory.getAuthDao().checkRoleProperty( user, ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
                                     || StarsUtils.isResidentialCustomer(user) && DaoFactory.getAuthDao().checkRoleProperty(user, ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))) {
-                        ServletUtils.sendConfigCommand( energyCompany, liteHw, false, null );
+                        YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
                     }
                     else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
-                        ServletUtils.sendEnableCommand( energyCompany, liteHw, null );
+                        YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
                     }
                 } else {
                     // Send disable command to hardware
-                    ServletUtils.sendDisableCommand(energyCompany, liteHw, null );
+                    YukonSwitchCommandAction.sendDisableCommand(energyCompany, liteHw, null );
                 }
             }
         } catch (InvalidParameterException e) {
