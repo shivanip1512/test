@@ -54,17 +54,18 @@
     </cti:breadCrumbs>
     
 	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+	
+	<script type="text/javascript">
+	
+		function updateLastRunLink() {
+		    return function(data) {
+		        var value = data['value'];
+		        $('lastRunLinkSpan').innerHTML = value;
+		    };
+		}
+	
+	</script>
 
-    <script type="text/javascript">
-
-	    var refreshUrl = '/spring/group/scheduledGroupRequestExecutionResults/lastRunRefresher';
-	    var refreshParams = $H();
-	    refreshParams['jobId'] = ${jobWrapper.job.id};
-	    
-    	var lastRunRefresher = new Ajax.PeriodicalUpdater('lastRunDiv', refreshUrl, {method: 'post', frequency: 4, parameters: refreshParams, evalScripts: true});
-
-    </script>
-    
     <h2 title="ID: ${jobWrapper.job.id}">${pageTitle}</h2>
     <br>
     
@@ -158,10 +159,24 @@
 			
 			<%-- last run --%>
 			<tags:nameValue name="${lastRunText}">
-			
-				<div id="lastRunDiv" style="display:inline;">
-					<amr:scheduledGroupRequestExecutionJobLastRunDate lastCre="${lastCre}" lastRunDate="${jobWrapper.lastRun}" />
-				</div>
+				
+				<cti:dataUpdaterCallback function="updateLastRunLink()" initialize="false" value="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_CRE_RUN_LINK"/>
+				<span id="lastRunLinkSpan">
+					<cti:msg var="naLastRun" key="yukon.web.defaults.na"/>
+					<c:choose>
+						<c:when test="${empty lastCre}">
+							${naLastRun}
+						</c:when>
+						<c:otherwise>
+							<cti:url var="lastRunUrl" value="/spring/common/commandRequestExecutionResults/detail">
+								<cti:param name="commandRequestExecutionId" value="${lastCre.id}"/>
+							</cti:url>
+							<a href="${lastRunUrl}">
+								<cti:formatDate value="${jobWrapper.lastRun}" type="DATEHM" nullText="${naLastRun}"/>
+							</a>
+						</c:otherwise>
+					</c:choose>
+				</span> 
 				<tags:helpInfoPopup title="Last Run">
 					<cti:msg key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.lastRun" />
 				</tags:helpInfoPopup>

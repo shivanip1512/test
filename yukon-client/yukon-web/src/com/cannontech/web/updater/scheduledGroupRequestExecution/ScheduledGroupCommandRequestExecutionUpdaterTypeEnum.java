@@ -3,7 +3,7 @@ package com.cannontech.web.updater.scheduledGroupRequestExecution;
 
 public enum ScheduledGroupCommandRequestExecutionUpdaterTypeEnum {
 	
-	LAST_CRE_ID_FOR_JOB,
+	LAST_CRE_RUN_LINK,
 	LAST_REQUEST_COUNT_FOR_JOB,
 	LAST_SUCCESS_RESULTS_COUNT_FOR_JOB,
 	LAST_FAILURE_RESULTS_COUNT_FOR_JOB,

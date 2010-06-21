@@ -27,7 +27,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
-import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -44,7 +43,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	private DateFormattingService dateFormattingService;
 	private ScheduledGroupRequestExecutionJobWrapperFactory scheduledGroupRequestExecutionJobWrapperFactory;
 	private RolePropertyDao rolePropertyDao;
-	private JobStatusDao jobStatusDao;
 	
 	// JOBS
 	public ModelAndView jobs(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -180,23 +178,6 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 		
 	}
 	
-	// LAST RUN REFRESHER
-	public ModelAndView lastRunRefresher(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/results/lastRun.jsp");
-		
-		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
-
-		Date lastRunDate = jobStatusDao.getJobLastSuccessfulRunDate(jobId);
-		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
-		
-        mav.addObject("lastCre", lastCre);
-        mav.addObject("lastRunDate", lastRunDate);
-        
-        return mav;
-		
-	}
-	
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(
 			ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao) {
@@ -222,10 +203,5 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
 	@Autowired
 	public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;
-	}
-	
-	@Autowired
-	public void setJobStatusDao(JobStatusDao jobStatusDao) {
-		this.jobStatusDao = jobStatusDao;
 	}
 }
