@@ -8,7 +8,8 @@ package com.cannontech.multispeak.service;
 
 import java.rmi.RemoteException;
 
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
@@ -178,4 +179,29 @@ public interface MultispeakMeterService {
      * @return
      */
     public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor);
+    
+    /**
+     * Removes the Meter from all Billing group memberships (all children under Billing).
+     * Adds the Meter to 'newBilling' Billing child group.  If the billing group does not already
+     * exist, then a new Billing sub group is created. 
+     * @return true if added to a new billing cycle group.  
+     */
+    public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+    
+    /**
+     * Removes the Meter from all Substation group memberships (all children under Substation).
+     * Adds the Meter to 'substationName' Substation child group.  If the substation group does not already
+     * exist, then a new Substation sub group is created.
+     * @return true if added to a new substation group.  
+     */
+    public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
+    
+    /**
+     * This is a shortcut method for {@link updateBillingCyle} or {@link updateSubstationGroup} when the groupParent has already been determined.
+     * Removes the Meter from all 'groupParent' group memberships (all children under 'groupParent').
+     * Adds the Meter to 'groupName' child group.  If the 'groupName' group does not already
+     * exist, then a new 'groupName' sub group is created.
+     * @return true if added to a new 'groupName' group.  
+     */
+    public boolean updateDeviceGroup(String groupName, StoredDeviceGroup groupParent, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor);
 }

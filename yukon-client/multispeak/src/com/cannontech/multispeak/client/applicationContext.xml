@@ -42,6 +42,8 @@
   <bean id="multispeakMeterService" class="com.cannontech.multispeak.service.impl.MultispeakMeterServiceImpl" init-method="initialize">
   	<property name="porterConnection" ref="porterConnection"/>
   </bean>
+  
+  <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl"/>
      
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
 	<property name="strategyNames">

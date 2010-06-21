@@ -23,6 +23,7 @@ import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.dao.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.CD_ServerSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Customer;
@@ -115,6 +116,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
        return mspMeter;
     }
 
+    // GET ALL MSP METERS
     @Override
     public void getAllMspMeters(MultispeakVendor mspVendor, SimpleCallback<List<com.cannontech.multispeak.deploy.service.Meter>> callback) throws Exception {
     
@@ -174,6 +176,82 @@ public class MspObjectDaoImpl implements MspObjectDao {
             CTILogger.error("TargetService: " + endpointURL + " - getAllMeters (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for Meter");
+       }
+       
+       return lastSent;
+    }
+    
+    // GET ALL MSP SERVICE LOCATIONS
+    @Override
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws Exception {
+    	
+    	boolean firstGet = true;
+		String lastReceived = null;
+		
+		while (firstGet || lastReceived != null) {
+			
+			// kill before gathering more substations if callback is canceled
+			if (callback.isCanceled()) {
+				CTILogger.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
+				return;
+			}
+			
+			CTILogger.info("Calling getMoreServiceLocations, lastReceived = " + lastReceived);
+			lastReceived = getMoreServiceLocations(mspVendor, lastReceived, callback);
+			firstGet = false;
+		}
+		
+		callback.finish();
+    }
+    
+    private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived, MultispeakGetAllServiceLocationsCallback callback) throws Exception {
+    	
+    	String lastSent = null;
+        
+        try {
+        	
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
+            if (port != null) {
+            	
+                com.cannontech.multispeak.deploy.service.ServiceLocation[] serviceLocations = port.getAllServiceLocations(lastReceived);
+                
+                List<com.cannontech.multispeak.deploy.service.ServiceLocation> mspServiceLocations = new ArrayList<com.cannontech.multispeak.deploy.service.ServiceLocation>(serviceLocations.length);
+                if(serviceLocations != null) {
+                	mspServiceLocations = Arrays.asList(serviceLocations);
+                }
+                
+                int objectsRemaining = 0;
+                String objectsRemainingStr = getAttributeValue(port, "objectsRemaining");
+                if (!StringUtils.isBlank(objectsRemainingStr)) {
+                	try {
+                		objectsRemaining = Integer.valueOf(objectsRemainingStr);
+                	} catch (NumberFormatException e) {
+                		CTILogger.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+                	}
+                }
+                
+                if (objectsRemaining != 0) { 
+        			lastSent = getAttributeValue(port, "lastSent");
+        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocations.length + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
+        		} else {
+        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocations.length + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
+        		}
+                
+                // pass to callback
+                callback.processServiceLocations(mspServiceLocations);
+                
+            } else {
+                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            }
+            
+        } catch (RemoteException e) {
+        	
+            String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_Server_STR);
+            CTILogger.error("TargetService: " + endpointURL + " - getAllServiceLocations (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);
+            CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
+            CTILogger.info("A default(empty) is being used for ServiceLocation");
+            
+            throw e;
        }
        
        return lastSent;

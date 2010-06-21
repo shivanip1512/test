@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
@@ -14,6 +15,7 @@ import com.cannontech.web.input.type.BooleanType;
 import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputType;
 import com.cannontech.web.input.type.IntegerType;
+import com.cannontech.web.input.type.Iso8601DateTimeType;
 import com.cannontech.web.input.type.LongType;
 import com.cannontech.web.input.type.StringType;
 
@@ -30,6 +32,7 @@ public class InputTypeFactory {
     private static final InputType<Boolean> booleanType = new BooleanType();
     private static final InputType<Integer> integerType = new IntegerType();
     private static final InputType<Long> longType = new LongType();
+    private static final InputType<DateTime> iso8601DateType = new Iso8601DateTimeType();
 
 
     public static <T extends Enum<T>> InputType<T> enumType(final Class<T> enumClass) {
@@ -74,6 +77,10 @@ public class InputTypeFactory {
     
     public static InputType<Long> longType() {
         return longType;
+    }
+    
+    public static InputType<DateTime> iso8601DateTimeType() {
+        return iso8601DateType;
     }
     
     private static class EnumPropertyEditor<T extends Enum<T>> extends PropertyEditorSupport {

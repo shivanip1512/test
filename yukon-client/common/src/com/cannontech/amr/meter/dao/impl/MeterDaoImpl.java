@@ -39,7 +39,6 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.SqlProvidingRowMapper;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
@@ -52,7 +51,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     private DBPersistentDao dbPersistentDao;
     private SimpleJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
-    private SqlProvidingRowMapper<Meter> meterRowMapper;
+    private MeterRowMapper meterRowMapper;
     private PaoDao paoDao;
     private RolePropertyDao rolePropertyDao;
     
@@ -321,6 +320,13 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
                       new MaxRowCalbackHandlerRse(lrcHandler, maxRecordCount));
         return mspMeters;
     }
+    
+    public int getMeterCount() {
+    	
+    	String sql = "SELECT COUNT(*) " + meterRowMapper.getFromClause();
+    	
+    	return jdbcOps.queryForInt(sql);
+    }
 
     public Comparator<Meter> getMeterComparator() {
         final NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
@@ -340,7 +346,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
 
     }
 
-    public void setMeterRowMapper(SqlProvidingRowMapper<Meter> meterRowMapper) {
+    public void setMeterRowMapper(MeterRowMapper meterRowMapper) {
         this.meterRowMapper = meterRowMapper;
     }
 

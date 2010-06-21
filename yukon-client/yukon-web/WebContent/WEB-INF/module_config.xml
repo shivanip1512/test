@@ -767,16 +767,27 @@
         </option>
 
         <option name="sync">
-          <link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
+          <link>/spring/multispeak/setup/deviceGroupSync/home</link>
           <options>
-            <option name="sync_cis_substation_group">
-              <link>/spring/multispeak/setup/syncCisSubstationGroup/home</link>
+            <option name="device_group_sync">
+              <link>/spring/multispeak/setup/deviceGroupSync/home</link>
             </option>
           </options>
         </option>
 
       </options>
     </menu>
+    
+    <pages>
+		<page name="deviceGroupSyncHome" type="BASIC">
+			<menu>sync|device_group_sync</menu>
+			<link>/spring/multispeak/setup/deviceGroupSync/home</link>
+		</page>
+		<page name="deviceGroupSyncProgress" type="BASIC">
+			<menu>sync|device_group_sync</menu>
+			<link>/spring/multispeak/setup/deviceGroupSync/progress</link>
+		</page>
+	</pages>
 
   </module>
 

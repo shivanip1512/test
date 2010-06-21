@@ -35,4 +35,6 @@ public interface MeterDao extends StandardDaoOperations<Meter> {
     
     public PaoLoader<DeviceCollectionReportDevice> getDeviceCollectionReportDeviceLoader();
     
+    public int getMeterCount();
+    
 }

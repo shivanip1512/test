@@ -25,6 +25,7 @@ public enum DataType {
     PHASE_DETECT,
     VALIDATION_PROCESSING,
     DATABASE_MIGRATION,
-    LTC
+    LTC,
+    MSP_DEVICE_GROUP_SYNC,
     ;
 }
