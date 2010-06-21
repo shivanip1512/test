@@ -109,8 +109,7 @@ private:
         Status_TransBufFull         = 0x1000,
         Status_TransBufFrozen       = 0x2000,
         Status_PLCTransDtran        = 0x4000,
-        Status_PLCTransBuf          = 0x8000,
-        Status_Invalid              = 0xffff
+        Status_PLCTransBuf          = 0x8000
     };
 
     struct queue_entry

@@ -961,35 +961,18 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
             reply.info.loadBuffer.accepted  = _queue.pending.size() - pre_pending;
 
             _next_seq += reply.info.loadBuffer.accepted;
-            
-            /*
-            if( !_queue.pending.empty() )
-            {
-                // SSPEC Section 2.3.2.1 - 
-                //      Bit 3 of the first byte of the status bytes is "Transmit Buffer Has Data" bit.
-                //      Since the pending queue is not empty, we need to let porter know there is more data.
-                setStatusBit(Status_TransBufHasData);
-                //_status.status_bytes |= 0x800;
-            }
-            */
+
             return error_t::success;
         }
         case Klondike_FreezeBuffer:
         {
             _bufferFrozen = true;
-
-            // SSPEC Section 2.3.2.1 - 
-            //      Bit 5 of the first byte of the status bytes is "Transmit Buffer Frozen" bit.
-            _status.status_bytes |= 0x2000;
             
             return error_t::success;
         }
         case Klondike_ThawBuffer:
         {
             _bufferFrozen = false;
-
-            // Undo the setting of bit 5 of the first byte of the status bytes to indicate the buffer's thaw.
-            _status.status_bytes &= 0xdfff;
 
             return error_t::success;
         }
@@ -1013,18 +996,6 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
                 bufferCount--;
             }
 
-            /*
-            if( _queue.completed.empty() )
-            {
-                resetStatusBit(Status_RespBufHasData);
-                //_status.status_bytes &= 0xf7ff;
-            }
-            if( _queue.pending.empty() )
-            {
-                resetStatusBit(Status_TransBufHasData);
-                //_status.status_bytes &= 0xfeff;
-            }
-            */
             return error_t::success;
         }
         case Klondike_TimeSync:
@@ -1193,24 +1164,6 @@ void Ccu721::processQueue(PortLogger &logger)
 
         _queue.completed.insert(entry);
     }
-    /*
-    if( !_queue.completed.empty() )
-    {
-        setStatusBit(Status_RespBufHasData);
-        //_status.status_bytes |= 0x100;
-        if( _queue.completed.size() == LoadBufferMaxSlots )
-        {
-            setStatusBit(Status_RespBufFull);
-        }
-    }
-
-    if( _queue.pending.empty() )
-    {
-        resetStatusBit(Status_TransBufHasData);
-        //_status.status_bytes &= 0xf7ff;
-        _queue.last_transmit = now;
-    }
-    */
 }
 
 unsigned Ccu721::queue_request_dlc_time(const queue_entry::request_info &request)
@@ -2326,9 +2279,7 @@ error_t Ccu721::setStatusBit(const StatusDescriptions &statusPos)
 
 error_t Ccu721::resetStatusBit(const StatusDescriptions &statusPos)
 {
-    unsigned short resetValue = Status_Invalid - statusPos;
-
-    _status.status_bytes &= resetValue;
+    _status.status_bytes &= ~statusPos;
 
     return error_t::success;
 }
@@ -2369,7 +2320,7 @@ error_t Ccu721::updateStatusBytes()
     }
 
     // Bit 6 of Byte 1 of the Status Bytes.
-    // "Transmitting Dtran Message. Necessary?
+    // "Transmitting Dtran Message" - Necessary?
 
     // Bit 7 of Byte 1 of the Status Bytes.
     if ( (_status.status_bytes & Status_TransBufHasData) && (_queue.completed.size() < LoadBufferMaxSlots) )
