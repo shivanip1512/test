@@ -189,7 +189,7 @@ public int getTypeOfSwitchSelected() {
 	
 	//normally we cannot show SA protocol groups, this checks the 
 	//specific property.
-    return getGroupList()[getSwitchList().getSelectedIndex()].getDeviceTypeId();
+    return ((PaoType)getSwitchList().getSelectedValue()).getDeviceTypeId();
 }
 
 
@@ -201,7 +201,7 @@ public String getTypeOfSwitchSelectedString()
 {	
 	//normally we cannot show SA protocol groups, this checks the 
 	//specific property.
-    return getGroupList()[getSwitchList().getSelectedIndex()].getDbString();
+    return ((PaoType)getSwitchList().getSelectedValue()).getDbString();
 }
 
 
