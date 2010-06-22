@@ -1294,16 +1294,6 @@
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
     
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
-    <bean id="metersProcessCountMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MetersProcessCountMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="substationChangeCountMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.SubstationChangeCountMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="substationNoChangeCountMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.SubstationNoChangeCountMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="billingCycleChangeCountMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.BillingCycleChangeCountMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="billingCycleNoChangeCountMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.BillingCycleNoChangeCountMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="isRunningMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.IsRunningMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="isNotRunningMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.IsNotRunningMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="isAbortedMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.IsAbortedMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="statusTextMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.StatusTextMultispeakDeviceGroupSyncUpdaterHandler"/>
-    <bean id="statusClassMultispeakDeviceGroupSyncUpdaterHandler" class="com.cannontech.web.updater.multispeak.deviceGroupSync.handler.StatusClassMultispeakDeviceGroupSyncUpdaterHandler"/>
     
     <bean id="deviceReconfigService" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigServiceImpl"/>
     <bean id="deviceReconfigLoadGroupSelectionTypeHandler" class="com.cannontech.web.stars.dr.operator.deviceReconfig.service.impl.DeviceReconfigLoadGroupSelectionTypeHandler"/>

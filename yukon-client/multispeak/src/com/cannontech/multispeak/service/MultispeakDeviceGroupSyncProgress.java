@@ -1,29 +1,30 @@
 package com.cannontech.multispeak.service;
 
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.google.common.collect.Maps;
 
 public class MultispeakDeviceGroupSyncProgress {
 
 	private MultispeakDeviceGroupSyncType type;
-	private MultispeakDeviceGroupSyncStatus status;
+	private MultispeakDeviceGroupSyncProgressStatus status;
 	private AtomicInteger metersProcessed = new AtomicInteger(0);
-	private AtomicInteger substationChangeCount = new AtomicInteger(0);
-	private AtomicInteger substationNoChangeCount = new AtomicInteger(0);
-	private AtomicInteger billingCycleChangeCount = new AtomicInteger(0);
-	private AtomicInteger billingCycleNoChangeCount = new AtomicInteger(0);
+	private Map<MultispeakDeviceGroupSyncTypeProcessorType, AtomicInteger> changeCount = Maps.newHashMap();
+	private Map<MultispeakDeviceGroupSyncTypeProcessorType, AtomicInteger> noChangeCount = Maps.newHashMap();
 	private Exception exception = null;
 	
 	// type
 	public MultispeakDeviceGroupSyncProgress(MultispeakDeviceGroupSyncType type) {
 		this.type = type;
-		this.status = MultispeakDeviceGroupSyncStatus.IN_PROGRESS;
+		this.status = MultispeakDeviceGroupSyncProgressStatus.RUNNING;
 	}
 	
 	public MultispeakDeviceGroupSyncType getType() {
 		return type;
 	}
 	
-	public MultispeakDeviceGroupSyncStatus getStatus() {
+	public MultispeakDeviceGroupSyncProgressStatus getStatus() {
 		return status;
 	}
 	
@@ -35,51 +36,55 @@ public class MultispeakDeviceGroupSyncProgress {
 		return metersProcessed.get();
 	}
 	
-	// substation change counts
-	public void incrementSubstationChangeCount() {
-		substationChangeCount.incrementAndGet();
-	}
-	public void incrementSubstationNoChangeCount() {
-		substationNoChangeCount.incrementAndGet();
-	}
-	public int getSubstationChangeCount() {
-		return substationChangeCount.get();
-	}
-	public int getSubstationNoChangeCount() {
-		return substationNoChangeCount.get();
+	public void incrementChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+		
+		if (!changeCount.containsKey(processorType)) {
+			changeCount.put(processorType, new AtomicInteger(0));
+		}
+		changeCount.get(processorType).incrementAndGet();
 	}
 	
-	// billing cycle change counts
-	public void incrementBillingCycleChangeCount() {
-		billingCycleChangeCount.incrementAndGet();
+	public void incrementNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+		
+		if (!noChangeCount.containsKey(processorType)) {
+			noChangeCount.put(processorType, new AtomicInteger(0));
+		}
+		noChangeCount.get(processorType).incrementAndGet();
 	}
-	public void incrementBillingCycleNoChangeCount() {
-		billingCycleNoChangeCount.incrementAndGet();
+	
+	public int getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+		
+		if (!changeCount.containsKey(processorType)) {
+			return 0;
+		}
+		return changeCount.get(processorType).get();
 	}
-	public int getBillingCycleChangeCount() {
-		return billingCycleChangeCount.get();
-	}
-	public int getBillingCycleNoChangeCount() {
-		return billingCycleNoChangeCount.get();
+	
+	public int getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType processorType) {
+		
+		if (!noChangeCount.containsKey(processorType)) {
+			return 0;
+		}
+		return noChangeCount.get(processorType).get();
 	}
 	
 	// status
 	public boolean isRunning() {
-		return this.status == MultispeakDeviceGroupSyncStatus.IN_PROGRESS;
+		return this.status == MultispeakDeviceGroupSyncProgressStatus.RUNNING;
 	}
 	
 	public void finish() {
-		this.status = MultispeakDeviceGroupSyncStatus.IN_PROGRESS_FINISHED;
+		this.status = MultispeakDeviceGroupSyncProgressStatus.FINISHED;
 	}
 	public boolean isFinished() {
-		return this.status == MultispeakDeviceGroupSyncStatus.IN_PROGRESS_FINISHED;
+		return this.status == MultispeakDeviceGroupSyncProgressStatus.FINISHED;
 	}
 	
 	public void cancel() {
-		this.status = MultispeakDeviceGroupSyncStatus.IN_PROGRESS_CANCELED;
+		this.status = MultispeakDeviceGroupSyncProgressStatus.CANCELED;
 	}
 	public boolean isCanceled() {
-		return this.status == MultispeakDeviceGroupSyncStatus.IN_PROGRESS_CANCELED;
+		return this.status == MultispeakDeviceGroupSyncProgressStatus.CANCELED;
 	}
 	
 	// exception
@@ -87,7 +92,7 @@ public class MultispeakDeviceGroupSyncProgress {
 		
 		if (exception != null) {
 			this.exception = exception;
-			this.status = MultispeakDeviceGroupSyncStatus.IN_PROGRESS_FAILED;
+			this.status = MultispeakDeviceGroupSyncProgressStatus.FAILED;
 		}
 	}
 	public Exception getException() {

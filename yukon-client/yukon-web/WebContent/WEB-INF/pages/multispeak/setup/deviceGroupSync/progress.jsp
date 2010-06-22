@@ -32,25 +32,18 @@
 											hideCount="true"/>
 			</tags:nameValue2>
 			
-			<%-- substation stats --%>
-			<c:if test="${progress.type.supportsSubstationSync}">
-				<tags:nameValue2 nameKey=".infoLabel.substationStats">
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="SUBSTATION_CHANGE_COUNT"/> <i:inline key=".infoValue.metersAdded"/>
-					<br>
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="SUBSTATION_NO_CHANGE_COUNT"/> <i:inline key=".infoValue.noChange"/>
-				</tags:nameValue2>
-			</c:if>
+			<%-- stats --%>
+			<c:set var="processorTypes" value="${progress.type.processorTypes}"/>
+			<c:forEach var="processorType" items="${processorTypes}">
 			
-			<%-- billing cycle stats --%>
-			<c:if test="${progress.type.supportsBillingCycleSync}">
-				<tags:nameValue2 nameKey=".infoLabel.billingCycleStats">
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="BILLING_CYCLE_CHANGE_COUNT"/> <i:inline key=".infoValue.metersAdded"/>
+				<tags:nameValue2 nameKey=".infoLabel.statsLabel.${processorType}">
+					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="${processorType}_CHANGE_COUNT"/> <i:inline key=".infoValue.metersAdded"/>
 					<br>
-					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="BILLING_CYCLE_NO_CHANGE_COUNT"/> <i:inline key=".infoValue.noChange"/>
+					<cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="${processorType}_NO_CHANGE_COUNT"/> <i:inline key=".infoValue.noChange"/>
 				</tags:nameValue2>
-			</c:if>
-		
-		
+			
+			</c:forEach>
+			
 		</tags:nameValueContainer2>
 		
 		<br>

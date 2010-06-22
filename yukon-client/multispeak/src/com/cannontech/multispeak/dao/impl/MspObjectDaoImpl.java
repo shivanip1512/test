@@ -183,7 +183,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     
     // GET ALL MSP SERVICE LOCATIONS
     @Override
-    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws Exception {
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws RemoteException {
     	
     	boolean firstGet = true;
 		String lastReceived = null;
@@ -204,7 +204,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 		callback.finish();
     }
     
-    private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived, MultispeakGetAllServiceLocationsCallback callback) throws Exception {
+    private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived, MultispeakGetAllServiceLocationsCallback callback) throws RemoteException {
     	
     	String lastSent = null;
         
@@ -213,13 +213,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
             CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor);
             if (port != null) {
             	
+            	// get service locations
                 com.cannontech.multispeak.deploy.service.ServiceLocation[] serviceLocations = port.getAllServiceLocations(lastReceived);
                 
-                List<com.cannontech.multispeak.deploy.service.ServiceLocation> mspServiceLocations = new ArrayList<com.cannontech.multispeak.deploy.service.ServiceLocation>(serviceLocations.length);
+                int serviceLocationCount = 0;
                 if(serviceLocations != null) {
-                	mspServiceLocations = Arrays.asList(serviceLocations);
+                	serviceLocationCount = serviceLocations.length;
                 }
                 
+                // objectsRemaining
                 int objectsRemaining = 0;
                 String objectsRemainingStr = getAttributeValue(port, "objectsRemaining");
                 if (!StringUtils.isBlank(objectsRemainingStr)) {
@@ -232,13 +234,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 
                 if (objectsRemaining != 0) { 
         			lastSent = getAttributeValue(port, "lastSent");
-        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocations.length + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
+        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocationCount + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining + ", lastSent = " + lastSent);
         		} else {
-        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocations.length + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
+        			CTILogger.info("getMoreServiceLocations responded, received " + serviceLocationCount + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = " + objectsRemaining);
         		}
                 
-                // pass to callback
-                callback.processServiceLocations(mspServiceLocations);
+                
+                // process service locations
+                if(serviceLocationCount > 0) {
+                	List<com.cannontech.multispeak.deploy.service.ServiceLocation> mspServiceLocations = Arrays.asList(serviceLocations);
+                    callback.processServiceLocations(mspServiceLocations);
+                } 
                 
             } else {
                 CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: " + lastReceived);

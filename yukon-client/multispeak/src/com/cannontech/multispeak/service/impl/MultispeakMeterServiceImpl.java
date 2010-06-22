@@ -1072,6 +1072,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
     
     // UPDATE BILLING CYCLE DEVICE GROUP
+    @Override
     public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice,
             String logActionStr, MultispeakVendor mspVendor) {
 
@@ -1087,6 +1088,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
     
     // UPDATE SUBSTATION DEVICE GROUP
+    @Override
     public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice,
             String logActionStr, MultispeakVendor mspVendor) {
 
@@ -1096,15 +1098,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.SUBSTATION_NAME);
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
             return updatePrefixGroup(substationName, meterNumber, yukonDevice, logActionStr, mspVendor, deviceGroupParent);
-        }
-        return false;
-    }
-    
-    // UPDATE DEVICE GROUP
-    public boolean updateDeviceGroup(String groupName, StoredDeviceGroup groupParent, String meterNumber, YukonDevice yukonDevice, String logActionStr, MultispeakVendor mspVendor) {
-
-        if (!StringUtils.isBlank(groupName)) {
-            return updatePrefixGroup(groupName, meterNumber, yukonDevice, logActionStr, mspVendor, groupParent);
         }
         return false;
     }

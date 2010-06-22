@@ -2,9 +2,10 @@ package com.cannontech.web.input.type;
 
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
-import java.util.Date;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.cannontech.common.util.Iso8601DateUtil;
 
@@ -34,8 +35,9 @@ public class Iso8601DateTimeType extends DefaultValidatedType<DateTime> {
             @Override
             public void setAsText(String text) throws IllegalArgumentException {
             	
-            	Date date = Iso8601DateUtil.parseIso8601Date(text);
-                setValue(new DateTime(date.getTime()));
+            	DateTimeFormatter formatter = ISODateTimeFormat.dateTimeNoMillis();
+            	DateTime dateTime = formatter.parseDateTime(text);
+                setValue(dateTime);
             }
             @Override
             public String getAsText() {

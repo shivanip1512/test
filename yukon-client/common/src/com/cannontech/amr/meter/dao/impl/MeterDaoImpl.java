@@ -323,7 +323,7 @@ public class MeterDaoImpl implements MeterDao, InitializingBean {
     
     public int getMeterCount() {
     	
-    	String sql = "SELECT COUNT(*) " + meterRowMapper.getFromClause();
+    	String sql = "SELECT COUNT(*) FROM DeviceMeterGroup";
     	
     	return jdbcOps.queryForInt(sql);
     }

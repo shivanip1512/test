@@ -6,11 +6,9 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.core.dao.PersistedSystemValueDao;
-import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
@@ -22,10 +20,9 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/setup/deviceGroupSync/*")
 public class MultispeakDeviceGroupSyncController {
 
-	private RolePropertyDao rolePropertyDao;
 	private MeterDao meterDao;
 	private MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService;
-	private PersistedSystemValueDao persistedSystemValueDao;
+	private MultispeakFuncs multispeakFuncs;
 	
 	// HOME
 	@RequestMapping
@@ -40,8 +37,8 @@ public class MultispeakDeviceGroupSyncController {
         MultispeakDeviceGroupSyncType[] deviceGroupSyncTypes = MultispeakDeviceGroupSyncType.values();
         modelMap.addAttribute("deviceGroupSyncTypes", deviceGroupSyncTypes);
         
-        DateTime lastSubstationSyncDateTime = persistedSystemValueDao.getIso8601DateTimeValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
-        DateTime lastBillingCycleSyncDateTime = persistedSystemValueDao.getIso8601DateTimeValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+        DateTime lastSubstationSyncDateTime = multispeakDeviceGroupSyncService.getLastSubstationSyncDateTime();
+        DateTime lastBillingCycleSyncDateTime = multispeakDeviceGroupSyncService.getLastBillingCycleSyncDateTime();
         modelMap.addAttribute("lastSubstationSyncDateTime", lastSubstationSyncDateTime);
         modelMap.addAttribute("lastBillingCycleSyncDateTime", lastBillingCycleSyncDateTime);
         
@@ -52,7 +49,7 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping
     public String start(ModelMap modelMap, FlashScope flashScope, String deviceGroupSyncType, YukonUserContext userContext) {
         
-		int vendorId = rolePropertyDao.getPropertyIntegerValue(YukonRoleProperty.MSP_PRIMARY_CB_VENDORID, null);
+		int vendorId = multispeakFuncs.getPrimaryCIS();
 		if (vendorId <= 0) {
 			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncHome.error.noCisVendorId"));
 			return "redirect:home";
@@ -92,7 +89,7 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping
     public String cancel(ModelMap modelMap, FlashScope flashScope) {
         
-		multispeakDeviceGroupSyncService.cancel();
+		multispeakDeviceGroupSyncService.getProgress().cancel();
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncProgress.cancelOk"));
 		
@@ -103,16 +100,11 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping
     public String done(ModelMap modelMap, FlashScope flashScope) {
         
-		multispeakDeviceGroupSyncService.init();
+		multispeakDeviceGroupSyncService.reset();
 		
         return "redirect:home";
     }
 	
-	@Autowired
-    public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
-		this.rolePropertyDao = rolePropertyDao;
-	}
-    
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
 		this.meterDao = meterDao;
@@ -124,7 +116,7 @@ public class MultispeakDeviceGroupSyncController {
 	}
     
     @Autowired
-    public void setPersistedSystemValueDao(PersistedSystemValueDao persistedSystemValueDao) {
-		this.persistedSystemValueDao = persistedSystemValueDao;
+    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
+		this.multispeakFuncs = multispeakFuncs;
 	}
 }

@@ -89,6 +89,6 @@ public interface PersistedSystemValueDao {
      * @param property any property that can be parsed into a Date from a string in Iso8601 format
      * @return  the value of the property or the default if uninitialized
      */
-    public DateTime getIso8601DateTimeValue(PersistedSystemValueKey property);
+    public DateTime getDateTimeValue(PersistedSystemValueKey property);
 
 }

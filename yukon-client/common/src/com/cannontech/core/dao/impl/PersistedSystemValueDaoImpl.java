@@ -78,7 +78,7 @@ public class PersistedSystemValueDaoImpl implements PersistedSystemValueDao {
     }
     
     @Override
-    public DateTime getIso8601DateTimeValue(PersistedSystemValueKey property) {
+    public DateTime getDateTimeValue(PersistedSystemValueKey property) {
     	DateTime convertedValue = getConvertedValue(property, DateTime.class);
         return convertedValue;
     }

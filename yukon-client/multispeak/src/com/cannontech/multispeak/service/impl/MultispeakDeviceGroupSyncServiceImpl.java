@@ -2,21 +2,21 @@ package com.cannontech.multispeak.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
@@ -29,12 +29,13 @@ import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessor;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Multimaps;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGroupSyncService {
 
@@ -44,18 +45,26 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 	private MultispeakDao multispeakDao;
 	private MeterDao meterDao;
 	private MultispeakMeterService multispeakMeterService;
-	private DeviceGroupEditorDao deviceGroupEditorDao;
 	private PersistedSystemValueDao persistedSystemValueDao;
 	
 	private Logger log = YukonLogManager.getLogger(MultispeakDeviceGroupSyncServiceImpl.class);
 	private static final String SUBSTATION_SYNC_LOG_STRING = "SubstationDeviceGroupSync";
     private static final String BILLING_CYCLE_LOG_STRING = "BillingCycleDeviceGroupSync";
+    private Map<MultispeakDeviceGroupSyncTypeProcessorType, MultispeakDeviceGroupSyncTypeProcessor> processorMap;
 	
-	private MultispeakDeviceGroupSyncProgress progress;
+	private MultispeakDeviceGroupSyncProgress progress = null;
 	
 	// INIT
 	@PostConstruct
 	public void init() {
+		
+		processorMap = Maps.newHashMap();
+		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, new SubstationSyncTypeProcessor());
+		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
+	}
+	
+	// RESET
+	public void reset() {
 		progress = null;
 	}
 	
@@ -68,10 +77,12 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 		return progress != null;
 	}
 	
-	// CANCEL
-	public void cancel() {
-		progress.cancel();
-		log.debug("Multispeak device group sync canceled.");
+	// LAST SYNC DATETIMES
+	public DateTime getLastSubstationSyncDateTime() {
+		return persistedSystemValueDao.getDateTimeValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+	}
+	public DateTime getLastBillingCycleSyncDateTime() {
+		return persistedSystemValueDao.getDateTimeValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
 	}
 	
 	// START
@@ -79,16 +90,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 	public void startSyncForType(final MultispeakDeviceGroupSyncType type, final YukonUserContext userContext) {
 		
 		log.debug("Multispeak device group sync started. type =  " + type);
-		
-		
-		// vendor and parent device groups
 		final MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-		
-		DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.SUBSTATION_NAME);
-        final StoredDeviceGroup substationDeviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
-		
-		DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
-        final StoredDeviceGroup billingCycleDeviceGroupParent = deviceGroupEditorDao.getStoredGroup(billingCycledeviceGroup);
 
     	// MultispeakGetAllServiceLocationsCallback
     	// processes the list of msp meters as they are retrieved from the cis vendor
@@ -98,11 +100,12 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
     		@Override
     		public void finish() {
     			
-    			if (type.isSupportsSubstationSync()) {
-    				persistedSystemValueDao.setValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED, new DateTime(userContext.getJodaTimeZone()));
-    			}
-    			if (type.isSupportsBillingCycleSync()) {
-    				persistedSystemValueDao.setValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED, new DateTime(userContext.getJodaTimeZone()));
+    			// set last completed persisted system value
+    			Set<MultispeakDeviceGroupSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
+    			for (MultispeakDeviceGroupSyncTypeProcessorType processorType : processorsTypes) {
+    				
+    				MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
+    				persistedSystemValueDao.setValue(processor.getPersistedSystemValueKey(), new DateTime(new Instant()));
     			}
     			
     			progress.finish();
@@ -120,6 +123,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
     			
     			// kill before gathering meters if canceled
     			if (progress.isCanceled()) {
+    				log.debug("Handling of remaining msp Service Locations skipped due to cancellation.");
     				return;
     			}
     			
@@ -130,66 +134,60 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
     				
     				List<com.cannontech.multispeak.deploy.service.Meter> mspMeters = mspObjectDao.getMspMetersByServiceLocation(mspServiceLocation, mspVendor);
     				
-    				// msp meter number map
+    				// msp meter map
         			log.debug("Handling msp meter list of size " + mspMeters.size() + " for Service Location: " + mspServiceLocation.getObjectID());
-        			ImmutableListMultimap<String,com.cannontech.multispeak.deploy.service.Meter> mspMeterMap = Multimaps.index(mspMeters, new Function<com.cannontech.multispeak.deploy.service.Meter, String>() {
+        			ImmutableMap<String, com.cannontech.multispeak.deploy.service.Meter> mspMeterMap = Maps.uniqueIndex(mspMeters,  new Function<com.cannontech.multispeak.deploy.service.Meter, String>() {
         	    		@Override
         	    		public String apply(com.cannontech.multispeak.deploy.service.Meter device) {
         	    			return device.getMeterNo();
         	    		}
         	    	});
         			
-        			// yukon meters
+        			// yukon meter map
         			List<String> meterNumberList = new ArrayList<String>(mspMeterMap.keySet());
-        	    	List<Meter> meters = meterDao.getMetersForMeterNumbers(meterNumberList);
-        	    	log.debug("Found " + meters.size() + " yukon meters for Service Location: " + mspServiceLocation.getObjectID());
-    				
-        	    	// loop per yukon meter
-    				for (Meter meter : meters) {
-        	    		
-        	    		String meterNumber = meter.getMeterNumber();
-        	    		ImmutableList<com.cannontech.multispeak.deploy.service.Meter> mspMeterList = mspMeterMap.get(meterNumber);
-
-        	    		for (com.cannontech.multispeak.deploy.service.Meter mspMeter : mspMeterList) {
-        	    			
-        	    			// kill before processing another meter if canceled
-        	    			if (progress.isCanceled()) {
-        	    				return;
-        	    			}
-            	    		
-        	    			// SUBSTATION SYNC
-        	    			if (type.isSupportsSubstationSync()) {
-        	    				
-        	    				boolean added = false;
-        	    				if (mspMeter.getUtilityInfo() != null) {
-        	    					
-        	    					String substationName = mspMeter.getUtilityInfo().getSubstationName();
-        	    					added = multispeakMeterService.updateDeviceGroup(substationName, substationDeviceGroupParent, meterNumber, meter, SUBSTATION_SYNC_LOG_STRING, mspVendor);
-        	    				}
-        	    				
-        	    				if (added) {
-        	    					progress.incrementSubstationChangeCount();
-        	    				} else {
-        	    					progress.incrementSubstationNoChangeCount();
-        	    				}
-        	    			}
-            	    		
-        	    			// BILLING CYCLE SYNC
-        	    			if (type.isSupportsBillingCycleSync()) {
-        	    				
-        	    				String billingCycleName = mspServiceLocation.getBillingCycle();
-        	    				
-        	    				boolean added = multispeakMeterService.updateDeviceGroup(billingCycleName, billingCycleDeviceGroupParent, meterNumber, meter, BILLING_CYCLE_LOG_STRING, mspVendor);
-        	    				if (added) {
-        	    					progress.incrementBillingCycleChangeCount();
-        	    				} else {
-        	    					progress.incrementBillingCycleNoChangeCount();
-        	    				}
-        	    			}
-            	    		
-        	    			// increment meters processed
-        	    			progress.incrementMetersProcessedCount();
+        	    	List<Meter> yukonMeters = meterDao.getMetersForMeterNumbers(meterNumberList);
+        	    	ImmutableMap<String, Meter> yukonMeterMap = Maps.uniqueIndex(yukonMeters,  new Function<Meter, String>() {
+        	    		@Override
+        	    		public String apply(Meter meter) {
+        	    			return meter.getMeterNumber();
         	    		}
+        	    	});
+        	    	
+        	    	log.debug("Found " + yukonMeters.size() + " yukon meters for Service Location: " + mspServiceLocation.getObjectID());
+    				
+        	    	// loop per msp meter
+    				for (com.cannontech.multispeak.deploy.service.Meter mspMeter : mspMeterMap.values()) {
+    					
+    					// kill before processing another meter if canceled
+    	    			if (progress.isCanceled()) {
+    	    				return;
+    	    			}
+        	    		
+    	    			// lookup yukon meter
+    	    			String meterNumber = mspMeter.getMeterNo();
+    	    			if (!yukonMeterMap.containsKey(meterNumber)) {
+    	    				
+    	    				log.debug("No Yukon meter found for meter number " + meterNumber + " from Service Location " + mspServiceLocation.getObjectID());
+    	    				continue;
+    	    			}
+    	    			Meter yukonMeter = yukonMeterMap.get(meterNumber);
+    	    			
+    	    			// process
+    	    			Set<MultispeakDeviceGroupSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
+    	    			for (MultispeakDeviceGroupSyncTypeProcessorType processorType : processorsTypes) {
+    	    				
+    	    				MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
+    	    				boolean added = processor.processMeterSync(mspVendor, mspServiceLocation, mspMeter, yukonMeter);
+    	    				
+    	    				if (added) {
+    	    					progress.incrementChangeCount(processorType);
+    	    				} else {
+    	    					progress.incrementNoChangeCount(processorType);
+    	    				}
+    	    			}
+        	    		
+    	    			// increment meters processed
+    	    			progress.incrementMetersProcessedCount();
     				}
     			}
     		}
@@ -211,6 +209,47 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 		
 		scheduledExecutor.execute(runner);
 	}
+	
+	// PROCESSORS
+	private class SubstationSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {
+		
+		@Override
+		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, com.cannontech.multispeak.deploy.service.Meter mspMeter, Meter yukonMeter) {
+
+			boolean added = false;
+			if (mspMeter.getUtilityInfo() != null) {
+				String substationName = mspMeter.getUtilityInfo().getSubstationName();
+				if (StringUtils.isNotBlank(substationName)) {
+					added = multispeakMeterService.updateSubstationGroup(substationName, yukonMeter.getMeterNumber(), yukonMeter, SUBSTATION_SYNC_LOG_STRING, mspVendor);
+				}
+			}
+			return added;
+		}
+		
+		@Override
+		public PersistedSystemValueKey getPersistedSystemValueKey() {
+			return PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED;
+		}
+	}
+	
+	private class BillingCycleSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {
+		
+		@Override
+		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, com.cannontech.multispeak.deploy.service.Meter mspMeter, Meter yukonMeter) {
+			
+			boolean added = false;
+			String billingCycleName = mspServiceLocation.getBillingCycle();
+			if (StringUtils.isNotBlank(billingCycleName)) {
+				added = multispeakMeterService.updateBillingCyle(billingCycleName, yukonMeter.getMeterNumber(), yukonMeter, BILLING_CYCLE_LOG_STRING, mspVendor);
+			}
+			return added;
+		}
+		
+		@Override
+		public PersistedSystemValueKey getPersistedSystemValueKey() {
+			return PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED;
+		}
+	}	
 
 	
 	@Resource(name="globalScheduledExecutor")
@@ -241,11 +280,6 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 	@Autowired
 	public void setMultispeakMeterService(MultispeakMeterService multispeakMeterService) {
 		this.multispeakMeterService = multispeakMeterService;
-	}
-	
-	@Autowired
-	public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-		this.deviceGroupEditorDao = deviceGroupEditorDao;
 	}
 	
 	@Autowired

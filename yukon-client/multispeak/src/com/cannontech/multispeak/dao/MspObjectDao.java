@@ -87,7 +87,7 @@ public interface MspObjectDao {
      * Retrieves msp ServiceLocation objects from the mspVendor.
      * Lists of msp ServiceLocation objects are given to the callback as they are retrieved in chunks from the vendor.
      */
-    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws Exception;
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws RemoteException;
     
     /**
      * Returns a list of the MeterNumber(s) for the mspServiceLocation.

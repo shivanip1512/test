@@ -1,27 +1,26 @@
 package com.cannontech.multispeak.service;
 
+import java.util.Set;
+
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.google.common.collect.Sets;
 
 public enum MultispeakDeviceGroupSyncType implements DisplayableEnum {
 
-	SUBSTATION(true, false),
-	BILLING_CYCLE(false, true),
-	SUBSTATION_AND_BILLING_CYCLE(true, true),
+	SUBSTATION(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)),
+	BILLING_CYCLE(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)),
+	SUBSTATION_AND_BILLING_CYCLE(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, 
+			                                           MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)),
 	;
 	
-	private boolean supportsSubstationSync;
-	private boolean supportsBillingCycleSync;
+	private Set<MultispeakDeviceGroupSyncTypeProcessorType> processorTypes;
 	
-	MultispeakDeviceGroupSyncType(boolean supportsSubstationSync, boolean supportsBillingCycleSync) {
-		this.supportsSubstationSync = supportsSubstationSync;
-		this.supportsBillingCycleSync = supportsBillingCycleSync;
+	MultispeakDeviceGroupSyncType(Set<MultispeakDeviceGroupSyncTypeProcessorType> processorTypes) {
+		this.processorTypes = processorTypes;
 	}
 	
-	public boolean isSupportsSubstationSync() {
-		return supportsSubstationSync;
-	}
-	public boolean isSupportsBillingCycleSync() {
-		return supportsBillingCycleSync;
+	public Set<MultispeakDeviceGroupSyncTypeProcessorType> getProcessorTypes() {
+		return this.processorTypes;
 	}
 	
 	@Override
