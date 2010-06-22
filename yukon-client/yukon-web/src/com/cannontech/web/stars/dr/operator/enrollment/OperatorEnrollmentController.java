@@ -6,8 +6,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -129,17 +127,6 @@ public class OperatorEnrollmentController {
                 accountInfoFragment.getAccountId(), assignedProgramId);
         ProgramEnrollment programEnrollment = new ProgramEnrollment(displayableEnrollmentProgram);
         model.addAttribute("programEnrollment", programEnrollment);
-
-        boolean autoConfiguration = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_AUTOMATIC_CONFIGURATION, userContext.getYukonUser());
-        if (isAdd && autoConfiguration
-                && programEnrollment.getInventoryEnrollments().size() == 1) {
-            programEnrollment.getInventoryEnrollments().get(0).setEnrolled(true);
-            JSONObject actionCommand = new JSONObject();
-            actionCommand.append("action", "close");
-            response.addHeader("X-JSON", actionCommand.toString());
-            return save(model, assignedProgramId, isAdd, programEnrollment,
-                        userContext, accountInfoFragment, flashScope);
-        }
 
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
 
