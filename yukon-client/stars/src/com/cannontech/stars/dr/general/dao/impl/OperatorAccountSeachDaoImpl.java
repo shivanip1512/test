@@ -74,7 +74,7 @@ public class OperatorAccountSeachDaoImpl implements OperatorAccountSearchDao {
 		sql.append("JOIN ECToAccountMapping ectam ON (ca.AccountId = ectam.AccountId)");
 		sql.append("JOIN Customer cust ON (ca.CustomerId = cust.CustomerId)");
 		sql.append("JOIN ContactNotification cn ON (cust.PrimaryContactId = cn.ContactId)");
-		sql.append("WHERE cn.Notification LIKE '%" + phoneNumber + "%'");
+		sql.append("WHERE cn.Notification").contains(phoneNumber);
 		sql.append("AND cn.NotificationCategoryId").in(phoneNumberNotificationCategories);
 		sql.append("AND ectam.EnergyCompanyId").in(energyCompanyIds);
 		sql.append("ORDER BY ca.AccountNumber");
