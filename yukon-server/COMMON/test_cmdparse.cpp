@@ -55,4 +55,44 @@ BOOST_AUTO_TEST_CASE(testDeviceGroupQuotes)
     BOOST_CHECK_EQUAL(midParser.getsValue("group"), mid_outcome);
 }
 
+BOOST_AUTO_TEST_CASE(testShedTimes)
+{
+    std::string inStrings[] = {
+      "control emetcon shed 1hr relay 1,2",
+      "control shed 5m relay 3",
+      "control shed 5m relay 2",
+      "control shed 5m relay 1",
+      "control shed 60m",
+      "control shed 30m",
+      "control shed 15m",
+      "control shed 7.m",
+      "control shed 5m",
+      "control sa305 shed 30m update",
+      "control sa205 shed 30m update",
+    };
+
+    double shedSecondTimes[] = {
+        0,
+        300,
+        300,
+        300,
+        3600,
+        1800,
+        900,
+        420,
+        300,
+        1800,
+        1800,
+    };
+
+    const size_t test_size = sizeof(inStrings) / sizeof(inStrings[0]);
+
+    for( int i = 0; i < test_size; i++ )
+    {
+        CtiCommandParser parser(inStrings[i]);
+
+        BOOST_CHECK_EQUAL(parser.getdValue("shed"), shedSecondTimes[i]);
+    }
+}
+
 
