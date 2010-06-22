@@ -210,5 +210,7 @@ std::string inputString[] = {
 "putconfig emetcon autoreconnect enable",
 "putconfig emetcon autoreconnect disable",
 "getvalue kwh update timeout 1800 select group '/Meters/Collection/'Test Group''",
+"control sa305 shed 30m update",
+"control sa205 shed 30m update",
 };
 

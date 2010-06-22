@@ -1063,7 +1063,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                     _snprintf(tbuf2, sizeof(tbuf2),"SHED %d", (INT)dValue);
                 }
 
-                if(!(temp2 = CmdStr.match((const boost::regex) CtiString(str_floatnum + CtiString(" *[hs]")))).empty())
+                if(!(temp2 = token.match((const boost::regex) CtiString(str_floatnum + CtiString(" *[hs]")))).empty())
                 {
                     /*
                      *  Minutes is the assumed entry format, but we return the number in seconds... so
