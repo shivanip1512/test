@@ -6,8 +6,8 @@ import com.cannontech.web.input.type.InputType;
 public enum PersistedSystemValueKey {
 	
     VALIDATION_ENGINE_LAST_CHANGE_ID(-1, InputTypeFactory.longType()),
-    MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, InputTypeFactory.iso8601DateTimeType()),
-    MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, InputTypeFactory.iso8601DateTimeType()),
+    MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, InputTypeFactory.instantType()),
+    MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, InputTypeFactory.instantType()),
     ;
     
     private final Object defaultValue;

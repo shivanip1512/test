@@ -1,6 +1,8 @@
 package com.cannontech.web.multispeak.deviceGroupSync;
 
-import org.joda.time.DateTime;
+import java.util.Map;
+
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -37,10 +40,8 @@ public class MultispeakDeviceGroupSyncController {
         MultispeakDeviceGroupSyncType[] deviceGroupSyncTypes = MultispeakDeviceGroupSyncType.values();
         modelMap.addAttribute("deviceGroupSyncTypes", deviceGroupSyncTypes);
         
-        DateTime lastSubstationSyncDateTime = multispeakDeviceGroupSyncService.getLastSubstationSyncDateTime();
-        DateTime lastBillingCycleSyncDateTime = multispeakDeviceGroupSyncService.getLastBillingCycleSyncDateTime();
-        modelMap.addAttribute("lastSubstationSyncDateTime", lastSubstationSyncDateTime);
-        modelMap.addAttribute("lastBillingCycleSyncDateTime", lastBillingCycleSyncDateTime);
+        Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
+        modelMap.addAttribute("lastSyncInstants", lastSyncInstants);
         
         return "setup/deviceGroupSync/home.jsp";
     }

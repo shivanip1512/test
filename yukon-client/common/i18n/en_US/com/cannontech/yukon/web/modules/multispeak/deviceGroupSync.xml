@@ -7,15 +7,13 @@
     <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncType.BILLING_CYCLE">Billing Cycle</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncType.SUBSTATION_AND_BILLING_CYCLE">Substation and Billing Cycle</entry>
     
+	<entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType.SUBSTATION">Substation</entry>
+    <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE">Billing Cycle</entry>
+    
     <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING">In Progress...</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FAILED">Error</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.CANCELED">Canceled</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FINISHED">Complete</entry>
-    
-    <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.RUNNING.statusClass"></entry>
-    <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FAILED.statusClass">errorMessage</entry>
-    <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.CANCELED.statusClass">errorMessage</entry>
-    <entry key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.FINISHED.statusClass">okGreen</entry>
     
 	<!-- home.jsp -->
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.pageName">Device Group Sync</entry>

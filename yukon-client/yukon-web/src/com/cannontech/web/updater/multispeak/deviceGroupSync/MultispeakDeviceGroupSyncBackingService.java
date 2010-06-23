@@ -3,18 +3,22 @@ package com.cannontech.web.updater.multispeak.deviceGroupSync;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MultispeakDeviceGroupSyncUpdaterHandler;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableMap.Builder;
 
 public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingService, InitializingBean {
     
@@ -22,6 +26,19 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     private ObjectFormattingService objectFormattingService;
     private MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService;
     private MeterDao meterDao;
+    
+    private ImmutableMap<MultispeakDeviceGroupSyncProgressStatus, String> statusStyleClassNameMap;
+    
+    @PostConstruct
+    public void init() {
+    	
+    	Builder<MultispeakDeviceGroupSyncProgressStatus, String> builder = ImmutableMap.builder();
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.RUNNING, "");
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FAILED, "errorMessage");
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.CANCELED, "errorMessage");
+    	builder.put(MultispeakDeviceGroupSyncProgressStatus.FINISHED, "okGreen");
+    	statusStyleClassNameMap = builder.build();
+    }
     
     @Override
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {
@@ -138,7 +155,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.getStatus();
+        		return progress.getStatus(); // status is a DisplayableEnum
         	}
         });
         
@@ -146,7 +163,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_CLASS, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return new YukonMessageSourceResolvable(progress.getStatus().getFormatKey() + ".statusClass");
+        		return statusStyleClassNameMap.get(progress.getStatus());
         	}
         });
     }

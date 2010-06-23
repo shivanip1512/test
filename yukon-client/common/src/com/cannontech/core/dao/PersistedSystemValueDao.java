@@ -1,6 +1,6 @@
 package com.cannontech.core.dao;
 
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 
 
 public interface PersistedSystemValueDao {
@@ -81,14 +81,10 @@ public interface PersistedSystemValueDao {
     public double getDoubleValue(PersistedSystemValueKey property);
     
     /**
-     * Returns the user's value of the specified property as a Date.
+     * Returns an Instant specified by the property key.
      * 
-     * This method may only be called with properties that have a type return type 
-     * that can be parsed into a Date from a string in Iso8601 format, see Iso8601DateUtil
-     * 
-     * @param property any property that can be parsed into a Date from a string in Iso8601 format
-     * @return  the value of the property or the default if uninitialized
+     * This method should only be called with keys based on the InstantType.
      */
-    public DateTime getDateTimeValue(PersistedSystemValueKey property);
+    public Instant getInstantValue(PersistedSystemValueKey property);
 
 }

@@ -4,15 +4,16 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.cannontech.common.util.Iso8601DateUtil;
-
 /**
- * Implementation of input type which represents a date input type.
+ * Implementation of input type which represents an Instant type.
  */
-public class Iso8601DateTimeType extends DefaultValidatedType<DateTime> {
+public class InstantType extends DefaultValidatedType<Instant> {
 
     private String renderer = "stringType.jsp";
 
@@ -24,8 +25,8 @@ public class Iso8601DateTimeType extends DefaultValidatedType<DateTime> {
         this.renderer = renderer;
     }
 
-    public Class<DateTime> getTypeClass() {
-        return DateTime.class;
+    public Class<Instant> getTypeClass() {
+        return Instant.class;
     }
 
     public PropertyEditor getPropertyEditor() {
@@ -35,15 +36,18 @@ public class Iso8601DateTimeType extends DefaultValidatedType<DateTime> {
             @Override
             public void setAsText(String text) throws IllegalArgumentException {
             	
-            	DateTimeFormatter formatter = ISODateTimeFormat.dateTimeNoMillis();
-            	DateTime dateTime = formatter.parseDateTime(text);
-                setValue(dateTime);
+            	DateTimeFormatter formatter = ISODateTimeFormat.dateTime();
+                DateTime dateTime = formatter.parseDateTime(text);
+                Instant instant = dateTime.toInstant();
+                setValue(instant);
             }
             @Override
             public String getAsText() {
-                
-            	DateTime dateTime = (DateTime)getValue();
-            	return Iso8601DateUtil.formatIso8601Date(dateTime.toDate());
+            	
+            	DateTimeFormatter formatter = ISODateTimeFormat.dateTime().withZone(DateTimeZone.UTC);
+            	ReadableInstant instant = (ReadableInstant)getValue();
+            	String instantStr = formatter.print(instant);
+            	return instantStr;
             }
         };
         

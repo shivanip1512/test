@@ -30,37 +30,25 @@
 			    	<%-- last run --%>
 			    	<br>
 			    	<table class="compactResultsTable">
-			    		<tr>
-			    			<th colspan="2"><i:inline key=".lastSyncCompleted"/></th>
-			    		</tr>
-			    		<tr>
-			    			<td><cti:msg key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncType.SUBSTATION"/></td>
-			    			<td>
-			    				<c:choose>
-			    					<c:when test="${empty lastSubstationSyncDateTime}">
-			    						<cti:msg2 key="defaults.na"/>
-			    					</c:when>
-				    				<c:otherwise>
-					    				<cti:formatDate value="${lastSubstationSyncDateTime}" type="FULL"/>
-				    				</c:otherwise>
-				    			</c:choose>
-			    			</td>
-			    		</tr>
-			    		<tr>
-			    			<td><cti:msg key="yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncType.BILLING_CYCLE"/></td>
-			    			<td>
-			    				<c:choose>
-			    					<c:when test="${empty lastBillingCycleSyncDateTime}">
-			    						<cti:msg2 key="defaults.na"/>
-			    					</c:when>
-				    				<c:otherwise>
-					    				<cti:formatDate value="${lastBillingCycleSyncDateTime}" type="FULL"/>
-				    				</c:otherwise>
-				    			</c:choose>
-			    			</td>
-			    		</tr>
+			    	
+			    		<tr><th colspan="2"><i:inline key=".lastSyncCompleted"/></th></tr>
+			    	
+			    		<c:forEach var="entry" items="${lastSyncInstants}">
+			    			<tr>
+				    			<td><cti:msg key="${entry.key}"/></td>
+				    			<td>
+				    				<c:choose>
+				    					<c:when test="${empty entry.value}">
+				    						<cti:msg2 key="defaults.na"/>
+				    					</c:when>
+					    				<c:otherwise>
+						    				<cti:formatDate value="${entry.value}" type="FULL"/>
+					    				</c:otherwise>
+					    			</c:choose>
+				    			</td>
+				    		</tr>
+			    		</c:forEach>
 			    	</table>
-				    	
 				</td>
 				
 				<%-- instructions --%>

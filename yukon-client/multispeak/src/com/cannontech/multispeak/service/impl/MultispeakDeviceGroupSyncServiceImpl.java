@@ -10,7 +10,6 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -58,7 +57,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 	@PostConstruct
 	public void init() {
 		
-		processorMap = Maps.newHashMap();
+		processorMap = Maps.newLinkedHashMap();
 		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, new SubstationSyncTypeProcessor());
 		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
 	}
@@ -77,12 +76,16 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 		return progress != null;
 	}
 	
-	// LAST SYNC DATETIMES
-	public DateTime getLastSubstationSyncDateTime() {
-		return persistedSystemValueDao.getDateTimeValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
-	}
-	public DateTime getLastBillingCycleSyncDateTime() {
-		return persistedSystemValueDao.getDateTimeValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+	// LAST SYNC INSTANTS
+	public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants() {
+		
+		Instant lastSubstationInstant = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+		Instant lastBillingCycleInstant = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+		
+		Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstantsMap = Maps.newLinkedHashMap();
+		lastSyncInstantsMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, lastSubstationInstant);
+		lastSyncInstantsMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, lastBillingCycleInstant);
+		return lastSyncInstantsMap;
 	}
 	
 	// START
@@ -105,7 +108,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
     			for (MultispeakDeviceGroupSyncTypeProcessorType processorType : processorsTypes) {
     				
     				MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
-    				persistedSystemValueDao.setValue(processor.getPersistedSystemValueKey(), new DateTime(new Instant()));
+    				persistedSystemValueDao.setValue(processor.getPersistedSystemValueKey(), new Instant());
     			}
     			
     			progress.finish();
@@ -202,6 +205,7 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 				try {
 					mspObjectDao.getAllMspServiceLocations(mspVendor, callback);
 				} catch (Exception e) {
+					log.error("Error occured during MSP device group sync.", e);
 					progress.setException(e);
 				}
 			}

@@ -1,9 +1,16 @@
 package com.cannontech.multispeak.service;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum MultispeakDeviceGroupSyncTypeProcessorType {
+
+public enum MultispeakDeviceGroupSyncTypeProcessorType implements DisplayableEnum {
 
 	SUBSTATION,
 	BILLING_CYCLE,
 	;
+	
+	@Override
+	public String getFormatKey() {
+		return "yukon.web.modules.multispeak.deviceGroupSync.multispeakDeviceGroupSyncTypeProcessorType." + this;
+	}
 }

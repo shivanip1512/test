@@ -1,6 +1,8 @@
 package com.cannontech.multispeak.service;
 
-import org.joda.time.DateTime;
+import java.util.Map;
+
+import org.joda.time.Instant;
 
 import com.cannontech.user.YukonUserContext;
 
@@ -13,14 +15,7 @@ public interface MultispeakDeviceGroupSyncService {
 	public MultispeakDeviceGroupSyncProgress getProgress();
 	
 	/**
-	 * Returns date/time for the last completed substation sync.
-	 * null if a substation sync has never been run to completion.
+	 * Get a map of Instants of last completed sync for each processor type.
 	 */
-	public DateTime getLastSubstationSyncDateTime();
-	
-	/**
-	 * Returns date/time for the last completed billing cycle sync.
-	 * null if a billing cycle sync has never been run to completion.
-	 */
-	public DateTime getLastBillingCycleSyncDateTime();
+	public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants();
 }

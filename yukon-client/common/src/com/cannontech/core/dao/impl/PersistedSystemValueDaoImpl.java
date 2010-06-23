@@ -4,7 +4,7 @@ import java.beans.PropertyEditor;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -78,8 +78,8 @@ public class PersistedSystemValueDaoImpl implements PersistedSystemValueDao {
     }
     
     @Override
-    public DateTime getDateTimeValue(PersistedSystemValueKey property) {
-    	DateTime convertedValue = getConvertedValue(property, DateTime.class);
+    public Instant getInstantValue(PersistedSystemValueKey property) {
+    	Instant convertedValue = getConvertedValue(property, Instant.class);
         return convertedValue;
     }
     
