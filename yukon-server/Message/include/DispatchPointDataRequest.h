@@ -20,9 +20,11 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
         DispatchPointDataRequest();
         ~DispatchPointDataRequest();
 
-        virtual bool watchPoints(const std::set<long>& points, const std::set<long>& requestPoints);
+        virtual bool watchPoints(const std::set<PointRequest>& points);
         virtual bool isComplete();
+        virtual float ratioComplete(PointRequestType pointRequestType);
         virtual PointValueMap getPointValues();
+        virtual PointValueMap getPointValues(PointRequestType pointRequestType);
 
         //MessageListener
         virtual void processNewMessage(CtiMessage* message);
@@ -32,6 +34,8 @@ class IM_EX_MSG DispatchPointDataRequest : public PointDataRequest, public Messa
 
     private:
         DispatchConnectionPtr _connection;
+
+        PointRequestTypeToPointIdMap _requestTypeToPointId;
 
         std::set<long> _points;
         PointValueMap _values;

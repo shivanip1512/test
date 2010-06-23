@@ -18,8 +18,8 @@ class IVVCAlgorithm
 
     protected:
 
-        virtual bool checkForStaleData(const PointValueMap& pointValues, CtiTime timeNow);
-        virtual void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<long>& pointIds, std::set<long>& requestPoints);
+        virtual bool checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow);
+        virtual void determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchConnectionPtr conn, bool sendScan, std::set<PointRequest>& pointRequests);
 
         double calculateTargetPFVars(const double targetPF, const double wattValue);
         double calculateVf(const PointValueMap &voltages);

@@ -7,9 +7,6 @@
 
 
 #include <string>
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
 #include <iostream>
 #include <time.h>
 #include <sstream>    // for istringstream
@@ -31,8 +28,6 @@
 
 #include "StrategyManager.h"
 #include "IVVCStrategy.h"
-
-#include "DispatchPointDataRequest.h"
 
 using boost::unit_test_framework::test_suite;
 using namespace std;
@@ -181,90 +176,6 @@ void initialize_capbank(Test_CtiCCSubstationBusStore* store, CtiCCCapBank* cap, 
 
     cap->setControlPointId(1);
 }
-
-
-BOOST_AUTO_TEST_CASE(test_point_data_request_factory)
-{
-    PointDataRequestFactory testFactory;
-    PointDataRequestPtr     pd_request = testFactory.createDispatchPointDataRequest( DispatchConnectionPtr( new mock_DispatchConnection ) );
-
-    // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
-
-    DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
-
-    std::set<long>  emptyWatchlist, watchlist;
-
-    // Add 5 point IDs to the watchlist
-
-    for (long pointID = 1100; pointID < 1105; ++pointID)
-    {
-        watchlist.insert(pointID);
-    }
-
-    BOOST_CHECK_EQUAL( true , request->watchPoints( watchlist,emptyWatchlist ) );
-
-    // We can send it more watchlists but it will not modify/replace the first valid one we load
-
-    BOOST_CHECK_EQUAL( false , request->watchPoints( emptyWatchlist,emptyWatchlist ) );
-
-    // Add 5 more point IDs to the watchlist
-
-    for (long pointID = 1110; pointID < 1115; ++pointID)
-    {
-        watchlist.insert(pointID);
-    }
-
-    BOOST_CHECK_EQUAL( false , request->watchPoints( watchlist,emptyWatchlist ) );
-
-    // Receive a bunch of point data - complete should be false until we receive point data for all of the watched point IDs.
-    //  If we get multiple data points for the same ID - we only keep the last one received.
-
-    BOOST_CHECK_EQUAL( false , request->isComplete() );
-
-    request->processNewMessage( new CtiPointDataMsg(  950, 121.0, NormalQuality, AnalogPointType ) );
-    BOOST_CHECK_EQUAL( false , request->isComplete() );
-
-    request->processNewMessage( new CtiPointDataMsg( 1101, 121.4, NormalQuality, AnalogPointType ) );
-    BOOST_CHECK_EQUAL( false , request->isComplete() );
-
-    request->processNewMessage( new CtiPointDataMsg( 1104, 122.2, NormalQuality, AnalogPointType ) );
-    BOOST_CHECK_EQUAL( false , request->isComplete() );
-
-    request->processNewMessage( new CtiPointDataMsg( 1101, 121.3, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1103, 120.2, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1102, 119.7, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1112, 118.9, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1104, 120.9, NormalQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1102, 116.7, UnknownQuality, AnalogPointType ) );
-    request->processNewMessage( new CtiPointDataMsg( 1104, 122.0, NormalQuality, AnalogPointType ) );
-    BOOST_CHECK_EQUAL( false , request->isComplete() );
-
-    request->processNewMessage( new CtiPointDataMsg( 1100, 120.5, NormalQuality, AnalogPointType ) );
-    BOOST_CHECK_EQUAL( true , request->isComplete() );
-
-    PointValueMap   receivedPoints = request->getPointValues();
-
-    // Make sure the map is full
-
-    BOOST_CHECK_EQUAL( 5, receivedPoints.size() );
-
-    // Test the values received against what was sent.  Note that ID = 1104 got
-    //  multiple updates, make sure the last one received is the one we kept.
-    //  ID = 1102 got a point with unknown quality - make sure this one is ignored.
-
-    BOOST_CHECK_CLOSE( 120.5 , receivedPoints[1100].value , 0.0001 );
-    BOOST_CHECK_CLOSE( 121.3 , receivedPoints[1101].value , 0.0001 );
-    BOOST_CHECK_CLOSE( 119.7 , receivedPoints[1102].value , 0.0001 );
-    BOOST_CHECK_CLOSE( 120.2 , receivedPoints[1103].value , 0.0001 );
-    BOOST_CHECK_CLOSE( 122.0 , receivedPoints[1104].value , 0.0001 );
-
-    // We also want to make sure we didn't save the points we got that were not
-    //  on our watchlist.
-
-    BOOST_CHECK( receivedPoints.end() == receivedPoints.find(950) );
-    BOOST_CHECK( receivedPoints.end() == receivedPoints.find(1112) );
-}
-
 
 BOOST_AUTO_TEST_CASE(test_cap_control_ivvc_algorithm_voltage_flatness_calculation)
 {

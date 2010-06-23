@@ -46,7 +46,7 @@ ULONG   _IVVC_HEARTBEAT_CONFIG;
 ULONG   _IVVC_MIN_TAP_PERIOD_MINUTES;
 ULONG   _IVVC_COMMS_RETRY_COUNT;
 double  _IVVC_NONWINDOW_MULTIPLIER;
-ULONG   _IVVC_BANKS_OFFLINE_HEARTBEAT_TIMER;
+double  _IVVC_BANKS_REPORTING_RATIO;
 
 
 void refreshGlobalCParms()
@@ -627,11 +627,11 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER: " << _IVVC_NONWINDOW_MULTIPLIER << endl;
     }
 
-    _IVVC_BANKS_OFFLINE_HEARTBEAT_TIMER = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_BANKS_OFFLINE_HEARTBEAT_TIMER", 0);    // seconds
+    _IVVC_BANKS_REPORTING_RATIO = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO", 100);    // seconds
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_BANKS_OFFLINE_HEARTBEAT_TIMER: " << _IVVC_BANKS_OFFLINE_HEARTBEAT_TIMER << endl;
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO: " << _IVVC_BANKS_REPORTING_RATIO << endl;
     }
 
 }

@@ -27,6 +27,7 @@ INCLPATHS+= \
 
 TESTOBJS=\
 test_pointDataHandler.obj \
+test_PointDataRequest.obj \
 test_message.obj \
 
 LIBS=\

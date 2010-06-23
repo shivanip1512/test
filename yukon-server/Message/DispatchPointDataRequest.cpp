@@ -4,6 +4,7 @@
 #include "msg_signal.h"
 #include "pointdefs.h"
 #include "logger.h"
+#include "PointDataRequest.h"
 
 DispatchPointDataRequest::DispatchPointDataRequest() :
     _complete(false),
@@ -74,7 +75,7 @@ void DispatchPointDataRequest::processNewMessage(CtiMessage* message)
     delete message;
 }
 
-bool DispatchPointDataRequest::watchPoints(const std::set<long>& points, const std::set<long>& requestPoints)
+bool DispatchPointDataRequest::watchPoints(const std::set<PointRequest>& pointRequests)
 {
     if (_connection.get() != NULL)
     {
@@ -84,8 +85,34 @@ bool DispatchPointDataRequest::watchPoints(const std::set<long>& points, const s
             return false;
         }
 
+        std::set<long> points;
+        std::set<long> requestPoints;
+
+        for each (PointRequest pointRequest in pointRequests)
+        {
+            points.insert(pointRequest.pointId);
+
+            if (pointRequest.requestLatestValue == true)
+            {
+                requestPoints.insert(pointRequest.pointId);
+            }
+
+            PointRequestTypeToPointIdMap::iterator requestTypeItr;
+            if ((requestTypeItr = _requestTypeToPointId.find(pointRequest.pointRequestType)) != _requestTypeToPointId.end())
+            {
+                (requestTypeItr->second).insert(pointRequest.pointId);
+            }
+            else
+            {
+                std::set<long> typePointIds;
+                typePointIds.insert(pointRequest.pointId);
+                _requestTypeToPointId[pointRequest.pointRequestType] = typePointIds;
+            }
+        }
+
         _connection->registerForPoints(this,points);
         _points.insert(points.begin(),points.end());
+
         _pointsSet = true;
 
         _connection->requestPointValues(requestPoints);
@@ -102,9 +129,60 @@ bool DispatchPointDataRequest::isComplete()
     return _complete;
 }
 
-std::map<long,PointValue> DispatchPointDataRequest::getPointValues()
+float DispatchPointDataRequest::ratioComplete(PointRequestType pointRequestType)
+{
+    PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
+
+    int complete = 0;
+    int total = itr->second.size();
+
+    if (total != 0)
+    {
+        for each (long pointId in itr->second)
+        {
+            PointValueMap::iterator valueItr = _values.find(pointId);
+            if (valueItr != _values.end())
+            {
+                ++complete;
+            }
+        }
+
+        return complete/(float)total;
+    }
+    else //Avoiding a divide by zero.
+    {
+        return 0.0;
+    }
+
+}
+
+PointValueMap DispatchPointDataRequest::getPointValues()
 {
     return _values;
+}
+
+PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointRequestType)
+{
+    PointValueMap pointMap;
+
+    PointRequestTypeToPointIdMap::iterator typeItr = _requestTypeToPointId.find(pointRequestType);
+
+    if (typeItr == _requestTypeToPointId.end())
+    {
+        return pointMap;
+    }
+
+    std::set<long> pointIds = typeItr->second;
+    for each (long pointId in pointIds)
+    {
+        PointValueMap::iterator itr = _values.find(pointId);
+        if (itr != _values.end())
+        {
+            pointMap[pointId] = itr->second;
+        }
+    }
+
+    return pointMap;
 }
 
 void DispatchPointDataRequest::reportStatusToLog()
