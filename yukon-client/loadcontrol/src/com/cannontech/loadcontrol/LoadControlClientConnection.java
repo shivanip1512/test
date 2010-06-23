@@ -36,7 +36,10 @@ import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.base.Function;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -183,6 +186,27 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     {
         DatedObject<LMProgramBase> datedProgram = programs.get(programId);
         return datedProgram == null ? null : datedProgram.getObject();
+    }
+    
+    /**
+     * Returns an ImmutableSet of all LMProgramBase objects
+     */
+    public Set<LMProgramBase> getAllProgramsSet() {
+    	
+    	List<DatedObject<LMProgramBase>> datedPrograms = new ArrayList<DatedObject<LMProgramBase>>(programs.values());
+    	
+    	
+    	
+    	List<LMProgramBase> programs = Lists.transform(datedPrograms, new Function<DatedObject<LMProgramBase>, LMProgramBase>() {
+								    		@Override
+								    		public LMProgramBase apply(DatedObject<LMProgramBase> from) {
+								    			return from.getObject();
+								    		}
+										});
+    	
+    	ImmutableSet<LMProgramBase> programSet = ImmutableSet.copyOf(programs);
+    	
+        return programSet;
     }
 
     public List<LMProgramBase> getProgramsForProgramIds(List<Integer> programIds) {

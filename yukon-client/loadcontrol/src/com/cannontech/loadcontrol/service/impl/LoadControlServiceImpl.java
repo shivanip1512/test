@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executor;
 
 import org.apache.log4j.Logger;
@@ -42,6 +43,8 @@ import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.cannontech.loadcontrol.service.data.ScenarioStatus;
 import com.cannontech.message.util.TimeoutException;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class LoadControlServiceImpl implements LoadControlService {
     
@@ -78,26 +81,39 @@ public class LoadControlServiceImpl implements LoadControlService {
     @Override
     public List<ProgramStatus> getAllCurrentlyActivePrograms(LiteYukonUser user) {
         
-        List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
+    	// all LMProgramBase set
+        Set<LMProgramBase> allProgramBaseSet = loadControlClientConnection.getAllProgramsSet();
         
-        List<Integer> programIds = loadControlProgramDao.getAllProgramIds();
-        for (int programId : programIds) {
-            
-        	if(programIsVisibleToUser(user, programId)) {
-        	
-	            LMProgramBase program = loadControlClientConnection.getProgram(programId);
-	            
-	            if (program != null) {
-	                ProgramStatus programStatus = new ProgramStatus(program);
-	                
-	                if (programStatus.isActive()) {
-	                    programStatuses.add(programStatus);
-	                }
-	            }
-        	}
+        // active LMProgramBase set
+        Set<LMProgramBase> activeProgramBaseSet = Sets.newHashSet();
+        for (LMProgramBase programBase : allProgramBaseSet) {
+            if (ProgramUtils.isActive(programBase)) {
+            	activeProgramBaseSet.add(programBase);
+            }
         }
         
-        return programStatuses;
+        // YukonPao to active LMProgramBase map
+        Map<YukonPao, LMProgramBase> allProgramPaoToProgramBaseMap = Maps.newHashMapWithExpectedSize(allProgramBaseSet.size());
+        for (LMProgramBase programBase : activeProgramBaseSet) {
+        	YukonPao yukonPao = paoDao.getYukonPao(programBase.getYukonID());
+        	allProgramPaoToProgramBaseMap.put(yukonPao, programBase);
+        }
+        
+        // filter out unauthorized YukonPao
+        List<YukonPao> authorizedProgramPaos = paoAuthorizationService.filterAuthorized(user, allProgramPaoToProgramBaseMap.keySet(), Permission.LM_VISIBLE);
+        
+        // build ProgramStatus list
+        List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
+        for (YukonPao programPao : authorizedProgramPaos) {
+        	
+        	LMProgramBase programBase = allProgramPaoToProgramBaseMap.get(programPao);
+        	ProgramStatus programStatus = new ProgramStatus(programBase);
+            if (programStatus.isActive()) {
+                programStatuses.add(programStatus);
+            }
+        }
+        
+       return programStatuses;
     }
     
     // START CONTROL BY PROGRAM NAME
