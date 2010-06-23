@@ -338,11 +338,10 @@ private com.cannontech.common.gui.util.RepeaterAddRemovePanel getRepeatersAddRem
 /**
  * This method was created in VisualAge.
  * @return java.lang.Object
- * @param val java.lang.Object
- * @throws EditorInputValidationException 
+ * @param val java.lang.Object 
  */
 @SuppressWarnings({ "cast", "unchecked" })
-public Object getValue(Object val) throws EditorInputValidationException {
+public Object getValue(Object val) {
 	com.cannontech.database.data.route.CCURoute route = (com.cannontech.database.data.route.CCURoute) val;
 	
 	   //Build up an assigned repeaterRoute Vector
@@ -483,17 +482,12 @@ public Object getValue(Object val) throws EditorInputValidationException {
 	    for( int i = 0; i < getRepeatersAddRemovePanel().rightListGetModel().getSize(); i++ )
         {
            LiteYukonPAObject liteYukonPAObject = (LiteYukonPAObject)getRepeatersAddRemovePanel().rightListGetModel().getElementAt(i);
-        if(liteYukonPAObject.getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
-               if(route.getDefaultRoute().equalsIgnoreCase(CtiUtilities.getTrueCharacter().toString())) {
-                   throw new EditorInputValidationException("Default Route is not allowed on a route " +
-                   		                                    "with a Repeater 850");
-               }else {
-                   showMessageDialog( this, 
-                                      "This route contains a Repeater 850, it is recommended that " +
-                                       "this repeater has no more than 10 devices connected.", 
-                                      "Information", 
-                                      javax.swing.JOptionPane.INFORMATION_MESSAGE );
-               }
+           if(liteYukonPAObject.getPaoIdentifier().getPaoType() == PaoType.REPEATER_850) {
+               showMessageDialog( this, 
+                                  "This route contains a Repeater 850, it is recommended that " +
+                                   "this repeater has no more than 10 devices connected.", 
+                                  "Information", 
+                                  javax.swing.JOptionPane.INFORMATION_MESSAGE );
            }
         }
 	    
