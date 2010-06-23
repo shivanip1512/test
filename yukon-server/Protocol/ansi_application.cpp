@@ -369,14 +369,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
             if (_currentTableID == 64)
             {
                 // make this generic
-               /* if  (getAnsiDeviceType() == focus)
-                {
-                    getDatalinkLayer().buildTableRequest( xfer, _currentTableID, full_read, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
-                }
-                else*/
-                {
-                    getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
-                }
+                getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType, pktSize, _maxNbrPkts );
                 if( getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
