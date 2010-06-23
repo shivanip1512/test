@@ -227,15 +227,15 @@ INT CtiProtocolExpresscom::timeSync(const CtiTime &local, bool fullsync)
 {
     INT status = NoError;
 
-    CtiTime gmt       = local + ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
-    CtiDate theDate   = gmt.dateGMT();
-    BYTE    dayOfWeek = theDate.weekDay() % 7;    // CtiDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
+    CtiTime delayedTime = local + ((unsigned long)gConfigParms.getValueAsInt("PORTER_PAGING_DELAY", 0));
+    CtiDate theDate     = delayedTime.dateGMT();
+    BYTE    dayOfWeek   = theDate.weekDay() % 7;    // CtiDate Monday = 1, Sunday = 7.  Protocol Sun = 0 - Sat = 6.
 
     _message.push_back( mtTimeSync );
     _message.push_back( (fullsync ? 0x80 : 0x00) | (local.isDST() ? 0x40 : 0x00) | (dayOfWeek & 0x07) );
-    _message.push_back( gmt.hourGMT() );
-    _message.push_back( gmt.minuteGMT() );
-    _message.push_back( gmt.secondGMT() );
+    _message.push_back( delayedTime.hourGMT() );
+    _message.push_back( delayedTime.minuteGMT() );
+    _message.push_back( delayedTime.secondGMT() );
 
     if(fullsync)
     {
