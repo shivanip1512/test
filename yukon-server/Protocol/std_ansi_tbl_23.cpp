@@ -52,6 +52,7 @@
 #include "yukon.h"
 
 #include "logger.h"
+#include "ctidate.h"
 #include "std_ansi_tbl_23.h"
 
 //=========================================================================================================================================
@@ -730,7 +731,7 @@ void CtiAnsiTable23::printDemands( DATA_BLK_RCD data_block )
                   timeString = CtiTime( data_block.demands[index].event_time[cnt]).asString();
               }
               else
-                  timeString = CtiTime(1,1,1990).asString();
+                  timeString = CtiTime(CtiDate(1,1,1970)).asString();
               {
                    CtiLockGuard< CtiLogger > doubt_guard( dout );
                    dout << "  "<<timeString;

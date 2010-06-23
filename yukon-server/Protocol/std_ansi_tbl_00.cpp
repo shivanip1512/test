@@ -307,6 +307,12 @@ void CtiAnsiTable00::printResult(const string& deviceName)
         dout << "   Id Format: " << aString << " (" << integer <<")" << endl;
     }
 
+    integer = getRawIntFormat();
+    aString = getResolvedIntFormat();
+    {
+        CtiLockGuard< CtiLogger > doubt_guard( dout );
+        dout << "   Int Format: " << aString << " (" << integer <<")" << endl;
+    }
     integer = getRawNIFormat1() ;
     aString = getResolvedNIFormat1();
     {
