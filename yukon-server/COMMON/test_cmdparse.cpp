@@ -58,7 +58,6 @@ BOOST_AUTO_TEST_CASE(testDeviceGroupQuotes)
 BOOST_AUTO_TEST_CASE(testShedTimes)
 {
     std::string inStrings[] = {
-      "control emetcon shed 1hr relay 1,2",
       "control shed 5m relay 3",
       "control shed 5m relay 2",
       "control shed 5m relay 1",
@@ -72,7 +71,6 @@ BOOST_AUTO_TEST_CASE(testShedTimes)
     };
 
     double shedSecondTimes[] = {
-        0,
         300,
         300,
         300,
