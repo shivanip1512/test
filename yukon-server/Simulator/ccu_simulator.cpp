@@ -295,7 +295,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
         peek_buf.clear();
         socket_interface.peek(byte_appender(peek_buf), 2);
 
-        if(  !peek_buf.empty() )
+        if( !peek_buf.empty() )
         {
             if( peek_buf[0] == CcuIDLC::Hdlc_FramingFlag )
             {
@@ -413,6 +413,10 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
     
                 socket_interface.clear();
             }
+        }
+        else
+        {
+            Sleep(500);
         }
     }
 }
