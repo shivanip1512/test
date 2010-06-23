@@ -3,17 +3,21 @@ package com.cannontech.core.dynamic.impl;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -44,17 +48,35 @@ import com.google.common.collect.Sets;
  */
 @ManagedResource
 public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, MessageListener  {
+    private static final Logger log = YukonLogManager.getLogger(AsyncDynamicDataSourceImpl.class);
+    
     
     private DispatchProxy dispatchProxy;
     private IServerConnection dispatchConnection;
     private IDatabaseCache databaseCache;
     private DynamicDataSource dynamicDataSource;
     
+    // Note that this is purposefully different than the default com.cannontech.common.util.CtiUtilities.DEFAULT_MSG_SOURCE
+    // that is set in the message class because there is already code that attaches
+    // specific meaning to that. 
+    private String applicationSourceIdentifier = CtiUtilities.getApplicationName() + "$" + UUID.randomUUID();
+    // For example, see 
+    // com.cannontech.dbeditor.DatabaseEditor.queueDBChangeMsgs(DBPersistent, int, DBChangeMsg[]).
+    // The problem is that the DatabaseEditor sends its own DB Changes, but registers directly with 
+    // this class for DB Change notifications. So, when DBEditor sends a DBChange, its old code will 
+    // directly handle the message to a certain degree, then it will reflect back from dispatch 
+    // through this class, whereby all of the listeners will be invoked INCLUDING the DBEditor 
+    // itself. When new code sends a DB Change directly through this code, we can invoke all of the 
+    // listeners immediately and then ignore the reflection.
+    
+    
     private volatile boolean allPointsRegistered = false;
     private SetMultimap<Integer, PointDataListener> pointIdPointDataListeners;
     private SetMultimap<Integer, SignalListener> pointIdSignalListeners;
 
     {
+        log.info("source id: " + applicationSourceIdentifier);
+        
         SetMultimap<Integer, PointDataListener> pointIdPointDataListenersUnsynchronized = LinkedHashMultimap.create();
         pointIdPointDataListeners = Multimaps.synchronizedSetMultimap(pointIdPointDataListenersUnsynchronized);
         
@@ -233,12 +255,14 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     
     private void handleDBChange(DBChangeMsg dbChange) {
-        // the following would be a nice check some day
-        
-//        if (!dbChange.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE)) {
-//            handleInternalDBChange(dbChange);
-//        }
-        
+        // Don't process message if we know it was sent through
+        // our own publishDbChange method. 
+        if (!dbChange.getSource().equals(applicationSourceIdentifier)) {
+            processDbChange(dbChange);
+        }
+    }
+
+    private void processDbChange(DBChangeMsg dbChange) {
         // the databaseCache call usually happened after the dbChangeListeners were processed
         // but, because several dbChangeLiteListeners have been converted to dbChangeListeners
         // it seems like a good idea to ensure things still happen in the expected order
@@ -252,6 +276,16 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         for (DBChangeLiteListener listener : dbChangeLiteListeners) {
             listener.handleDBChangeMsg(dbChange, lite);
         }
+    }
+    
+    @Override
+    public void publishDbChange(DBChangeMsg dbChange) {
+        // set the source here so that when the changes comes back 
+        // through this class we know that it must have started
+        // in this method
+        dbChange.setSource(applicationSourceIdentifier);
+        processDbChange(dbChange);
+        dispatchConnection.queue(dbChange);
     }
 
     /**

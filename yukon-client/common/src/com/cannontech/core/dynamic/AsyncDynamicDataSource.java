@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 /**
  * AsyncDynamicDataSource provides a method to receive dynamic point, signal/alarm, 
@@ -93,6 +94,15 @@ public interface AsyncDynamicDataSource {
      * @param l         the listener to remove
      */
     public void removeDBChangeListener(DBChangeListener l);
+    
+    /**
+     * Processes a DBChangeMsg locally and then queue to the 
+     * dispatch connection. This method is ONLY provided for
+     * the DBPersistentDaoImpl. NO OTHER CODE SHOULD EVER
+     * CALL THIS!
+     * @param dbChange
+     */
+    public void publishDbChange(DBChangeMsg dbChange);
     
     /**
      * Adds a listner that will receive DBChange events

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -19,6 +20,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PersistenceException;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
@@ -31,7 +33,6 @@ import com.cannontech.database.dbchange.ChangeTypeEnum;
 import com.cannontech.database.dbchange.DbChangeIdentifier;
 import com.cannontech.database.dbchange.DbChangeMessageHolder;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.yukon.BasicServerConnection;
 
 /**
  * @author snebben
@@ -43,7 +44,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 {
     private Logger log = YukonLogManager.getLogger(DBPersistentDaoImpl.class);
     
-    private BasicServerConnection dispatchConnection;
+    private AsyncDynamicDataSource asyncDynamicDataSource;
     
     @Override
     public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
@@ -125,7 +126,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             
         } else {
             log.debug("sending out an un synchronized DB change messages");
-            dispatchConnection.queue(dbChange);
+            asyncDynamicDataSource.publishDbChange(dbChange);
         }
     }
 
@@ -158,7 +159,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             log.debug("sending out " + dbChanges.size() + " held DB change messages (was " + initialSize + ")");
         }
         for (DBChangeMsg changeMsg : dbChanges) {
-            dispatchConnection.queue(changeMsg);
+            asyncDynamicDataSource.publishDbChange(changeMsg);
         }
     }
     
@@ -224,7 +225,8 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         }
     }
 
-    public void setDispatchConnection(BasicServerConnection dispatchConnection) {
-        this.dispatchConnection = dispatchConnection;
+    @Autowired
+    public void setAsyncDynamicDataSource(AsyncDynamicDataSource asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
 }
