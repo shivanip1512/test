@@ -36,13 +36,13 @@ const char* CtiTableMCSimpleSchedule::_table_name = "MACSimpleSchedule";
 
 CtiTableMCSimpleSchedule::CtiTableMCSimpleSchedule(
                                                   long schedule_id,
-                                                  long target_select,
+                                                  long target_id,
                                                   const string& start_command,
                                                   const string& stop_command,
                                                   long repeat_interval )
 :
 _schedule_id(schedule_id),
-_target_id(target_select),
+_target_id(target_id),
 _start_command(start_command),
 _stop_command(stop_command),
 _repeat_interval(repeat_interval)
@@ -83,9 +83,9 @@ CtiTableMCSimpleSchedule::setScheduleID(long schedule_id)
 }
 
 CtiTableMCSimpleSchedule&
-CtiTableMCSimpleSchedule::setTargetSelect(const int target_select)
+CtiTableMCSimpleSchedule::setTargetPaoID(const int target_id)
 {
-    _target_id = target_select;
+    _target_id = target_id;
     return *this;
 }
 
@@ -118,7 +118,7 @@ void CtiTableMCSimpleSchedule::getSQL(  RWDBDatabase &db,
 
     selector                            <<
     keyTable["scheduleid"]          <<
-    keyTable["paobjectid"]        <<
+    keyTable["targetpaobjectid"]        <<
     keyTable["startcommand"]        <<
     keyTable["stopcommand"]         <<
     keyTable["repeatinterval"];
@@ -135,7 +135,7 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["scheduleid"]       >> _schedule_id;
 
-    rdr["paobjectid"]     >> _target_id;
+    rdr["targetpaobjectid"]     >> _target_id;
 
     rdr["startcommand"]    >> _start_command;
     rdr["stopcommand"]     >> _stop_command;
@@ -162,7 +162,7 @@ bool CtiTableMCSimpleSchedule::Update()
 
             updater.where( t["ScheduleID"] == getScheduleID() );
 
-            updater << t["PAObjectId"].assign(getTargetPaoId());
+            updater << t["TargetPaobjectID"].assign(getTargetPaoId());
 
             updater << t["StartCommand"].assign((const char*) getStartCommand().c_str());
 

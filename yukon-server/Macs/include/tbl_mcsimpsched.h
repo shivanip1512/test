@@ -43,7 +43,7 @@ class CtiTableMCSimpleSchedule
 {
 public:
     CtiTableMCSimpleSchedule(   long schedule_id = 0,
-                                long target_select = 0,
+                                long target_id = 0,
                                 const string& start_command = "",
                                 const string& stop_command = "",
                                 long repeat_interval = 0 );
@@ -57,7 +57,7 @@ public:
     long getRepeatInterval() const;
 
     CtiTableMCSimpleSchedule& setScheduleID(long schedule_id);
-    CtiTableMCSimpleSchedule& setTargetSelect(const int target_select);
+    CtiTableMCSimpleSchedule& setTargetPaoID(const int target_id);
     CtiTableMCSimpleSchedule& setStartCommand(const string& start_command);
     CtiTableMCSimpleSchedule& setStopCommand(const string& stop_command);
     CtiTableMCSimpleSchedule& setRepeatInterval(long repeat_interval);

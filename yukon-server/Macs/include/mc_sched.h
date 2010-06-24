@@ -146,7 +146,7 @@ public:
     CtiMCSchedule& setTemplateType(int template_type);
 
     //Only simple schedules will return meaningfull info for these
-    CtiMCSchedule& setTargetSelect(const int target_select);
+    CtiMCSchedule& setTargetPaoID(const int target_id);
     CtiMCSchedule& setStartCommand(const string& start_command);
     CtiMCSchedule& setStopCommand(const string& stop_command);
     CtiMCSchedule& setRepeatInterval(long repeat_interval);

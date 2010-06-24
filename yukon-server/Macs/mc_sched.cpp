@@ -114,7 +114,7 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
 
     if( sched.isSimpleSchedule() )
     {
-        ostrm << " Target Select:  " << sched.getTargetPaoId() << endl;
+        ostrm << " Target Pao ID:  " << sched.getTargetPaoId() << endl;
         ostrm << " Start Command:  " << sched.getStartCommand() << endl;
         ostrm << " Stop Command:   " << sched.getStopCommand() << endl;
         ostrm << " Repeat Int:     " << sched.getRepeatInterval() << endl;
@@ -852,11 +852,11 @@ CtiMCSchedule& CtiMCSchedule::setTemplateType(int template_type)
     return *this;
 }
 
-CtiMCSchedule& CtiMCSchedule::setTargetSelect(const int target_select)
+CtiMCSchedule& CtiMCSchedule::setTargetPaoID(const int target_id)
 {
-    if( target_select != getTargetPaoId() )
+    if( target_id != getTargetPaoId() )
     {
-        _simple_schedule_table.setTargetSelect(target_select);
+        _simple_schedule_table.setTargetPaoID(target_id);
         setDirty(true);
     }
 
@@ -1020,7 +1020,7 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
     //setManualStopTime( temp_time );
 
     aStream >> temp_int;
-    setTargetSelect( temp_int );
+    setTargetPaoID( temp_int );
 
     aStream >> temp_str;
     setStartCommand(temp_str );
