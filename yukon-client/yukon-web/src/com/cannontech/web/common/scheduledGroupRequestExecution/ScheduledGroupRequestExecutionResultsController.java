@@ -177,6 +177,18 @@ public class ScheduledGroupRequestExecutionResultsController extends MultiAction
         return mav;
 		
 	}
+
+	// VIEW LAST RUN
+	// Note: this url should only be hit if it is know the job has a last cre, no protection for null lastCre here
+	public ModelAndView viewLastRun(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+		
+		int jobId = ServletRequestUtils.getRequiredIntParameter(request, "jobId");
+		CommandRequestExecution lastCre = scheduledGroupRequestExecutionDao.findLatestCommandRequestExecutionForJobId(jobId, null);
+		ModelAndView mav = new ModelAndView("redirect:/spring/common/commandRequestExecutionResults/detail");
+		mav.addObject("commandRequestExecutionId", lastCre.getId());
+		
+		return mav;
+	}
 	
 	@Autowired
 	public void setScheduledGroupRequestExecutionDao(

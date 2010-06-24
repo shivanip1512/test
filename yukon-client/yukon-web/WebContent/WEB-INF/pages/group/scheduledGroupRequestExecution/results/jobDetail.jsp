@@ -57,10 +57,16 @@
 	
 	<script type="text/javascript">
 	
-		function updateLastRunLink() {
+		function toggleLastRunLink() {
 		    return function(data) {
-		        var value = data['value'];
-		        $('lastRunLinkSpan').innerHTML = value;
+		        var creCount = data['value'];
+		        if (creCount > 0) {
+			        $('noLastRunSpan').hide();
+			        $('hasLastRunSpan').show();
+		        } else {
+		        	$('noLastRunSpan').show();
+			        $('hasLastRunSpan').hide();
+		        }
 		    };
 		}
 	
@@ -159,24 +165,29 @@
 			
 			<%-- last run --%>
 			<tags:nameValue name="${lastRunText}">
+			
+				<cti:dataUpdaterCallback function="toggleLastRunLink()" value="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/CRE_COUNT_FOR_JOB"/>
 				
-				<cti:dataUpdaterCallback function="updateLastRunLink()" initialize="false" value="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_CRE_RUN_LINK"/>
-				<span id="lastRunLinkSpan">
-					<cti:msg var="naLastRun" key="yukon.web.defaults.na"/>
-					<c:choose>
-						<c:when test="${empty lastCre}">
-							${naLastRun}
-						</c:when>
-						<c:otherwise>
-							<cti:url var="lastRunUrl" value="/spring/common/commandRequestExecutionResults/detail">
-								<cti:param name="commandRequestExecutionId" value="${lastCre.id}"/>
-							</cti:url>
-							<a href="${lastRunUrl}">
-								<cti:formatDate value="${jobWrapper.lastRun}" type="DATEHM" nullText="${naLastRun}"/>
-							</a>
-						</c:otherwise>
-					</c:choose>
-				</span> 
+				<c:choose>
+					<c:when test="${empty jobWrapper.lastRun}">
+						<c:set var="hasLastRunSpanInitialStyle" value="display:none;"/>
+					</c:when>
+					<c:otherwise>
+						<c:set var="noLastRunSpanInitialStyle" value="display:none;"/>
+					</c:otherwise>
+				</c:choose>
+			
+				<span id="noLastRunSpan" style="${noLastRunSpanInitialStyle}">
+					<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_RUN_DATE/"/>
+				</span>
+				
+				<span id="hasLastRunSpan" style="${hasLastRunSpanInitialStyle}">
+					<cti:url var="lastRunUrl" value="/spring/group/scheduledGroupRequestExecutionResults/viewLastRun">
+						<cti:param name="jobId" value="${jobWrapper.job.id}"/>
+					</cti:url>
+					<a href="${lastRunUrl}"><cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION" identifier="${jobWrapper.job.id}/LAST_RUN_DATE"/></a>
+				</span>
+				
 				<tags:helpInfoPopup title="Last Run">
 					<cti:msg key="yukon.web.modules.amr.scheduledGroupRequests.results.jobDetail.info.popInfo.lastRun" />
 				</tags:helpInfoPopup>
