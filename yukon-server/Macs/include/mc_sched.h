@@ -116,7 +116,7 @@ public:
     int getTemplateType() const;
 
     //Only simple schedules will return meaningfull info for these
-    const string& getTargetSelect() const;
+    long getTargetPaoId() const;
     const string& getStartCommand() const;
     const string& getStopCommand() const;
     long getRepeatInterval() const;
@@ -146,7 +146,7 @@ public:
     CtiMCSchedule& setTemplateType(int template_type);
 
     //Only simple schedules will return meaningfull info for these
-    CtiMCSchedule& setTargetSelect(const string& target_select);
+    CtiMCSchedule& setTargetSelect(const int target_select);
     CtiMCSchedule& setStartCommand(const string& start_command);
     CtiMCSchedule& setStopCommand(const string& stop_command);
     CtiMCSchedule& setRepeatInterval(long repeat_interval);

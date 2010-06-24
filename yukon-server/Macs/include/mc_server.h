@@ -122,7 +122,7 @@ private:
     void logEvent(const string& user, const string& text) const;
 
     // execute a command on a tcl interpreter
-    void executeCommand(const string& command, const string& target = "");
+    void executeCommand(const string& command, long target = 0);
 
     void sendDBChange(const int& paoid, const string& user) const;
 

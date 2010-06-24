@@ -43,7 +43,7 @@ class CtiTableMCSimpleSchedule
 {
 public:
     CtiTableMCSimpleSchedule(   long schedule_id = 0,
-                                const string& target_select = "",
+                                long target_select = 0,
                                 const string& start_command = "",
                                 const string& stop_command = "",
                                 long repeat_interval = 0 );
@@ -51,13 +51,13 @@ public:
     virtual ~CtiTableMCSimpleSchedule();
 
     long getScheduleID() const;
-    const string& getTargetSelect() const;
+    long getTargetPaoId() const;
     const string& getStartCommand() const;
     const string& getStopCommand() const;
     long getRepeatInterval() const;
 
     CtiTableMCSimpleSchedule& setScheduleID(long schedule_id);
-    CtiTableMCSimpleSchedule& setTargetSelect(const string& target_select);
+    CtiTableMCSimpleSchedule& setTargetSelect(const int target_select);
     CtiTableMCSimpleSchedule& setStartCommand(const string& start_command);
     CtiTableMCSimpleSchedule& setStopCommand(const string& stop_command);
     CtiTableMCSimpleSchedule& setRepeatInterval(long repeat_interval);
@@ -77,7 +77,7 @@ private:
     static const char* _table_name;
 
     long    _schedule_id;
-    string  _target_select;
+    long    _target_id;
     string  _start_command;
     string  _stop_command;
     long    _repeat_interval;

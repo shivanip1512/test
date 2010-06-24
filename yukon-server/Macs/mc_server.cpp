@@ -285,19 +285,19 @@ void CtiMCServer::logEvent(const string& user, const string& text) const
   Executes the start command for the given schedule in a tcl interpreter
   synchronously
 ----------------------------------------------------------------------------*/
-void CtiMCServer::executeCommand(const string& command, const string& target)
+void CtiMCServer::executeCommand(const string& command, long target)
 {
-    const char* selectPrefix = "Select name \"";
+    const char* selectPrefix = "Select deviceid ";
     string to_send;
 
     if( command.length() == 0 )
         return;
 
-    if( target.length() > 0 )
+    if( target > 0 )
     {
         to_send.append(selectPrefix)
-               .append(target)
-               .append("\"\r\n");
+               .append(CtiNumStr(target))
+               .append("\r\n");
     }
 
     to_send.append(command);
@@ -1139,7 +1139,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
     case RepeatInterval:
 
         if( sched->isSimpleSchedule() )
-                executeCommand( sched->getStartCommand(), sched->getTargetSelect() );
+                executeCommand( sched->getStartCommand(), sched->getTargetPaoId() );
             else
                 executeScript(*sched); // start script
 
@@ -1151,7 +1151,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
         event_text += "\\\"";
 
         if( sched->isSimpleSchedule() )
-                executeCommand( sched->getStopCommand(), sched->getTargetSelect() );
+                executeCommand( sched->getStopCommand(), sched->getTargetPaoId() );
             else
                 stopScript(sched->getScheduleID()); // stop script
 

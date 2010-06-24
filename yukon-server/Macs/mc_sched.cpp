@@ -114,7 +114,7 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
 
     if( sched.isSimpleSchedule() )
     {
-        ostrm << " Target Select:  " << sched.getTargetSelect() << endl;
+        ostrm << " Target Select:  " << sched.getTargetPaoId() << endl;
         ostrm << " Start Command:  " << sched.getStartCommand() << endl;
         ostrm << " Stop Command:   " << sched.getStopCommand() << endl;
         ostrm << " Repeat Int:     " << sched.getRepeatInterval() << endl;
@@ -531,9 +531,9 @@ int CtiMCSchedule::getTemplateType() const
     return _schedule_table.getTemplateType();
 }
 
-const string& CtiMCSchedule::getTargetSelect() const
+long CtiMCSchedule::getTargetPaoId() const
 {
-    return _simple_schedule_table.getTargetSelect();
+    return _simple_schedule_table.getTargetPaoId();
 }
 
 const string& CtiMCSchedule::getStartCommand() const
@@ -852,9 +852,9 @@ CtiMCSchedule& CtiMCSchedule::setTemplateType(int template_type)
     return *this;
 }
 
-CtiMCSchedule& CtiMCSchedule::setTargetSelect(const string& target_select)
+CtiMCSchedule& CtiMCSchedule::setTargetSelect(const int target_select)
 {
-    if( target_select != getTargetSelect() )
+    if( target_select != getTargetPaoId() )
     {
         _simple_schedule_table.setTargetSelect(target_select);
         setDirty(true);
@@ -927,7 +927,7 @@ void CtiMCSchedule::saveGuts(RWvostream &aStream) const
                 <<  getDuration()   //int
                 <<  CtiTime((unsigned long)0) //getManualStartTime() //CtiTime
                 <<  CtiTime((unsigned long)0) //getManualStopTime()  //CtiTime
-                <<  getTargetSelect()
+                <<  getTargetPaoId()
                 <<  getStartCommand()
                 <<  getStopCommand()
                 <<  getRepeatInterval()  //int
@@ -1019,8 +1019,8 @@ void CtiMCSchedule::restoreGuts(RWvistream& aStream)
     aStream >> temp_time;
     //setManualStopTime( temp_time );
 
-    aStream >> temp_str;
-    setTargetSelect( temp_str );
+    aStream >> temp_int;
+    setTargetSelect( temp_int );
 
     aStream >> temp_str;
     setStartCommand(temp_str );

@@ -2278,6 +2278,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
 
     boost::regex select_list_regex = boost::regex(".*select[ ]+list[ ]+");
     boost::regex select_id_regex = boost::regex(".*select[ ]+[^ ]+[ ]+id");
+    boost::regex select_deviceid_regex = boost::regex(".*select deviceid");
     boost::regex select_regex = boost::regex(".*select[ ]+[^ ]+[ ]+");
 
     if( cmd_line.index(select_list_regex, end_index) != string::npos )
@@ -2341,7 +2342,8 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         Tcl_DecrRefCount(sel_str);
     }
     else //dont add quotes if it is an id
-    if( cmd_line.index(select_id_regex, end_index) != string::npos )
+    if( cmd_line.index(select_id_regex, end_index)       != string::npos ||
+        cmd_line.index(select_deviceid_regex, end_index) != string::npos )
     {
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);

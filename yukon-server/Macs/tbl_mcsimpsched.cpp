@@ -36,13 +36,13 @@ const char* CtiTableMCSimpleSchedule::_table_name = "MACSimpleSchedule";
 
 CtiTableMCSimpleSchedule::CtiTableMCSimpleSchedule(
                                                   long schedule_id,
-                                                  const string& target_select,
+                                                  long target_select,
                                                   const string& start_command,
                                                   const string& stop_command,
                                                   long repeat_interval )
 :
 _schedule_id(schedule_id),
-_target_select(target_select),
+_target_id(target_select),
 _start_command(start_command),
 _stop_command(stop_command),
 _repeat_interval(repeat_interval)
@@ -55,9 +55,9 @@ long CtiTableMCSimpleSchedule::getScheduleID() const
     return _schedule_id;
 }
 
-const string& CtiTableMCSimpleSchedule::getTargetSelect() const
+long CtiTableMCSimpleSchedule::getTargetPaoId() const
 {
-    return _target_select;
+    return _target_id;
 }
 
 const string& CtiTableMCSimpleSchedule::getStartCommand() const
@@ -83,9 +83,9 @@ CtiTableMCSimpleSchedule::setScheduleID(long schedule_id)
 }
 
 CtiTableMCSimpleSchedule&
-CtiTableMCSimpleSchedule::setTargetSelect(const string& target_select)
+CtiTableMCSimpleSchedule::setTargetSelect(const int target_select)
 {
-    _target_select = target_select;
+    _target_id = target_select;
     return *this;
 }
 
@@ -118,7 +118,7 @@ void CtiTableMCSimpleSchedule::getSQL(  RWDBDatabase &db,
 
     selector                            <<
     keyTable["scheduleid"]          <<
-    keyTable["targetselect"]        <<
+    keyTable["paobjectid"]        <<
     keyTable["startcommand"]        <<
     keyTable["stopcommand"]         <<
     keyTable["repeatinterval"];
@@ -135,16 +135,7 @@ bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["scheduleid"]       >> _schedule_id;
 
-    rdr["targetselect"]     >> temp;
-
-    if(temp != " ")
-    {
-        _target_select = temp;
-    }
-    else
-    {
-        _target_select = "";
-    }
+    rdr["paobjectid"]     >> _target_id;
 
     rdr["startcommand"]    >> _start_command;
     rdr["stopcommand"]     >> _stop_command;
@@ -171,7 +162,7 @@ bool CtiTableMCSimpleSchedule::Update()
 
             updater.where( t["ScheduleID"] == getScheduleID() );
 
-            updater << t["TargetSelect"].assign((const char*) getTargetSelect().c_str());
+            updater << t["PAObjectId"].assign(getTargetPaoId());
 
             updater << t["StartCommand"].assign((const char*) getStartCommand().c_str());
 
@@ -224,7 +215,7 @@ bool CtiTableMCSimpleSchedule::Insert()
 
             inserter << getScheduleID();
 
-            inserter << (const char*) getTargetSelect().c_str();
+            inserter << getTargetPaoId();
 
             inserter << (const char*) getStartCommand().c_str();
 
