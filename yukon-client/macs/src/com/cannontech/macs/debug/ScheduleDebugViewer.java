@@ -120,7 +120,7 @@ public void setValue(Object o)
 		data.addElement("Stop Cmd   : " + schedule.getStopCommand() );
 		data.addElement("Stop Plcy  : " + schedule.getStopPolicy() );
 		data.addElement("Stop Time  : " + schedule.getStopTime() );
-		data.addElement("Target     : " + schedule.getTargetSelect());
+		data.addElement("Target     : " + schedule.getPAObjectId());
 		data.addElement("Valid WkDys: " + schedule.getValidWeekDays() );		
 
 		data.addElement("");

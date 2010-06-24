@@ -56,7 +56,7 @@ public Class getJavaClass() {
 }
 /**
  *  Changed scheduleId and holidayId to extract long instead of int.
- *  Added targetSelect, startCommand, stopCommand, repeatInterval
+ *  Added paobjectId, startCommand, stopCommand, repeatInterval
  *  Need to figure out a way to determine the targets type and ID still
  */
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
@@ -84,7 +84,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	int duration = vstr.extractInt();
 	java.util.Date manualStartTime = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );
 	java.util.Date manualStopTime = (java.util.Date) vstr.restoreObject( SimpleMappings.Time );
-	String targetSelect = (String) vstr.restoreObject( SimpleMappings.CString );
+	int paobjectId = vstr.extractInt();
 	String startCommand = (String) vstr.restoreObject( SimpleMappings.CString );
 	String stopCommand  = (String) vstr.restoreObject( SimpleMappings.CString );
 	int repeatInterval  = vstr.extractInt();
@@ -114,7 +114,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	schedule.setManualStopTime( manualStopTime );
 	schedule.setNextRunTime( nextRunTime );
 	schedule.setNextStopTime( nextStopTime );
-	schedule.setTargetSelect( targetSelect );
+	schedule.setPAObjectId(paobjectId);
 	schedule.setStartCommand( startCommand );
 	schedule.setStopCommand( stopCommand );
 	schedule.setRepeatInterval( repeatInterval );
@@ -149,7 +149,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertInt( schedule.getDuration() );
 	vstr.saveObject( schedule.getManualStartTime(), SimpleMappings.Time );
 	vstr.saveObject( schedule.getManualStopTime(), SimpleMappings.Time );
-	vstr.saveObject( schedule.getTargetSelect(), SimpleMappings.CString );
+	vstr.insertInt(schedule.getPAObjectId());
 	vstr.saveObject( schedule.getStartCommand(), SimpleMappings.CString );
 	vstr.saveObject( schedule.getStopCommand(), SimpleMappings.CString );
 	vstr.insertInt( schedule.getRepeatInterval() );

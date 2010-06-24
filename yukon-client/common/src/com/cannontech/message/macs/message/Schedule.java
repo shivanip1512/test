@@ -52,7 +52,7 @@ public class Schedule extends com.cannontech.message.util.Message implements jav
 	private int duration = 0;
 	private java.util.Date manualStartTime = new java.util.Date(INVALID_DATE);
 	private java.util.Date manualStopTime = new java.util.Date(INVALID_DATE);
-	private String targetSelect = "";
+	private int paobjectId = 0;
 	private String startCommand = "";
 	private String stopCommand = "";
 	private int repeatInterval = 0;
@@ -297,13 +297,9 @@ public java.lang.String getStopPolicy() {
 public String getStopTime() {
 	return stopTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @return java.lang.String
- */
-public java.lang.String getTargetSelect() {
-	return targetSelect;
+
+public int getPAObjectId() {
+	return paobjectId;
 }
 /**
  * @return int
@@ -519,13 +515,9 @@ public void setStopPolicy(java.lang.String newStopPolicy) {
 public void setStopTime(String newStopTime) {
 	stopTime = newStopTime;
 }
-/**
- * Insert the method's description here.
- * Creation date: (2/28/2001 4:44:06 PM)
- * @param newTargetSelect java.lang.String
- */
-public void setTargetSelect(java.lang.String newTargetSelect) {
-	targetSelect = newTargetSelect;
+
+public void setPAObjectId(int paobjectId) {
+	this.paobjectId = paobjectId;
 }
 /**
  * @param newTemplateType
