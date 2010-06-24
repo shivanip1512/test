@@ -141,7 +141,7 @@ public class OptOutController extends AbstractConsumerController {
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
         final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         try {
-            validateStartDate(startDateObj, today, yukonUserContext);
+            validateStartDate(startDateObj, today, yukonUserContext, customerAccount);
         } catch (StartDateException exception) {
             MessageSourceResolvable message = new YukonMessageSourceResolvable(
                     exception.getMessage());
@@ -239,7 +239,7 @@ public class OptOutController extends AbstractConsumerController {
         final Date now = new Date();
 		final Date today = TimeUtil.getMidnight(now, userTimeZone);
 		try {
-		    validateStartDate(startDateObj, today, yukonUserContext);
+		    validateStartDate(startDateObj, today, yukonUserContext, customerAccount);
         } catch (StartDateException exception) {
         	result = new YukonMessageSourceResolvable(
         			"yukon.dr.consumer.optoutresult.invalidStartDate");
@@ -341,8 +341,8 @@ public class OptOutController extends AbstractConsumerController {
         return null;
     }
 
-    private void validateStartDate(Date startDate, Date todayDate,
-            YukonUserContext userContext) throws StartDateException {
+    private void validateStartDate(Date startDate, Date todayDate, YukonUserContext userContext, 
+                                   CustomerAccount customerAccount) throws StartDateException {
         // this shouldn't happen unless the user is hacking the UI
         if (startDate == null)
             throw new StartDateException("yukon.dr.consumer.optout.invalidStartDate");
@@ -360,6 +360,25 @@ public class OptOutController extends AbstractConsumerController {
         long yearInFuture = cal.getTimeInMillis();
         if (startTime > yearInFuture) {
             throw new StartDateException("yukon.dr.consumer.optout.startDateTooLate");
+        }
+        
+        // Check if all opt out devices are already opted out for today.
+        if (startDate.equals(todayDate)) {
+            
+            boolean hasADeviceAvailableForOptOut = false;
+            
+            List<DisplayableInventory> displayableInventories =
+                displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
+            
+            for (DisplayableInventory displayableInventory : displayableInventories) {
+                if (!displayableInventory.isCurrentlyOptedOut()) {
+                    hasADeviceAvailableForOptOut = true;
+                }
+            }
+
+            if (!hasADeviceAvailableForOptOut) {
+                throw new StartDateException("yukon.dr.consumer.optout.allDevicesCurrentlyOptedOut");
+            }
         }
         
         boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(

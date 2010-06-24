@@ -1,3 +1,4 @@
+
 package com.cannontech.web.stars.dr.operator;
 
 import java.util.Collections;
@@ -179,7 +180,8 @@ public class OperatorProgramOptOutOperatorController {
         }
         
         // Validate the optOutBackingBean
-        OptOutValidator optOutValidator = optOutValidatorFactory.getOptOutValidator(userContext);
+        OptOutValidator optOutValidator = 
+            optOutValidatorFactory.getOptOutValidator(userContext, accountInfoFragment);
         optOutValidator.validate(optOutBackingBean, bindingResult);
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
 
@@ -391,7 +393,8 @@ public class OperatorProgramOptOutOperatorController {
         this.checkInventoryAgainstAccount(inventoryIds, customerAccount);
         
         // validate/update
-        OptOutValidator optOutValidator = optOutValidatorFactory.getOptOutValidator(userContext);
+        OptOutValidator optOutValidator = 
+            optOutValidatorFactory.getOptOutValidator(userContext, accountInfoFragment);
         optOutValidator.validate(optOutBackingBean, bindingResult);
         if (!bindingResult.hasErrors()) {
             String jsonQuestions = ServletRequestUtils.getStringParameter(request, "jsonQuestions");

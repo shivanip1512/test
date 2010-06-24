@@ -50,6 +50,7 @@
     <entry key="yukon.web.modules.operator.optOutBackingBean.startDateTooEarly">The start date cannot be earlier than today.</entry>
     <entry key="yukon.web.modules.operator.optOutBackingBean.startDateTooLate">The start date cannot be more than one year in the future.</entry>
     <entry key="yukon.web.modules.operator.optOutBackingBean.startDateToday">The start date must be today.</entry>
+    <entry key="yukon.web.modules.operator.optOutBackingBean.allDevicesCurrentlyOptedOut">All of the devices are already opted out for today.</entry>
     <entry key="yukon.web.modules.operator.optOutBackingBean.invalidDuration">Invalid duration</entry>
 
     <!-- Opt Out Inventory Selection -->

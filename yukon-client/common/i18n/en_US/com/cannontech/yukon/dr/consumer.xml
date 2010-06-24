@@ -398,6 +398,7 @@
     <entry key="yukon.dr.consumer.optout.invalidStartDate">The start date supplied was invalid.</entry>
     <entry key="yukon.dr.consumer.optout.startDateTooEarly">The start date cannot be earlier than today.</entry>
     <entry key="yukon.dr.consumer.optout.startDateTooLate">The start date cannot be more than 1 year in the future.</entry>
+    <entry key="yukon.dr.consumer.optout.allDevicesCurrentlyOptedOut">All of the devices are already opted out for today.</entry>
 
     <!-- confirmCancle.jsp -->
     <entry key="yukon.dr.consumer.optout.confirmCancel.question">Are you sure you want to cancel the opt out for {0}?</entry>
