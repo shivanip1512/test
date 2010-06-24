@@ -7562,6 +7562,58 @@ void CtiCCSubstationBus::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
     }
 }
 
+/**
+ * This function will update the point response deltas but take
+ * into account any missing updated values. pointIds is a list
+ * of points we got an update for from a recent scan.
+ *
+ */
+void CtiCCSubstationBus::updatePointResponseDeltas(std::set<long> pointIds)
+{
+    try
+    {
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+        CtiCCFeederPtr feeder = store->findFeederByPAObjectID(getLastFeederControlledPAOId());
+        if (feeder == NULL)
+        {
+            return;
+        }
+
+        CtiCCCapBankPtr capBank = store->findCapBankByPAObjectID(feeder->getLastCapBankControlledDeviceId());
+        if (capBank == NULL)
+        {
+            return;
+        }
+
+        //This checks for the case that we did not get a response from the bank in question.
+        if (pointIds.find(capBank->getTwoWayPoints()->getVoltageId()) == pointIds.end())
+        {
+            return;
+        }
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Updating POINT RESPONSE DELTAS for CapBank: " << capBank->getPaoName() << endl;
+        }
+
+        for (int k = 0; k < _multipleMonitorPoints.size(); k++)
+        {
+            CtiCCMonitorPoint* point = (CtiCCMonitorPoint*)_multipleMonitorPoints[k];
+
+            //This checks to make sure we got an update for the monitor point before updating the deltas.
+            if (pointIds.find(point->getPointId()) != pointIds.end())
+            {
+                capBank->updatePointResponseDeltas(point);
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
 
 void CtiCCSubstationBus::updatePointResponseDeltas()
 {

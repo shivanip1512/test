@@ -53,7 +53,7 @@ class IM_EX_MSG PointDataRequest
         virtual PointValueMap getPointValues(PointRequestType pointRequestType)=0;
         virtual void reportStatusToLog()=0;
 
-
+        virtual void removePointValue(long pointId)=0;
 };
 
 typedef boost::shared_ptr<PointDataRequest> PointDataRequestPtr;

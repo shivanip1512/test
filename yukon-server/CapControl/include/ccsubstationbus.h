@@ -308,6 +308,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void voltControlProcess();
     void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();
+    void updatePointResponseDeltas(std::set<long> pointIds);
+
     BOOL areAllMonitorPointsNewEnough(const CtiTime& currentDateTime);
     BOOL isScanFlagSet();
     ULONG getMonitorPointScanTime();

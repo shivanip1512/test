@@ -627,11 +627,11 @@ void refreshGlobalCParms()
         dout << CtiTime() << " - CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER: " << _IVVC_NONWINDOW_MULTIPLIER << endl;
     }
 
-    _IVVC_BANKS_REPORTING_RATIO = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO", 100);    // seconds
+    _IVVC_BANKS_REPORTING_RATIO = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO", 100) / 100.0; //store as 0-1.0
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO: " << _IVVC_BANKS_REPORTING_RATIO << endl;
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO: " << _IVVC_BANKS_REPORTING_RATIO * 100 << endl;
     }
 
 }

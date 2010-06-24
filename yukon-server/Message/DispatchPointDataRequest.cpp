@@ -185,6 +185,16 @@ PointValueMap DispatchPointDataRequest::getPointValues(PointRequestType pointReq
     return pointMap;
 }
 
+void DispatchPointDataRequest::removePointValue(long pointId)
+{
+    _values.erase(pointId);
+    for each(const PointRequestTypeToPointIdMap::value_type& mapPair in _requestTypeToPointId)
+    {
+        std::set<long> pointIds = mapPair.second;
+        pointIds.erase(pointId);
+    }
+}
+
 void DispatchPointDataRequest::reportStatusToLog()
 {
     CtiLockGuard<CtiLogger> logger_guard(dout);

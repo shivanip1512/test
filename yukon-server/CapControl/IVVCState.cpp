@@ -189,3 +189,13 @@ bool IVVCState::isShowNoLtcAttachedMsg() const
 {
     return _showNoLtcAttachedMsg;
 }
+
+void IVVCState::setReportedControllers(const std::set<long>& reportedControllers)
+{
+    _reportedControllers = reportedControllers;
+}
+
+const std::set<long>& IVVCState::getReportedControllers()
+{
+    return _reportedControllers;
+}

@@ -199,6 +199,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             if (state->isScannedRequest())
             {
+                //We will be waiting for some scan responses in this request.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -207,26 +208,12 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
             else
             {
-                //Regular request. Ask dispatch for the current points values.
+                //Regular request. Dispatch will send all current values to us.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " IVVC Algorithm: Group Request made in IVVC State" << endl;
                 }
-/*
-                //We did not Scan for these points. Ask dispatch for them instead.
-                CtiCommandMsg* cmdMsg = new CtiCommandMsg();
-                cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
-
-                CtiCommandMsg::CtiOpArgList_t points;
-                for each (PointRequest pointRequest in pointRequests)
-                {
-                    points.push_back(pointRequest.pointId);
-                }
-
-                cmdMsg->setOpArgList(points);
-                dispatchConnection->WriteConnQue(cmdMsg);
-*/
             }
 
             //reset this flag.
@@ -250,58 +237,41 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 PointDataRequestPtr request = state->getGroupRequest();
 
-                if (request->isComplete() || (request->ratioComplete(CbcRequestType) > _IVVC_BANKS_REPORTING_RATIO))
+                //Check for stale data.
+                if (checkForStaleData(request,timeNow))
                 {
-                    //Check for stale data.
-                    bool stale = checkForStaleData(request,timeNow);
-                    if (stale == true)
-                    {
-                        //To be considered. Initiate scan if stale? like in 'on new data'
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Stale Data." << endl;
-                            request->reportStatusToLog();
-                        }
-
-                        state->setCommsRetryCount(state->getCommsRetryCount() + 1);
-                        if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
-                        {
-                            state->setCommsRetryCount(0);
-                            state->setState(IVVCState::IVVC_COMMS_LOST);
-                            request->reportStatusToLog();
-
-                            if (_CC_DEBUG & CC_DEBUG_IVVC)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
-                            }
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        if (_CC_DEBUG & CC_DEBUG_IVVC)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Data ok moving on to Analyze." << endl;
-                        }
-                        request->reportStatusToLog();
-                        state->setState(IVVCState::IVVC_ANALYZE_DATA);
-                    }
-                }
-                else
-                {
-                    //scan did not complete in the analysis interval... start over.
-                    //Do we flip to auto and kill heartbeat like above?
+                    //Not starting a new scan here. There should be retrys happening already.
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Scan never completed in time. Resetting to WAIT." << endl;
+                        dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Stale Data." << endl;
+                        request->reportStatusToLog();
+                    }
+
+                    state->setCommsRetryCount(state->getCommsRetryCount() + 1);
+                    if (state->getCommsRetryCount() >= _IVVC_COMMS_RETRY_COUNT)
+                    {
+                        state->setCommsRetryCount(0);
+                        state->setState(IVVCState::IVVC_COMMS_LOST);
+                        request->reportStatusToLog();
+
+                        if (_CC_DEBUG & CC_DEBUG_IVVC)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << endl;
+                        }
+                    }
+                    break;
+                }
+                else
+                {
+                    if (_CC_DEBUG & CC_DEBUG_IVVC)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " IVVC Algorithm: Analysis Interval: Data ok moving on to Analyze." << endl;
                     }
                     request->reportStatusToLog();
-                    state->setState(IVVCState::IVVC_WAIT);
-                    break;
+                    state->setState(IVVCState::IVVC_ANALYZE_DATA);
                 }
             }
             else
@@ -413,9 +383,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             CtiTime scanTime = state->getTimeStamp();
             CtiTime now;
 
-            if (request->isComplete() || (request->ratioComplete(CbcRequestType) > _IVVC_BANKS_REPORTING_RATIO))
-
-            //if (request->isComplete())
+            //We only check to make sure enough banks are reporting here. The
+            if ((request->isComplete()))
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
@@ -423,19 +392,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     dout << CtiTime() << " IVVC Algorithm: Post Scan Complete. " << endl;
                 }
 
-                // Record data
-                CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-                int bankId = state->getControlledBankId();
-                CtiCCCapBankPtr bank = store->getCapBankByPaoId(bankId);
-                if (bank == NULL)
-                {
-                    //Log Error
-                    state->setState(IVVCState::IVVC_WAIT);
-                    break;
-                }
+                std::set<long> reportedControllers = state->getReportedControllers();
 
-                // IS THIS RIGHT?
-                subbus->updatePointResponseDeltas();
+                subbus->updatePointResponseDeltas(reportedControllers);
 
                 state->setState(IVVCState::IVVC_WAIT);
             }
@@ -486,111 +445,85 @@ bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTim
     double ltcRatio = 1.0;
     double otherRatio = 1.0;
 
-    double ratio = request->ratioComplete(LtcRequestType);
+    if (checkForStaleData(request,timeNow,ltcRatio,LtcRequestType))
+    {
+        return true;
+    }
 
-    if (ratio < ltcRatio)
+    if (checkForStaleData(request,timeNow,otherRatio,OtherRequestType))
+    {
+        return true;
+    }
+
+    if (checkForStaleData(request,timeNow,_IVVC_BANKS_REPORTING_RATIO,CbcRequestType))
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool IVVCAlgorithm::checkForStaleData(const PointDataRequestPtr& request, CtiTime timeNow, double desiredRatio, PointRequestType pointRequestType)
+{
+    double ratio = request->ratioComplete(pointRequestType);
+    if (ratio < desiredRatio)
     {
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " IVVC Algorithm: Missing points from LtcRequestType" << endl;
+            dout << CtiTime() << " IVVC Algorithm: Incomplete data. Received " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << endl;
         }
         return true;
     }
     else
     {
-        PointValueMap valueMap = request->getPointValues(LtcRequestType);
-        int stalePoints = 0;
-
-        for each (const PointValueMap::value_type& pv in valueMap)
-        {
-            if (pv.second.timestamp < (timeNow - (_POINT_AGE*60)))
-            {
-                ++stalePoints;
-            }
-        }
-        double actualRatio = ((valueMap.size()-stalePoints)/(double)valueMap.size());
-        bool staleData = actualRatio < ltcRatio;
-        if (staleData)
-        {
-            if (_CC_DEBUG & CC_DEBUG_IVVC)
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " IVVC Algorithm: Request type ltc failed the stale ratio: " << actualRatio << " < " << ltcRatio << endl;
-            }
-            return true;
-        }
-    }
-
-    //Build the stale check into the complete function?
-    ratio = request->ratioComplete(OtherRequestType);
-    if (ratio < otherRatio)
-    {
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " IVVC Algorithm: Missing points from OtherRequestType" << endl;
+            dout << CtiTime() << " IVVC Algorithm: Enough data received for Request Type: " << pointRequestType << endl;
         }
-        return true;
-    }
-    else
-    {
-        PointValueMap valueMap = request->getPointValues(OtherRequestType);
-        int stalePoints = 0;
+
+        PointValueMap valueMap = request->getPointValues(pointRequestType);
+        int currentData = 0;
+        set<long> stalePoints;
+
 
         for each (const PointValueMap::value_type& pv in valueMap)
         {
-            if (pv.second.timestamp < (timeNow - (_POINT_AGE*60)))
+            if (pv.second.timestamp > (timeNow - (_POINT_AGE*60)))
             {
-                ++stalePoints;
+                ++currentData;
+            }
+            else
+            {
+                stalePoints.insert(pv.first);
             }
         }
-        double actualRatio = ((valueMap.size()-stalePoints)/(double)valueMap.size());
-        bool staleData = actualRatio < otherRatio;
-        if (staleData)
+
+        ratio = currentData/(double)valueMap.size();
+        if (ratio < desiredRatio)
         {
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " IVVC Algorithm: Request type other failed the stale ratio: " << actualRatio << " < " << otherRatio << endl;
+                dout << CtiTime() << " IVVC Algorithm: Stale data. Received updates for " << ratio*100 << "%. Minimum was " << desiredRatio*100 << "%, for Request Type: " << pointRequestType << endl;
             }
             return true;
         }
-    }
-
-    ratio = request->ratioComplete(CbcRequestType);
-    if (ratio < _IVVC_BANKS_REPORTING_RATIO/100.0)
-    {
-        if (_CC_DEBUG & CC_DEBUG_IVVC)
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " IVVC Algorithm: Missing points from CbcRequestType" << endl;
-        }
-        return true;
-    }
-    else
-    {
-        PointValueMap valueMap = request->getPointValues(CbcRequestType);
-        int stalePoints = 0;
-
-        for each (const PointValueMap::value_type& pv in valueMap)
-        {
-            if (pv.second.timestamp < (timeNow - (_POINT_AGE/*minutes*/*60)))
-            {
-                ++stalePoints;
-            }
-        }
-
-        double actualRatio = ((valueMap.size()-stalePoints)/(double)valueMap.size());
-        bool staleData = actualRatio < _IVVC_BANKS_REPORTING_RATIO/100.0;
-        if (staleData)
+        else
         {
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " IVVC Algorithm: Request type cbc failed the stale ratio: " << actualRatio << " < " << _IVVC_BANKS_REPORTING_RATIO/100.0 << endl;
+                dout << CtiTime() << " IVVC Algorithm: Data Current for Request Type: " << pointRequestType << endl;
             }
-            return true;
+
+            //Removing stale points from the request.
+            for each (long pointId in stalePoints)
+            {
+                request->removePointValue(pointId);
+            }
+
         }
     }
 
@@ -963,16 +896,24 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             if ( !stringCompareIgnoreCase(currentBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
                  !currentBank->getLocalControlFlag() &&
                  !currentBank->getDisableFlag() &&
-                 (isCapBankOpen || isCapBankClosed) )
+                 (isCapBankOpen || isCapBankClosed) &&
+                 (deltas.find(currentBank->getTwoWayPoints()->getVoltageId()) != deltas.end()))
             {
                 std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
 
+                std::set<long> reportedIds;
                 for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
                 {
                     CtiCCPointResponsePtr currentResponse = *prb;
-
-                    deltas[ currentResponse->getPointId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                    if (deltas.find(currentResponse->getPointId()) != deltas.end())
+                    {
+                        reportedIds.insert(currentResponse->getPointId());
+                        deltas[ currentResponse->getPointId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
+                    }
                 }
+
+                //Store away the ids that responded for the POST SCAN LOOP state to use when it records deltas
+                state->setReportedControllers(reportedIds);
 
                 state->_estimated[currentBank->getPaoId()].capbank = currentBank;
 
@@ -988,8 +929,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                     for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
                     {
                         CtiCCPointResponsePtr currentResponse = *prb;
-
-                        dout << currentResponse->getPointId() << " : " << deltas[ currentResponse->getPointId() ].value << endl;
+                        if (deltas.find(currentResponse->getPointId()) != deltas.end())
+                        {
+                            dout << currentResponse->getPointId() << " : " << deltas[ currentResponse->getPointId() ].value << endl;
+                        }
                     }
                 }
 
@@ -1074,7 +1017,10 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         {
             CtiCCPointResponsePtr currentResponse = *prb;
 
-            currentResponse->setPreOpValue( pointValues[ currentResponse->getPointId() ].value );
+            if (deltas.find(currentResponse->getPointId()) != deltas.end())
+            {
+                currentResponse->setPreOpValue( pointValues[ currentResponse->getPointId() ].value );
+            }
         }
 
         state->_estimated[operatePaoId].operated = true;

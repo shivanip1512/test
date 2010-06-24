@@ -75,6 +75,9 @@ class IVVCState
         void setShowNoLtcAttachedMsg(const bool flag);
         bool isShowNoLtcAttachedMsg() const;
 
+        void setReportedControllers(const std::set<long>& reportedControllers);
+        const std::set<long>& getReportedControllers();
+
         struct EstimatedData
         {
             bool            operated;
@@ -114,6 +117,7 @@ class IVVCState
         bool _showNoLtcAttachedMsg;
 
         unsigned long _commsRetryCount;
+        std::set<long> _reportedControllers;
 };
 
 typedef boost::shared_ptr<IVVCState> IVVCStatePtr;
