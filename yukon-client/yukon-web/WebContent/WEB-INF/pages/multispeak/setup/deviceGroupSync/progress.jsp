@@ -47,26 +47,23 @@
 		</tags:nameValueContainer2>
 		
 		<br>
-	
-		<%-- CANCEL --%>
-		<div id="cancelDiv" style="display:none;">
-			<form id="cancelForm" action="/spring/multispeak/setup/deviceGroupSync/cancel" method="post">
-		   		<tags:slowInput2 key="cancelButton" formId="cancelForm"/>
-		   	</form>
-	   	</div>
-	   	
-	   	<%-- DONE BUTTON --%>
-		<div id="doneDiv" style="display:none;">
-			<form id="doneForm" action="/spring/multispeak/setup/deviceGroupSync/done" method="post">
-		   		<tags:slowInput2 key="doneButton" formId="doneForm"/>
-		   	</form>
-	   	</div>
+		
+		<%-- BACK/CANCEL BUTTONS --%>
+		<form id="backToHomeForm" action="/spring/multispeak/setup/deviceGroupSync/done" method="post">
+		
+			<button name="backToHome" class="formSubmit">
+				<i:inline key=".backToHomeButton"/>
+			</button>
+			
+			<button name="cancel" class="formSubmit" id="cancelButton">
+				<i:inline key=".cancelButton"/>
+			</button>
+			
+	   	</form>
 	
 	</tags:formElementContainer>
 	
-	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelDiv'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['doneDiv'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
-	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelDiv'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
-	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['doneDiv'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
+	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelButton'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
+	<cti:dataUpdaterCallback function="toggleElementsWhenTrue(['cancelButton'], false)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_NOT_RUNNING" />
 
 </cti:standardPage>

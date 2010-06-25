@@ -1,6 +1,8 @@
 package com.cannontech.web.multispeak.deviceGroupSync;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorT
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Lists;
 
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
 @RequestMapping("/setup/deviceGroupSync/*")
@@ -31,17 +34,22 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping
     public String home(ModelMap modelMap) {
         
-		// sync in progress go to progress page
-		if (multispeakDeviceGroupSyncService.isProgressAvailable()) {
-			return "redirect:progress";
-		}
+		MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
 		
 		// start page
         MultispeakDeviceGroupSyncType[] deviceGroupSyncTypes = MultispeakDeviceGroupSyncType.values();
         modelMap.addAttribute("deviceGroupSyncTypes", deviceGroupSyncTypes);
         
         Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
-        modelMap.addAttribute("lastSyncInstants", lastSyncInstants);
+        
+        List<LastRunTimestampValue> lastRunTimestampValues = Lists.newArrayListWithCapacity(lastSyncInstants.size());
+        for (Entry<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstantEntry : lastSyncInstants.entrySet()) {
+        	
+        	LastRunTimestampValue lastRunTimestampValue = new LastRunTimestampValue(lastSyncInstantEntry.getKey(), lastSyncInstantEntry.getValue(), progress);
+        	lastRunTimestampValues.add(lastRunTimestampValue);
+        }
+        modelMap.addAttribute("lastRunTimestampValues", lastRunTimestampValues);
+        
         
         return "setup/deviceGroupSync/home.jsp";
     }
@@ -87,8 +95,8 @@ public class MultispeakDeviceGroupSyncController {
 	}
 	
 	// CANCEL
-	@RequestMapping
-    public String cancel(ModelMap modelMap, FlashScope flashScope) {
+	@RequestMapping(params="cancel")
+    public String done(ModelMap modelMap, FlashScope flashScope) {
         
 		multispeakDeviceGroupSyncService.getProgress().cancel();
 		
@@ -97,11 +105,9 @@ public class MultispeakDeviceGroupSyncController {
         return "redirect:progress";
     }
 	
-	// DONE
-	@RequestMapping
-    public String done(ModelMap modelMap, FlashScope flashScope) {
-        
-		multispeakDeviceGroupSyncService.reset();
+	// BACK TO HOME
+	@RequestMapping(params="backToHome")
+    public String done(ModelMap modelMap) {
 		
         return "redirect:home";
     }

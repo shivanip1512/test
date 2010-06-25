@@ -20,7 +20,7 @@
     
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.startContainer.title">Synchronize Device Groups</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.selectSyncType">Select Synchronization Type</entry>
-    <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.startButton.label">Sync Now</entry>
+    <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.startButton">Sync Now</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.lastSyncCompleted">Last Sync Completed</entry>
     
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncHome.error.invalidSyncType">No synchronization type selected.</entry>
@@ -97,8 +97,8 @@
     
     <!-- progress.jsp -->
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.pageName">Device Group Sync Progress</entry>
-    <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.cancelButton.label">Cancel Sync</entry>
-    <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.doneButton.label">Done</entry>
+    <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.cancelButton">Cancel Sync</entry>
+    <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.backToHomeButton">Back To Main Page</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.cancelOk">Synchronization successfully canceled.</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.progressDetailContainer.title">Progress Details</entry>
     <entry key="yukon.web.modules.multispeak.deviceGroupSyncProgress.infoLabel.status">Status</entry>

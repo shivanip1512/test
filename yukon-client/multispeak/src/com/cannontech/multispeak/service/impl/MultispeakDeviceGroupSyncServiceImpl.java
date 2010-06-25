@@ -62,19 +62,9 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
 		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
 	}
 	
-	// RESET
-	public void reset() {
-		progress = null;
-	}
-	
 	public MultispeakDeviceGroupSyncProgress getProgress() {
 		return progress;
 	};
-	
-	// IS SYNC IN PROGRESS
-	public boolean isProgressAvailable() {
-		return progress != null;
-	}
 	
 	// LAST SYNC INSTANTS
 	public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants() {

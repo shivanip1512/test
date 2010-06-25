@@ -2,10 +2,29 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="deviceGroupSync" tagdir="/WEB-INF/tags/deviceGroupSync" %>
 
 <cti:standardPage module="multispeak" page="deviceGroupSyncHome">
 
 	<cti:includeCss link="/WebConfig/yukon/styles/multispeak/deviceGroupSync.css"/>
+	<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+	
+	<script type="text/javascript">
+	
+		function toggleSyncNowControls() {
+			return function(data) {
+		        var value = data['value'];
+		        if (value == 'true') {
+		            $('deviceGroupSyncTypeSelect').disable();
+		            $('startButton').disabled = true;
+		        } else {
+		        	$('deviceGroupSyncTypeSelect').enable();
+		            $('startButton').disabled = false;
+			    }
+		    };
+		}
+	
+	</script>
 	
 	<tags:boxContainer2 nameKey="startContainer">
 	
@@ -17,34 +36,29 @@
 					<br>
 					<form id="startForm" action="/spring/multispeak/setup/deviceGroupSync/start" method="post">
 						<span id="syncNowContent" class="nonwrapping">
-			    		<select name="deviceGroupSyncType">
+			    		<select name="deviceGroupSyncType" id="deviceGroupSyncTypeSelect">
 			    			<option value=""><i:inline key=".selectSyncType"/></option>
 			    			<c:forEach var="type" items="${deviceGroupSyncTypes}">
 			    				<option value="${type}"><cti:msg key="${type.formatKey}"/></option>
 			    			</c:forEach>
 			    		</select>
-			    		<tags:slowInput2 key="startButton" formId="startForm"/>
+			    		<button id="startButton" class="formSubmit">
+			    			<i:inline key=".startButton"/>
+			    		</button>
 			    		</span>
 			    	</form>
 			    	
 			    	<%-- last run --%>
 			    	<br>
-			    	<table class="compactResultsTable">
+			    	<table class="compactResultsTable lastSync">
 			    	
 			    		<tr><th colspan="2"><i:inline key=".lastSyncCompleted"/></th></tr>
 			    	
-			    		<c:forEach var="entry" items="${lastSyncInstants}">
+			    		<c:forEach var="lastRunTimestampValue" items="${lastRunTimestampValues}">
 			    			<tr>
-				    			<td><cti:msg key="${entry.key}"/></td>
+				    			<td class="type"><cti:msg key="${lastRunTimestampValue.type}"/></td>
 				    			<td>
-				    				<c:choose>
-				    					<c:when test="${empty entry.value}">
-				    						<cti:msg2 key="defaults.na"/>
-				    					</c:when>
-					    				<c:otherwise>
-						    				<cti:formatDate value="${entry.value}" type="FULL"/>
-					    				</c:otherwise>
-					    			</c:choose>
+				    				<deviceGroupSync:lastCompletedSyncLink lastRunTimestampValue="${lastRunTimestampValue}"/>
 				    			</td>
 				    		</tr>
 			    		</c:forEach>
@@ -62,5 +76,7 @@
 		</table>
 	
 	</tags:boxContainer2>
+	
+	<cti:dataUpdaterCallback function="toggleSyncNowControls()" initialize="true" value="MSP_DEVICE_GROUP_SYNC/IS_RUNNING" />
 	
 </cti:standardPage>

@@ -5,11 +5,16 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
@@ -26,6 +31,8 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     private ObjectFormattingService objectFormattingService;
     private MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService;
     private MeterDao meterDao;
+    private DateFormattingService dateFormattingService;
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private ImmutableMap<MultispeakDeviceGroupSyncProgressStatus, String> statusStyleClassNameMap;
     
@@ -44,11 +51,6 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {
 
         MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
-        
-        // should only occur during an updater last gasp just after a done-action, this basically just avoids seeing a null exception error in the log
-        if (progress == null) {
-        	return "";
-        }
         
         MultispeakDeviceGroupSyncUpdaterTypeEnum updaterType = MultispeakDeviceGroupSyncUpdaterTypeEnum.valueOf(updaterTypeStr);
         MultispeakDeviceGroupSyncUpdaterHandler handler = handlersMap.get(updaterType);
@@ -72,6 +74,10 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
 
+        		if (progress == null) {
+        			return 0;
+        		}
+        		
         		int meterCount = meterDao.getMeterCount();
         		int processedCount = progress.getMetersProcessedCount();
         		
@@ -99,7 +105,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.SUBSTATION_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION);
+        		return progress != null ? progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION) : 0;
         	}
         });
         
@@ -107,7 +113,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.SUBSTATION_NO_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION);
+        		return progress != null ? progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION) : 0;
         	}
         });
         
@@ -115,7 +121,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.BILLING_CYCLE_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE);
+        		return progress != null ? progress.getChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE) : 0;
         	}
         });
         
@@ -123,7 +129,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.BILLING_CYCLE_NO_CHANGE_COUNT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE);
+        		return progress != null ? progress.getNoChangeCount(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE) : 0;
         	}
         });
         
@@ -131,7 +137,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.IS_RUNNING, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.isRunning();
+        		return progress != null ? progress.isRunning() : false;
         	}
         });
         
@@ -139,7 +145,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.IS_NOT_RUNNING, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return !progress.isRunning();
+        		return progress != null ? !progress.isRunning() : true;
         	}
         });
         
@@ -147,7 +153,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.IS_ABORTED, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.isHasException() || progress.isCanceled();
+        		return progress != null ? progress.isHasException() || progress.isCanceled() : false;
         	}
         });
         
@@ -155,7 +161,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return progress.getStatus(); // status is a DisplayableEnum
+        		return progress != null ? progress.getStatus() : null; // status is a DisplayableEnum
         	}
         });
         
@@ -163,7 +169,91 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_CLASS, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		return statusStyleClassNameMap.get(progress.getStatus());
+        		return progress != null ? statusStyleClassNameMap.get(progress.getStatus()) : null;
+        	}
+        });
+        
+        // HAS_LINKABLE_PROGRESS_SUBSTATION
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.HAS_LINKABLE_PROGRESS_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		
+        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+        			return true;
+        		}
+        		return false;
+        	}
+        });
+        
+        // NO_LINKABLE_PROGRESS_SUBSTATION
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.NO_LINKABLE_PROGRESS_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		
+        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+        			return true;
+        		}
+        		return false;
+        	}
+        });
+        
+        // HAS_LINKABLE_PROGRESS_BILLING_CYCLE
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.HAS_LINKABLE_PROGRESS_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		
+        		if (progress != null && progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+        			return true;
+        		}
+        		return false;
+        	}
+        });
+        
+        // NO_LINKABLE_PROGRESS_BILLING_CYCLE
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.NO_LINKABLE_PROGRESS_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		
+        		if (progress == null || !progress.getType().getProcessorTypes().contains(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+        			return true;
+        		}
+        		return false;
+        	}
+        });
+        
+        // LAST_COMPLETED_SYNC_SUBSTATION
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		
+        		Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
+        		Instant instant = lastSyncInstants.get(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION);
+        		
+        		if (instant == null) {
+        			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        			return messageSourceAccessor.getMessage("yukon.web.defaults.na");
+        		}
+        		
+        		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
+        		return dateStr;
+        	}
+        });
+
+        // LAST_COMPLETED_SYNC_BILLING_CYCLE
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		
+        		Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
+        		Instant instant = lastSyncInstants.get(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE);
+        		
+        		if (instant == null) {
+        			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        			return messageSourceAccessor.getMessage("yukon.web.defaults.na");
+        		}
+        		
+        		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
+        		return dateStr;
         	}
         });
     }
@@ -181,5 +271,15 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
 		this.meterDao = meterDao;
+	}
+    
+    @Autowired
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+		this.dateFormattingService = dateFormattingService;
+	}
+    
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+		this.messageSourceResolver = messageSourceResolver;
 	}
 }

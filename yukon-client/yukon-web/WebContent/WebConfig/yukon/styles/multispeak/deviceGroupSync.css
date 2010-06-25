@@ -31,3 +31,7 @@ table.homeLayout td.syncNow {
 table.homeLayout td.instructions {
 	width:70%;
 }
+
+table.lastSync td.type {
+	width:30%;
+}
