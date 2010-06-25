@@ -630,15 +630,15 @@
 <error code="98">
 	<category>Yukon System</category> 
 	<porter>Bad Nexus Specification</porter>
-    <description>A connection to the TCP-IP device could not be established or a current connection failed.</description>
+    <description>A connection to the TCP/IP device could not be established or a current connection failed.</description>
     <troubleshooting>
 		<ul>
 			<li>Attempt the command again</li>
-			<li>Confirm communication with TCP-IP devices by 'pinging' the IP address of the devices. Check the setup of all devices found unreachable.</li>
-			<li>Confirm the Yukon configuration of the TCP-IP device and communications port are correct.</li>
-			<li>Confirm the devices configuration is correct.</li> 
-			<li>Physical inspect any unreachable devices for hardware issues.</li>
-			<li>Contact 3rd parties to confirm operation of network.</li>
+			<li>Confirm communication with TCP/IP devices by 'pinging' the IP address of the devices. Check the setup of all devices found unreachable.</li>
+			<li>Confirm the Yukon configuration of the TCP/IP device and communications port are correct.</li>
+			<li>Confirm the device's configuration is correct.</li> 
+			<li>Physically inspect any unreachable devices for hardware issues.</li>
+			<li>Contact third parties to confirm operation of network.</li>
 			<li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
 		</ul>
 	</troubleshooting>
@@ -647,15 +647,15 @@
 <error code="99">
 	<category>Yukon System</category> 
 	<porter>Error Writing to Port</porter>
-    <description>A connection to the TCP-IP device could not be established or a current connection failed.</description>
+    <description>A connection to the TCP/IP device could not be established or a current connection failed.</description>
     <troubleshooting>
 		<ul>
 			<li>Attempt the command again</li>
-			<li>Confirm communication with TCP-IP devices by 'pinging' the IP address of the devices. Check the setup of all devices found unreachable.</li>
-			<li>Confirm the Yukon configuration of the TCP-IP device and communications port are correct.</li>
-			<li>Confirm the devices configuration is correct.</li> 
-			<li>Physical inspect any unreachable devices for hardware issues.</li>
-			<li>Contact 3rd parties to confirm operation of network.</li>
+			<li>Confirm communication with TCP/IP devices by 'pinging' the IP address of the devices. Check the setup of all devices found unreachable.</li>
+			<li>Confirm the Yukon configuration of the TCP/IP device and communications port are correct.</li>
+			<li>Confirm the device's configuration is correct.</li> 
+			<li>Physically inspect any unreachable devices for hardware issues.</li>
+			<li>Contact third parties to confirm operation of network.</li>
 			<li>If the problem persists, please contact Technical Support at 1-800-815-2258</li>
 		</ul>
 	</troubleshooting>
