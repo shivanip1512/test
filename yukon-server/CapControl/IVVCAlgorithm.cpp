@@ -869,15 +869,15 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     CtiFeeder_vec& feeders = subbus->getCCFeeders();
 
     // for each feeder
+    std::set<long> reportedIds;
 
     for ( CtiFeeder_vec::iterator fb = feeders.begin(), fe = feeders.end(); fb != fe; ++fb )
     {
         CtiCCFeederPtr currentFeeder = *fb;
-
         CtiCCCapBank_SVector& capbanks =  currentFeeder->getCCCapBanks();
 
-        // for each capbank
 
+        // for each capbank
         for ( CtiCCCapBank_SVector::iterator cb = capbanks.begin(), ce = capbanks.end(); cb != ce; ++cb )
         {
             CtiCCCapBankPtr currentBank = *cb;
@@ -901,7 +901,6 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             {
                 std::vector <CtiCCPointResponsePtr>& responses = currentBank->getPointResponse();
 
-                std::set<long> reportedIds;
                 for ( std::vector <CtiCCPointResponsePtr>::iterator prb = responses.begin(), pre = responses.end(); prb != pre; ++prb )
                 {
                     CtiCCPointResponsePtr currentResponse = *prb;
@@ -911,9 +910,6 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                         deltas[ currentResponse->getPointId() ].value += ( ( isCapBankOpen ? 1.0 : -1.0 ) * currentResponse->getDelta() );
                     }
                 }
-
-                //Store away the ids that responded for the POST SCAN LOOP state to use when it records deltas
-                state->setReportedControllers(reportedIds);
 
                 state->_estimated[currentBank->getPaoId()].capbank = currentBank;
 
@@ -989,6 +985,9 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         }
     }
 
+    //Store away the ids that responded for the POST SCAN LOOP state to use when it records deltas
+    state->setReportedControllers(reportedIds);
+
     // Search for the minimum bus weight
 
     long    operatePaoId = -1;
@@ -1017,7 +1016,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         {
             CtiCCPointResponsePtr currentResponse = *prb;
 
-            if (deltas.find(currentResponse->getPointId()) != deltas.end())
+            if (reportedIds.find(currentResponse->getPointId()) != reportedIds.end())
             {
                 currentResponse->setPreOpValue( pointValues[ currentResponse->getPointId() ].value );
             }
