@@ -4068,7 +4068,7 @@ INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeN
         {
             if( config_byte & 0x04 )
             {
-                resultStr += "Reconnect button disabled\n";
+                resultStr += "Autoreconnect enabled\n";
             }
 
             if( config_byte & 0x08 && demand_threshhold.value )
@@ -4339,7 +4339,7 @@ INT CtiDeviceMCT410::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 
             if( DSt.Message[3] & 0x01 )      descriptor += "DST observance enabled\n";
             if( DSt.Message[3] & 0x02 )      descriptor += "LED test enabled\n";
-            if( DSt.Message[3] & 0x04 )      descriptor += "Reconnect button disabled\n";
+            if( DSt.Message[3] & 0x04 )      descriptor += "Autoreconnect enabled\n";
 
             if(      DSt.Message[3] & 0x08 ) descriptor += "Demand limit mode active\n";
             else if( DSt.Message[3] & 0x10 ) descriptor += "Disconnect cycling mode active\n";
