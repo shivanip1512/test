@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
 import com.cannontech.dr.program.service.ConstraintViolations;
@@ -67,7 +67,7 @@ public class StopProgramController extends ProgramControllerBase {
             backingBean.setStopDate(new Date());
         }
 
-        ControllablePao program = programService.getProgram(backingBean.getProgramId());
+        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
         model.addAttribute("program", program);
         boolean stopGearAllowed = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_STOP_GEAR_ACCESS,
                                                                 userContext.getYukonUser());
@@ -91,7 +91,7 @@ public class StopProgramController extends ProgramControllerBase {
             return details(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
-        ControllablePao program = programService.getProgram(backingBean.getProgramId());
+        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      program,
                                                      Permission.LM_VISIBLE,
@@ -121,7 +121,7 @@ public class StopProgramController extends ProgramControllerBase {
             return details(model, true, backingBean, bindingResult, userContext, flashScope);
         }
 
-        ControllablePao program = programService.getProgram(backingBean.getProgramId());
+        DisplayablePao program = programService.getProgram(backingBean.getProgramId());
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser,
                                                      program,
@@ -163,11 +163,11 @@ public class StopProgramController extends ProgramControllerBase {
             @ModelAttribute("backingBean") StopMultipleProgramsBackingBean backingBean,
             BindingResult bindingResult, YukonUserContext userContext, FlashScope flashScope) {
         
-        UiFilter<ControllablePao> filter = null;
+        UiFilter<DisplayablePao> filter = null;
 
         String paoName = null;
         if (backingBean.getControlAreaId() != null) {
-            ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
@@ -177,7 +177,7 @@ public class StopProgramController extends ProgramControllerBase {
             filter = new ForControlAreaFilter(backingBean.getControlAreaId());
         }
         if (backingBean.getScenarioId() != null) {
-            ControllablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,
@@ -194,10 +194,10 @@ public class StopProgramController extends ProgramControllerBase {
             throw new IllegalArgumentException();
         }
 
-        SearchResult<ControllablePao> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             programService.filterPrograms(filter, new DisplayablePaoComparator(),
                                           0, Integer.MAX_VALUE, userContext);
-        List<ControllablePao> programs = searchResult.getResultList();
+        List<DisplayablePao> programs = searchResult.getResultList();
         if (programs == null || programs.size() == 0) {
             model.addAttribute("popupId", "drDialog");
             YukonMessageSourceResolvable error =
@@ -213,7 +213,7 @@ public class StopProgramController extends ProgramControllerBase {
             backingBean.setStopNow(true);
             backingBean.setStopDate(new Date());
             List<ProgramStopInfo> programStopInfo = new ArrayList<ProgramStopInfo>(programs.size());
-            for (ControllablePao program : programs) {
+            for (DisplayablePao program : programs) {
                 programStopInfo.add(new ProgramStopInfo(program.getPaoIdentifier().getPaoId(),
                                                         true));
             }
@@ -239,7 +239,7 @@ public class StopProgramController extends ProgramControllerBase {
         Date stopDate = backingBean.getStopDate();
         Map<Integer, ScenarioProgram> scenarioPrograms = null;
         if (backingBean.getControlAreaId() != null) {
-            ControllablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
+            DisplayablePao controlArea = controlAreaService.getControlArea(backingBean.getControlAreaId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          controlArea,
                                                          Permission.LM_VISIBLE,
@@ -249,7 +249,7 @@ public class StopProgramController extends ProgramControllerBase {
                                                                       controlArea.getName());
         }
         if (backingBean.getScenarioId() != null) {
-            ControllablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
+            DisplayablePao scenario = scenarioDao.getScenario(backingBean.getScenarioId());
             paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                          scenario,
                                                          Permission.LM_VISIBLE,

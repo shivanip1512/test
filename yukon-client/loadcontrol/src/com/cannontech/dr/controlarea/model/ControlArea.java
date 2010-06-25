@@ -3,11 +3,10 @@ package com.cannontech.dr.controlarea.model;
 import java.util.Collections;
 import java.util.List;
 
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.dr.model.ControllablePao;
-import com.cannontech.dr.model.DrActionStateEnum;
 
-public class ControlArea extends ControllablePao {
+public class ControlArea extends DisplayablePaoBase {
 
     private List<ControlAreaTrigger> triggers;
 
@@ -33,10 +32,4 @@ public class ControlArea extends ControllablePao {
     public void setTriggers(List<ControlAreaTrigger> triggers) {
         this.triggers = triggers;
     }
-
-    @Override
-    public DrActionStateEnum getDrActionState() {
-        return DrActionStateEnum.CONTROLLABLE;
-    }
-
 }

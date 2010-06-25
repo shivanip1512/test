@@ -8,7 +8,6 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.DatedObject;
 import com.cannontech.dr.controlarea.model.ControlArea;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.user.YukonUserContext;
 
@@ -19,9 +18,9 @@ public interface ControlAreaService {
     
     public DatedObject<LMControlArea> getDatedControlArea(int controlAreaId);
 
-    public ControllablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
+    public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId);
 
-    public SearchResult<ControllablePao> filterControlAreas(UiFilter<ControllablePao> filter,
+    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
                                                         Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext);

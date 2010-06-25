@@ -6,11 +6,11 @@ import java.util.List;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.model.ControllablePao;
 
-public class LoadGroupsForProgramFilter implements UiFilter<ControllablePao> {
+public class LoadGroupsForProgramFilter implements UiFilter<DisplayablePao> {
     private int programId;
 
     public LoadGroupsForProgramFilter(int programId) {
@@ -18,7 +18,7 @@ public class LoadGroupsForProgramFilter implements UiFilter<ControllablePao> {
     }
 
     @Override
-    public List<PostProcessingFilter<ControllablePao>> getPostProcessingFilters() {
+    public List<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
         return null;
     }
 

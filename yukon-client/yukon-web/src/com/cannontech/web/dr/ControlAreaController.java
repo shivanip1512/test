@@ -26,6 +26,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -45,10 +46,8 @@ import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.dr.controlarea.service.ControlAreaFieldService;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
 import com.cannontech.dr.controlarea.service.TriggerFieldService;
-import com.cannontech.dr.favorites.dao.FavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.filter.ForControlAreaFilter;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -114,9 +113,9 @@ public class ControlAreaController {
             @ModelAttribute("backingBean") ControlAreaListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
 
-        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
+        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
 
-        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService,
+        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService,
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
 
@@ -170,9 +169,9 @@ public class ControlAreaController {
             }
         }
 
-        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        SearchResult<ControllablePao> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             controlAreaService.filterControlAreas(filter, sorter, startIndex,
                                                   backingBean.getItemsPerPage(), userContext);
 
@@ -192,7 +191,7 @@ public class ControlAreaController {
             @ModelAttribute("backingBean") ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE);
@@ -203,7 +202,7 @@ public class ControlAreaController {
             favoritesDao.isFavorite(controlAreaId, userContext.getYukonUser());
         modelMap.addAttribute("isFavorite", isFavorite);
 
-        UiFilter<ControllablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
+        UiFilter<DisplayablePao> detailFilter = new ForControlAreaFilter(controlAreaId);
         programControllerHelper.filterPrograms(modelMap, userContext, backingBean,
                                                result, status, detailFilter);
 
@@ -214,7 +213,7 @@ public class ControlAreaController {
     public String sendEnableConfirm(ModelMap modelMap, int controlAreaId, boolean isEnabled,
             YukonUserContext userContext) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE,
@@ -229,7 +228,7 @@ public class ControlAreaController {
     public String setEnabled(ModelMap modelMap, int controlAreaId, boolean isEnabled,
             YukonUserContext userContext, FlashScope flashScope) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser,
                                                      controlArea,
@@ -255,7 +254,7 @@ public class ControlAreaController {
     public String sendResetPeakConfirm(ModelMap modelMap, int controlAreaId,
                                        YukonUserContext userContext) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE,
@@ -269,7 +268,7 @@ public class ControlAreaController {
     public String resetPeak(ModelMap modelMap, int controlAreaId, YukonUserContext userContext,
                             FlashScope flashScope) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser,
                                                      controlArea,
@@ -289,7 +288,7 @@ public class ControlAreaController {
     public String getChangeTimeWindowValues(ModelMap modelMap, int controlAreaId,
                                             YukonUserContext userContext) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE,
@@ -325,7 +324,7 @@ public class ControlAreaController {
 											  BindingResult bindingResult,
                                               YukonUserContext userContext, FlashScope flashScope) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE,
@@ -350,7 +349,7 @@ public class ControlAreaController {
                                    String stopTime, YukonUserContext userContext, 
                                    FlashScope flashScope) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser,
                                                      controlArea,
@@ -378,7 +377,7 @@ public class ControlAreaController {
     public String getTriggerChangeValues(ModelMap modelMap, int controlAreaId,
                                          YukonUserContext userContext) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(),
                                                      controlArea,
                                                      Permission.LM_VISIBLE,
@@ -410,7 +409,7 @@ public class ControlAreaController {
 								BindingResult bindingResult,
                                 YukonUserContext userContext, FlashScope flashScope) {
 
-        ControllablePao controlArea = controlAreaService.getControlArea(controlAreaId);
+        DisplayablePao controlArea = controlAreaService.getControlArea(controlAreaId);
         LiteYukonUser yukonUser = userContext.getYukonUser();
         paoAuthorizationService.verifyAllPermissions(yukonUser,
                                                      controlArea,

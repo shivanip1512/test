@@ -18,7 +18,8 @@ public class PaoNameDisplayablePaoRowMapper implements
         int paoID = rs.getInt("paobjectId");
         String paoTypeStr = rs.getString("type");
         PaoType paoType = PaoType.getForDbString(paoTypeStr);
-        return new DisplayablePaoBase(new PaoIdentifier(paoID, paoType),
-                                       paoName);
+        
+        PaoIdentifier paoIdentifier = new PaoIdentifier(paoID, paoType);
+        return new DisplayablePaoBase(paoIdentifier, paoName);
     }
 }

@@ -1,4 +1,4 @@
-<%@ attribute name="pao" required="true" type="com.cannontech.dr.model.ControllablePao" %>
+<%@ attribute name="pao" required="true" type="com.cannontech.common.pao.YukonPao" %>
 <%@ tag body-content="empty" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>

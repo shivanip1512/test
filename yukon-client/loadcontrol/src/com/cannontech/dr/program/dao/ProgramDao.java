@@ -1,7 +1,7 @@
 package com.cannontech.dr.program.dao;
 
-import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.common.pao.DisplayablePao;
 
 public interface ProgramDao {
-    public ControllablePao getProgram(int programId);
+    public DisplayablePao getProgram(int programId);
 }

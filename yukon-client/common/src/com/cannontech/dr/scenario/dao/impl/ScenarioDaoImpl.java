@@ -8,12 +8,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcOperations;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
-import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.google.common.collect.Maps;
 
@@ -21,29 +22,27 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	
     private YukonJdbcOperations yukonJdbcOperations;
 
-    private final static String scenarioQuery =
-        "SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ScenarioProgramCount "+
-        "FROM YukonPAObject PAO "+
-        "LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId "+
-        "WHERE PAO.Type = '"+ PaoType.LM_SCENARIO.getDatabaseRepresentation() +"' ";
+    private final static String singleScenarioByIdQuery =
+        "SELECT paObjectId, paoName FROM yukonPAObject"
+        + " WHERE type = 'LMSCENARIO'"
+        + " AND paObjectId = ?";
+    private final static String scenariosByProgramIdQuery =
+        "SELECT paObjectId, paoName FROM yukonPAObject"
+        + " WHERE type = 'LMSCENARIO'"
+        + " AND paObjectId IN (SELECT scenarioId FROM lmControlScenarioProgram"
+        + " WHERE programId = ?)";
 
-    private final static ParameterizedRowMapper<Scenario> scenarioRowMapper =
-        new ParameterizedRowMapper<Scenario>() {
+    private final static ParameterizedRowMapper<DisplayablePao> scenarioRowMapper =
+        new ParameterizedRowMapper<DisplayablePao>() {
         @Override
-        public Scenario mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
-            
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_SCENARIO);
-            String paoName = rs.getString("paoName");
-            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
-            Scenario retVal = new Scenario(paoId,
-                                           paoName,
-                                           scenarioProgramCount);
-            
+            DisplayablePao retVal = new DisplayablePaoBase(paoId,
+                                                           rs.getString("paoName"));
             return retVal;
-        }
-    };
+        }};
 
     private final static ParameterizedRowMapper<ScenarioProgram> scenarioProgramRowMapper =
         new ParameterizedRowMapper<ScenarioProgram>() {
@@ -56,40 +55,32 @@ public class ScenarioDaoImpl implements ScenarioDao {
                                                                   rs.getInt("stopOffset"),
                                                                   rs.getInt("startGear"));
             return scenarioProgram;
-        }
-    };
+        }};
 
     @Override
-    public Scenario getScenario(int scenarioId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
-        sql.append("AND PAO.PAObjectId ").eq(scenarioId);
-        sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
-
-        Scenario scenario = yukonJdbcOperations.queryForObject(sql,
-                                                               scenarioRowMapper);
-        
-        return scenario;
+    public DisplayablePao getScenario(int scenarioId) {
+        return yukonJdbcOperations.queryForObject(singleScenarioByIdQuery,
+                                                 scenarioRowMapper,
+                                                 scenarioId);
     }
     
     @Override
-    public List<Scenario> getAllScenarios() {
+    public List<DisplayablePao> getAllScenarios() {
     	
-    	SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
-        sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
-
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ypo.PAObjectID, ypo.paoName");
+    	sql.append("FROM YukonPaObject ypo");
+    	sql.append("WHERE ypo.Type = ").appendArgument("LMSCENARIO");
+    	
         return yukonJdbcOperations.query(sql, scenarioRowMapper);
     }
 
     @Override
-    public List<Scenario> findScenariosForProgram(int programId) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder(scenarioQuery);
-        sql.append("AND PAO.PAObjectId IN (SELECT ScenarioId ");
-        sql.append("                       FROM LMControlScenarioProgram ");
-        sql.append("                       WHERE ProgramId").eq(programId).append(")");
-        sql.append("GROUP BY PAO.PAObjectId, PAO.PAOName");                                       
-        
-        return yukonJdbcOperations.query(sql, scenarioRowMapper);
+    public List<DisplayablePao> findScenariosForProgram(int programId) {
+        List<DisplayablePao> retVal = yukonJdbcOperations.query(scenariosByProgramIdQuery,
+                                                               scenarioRowMapper,
+                                                               programId);
+        return retVal;
     }
 
     @Override

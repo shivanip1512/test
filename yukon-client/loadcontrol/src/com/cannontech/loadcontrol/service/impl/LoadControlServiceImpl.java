@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
@@ -22,9 +23,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
-import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.model.ScenarioProgram;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.ProgramUtils;
@@ -315,10 +314,10 @@ public class LoadControlServiceImpl implements LoadControlService {
 	@Override
     public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
         
-		List<Scenario> allScenarios = scenarioDao.getAllScenarios();
+		List<DisplayablePao> allScenarios = scenarioDao.getAllScenarios();
 		List<ScenarioProgramStartingGears> allScenarioProgramStartingGears = Lists.newArrayListWithExpectedSize(allScenarios.size());
 		
-		for (ControllablePao scenario : allScenarios) {
+		for (DisplayablePao scenario : allScenarios) {
 			
 			int scenarioId = scenario.getPaoIdentifier().getPaoId();
 			if (scenarioIsVisibleToUser(user, scenario)) {

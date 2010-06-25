@@ -6,11 +6,11 @@ import java.util.List;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.model.ControllablePao;
 
-public class NameFilter implements UiFilter<ControllablePao> {
+public class NameFilter implements UiFilter<DisplayablePao> {
     private String name;
 
     public NameFilter(String name) {
@@ -18,7 +18,7 @@ public class NameFilter implements UiFilter<ControllablePao> {
     }
 
     @Override
-    public List<PostProcessingFilter<ControllablePao>> getPostProcessingFilters() {
+    public List<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
         return null;
     }
 

@@ -6,14 +6,14 @@ import java.util.List;
 import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.model.ControllablePao;
 
 /**
- * ControllablePao filter for DR quick search
+ * DisplayablePao filter for DR quick search
  */
-public class QuickSearchFilter implements UiFilter<ControllablePao> {
+public class QuickSearchFilter implements UiFilter<DisplayablePao> {
 
     private String searchText = null;
     
@@ -22,7 +22,7 @@ public class QuickSearchFilter implements UiFilter<ControllablePao> {
     }
     
     @Override
-    public Iterable<PostProcessingFilter<ControllablePao>> getPostProcessingFilters() {
+    public Iterable<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
         return null;
     }
 

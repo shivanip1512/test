@@ -31,7 +31,6 @@ import com.cannontech.dr.controlarea.model.ControlArea;
 import com.cannontech.dr.controlarea.model.ControlAreaTrigger;
 import com.cannontech.dr.controlarea.model.TriggerType;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
@@ -58,11 +57,6 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             return retVal;
         }
 
-        @Override
-        public SqlFragmentSource getGroupBy() {
-            return null;
-        }
-        
         @Override
         public SqlFragmentSource getOrderBy() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
@@ -93,7 +87,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         }
     }
 
-    private static class ControlAreaRowMapper extends AbstractRowMapperWithBaseQuery<ControllablePao> {
+    private static class ControlAreaRowMapper extends AbstractRowMapperWithBaseQuery<DisplayablePao> {
         Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId;
 
         ControlAreaRowMapper(Map<Integer, List<ControlAreaTrigger>> triggersByControlAreaId) {
@@ -125,7 +119,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     // Then, we can query specifically for triggers that are specific to the
     // control areas we are filtering on.
     private class TriggerFilter implements UiFilter<ControlAreaTrigger> {
-        UiFilter<ControllablePao> wrappedControlAreaFilter;
+        UiFilter<DisplayablePao> wrappedControlAreaFilter;
 
         class WrappedSqlFilter implements SqlFilter {
             SqlFilter wrapped;
@@ -146,7 +140,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
             }
         }
 
-        TriggerFilter(UiFilter<ControllablePao> wrappedControlAreaFiter) {
+        TriggerFilter(UiFilter<DisplayablePao> wrappedControlAreaFiter) {
             this.wrappedControlAreaFilter = wrappedControlAreaFiter;
         }
 
@@ -185,10 +179,10 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public ControllablePao findControlAreaForProgram(YukonUserContext userContext, int programId) {
-        UiFilter<ControllablePao> filter = new ForProgramFilter(programId);
+    public DisplayablePao findControlAreaForProgram(YukonUserContext userContext, int programId) {
+        UiFilter<DisplayablePao> filter = new ForProgramFilter(programId);
 
-        SearchResult<ControllablePao> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             filterControlAreas(filter, null, 0, Integer.MAX_VALUE, userContext);
 
         if (searchResult.getHitCount() > 0) {
@@ -198,7 +192,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
     }
 
     @Override
-    public SearchResult<ControllablePao> filterControlAreas(UiFilter<ControllablePao> filter,
+    public SearchResult<DisplayablePao> filterControlAreas(UiFilter<DisplayablePao> filter,
                                                         Comparator<DisplayablePao> sorter, 
                                                         int startIndex, int count,
                                                         YukonUserContext userContext) {
@@ -216,7 +210,7 @@ public class ControlAreaServiceImpl implements ControlAreaService {
         filterService.filter(triggerFilter, null, 0, Integer.MAX_VALUE,
                              triggerRowMapper);
         
-        SearchResult<ControllablePao> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count,
                                  new ControlAreaRowMapper(triggerRowMapper.triggersByControlAreaId));
 

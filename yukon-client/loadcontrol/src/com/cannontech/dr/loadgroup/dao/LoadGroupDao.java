@@ -2,10 +2,10 @@ package com.cannontech.dr.loadgroup.dao;
 
 import java.util.List;
 
-import com.cannontech.dr.model.ControllablePao;
+import com.cannontech.common.pao.DisplayablePao;
 
 public interface LoadGroupDao {
-    public ControllablePao getLoadGroup(int loadGroupId);
+    public DisplayablePao getLoadGroup(int loadGroupId);
 
-    public List<ControllablePao> getForProgram(int programId);
+    public List<DisplayablePao> getForProgram(int programId);
 }

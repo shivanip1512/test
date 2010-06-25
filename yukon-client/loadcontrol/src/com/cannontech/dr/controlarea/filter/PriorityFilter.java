@@ -7,12 +7,12 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlarea.service.ControlAreaService;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMControlArea;
 
-public class PriorityFilter implements UiFilter<ControllablePao> {
+public class PriorityFilter implements UiFilter<DisplayablePao> {
     private ControlAreaService controlAreaService;
 
     private Range<Integer> filter;
@@ -23,13 +23,13 @@ public class PriorityFilter implements UiFilter<ControllablePao> {
     }
 
     @Override
-    public List<PostProcessingFilter<ControllablePao>> getPostProcessingFilters() {
-        List<PostProcessingFilter<ControllablePao>> retVal =
-            new ArrayList<PostProcessingFilter<ControllablePao>>(1);
-        retVal.add(new PostProcessingFilterAdapter<ControllablePao>() {
+    public List<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
+        List<PostProcessingFilter<DisplayablePao>> retVal =
+            new ArrayList<PostProcessingFilter<DisplayablePao>>(1);
+        retVal.add(new PostProcessingFilterAdapter<DisplayablePao>() {
 
             @Override
-            public boolean matches(ControllablePao pao) {
+            public boolean matches(DisplayablePao pao) {
                 LMControlArea controlArea = controlAreaService.getControlAreaForPao(pao);
                 return controlArea != null
                     && filter.intersects(controlArea.getCurrentPriority() <= 0

@@ -20,6 +20,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -28,10 +29,8 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.dr.DemandResponseBackingField;
-import com.cannontech.dr.favorites.dao.FavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.filter.PriorityFilter;
 import com.cannontech.dr.program.filter.StartStopFilter;
 import com.cannontech.dr.program.filter.StateFilter;
@@ -137,14 +136,14 @@ public class ProgramControllerHelper {
     public void filterPrograms(ModelMap modelMap, YukonUserContext userContext,
             ProgramControllerHelper.ProgramListBackingBean backingBean,
             BindingResult result, SessionStatus status,
-            UiFilter<ControllablePao> detailFilter) {
+            UiFilter<DisplayablePao> detailFilter) {
         // TODO:  validation on backing bean
-        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
+        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (detailFilter != null) {
             filters.add(detailFilter);
         }
 
-        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService, 
+        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
         
@@ -198,8 +197,8 @@ public class ProgramControllerHelper {
         }
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
-        SearchResult<ControllablePao> searchResult =
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        SearchResult<DisplayablePao> searchResult =
             programService.filterPrograms(filter, sorter, startIndex, backingBean.getItemsPerPage(),
                                           userContext);
 

@@ -52,11 +52,6 @@ public class FilterServiceImpl implements FilterService {
             sql.append(whereClause);
         }
 
-        SqlFragmentSource groupByClause = rowMapper.getGroupBy();
-        if (groupByClause != null) {
-            sql.append(groupByClause);
-        }
-        
         SqlFragmentSource orderByClause = rowMapper.getOrderBy();
         if (orderByClause != null) {
             sql.append(orderByClause);

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.DisplayablePaoComparator;
 import com.cannontech.common.pao.PaoType;
@@ -24,10 +25,8 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.favorites.dao.FavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NotPaoTypeFilter;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.quicksearch.QuickSearchFilter;
 import com.cannontech.dr.quicksearch.QuickSearchRowMapper;
 import com.cannontech.dr.service.DemandResponseService;
@@ -54,8 +53,8 @@ public class QuickSearchController {
                          @ModelAttribute("quickSearchBean") ListBackingBean quickSearchBean) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
-        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService, 
+        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
+        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
                                          userContext.getYukonUser(),
                                          Permission.LM_VISIBLE));
         boolean showControlAreas =
@@ -89,9 +88,9 @@ public class QuickSearchController {
             sorter = new DisplayablePaoComparator();
         }
 
-        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
         int startIndex = (quickSearchBean.getPage() - 1) * quickSearchBean.getItemsPerPage();
-        SearchResult<ControllablePao> searchResult = 
+        SearchResult<DisplayablePao> searchResult = 
                 filterService.filter(filter, 
                                      sorter, 
                                      startIndex, 
@@ -99,7 +98,7 @@ public class QuickSearchController {
                                      new QuickSearchRowMapper());
 
         if (searchResult.getHitCount() == 1) {
-            ControllablePao pao = searchResult.getResultList().get(0);
+            DisplayablePao pao = searchResult.getResultList().get(0);
             String detailUrl = paoDetailUrlHelper.getUrlForPaoDetailPage(pao);
             if (detailUrl != null) {
                 return "redirect:" + detailUrl;

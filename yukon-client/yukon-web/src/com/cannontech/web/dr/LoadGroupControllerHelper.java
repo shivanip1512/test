@@ -18,6 +18,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
+import com.cannontech.common.favorites.dao.FavoritesDao;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.Range;
@@ -25,7 +26,6 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.dr.DemandResponseBackingField;
-import com.cannontech.dr.favorites.dao.FavoritesDao;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.filter.NameFilter;
 import com.cannontech.dr.loadgroup.filter.LoadGroupLastActionFilter;
@@ -34,7 +34,6 @@ import com.cannontech.dr.loadgroup.filter.LoadGroupStateFilter;
 import com.cannontech.dr.loadgroup.model.LoadGroupNameField;
 import com.cannontech.dr.loadgroup.service.LoadGroupFieldService;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -93,14 +92,14 @@ public class LoadGroupControllerHelper {
     public void filterGroups(ModelMap modelMap, YukonUserContext userContext,
             LoadGroupControllerHelper.LoadGroupListBackingBean backingBean,
             BindingResult result, SessionStatus status,
-            UiFilter<ControllablePao> detailFilter) {
+            UiFilter<DisplayablePao> detailFilter) {
         // TODO:  validation on backing bean
-        List<UiFilter<ControllablePao>> filters = new ArrayList<UiFilter<ControllablePao>>();
+        List<UiFilter<DisplayablePao>> filters = new ArrayList<UiFilter<DisplayablePao>>();
         if (detailFilter != null) {
             filters.add(detailFilter);
         }
 
-        filters.add(new AuthorizedFilter<ControllablePao>(paoAuthorizationService, 
+        filters.add(new AuthorizedFilter<DisplayablePao>(paoAuthorizationService, 
                 userContext.getYukonUser(), 
                 Permission.LM_VISIBLE));
 
@@ -150,8 +149,8 @@ public class LoadGroupControllerHelper {
         }
         
         int startIndex = (backingBean.getPage() - 1) * backingBean.getItemsPerPage();
-        UiFilter<ControllablePao> filter = UiFilterList.wrap(filters);
-        SearchResult<ControllablePao> searchResult =
+        UiFilter<DisplayablePao> filter = UiFilterList.wrap(filters);
+        SearchResult<DisplayablePao> searchResult =
             loadGroupService.filterGroups(filter, sorter, startIndex,
                                           backingBean.getItemsPerPage(), userContext);
 

@@ -12,14 +12,13 @@ import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
-import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 
@@ -27,49 +26,46 @@ public class ScenarioServiceImpl implements ScenarioService {
     private ScenarioDao scenarioDao;
     private FilterService filterService;
 
-    private static RowMapperWithBaseQuery<ControllablePao> rowMapper = new AbstractRowMapperWithBaseQuery<ControllablePao>() {
+    private static RowMapperWithBaseQuery<DisplayablePao> rowMapper = new AbstractRowMapperWithBaseQuery<DisplayablePao>() {
 
         @Override
         public SqlFragmentSource getBaseQuery() {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ScenarioProgramCount");    
-            retVal.append("FROM YukonPAObject PAO");                                                     
-            retVal.append("LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId ");
-            retVal.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO.getDatabaseRepresentation());   
+            retVal.append("SELECT PAO.PAObjectId, PAO.PAOName");
+            retVal.append("FROM YukonPAObject PAO");
+            retVal.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO.getDatabaseRepresentation());
             return retVal;
         }
 
         @Override
-        public SqlStatementBuilder getGroupBy() {
-            SqlStatementBuilder retVal = new SqlStatementBuilder();
-            retVal.append("GROUP BY PAO.PAObjectId, PAO.PAOName");
-            return retVal;
-        }
-        
-        @Override
-        public ControllablePao mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
-            PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
-                                                    PaoType.LM_SCENARIO);
-            String paoName = rs.getString("paoName");
-            int scenarioProgramCount = rs.getInt("ScenarioProgramCount");
-            return new Scenario(paoId, paoName, scenarioProgramCount);
+            PaoIdentifier paoId = 
+            	new PaoIdentifier(rs.getInt("paObjectId"), PaoType.LM_SCENARIO);
+            DisplayablePao retVal = 
+            	new DisplayablePaoBase(paoId, rs.getString("paoName"));
+            return retVal;
         }
     };
 
     @Override
-    public SearchResult<ControllablePao> filterScenarios(
-            YukonUserContext userContext, UiFilter<ControllablePao> filter,
+    public SearchResult<DisplayablePao> filterScenarios(
+            YukonUserContext userContext, UiFilter<DisplayablePao> filter,
             Comparator<DisplayablePao> sorter, int startIndex, int count) {
 
-        SearchResult<ControllablePao> searchResult =
+        SearchResult<DisplayablePao> searchResult =
             filterService.filter(filter, sorter, startIndex, count, rowMapper);
 
         return searchResult;
     }
 
     @Override
-    public List<Scenario> findScenariosForProgram(int programId) {
+    public DisplayablePao getScenario(int scenarioId) {
+        return scenarioDao.getScenario(scenarioId);
+    }
+    
+    @Override
+    public List<DisplayablePao> findScenariosForProgram(int programId) {
         return scenarioDao.findScenariosForProgram(programId);
     }
 

@@ -8,12 +8,12 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.service.ProgramService;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
-public class StartStopFilter implements UiFilter<ControllablePao> {
+public class StartStopFilter implements UiFilter<DisplayablePao> {
     private ProgramService programService;
 
     private Range<Date> filter;
@@ -27,13 +27,13 @@ public class StartStopFilter implements UiFilter<ControllablePao> {
     }
 
     @Override
-    public List<PostProcessingFilter<ControllablePao>> getPostProcessingFilters() {
-        List<PostProcessingFilter<ControllablePao>> retVal =
-            new ArrayList<PostProcessingFilter<ControllablePao>>(1);
-        retVal.add(new PostProcessingFilterAdapter<ControllablePao>() {
+    public List<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
+        List<PostProcessingFilter<DisplayablePao>> retVal =
+            new ArrayList<PostProcessingFilter<DisplayablePao>>(1);
+        retVal.add(new PostProcessingFilterAdapter<DisplayablePao>() {
 
             @Override
-            public boolean matches(ControllablePao pao) {
+            public boolean matches(DisplayablePao pao) {
                 LMProgramBase program = programService.getProgramForPao(pao);
                 boolean retVal = program != null && filter.intersects((isStart
                         ? program.getStartTime() : program.getStopTime()).getTime());

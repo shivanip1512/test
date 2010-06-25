@@ -6,11 +6,11 @@ import com.cannontech.common.bulk.filter.PostProcessingFilter;
 import com.cannontech.common.bulk.filter.PostProcessingFilterAdapter;
 import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.dr.model.ControllablePao;
 import com.google.common.collect.Lists;
 
-public class NotPaoTypeFilter implements UiFilter<ControllablePao> {
+public class NotPaoTypeFilter implements UiFilter<DisplayablePao> {
     private PaoType paoTypeNotToBe;
 
     public NotPaoTypeFilter(PaoType paoTypeNotToBe) {
@@ -18,11 +18,11 @@ public class NotPaoTypeFilter implements UiFilter<ControllablePao> {
     }
 
     @Override
-    public Iterable<PostProcessingFilter<ControllablePao>> getPostProcessingFilters() {
-        List<PostProcessingFilter<ControllablePao>> filters = Lists.newArrayList();
-        filters.add(new PostProcessingFilterAdapter<ControllablePao>() {
+    public Iterable<PostProcessingFilter<DisplayablePao>> getPostProcessingFilters() {
+        List<PostProcessingFilter<DisplayablePao>> filters = Lists.newArrayList();
+        filters.add(new PostProcessingFilterAdapter<DisplayablePao>() {
             @Override
-            public boolean matches(ControllablePao pao) {
+            public boolean matches(DisplayablePao pao) {
                 return !pao.getPaoIdentifier().getPaoType().equals(paoTypeNotToBe);
             }});
         return filters;

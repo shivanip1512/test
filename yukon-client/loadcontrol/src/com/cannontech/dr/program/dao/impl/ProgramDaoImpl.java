@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.DisplayablePaoBase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.dr.model.ControllablePao;
 import com.cannontech.dr.program.dao.ProgramDao;
-import com.cannontech.dr.program.model.Program;
 
 public class ProgramDaoImpl implements ProgramDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -20,20 +20,20 @@ public class ProgramDaoImpl implements ProgramDao {
         "SELECT paObjectId, paoName FROM yukonPAObject"
         + " WHERE type = 'LM DIRECT PROGRAM' AND paObjectId = ?";
 
-    private final static ParameterizedRowMapper<ControllablePao> programRowMapper =
-        new ParameterizedRowMapper<ControllablePao>() {
+    private final static ParameterizedRowMapper<DisplayablePao> programRowMapper =
+        new ParameterizedRowMapper<DisplayablePao>() {
         @Override
-        public ControllablePao mapRow(ResultSet rs, int rowNum)
+        public DisplayablePao mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
             PaoIdentifier paoId = new PaoIdentifier(rs.getInt("paObjectId"),
                                                     PaoType.LM_DIRECT_PROGRAM);
-            ControllablePao retVal = new Program(paoId,
-                                                 rs.getString("paoName"));
+            DisplayablePao retVal = new DisplayablePaoBase(paoId,
+                                                           rs.getString("paoName"));
             return retVal;
         }};
 
     @Override
-    public ControllablePao getProgram(int programId) {
+    public DisplayablePao getProgram(int programId) {
         return simpleJdbcTemplate.queryForObject(singleProgramByIdQuery,
                                                  programRowMapper,
                                                  programId);

@@ -24,7 +24,6 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.layout.HttpExpressionLanguageResolver;
-import com.cannontech.web.layout.PageDetailProducer;
 import com.google.common.collect.Lists;
 
 public class HttpExpressionLanguageResolverImpl implements HttpExpressionLanguageResolver {
