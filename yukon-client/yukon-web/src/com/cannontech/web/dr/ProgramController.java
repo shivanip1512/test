@@ -19,6 +19,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForProgramFilter;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -66,7 +67,7 @@ public class ProgramController extends ProgramControllerBase {
         DisplayablePao parentControlArea =
             controlAreaService.findControlAreaForProgram(userContext, programId);
         modelMap.addAttribute("parentControlArea", parentControlArea);
-        List<DisplayablePao> parentScenarios = scenarioDao.findScenariosForProgram(programId);
+        List<Scenario> parentScenarios = scenarioDao.findScenariosForProgram(programId);
         modelMap.addAttribute("parentScenarios", parentScenarios);
         
         addErrorsToFlashScopeIfNecessary(result, flashScope);

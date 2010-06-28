@@ -19,6 +19,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.dr.scenario.dao.ScenarioDao;
+import com.cannontech.dr.scenario.model.Scenario;
 import com.cannontech.dr.scenario.service.ScenarioService;
 import com.cannontech.user.YukonUserContext;
 
@@ -60,12 +61,12 @@ public class ScenarioServiceImpl implements ScenarioService {
     }
 
     @Override
-    public DisplayablePao getScenario(int scenarioId) {
+    public Scenario getScenario(int scenarioId) {
         return scenarioDao.getScenario(scenarioId);
     }
     
     @Override
-    public List<DisplayablePao> findScenariosForProgram(int programId) {
+    public List<Scenario> findScenariosForProgram(int programId) {
         return scenarioDao.findScenariosForProgram(programId);
     }
 
@@ -78,5 +79,4 @@ public class ScenarioServiceImpl implements ScenarioService {
     public void setFilterService(FilterService filterService) {
         this.filterService = filterService;
     }
-
 }

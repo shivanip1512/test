@@ -666,6 +666,9 @@
                 <entry key="DR_LOADGROUP">
                     <ref local="drLoadGroupBackingService"/>
                 </entry>
+                <entry key="DR_SCENARIO">
+                    <ref local="drScenarioBackingService"/>
+                </entry>
                 <entry key="PHASE_DETECT">
                     <ref local="phaseDetectBackingService"/>
                 </entry>    
@@ -815,7 +818,7 @@
     <bean id="drTriggerBackingService" class="com.cannontech.web.updater.dr.TriggerBackingService"/>    
     <bean id="drProgramBackingService" class="com.cannontech.web.updater.dr.ProgramBackingService"/>
     <bean id="drLoadGroupBackingService" class="com.cannontech.web.updater.dr.LoadGroupBackingService"/>
-
+    <bean id="drScenarioBackingService" class="com.cannontech.web.updater.dr.ScenarioBackingService"/>
     
     <!-- phase detect -->    
     <bean id="phaseDetectBackingService" class="com.cannontech.web.updater.phaseDetect.PhaseDetectBackingService"/>

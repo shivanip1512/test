@@ -7,21 +7,42 @@
 
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cti:url var="startScenarioUrl" value="/spring/dr/program/start/multipleDetails">
-        <cti:param name="scenarioId" value="${paoId}"/>
-    </cti:url>
-    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
-                           dialogId="drDialog" 
-                           actionUrl="${startScenarioUrl}" 
-                           logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
 
-    <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
-        <cti:param name="scenarioId" value="${paoId}"/>
-    </cti:url>
-    <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
-                           dialogId="drDialog" 
-                           actionUrl="${stopScenarioUrl}" 
-                           logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
+
+    <tags:dynamicChoose updaterString="DR_SCENARIO/${paoId}/SHOW_ACTION" suffix="${paoId}">
+        <tags:dynamicChooseOption optionId="hasNoPrograms">
+        
+            <cti:msg var="scenarioHasNoAssignedPrograms"
+                   key="yukon.web.modules.dr.scenarioDetail.noAssignedPrograms"/>
+            <span title="${scenarioHasNoAssignedPrograms}">
+                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.startIcon.disabled"/>
+            </span>
+            <span title="${scenarioHasNoAssignedPrograms}">
+                <cti:logo key="yukon.web.modules.dr.scenarioDetail.actions.stopIcon.disabled"/>
+            </span>
+                        
+        </tags:dynamicChooseOption>
+        <tags:dynamicChooseOption optionId="enabled">
+        
+            <cti:url var="startScenarioUrl" value="/spring/dr/program/start/multipleDetails">
+                <cti:param name="scenarioId" value="${paoId}"/>
+            </cti:url>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.startMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${startScenarioUrl}" 
+                                   logoKey="yukon.web.modules.dr.scenarioDetail.actions.startIcon"/>
+        
+            <cti:url var="stopScenarioUrl" value="/spring/dr/program/stop/multipleDetails">
+                <cti:param name="scenarioId" value="${paoId}"/>
+            </cti:url>
+            <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopMultiplePrograms.title" 
+                                   dialogId="drDialog" 
+                                   actionUrl="${stopScenarioUrl}" 
+                                   logoKey="yukon.web.modules.dr.scenarioDetail.actions.stopIcon"/>
+            
+        </tags:dynamicChooseOption>
+    </tags:dynamicChoose>
+
 </cti:checkPaoAuthorization>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
     <cti:msg var="noScenarioControl" key="yukon.web.modules.dr.scenarioDetail.noControl"/>

@@ -194,6 +194,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    public SqlStatementBuilder in(SqlStatementBuilder sqlStatementBuilder) {
+        statement.append("in (");
+        append(sqlStatementBuilder);
+        statement.append(") ");
+        return this;
+    }
+    
     public SqlStatementBuilder startsWith(String argument) {
         statement.append("like ");
         appendArgument(argument + "%");

@@ -54,6 +54,8 @@
     <bean id="drTriggerATKUField" class="com.cannontech.dr.controlarea.model.TriggerATKUField"/>
 
     <bean id="drScenarioService" class="com.cannontech.dr.scenario.service.impl.ScenarioServiceImpl"/>
+    <bean id="drScenarioFieldService" class="com.cannontech.dr.scenario.service.impl.ScenarioFieldServiceImpl"/>
+    <bean id="drScenarioShowActionField" class="com.cannontech.dr.scenario.model.ScenarioShowActionField"/>
 
     <bean id="drProgramService" class="com.cannontech.dr.program.service.impl.ProgramServiceImpl"/>
     <bean id="drProgramFieldService" class="com.cannontech.dr.program.service.impl.ProgramFieldServiceImpl"/>
