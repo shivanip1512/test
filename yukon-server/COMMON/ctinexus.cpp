@@ -543,7 +543,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
         //  READANY waits until the timeout occurs or until any data is read
         //  READEXACTLY waits until an exact amount of data is read or until the timeout occurs
 
-        CtiHighPerfTimer elapsed("CtiNexus read timeout");
+        Cti::Timing::MillisecondTimer timer;
 
         while( !retval && (read_buffer.size() < len) && (NexusState != CTINEXUS_STATE_NULL) && (sockt != INVALID_SOCKET) )
         {
@@ -565,7 +565,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
                     tv.tv_usec = 500 * 1000;
                 }
 
-                elapsed.reset();
+                timer.reset();
             }
 
             //  initialize the FD set
@@ -627,8 +627,7 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
             {
                 if( TimeOut > 0 )
                 {
-                    //  note that CtiHighPerfTimer::delta() returns milliseconds
-                    TimeOut -= min((LONG)elapsed.delta(), TimeOut);
+                    TimeOut -= min((LONG)timer.elapsed(), TimeOut);
                 }
 
                 try

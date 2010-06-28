@@ -87,7 +87,7 @@ CTIPROGS=\
 ctibase.dll
 
 
-WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib
+WINLIBS=kernel32.lib user32.lib advapi32.lib wsock32.lib winmm.lib
 
 ACTIVEMQLIB=$(ACTIVEMQ)\lib\activemq-cpp.lib
 

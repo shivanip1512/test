@@ -1,165 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pendingOpThread
-*
-* Date:   11/2/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2008/11/11 21:51:43 $
-*
-* HISTORY      :
-* $Log: pendingOpThread.cpp,v $
-* Revision 1.40  2008/11/11 21:51:43  jotteson
-* YUK-6504 Server processes should not load all points
-* Changed most of mgr_ptclients to use smart pointers.
-* Updated tests for dispatch points.
-*
-* Revision 1.39  2008/10/21 21:51:12  jotteson
-* YUK-6504 Server processes should not load all points
-* Changed Dispatch to load points by pao differently than porter handles it.
-* Updated tracking of paoid's loaded.
-* Changed functions to require the point to exist instead of just using a point id.
-*
-* Revision 1.38  2008/10/13 16:25:18  jotteson
-* YUK-6504 Server processes should not load all points
-* Re-factor of CtiPointManager::getEqual to getPoint.
-* Changed getEqualWithoutLoad to getCachedPoint.
-* Removed un-necessary sleep in Dispatch's point loading threads.
-*
-* Revision 1.37  2008/10/02 18:27:29  mfisher
-* YUK-6504 Server-side point management is naive
-* Implemented first draft of LRU (least recently used) point expirations
-*
-* Revision 1.36  2008/04/24 19:41:50  jotteson
-* YUK-4897 Load management implementation of Expresscom priorities
-* Moved the handling of control status points to Dispatch.
-* Enabled dispatch to know what the current control priority of any group is.
-*
-* Revision 1.35  2008/04/21 15:22:32  jotteson
-* YUK-4897 Load management implementation of Expresscom priorities
-* Added expresscom priority tracking.
-* Modified tables to add priorities.
-*
-* Revision 1.34  2007/08/27 18:27:52  jotteson
-* YUK-4279
-* Changed "repeat control" functionality to copy the "control state" to the new control object.
-*
-* Revision 1.33  2007/03/21 21:51:19  mfisher
-* Changed to say "pendingOpThread" instead of "verification thread" on shutdown
-*
-* Revision 1.32  2006/09/08 20:18:05  jotteson
-* Fixed a bug that would cause delayed limits to not be ack-able.
-*
-* Revision 1.31  2006/06/16 20:04:56  jotteson
-* Now modifies tags when removing a control. Can be told not to write control history if desired.
-*
-* Revision 1.30  2006/05/16 19:55:40  cplender
-* Problems were found in the processing of the control stop point at ER.
-*
-* Revision 1.29  2006/05/16 15:25:52  cplender
-* Problems were found in the processing of the control stop point at ER.
-*
-* Revision 1.28  2006/05/02 20:25:30  cplender
-* Added cparm DISPATCH_COMPUTE_RESTORATION to turn on the
-* ControlStopCountdown point.  Set to true to enable.
-*
-* Revision 1.27  2006/03/23 15:29:15  jotteson
-* Mass update of point* to smart pointers. Point manager now uses smart pointers.
-*
-* Revision 1.26  2006/01/19 20:18:36  cplender
-* Added CPARM function isTrue() cause I'm sick of doing the same thing everywhere.
-*
-* Revision 1.25  2006/01/05 21:05:14  cplender
-* Changed a CtiQueue (sorted) to CtiFIFOQueue for speed.
-*
-* Revision 1.24  2006/01/05 19:30:10  cplender
-* Que_t changed to Que_t typedef name.
-*
-* Revision 1.23  2005/12/21 22:22:07  cplender
-* Altered code to make the lmctrlhistid match between dynamic an lmcontrolhistory tables.
-*
-* Revision 1.22  2005/12/21 18:11:56  cplender
-* Altered code to make the lmctrlhistid match between dynamic an lmcontrolhistory tables.
-*
-* Revision 1.21  2005/12/20 17:16:57  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.20  2005/09/01 14:42:52  cplender
-* Made some changes to the limit timing code.  Earlier code would not properly track limit 2.
-*
-* Revision 1.19  2005/07/25 16:40:53  cplender
-* Working on lmcontrolhistory for Minnkota.
-* Revision 1.18.2.3  2005/08/12 19:53:41  jliu
-* Date Time Replaced
-*
-* Revision 1.18.2.2  2005/07/14 22:26:54  jliu
-* RWCStringRemoved
-*
-* Revision 1.18.2.1  2005/07/12 21:08:35  jliu
-* rpStringWithoutCmpParser
-*
-* Revision 1.18  2005/06/14 20:19:11  cplender
-* Initial Control Condition should indicate that a control has completed.
-*
-* Revision 1.17  2005/06/13 19:07:48  cplender
-* LM Control History would get off a bit on RESTORE operations.
-*
-* Revision 1.16  2005/05/24 00:39:51  cplender
-* Added additional try catch on the DB writing threads which use transactions.
-* Improved the use of the thread monitor.
-*
-* Revision 1.15  2005/02/18 14:34:28  cplender
-* Make pendingOpThread announce itself every 5 like the others do.
-*
-* Revision 1.14  2005/02/17 19:02:57  mfisher
-* Removed space before CVS comment header, moved #include "yukon.h" after CVS header
-*
-* Revision 1.13  2005/02/10 23:23:50  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.12  2005/01/27 17:48:46  cplender
-* Make certain the _opId map is copied for pendables.
-* Reduce the frequency of ctlhist AI points.
-*
-* Revision 1.11  2004/12/14 22:24:37  cplender
-* Removed unused _actionCount
-*
-* Revision 1.10  2004/12/06 22:15:50  cplender
-* Missing state in control InProgress.
-*
-* Revision 1.9  2004/12/02 22:58:43  cplender
-* Try to reduce the number of pointdata messages sent to loadmanagement due to controlling groups.
-*
-* Revision 1.8  2004/12/01 20:15:04  cplender
-* LMControlHistory.
-*
-* Revision 1.7  2004/11/23 14:19:30  cplender
-* Working on lmcontrolhistory and slow performance
-*
-* Revision 1.6  2004/11/19 17:10:28  cplender
-* Control History Getting real close.
-*
-* Revision 1.5  2004/11/18 23:56:08  cplender
-* Control History Getting closer.
-*
-* Revision 1.4  2004/11/17 23:46:33  cplender
-* Updates for GRE performance issues.
-*
-* Revision 1.3  2004/11/09 06:12:51  cplender
-* Working to calm dispatch down
-*
-* Revision 1.2  2004/11/08 14:40:37  cplender
-* 305 Protocol should send controls on RTCs now.
-*
-* Revision 1.1  2004/11/05 17:22:48  cplender
-* IR
-*
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "counter.h"
@@ -171,19 +9,11 @@
 
 using namespace std;
 
-#ifndef PERF_TO_MS
-    #define PERF_TO_MS(b,a,p) ((UINT)((b).QuadPart - (a).QuadPart) / ((UINT)(p).QuadPart / 1000L))
-#endif
-
-// #define CTI_REPORTPENDINGREMOVAL TRUE
-
 extern CtiPointClientManager  PointMgr;  // The RTDB for memory points....
 
 extern int CntlHistInterval;
 extern int CntlHistPointPostInterval;
 extern int CntlStopInterval;
-
-static LARGE_INTEGER perfFrequency;
 
 CtiPendingOpThread::CtiPendingOpSet_t CtiPendingOpThread::_pendingControls;
 CtiPendingOpThread::CtiPendingOpSet_t CtiPendingOpThread::_pendingPointData;
@@ -196,8 +26,6 @@ _pMainQueue(0)
 {
     _dbThread  = rwMakeThreadFunction(*this, &CtiPendingOpThread::dbWriterThread);
     _dbThread.start();
-
-    QueryPerformanceFrequency(&perfFrequency);
 }
 
 CtiPendingOpThread::CtiPendingOpThread(const CtiPendingOpThread& aRef)
@@ -355,11 +183,11 @@ void CtiPendingOpThread::push(CtiPendable *entry)
  */
 void CtiPendingOpThread::processPendableQueue()
 {
-    LARGE_INTEGER startTime, completeTime;
+    Cti::Timing::MillisecondTimer pendableQueueTimer;
     CtiPendable   *pendable;
 
     int action;
-    QueryPerformanceCounter(&startTime);
+
     while( pendable = _input.getQueue(0) )
     {
         action = pendable->getAction();
@@ -406,30 +234,21 @@ void CtiPendingOpThread::processPendableQueue()
     }
 
     set(QPROCESSED);
-    QueryPerformanceCounter(&completeTime);
+    DWORD elapsedTime = pendableQueueTimer.elapsed();
 
-    #if 1
-    if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 500)
+    if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && elapsedTime > 500)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " processPendableQueue duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+        dout << CtiTime() << " processPendableQueue duration (ms) = " << elapsedTime << endl;
     }
-    #endif
 }
 
 void CtiPendingOpThread::doPendingControls(bool bShutdown)
 {
-    LARGE_INTEGER startTime, completeTime;
     CtiTime now;
     static CtiTime cHistTime;
     static CtiTime cStopTime;
     static CtiTime cPostTime;
-
-    int counter01 = 0;
-    int counter02 = 0;
-    int counter03 = 0;
-    int counter04 = 0;
-    int counter05 = 0;
 
     try
     {
@@ -444,7 +263,8 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
 
         if( !_pendingControls.empty() )
         {
-            QueryPerformanceCounter(&startTime);
+            Cti::Timing::MillisecondTimer timer;
+
             int lpcnt = 0;
 
             bool postCtrlHist = now >= cHistTime;
@@ -491,12 +311,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                         {
                             /*  CONTROL IS COMPLETE!  Time it in. */
                             updateControlHistory( ppo, CtiPendingPointOperations::datachange, ppo.getControl().getControlCompleteTime(), CtiTime(), __LINE__ );    // This will write a 'T' row!
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
                             it = erasePendingControl(it);
                             continue;   // iterator has been repositioned!
                         }
@@ -504,12 +318,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                         {
                             /*  This is a restore command.  */
                             updateControlHistory( ppo, CtiPendingPointOperations::datachange, ppo.getControl().getStartTime(), CtiTime(), __LINE__ );    // This will write a 'M' or slight possibility of a 'T' row!
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
                             it = erasePendingControl(it);
                             continue;   // iterator has been repositioned!
                         }
@@ -519,19 +327,16 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                             {
                                 // We have accumulated enough time against this control to warrant a new log entry!
                                 updateControlHistory( ppo, CtiPendingPointOperations::intervalcrossing, now, CtiTime(), __LINE__);
-                                counter01++;
                             }
                             else if(postCtrlPost)
                             {
                                 // This rate posts history points and stop point.
                                 updateControlHistory( ppo, CtiPendingPointOperations::intervalpointpostcrossing, now, CtiTime(), __LINE__);
-                                counter02++;
                             }
                             else if(postCtrlStop)
                             {
                                 // This rate posts stop point.  Does not affect ppo.
                                 updateControlHistory( ppo, CtiPendingPointOperations::stopintervalcrossing, now, CtiTime(), __LINE__);
-                                counter03++;
                             }
                         }
                     }
@@ -568,12 +373,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 pSig = 0;
                             }
 
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
                             it = erasePendingControl(it);
                             continue;   // iterator has been repositioned!
                         }
@@ -582,12 +381,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteTimedIn     ||
                              ppo.getControlState() == CtiPendingPointOperations::controlCompleteManual      )
                     {
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
                         it = erasePendingControl(it);
                         continue;   // iterator has been repositioned!
                     }
@@ -595,12 +388,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                     {
                         updateControlHistory( ppo, CtiPendingPointOperations::seasonReset, now, CtiTime(), __LINE__);
 
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
                         it = erasePendingControl(it);
                         continue;   // iterator has been repositioned!
                     }
@@ -615,37 +402,20 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                 }
                 else
                 {
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
                     it = erasePendingControl(it);
                     continue;   // iterator has been repositioned!
                 }
 
                 it++;
             }
-            QueryPerformanceCounter(&completeTime);
+            DWORD duration = timer.elapsed();
 
-            #if 1
-            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
+            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && duration > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " doPendingControls count         = " << _pendingControls.size() << endl;
-                dout << CtiTime() << " doPendingControls duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
-
-                /*
-                dout << " Counter 01 " << counter01 << endl;
-                dout << " Counter 02 " << counter02 << endl;
-                dout << " Counter 03 " << counter03 << endl;
-                dout << " Counter 04 " << counter04 << endl;
-                dout << " Counter 05 " << counter05 << endl;
-                */
+                dout << CtiTime() << " doPendingControls duration (ms) = " << duration << endl;
             }
-            #endif
-
         }
     }
     catch(...)
@@ -658,8 +428,6 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
 
 void CtiPendingOpThread::doPendingPointData(bool bShutdown)
 {
-    LARGE_INTEGER startTime, completeTime;
-
     try
     {
         if(!_pMainQueue)
@@ -673,7 +441,8 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
 
         if( !_pendingPointData.empty() )
         {
-            QueryPerformanceCounter(&startTime);
+            Cti::Timing::MillisecondTimer timer;
+
             int lpcnt = 0;
             CtiTime now;
 
@@ -717,15 +486,13 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
 
                 it++;
             }
-            QueryPerformanceCounter(&completeTime);
+            DWORD duration = timer.elapsed();
 
-            #if 1
-            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
+            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && duration > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " doPendingPointDataOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+                dout << CtiTime() << " doPendingPointDataOp duration (ms) = " << duration << endl;
             }
-            #endif
         }
     }
     catch(...)
@@ -737,8 +504,6 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
 
 void CtiPendingOpThread::doPendingLimits(bool bShutdown)
 {
-    LARGE_INTEGER startTime, completeTime;
-
     try
     {
         if(!_pMainQueue)
@@ -752,7 +517,8 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
 
         if( !_pendingPointLimit.empty() )
         {
-            QueryPerformanceCounter(&startTime);
+            Cti::Timing::MillisecondTimer timer;
+
             int lpcnt = 0;
             CtiTime now;
 
@@ -789,12 +555,12 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
 
                 it++;
             }
-            QueryPerformanceCounter(&completeTime);
+            DWORD duration = timer.elapsed();
 
-            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && PERF_TO_MS(completeTime, startTime, perfFrequency) > 2)
+            if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && duration > 2)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " doPendingLimitsOp duration (ms) = " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
+                dout << CtiTime() << " doPendingLimitsOp duration (ms) = " << duration << endl;
             }
         }
     }
@@ -814,15 +580,6 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
 {
     try
     {
-#ifdef CTI_REPORTPENDINGREMOVAL
-        if(line)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") line " << line << " cause " << cause << endl;
-            }
-        }
-#endif
         switch(cause)
         {
         case (CtiPendingPointOperations::newcontrol):
@@ -1714,12 +1471,6 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
         {
             // No longer in the controlcomplete state... because of a pointdata (Manual Change or TimedIn???)
             updateControlHistory( ppo, CtiPendingPointOperations::datachange, pendable->_time, CtiTime(), __LINE__ );
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
             erasePendingControl(it);
         }
         else
@@ -1740,12 +1491,6 @@ void CtiPendingOpThread::removeControl(CtiPendable *&pendable)
 
     if( it != _pendingControls.end() )
     {
-#ifdef CTI_REPORTPENDINGREMOVAL
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** REMOVAL Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-#endif
         it = erasePendingControl(it);
     }
 }
@@ -1766,12 +1511,6 @@ void CtiPendingOpThread::removeLimit(CtiPendable *&pendable)
             {
                 if(pendable->_limit == ppo.getLimitBeingTimed())
                 {
-#ifdef CTI_REPORTPENDINGREMOVAL
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** removeLimit Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-#endif
                     it = _pendingPointLimit.erase(it);
                     continue;   // iterator has been repositioned!
                 }
@@ -1789,12 +1528,6 @@ void CtiPendingOpThread::removePointData(CtiPendable *&pendable)
 
         if( it != _pendingPointData.end() )
         {
-#ifdef CTI_REPORTPENDINGREMOVAL
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** removePointData Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-#endif
             it = _pendingPointData.erase(it);
         }
     }

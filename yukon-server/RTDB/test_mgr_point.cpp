@@ -16,8 +16,6 @@
 #include <iostream>
 
 //  for the winsock.h inclusion by mgr_point.h (?!)
-#define _WIN32_WINNT 0x0400
-
 #include "mgr_point.h"
 #include "pt_status.h"
 #include "pt_analog.h"

@@ -9,8 +9,6 @@
 #include <boost/test/unit_test.hpp>
 
 
-#define _WIN32_WINNT 0x0400
-
 #include <iostream>
 #include "dev_ccu721.h"
 #include "prot_emetcon.h"

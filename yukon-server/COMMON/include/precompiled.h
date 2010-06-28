@@ -4,13 +4,10 @@
  * This header file exists to precompile large header files that never change.
  * Add any headers here that you want precompiled.
  */
-#ifndef __PRECOMPILED_H__
-#define __PRECOMPILED_H__
-
-#pragma warning( disable : 4786)
+#pragma once
 
 #if !defined(_WIN32_WINNT)
-#define _WIN32_WINNT 0x0500
+#define _WIN32_WINNT 0x0500  //  Windows XP, Server 2003.  No service packs.
 #endif 
 
 #define WIN32_LEAN_AND_MEAN 
@@ -19,12 +16,8 @@
 #define NOMINMAX
 #endif
 
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
+#include <mmsystem.h>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -52,7 +45,49 @@
 
 #include <rw/db/db.h>
 
-#include "boost/tokenizer.hpp"
-#include "boost/shared_ptr.hpp"
 
-#endif
+//  for boost/bimap.hpp
+#define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION
+
+#include "boost/assert.hpp"
+#include "boost/assign/ptr_map_inserter.hpp"
+#include "boost/bimap.hpp"
+#include "boost/bind.hpp"
+#include "boost/config.hpp"
+#include "boost/crc.hpp"
+#include "boost/function.hpp"
+#include "boost/mem_fn.hpp"
+#include "boost/noncopyable.hpp"
+#include "boost/ptr_container/ptr_map.hpp"
+#include "boost/ptr_container/ptr_vector.hpp"
+#include "boost/scoped_array.hpp"
+#include "boost/scoped_ptr.hpp"
+#include "boost/shared_ptr.hpp"
+#include "boost/tokenizer.hpp"
+#include "boost/utility.hpp"
+#include "boost/weak_ptr.hpp"
+
+//  The Boost libraries listed below all attempt to auto-link with their libraries.
+//    This does not work for the Service/ directory, and we probably don't want to try to link with them by default anyway.
+
+//#include "boost/date_time/gregorian/greg_date.hpp"
+//#include "boost/date_time/gregorian/gregorian.hpp"
+//#include "boost/date_time/microsec_time_clock.hpp"
+//#include "boost/date_time/posix_time/posix_time.hpp"
+//#include "boost/date_time/posix_time/posix_time_types.hpp"
+
+//#include "boost/regex.hpp"
+
+//#include "boost/test/auto_unit_test.hpp"
+//#include "boost/test/floating_point_comparison.hpp"
+//#include "boost/test/unit_test.hpp"
+
+//#include "boost/thread/condition.hpp"
+//#include "boost/thread/mutex.hpp"
+//#include "boost/thread/shared_mutex.hpp"
+//#include "boost/thread/thread.hpp"
+//#include "boost/thread/tss.hpp"
+//#include "boost/thread/xtime.hpp"
+
+#include "types.h"
+

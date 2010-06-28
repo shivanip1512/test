@@ -13,8 +13,6 @@
 
 using boost::unit_test_framework::test_suite;
 
-#define _WIN32_WINNT 0x0400
-
 #include <iostream>
 #include "prot_klondike.h"
 #include "dev_ccu721.h"  //  for timesync writes

@@ -100,8 +100,6 @@ using namespace std;
 #define POINT_EXPIRE_CHECK_RATE  60
 #define DYNAMIC_LOAD_SIZE        256
 
-#define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
-
 DLLIMPORT extern CtiLogger   dout;
 
 DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -125,7 +123,6 @@ static CtiCounter msgTimes;
 
 static bool processExecutionTime(UINT ms);
 
-static LARGE_INTEGER perfFrequency;
 /*
  *  This function detects all group control status points which are indicating control, but do not have a pending control object.
  *  It should synchronize the control state of the group with what is known about the point from the control history table.
@@ -262,8 +259,6 @@ void CtiVanGogh::VGMainThread()
     CtiTime lastTickleTime((unsigned long) 0); //We always always want this to happen in the first loop
     CtiTime lastReportTime((unsigned long) 0); //Ditto
 
-    LARGE_INTEGER completeTime, missqueueTime, dequeueTime, getQTime, loopDoneTime;
-
     INPUT_RECORD      inRecord;
     HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
     DWORD             Count;
@@ -314,8 +309,6 @@ void CtiVanGogh::VGMainThread()
             dout << CtiTime() << " Done verifying control point states" << endl;
         }
 
-        QueryPerformanceFrequency(&perfFrequency);
-
         ThreadMonitor.start();
 
         _pendingOpThread.setMainQueue( &MainQueue_ );
@@ -362,10 +355,12 @@ void CtiVanGogh::VGMainThread()
         // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
         CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
+        Cti::Timing::MillisecondTimer timer;
+
         for(;!bGCtrlC;)
         {
-            QueryPerformanceCounter(&getQTime);
-            
+            timer.reset();
+
             if((MsgPtr = DeferredQueue_.getQueue(0)) == NULL)
             {
                 MsgPtr = MainQueue_.getQueue( 1000 );
@@ -381,7 +376,7 @@ void CtiVanGogh::VGMainThread()
             }
 
 
-            QueryPerformanceCounter(&dequeueTime);
+            DWORD dequeueTime = timer.elapsed();
             if(MsgPtr != NULL)
             {
                 if(MsgPtr->isA() == MSG_SERVER_REQUEST)
@@ -455,14 +450,14 @@ void CtiVanGogh::VGMainThread()
                         {
                             nRet = pExec->ServerExecute(this);     // The "this" in question is the CtiVanGogh object...
 
-                            QueryPerformanceCounter(&completeTime);
+                            DWORD completeTime = timer.elapsed();
 
-                            if(processExecutionTime(PERF_TO_MS(completeTime, dequeueTime, perfFrequency)))
+                            if(processExecutionTime(completeTime - dequeueTime))
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     if(pExec->getMessage())
-                                        dout << CtiTime() << " Message Type " << pExec->getMessage()->typeString() << " get ms = " << PERF_TO_MS(dequeueTime, getQTime, perfFrequency) << "  ms = " << PERF_TO_MS(completeTime, dequeueTime, perfFrequency) << endl;
+                                        dout << CtiTime() << " Message Type " << pExec->getMessage()->typeString() << " get ms = " << dequeueTime << "  ms = " << (completeTime - dequeueTime) << endl;
                                 }
 
                                 {
@@ -510,15 +505,6 @@ void CtiVanGogh::VGMainThread()
             }
             else
             {
-                QueryPerformanceCounter(&missqueueTime);
-
-                if(0)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Last Message ms ago = " << PERF_TO_MS(getQTime, dequeueTime, perfFrequency) << " Queue miss took " << PERF_TO_MS(missqueueTime, getQTime, perfFrequency) << endl;
-                }
-
-
                 if( !(ConnThread_.isValid() &&
                       ConnThread_.getExecutionState() & RW_THR_ACTIVE &&
                       ConnThread_.getCompletionState() == RW_THR_PENDING) )
@@ -586,11 +572,11 @@ void CtiVanGogh::VGMainThread()
                 }
             }
 
-            QueryPerformanceCounter(&loopDoneTime);
-            if(PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) > 5000)
+            DWORD loopDuration = timer.elapsed();
+            if( loopDuration > 5000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Main loop duration: " << PERF_TO_MS(loopDoneTime, getQTime, perfFrequency) << " ms.  MainQueue_ has " << MainQueue_.entries() << endl;
+                dout << CtiTime() << " Main loop duration: " << loopDuration << " ms.  MainQueue_ has " << MainQueue_.entries() << endl;
             }
         }
 
@@ -2694,18 +2680,13 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 {
     int status = NORMAL;
     bool isPseudo = false;
-    CtiPointDataMsg *pPseudoValPD = 0;
     PtVerifyTriggerSPtr verificationPtr;
-
-    LARGE_INTEGER startTime, t1Time, t2Time, t3Time, t4Time, t5Time, t6Time, t7Time;
 
     try
     {
-        QueryPerformanceCounter(&startTime);
         CtiPointSPtr pPoint;
         CtiServerExclusion pmguard(_server_exclusion);
         pPoint = PointMgr.getPoint(pMsg->getPointId());
-        QueryPerformanceCounter(&t1Time);
 
         if(pPoint)
         {
@@ -2720,7 +2701,6 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 {
                     pMsg->setPAOId( pPoint->getDeviceID() );
                 }
-                QueryPerformanceCounter(&t2Time);
 
                 CtiPendingPointOperations *pendingControlLMMsg = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
                 pendingControlLMMsg->setType(CtiPendingPointOperations::pendingControl);
@@ -2758,9 +2738,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
 
                 pendingControlLMMsg->getControl().setStopTime(cntrlStopTime);
                 pendingControlLMMsg->getControl().setControlCompleteTime(cntrlStopTime);
-                QueryPerformanceCounter(&t3Time);
                 pendingControlLMMsg->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
-                QueryPerformanceCounter(&t4Time);
 
                 const CtiTablePointAlarming alarming = PointMgr.getAlarming(pPoint);
 
@@ -2775,8 +2753,6 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
 
                 pendingControlLMMsg->setSignal( pFailSig );
-
-                QueryPerformanceCounter(&t5Time);
 
                 if(isDeviceGroupType(pMsg->getPAOId()) && _pendingOpThread.getCurrentControlPriority(pMsg->getPointId()) >= pMsg->getControlPriority())
                 {
@@ -2812,29 +2788,9 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 {
                     addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
                 }
-                QueryPerformanceCounter(&t6Time);
 
                 pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
                 bumpDeviceToAlternateRate( pPoint );
-
-                QueryPerformanceCounter(&t7Time);
-
-                pPseudoValPD = 0;
-
-                #if 0
-                if(PERF_TO_MS(t7Time, startTime, perfFrequency) > 500)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " t1Time " << PERF_TO_MS(t1Time, startTime, perfFrequency) << endl;
-                    dout << " t2Time " << PERF_TO_MS(t2Time, startTime, perfFrequency) << endl;
-                    dout << " t3Time " << PERF_TO_MS(t3Time, startTime, perfFrequency) << endl;
-                    dout << " t4Time " << PERF_TO_MS(t4Time, startTime, perfFrequency) << endl;
-                    dout << " t5Time " << PERF_TO_MS(t5Time, startTime, perfFrequency) << endl;
-                    dout << " t6Time " << PERF_TO_MS(t6Time, startTime, perfFrequency) << endl;
-                    dout << " t7Time " << PERF_TO_MS(t7Time, startTime, perfFrequency) << endl;
-                }
-                #endif
             }
         }
     }
@@ -2890,9 +2846,6 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
     bool isFullBoat = ((const CtiVanGoghConnectionManager *)CM.get())->isRegForAll();                   // Is this connection asking for everything?
 
-    LARGE_INTEGER startTime, completeTime;
-
-    QueryPerformanceCounter(&startTime);
     if(isFullBoat)
     {
         {

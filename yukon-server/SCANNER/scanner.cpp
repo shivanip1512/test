@@ -457,10 +457,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         }
     }
 
+    Cti::Timing::MillisecondTimer loop_timer;
+
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
     {
-        DWORD loop_start_time = timeGetTime();
+		loop_timer.reset();
 
         if(pointID!=0)
         {
@@ -697,7 +699,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             PorterNexus.CTINexusClose();
         }
 
-        DWORD loop_elapsed_time = timeGetTime() - loop_start_time;
+        DWORD loop_elapsed_time = loop_timer.elapsed();
 
         //  don't loop any faster than twice per second
         if( loop_elapsed_time < 500 )

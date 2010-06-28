@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   utility
-*
-* Date:   4/14/2000
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.61.2.5 $
-* DATE         :  $Date: 2008/11/20 16:49:26 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __UTILITY_H__
-#define __UTILITY_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <string>
 #include <list>
@@ -128,48 +111,22 @@ struct CtiQueueAnalysis_t
 };
 
 
-class CtiHighPerfTimer
+namespace Cti {
+namespace Timing {
+
+class IM_EX_CTIBASE MillisecondTimer
 {
-private:
-    LARGE_INTEGER _perfFrequency;
-    LARGE_INTEGER _start;
-    LARGE_INTEGER _stop;
-    UINT _gripe;
-
-    string _name;
-
-    string _file;
-    UINT _line;
-
-    CtiHighPerfTimer(  ) : _gripe(0)
-    {
-        QueryPerformanceFrequency(&_perfFrequency);
-        QueryPerformanceCounter(&_start);
-    }
-
-    string getName() const
-    {
-        string str = _name;
-        if( !_file.empty() ) str += string(" (") + _file + string(":") + string(CtiNumStr(_line)) + string(")");
-        return str;
-    }
-
-    inline UINT PERF_TO_MS(LARGE_INTEGER b,LARGE_INTEGER a,LARGE_INTEGER p)
-    {
-        return ((UINT)((b.QuadPart - a.QuadPart) / (p.QuadPart / 1000L)));
-    }
+    DWORD _mark;
 
 public:
-    CtiHighPerfTimer( string name, UINT gripeDelta = 0, string file = string(), UINT line = 0 );
-
-    ~CtiHighPerfTimer();
-    CtiHighPerfTimer& reset();
-    CtiHighPerfTimer& report(bool force = true);
-    UINT delta();
-    CtiHighPerfTimer& rename(string name, string file = string(""), UINT line = 0);
-    CtiHighPerfTimer& relocate(string file, UINT line);
+    MillisecondTimer();
+    ~MillisecondTimer();
+    void reset();
+    DWORD elapsed() const;
 };
 
+}
+}
 
 
 IM_EX_CTIBASE void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName);
@@ -414,4 +371,3 @@ struct padded_output_iterator : public std::iterator<std::output_iterator_tag, v
     }
 };
 
-#endif // #ifndef __UTILITY_H__

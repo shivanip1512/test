@@ -1,5 +1,3 @@
-#define _WIN32_WINNT 0x0400
-
 #define BOOST_TEST_MAIN "Testing resolvers.cpp"
 #include <boost/test/unit_test.hpp>
 

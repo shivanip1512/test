@@ -1,88 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   pilSystemMsgHandler.cpp
-*
-* Date:   1/5/2007
-*
-* Author: Jess Otteson
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:44 $
-*
-* HISTORY      :
-* $Log: systemmsgthread.cpp,v $
-* Revision 1.11.2.1  2008/11/13 17:23:44  jmarks
-* YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-*
-* Responded to reviewer comments again.
-*
-* I eliminated excess references to windows.h .
-*
-* This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
-*
-* None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
-* Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
-*
-* In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
-*
-* This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
-*
-* Revision 1.11  2008/10/22 21:16:43  mfisher
-* YUK-6589 Scanner should not load non-scannable devices
-* Major refactoring of refresh() and all associated functions
-* Added DebugTimer
-* Renamed CtiDeviceManager::getEqual to ::getDeviceByID
-* Removed CtiDevice typedef
-*
-* Revision 1.10  2008/08/14 18:26:11  jotteson
-* YUKRV-163 YUK-6306 Change porter to not send a error for canceled messages
-* Updated some naming conventions based on code review
-*
-* Revision 1.9  2008/08/14 15:57:41  jotteson
-* YUK-6333  Change naming in request message and change cancellation to use this new named field instead of user ID
-* Cancellation now uses the new group message ID.
-* Group Message ID name added to Request, Result, Out, and In messages.
-*
-* Revision 1.8  2008/08/13 19:08:34  jotteson
-* YUK-6306 Change porter to not send a error for canceled messages
-* Changed canceled messages to update statistics but not send an error back to the client
-* Added a new error message for cancelled messages seperate from queue purged
-* Fixed minor statistics startup bug.
-*
-* Revision 1.7  2008/07/21 20:38:27  jotteson
-* YUK-4556 CCU queue backs up and returns no error when uninitialized
-* Added expiration functionality regardless of port's state.
-* Added 24 hour default expiration.
-* Modified Cancellation and Expiration to return error and update statistics.
-*
-* Revision 1.6  2008/07/17 20:51:52  mfisher
-* YUK-6188 PIL to Porter group submission is very slow
-* Added readers/writer lock
-*
-* Revision 1.5  2008/07/08 22:54:57  mfisher
-* YUK-6077 Several lists in PIL and Porter are not sorted
-* YUK-6113 Large group reads block out higher-priority commands
-* YUK-6156 MCT-410 "getvalue kwh" command execution is slow
-* removed a slow CPARM lookup
-* added support to purge requests from CtiLocalConnect
-*
-* Revision 1.4  2007/10/18 21:12:18  jotteson
-* Fix for bug in timing code that makes debugging Dispatch difficult.
-*
-* Revision 1.3  2007/06/25 18:59:53  mfisher
-* added thread names
-*
-* Revision 1.2  2007/02/22 17:46:42  jotteson
-* Bug Id: 814, 651
-* Completed integration of MACS with new system messages. QueueWrites were changed to be sure they put the proper ID into the queues. New messaging used, new device interface used.
-*
-* Revision 1.1  2007/01/22 21:40:08  jotteson
-* Initial Revision. Thread in porter that executes system messages and returns results to requestor.
-*
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "cmdparse.h"
@@ -101,12 +16,7 @@
 #include "portdecl.h"
 #include <list>
 
-static LARGE_INTEGER perfFrequency;
 using namespace std;
-
-#ifndef PERF_TO_MS
-    #define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
-#endif
 
 namespace Cti {
 namespace Porter {
@@ -114,7 +24,6 @@ namespace Porter {
 SystemMsgThread::SystemMsgThread(CtiFIFOQueue< CtiMessage > *inputQueue)
 {
     _input = inputQueue;
-    QueryPerformanceFrequency(&perfFrequency);
     _pDevManager = NULL;
     _pPortManager = NULL;
     _pPilToPorter = NULL;

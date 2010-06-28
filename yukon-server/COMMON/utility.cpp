@@ -2657,53 +2657,33 @@ double limitValue(double input, double minValue, double maxValue)
     return input;
 }
 
-CtiHighPerfTimer::CtiHighPerfTimer( string name, UINT gripeDelta, string file, UINT line ) :
-    _name(name), _gripe(gripeDelta), _file(file), _line(line) {
 
-    QueryPerformanceFrequency(&_perfFrequency);
-    QueryPerformanceCounter(&_start);
+namespace Cti {
+namespace Timing {
+
+MillisecondTimer::MillisecondTimer()
+{
+    timeBeginPeriod(1U);
+
+    reset();
 }
 
-CtiHighPerfTimer::~CtiHighPerfTimer() {
-
-    QueryPerformanceCounter(&_stop);
-    if(_gripe && PERF_TO_MS(_stop, _start, _perfFrequency) > _gripe) {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << " timer: " << PERF_TO_MS(_stop, _start, _perfFrequency) << " ms" << endl;
-    }
+MillisecondTimer::~MillisecondTimer()
+{
+    timeEndPeriod(1U);
 }
 
-CtiHighPerfTimer& CtiHighPerfTimer::reset() {
-    QueryPerformanceCounter(&_start);
-    return *this;
+void MillisecondTimer::reset()
+{
+    _mark = timeGetTime();
 }
 
-CtiHighPerfTimer& CtiHighPerfTimer::report(bool force) {
-
-    QueryPerformanceCounter(&_stop);
-    if(force || (_gripe && PERF_TO_MS(_stop, _start, _perfFrequency) > _gripe)) {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << " timer: " << PERF_TO_MS(_stop, _start, _perfFrequency) << " ms" << endl;
-    }
-    return *this;
+DWORD MillisecondTimer::elapsed() const
+{
+    return timeGetTime() - _mark;
 }
 
-UINT CtiHighPerfTimer::delta() {
-    QueryPerformanceCounter(&_stop);
-    return PERF_TO_MS(_stop, _start, _perfFrequency);
 }
-
-CtiHighPerfTimer& CtiHighPerfTimer::rename(string name, string file, UINT line) {
-    _name = name;
-    _file = file;
-    _line = line;
-    return *this;
-}
-
-CtiHighPerfTimer& CtiHighPerfTimer::relocate(string file, UINT line) {
-    _file = file;
-    _line = line;
-    return *this;
 }
 
 
