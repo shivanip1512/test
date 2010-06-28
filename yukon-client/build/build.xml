@@ -112,7 +112,8 @@
           <ant dir="${export}" target="${dotarget}" />
           <ant dir="${esub}" target="${dotarget}"/>
           <ant dir="${tdc}" target="${dotarget}" />
-          <ant dir="${dbeditor}" target="${dotarget}" />
+    	  <ant dir="${loadcontrol}" target="${dotarget}" />
+    	  <ant dir="${dbeditor}" target="${dotarget}" />
           <ant dir="${commander}" target="${dotarget}" />
           <ant dir="${commands}" target="${dotarget}" />
           <ant dir="${logger}" target="${dotarget}"/>
@@ -120,7 +121,6 @@
         
           <ant dir="${esub-editor}" target="${dotarget}"/>
           <ant dir="${cbc}" target="${dotarget}" />
-          <ant dir="${loadcontrol}" target="${dotarget}" />
           <ant dir="${macs}" target="${dotarget}" />
           <ant dir="${stars}" target="${dotarget}"/>
     	
