@@ -64,13 +64,8 @@ public class MultispeakDeviceGroupSyncController {
 			return "redirect:home";
 		}
 		
-		try {
-			MultispeakDeviceGroupSyncType multispeakDeviceGroupSyncType = MultispeakDeviceGroupSyncType.valueOf(deviceGroupSyncType);
-			multispeakDeviceGroupSyncService.startSyncForType(multispeakDeviceGroupSyncType, userContext);
-		} catch (IllegalArgumentException e) {
-			flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncHome.error.invalidSyncType"));
-			return "redirect:home";
-		}
+		MultispeakDeviceGroupSyncType multispeakDeviceGroupSyncType = MultispeakDeviceGroupSyncType.valueOf(deviceGroupSyncType);
+		multispeakDeviceGroupSyncService.startSyncForType(multispeakDeviceGroupSyncType, userContext);
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.multispeak.deviceGroupSyncHome.startOk"));
         return "redirect:progress";

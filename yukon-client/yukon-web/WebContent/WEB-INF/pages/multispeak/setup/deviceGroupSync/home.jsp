@@ -37,7 +37,6 @@
 					<form id="startForm" action="/spring/multispeak/setup/deviceGroupSync/start" method="post">
 						<span id="syncNowContent" class="nonwrapping">
 			    		<select name="deviceGroupSyncType" id="deviceGroupSyncTypeSelect">
-			    			<option value=""><i:inline key=".selectSyncType"/></option>
 			    			<c:forEach var="type" items="${deviceGroupSyncTypes}">
 			    				<option value="${type}"><cti:msg key="${type.formatKey}"/></option>
 			    			</c:forEach>

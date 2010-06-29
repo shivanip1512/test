@@ -7,10 +7,10 @@ import com.google.common.collect.Sets;
 
 public enum MultispeakDeviceGroupSyncType implements DisplayableEnum {
 
+	SUBSTATION_AND_BILLING_CYCLE(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, 
+													   MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)),
 	SUBSTATION(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)),
 	BILLING_CYCLE(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)),
-	SUBSTATION_AND_BILLING_CYCLE(Sets.immutableEnumSet(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, 
-			                                           MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)),
 	;
 	
 	private Set<MultispeakDeviceGroupSyncTypeProcessorType> processorTypes;
