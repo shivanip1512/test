@@ -12,7 +12,7 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
 
 <cti:msg var="dialogTitle" key="${title}"/>
 <tags:simplePopup title="${dialogTitle}" id="${id}" styleClass="pickerDialog">
-    <form class="pickerHeader">
+    <div class="pickerHeader">
         <table>
             <tr>
                 <td class="queryStringArea">
@@ -26,7 +26,7 @@ Picker.alreadySelectedHoverMessage = '<cti:msg2 key=".alreadySelectedHover"/>';
                     nextUrl="javascript:${id}.next()" mode="javascript"/>
             </tr>
         </table>
-    </form>
+    </div>
 
     <div id="picker_${id}_nothingSelected" style="display:none" class="errorMessage"><i:inline key=".nothingSelected"/></div>
     <div id="picker_${id}_results" class="pickerResults"></div>
