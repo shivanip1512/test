@@ -1,15 +1,16 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="modules.operator.accountImport">
 
     <tags:boxContainer2 nameKey="importErrorsContainer" hideEnabled="true" showInitially="true">
         <table class="compactResultsTable">
             <tr>
-                <th nowrap="nowrap">Line #</th>
-                <th>Error Message</th>
-                <th>Import Account</th>
+                <th nowrap="nowrap"><i:inline key="yukon.web.modules.operator.accountImport.lineNo"/></th>
+                <th><i:inline key="yukon.web.modules.operator.accountImport.errorMessage"/></th>
+                <th><i:inline key="yukon.web.modules.operator.accountImport.importAccount"/></th>
             </tr>
             <c:forEach var="importError" items="${importErrors}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">

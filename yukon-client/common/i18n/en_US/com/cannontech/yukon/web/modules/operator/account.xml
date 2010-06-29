@@ -200,10 +200,14 @@
     <entry key="yukon.web.modules.operator.accountImport.accountsProgress">Accounts</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareProgress">Hardware</entry>
     <entry key="yukon.web.modules.operator.accountImport.prescanning">Prescanning...</entry>
-    <entry key="yukon.web.modules.operator.accountImport.failedFailed">Finished - Failed</entry>
+    <entry key="yukon.web.modules.operator.accountImport.finishedFailed">Finished - Failed</entry>
     <entry key="yukon.web.modules.operator.accountImport.finishedPassed">Finished - Passed</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareStats">{0} Added, {1} Updated, {2} Removed</entry>
     <entry key="yukon.web.modules.operator.accountImport.accountStats">{0} Added, {1} Updated, {2} Removed</entry>
-    <entry key="yukon.web.modules.operator.accountImport.finishedPassed">Finished - Passed</entry>
+    
+    <!-- accountImportResults.jsp -->
+    <entry key="yukon.web.modules.operator.accountImport.lineNo">Line Number</entry>
+    <entry key="yukon.web.modules.operator.accountImport.errorMessage">Error Message</entry>
+    <entry key="yukon.web.modules.operator.accountImport.importAccount">Import Account</entry>
     
 </properties>
