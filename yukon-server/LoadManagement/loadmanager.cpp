@@ -387,11 +387,11 @@ void CtiLoadManager::controlLoop()
                                     }
                                     else if( currentControlArea->hasStatusTrigger() &&
                                              !currentControlArea->isStatusTriggerTripped() &&
-                                             (!currentControlArea->hasThresholdTrigger() || 
+                                             (!currentControlArea->hasThresholdTrigger() ||
                                               (!currentControlArea->getRequireAllTriggersActiveFlag() && !currentControlArea->isThresholdTriggerTripped())) &&
                                              currentControlArea->getControlInterval() == 0 )   // Only stop them manually if there is no control interval!
                                     {
-                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, true); 
+                                        currentControlArea->manuallyStopAllProgramsNow(secondsFromBeginningOfDay, secondsFrom1901, multiPilMsg, multiDispatchMsg, multiNotifMsg, true);
                                         // Potentially this control area is ready for manual control
                                         // If so lets do it now otherwise we have to wait for the top
                                         // of the main loop which could be a while
@@ -1109,7 +1109,7 @@ void CtiLoadManager::parseMessage(RWCollectable *message, ULONG secondsFrom1901)
             msgMulti = (CtiMultiMsg*)message;
             CtiMultiMsg_vec& temp = msgMulti->getData();
             string timerOutput = " Multi loading " + CtiNumStr(temp.size()) + " messages";
-            Cti::DebugTimer debugTime(timerOutput, _LM_DEBUG & LM_DEBUG_TIMING, 2);
+            Cti::Timing::DebugTimer debugTime(timerOutput, _LM_DEBUG & LM_DEBUG_TIMING, 2);
             for( i=0;i<temp.size( );i++ )
             {
                 parseMessage(temp[i], secondsFrom1901);

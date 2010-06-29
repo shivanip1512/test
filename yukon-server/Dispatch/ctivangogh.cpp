@@ -85,6 +85,7 @@
 #include "ctidate.h"
 #include "numstr.h"
 #include "debug_timer.h"
+#include "millisecond_timer.h"
 
 using namespace std;
 
@@ -1770,7 +1771,7 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
             if(ptIdList.size() > 0)
             {
                 timerOutput = threadName + " loading " + CtiNumStr(ptIdList.size()) + " points";
-                Cti::DebugTimer debugTime(timerOutput, gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE, 2);
+                Cti::Timing::DebugTimer debugTime(timerOutput, gDispatchDebugLevel & DISPATCH_DEBUG_PERFORMANCE, 2);
 
                 PointMgr.refreshListByPointIDs(ptIdList);
                 ptIdList.clear();

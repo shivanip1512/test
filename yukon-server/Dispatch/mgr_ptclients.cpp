@@ -719,7 +719,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que)
 {
     {
-        Cti::DebugTimer debugTime("Scanning For Archival", false, 1);
+        Cti::Timing::DebugTimer debugTime("Scanning For Archival", false, 1);
         coll_type::writer_lock_guard_t guard(getLock());
         vector<long> points;
         getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);

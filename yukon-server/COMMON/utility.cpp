@@ -2658,35 +2658,6 @@ double limitValue(double input, double minValue, double maxValue)
 }
 
 
-namespace Cti {
-namespace Timing {
-
-MillisecondTimer::MillisecondTimer()
-{
-    timeBeginPeriod(1U);
-
-    reset();
-}
-
-MillisecondTimer::~MillisecondTimer()
-{
-    timeEndPeriod(1U);
-}
-
-void MillisecondTimer::reset()
-{
-    _mark = timeGetTime();
-}
-
-DWORD MillisecondTimer::elapsed() const
-{
-    return timeGetTime() - _mark;
-}
-
-}
-}
-
-
 // Usage: SetThreadName (-1, "MainThread");
 void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName)
 {

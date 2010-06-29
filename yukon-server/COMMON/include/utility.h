@@ -111,24 +111,6 @@ struct CtiQueueAnalysis_t
 };
 
 
-namespace Cti {
-namespace Timing {
-
-class IM_EX_CTIBASE MillisecondTimer
-{
-    DWORD _mark;
-
-public:
-    MillisecondTimer();
-    ~MillisecondTimer();
-    void reset();
-    DWORD elapsed() const;
-};
-
-}
-}
-
-
 IM_EX_CTIBASE void SetThreadName( DWORD dwThreadID, LPCSTR szThreadName);
 
 IM_EX_CTIBASE void CreateMiniDump(const std::string &dumpfilePrefix);

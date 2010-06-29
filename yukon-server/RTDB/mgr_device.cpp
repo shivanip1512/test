@@ -664,7 +664,7 @@ bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_n
 {
     bool print_bounds = DebugLevel & 0x00020000;
 
-    DebugTimer timer("looking for " + device_name, print_bounds);
+    Timing::DebugTimer timer("looking for " + device_name, print_bounds);
 
     RWDBConnection conn     = getConnection();
     RWDBDatabase   db       = getDatabase();
@@ -839,7 +839,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
         // Updated Flag being NOT set.  I only do this for non-directed loads.  a paoid is directed.!
         if( paoids.empty() && rowFound )
         {
-            DebugTimer timer("removing non-updated devices ");
+            Timing::DebugTimer timer("removing non-updated devices ");
 
             CtiDeviceSPtr evictedDevice;
 
@@ -1750,35 +1750,35 @@ void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
 {
     if( !type || type == TYPE_MACRO )
     {
-        DebugTimer timer("loading macro subdevices");
+        Timing::DebugTimer timer("loading macro subdevices");
         refreshMacroSubdevices(paoids);
     }
 
     if( !type || isION(type) )
     {
-        DebugTimer timer("loading ION meter groups");
+        Timing::DebugTimer timer("loading ION meter groups");
         refreshIONMeterGroups(paoids);
     }
 
     if( !type || isMCT(type) )
     {
-        DebugTimer timer("loading MCT configs");
+        Timing::DebugTimer timer("loading MCT configs");
         refreshMCTConfigs(paoids);
         refreshMCT400Configs(paoids);
     }
 
     {
-        DebugTimer timer("loading Device Parameters");
+        Timing::DebugTimer timer("loading Device Parameters");
         refreshDeviceParameters(paoids, type);
     }
 
     {
-        DebugTimer timer("loading device exclusions");
+        Timing::DebugTimer timer("loading device exclusions");
         refreshExclusions(paoids);
     }
 
     {
-        DebugTimer timer("loading dynamic device data");
+        Timing::DebugTimer timer("loading dynamic device data");
         refreshDynamicPaoInfo(paoids);
     }
 }

@@ -529,7 +529,7 @@ void initStatisticsRecords(const set<long> &ids)
 
     const int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_STATISTICS_SELECT", 1000);
 
-    DebugTimer timer("initStatisticsRecords()");
+    Timing::DebugTimer timer("initStatisticsRecords()");
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
@@ -635,7 +635,7 @@ void processCollectedStats(bool force)
 {
     int inactive_index;
     CtiTime current_stat_time;
-    
+
     {
         CtiLockGuard<CtiCriticalSection> guard(event_mux);
 

@@ -1,12 +1,15 @@
 #include "yukon.h"
 
-#include <strstream>
-
 #include "debug_timer.h"
+
+#include "logger.h"
+
+#include <strstream>
 
 using namespace std;
 
 namespace Cti {
+namespace Timing {
 
 string DebugTimer::formatSystemTime(const SYSTEMTIME &systime)
 {
@@ -84,5 +87,6 @@ DebugTimer::~DebugTimer()
     }
 }
 
+}
 }
 

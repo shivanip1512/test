@@ -6,6 +6,7 @@
 #include "mgr_ptclients.h"
 #include "msg_cmd.h"
 #include "pendingopthread.h"
+#include "millisecond_timer.h"
 
 using namespace std;
 

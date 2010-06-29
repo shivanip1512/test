@@ -21,8 +21,8 @@ void ScannableDeviceManager::refreshDeviceProperties(id_range_t &paoids, int typ
 
     bool print_bounds = DebugLevel & 0x00020000;
 
-    {  DebugTimer timer("loading scan rates",   print_bounds);  refreshScanRates    (paoids);  }
-    {  DebugTimer timer("loading scan windows", print_bounds);  refreshDeviceWindows(paoids);  }
+    {  Timing::DebugTimer timer("loading scan rates",   print_bounds);  refreshScanRates    (paoids);  }
+    {  Timing::DebugTimer timer("loading scan windows", print_bounds);  refreshDeviceWindows(paoids);  }
 }
 
 

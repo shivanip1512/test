@@ -8,16 +8,15 @@
 
 #if !defined(_WIN32_WINNT)
 #define _WIN32_WINNT 0x0500  //  Windows XP, Server 2003.  No service packs.
-#endif 
+#endif
 
-#define WIN32_LEAN_AND_MEAN 
+#define WIN32_LEAN_AND_MEAN
 
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
 #include <windows.h>
-#include <mmsystem.h>
 
 #include <stdlib.h>
 #include <stdio.h>

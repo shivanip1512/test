@@ -67,7 +67,7 @@
 #include "dllyukon.h"
 #include "thread_monitor.h"
 
-#include "mmsystem.h"
+#include "millisecond_timer.h"
 
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
@@ -380,7 +380,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         if(pointID!=0)
         {
             CtiThreadMonitor::State next;
-            if((next = ThreadMonitor.getState()) != previous || 
+            if((next = ThreadMonitor.getState()) != previous ||
                CtiTime::now() > NextThreadMonitorReportTime)
             {
                 // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
@@ -462,12 +462,12 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
     {
-		loop_timer.reset();
+        loop_timer.reset();
 
         if(pointID!=0)
         {
             CtiThreadMonitor::State next;
-            if((next = ThreadMonitor.getState()) != previous || 
+            if((next = ThreadMonitor.getState()) != previous ||
                CtiTime::now() > NextThreadMonitorReportTime)
             {
                 // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point

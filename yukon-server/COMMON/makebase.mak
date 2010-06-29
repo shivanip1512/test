@@ -55,6 +55,7 @@ guard.obj \
 hash_functions.obj \
 logger.obj \
 master.obj \
+millisecond_timer.obj \
 mutex.obj \
 observe.obj \
 pending_stat_operation.obj \
