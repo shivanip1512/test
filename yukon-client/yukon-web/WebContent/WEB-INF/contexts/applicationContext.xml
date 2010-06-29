@@ -680,7 +680,10 @@
                 </entry>
                 <entry key="MSP_DEVICE_GROUP_SYNC">
                     <ref local="multispeakDeviceGroupSyncBackingService"/>
-                </entry>             
+                </entry> 
+                <entry key="ACCOUNT_IMPORT">
+                    <ref local="accountImportBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -1563,5 +1566,12 @@
     <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
+    <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>
+    <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
+    <bean id="accountImportBackingService" class="com.cannontech.web.updater.dr.AccountImportBackingService">
+        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="resultsCache" ref="recentResultsCache" />
+    </bean>
     
 </beans>

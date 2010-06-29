@@ -2,6 +2,7 @@ package com.cannontech.web.updater;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
@@ -28,7 +29,7 @@ public abstract class RecentResultUpdateBackingService implements UpdateBackingS
         // get result value
         Object value = getResultValue(resultId, resultTypeStr);
         
-        // check instanceof ResolvableTemplate, handles as such, else call toString
+        // check to handel ResolvableTemplate, or MessageSourceResolvable, else call toString
         if (value instanceof ResolvableTemplate) {
             
             ResolvableTemplate resolvableValue = (ResolvableTemplate)value;
@@ -37,6 +38,10 @@ public abstract class RecentResultUpdateBackingService implements UpdateBackingS
             String template = messageSourceAccessor.getMessage(resolvableValue.getCode());
             FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
             return templateProcessor.process(template, resolvableValue.getData());
+        } else if (value instanceof MessageSourceResolvable) {
+            MessageSourceResolvable resolvableMessage = (MessageSourceResolvable)value;
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            return messageSourceAccessor.getMessage(resolvableMessage);
         }
         
         return value.toString();

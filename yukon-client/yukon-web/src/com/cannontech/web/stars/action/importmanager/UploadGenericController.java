@@ -1,7 +1,5 @@
 package com.cannontech.web.stars.action.importmanager;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -14,7 +12,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ProgressChecker;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.util.task.ImportCustAccountsTask;
 import com.cannontech.stars.util.task.TimeConsumingTask;
 import com.cannontech.stars.util.task.UploadGenericFileTask;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -48,7 +45,7 @@ public class UploadGenericController extends StarsImportManagerActionController 
                 
                 task = ProgressChecker.getTask(id);
                 
-                if (task.getStatus() == ImportCustAccountsTask.STATUS_FINISHED) {
+                if (task.getStatus() == TimeConsumingTask.STATUS_FINISHED) {
                     session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, task.getProgressMsg());
                     ProgressChecker.removeTask( id );
                     String location = this.getRedirect(request);
@@ -56,7 +53,7 @@ public class UploadGenericController extends StarsImportManagerActionController 
                     return;
                 }
                 
-                if (task.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
+                if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) {
                     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, task.getErrorMsg());
                     ProgressChecker.removeTask( id );
                     String location = this.getRedirect(request);

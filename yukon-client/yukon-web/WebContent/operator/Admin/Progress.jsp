@@ -3,7 +3,6 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.util.ProgressChecker" %>
 <%@ page import="com.cannontech.stars.util.task.TimeConsumingTask" %>
-<%@ page import="com.cannontech.stars.util.task.ImportCustAccountsTask" %>
 <%@ page import="com.cannontech.stars.util.task.DeleteEnergyCompanyTask" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany" %>
@@ -71,11 +70,6 @@
 		{
 			session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, taskProgress);
 			if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) {
-				if (task instanceof ImportCustAccountsTask) {
-					ProgressChecker.removeTask(id);
-					session.setAttribute("errorList", ((ImportCustAccountsTask) task).getErrorList());
-					session.setAttribute(ServletUtils.ATT_REFERRER, request.getContextPath() + "/operator/Consumer/ImportManagerView.jsp");
-				}
 				if (taskError != null)
 					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, taskError);
 				else

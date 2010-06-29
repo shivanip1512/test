@@ -95,6 +95,115 @@
     <entry key="yukon.web.modules.operator.accountGeneral.accountDto.accountNumber.accountNumberUnavailable">Account Number Already Exists</entry>
     <entry key="yukon.web.modules.operator.contactEdit.firstNameRequired">First Name Required</entry>
     
+	<!-- accountImport.jsp -->
+	<entry key="yukon.web.modules.operator.accountImport.pageName">Account Import</entry>
+	<entry key="yukon.web.modules.operator.accountImport.fileUploadContainer.title">Upload CSV formatted file(s) containing required column headers for creating/updating/deleting accounts and hardware: </entry>
+	<entry key="yukon.web.modules.operator.accountImport.sampleFiles">Sample Files</entry>
+	<entry key="yukon.web.modules.operator.accountImport.canceledMessage">Operation was canceled by user after {0} was proccessed.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.noteLabel">Note:</entry>
+	<entry key="yukon.web.modules.operator.accountImport.noteText">Please enter the import file(s). Leave the field empty if you do not have the corresponding file.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.instructionsLabel">Instructions:</entry>
+    <entry key="yukon.web.modules.operator.accountImport.instructionsText"><![CDATA[ 
+        Files must contain a header row with valid columns as listed in the tables below.<br><br>Accounts can be imported using the file structure described below.<br><br>Hardware can be imported using the hardware file structure described below.
+    ]]></entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountImportFile">Customer File</entry>
+	<entry key="yukon.web.modules.operator.accountImport.hardwareImportFile">Hardware File</entry>
+	<entry key="yukon.web.modules.operator.accountImport.email">Email (optional)</entry>
+	<entry key="yukon.web.modules.operator.accountImport.sampleAccountFile">Sample Account File</entry>
+	<entry key="yukon.web.modules.operator.accountImport.sampleHardwareFile">Sample Hardware File</entry>
+	<entry key="yukon.web.modules.operator.accountImport.sampleAccountAndHardwareFile">Sample Account And Hardware File</entry>
+	<entry key="yukon.web.modules.operator.accountImport.importAccountTableHeader">Import Accounts</entry>
+	<entry key="yukon.web.modules.operator.accountImport.importAccountTableDescription">Accounts will be updated/added/deleted using this type of file.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.importHardwareTableHeader">Import Hardware</entry>
+	<entry key="yukon.web.modules.operator.accountImport.importHardwareTableDescription">Hardware will be updated/added/deleted using this type of file.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountColumnHeader">Account Field</entry>
+	<entry key="yukon.web.modules.operator.accountImport.hardwareColumnHeader">Hardware Field</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountColumnDescription">Description</entry>
+	<entry key="yukon.web.modules.operator.accountImport.hardwareColumnDescription">Description</entry>
 	
+	<!-- import errors -->
+	<entry key="yukon.web.modules.operator.accountImport.error.noFiles">You must supply an account file or a hardware file.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.error.invalidEmail">Not a valid email address.</entry>
 	
+	<!-- Import Account Fields -->
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.ACCOUNT_NO">Customer account number. Maximum number of characters is 40.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.CUST_ACTION">Customer action (INSERT, UPDATE, REMOVE)</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.LAST_NAME">Last name of the customer contact. Maximum number of characters is 120.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.FIRST_NAME">First name of the customer contact. Maximum number of characters is 120.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.HOME_PHONE">Phone number of the customer contact. Maximum number of characters is 130.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.WORK_PHONE">Work number of the customer contact. Maximum number of characters is 130.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.EMAIL">Email address of the customer contact. Maximum number of characters is 130.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.STREET_ADDR1">Street address of the customer account. Maximum number of characters is 40.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.STREET_ADDR2">Second line of address of the customer account. Maximum number of characters is 40.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.CITY">City of the customer account. Maximum number of characters is 32.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.STATE">Postal abbreviation of the customer account (i.e., Minnesota = MN). Maximum number of characters is 2.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.COUNTY">County of the customer account. Maximum number of characters is 30.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.ZIP_CODE">Zip code of the customer account. Maximum number of characters is 12.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.MAP_NO">Location code of customer account property from mapping system. Maximum number of characters is 40.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.SUBSTATION">Name of the substation feeding this customer account. The substation name must match a substation defined in the Substations list on the Config Energy Company “Administration” page. Maximum number of characters is 50.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.FEEDER">Feeder for this account. Maximum number of characters is 20.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.POLE">Pole feeding this account. Maximum number of characters is 20.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.TRFM_SIZE">Size of the transformer for this account. Maximum number of characters is 20.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.SERV_VOLT">Service voltage of this account. Maximum number of characters is 20.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.USERNAME">Login name of the customer contact. Maximum number of characters is 64.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.PASSWORD">Password of the customer contact. Maximum number of characters is 64.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.LOGIN_GROUP">Customer login group. The login group must match the name of customer login group assigned to the Energy Company. Maximum number of characters is 120.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.COMPANY_NAME">Name of company (commercial customer). Maximum number of characters is 80.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_PIN">The ivr pin number of the account. Must be numeric. Maximum number of digits is 19.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_USERNAME">The ivr username of the account. Must be numeric. Maximum number of digits is 19.</entry>
+	
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.a.label">a.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.a.text">This field is required to insert, update, or remove a customer account in STARS.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.b.label">b.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.b.text">The REMOVE customer action deletes a customer account including all account and enrollment information. Load control devices that was assigned to the account is moved to the general inventory.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.label">c.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.c.text">If the USERNAME and PASSWORD fields are specified, the LOGIN_GROUP becomes a required field. However, a customer’s login group cannot be updated or removed using the LOGIN_GROUP field.</entry>
+    
+    <!-- Import Hardware Fields -->
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.ACCOUNT_NO">Customer account number. Maximum number of characters is 40.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.HW_ACTION">Hardware action (INSERT, UPDATE, REMOVE).</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.DEVICE_TYPE">Type of load control device installed at the customer account. The device type name must match a device type assigned to the Entries list on the Config Energy Company “Administration - Device Type” page. For example, LCR-5000(ExpressCom), ExpressStat, or UtilityPRO. Maximum number of characters is 50.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.DEVICE_LABEL">Label/name for the load control device installed at the customer account. Maximum number of characters is 60.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.SERIAL_NO">Serial number of the load control device installed at the customer account. Maximum number of characters is 30.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.INSTALL_DATE">Date the load control device was installed. Enter in mm/dd/yyyy format.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.REMOVE_DATE">Date the load control device was removed. Enter in mm/dd/yyyy format.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.SERVICE_COMPANY">Company responsible for installing the load control device. The service company name must match a service company defined in the Service Companies list on the Config Energy Company “Administration” page. Maximum number of characters is 40.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.PROGRAM_NAME">Name of the load control program. The program name must match a load program in the Database Editor or the display name of a program in the Appliance Categories And Published Programs area on the Config Energy Company “Administration” page. Maximum number of characters is 60.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.ADDR_GROUP">Name of the load control group. The address group name must match a load group assigned to the load program in the Database Editor. Maximum number of characters is 60.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.APP_TYPE">Type of appliance attached to the load control device. The application type name must match the category name of an appliance category in the Appliance Categories And Published Programs area on the Config Energy Company “Administration” page. Maximum number of characters is 40.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.APP_KW">Energy usage of the appliance in kW. Enter in decimal format.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.APP_RELAY_NUM">Relay number of the load control device to be used for program assignment. The typical value is 1, but it depends on the device configuration. The relay must be assigned a value to allow configuration commands to be sent out correctly. Maximum number of characters is 1.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.OPTION_PARAMS">Optional parameter for special import functions.</entry>
+    
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.label">a.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.text">These field are required to insert, update, or remove a load control device in STARS.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.b.label">b.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.b.text">The REMOVE hardware action removes a load control device from a customer and moves it to the general inventory.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.c.label">c.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.c.text">If the install date is not included, it defaults to today’s date.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.d.label">d.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.d.text">In addition to ACCOUNT_NO, DEVICE_TYPE, and SERIAL_NO, these fields are required to correctly enroll a load control device into a load control program.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.e.label">e.</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.e.text">If an address group name (ADDR_GROUP) is not included, the import application picks an address group from the a list of groups assigned to the load control program (PROGRAM_NAME).</entry>
+    
+    <!-- accountImportResults.jsp -->
+    <entry key="yukon.web.modules.operator.accountImport.importErrorsContainer.title">Prescan Errors By Line Number</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.prescanResultsContainer.title">Prescan Results</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.prescanStatus">Prescan Status</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.accountsToImport">Accounts Processed</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.hardwareToImport">Hardware Processed</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.importErrors">Errors</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.errorsLink">Show Errors</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.backLink">Back to Account Import</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.accountImportResultsContainer.title">Account Import Results</entry> 
+    <entry key="yukon.web.modules.operator.accountImport.progressBarLabel">Import Progress</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountsProgress">Accounts</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareProgress">Hardware</entry>
+    <entry key="yukon.web.modules.operator.accountImport.prescanning">Prescanning...</entry>
+    <entry key="yukon.web.modules.operator.accountImport.failedFailed">Finished - Failed</entry>
+    <entry key="yukon.web.modules.operator.accountImport.finishedPassed">Finished - Passed</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareStats">{0} Added, {1} Updated, {2} Removed</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountStats">{0} Added, {1} Updated, {2} Removed</entry>
+    <entry key="yukon.web.modules.operator.accountImport.finishedPassed">Finished - Passed</entry>
+    
 </properties>

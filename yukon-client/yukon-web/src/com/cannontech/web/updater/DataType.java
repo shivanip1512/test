@@ -28,5 +28,6 @@ public enum DataType {
     DATABASE_MIGRATION,
     LTC,
     MSP_DEVICE_GROUP_SYNC,
+    ACCOUNT_IMPORT
     ;
 }

@@ -14,9 +14,6 @@
         <property name="yukonUserDao" ref="yukonUserDao"/>
     </bean>
 
-	<bean id="importmanagerImportCustAccounts" class="com.cannontech.web.stars.action.importmanager.ImportCustAccountsController"
-          parent="starsImportManagerController"/>
-	
 	<bean id="importmanagerUploadGeneric" class="com.cannontech.web.stars.action.importmanager.UploadGenericController" 
           parent="starsImportManagerController"/>
 

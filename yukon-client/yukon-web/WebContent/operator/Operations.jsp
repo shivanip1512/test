@@ -53,10 +53,10 @@
 		</c:set>
 		<c:choose>
 			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'true')}">
-				<c:set var="importUri" scope="page" value="ImportAccount.jsp"/>
+				<c:set var="importUri" scope="page" value="/spring/stars/operator/account/accountImport"/>
 				<c:set var="importLabel" scope="page" value="Import Account"/>
 				<tags:sectionLink>
-		        	<a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
+		        	<a href="${pageScope.importUri}">${pageScope.importLabel}</a>
 		        </tags:sectionLink>
 			</c:when>
 			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'EnrollMigration')}">

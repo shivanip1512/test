@@ -2,7 +2,6 @@ package com.cannontech.web.bulk.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,39 +13,36 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import com.cannontech.web.util.WebFileUtils;
 
 public class BulkFileUploadUtils {
-
-    public static BulkFileUpload getBulkFileUpload(HttpServletRequest request) {
-        
+    
+    public static  BulkFileUpload getBulkFileUpload(HttpServletRequest request, String fileInputName) {
         BulkFileUpload bulkFileUpload = new BulkFileUpload();
         
         if(ServletFileUpload.isMultipartContent(request)) {
 
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
-            MultipartFile dataFile = mRequest.getFile("dataFile");
+            MultipartFile dataFile = mRequest.getFile(StringUtils.isEmpty(fileInputName) ? "dataFile" : fileInputName);
 
             try {
 
                 if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                     bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.noFile");
-                } 
-                else {
-                    InputStream inputStream = dataFile.getInputStream();
-                    if (inputStream.available() <= 0) {
-                        bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.emptyFile");
-                    }
+                } else if(dataFile.getInputStream().available() <= 0){
+                    bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.emptyFile");
+                } else {
+                    File file = WebFileUtils.convertToTempFile(dataFile, "bulkImport", "");
+                    bulkFileUpload.setFile(file);
                 }
-
-                File file = WebFileUtils.convertToTempFile(dataFile, "bulkImport", "");
-                bulkFileUpload.setFile(file);
-
             } catch (IOException e) {
                 bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.noFile");
             }
-        }
-        else {
+        } else {
             bulkFileUpload.addError("yukon.common.device.bulk.fileUpload.error.noFile");
         }
         
         return bulkFileUpload;
+    }
+
+    public static BulkFileUpload getBulkFileUpload(HttpServletRequest request) {
+        return getBulkFileUpload(request, null);
     }
 }
