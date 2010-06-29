@@ -158,7 +158,8 @@ public enum HardwareType implements DatabaseRepresentationSource{
     }
 
     public boolean isConfigurable() {
-        return hardwareConfigType != HardwareConfigType.SA_SIMPLE;
+        return hardwareConfigType != HardwareConfigType.SA_SIMPLE
+            && hardwareConfigType != null;
     }
 
     /**

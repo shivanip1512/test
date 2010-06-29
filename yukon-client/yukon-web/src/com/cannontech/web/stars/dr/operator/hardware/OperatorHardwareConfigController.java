@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DefaultMessageCodesResolver;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -45,6 +46,7 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.HardwareConfigType;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
 import com.cannontech.stars.util.WebClientException;
@@ -64,9 +66,8 @@ import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.hardware.model.HardwareConfigurationDto;
 import com.cannontech.web.stars.dr.operator.hardware.model.ProgramEnrollmentDto;
 import com.cannontech.web.stars.dr.operator.hardware.validator.ColdLoadPickupValidator;
-import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareConfigTypeValidator;
+import com.cannontech.web.stars.dr.operator.hardware.validator.HardwareConfigurationDtoValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator;
-import com.cannontech.web.stars.dr.operator.hardware.validator.ProgramSplinterValidator;
 import com.cannontech.web.stars.dr.operator.hardware.validator.TamperDetectValidator;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Lists;
@@ -91,7 +92,6 @@ public class OperatorHardwareConfigController {
     private PaoDao paoDao;
     private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
-    private ProgramSplinterValidator programSplinterValidator = new ProgramSplinterValidator();
 
     @RequestMapping
     public String edit(ModelMap model, int inventoryId,
@@ -103,7 +103,8 @@ public class OperatorHardwareConfigController {
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("displayName", hardware.getDisplayName());
 
-        HardwareConfigurationDto configuration = new HardwareConfigurationDto();
+        HardwareConfigurationDto configuration =
+            new HardwareConfigurationDto(hardware.getHardwareType().getHardwareConfigType());
         configuration.setAccountId(accountInfo.getAccountId());
         configuration.setInventoryId(inventoryId);
         boolean trackHardwareAddressing =
@@ -193,15 +194,34 @@ public class OperatorHardwareConfigController {
         return "operator/hardware/config/edit.jsp";
     }
 
+    @SuppressWarnings("unchecked")
+    private BindingResult bind(ModelMap model, HttpServletRequest request,
+            Object target, String objectName, YukonUserContext userContext) {
+        ServletRequestDataBinder binder =
+            new ServletRequestDataBinder(target, objectName);
+        initBinder(binder, userContext);
+        binder.bind(request);
+        BindingResult bindingResult = binder.getBindingResult();
+        model.addAttribute("configuration", target);
+        model.putAll(binder.getBindingResult().getModel());
+        return bindingResult;
+    }
+
     @RequestMapping
-    public String commit(ModelMap model,
-            @ModelAttribute("configuration") HardwareConfigurationDto configuration,
-            BindingResult bindingResult, YukonUserContext userContext,
+    public String commit(ModelMap model, HttpServletRequest request,
+            int inventoryId, YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                        userContext.getYukonUser());
 
-        int inventoryId = configuration.getInventoryId();
+        // Manually bind the configuration so we can create the correct type
+        // based on hardwareConfigType.
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        HardwareConfigType hardwareConfigType = hardware.getHardwareType().getHardwareConfigType();
+        HardwareConfigurationDto configuration = new HardwareConfigurationDto(hardwareConfigType);
+        BindingResult bindingResult = bind(model, request, configuration,
+                                           "configuration", userContext);
+
         verifyHardwareIsForAccount(inventoryId, accountInfo);
 
         String action = configuration.getAction();
@@ -225,18 +245,16 @@ public class OperatorHardwareConfigController {
 
         try {
             if (trackHardwareAddressing) {
-                HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
-                HardwareConfigTypeValidator validator =
-                    HardwareConfigTypeValidator.getInstance(hardware.getHardwareType().getHardwareConfigType());
+                HardwareConfigurationDtoValidator validator =
+                    new HardwareConfigurationDtoValidator();
                 validator.validate(configuration, bindingResult);
                 coldLoadPickupValidator.validate(configuration, bindingResult);
                 if (hardware.getHardwareType().isHasTamperDetect()) {
                     tamperDetectValidator.validate(configuration, bindingResult);
                 }
-                if (hardware.getHardwareType().isHasProgramSplinter()) {
-                    programSplinterValidator.validate(configuration, bindingResult);
-                }
                 if (bindingResult.hasErrors()) {
+                    List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+                    flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
                     return prepareForEdit(false, model, configuration,
                                             bindingResult, userContext, accountInfo);
                 }
@@ -246,7 +264,6 @@ public class OperatorHardwareConfigController {
             LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(accountInfo.getEnergyCompanyId());
             HardwareAction.updateLMHardwareConfig(hardwareConfig, liteHw, userContext.getYukonUser().getUserID(), energyCompany);
 
-            HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
             MessageSourceResolvable confirmationMessage =
                 new YukonMessageSourceResolvable("yukon.web.modules.operator.hardwareConfig." +
                                                  action + "Complete",
