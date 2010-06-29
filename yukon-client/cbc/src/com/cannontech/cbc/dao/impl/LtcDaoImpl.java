@@ -10,7 +10,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.cbc.dao.LtcDao;
-import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.cbc.model.LoadTapChanger;
 import com.cannontech.common.pao.PaoCategory;
@@ -18,11 +17,10 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.impl.YukonPaoRowMapper;
+import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -133,6 +131,7 @@ public class LtcDaoImpl implements LtcDao {
         return ltcIds;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
         ParameterizedRowMapper<LiteCapControlObject> rowMapper = new ParameterizedRowMapper<LiteCapControlObject>() {
@@ -140,7 +139,7 @@ public class LtcDaoImpl implements LtcDao {
                 
                 LiteCapControlObject lco = new LiteCapControlObject();
                 lco.setId(rs.getInt("PAObjectID"));
-                lco.setType(rs.getString("TYPE"));
+                lco.setType(rs.getString("Type"));
                 lco.setDescription(rs.getString("Description"));
                 lco.setName(rs.getString("PAOName"));
                 lco.setParentId(0);
@@ -148,24 +147,35 @@ public class LtcDaoImpl implements LtcDao {
             }
         };
         
-        List<Integer> ltcIds = getUnassignedLtcIds();
+        /* Get the unordered total count */
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonPAObject");
+        sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
+        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
+        sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
+        sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
         
-        ChunkingSqlTemplate template = new ChunkingSqlTemplate(yukonJdbcTemplate);
-        final List<LiteCapControlObject> unassignedLtcs = template.query(new SqlGenerator<Integer>() {
-            @Override
-            public String generate(List<Integer> subList) {
-                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-                sqlBuilder.append("SELECT PAObjectID,PAOName,TYPE,Description FROM YukonPAObject WHERE PAObjectID IN (");
-                sqlBuilder.append(subList);
-                sqlBuilder.append(")");
-                String sql = sqlBuilder.toString();
-                return sql;
-            }
-        }, ltcIds, new SearchCapControlObjectResultSetExtractor(rowMapper, start, count));
+        int orphanCount = yukonJdbcTemplate.queryForInt(sql);
+        
+        /* Get the paged subset of cc objects */
+        sql = new SqlStatementBuilder();
+        sql.append("SELECT PAObjectID, PAOName, Type, Description");
+        sql.append("FROM YukonPAObject");
+        sql.append("  WHERE Category").eq(PaoCategory.CAPCONTROL);
+        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
+        sql.append("    AND type").eq(PaoType.LOAD_TAP_CHANGER);
+        sql.append("    AND PAObjectID not in (SELECT ltcId FROM CCSubstationBusToLTC)");
+        sql.append("ORDER BY PAOName");
+        
+        PagingResultSetExtractor orphanExtractor = new PagingResultSetExtractor(start, count, rowMapper);
+        yukonJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), orphanExtractor);
+        
+        List<LiteCapControlObject> unassignedLtcs = (List<LiteCapControlObject>) orphanExtractor.getResultList();
         
         SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedLtcs);
-        searchResult.setBounds(start, count, ltcIds.size());
+        searchResult.setBounds(start, count, orphanCount);
         
         return searchResult;
     }

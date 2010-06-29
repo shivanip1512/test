@@ -600,7 +600,7 @@
                         </c:choose>
     
                         <c:if test="${viewableCapBank.twoWayCbc}">
-                            <a href="javascript:showCbcPointList(${viewableCapBank.controlDevice.liteID}, ${viewableCapBank.controlDevice.paoName})" class="tierIconLink">
+                            <a href="javascript:showCbcPointList(${viewableCapBank.controlDevice.liteID}, '${viewableCapBank.controlDevice.paoName}')" class="tierIconLink">
                                 <img alt="Timestamps" class="tierImg magnifierImg" src="/WebConfig/yukon/Icons/magnifier.gif" 
                                     onmouseover="statusMsgAbove(this,'Click here to see the timestamp information for the cap bank controller device.');">
                            </a>

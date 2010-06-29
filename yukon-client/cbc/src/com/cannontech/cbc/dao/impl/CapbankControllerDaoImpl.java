@@ -12,22 +12,21 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.cbc.dao.CapbankControllerDao;
-import com.cannontech.cbc.dao.SearchCapControlObjectResultSetExtractor;
 import com.cannontech.cbc.model.Capbank;
 import com.cannontech.cbc.model.CapbankController;
 import com.cannontech.cbc.model.LiteCapControlObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoCategory;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.search.SearchResult;
-import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -64,7 +63,6 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	private PaoDao paoDao;
 	private PointDao pointDao;
 	private PaoDefinitionService paoDefinitionService;
-	private DeviceDao deviceDao;
 	
     static {
         insertSql = "INSERT INTO DeviceCBC (DEVICEID,SERIALNUMBER,ROUTEID) VALUES (?,?,?)";
@@ -310,26 +308,38 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 	    return cbcIds;
     }
 	
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public SearchResult<LiteCapControlObject> getOrphans(final int start, final int count) {
-		List<Integer> cbcIds = getUnassignedControllerIds();
-		
-		ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
-		final List<LiteCapControlObject> unassignedCbcs = template.query(new SqlGenerator<Integer>() {
-            @Override
-            public String generate(List<Integer> subList) {
-                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-                sqlBuilder.append("SELECT PAObjectID,PAOName,TYPE,Description FROM YukonPAObject WHERE PAObjectID IN (");
-                sqlBuilder.append(subList);
-                sqlBuilder.append(")");
-                String sql = sqlBuilder.toString();
-                return sql;
-            }
-        }, cbcIds, new SearchCapControlObjectResultSetExtractor(liteCapControlObjectRowMapper, start, count));
-		
+	    /* Get the unordered total count */
+	    SqlStatementBuilder sql = new SqlStatementBuilder();
+	    sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonPAObject");
+        sql.append("  WHERE Category").eq(PaoCategory.DEVICE);
+        sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
+        sql.append("    AND type like 'CBC%'");
+        sql.append("    AND PAObjectID not in (SELECT ControlDeviceID FROM CAPBANK)");
+	    
+	    int orphanCount = simpleJdbcTemplate.queryForInt(sql.getSql(), sql.getArguments());
+	    
+	    /* Get the paged subset of cc objects */
+	    sql = new SqlStatementBuilder();
+	    sql.append("SELECT PAObjectID, PAOName, Type, Description");
+	    sql.append("FROM YukonPAObject");
+	    sql.append("  WHERE Category").eq(PaoCategory.DEVICE);
+	    sql.append("    AND PAOClass").eq(PaoClass.CAPCONTROL);
+	    sql.append("    AND type like 'CBC%'");
+	    sql.append("    AND PAObjectID not in (SELECT ControlDeviceID FROM CAPBANK)");
+	    sql.append("ORDER BY PAOName");
+	    
+	    PagingResultSetExtractor cbcOrphanExtractor = new PagingResultSetExtractor(start, count, liteCapControlObjectRowMapper);
+	    simpleJdbcTemplate.getJdbcOperations().query(sql.getSql(), sql.getArguments(), cbcOrphanExtractor);
+	    
+	    List<LiteCapControlObject> unassignedCbcs = (List<LiteCapControlObject>) cbcOrphanExtractor.getResultList();
+	    
 		SearchResult<LiteCapControlObject> searchResult = new SearchResult<LiteCapControlObject>();
         searchResult.setResultList(unassignedCbcs);
-        searchResult.setBounds(start, count, cbcIds.size());
+        searchResult.setBounds(start, count, orphanCount);
 		
         return searchResult;
 	}
@@ -501,9 +511,4 @@ public class CapbankControllerDaoImpl implements CapbankControllerDao {
 		this.paoDefinitionService = paoDefinitionService;
 	}
     
-    @Autowired
-	public void setDeviceDao(DeviceDao deviceDao) {
-		this.deviceDao = deviceDao;
-	}
-
 }
