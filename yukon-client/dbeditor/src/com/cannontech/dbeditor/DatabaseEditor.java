@@ -2597,7 +2597,7 @@ public void selectionPerformed(WizardPanelEvent event)
 
 	if((successfullInsertion || objTypeChange) && selectInTree) {
 	    if(selectWorked || objTypeChange) {
-	    	showEditorSelectedObject(newItem);
+	    	showEditorSelectedObject();
 	    }else {
 	        showEditor(newItem);
 	    }
@@ -2770,7 +2770,7 @@ private void showCopyWizardPanel(WizardPanel wizard, DBPersistent toCopy) {
  * Insert the method's description here.
  * Creation date: (7/26/2001 3:45:30 PM)
  */
-public void showEditorSelectedObject(Object o)
+public void showEditorSelectedObject()
 {
 	java.awt.Frame f = CtiUtilities.getParentFrame(this.desktopPane);
 	f.validate();
@@ -2778,7 +2778,7 @@ public void showEditorSelectedObject(Object o)
 	try
 	{
 		
-		executeEditButton_ActionPerformed(new ActionEvent(o, DBEditorTreePopUpMenu.EDIT_TREENODE, "edit"));
+		executeEditButton_ActionPerformed(new ActionEvent(this, DBEditorTreePopUpMenu.EDIT_TREENODE, "edit"));
 	}
 	catch (Exception e)
 	{
