@@ -4,7 +4,7 @@
 
 #include "logger.h"
 
-#include <strstream>
+#include <sstream>
 
 using namespace std;
 
