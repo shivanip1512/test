@@ -39,7 +39,7 @@ class IM_EX_CTIYUKONDB CtiTableDeviceSeriesV : public CtiMemDBObject
 protected:
 
     LONG      _device_id;
-    string _start_code,
+    unsigned  _start_code,
               _stop_code;
     bool      _save_history;
     INT       _tick_time,
@@ -70,8 +70,8 @@ public:
     int getTransmitterLow()  const;
     int getTransmitterHigh() const;
 
-    string getStartCode() const;
-    string getStopCode()  const;
+    unsigned getStartCode() const;
+    unsigned getStopCode()  const;
 
     static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 

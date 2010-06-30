@@ -88,12 +88,12 @@ int CtiTableDeviceSeriesV::getTransmitterHigh() const
     return _power_value_high;
 }
 
-string CtiTableDeviceSeriesV::getStartCode() const
+unsigned CtiTableDeviceSeriesV::getStartCode() const
 {
     return _start_code;
 }
 
-string CtiTableDeviceSeriesV::getStopCode() const
+unsigned CtiTableDeviceSeriesV::getStopCode() const
 {
     return _stop_code;
 }

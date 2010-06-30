@@ -27,6 +27,7 @@
 
 #include "verification_objects.h"
 
+#include <sstream>
 
 CtiProtocolLMI::CtiProtocolLMI() :
     _transmitter_power_time(0),
@@ -141,7 +142,7 @@ void CtiProtocolLMI::setCommand( LMICommand cmd, unsigned control_offset, unsign
 }
 
 
-void CtiProtocolLMI::setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, string startcode, string stopcode)
+void CtiProtocolLMI::setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, unsigned startcode, unsigned stopcode)
 {
     _tick_time   = ticktime;
     _time_offset = timeoffset;
@@ -617,6 +618,10 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
             //  if we've never downloaded the system parameters, send them out (once per day by default)
             else if( _config_sent < (CtiTime::now().seconds() - gConfigParms.getValueAsULong("PORTER_LMI_SYSTEMDATA_INTERVAL", 86400)) )
             {
+                //  limit each to 6 characters
+                string start_code = CtiNumStr(_start_code % 1000000).zpad(6);
+                string stop_code  = CtiNumStr(_stop_code  % 1000000).zpad(6);
+
                 _outbound.length  = 19;
                 _outbound.body_header.message_type = Opcode_DownloadSystemData;
                 _outbound.data[ 0] =  _tick_time;
@@ -626,18 +631,18 @@ int CtiProtocolLMI::generate( CtiXfer &xfer )
                 _outbound.data[ 4] = (_transmitter_power_low_limit >> 8) & 0xff;
                 _outbound.data[ 5] =  _transmitter_power_high_limit & 0xff;
                 _outbound.data[ 6] = (_transmitter_power_high_limit >> 8) & 0xff;
-                _outbound.data[ 7] = _start_code[0];
-                _outbound.data[ 8] = _start_code[1];
-                _outbound.data[ 9] = _start_code[2];
-                _outbound.data[10] = _start_code[3];
-                _outbound.data[11] = _start_code[4];
-                _outbound.data[12] = _start_code[5];
-                _outbound.data[13] = _stop_code[0];
-                _outbound.data[14] = _stop_code[1];
-                _outbound.data[15] = _stop_code[2];
-                _outbound.data[16] = _stop_code[3];
-                _outbound.data[17] = _stop_code[4];
-                _outbound.data[18] = _stop_code[5];
+                _outbound.data[ 7] = start_code[0];
+                _outbound.data[ 8] = start_code[1];
+                _outbound.data[ 9] = start_code[2];
+                _outbound.data[10] = start_code[3];
+                _outbound.data[11] = start_code[4];
+                _outbound.data[12] = start_code[5];
+                _outbound.data[13] = stop_code[0];
+                _outbound.data[14] = stop_code[1];
+                _outbound.data[15] = stop_code[2];
+                _outbound.data[16] = stop_code[3];
+                _outbound.data[17] = stop_code[4];
+                _outbound.data[18] = stop_code[5];
             }
             else
             {

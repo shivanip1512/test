@@ -58,7 +58,7 @@ private:
 
     int _tick_time, _transmit_window, _time_offset;
     int _transmitter_power_low_limit, _transmitter_power_high_limit;
-    string _start_code, _stop_code;
+    unsigned _start_code, _stop_code;
 
     //crc_ccitt_type _crc;
     queue< CtiOutMessage * > _codes;
@@ -237,7 +237,7 @@ public:
     void setAddress(unsigned char address);
     void setCommand(LMICommand cmd, unsigned control_offset = 0, unsigned control_parameter = 0);
     void setDeadbands(const vector<unsigned> &points, const vector<unsigned> &deadbands);
-    void setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, string startcode, string stopcode);
+    void setSystemData(int ticktime, int timeoffset, int transmittime, int transmitterlow, int transmitterhigh, unsigned startcode, unsigned stopcode);
 
     LMICommand getCommand() const;
 
