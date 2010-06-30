@@ -27,7 +27,6 @@
 
 #include "verification_objects.h"
 
-#include <sstream>
 
 CtiProtocolLMI::CtiProtocolLMI() :
     _transmitter_power_time(0),
