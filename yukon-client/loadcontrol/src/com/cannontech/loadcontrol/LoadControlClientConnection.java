@@ -104,7 +104,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 setChanged();
                 notifyObservers(new LCChangeEvent(this,
                                                   LCChangeEvent.DELETE,
-                                                  removed));
+                                                  removed.getObject()));
             }
         }
 
@@ -114,7 +114,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 setChanged();
                 notifyObservers(new LCChangeEvent(this,
                                                   LCChangeEvent.DELETE,
-                                                  removed));
+                                                  removed.getObject()));
             }
         }
 
@@ -124,7 +124,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
                 setChanged();
                 notifyObservers(new LCChangeEvent(this,
                                                   LCChangeEvent.DELETE,
-                                                  removed));
+                                                  removed.getObject()));
             }
         }
     }
