@@ -68,6 +68,7 @@ public:
         GetValue_Shedtime,
         GetValue_PropCount,
         GetValue_PhaseCurrent,
+        GetValue_ControlTime,
 
         // PutValue Commands
         PutValue_IEDReset,

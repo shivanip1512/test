@@ -42,6 +42,11 @@ public:
         return decodeGetValueHistoricalTime(InMessage, TimeNow, vgList, retList, outList);
     }
 
+    INT test_decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+    {
+        return decodeGetValueControlTime(InMessage, TimeNow, vgList, retList, outList);
+    }
+
 private:
     typedef std::map< int, point_info > point_results_map;
     typedef std::map< int, point_info >::iterator point_results_map_iter;
@@ -297,6 +302,44 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
     BOOST_CHECK_CLOSE(pi.value, (double)propcount, 0.0000001);
 
+}
+
+BOOST_AUTO_TEST_CASE(test_decode_control_time)
+{
+    static const int PointOffest_controltime_relay_1 = 15;
+    INMESS InMessage;
+    CtiTime now;
+    list< CtiMessage* > vgList;
+    list< CtiMessage* > retList;
+    list< OUTMESS* > outList;
+
+    // Set the InMessage's control time for relay 1 (half-seconds).
+    const int relay1_controlTime = 590;
+    const int expected_controlTime = 295;
+
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Address = 10;
+    InMessage.Buffer.DSt.Alarm   = 0;
+    InMessage.Buffer.DSt.DSTFlag = 0;
+    InMessage.Buffer.DSt.Power   = 0;
+    InMessage.Buffer.DSt.RepVar  = 0;
+    InMessage.Buffer.DSt.Time    = now.seconds();
+    InMessage.Buffer.DSt.TSync   = 0;
+
+    // Set the relay to 1 and give it its control time.
+    InMessage.Buffer.DSt.Message[0] = 1;
+    InMessage.Buffer.DSt.Message[1] = relay1_controlTime >> 24;
+    InMessage.Buffer.DSt.Message[2] = relay1_controlTime >> 16;
+    InMessage.Buffer.DSt.Message[3] = relay1_controlTime >> 8;
+    InMessage.Buffer.DSt.Message[4] = relay1_controlTime;
+
+    test_device.test_decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
+
+    test_LCR3102::point_info pi = test_device.test_getPointResults(PointOffest_controltime_relay_1);
+
+    BOOST_CHECK_EQUAL(pi.value, expected_controlTime); // We are expecting the half seconds to be converted to seconds here!
+    BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
 }
 
 };

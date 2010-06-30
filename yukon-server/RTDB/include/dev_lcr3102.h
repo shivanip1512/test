@@ -34,7 +34,10 @@ protected:
         FuncRead_ShedtimeLen     = 13,
 
         FuncRead_PropCountPos    = 0x13,
-        FuncRead_PropCountLen    = 1
+        FuncRead_PropCountLen    = 1,
+
+        FuncRead_ControlTimePos  = 0x92,
+        FuncRead_ControlTimeLen  = 5
     };
 
     enum PointOffsets
@@ -44,6 +47,7 @@ protected:
         PointOffset_ShedtimeBase     = 9,   //      and here
 
         PointOffset_PropCount        = 13,
+        PointOffset_ControlTimeBase  = 15,  //      AND HERE
         PointOffset_CommStatus       = 2000
     };
 
@@ -64,6 +68,7 @@ protected:
     INT decodeGetValueIntervalLast  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValuePropCount     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueControlTime   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodePutConfig             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfig             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 

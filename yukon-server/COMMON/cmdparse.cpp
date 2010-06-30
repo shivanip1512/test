@@ -464,6 +464,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_load_runtime   (CtiString("runtime(( load| relay) ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
     static const boost::regex   re_load_shedtime  (CtiString("shedtime(( load| relay) ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
     static const boost::regex   re_propcount      (CtiString("propcount"));
+    static const boost::regex   re_control_time   (CtiString("controltime remaining( relay ") + str_num + CtiString(")?"));
 
     CtiTokenizer   tok(CmdStr);
 
@@ -754,6 +755,23 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                     {
                         _cmd["previous_hours"] = atoi(cmdtok().c_str());
                     }
+                }
+            }
+        }
+        else if(!(token = CmdStr.match(re_control_time)).empty() )
+        {
+            flag |= CMD_FLAG_GV_CONTROLTIME;
+
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // Move past "controltime"
+            cmdtok(); // Move past "remaining"
+
+            if(!(temp = cmdtok()).empty())
+            {
+                if(temp.contains("relay"))
+                {
+                    _cmd["load"] = atoi(cmdtok().c_str());
                 }
             }
         }

@@ -150,6 +150,11 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodeGetValueHistoricalTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
+        case Emetcon::GetValue_ControlTime:
+        {
+            status = decodeGetValueControlTime( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
         case Emetcon::GetValue_PropCount:
         {
             status = decodeGetValuePropCount( InMessage, TimeNow, vgList, retList, outList );
@@ -386,6 +391,56 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
     return status;
 }
 
+INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        int relay         = DSt->Message[0]; // Relay is 1-4 here
+        int point_base    = PointOffset_ControlTimeBase;
+        string identifier = "Control Time Remaining";
+
+        const double halfSecondsPerSecond = 2.0;
+
+        point_info pi;
+
+        // The LCR 3102 returns the control time remaining in half seconds: we want to return seconds.
+        int half_seconds = (DSt->Message[1] << 24) | (DSt->Message[2] << 16) | (DSt->Message[3] << 8) | (DSt->Message[4]);
+
+        pi.value       = half_seconds / halfSecondsPerSecond; // Convert to seconds. Is this the unit we want for this?
+        pi.quality     = NormalQuality;
+        pi.freeze_bit  = false;
+        pi.description = "Control Time Remaining Relay " + CtiNumStr(relay);
+
+        string results = getName() + " / " + identifier;
+        ReturnMsg->setResultString(results);
+
+        int point_offset = point_base + relay - 1;
+
+        insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
+
+        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
 
 INT LCR3102::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
@@ -548,6 +603,7 @@ LCR3102::CommandSet LCR3102::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetValue_Runtime,      Emetcon::IO_Function_Read, FuncRead_RuntimePos,      FuncRead_RuntimeLen));
     cs.insert(CommandStore(Emetcon::GetValue_Shedtime,     Emetcon::IO_Function_Read, FuncRead_ShedtimePos,     FuncRead_ShedtimeLen));
     cs.insert(CommandStore(Emetcon::GetValue_PropCount,    Emetcon::IO_Function_Read, FuncRead_PropCountPos,    FuncRead_PropCountLen));
+    cs.insert(CommandStore(Emetcon::GetValue_ControlTime,  Emetcon::IO_Function_Read, FuncRead_ControlTimePos,  FuncRead_ControlTimeLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,         Emetcon::IO_Write,         0,                        0));    // filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,         Emetcon::IO_Read,          0,                        0));    // ...ditto
 
@@ -622,6 +678,22 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     {
         function = Emetcon::GetValue_PropCount;
         found = getOperation(function, OutMessage->Buffer.BSt);
+    }
+    else if(parse.getFlags() & CMD_FLAG_GV_CONTROLTIME)
+    {
+        function = Emetcon::GetValue_ControlTime;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        int load = parseLoadValue(parse);
+
+        if( load == -1 )
+        {
+            nRet = BADPARAM;
+        }
+        else
+        {
+            OutMessage->Buffer.BSt.Function += (load - 1);
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {

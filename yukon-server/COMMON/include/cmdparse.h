@@ -171,6 +171,7 @@ public:
 #define CMD_FLAG_GV_PROPCOUNT    0x00010000
 #define CMD_FLAG_GV_RUNTIME      0x00020000
 #define CMD_FLAG_GV_SHEDTIME     0x00040000
+#define CMD_FLAG_GV_CONTROLTIME  0x00080000
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */
