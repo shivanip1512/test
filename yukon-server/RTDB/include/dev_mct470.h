@@ -129,6 +129,9 @@ private:
     virtual bool isSupported(const CtiDeviceMCT4xx::Features feature) const  {  return true;  };
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const  {  return true;  };  //  not checking SSPECs yet
 
+    bool hasIedInputs()   const;
+    bool hasPulseInputs() const;
+
     long       getLoadProfileInterval( unsigned channel );
     point_info getLoadProfileData    ( unsigned channel, unsigned char *buf, unsigned len );
 

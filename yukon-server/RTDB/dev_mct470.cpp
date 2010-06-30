@@ -960,6 +960,58 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( const unsigned char *buf, 
 }
 
 
+bool CtiDeviceMCT470::hasIedInputs() const
+{
+    string lp_config;
+
+    if( !getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lp_config) )
+    {
+        return true;  //  if we don't know for sure, be safe and assume it has them
+    }
+
+    if( lp_config.length() < LPChannels * 3 )
+    {
+        return true;
+    }
+
+    for( unsigned i = 0; i < lp_config.length(); i += 3 )
+    {
+        if( lp_config[i] == '1' )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+bool CtiDeviceMCT470::hasPulseInputs() const
+{
+    string lp_config;
+
+    if( !getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lp_config) )
+    {
+        return true;  //  if we don't know for sure, be safe and assume it has them
+    }
+
+    if( lp_config.length() < LPChannels * 3 )
+    {
+        return true;
+    }
+
+    for( unsigned i = 0; i < lp_config.length(); i += 3 )
+    {
+        if( lp_config[i] > '1' )
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 CtiDeviceMCT470::point_info CtiDeviceMCT470::getLoadProfileData(unsigned channel, unsigned char *buf, unsigned len)
 {
     point_info pi;
@@ -1822,14 +1874,35 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             CtiString originalString = pReq->CommandString();
             boost::regex re_scan ("scan integrity");
 
+            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
+            {
+                function = Emetcon::GetConfig_ChannelSetup;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+                if( found )
+                {
+                    OutMessage->Sequence  = function;     // Helps us figure it out later!
+                    CtiString createdString = originalString;
+                    CtiString replaceString = "getconfig channels";
+
+                    createdString.toLower();
+                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+            }
+
            /* if( deviceConfig )
             {
                 options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
             }
 
             if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                          || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+                         || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
             {*/
+            if( hasPulseInputs() )
+            {
                 //Read the pulse demand
                 function = Emetcon::GetValue_Demand;
                 found = getOperation(function, OutMessage->Buffer.BSt);
@@ -1852,11 +1925,13 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                 {
                     nRet = NoMethod;
                 }
-            //}
+            }
 
             /*if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
                           || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "ied"))) )
             {*/
+            if( hasIedInputs() )
+            {
                 if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
                 {
                     //If we need to read out the time, do so.
@@ -1902,8 +1977,8 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
                 {
                     nRet = NoMethod;
                 }
-            /*}
-            else
+            }
+            /*else
             {
                 nRet = NoConfigData;
             }*/
