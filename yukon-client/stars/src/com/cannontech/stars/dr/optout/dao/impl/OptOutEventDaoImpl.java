@@ -7,17 +7,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -46,8 +46,7 @@ import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.model.OverrideStatus;
 import com.cannontech.stars.dr.program.model.Program;
 import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 /**
@@ -205,7 +204,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 
 	@Override
 	@Transactional(readOnly=true)
-    public Multimap<Integer, OptOutLog> getOptOutEventDetails(
+    public Multimap<OptOutEventDto, OptOutLog> getOptOutEventDetails(
             Iterable<OptOutEventDto> optOutEvents) {
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -222,9 +221,10 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
             }
         };
 
-        final ParameterizedRowMapper<OptOutLog> rowMapper = new ParameterizedRowMapper<OptOutLog>() {
+        final ParameterizedRowMapper<Map.Entry<Integer, OptOutLog>> rowMapper =
+            new ParameterizedRowMapper<Map.Entry<Integer, OptOutLog>>() {
             @Override
-            public OptOutLog mapRow(ResultSet rs, int rowNum)
+            public Map.Entry<Integer, OptOutLog> mapRow(ResultSet rs, int rowNum)
                     throws SQLException {
                 OptOutLog value = new OptOutLog();
                 value.setLogId(rs.getInt("optOutEventLogId"));
@@ -244,7 +244,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
                 value.setUsername(rs.getString("username"));
                 value.setEventId(rs.getInt("optOutEventId"));
                 value.setEventCounts(OptOutCounts.valueOf(rs.getString("eventCounts")));
-                return value;
+                return Maps.immutableEntry(value.getEventId(), value);
             }
         };
 
@@ -255,21 +255,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
             }
         };
 
-        ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(yukonJdbcTemplate);
-
-        final Multimap<Integer, OptOutLog> retVal = ArrayListMultimap.create();
-	    chunkingTemplate.query(sqlGenerator, 
-                               Lists.transform(Lists.newArrayList(optOutEvents), typeMapper), 
-                               new RowCallbackHandler() {
-
-            private int row = 0;
-
-            public void processRow(ResultSet rs) throws SQLException {
-                OptOutLog optOutLog = rowMapper.mapRow(rs, row++);
-                retVal.put(optOutLog.getEventId(), optOutLog);
-            }
-        });
-	    return retVal;
+        ChunkingMappedSqlTemplate chunkingTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
+        return chunkingTemplate.multimappedQuery(sqlGenerator, optOutEvents, rowMapper, typeMapper);
 	}
 	
     @Override

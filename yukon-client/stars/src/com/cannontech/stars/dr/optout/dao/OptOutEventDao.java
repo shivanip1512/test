@@ -51,7 +51,7 @@ public interface OptOutEventDao {
      * @return A multimap of eventId -> list of OptOutLog instances, ordered by
      *         logDate.
      */
-	public Multimap<Integer, OptOutLog> getOptOutEventDetails(Iterable<OptOutEventDto> optOutEvents);
+	public Multimap<OptOutEventDto, OptOutLog> getOptOutEventDetails(Iterable<OptOutEventDto> optOutEvents);
 
 	/**
 	 * Method to get a list of opt out events by account and time period

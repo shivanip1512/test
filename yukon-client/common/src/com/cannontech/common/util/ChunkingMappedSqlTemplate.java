@@ -2,6 +2,7 @@ package com.cannontech.common.util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,9 +11,11 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 
 public class ChunkingMappedSqlTemplate {
@@ -65,6 +68,21 @@ public class ChunkingMappedSqlTemplate {
         return resultMap;
     }
 
+    public <I, R, C> Multimap<C, R> multimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
+                                           final Iterable<C> input,
+                                           final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
+                                           Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
+        
+        final Multimap<C, R> resultMap = ArrayListMultimap.create();
+        processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
+            public void handle(C a, R b) {
+                resultMap.put(a, b);
+            }
+        });
+        
+        return resultMap;
+    }
+    
     /**
      * Returns a mapping of results to inputs. Query is run in a chunking manner.
      * @param <I> Type of value used by the SqlFragmentGenerator. Often Integer or String.
@@ -104,7 +122,7 @@ public class ChunkingMappedSqlTemplate {
     private <R, I, C> void processQuery(final SqlFragmentGenerator<I> sqlGenerator,
             final Iterable<C> input, final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
             Function<C, I> inputTypeToSqlGeneratorTypeMapper, PairProcessor<C, R> processor) {
-        final Map<I, R> intermediaryResult = Maps.newHashMap();
+        final Multimap<I, R> intermediaryResult = ArrayListMultimap.create();
 
         ChunkingSqlTemplate chunkingTemplate = new ChunkingSqlTemplate(simpleJdbcTemplate);
         chunkingTemplate.query(sqlGenerator, 
@@ -122,8 +140,10 @@ public class ChunkingMappedSqlTemplate {
         for (C i : input) {
             I e = inputTypeToSqlGeneratorTypeMapper.apply(i);
             if (intermediaryResult.containsKey(e)) {
-                R r = intermediaryResult.get(e);
-                processor.handle(i, r);
+                Collection<R> rList = intermediaryResult.get(e);
+                for (R r : rList) {
+                    processor.handle(i, r);
+                }
             }
         }
     }

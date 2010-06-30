@@ -355,12 +355,12 @@ public class OperatorProgramOptOutOperatorController {
     private Map<Integer, List<MessageSourceResolvable>> getHistoryActionLog(
             List<OptOutEventDto> previousOptOutList,
             YukonUserContext userContext) {
-        Multimap<Integer, OptOutLog> previousOptOutDetails =
+        Multimap<OptOutEventDto, OptOutLog> previousOptOutDetails =
             optOutEventDao.getOptOutEventDetails(previousOptOutList);
         Map<Integer, List<MessageSourceResolvable>> retVal = Maps.newHashMap();
-        for (Integer eventId : previousOptOutDetails.keySet()) {
+        for (OptOutEventDto event : previousOptOutDetails.keySet()) {
             List<MessageSourceResolvable> actionMessages = Lists.newArrayList();
-            for (OptOutLog actionLog : previousOptOutDetails.get(eventId)) {
+            for (OptOutLog actionLog : previousOptOutDetails.get(event)) {
                 MessageSourceAccessor messageSourceAccessor =
                     messageSourceResolver.getMessageSourceAccessor(userContext);
                 String actionStr = messageSourceAccessor.getMessage(actionLog.getAction().getFormatKey());
@@ -374,7 +374,7 @@ public class OperatorProgramOptOutOperatorController {
                                                      logDateStr);
                 actionMessages.add(msg);
             }
-            retVal.put(eventId, actionMessages);
+            retVal.put(event.getEventId(), actionMessages);
         }
         return retVal;
     }
