@@ -901,10 +901,8 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             //  submit a retry if we're multi-day and we have any retries left
             if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
             {
-                if( _daily_read_info.request.multi_day_retries > 0  && InMessage->EventCode != ErrorRequestCancelled)
+                if( _daily_read_info.request.multi_day_retries-- > 0  && InMessage->EventCode != ErrorRequestCancelled)
                 {
-                    _daily_read_info.request.multi_day_retries--;
-
                     string request_str = "getvalue daily read ";
 
                     request_str += "channel " + CtiNumStr(_daily_read_info.request.channel)
@@ -942,7 +940,10 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
                     retList.push_back(ret);
 
                     //  same UserMessageID, no need to reset the in_progress flag
-                    CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
+                    if( CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList) == NoError )
+                    {
+                        overrideExpectMore = true;
+                    }
                 }
                 else
                 {
@@ -1337,7 +1338,7 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
         if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration))
         {
             // the config byte is needed for the autoreconnect command
-            // sending a getconfig model message and returning an error to 
+            // sending a getconfig model message and returning an error to
             // reissue the autoreconnect command
             CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
 
