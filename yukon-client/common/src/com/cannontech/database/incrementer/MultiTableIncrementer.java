@@ -9,11 +9,11 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -130,7 +130,11 @@ public class MultiTableIncrementer {
                         + " where " + keyColumnName + " = '" + sequenceKey + "'";
                     List matches = jdbc.queryForList(checkSql, String.class);
                     if (matches.isEmpty()) {
-                        jdbc.update(insertSql, new Integer[] {1});
+                        try {
+                            jdbc.update(insertSql, new Integer[] {1});
+                        } catch (DataIntegrityViolationException e) {
+                            //ignore and proceed with the update attempt that follows
+                        }
                     }
 
                     String updateSql = "update " + sequenceTableName + " set " + valueColumnName
