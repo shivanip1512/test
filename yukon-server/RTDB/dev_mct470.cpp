@@ -962,6 +962,11 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( const unsigned char *buf, 
 
 bool CtiDeviceMCT470::hasIedInputs() const
 {
+    if( getType() == TYPEMCT430 )
+    {
+        return true;
+    }
+
     string lp_config;
 
     if( !getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lp_config) )
@@ -988,6 +993,11 @@ bool CtiDeviceMCT470::hasIedInputs() const
 
 bool CtiDeviceMCT470::hasPulseInputs() const
 {
+    if( getType() == TYPEMCT430 )
+    {
+        return false;
+    }
+
     string lp_config;
 
     if( !getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig, lp_config) )
@@ -1874,56 +1884,62 @@ INT CtiDeviceMCT470::executeScan(CtiRequestMsg      *pReq,
             CtiString originalString = pReq->CommandString();
             boost::regex re_scan ("scan integrity");
 
-            if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
+            /* if( deviceConfig )
+             {
+                 options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
+             }
+             */
+
+            if( getType() == TYPEMCT470 )
             {
-                function = Emetcon::GetConfig_ChannelSetup;
-                found = getOperation(function, OutMessage->Buffer.BSt);
-                if( found )
+                //  Since this is an MCT-470, read the channel config to optimize the next scan
+                if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileConfig) )
                 {
-                    OutMessage->Sequence  = function;     // Helps us figure it out later!
-                    CtiString createdString = originalString;
-                    CtiString replaceString = "getconfig channels";
+                    function = Emetcon::GetConfig_ChannelSetup;
+                    found = getOperation(function, OutMessage->Buffer.BSt);
+                    if( found )
+                    {
+                        OutMessage->Sequence  = function;     // Helps us figure it out later!
+                        CtiString createdString = originalString;
+                        CtiString replaceString = "getconfig channels";
 
-                    createdString.toLower();
-                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
-                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+                        createdString.toLower();
+                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    }
                 }
-            }
 
-           /* if( deviceConfig )
-            {
-                options = boost::static_pointer_cast< ConfigurationPart<MCTSystemOptions> >(deviceConfig->getConfigFromType(ConfigTypeMCTSystemOptions));
-            }
-
-            if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
-                         || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
-            {*/
-            if( hasPulseInputs() )
-            {
-                //Read the pulse demand
-                function = Emetcon::GetValue_Demand;
-                found = getOperation(function, OutMessage->Buffer.BSt);
-
-                if( found )
+                /*
+                if( !options || (options && ( !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "all")
+                             || !stringCompareIgnoreCase(options->getValueFromKey(DemandMetersToScan), "pulse"))) )
+                {*/
+                if( hasPulseInputs() )
                 {
-                    OutMessage->Sequence  = function;     // Helps us figure it out later!
+                    //Read the pulse demand
+                    function = Emetcon::GetValue_Demand;
+                    found = getOperation(function, OutMessage->Buffer.BSt);
 
-                    CtiString createdString = originalString;
-                    CtiString replaceString = "getvalue demand";
+                    if( found )
+                    {
+                        OutMessage->Sequence  = function;     // Helps us figure it out later!
 
-                    createdString.toLower();
-                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
-                    strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+                        CtiString createdString = originalString;
+                        CtiString replaceString = "getvalue demand";
 
-                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-                }
-                else
-                {
-                    nRet = NoMethod;
+                        createdString.toLower();
+                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
+
+                        outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                        incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                    }
+                    else
+                    {
+                        nRet = NoMethod;
+                    }
                 }
             }
 
