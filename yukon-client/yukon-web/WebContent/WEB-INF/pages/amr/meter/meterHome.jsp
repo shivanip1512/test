@@ -117,7 +117,7 @@
 	                        
 	                        <!-- Actions: >Manual Commander -->
                             <c:choose>
-                                <c:when test="porterCommandRequestsSupported">
+                                <c:when test="${porterCommandRequestsSupported}">
         							<cti:checkProperty property="CommanderRole.ENABLE_WEB_COMMANDER">
         								<cti:url var="commanderUrl" value="/spring/amr/manualCommand/home">
         									<cti:param name="deviceId" value="${deviceId}" />
@@ -133,7 +133,7 @@
 	                        
 	                        <!-- Actions: Locate Route -->
                             <c:choose>
-                                <c:when test="porterCommandRequestsSupported">
+                                <c:when test="${porterCommandRequestsSupported}">
         	                        <cti:checkProperty property="operator.DeviceActionsRole.LOCATE_ROUTE">
         	                        <cti:url var="routeLocateUrl" value="/spring/bulk/routeLocate/home">
         	                            <cti:param name="collectionType" value="idList" />
