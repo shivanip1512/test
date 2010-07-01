@@ -36,9 +36,7 @@
                     
                     <br>
                     
-                    <cti:checkRolesAndProperties value="OPERATOR_IMPORT_CUSTOMER_ACCOUNT">
-                        <tags:slowInput2 formId="importForm" key="prescan" />
-                    </cti:checkRolesAndProperties>
+                    <tags:slowInput2 formId="importForm" key="prescan" />
                     
                     <br><br>
                     

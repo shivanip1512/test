@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -82,7 +83,9 @@ public class OperatorAccountController {
 	// ACCOUNT IMPORT PAGE
 	@RequestMapping
 	public String accountImport(ModelMap modelMap, YukonUserContext userContext, FlashScope flashScope, String processedBeforeCancel) {
-	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
+	    if(!Boolean.parseBoolean(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser()))) {
+	        throw new NotAuthorizedException("User not authorized to view this page.");
+	    }
 	    setupAccountImportModelMap(modelMap);
 	    
 	    if(StringUtils.isNotBlank(processedBeforeCancel)){
@@ -99,7 +102,9 @@ public class OperatorAccountController {
                                 ModelMap modelMap, 
                                 YukonUserContext userContext,
                                 FlashScope flashScope) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
+        if(!Boolean.parseBoolean(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser()))) {
+            throw new NotAuthorizedException("User not authorized to view this page.");
+        }
         
         BulkFileUpload accountFileUpload = BulkFileUploadUtils.getBulkFileUpload(request, "accountImportFile");
         BulkFileUpload hardwareFileUpload = BulkFileUploadUtils.getBulkFileUpload(request, "hardwareImportFile");
@@ -153,7 +158,9 @@ public class OperatorAccountController {
     
     @RequestMapping(params="cancelImport")
     public String cancelImport(ModelMap modelMap, String resultId, boolean prescan, YukonUserContext userContext) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
+        if(!Boolean.parseBoolean(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser()))) {
+            throw new NotAuthorizedException("User not authorized to view this page.");
+        }
         AccountImportResult result = recentResultsCache.getResult(resultId);
         result.cancel();
         if(!prescan) {
@@ -166,7 +173,9 @@ public class OperatorAccountController {
     // DO ACCOUNT IMPORT
     @RequestMapping
     public String doAccountImport(ModelMap modelMap, String resultId, YukonUserContext userContext, String cancel) throws ServletException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser());
+        if(!Boolean.parseBoolean(rolePropertyDao.getPropertyStringValue(YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT, userContext.getYukonUser()))) {
+            throw new NotAuthorizedException("User not authorized to view this page.");
+        }
         AccountImportResult prescanResult = recentResultsCache.getResult(resultId); 
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), prescanResult.getAccountFileUpload(), prescanResult.getHardwareFileUpload(), prescanResult.getEmail(), false);
         accountImportService.startAccountImport(result);
