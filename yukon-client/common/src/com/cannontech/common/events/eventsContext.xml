@@ -10,8 +10,11 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
     
-        
-    <bean id="eventLogDao" class="com.cannontech.common.events.dao.EventLogDaoImpl"/>
+    <context:component-scan base-package="com.cannontech.common.events"/>
+
+    <bean id="accountEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.AccountEventLogService"/>
+    </bean>
     
     <bean id="meteringEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.MeteringEventLogService"/>

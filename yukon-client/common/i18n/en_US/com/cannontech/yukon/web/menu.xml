@@ -230,8 +230,11 @@
 <entry key="yukon.web.menu.config.support.webservice">Web Services Test</entry>
 <entry key="yukon.web.menu.config.support.webservice.xml">XML</entry>
 
+<entry key="yukon.web.menu.config.support.events">Events</entry>
+<entry key="yukon.web.menu.config.support.events.byCategory">By Category</entry>
+<entry key="yukon.web.menu.config.support.events.byType">By Type</entry>
+
 <entry key="yukon.web.menu.config.support.other">Other</entry>
-<entry key="yukon.web.menu.config.support.other.events">Events</entry>
 <entry key="yukon.web.menu.config.support.other.threadDump">Thread Dump</entry>
 
 <!-- Commander Module -->

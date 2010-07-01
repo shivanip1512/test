@@ -4,36 +4,42 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 
-<cti:standardPage title="Event Log" module="support">
-<cti:standardMenu menuSelection="other|events" />
-    <c:set var="baseUrl" value="/spring/common/eventLog/view"/>
+<cti:standardPage title="Event Log" module="support" page="byCategory">
+    <cti:standardMenu menuSelection="events|byCategory" />
+    <c:set var="baseUrl" value="/spring/common/eventLog/viewByCategory"/>
     
     <tags:sectionContainer title="Filter Options">
-        <form method="get" action="view">
-            <c:if test="${not empty itemsPerPage}">
-                <input type="hidden" name="itemsPerPage" value="${itemsPerPage}"/>
-            </c:if>
-            <tags:nameValueContainer>
-                <tags:nameValue name="Categories" nameColumnWidth="110px">
+        <form:form id="byCategoryForm" action="/spring/common/eventLog/viewByCategory" 
+                   commandName="byCategoryBackingBean">
+            <tags:hidden path="itemsPerPage"/>
+ 
+            <tags:nameValueContainer2>
+                
+                <tags:nameValue2 nameKey=".categories">
                     <select name="categories" multiple size="4">
                         <c:forEach items="${eventCategoryList}" var="eventCategory">
                             <c:set var="selected" value="${selectedCategories[eventCategory] ? 'selected' : ''}"/>
                             <option ${selected}><spring:escapeBody htmlEscape="true">${eventCategory.fullName}</spring:escapeBody></option>
                         </c:forEach>
                     </select>
-                </tags:nameValue>
-                <tags:nameValue name="Date Range">
-                    <cti:formatDate var="fromDateStr" type="DATE" value="${fromDate}" nullText=""/>
-                    <tags:dateInputCalendar fieldName="fromDate" fieldValue="${fromDateStr}"/>
-                    
-                    <cti:formatDate var="toDateStr" type="DATE" value="${toDate}" nullText=""/>
-                    <tags:dateInputCalendar fieldName="toDate" fieldValue="${toDateStr}"/>
-                </tags:nameValue>
-            </tags:nameValueContainer>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".filterValue">
+                    <tags:input path="filterValue" autocomplete="false"/>
+                </tags:nameValue2>
+                
+                <tags:nameValue2 nameKey=".dateRange">
+                    <tags:dateInputCalendar fieldName="startDate" springInput="true" />
+
+                    <tags:dateInputCalendar fieldName="stopDate" springInput="true" />
+                </tags:nameValue2>
+                
+            </tags:nameValueContainer2>
             <br>
             <input value="Filter" type="submit">
-        </form>
+        </form:form>
     </tags:sectionContainer>
     <br>
 

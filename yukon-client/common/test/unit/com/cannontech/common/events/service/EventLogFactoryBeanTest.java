@@ -2,10 +2,10 @@ package com.cannontech.common.events.service;
 
 
 import java.sql.Types;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.joda.time.ReadableInstant;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,6 @@ public class EventLogFactoryBeanTest {
         builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
-        
         EventLogFactoryBean eventLogFactoryBean = new EventLogFactoryBean();
         eventLogFactoryBean.setServiceInterface(TestEventLogInterface.class);
         eventLogFactoryBean.setBeanClassLoader(this.getClass().getClassLoader());
@@ -63,8 +62,9 @@ public class EventLogFactoryBeanTest {
                 insertedEventLogs.add(eventLog);
             }
             @Override
-            public List<EventLog> findAllByCategories(
-                    Iterable<EventCategory> eventCategory, Date startDate, Date stopDate) {
+            public List<EventLog> findAllByCategories(Iterable<EventCategory> eventCategory, 
+                                                      ReadableInstant startDate, 
+                                                      ReadableInstant stopDate) {
                 return null;
             }
             @Override
@@ -73,7 +73,30 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
-                                                                           Date startDate, Date stopDate, Integer start, Integer pageCount) {
+                                                                           ReadableInstant startDate, 
+                                                                           ReadableInstant stopDate, 
+                                                                           Integer start, 
+                                                                           Integer pageCount) {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> getPagedSearchResultByLogTypes(Iterable<String> eventLogTypes,
+                                                                         ReadableInstant startDate,
+                                                                         ReadableInstant stopDate,
+                                                                         Integer start,
+                                                                         Integer pageCount) {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> getFilteredPagedSearchResultByCategories(
+                                                                                   Iterable<EventCategory> eventCategories,
+                                                                                   ReadableInstant startDate,
+                                                                                   ReadableInstant stopDate,
+                                                                                   Integer start,
+                                                                                   Integer pageCount,
+                                                                                   String filterString,
+                                                                                   Double filterNumber,
+                                                                                   ReadableInstant filterInstant) {
                 return null;
             }
         });
@@ -126,8 +149,9 @@ public class EventLogFactoryBeanTest {
             public void insert(EventLog eventLog) {
             }
             @Override
-            public List<EventLog> findAllByCategories(
-                    Iterable<EventCategory> eventCategory, Date startDate, Date stopDate) {
+            public List<EventLog> findAllByCategories(Iterable<EventCategory> eventCategory, 
+                                                      ReadableInstant startDate, 
+                                                      ReadableInstant stopDate) {
                 return null;
             }
             @Override
@@ -136,7 +160,31 @@ public class EventLogFactoryBeanTest {
             }
             @Override
             public SearchResult<EventLog> getPagedSearchResultByCategories(Iterable<EventCategory> eventCategories,
-                                                                           Date startDate, Date stopDate, Integer start, Integer pageCount) {
+                                                                           ReadableInstant startDate,
+                                                                           ReadableInstant stopDate,
+                                                                           Integer start,
+                                                                           Integer pageCount) {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> getPagedSearchResultByLogTypes(
+                                                                         Iterable<String> eventLogTypes,
+                                                                         ReadableInstant startDate,
+                                                                         ReadableInstant stopDate,
+                                                                         Integer start,
+                                                                         Integer pageCount) {
+                return null;
+            }
+            @Override
+            public SearchResult<EventLog> getFilteredPagedSearchResultByCategories(
+                                                                                   Iterable<EventCategory> eventCategories,
+                                                                                   ReadableInstant startDate,
+                                                                                   ReadableInstant stopDate,
+                                                                                   Integer start,
+                                                                                   Integer pageCount,
+                                                                                   String filterString,
+                                                                                   Double filterNumber,
+                                                                                   ReadableInstant filterInstant) {
                 return null;
             }
         });

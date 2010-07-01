@@ -23,8 +23,6 @@ public interface AccountService {
      */
     public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException;
     
-    public void addAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) throws AccountNumberUnavailableException, UserNameUnavailableException;
-    
     /**
      * Method to update an account
      * The energy company is for the user is retrieved, then updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) is called.
@@ -34,8 +32,6 @@ public interface AccountService {
      */
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) throws InvalidAccountNumberException;
     
-    public void updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany ec) throws InvalidAccountNumberException;
-
     /**
      * Method to delete an account
      * The energy company is for the user is retrieved, then deleteAccount(String accountNumber, LiteStarsEnergyCompany ec) is called.
@@ -44,9 +40,7 @@ public interface AccountService {
      */
     public void deleteAccount(String accountNumber, LiteYukonUser user);
     
-    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany ec);
-    
-    public void deleteAccount(int accountId, int energyCompanyId);
+    public void deleteAccount(int accountId, LiteYukonUser user);
     
     /**
      * Method to return an account dto for an account number and energy company.

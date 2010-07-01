@@ -20,27 +20,14 @@ public class AccountServiceAdapter implements AccountService {
 	}
 
 	@Override
-	public void addAccount(UpdatableAccount updatableAccount,
-			LiteStarsEnergyCompany ec)
-			throws AccountNumberUnavailableException,
-			UserNameUnavailableException {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
 	public void deleteAccount(String accountNumber, LiteYukonUser user) {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 
-	@Override
-	public void deleteAccount(String accountNumber, LiteStarsEnergyCompany ec) {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-	
-	@Override
-	public void deleteAccount(int accountId, int energyCompanyId) {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
+    @Override
+    public void deleteAccount(int accountId, LiteYukonUser user) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
 
 	@Override
 	public AccountDto getAccountDto(String accountNumber,
@@ -57,12 +44,6 @@ public class AccountServiceAdapter implements AccountService {
 	@Override
 	public void updateAccount(UpdatableAccount updatableAccount,
 			LiteYukonUser user) throws InvalidAccountNumberException {
-		throw new UnsupportedOperationException("Not Implemented");
-	}
-
-	@Override
-	public void updateAccount(UpdatableAccount updatableAccount,
-			LiteStarsEnergyCompany ec) throws InvalidAccountNumberException {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
 

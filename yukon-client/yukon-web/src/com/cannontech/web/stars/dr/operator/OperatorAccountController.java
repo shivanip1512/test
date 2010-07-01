@@ -134,7 +134,7 @@ public class OperatorAccountController {
         }
         
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), accountFileUpload, hardwareFileUpload, accountImportData.getEmail(), true);
-        accountImportService.startAccountImport(result);
+        accountImportService.startAccountImport(result, userContext);
         
         modelMap.addAttribute("resultId", result.getResultId());
         modelMap.addAttribute("prescan", true);
@@ -178,7 +178,7 @@ public class OperatorAccountController {
         }
         AccountImportResult prescanResult = recentResultsCache.getResult(resultId); 
         AccountImportResult result = initAccountImportResult(userContext.getYukonUser(), prescanResult.getAccountFileUpload(), prescanResult.getHardwareFileUpload(), prescanResult.getEmail(), false);
-        accountImportService.startAccountImport(result);
+        accountImportService.startAccountImport(result, userContext);
         
         modelMap.addAttribute("resultId", result.getResultId());
 
@@ -280,8 +280,6 @@ public class OperatorAccountController {
 					    		AccountInfoFragment accountInfoFragment) {
 		
 		// account
-		int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
-		LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
 		String currentAccountNumber = customerAccount.getAccountNumber();
 		
@@ -296,7 +294,7 @@ public class OperatorAccountController {
 			accountGeneralValidator.validate(accountGeneral, bindingResult);
 			
 			if (!bindingResult.hasErrors()) {
-				accountService.updateAccount(updatableAccount, energyCompany);
+				accountService.updateAccount(updatableAccount, userContext.getYukonUser());
 				operatorAccountService.updateAccount(accountId, accountGeneral.getOperatorGeneralUiExtras());
 			}
 			
@@ -329,9 +327,7 @@ public class OperatorAccountController {
     							YukonUserContext userContext,
     							FlashScope flashScope) throws ServletRequestBindingException {
 		
-		int energyCompanyId = ecMappingDao.getEnergyCompanyIdForAccountId(accountId);
-		
-		accountService.deleteAccount(accountId, energyCompanyId);
+		accountService.deleteAccount(accountId, userContext.getYukonUser());
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.accountEdit.accountDeleted"));
 		return "redirect:/spring/stars/operator/home";

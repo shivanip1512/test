@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -49,6 +50,7 @@ import com.google.common.collect.Maps;
 
 public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     
+    private AccountEventLogService accountEventLogService;
     private ApplianceDao applianceDao;
     private ApplianceCategoryDao applianceCategoryDao;
     private CustomerAccountDao customerAccountDao;
@@ -63,9 +65,9 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
     private ECMappingDao ecMappingDao;
 
     @Override
-    public void updateProgramEnrollments(
-            List<ProgramEnrollment> programEnrollments, int accountId,
-            YukonUserContext userContext) {
+    public void updateProgramEnrollments(List<ProgramEnrollment> programEnrollments, 
+                                         int accountId,
+                                         YukonUserContext userContext) {
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         // Get the current enrollments.  This list will be updated to reflect
         // the desired enrollment data then passed to applyEnrollments which
@@ -163,6 +165,19 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
                                            ", inventory " + programEnrollment.getInventoryId() +
                                            ".  Please fix as soon as possible.");
             }
+        }
+        
+        if (enrollmentEnum == EnrollmentEnum.ENROLL) {
+            accountEventLogService.enrollmentAdded(user, enrollmentHelper.getAccountNumber(),
+                                                   enrollmentHelper.getSerialNumber(),
+                                                   enrollmentHelper.getProgramName(),
+                                                   enrollmentHelper.getLoadGroupName());
+        }
+        if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
+            accountEventLogService.enrollmentRemoved(user, enrollmentHelper.getAccountNumber(),
+                                                     enrollmentHelper.getSerialNumber(),
+                                                     enrollmentHelper.getProgramName(),
+                                                     enrollmentHelper.getLoadGroupName());
         }
     }
 
@@ -406,6 +421,11 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
 		return enrolledDeviceProgramsList;
 	}
 
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+	
     @Autowired
     public void setApplianceCategoryDao(ApplianceCategoryDao applianceCategoryDao) {
         this.applianceCategoryDao = applianceCategoryDao;

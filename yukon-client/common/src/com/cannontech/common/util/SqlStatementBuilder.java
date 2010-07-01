@@ -157,6 +157,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    public SqlStatementBuilder eqUppercase(String argument) {
+        statement.append("= UPPER(" );
+        appendArgument(argument);
+        statement.append(") ");
+        return this;
+    }
+    
     public SqlStatementBuilder neq(Object argument) {
         statement.append("!= ");
         appendArgument(argument);

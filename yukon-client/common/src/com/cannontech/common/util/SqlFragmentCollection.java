@@ -43,6 +43,10 @@ public class SqlFragmentCollection implements SqlFragmentSource {
     }
     
     public SqlFragmentCollection add(SqlFragmentSource fragment) {
+        if (fragment == null) {
+            return this;
+        }
+
         sql.add(fragment.getSql());
         arguments.addAll(fragment.getArgumentList());
         return this;

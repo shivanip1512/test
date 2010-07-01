@@ -13,8 +13,9 @@ public interface StarsApplianceService {
      * 
      */
     public void createStarsAppliance(StarsAppliance liteStarsAppliance, 
-                                      int energyCompanyId,
-                                      int accountId);
+                                     int energyCompanyId,
+                                     int accountId,
+                                     LiteYukonUser user);
 
     
     /**
@@ -38,6 +39,7 @@ public interface StarsApplianceService {
      * 
      */
     public void updateStarsAppliance(StarsAppliance liteStarsAppliance, 
-                                       int energyCompanyId);
+                                       int energyCompanyId,
+                                       LiteYukonUser user);
 
 }

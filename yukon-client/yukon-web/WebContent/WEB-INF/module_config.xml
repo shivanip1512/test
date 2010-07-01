@@ -872,14 +872,24 @@
             </option>
           </options>
         </option>
+        <option name="events">
+          <link>/spring/common/eventLog/viewByCategory</link>
+          <options>
+            <option name="byCategory">
+              <link>/spring/common/eventLog/viewByCategory</link>
+            </option>
+            <!--
+            <option name="byType">
+              <link>/spring/common/eventLog/viewByType</link>
+            </option>
+            -->
+          </options>
+        </option>
         <option name="other">
           <link>/spring/support/threadDump</link>
           <options>
             <option name="threadDump">
               <link>/spring/support/threadDump</link>
-            </option>
-            <option name="events">
-              <link>/spring/common/eventLog/view</link>
             </option>
           </options>
         </option>

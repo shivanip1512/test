@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.appliance.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -22,6 +23,8 @@ import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsApplianceDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEnum;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentHelper;
@@ -35,11 +38,16 @@ import com.cannontech.stars.xml.serialize.StarsAppliance;
 
 public class StarsApplianceServiceImpl implements StarsApplianceService {
 
+    private AccountEventLogService accountEventLogService;
+    private CustomerAccountDao customerAccountDao;
+    private LMHardwareBaseDao lmHardwareBaseDao;
+    private ProgramDao programDao;
     private StarsApplianceDao starsApplianceDao;
 
     @Override
     public void createStarsAppliance(StarsAppliance starsAppliance,
-                                     int energyCompanyId, int accountId) {
+                                     int energyCompanyId, int accountId,
+                                     LiteYukonUser user) {
 
         try {
             com.cannontech.database.data.stars.appliance.ApplianceBase app = 
@@ -277,6 +285,16 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
 
                 break;
             }
+            
+            String serialNumber = getSerialNumber(app);
+            String accountNumber = getAccountNumber(app);
+            String programName = getProgramName(app);
+            accountEventLogService.applianceAdded(user,
+                                                  accountNumber,
+                                                  liteApp.getApplianceCategory().getName(),
+                                                  serialNumber,
+                                                  programName);
+            
         } catch (TransactionException e) {
             throw new RuntimeException("Error creating STARS Appliance.", e);
         }
@@ -380,6 +398,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 break;
             }
 
+            String programName = null;
             if (unenrollProgram) {
                 LoadGroupDao loadGroupDao = 
                     YukonSpringHook.getBean("loadGroupDao", LoadGroupDao.class);
@@ -389,7 +408,7 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 ProgramDao programDao = 
                     YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
                 Program program = programDao.getByProgramId(liteApp.getProgramID());
-                String programName = program.getProgramPaoName();
+                programName = program.getProgramPaoName();
 
                 LMHardwareBaseDao lmHardwareBaseDao = 
                     YukonSpringHook.getBean("hardwareBaseDao", LMHardwareBaseDao.class);
@@ -410,6 +429,14 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 new com.cannontech.database.data.stars.appliance.ApplianceBase();
             app.setApplianceID(liteApp.getApplianceID());
             Transaction.createTransaction(Transaction.DELETE, app).execute();
+
+            String serialNumber = getSerialNumber(app);
+            accountEventLogService.applianceDeleted(user, 
+                                                    accountNumber,
+                                                    liteApp.getApplianceCategory().getName(),
+                                                    serialNumber,
+                                                    programName);
+            
         } catch (TransactionException e) {
             throw new RuntimeException("Error removing STARS Appliance.", e);
         }
@@ -417,7 +444,8 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
 
     @Override
     public void updateStarsAppliance(StarsAppliance liteStarsAppliance,
-                                     int energyCompanyId) {
+                                     int energyCompanyId,
+                                     LiteYukonUser user) {
         try {
             LiteStarsAppliance liteApp = 
                 starsApplianceDao.getByApplianceIdAndEnergyCompanyId(liteStarsAppliance.getApplianceID(),
@@ -725,11 +753,88 @@ public class StarsApplianceServiceImpl implements StarsApplianceService {
                 break;
             }
 
+            
+            String serialNumber = getSerialNumber(app);
+            String accountNumber = getAccountNumber(app);
+            String programName = getProgramName(app);
+            accountEventLogService.applianceUpdated(user, 
+                                                    accountNumber,
+                                                    liteApp.getApplianceCategory().getName(),
+                                                    serialNumber,
+                                                    programName);
+
         } catch (TransactionException e) {
             throw new RuntimeException("Error updating STARS Appliance.", e);
         }
     }
 
+    /**
+     * 
+     * @param app
+     * @return
+     */
+    private String getProgramName(com.cannontech.database.data.stars.appliance.ApplianceBase app) {
+        String programName = null;
+        Integer programId = app.getApplianceBase().getProgramID();
+        if (app.getApplianceBase().getProgramID() != null) {
+            Program program = programDao.getByProgramId(programId);
+            programName = program.getProgramPaoName();
+        }
+        
+        return programName;
+    }
+
+    /**
+     * @param app
+     * @param serialNumber
+     * @return
+     */
+    private String getSerialNumber(com.cannontech.database.data.stars.appliance.ApplianceBase app) {
+        String serialNumber = null;
+        if (app.getLMHardwareConfig().getInventoryID() != null) {
+            LMHardwareBase lmHardwareBase = 
+                lmHardwareBaseDao.getById(app.getLMHardwareConfig().getInventoryID());
+            serialNumber = lmHardwareBase.getManufacturerSerialNumber();
+        }
+        return serialNumber;
+    }
+
+    /**
+     * 
+     * @param app
+     * @return
+     */
+    private String getAccountNumber(com.cannontech.database.data.stars.appliance.ApplianceBase app) {
+        String accountNumber = null;
+        Integer accountId = app.getApplianceBase().getAccountID();
+        if (accountId != null) {
+            CustomerAccount account = customerAccountDao.getById(accountId);
+            accountNumber = account.getAccountNumber();
+        }
+        
+        return accountNumber;
+    }
+
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
+    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
+    }
+    
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
+    }
+    
+    @Autowired
+    public void setProgramDao(ProgramDao programDao) {
+        this.programDao = programDao;
+    }
+    
     @Autowired
     public void setStarsApplianceDao(StarsApplianceDao starsApplianceDao) {
         this.starsApplianceDao = starsApplianceDao;

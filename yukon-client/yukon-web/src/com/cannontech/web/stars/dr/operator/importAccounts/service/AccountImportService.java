@@ -61,6 +61,7 @@ import com.cannontech.stars.ws.dto.StarsControllableDeviceDTO;
 import com.cannontech.stars.ws.helper.StarsControllableDeviceHelper;
 import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 
@@ -81,16 +82,16 @@ public class AccountImportService {
     private static final Logger log = YukonLogManager.getLogger(AccountImportService.class);
     private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
     
-    public void startAccountImport(final AccountImportResult result) {
+    public void startAccountImport(final AccountImportResult result, final YukonUserContext userContext) {
         executor.execute(new Runnable() {
             public void run() {
-                processAccountImport(result);
+                processAccountImport(result, userContext);
             }
         });
     }
     
     @SuppressWarnings("deprecation")
-    private void processAccountImport(AccountImportResult result) {
+    private void processAccountImport(AccountImportResult result, YukonUserContext userContext) {
         String email = result.getEmail();
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
@@ -312,7 +313,7 @@ public class AccountImportService {
                     
                     if (!preScan) {
                         try {
-                            liteAcctInfo = importAccount( custFields, energyCompany, result );
+                            liteAcctInfo = importAccount( custFields, energyCompany, result, userContext);
                         } catch (Exception ex) {
                             result.custFileErrors++;
                             String[] value = result.getCustLines().get(lineNoKey);
@@ -1022,7 +1023,10 @@ public class AccountImportService {
     }
     
     @SuppressWarnings("deprecation")
-    private LiteStarsCustAccountInformation importAccount(String[] custFields, LiteStarsEnergyCompany energyCompany, AccountImportResult result) throws Exception {
+    private LiteStarsCustAccountInformation importAccount(String[] custFields, 
+                                                          LiteStarsEnergyCompany energyCompany, 
+                                                          AccountImportResult result,
+                                                          YukonUserContext userContext) throws Exception {
         LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
         
         try {
@@ -1034,7 +1038,8 @@ public class AccountImportService {
                 } else {
                     
                     // DELETE ACCOUNT
-                    accountService.deleteAccount(liteAcctInfo.getCustomerAccount().getAccountNumber(), energyCompany);
+                    accountService.deleteAccount(liteAcctInfo.getCustomerAccount().getAccountNumber(), 
+                                                 userContext.getYukonUser());
                     
                     result.setNumAcctRemoved(result.getNumAcctRemoved() + 1);
                     result.setNumAcctImported(result.getNumAcctImported() + 1);
@@ -1051,7 +1056,7 @@ public class AccountImportService {
                 
                 // ADD ACCOUNT
                 UpdatableAccount updatableAccount = updatableAccountConverter.createNewUpdatableAccount(custFields, energyCompany);
-                accountService.addAccount(updatableAccount, energyCompany);
+                accountService.addAccount(updatableAccount, userContext.getYukonUser());
                 liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
                 
                 result.setNumAcctAdded(result.getNumAcctAdded() + 1);
@@ -1064,7 +1069,7 @@ public class AccountImportService {
                 
                 // UPDATE ACCOUNT
                 UpdatableAccount updatableAccount = updatableAccountConverter.getUpdatedUpdatableAccount(liteAcctInfo, custFields, energyCompany);
-                accountService.updateAccount(updatableAccount, energyCompany);
+                accountService.updateAccount(updatableAccount, userContext.getYukonUser());
                 
                 result.setNumAcctUpdated(result.getNumAcctUpdated() + 1);
             }

@@ -1,12 +1,85 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-    <!-- Genera Event Messages -->
+    <!-- Generic Event Messages -->
     <entry key="yukon.common.events.title">Events</entry>
+    <entry key="yukon.common.events.category">Category</entry>
     <entry key="yukon.common.events.columnHeader.event">Event</entry>
     <entry key="yukon.common.events.columnHeader.dateAndTime"><![CDATA[Date & Time]]></entry>
     <entry key="yukon.common.events.columnHeader.message">Message</entry>
+    <entry key="yukon.common.events.eventCategories">Event Categories</entry>
     <entry key="yukon.common.events.noResults">No Results Found</entry>
+    <entry key="yukon.common.events.generateReports">Generate Reports</entry>
+    <entry key="yukon.common.events.eventTypes">Event Types</entry>
+    
+    <entry key="yukon.web.modules.support.byCategory.categories">Categories</entry>
+    <entry key="yukon.web.modules.support.byCategory.filterValue">Filter Value</entry>
+    <entry key="yukon.web.modules.support.byCategory.dateRange">Date Range</entry>
+    
+    <!-- Manage Event Logs -->
+    <entry key="yukon.web.modules.support.manageEventLogs.title">Manage Event Logs</entry>
+    <entry key="yukon.common.events.manageEventLogs.turnOnEventLog">Turn on event logging for this category.</entry>
+    <entry key="yukon.common.events.manageEventLogs.turnOffEventLog">Turn off event logging for this category.</entry>
+    <entry key="yukon.common.events.manageEventLogs.viewEventLog">View event log</entry>
+<!-- <entry key="yukon.common.events.manageEventLogs.modifyCategory">Modify Category</entry> -->
+    <entry key="yukon.common.events.manageEventLogs.categoryOptions">Cateogry Options</entry>
+    <entry key="yukon.common.events.manageEventLogs.enableCategory">Enable Category</entry>
+    <entry key="yukon.common.events.manageEventLogs.disableCategory">Disable Category</entry>
+    <entry key="yukon.common.events.manageEventLogs.viewCategory">View Category</entry>
+    
+
+
+
+<!-- Event log message text and column names -->
+    <!-- Account -->
+    <entry key="yukon.common.events.account.accountAdded">The account {2} was added by {1}</entry>
+    <entry key="yukon.common.events.account.accountAdded.1">User</entry>
+    <entry key="yukon.common.events.account.accountAdded.2">Account Number</entry>
+    
+    <entry key="yukon.common.events.account.accountUpdated">The account {2} was updated by {1}</entry>
+    <entry key="yukon.common.events.account.accountUpdated.1">User</entry>
+    <entry key="yukon.common.events.account.accountUpdated.2">Account Number</entry>
+    
+    <entry key="yukon.common.events.account.accountDeleted">The account {2} was removed by {1}</entry>
+    <entry key="yukon.common.events.account.accountDeleted.1">User</entry>
+    <entry key="yukon.common.events.account.accountDeleted.2">Account Number</entry>
+
+    <!-- Account Enrollment -->
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded">The device {2} was enrolled in the program {4} and the load group {5} for the account {2} by {1}</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.1">User</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.2">Account</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.3">Serial Number</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.4">Program</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.5">Load Group</entry>
+
+    <entry key="yukon.common.events.account.enrollment.enrollmentRemoved">The device {2} was unenrolled from the program {4} and the load group {5} for the account {2} by {1}</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.1">User</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.2">Account</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.3">Serial Number</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.4">Program</entry>
+    <entry key="yukon.common.events.account.enrollment.enrollmentAdded.5">Load Group</entry>
+    
+    <!-- Account Appliances -->
+    <entry key="yukon.common.events.account.appliance.applianceAdded">The appliance {3} with the program {5} was added to the account {2} on device {4} by {1}</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.1">User</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.2">Account Number</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.3">Appliance</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.4">Serial Number</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.5">Program</entry>
+    
+    <entry key="yukon.common.events.account.appliance.applianceUpdated">The appliance {3} with the program {5} for device {4} and account {2} was updated by {1}</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.1">User</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.2">Account Number</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.3">Appliance</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.4">Serial Number</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.5">Program</entry>
+    
+    <entry key="yukon.common.events.account.appliance.applianceDeleted">The appliance {3} with the program {5} for device {4} and account {2} was removed by {1}</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.1">User</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.2">Account Number</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.3">Appliance</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.4">Serial Number</entry>
+    <entry key="yukon.common.events.account.appliance.applianceAdded.5">Program</entry>
     
     <!-- AMR -->
     <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}</entry>

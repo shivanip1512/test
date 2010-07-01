@@ -141,7 +141,8 @@ public class OperatorApplianceController {
             if (!bindingResult.hasErrors()) {
                 starsApplianceService.createStarsAppliance(starsAppliance,
                                                            accountInfoFragment.getEnergyCompanyId(),
-                                                           accountInfoFragment.getAccountId());
+                                                           accountInfoFragment.getAccountId(),
+                                                           userContext.getYukonUser());
                 EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
                                          EventUtils.EVENT_CATEGORY_ACCOUNT,
                                          YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
@@ -241,7 +242,9 @@ public class OperatorApplianceController {
 
                 starsAppliance.setApplianceCategory(applianceCategory);
                 starsApplianceService.updateStarsAppliance(starsAppliance,
-                                                           accountInfoFragment.getEnergyCompanyId());
+                                                           accountInfoFragment.getEnergyCompanyId(),
+                                                           userContext.getYukonUser());
+
                 EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(),
                                          EventUtils.EVENT_CATEGORY_ACCOUNT,
                                          YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,

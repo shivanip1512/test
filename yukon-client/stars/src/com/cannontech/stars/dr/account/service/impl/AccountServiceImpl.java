@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.util.CtiUtilities;
@@ -79,6 +80,7 @@ import com.cannontech.user.YukonUserContext;
 
 public class AccountServiceImpl implements AccountService {
     
+    private AccountEventLogService accountEventLogService;
     private Logger log = YukonLogManager.getLogger(AccountServiceImpl.class);
     
     private YukonUserDao yukonUserDao;
@@ -118,12 +120,6 @@ public class AccountServiceImpl implements AccountService {
     public void addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator) throws AccountNumberUnavailableException, UserNameUnavailableException {
     	
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(operator);
-    	addAccount(updatableAccount, energyCompany);
-    }
-    
-    @Override
-    @Transactional
-    public void addAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany energyCompany) throws AccountNumberUnavailableException, UserNameUnavailableException {
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         
@@ -380,39 +376,37 @@ public class AccountServiceImpl implements AccountService {
         ecToAccountMapping.setAccountId(customerAccount.getAccountId());
         ecMappingDao.addECToAccountMapping(ecToAccountMapping);
         log.info("Account: " + accountNumber + " added successfully.");
+        
+        accountEventLogService.accountAdded(operator, accountNumber);
     }
 
     // DELETE ACCOUNT
     @Override
     @Transactional
+    public void deleteAccount(int accountId, LiteYukonUser user) {
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        deleteAccount(account, user);
+    }
+    
+    @Override
+    @Transactional
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
     	
-    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-    	deleteAccount(accountNumber, energyCompany);
-    }
-    
-    @Override
-    @Transactional
-    public void deleteAccount(int accountId, int energyCompanyId) {
-    	
-    	CustomerAccount customerAccount = getCustomerAccountForAccountId(accountId);
-        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
-    	
-        deleteAccount(customerAccount.getAccountNumber(), energyCompany);
-    }
-    
-    @Override
-    @Transactional
-    public void deleteAccount(String accountNumber, LiteStarsEnergyCompany energyCompany) {
-        
-        CustomerAccount  account = null;
-        try {
-            account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
-        }catch (NotFoundException e ) {
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	try {
+    	    CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyID());
+            deleteAccount(account, user);
+
+    	}catch (NotFoundException e ) {
             log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: " + accountNumber);
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }
-        
+    }
+
+    private void deleteAccount(CustomerAccount account, LiteYukonUser user) {
+
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+
         LiteStarsCustAccountInformation customerInfo = starsCustAccountInformationDao.getById(account.getAccountId(), energyCompany.getEnergyCompanyID());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteSiteInformation siteInfo = siteInformationDao.getSiteInfoById(accountSite.getSiteInformationId());
@@ -528,7 +522,9 @@ public class AccountServiceImpl implements AccountService {
                                DBChangeMsg.CAT_CUSTOMER_ACCOUNT,
                                DBChangeMsg.CHANGE_TYPE_DELETE));
         
-        log.info("Account: " +accountNumber + " deleted successfully.");
+        log.info("Account: " +account.getAccountNumber()+ " deleted successfully.");
+        
+        accountEventLogService.accountDeleted(user, account.getAccountNumber());
     }
     
     
@@ -538,12 +534,6 @@ public class AccountServiceImpl implements AccountService {
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
     
     	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
-    	updateAccount(updatableAccount, energyCompany);
-    }
-    
-    @Override
-    @Transactional
-    public void updateAccount(UpdatableAccount updatableAccount, LiteStarsEnergyCompany energyCompany) {
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
         String username = accountDto.getUserName(); 
@@ -650,9 +640,9 @@ public class AccountServiceImpl implements AccountService {
                 /*
                  * Create a new login.
                  */
-                LiteYukonUser user = new LiteYukonUser(); 
-                user.setUsername(accountDto.getUserName());
-                user.setLoginStatus(LoginStatusEnum.ENABLED);
+                LiteYukonUser newUser = new LiteYukonUser(); 
+                newUser.setUsername(accountDto.getUserName());
+                newUser.setLoginStatus(LoginStatusEnum.ENABLED);
                 List<LiteYukonGroup> groups = new ArrayList<LiteYukonGroup>();
                 LiteYukonGroup defaultYukonGroup = yukonGroupDao.getLiteYukonGroup(YukonGroup.YUKON_GROUP_ID);
                 groups.add(defaultYukonGroup);
@@ -667,17 +657,17 @@ public class AccountServiceImpl implements AccountService {
                 String password = accountDto.getPassword();
                 if(password != null) {
                     if(authType == null) {
-                        user.setAuthType(defaultAuthType);
+                        newUser.setAuthType(defaultAuthType);
                     }else {
-                        user.setAuthType(authType);
+                        newUser.setAuthType(authType);
                     }
                 }else {
-                    user.setAuthType(AuthType.NONE);
+                    newUser.setAuthType(AuthType.NONE);
                     password = emptyPassword;
                 }
-                yukonUserDao.addLiteYukonUserWithPassword(user, password, energyCompany.getEnergyCompanyID(), groups);
-                newLoginId = user.getUserID();
-                dbPersistantDao.processDBChange(new DBChangeMsg(user.getLiteID(),
+                yukonUserDao.addLiteYukonUserWithPassword(newUser, password, energyCompany.getEnergyCompanyID(), groups);
+                newLoginId = newUser.getUserID();
+                dbPersistantDao.processDBChange(new DBChangeMsg(newUser.getLiteID(),
                     DBChangeMsg.CHANGE_YUKON_USER_DB,
                     DBChangeMsg.CAT_YUKON_USER,
                     DBChangeMsg.CAT_YUKON_USER,
@@ -914,6 +904,8 @@ public class AccountServiceImpl implements AccountService {
         
         
         log.info("Account: " +accountNumber + " updated successfully.");
+        
+        accountEventLogService.accountUpdated(user, accountNumber);
     }
     
     @Override
@@ -1113,6 +1105,11 @@ public class AccountServiceImpl implements AccountService {
     //==============================================================================================
     // INJECTED DEPENDANCIES
     //==============================================================================================
+    
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
     
     @Autowired
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
