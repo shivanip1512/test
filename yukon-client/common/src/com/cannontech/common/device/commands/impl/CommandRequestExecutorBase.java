@@ -637,7 +637,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         this.configurationSource = configurationSource;
     }
     
-    @Resource(name="longRunningExecutor")
+    @Resource(name="globalScheduledExecutor")
     public void setExecutor(Executor executor) {
 		this.executor = executor;
 	}

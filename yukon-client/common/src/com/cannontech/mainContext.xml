@@ -92,7 +92,7 @@
        <constructor-arg>
             <bean class="java.util.concurrent.Executors"
                 factory-method="newScheduledThreadPool">
-                <constructor-arg value="2" />
+                <constructor-arg value="4" />
             </bean>
        </constructor-arg>
     </bean>
@@ -106,8 +106,8 @@
         <constructor-arg>
             <bean class="java.util.concurrent.ThreadPoolExecutor">
                 <qualifier value="longRunning" />
-                <constructor-arg value="1" />
-                <constructor-arg value="1" />
+                <constructor-arg value="2" />
+                <constructor-arg value="2" />
                 <constructor-arg value="60" />
                 <constructor-arg value="SECONDS" />
                 <constructor-arg>
