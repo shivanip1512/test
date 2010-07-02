@@ -152,7 +152,7 @@
       <sequence name="CustomerAccount">
         <table name="CustomerAccount" identitycolumn="AccountID" initsequence="true"/>
       </sequence>
-      <sequence>
+      <sequence name="SiteInformation">
         <table name="SiteInformation" identitycolumn="SiteID" initsequence="true"/>
       </sequence>
       <sequence name="WorkOrderBase">
