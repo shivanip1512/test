@@ -54,17 +54,12 @@ public class EventService {
             sixMonthsAgo = calendar.getTime();
         }
         public boolean evaluate(BaseEvent event) {
-            if (!isConsideredActive(event)) {
-                // Regardless of the times, display this event as recent because it wasn't
-                // displayed in the other sections.
-                return true;
-            } else if (event.getStopTime().before(sixMonthsAgo)) {
+            if (event.getStopTime().before(sixMonthsAgo)) {
                 return false;
             } else if (event.getStopTime().after(now)) {
-                return false;
-            } else {
-                return true;
+                return !isConsideredActive(event);
             }
+                return true;
         }
     }
     
