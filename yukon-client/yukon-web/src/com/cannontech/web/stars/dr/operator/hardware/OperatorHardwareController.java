@@ -348,6 +348,10 @@ public class OperatorHardwareController {
         
             if(!bindingResult.hasErrors()) {
                 inventoryId = hardwareService.createHardware(hardwareDto, accountInfoFragment.getAccountId(), userContext);
+                /* If the device status was set, spawn an event for it. */
+                if(hardwareDto.getDeviceStatusEntryId() != 0){
+                    EventUtils.logSTARSEvent(userContext.getYukonUser().getUserID(), EventUtils.EVENT_CATEGORY_INVENTORY, hardwareDto.getDeviceStatusEntryId(), inventoryId, request.getSession());
+                }
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");

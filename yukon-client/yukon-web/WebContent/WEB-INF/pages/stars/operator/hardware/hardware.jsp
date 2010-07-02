@@ -90,17 +90,17 @@
     
     <!-- Create Two Way Device Popup -->
     <i:simplePopup titleKey=".createTwoWay" id="createDevicePopup" styleClass="smallSimplePopup">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".displayName">
-                    <input type="text" name="deviceName" id="createTwoWayDeviceName">
-                    <input type="button" value="Create" onclick="createTwoWayDevice()">
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-            <div id="creationErrors" class="errorMessage">
-                <span id="nameAlreadyExists" style="display:none;"><i:inline key=".createTwoWay.error.nameAlreadyExists"/></span>
-                <span id="mustSupplyName" style="display:none;"><i:inline key=".createTwoWay.error.mustSupplyName"/></span>
-                <span id="unknown" style="display:none;"><i:inline key=".createTwoWay.error.unknown"/></span>
-            </div>
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".displayName">
+                <input type="text" name="deviceName" id="createTwoWayDeviceName">
+                <input type="button" value="Create" onclick="createTwoWayDevice()">
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        <div id="creationErrors" class="errorMessage">
+            <span id="nameAlreadyExists" style="display:none;"><i:inline key=".createTwoWay.error.nameAlreadyExists"/></span>
+            <span id="mustSupplyName" style="display:none;"><i:inline key=".createTwoWay.error.mustSupplyName"/></span>
+            <span id="unknown" style="display:none;"><i:inline key=".createTwoWay.error.unknown"/></span>
+        </div>
     </i:simplePopup>
     
     <!-- Delete Hardware Popup -->
@@ -224,9 +224,9 @@
                             <tags:selectNameValue nameKey=".route" path="routeId"  itemLabel="paoName" itemValue="yukonID" items="${routes}"  defaultItemValue="0" defaultItemLabel="${defaultRoute}"/>
                         </c:if>
                         
-                        <cti:displayForPageEditModes modes="EDIT,VIEW">
+                        <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
                         
-                            <tags:yukonListEntrySelectNameValue nameKey=".status" path="deviceStatusEntryId" accountId="${accountId}" listName="DEVICE_STATUS" defaultItemValue="0" defaultItemLabel="(none)"/>
+                        <cti:displayForPageEditModes modes="EDIT,VIEW">
                             
                             <form:hidden path="originalDeviceStatusEntryId"/>
                             
