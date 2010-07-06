@@ -53,7 +53,8 @@ updateSubmitButtons = function() {
 allProgramsChecked = function() {
     allChecked = $('allProgramsCheckbox').checked;
     for (index = 0; index < numPrograms; index++) {
-        $('startProgramCheckbox' + index).checked = allChecked;
+        $('startProgramCheckbox' + index).checked =
+            allChecked && !$('startProgramCheckbox' + index).disabled;
     }
     gearChanged();
 }
@@ -61,8 +62,11 @@ allProgramsChecked = function() {
 updateAllProgramsChecked = function() {
     allChecked = true;
     for (index = 0; index < numPrograms; index++) {
-        allChecked &= $('startProgramCheckbox' + index).checked;
-        if (!allChecked) break;
+        if (!$('startProgramCheckbox' + index).disabled
+                && !$('startProgramCheckbox' + index).checked) {
+            allChecked = false;
+            break;
+        }
     }
     $('allProgramsCheckbox').checked = allChecked;
 }
@@ -80,10 +84,9 @@ gearChanged = function() {
     var adjustButtonShown = false;
 
     for (index = 0; index < numPrograms; index++) {
-        var gearNum = $('programStartInfo'+index+'.gearNumber').value;
-        var programChecked = $('startProgramCheckbox'+index).checked;
-        if (targetPrograms[index][gearNum] &&
-            programChecked) {
+        var gearNum = $('programGear' + index).value;
+        var programChecked = $('startProgramCheckbox' + index).checked;
+        if (targetPrograms[index][gearNum] && programChecked) {
             adjustButtonShown = true;
             break;
         }
@@ -98,6 +101,19 @@ gearChanged = function() {
     updateSubmitButtons();
 }
 
+updateProgramState = function(index) {
+    return function(data) {
+        if (data.state.startsWith('running')) {
+            $('startProgramCheckbox' + index).disable();
+            $('startProgramCheckbox' + index).checked = false;
+            $('programGear' + index).disable();
+        } else {
+            $('startProgramCheckbox' + index).enable();
+            $('programGear' + index).enable();
+        }
+        updateAllProgramsChecked();
+    }
+}
 </script>
 
 <cti:flashScopeMessages/>
@@ -183,12 +199,13 @@ gearChanged = function() {
                     id="startProgramCheckbox${status.index}"
                     onclick="singleProgramChecked(this);"/>
                 <label for="startProgramCheckbox${status.index}"><spring:escapeBody htmlEscape="true">${program.name}</spring:escapeBody></label></td>
-                <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()">
+                <td><form:select path="programStartInfo[${status.index}].gearNumber" onchange="gearChanged()" id="programGear${status.index}">
                     <c:forEach var="gear" varStatus="gearStatus" items="${gears}">
                         <form:option value="${gearStatus.index + 1}"><spring:escapeBody htmlEscape="true">${gear.gearName}</spring:escapeBody></form:option>
                     </c:forEach>
                 </form:select></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
+                <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/></td>
                 <c:if test="${!empty scenarioPrograms}">
                     <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
                     <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.startOffset}"/></td>

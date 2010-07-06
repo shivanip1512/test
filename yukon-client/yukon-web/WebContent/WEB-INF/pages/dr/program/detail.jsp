@@ -86,6 +86,8 @@
 
                 <div class="widgetContainer">
                 <cti:msg var="boxTitle" key="yukon.web.modules.dr.programDetail.heading.actions"/>
+<cti:msg var="notRunning" key="yukon.web.modules.dr.programDetail.notRunning"/>
+<cti:msg var="alreadyRunning" key="yukon.web.modules.dr.programDetail.alreadyRunning"/>
                 <tags:abstractContainer type="box" title="${boxTitle}">
                     <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${program}">
                         
@@ -117,6 +119,10 @@
                             <tags:dynamicChooseOption optionId="runningEnabled">
                             
                                 <%-- Actions shown when the Program is manually active and enabled --%>
+                                <div class="subtleGray" title="${alreadyRunning}">
+                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
+                                </div>
                             
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
@@ -162,16 +168,11 @@
                                                        logoKey="yukon.web.modules.dr.programDetail.actions.startIcon"
                                                        labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
-    
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                                       dialogId="drDialog" 
-                                                       actionUrl="${stopProgramUrl}" 
-                                                       logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
-                                                       labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                <br>
+
+                                <div class="subtleGray" title="${notRunning}">
+                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                                </div>
 
                                 <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
                                 <span id="changeGearDisabled" title="${changeGearsDisabled}">
@@ -194,6 +195,11 @@
                             <tags:dynamicChooseOption optionId="runningDisabled">
                             
                                 <%-- Actions shown when the Program is manually active and disabled --%>
+
+                                <div class="subtleGray" title="${alreadyRunning}">
+                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.startIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.start"/>
+                                </div>
                             
                                 <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
                                     <cti:param name="programId" value="${programId}"/>
@@ -240,15 +246,10 @@
                                                        labelKey="yukon.web.modules.dr.programDetail.actions.start"/>
                                 <br>
 
-                                <cti:url var="stopProgramUrl" value="/spring/dr/program/stop/details">
-                                    <cti:param name="programId" value="${programId}"/>
-                                </cti:url>
-                                <tags:simpleDialogLink titleKey="yukon.web.modules.dr.program.stopProgram.title" 
-                                                       dialogId="drDialog" 
-                                                       actionUrl="${stopProgramUrl}" 
-                                                       logoKey="yukon.web.modules.dr.programDetail.actions.stopIcon"
-                                                       labelKey="yukon.web.modules.dr.programDetail.actions.stop"/>
-                                <br>
+                                <div class="subtleGray" title="${notRunning}">
+                                    <cti:logo key="yukon.web.modules.dr.programDetail.actions.stopIcon.disabled"/>
+                                    <cti:msg key="yukon.web.modules.dr.programDetail.actions.stop"/>
+                                </div>
 
                                 <cti:msg var="changeGearsDisabled" key="yukon.web.modules.dr.programDetail.actions.changeGears.disabled"/>
                                 <span id="changeGearDisabled" title="${changeGearsDisabled}">

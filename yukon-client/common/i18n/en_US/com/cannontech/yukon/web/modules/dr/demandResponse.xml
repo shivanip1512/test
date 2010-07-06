@@ -519,6 +519,7 @@
 <entry key="yukon.web.modules.dr.programDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.programDetail.noControl">You do not have permission to control this program</entry>
 <entry key="yukon.web.modules.dr.programDetail.unknown">This program is not in Load Management</entry>
+<entry key="yukon.web.modules.dr.programDetail.notRunning">This program is not running.</entry>
 <entry key="yukon.web.modules.dr.programDetail.alreadyRunning">This program is already running.</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.start">Start Program</entry>
 <entry key="yukon.web.modules.dr.programDetail.actions.startIcon">/WebConfig/yukon/Icons/control_play_blue.gif</entry>

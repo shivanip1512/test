@@ -18,15 +18,19 @@ updateComponentAvailability = function() {
 allProgramsChecked = function() {
     allChecked = $('allProgramsCheckbox').checked;
     for (index = 0; index < ${fn:length(programs)}; index++) {
-        $('stopProgramCheckbox' + index).checked = allChecked;
+        $('stopProgramCheckbox' + index).checked =
+            allChecked && !$('stopProgramCheckbox' + index).disabled;
     }
 }
 
 updateAllProgramsChecked = function() {
     allChecked = true;
     for (index = 0; index < ${fn:length(programs)}; index++) {
-        allChecked &= $('stopProgramCheckbox' + index).checked;
-        if (!allChecked) break;
+        if (!$('stopProgramCheckbox' + index).disabled
+                && !$('stopProgramCheckbox' + index).checked) {
+            allChecked = false;
+            break;
+        }
     }
     $('allProgramsCheckbox').checked = allChecked;
 }
@@ -36,6 +40,18 @@ singleProgramChecked = function(boxChecked) {
         updateAllProgramsChecked();
     } else {
         $('allProgramsCheckbox').checked = false;
+    }
+}
+
+updateProgramState = function(index) {
+    return function(data) {
+        if (data.state.startsWith('running')) {
+            $('stopProgramCheckbox' + index).enable();
+        } else {
+            $('stopProgramCheckbox' + index).disable();
+            $('stopProgramCheckbox' + index).checked = false;
+        }
+        updateAllProgramsChecked();
     }
 }
 </script>
@@ -99,7 +115,8 @@ singleProgramChecked = function(boxChecked) {
                     id="stopProgramCheckbox${status.index}"
                     onclick="singleProgramChecked(this);"/>
                 <label for="stopProgramCheckbox${status.index}">${program.name}</label></td>
-                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/></td>
+                <td><cti:dataUpdaterValue identifier="${programId}/STATE" type="DR_PROGRAM"/>
+                <cti:dataUpdaterCallback function="updateProgramState(${status.index})" initialize="true" state="DR_PROGRAM/${programId}/SHOW_ACTION"/></td>
                 <c:if test="${!empty scenarioPrograms}">
                     <c:set var="scenarioProgram" value="${scenarioPrograms[programId]}"/>
                     <td><cti:formatPeriod type="HM_SHORT" value="${scenarioProgram.stopOffset}"/></td>
