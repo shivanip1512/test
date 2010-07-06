@@ -88,9 +88,18 @@
     <entry key="yukon.web.modules.operator.optOut.main.confirmDialogOk">OK</entry>
     <entry key="yukon.web.modules.operator.optOut.main.confirmDialogCancel">Cancel</entry>
 
+    <entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.confirm">Are you sure you want remove an opt out for {0}?</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.imageUrl">/WebConfig/yukon/Icons/gray_subtract.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.hoverUrl">/WebConfig/yukon/Icons/gray_subtract_over.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.hoverText">Decrements opt out allowance for the device.</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.decrementAllowanceIconText">Removes an opt out allowance from the device.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.decrementAllowance.successText">Opt Out Allowance Reduced</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.decrementAllowanceDisabled.imageUrl">/WebConfig/yukon/Icons/gray_subtract_disabled.gif</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.decrementAllowanceDisabled.hoverText">The device has no allowances left.</entry>
+
     <entry key="yukon.web.modules.operator.optOut.main.allowOne.confirm">Are you sure you want add an extra opt out for {0}?</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.allowOne.imageUrl">/WebConfig/yukon/Icons/add.gif</entry>
-	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverUrl">/WebConfig/yukon/Icons/add_over.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.allowOne.imageUrl">/WebConfig/yukon/Icons/gray_add.gif</entry>
+	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverUrl">/WebConfig/yukon/Icons/gray_add_over.gif</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOne.hoverText">Adds an extra opt out to the device.</entry>
 	<entry key="yukon.web.modules.operator.optOut.main.allowOneIconText">Adds an extra opt out to the device. This is not restricted by the system opt out limit.</entry>
     <entry key="yukon.web.modules.operator.optOut.main.allowOne.successText">Opt Out Added</entry>

@@ -485,7 +485,7 @@ public class OperatorProgramOptOutOperatorController {
     }
 
     @RequestMapping
-    public String confirmAllowAnother(int inventoryId, ModelMap model,
+    public String confirmDecrementAllowances(int inventoryId, ModelMap model,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
@@ -497,19 +497,58 @@ public class OperatorProgramOptOutOperatorController {
                                      customerAccount);
         HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
         model.addAttribute("hardware", hardware);
-        return "operator/program/optOut/confirmAllowAnother.jsp";
+        return "operator/program/optOut/confirmDecrementAllowances.jsp";
     }
 
     @RequestMapping
-    public String allowAnother(Integer inventoryId,  
-                                FlashScope flashScope,
-                                ModelMap modelMap,
-                                YukonUserContext userContext,
-                                AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
-        
+    public String decrementAllowances(Integer inventoryId,
+            FlashScope flashScope, ModelMap modelMap,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment)
+            throws ServletRequestBindingException {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                        userContext.getYukonUser());
 
+        // Check that the inventory we're working with belongs to the current account
+        CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+        checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
+
+        optOutAdditionalDao.addAdditonalOptOuts(inventoryId, customerAccount.getAccountId(), -1);
+
+        flashScope.setConfirm(
+                       new YukonMessageSourceResolvable(
+                               "yukon.web.modules.operator.optOut.main.decrementAllowance.successText"));
+
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
+        return closeDialog(modelMap);
+    }
+
+    @RequestMapping
+    public String confirmAllowAnother(int inventoryId, ModelMap model,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) {
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+        
+        CustomerAccount customerAccount =
+            customerAccountDao.getById(accountInfoFragment.getAccountId());
+        checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
+                                     customerAccount);
+        HardwareSummary hardware = inventoryDao.findHardwareSummaryById(inventoryId);
+        model.addAttribute("hardware", hardware);
+        return "operator/program/optOut/confirmAllowAnother.jsp";
+    }
+    
+    @RequestMapping
+    public String allowAnother(Integer inventoryId,  
+            FlashScope flashScope,
+            ModelMap modelMap,
+            YukonUserContext userContext,
+            AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
+        
+        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
+                                       userContext.getYukonUser());
+        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -517,13 +556,13 @@ public class OperatorProgramOptOutOperatorController {
         optOutAdditionalDao.addAdditonalOptOuts(inventoryId, customerAccount.getAccountId(), 1);
         
         flashScope.setConfirm(
-                       new YukonMessageSourceResolvable(
-                               "yukon.web.modules.operator.optOut.main.allowOne.successText"));
-               
+                              new YukonMessageSourceResolvable(
+                              "yukon.web.modules.operator.optOut.main.allowOne.successText"));
+        
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return closeDialog(modelMap);
     }
-
+    
     @RequestMapping
     public String confirmResend(int inventoryId, ModelMap model,
             YukonUserContext userContext,

@@ -212,6 +212,18 @@
                                 <cti:img key="allowOne"
                                     href="javascript:openSimpleDialog('confirmDialog', '${allowAnotherUrl}')"/>                        
 
+                                <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
+                                    <cti:url var="decrementAllowancesUrl" value="/spring/stars/operator/program/optOut/confirmDecrementAllowances">
+                                        <cti:param name="accountId" value="${accountId}"/>
+                                        <cti:param name="inventoryId" value="${inventory.inventoryId}" />
+                                    </cti:url>
+                                    <cti:img key="decrementAllowance"
+                                        href="javascript:openSimpleDialog('confirmDialog', '${decrementAllowancesUrl}')"/>                        
+                                </c:if>
+                                <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
+                                    <cti:img key="decrementAllowanceDisabled"/>
+                                </c:if>
+
                                 <c:choose>
             	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
                                         <cti:img key="resetToLimitDisabled"/>
