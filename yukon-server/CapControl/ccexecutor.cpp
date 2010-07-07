@@ -36,6 +36,7 @@ extern ULONG _SEND_TRIES;
 extern BOOL _USE_FLIP_FLAG;
 extern BOOL _LOG_MAPID_INFO;
 extern ULONG _IVVC_HEARTBEAT_CONFIG;
+extern BOOL _LIMIT_ONE_WAY_COMMANDS;
 
 /*===========================================================================
     CtiCCCommandExecutor
@@ -4202,6 +4203,10 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
                             {
                                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
+                                //limit auto individual commands to one way devices 
+                                if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
+                                    continue;
+
                                 if ( currentCapBank->getReEnableOvUvFlag() )
                                 {
                                     currentCapBank->setReEnableOvUvFlag(FALSE);
@@ -4386,6 +4391,10 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
                             {
                                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
+                                //limit auto individual commands to one way devices 
+                                if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
+                                    continue;
+
                                 if ( !currentCapBank->getOvUvDisabledFlag() )
                                 {
                                     currentCapBank->setReEnableOvUvFlag(TRUE);
@@ -4542,6 +4551,10 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                     {
                         CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
+                        //limit auto individual commands to one way devices 
+                        if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
+                            continue;
+
                         if (disableFlag)
                         {
                             if ( !currentCapBank->getOvUvDisabledFlag() )
@@ -4676,6 +4689,10 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+
+                    //limit auto individual commands to one way devices 
+                    if (!currentCapBank->isControlDeviceTwoWay() && _LIMIT_ONE_WAY_COMMANDS)
+                        continue;
 
                     if (disableFlag)
                     {

@@ -48,7 +48,7 @@ ULONG   _IVVC_COMMS_RETRY_COUNT;
 double  _IVVC_NONWINDOW_MULTIPLIER;
 double  _IVVC_BANKS_REPORTING_RATIO;
 double  _IVVC_DEFAULT_DELTA;
-
+BOOL    _LIMIT_ONE_WAY_COMMANDS;
 
 void refreshGlobalCParms()
 {
@@ -639,6 +639,12 @@ void refreshGlobalCParms()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_IVVC_DEFAULT_DELTA: " << _IVVC_DEFAULT_DELTA << endl;
+    }
+    _LIMIT_ONE_WAY_COMMANDS = gConfigParms.isTrue("CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS", false);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS: " << _LIMIT_ONE_WAY_COMMANDS << endl;
     }
 
 }
