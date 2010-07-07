@@ -47,6 +47,7 @@ ULONG   _IVVC_MIN_TAP_PERIOD_MINUTES;
 ULONG   _IVVC_COMMS_RETRY_COUNT;
 double  _IVVC_NONWINDOW_MULTIPLIER;
 double  _IVVC_BANKS_REPORTING_RATIO;
+double  _IVVC_DEFAULT_DELTA;
 
 
 void refreshGlobalCParms()
@@ -632,6 +633,12 @@ void refreshGlobalCParms()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO: " << _IVVC_BANKS_REPORTING_RATIO * 100 << endl;
+    }
+    _IVVC_DEFAULT_DELTA = gConfigParms.getValueAsDouble("CAP_CONTROL_IVVC_DEFAULT_DELTA", 0);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_IVVC_DEFAULT_DELTA: " << _IVVC_DEFAULT_DELTA << endl;
     }
 
 }

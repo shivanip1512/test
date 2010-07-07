@@ -2548,6 +2548,17 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
         if (getOperationStats().isDirty())
             getOperationStats().dumpDynamicData(conn, currentDateTime);
+
+        for each (CtiCCMonitorPointPtr monPoint in getMonitorPoint())
+        {
+            if (monPoint->isDirty())
+                monPoint->dumpDynamicData(conn,currentDateTime);
+        }
+        for each (CtiCCPointResponsePtr ptResponse in getPointResponse())
+        {
+            if (ptResponse->isDirty())
+                ptResponse->dumpDynamicData(conn,currentDateTime);
+        }
     }
 }
 const string& CtiCCCapBank::convertOperationalState( int num )

@@ -22,6 +22,7 @@
 #include "resolvers.h"
 
 extern ULONG _CC_DEBUG;
+extern double _IVVC_DEFAULT_DELTA;
 
 RWDEFINE_COLLECTABLE( CtiCCPointResponse, CTICCPOINTRESPONSE_ID )
 
@@ -219,9 +220,8 @@ void CtiCCPointResponse::restore(RWDBReader& rdr)
     rdr["bankid"] >> _bankId;
     rdr["pointid"] >> _pointId;
     _preOpValue = 0;
-    _delta = 0;
-    //rdr["preopvalue"] >> _preOpValue;
-    //rdr["delta"] >> _delta;
+    _delta = _IVVC_DEFAULT_DELTA;
+
     _insertDynamicDataFlag = TRUE;
     /*{
         CtiLockGuard<CtiLogger> doubt_guard(dout);
