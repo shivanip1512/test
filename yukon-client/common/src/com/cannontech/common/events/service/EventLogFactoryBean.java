@@ -10,6 +10,7 @@ import java.util.Map;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
@@ -25,6 +26,8 @@ import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.events.YukonEventLog;
 import com.cannontech.common.events.dao.EventLogDao;
@@ -77,11 +80,35 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         ObjectMapper<Object[], Object[]> valueMapper = null;
         EventCategory eventCategory = null;
         String methodName = null;
+        boolean isLogging = true; 
         
         @Override
         public String toString() {
             return eventCategory.getFullName() + "." + methodName + ": " + valueMapper;
         }
+        
+        public String getFullPath(){
+            return eventCategory.getFullName()+"."+methodName;
+        }
+    }
+
+    private final static ImmutableList<String> excludedEventLogPaths;
+    static {
+        // Gets the value from the cparm if it exists
+        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
+        String excludedEventLogPathsStr = configSource.getString("EVENT_LOG_EXCLUSION_LIST");
+
+        // Builds up the list of excluded event log paths.
+        Builder<String> excludedEventLogPathsBuilder = ImmutableList.builder();
+        if (excludedEventLogPathsStr != null) {
+            String[] excludedEventLogPathArray = StringUtils.split(excludedEventLogPathsStr, ",");
+
+            for (String excludedEventLogPathStr : excludedEventLogPathArray) {
+                excludedEventLogPathsBuilder.add(excludedEventLogPathStr.trim());
+            }
+        }
+        
+        excludedEventLogPaths = excludedEventLogPathsBuilder.build();
     }
     
     private Map<Method, MethodLogDetail> methodLogDetailLookup = Maps.newHashMap();
@@ -150,7 +177,6 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         Method[] methods = serviceInterface.getMethods();
         for (Method method : methods) {
             MethodLogDetail methodLogDetail = createDetailForMethod(method);
-            log.debug("Created mapping: " + methodLogDetail);
             methodLogDetailLookup.put(method, methodLogDetail);
         }
         
@@ -172,7 +198,7 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
      */
     private MethodLogDetail createDetailForMethod(final Method method) throws BadConfigurationException {
         MethodLogDetail methodLogDetail = new MethodLogDetail();
-
+        
         YukonEventLog annotation = AnnotationUtils.getAnnotation(method, YukonEventLog.class);
 
         methodLogDetail.transactionality = annotation.transactionality();
@@ -181,10 +207,11 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
         if (categoryStr == null) {
             throw new BadConfigurationException("Could not find EventCategory for: " + method);
         }
+        
         EventCategory category = EventCategory.createCategory(categoryStr);
         methodLogDetail.eventCategory = category;
         methodLogDetail.methodName = method.getName();
-        
+
         final Class<?>[] parameterTypes = method.getParameterTypes();
         
         final List<ArgumentColumn> argumentColumns = eventLogDao.getArgumentColumns();
@@ -258,6 +285,15 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
             }
         };
         methodLogDetail.valueMapper = argumentValueMapper; 
+        log.debug("Created mapping: " + methodLogDetail);
+        
+        // Checks to see if the event log is in the exclusion list.
+        for (String excludedEventLogPath : excludedEventLogPaths) {
+            if (methodLogDetail.getFullPath().startsWith(excludedEventLogPath)) {
+                methodLogDetail.isLogging = false;
+                log.debug("Adding "+methodLogDetail.getFullPath()+" to the logging exclusion list");
+            }
+        }
         
         return methodLogDetail;
     }
@@ -278,14 +314,21 @@ public class EventLogFactoryBean implements FactoryBean, InitializingBean, BeanC
 
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+
         // This method will be called whenever a method on the interface is invoked.
         Date date = new Date();
         
         // Lookup the MethodLogDetail object.
         Method method = methodInvocation.getMethod();
         MethodLogDetail methodLogDetail = methodLogDetailLookup.get(method);
+        
         if (methodLogDetail == null) {
             throw new BadConfigurationException("Unable to log: " + methodInvocation);
+        }
+
+        // Check to see if logging is turned on for this type.
+        if (!methodLogDetail.isLogging){
+            return null;
         }
         
         // Convert the arguments of the method call into database parameters.
