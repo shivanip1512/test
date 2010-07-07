@@ -3,6 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<%@ attribute name="id" required="false" type="java.lang.String" description="The id of the main button."%>
 <%@ attribute name="formId" required="true" type="java.lang.String" description="The id attribute of the form to be submitted."%>
 <%@ attribute name="key" required="true" type="java.lang.String" description="Base i18n key. Available settings: .label (required), .labelBusy (optional), .description (optional)"%>
 <%@ attribute name="disableOtherButtons" required="false" type="java.lang.Boolean" description="Defaults to true. Disables all other buttons with formSubmit class on the page."%>
@@ -12,6 +13,9 @@
 <cti:includeScript link="/JavaScript/slowInput2.js"/>
 
 <cti:uniqueIdentifier var="uniqueId"/>
+<c:if test="${!empty pageScope.id}">
+    <c:set var="uniqueId" value="${pageScope.id}"/>
+</c:if>
 
 <c:if test="${empty pageScope.disableOtherButtons}">
 	<c:set var="disableOtherButtons" value="true"/>

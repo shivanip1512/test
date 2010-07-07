@@ -1097,7 +1097,8 @@ input.calendarInput {
 }
 
 input.formSubmit,
-.actionArea input {
+.actionArea input,
+.actionArea button {
     padding-left: 10px;
     padding-right: 10px;
 }

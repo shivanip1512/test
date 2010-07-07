@@ -50,8 +50,8 @@
     </c:if>
 
     <div class="actionArea">
-        <input type="submit" value="<cti:msg2 key=".ok"/>"/>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
+        <tags:slowInput2 formId="inputForm" key="ok"/>
+        <input class="formSubmit" type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('peDialog').hide()"/>
     </div>
 </form:form>

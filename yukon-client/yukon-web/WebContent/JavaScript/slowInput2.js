@@ -1,21 +1,23 @@
 
 function slowInput2ButtonPress(id, formId, disableOtherButtons, onsubmit){
 	
-	slowInput2TogglePressedStateOn(true, id, disableOtherButtons);
-    
+	slowInput2TogglePressedStateOn(true, id, formId, disableOtherButtons);
+
     var doSubmit = true;
     if (onsubmit) {
     	doSubmit = onsubmit();
     }
 
     if (doSubmit) {
-    	$(formId).submit();
+    	if (!$(formId).onsubmit || $(formId).onsubmit && $(formId).onsubmit()) {
+        	$(formId).submit();
+    	}
     } else {
     	slowInput2TogglePressedStateOn(false, id, disableOtherButtons);
     }
 }
 
-function slowInput2TogglePressedStateOn(toggleOn, id, disableOtherButtons) {
+function slowInput2TogglePressedStateOn(toggleOn, id, formId, disableOtherButtons) {
 	
 	if (toggleOn) {
 		$('slowInput2SpinnerImg_' + id).show();
@@ -30,7 +32,7 @@ function slowInput2TogglePressedStateOn(toggleOn, id, disableOtherButtons) {
 	}
 	
 	if (disableOtherButtons) {
-	    $$('.formSubmit').each(function(el) {
+	    $$('#' + formId + ' .formSubmit').each(function(el) {
 			el.disabled = toggleOn;
 		});
     }

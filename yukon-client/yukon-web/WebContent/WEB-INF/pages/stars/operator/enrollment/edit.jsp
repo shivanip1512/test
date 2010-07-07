@@ -12,7 +12,9 @@ enrollmentChanged = function(inventoryId) {
     var isEnrolled = $('enrolledCB' + inventoryId).checked;
     if (isEnrolled) {
         $('relaySelect' + inventoryId).enable();
-        $('okButton').enable();
+        if ($('slowInput2Button_ok')) {
+            $('slowInput2Button_ok').disabled = false;
+        }
     } else {
         $('relaySelect' + inventoryId).disable();
         updateOKButton();
@@ -23,11 +25,11 @@ inventoryIds = [];
 updateOKButton = function() {
     for (var index = 0; index < inventoryIds.length; index++) {
         if ($('enrolledCB' + inventoryIds[index]).checked) {
-            $('okButton').enable();
+            $('slowInput2Button_ok').disabled = false;
             return;
         }
     }
-    $('okButton').disable();
+    $('slowInput2Button_ok').disabled = true;
 }
 </script>
 
@@ -93,19 +95,29 @@ updateOKButton = function() {
                         </form:select>
                     </td>
                 </tr>
-                <script type="text/javascript">
-                enrollmentChanged(${inventoryId});
-                </script>
             </c:forEach>
         </table>
         </div>
     </tags:boxContainer2>
 
     <div class="actionArea">
-        <input id="okButton" type="submit" value="<cti:msg2 key=".ok"/>"/>
-        <input type="button" value="<cti:msg2 key=".cancel"/>"
+        <tags:slowInput2 id="ok" formId="inputForm" key="ok"/>
+        <input class="formSubmit" type="button" value="<cti:msg2 key=".cancel"/>"
             onclick="parent.$('peDialog').hide()"/>
     </div>
+    <script type="text/javascript">
+    var okEnabled = false;
+    for (var index = 0; index < inventoryIds.length; index++) {
+        var inventoryId = inventoryIds[index];
+        if ($('enrolledCB' + inventoryId).checked) {
+        	okEnabled = true;
+            $('relaySelect' + inventoryId).enable();
+        } else {
+            $('relaySelect' + inventoryId).disable();
+        }
+    }
+    $('slowInput2Button_ok').disabled = !okEnabled;
+    </script>
 
 </form:form>
 

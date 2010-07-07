@@ -9,6 +9,7 @@
 
 <cti:standardPage module="operator" page="enrollmentList">
 <cti:includeCss link="/WebConfig/yukon/styles/operator/enrollment.css"/>
+<cti:includeScript link="/JavaScript/slowInput2.js"/>
 
 <tags:simpleDialog id="peDialog"/>
 <script type="text/javascript">
