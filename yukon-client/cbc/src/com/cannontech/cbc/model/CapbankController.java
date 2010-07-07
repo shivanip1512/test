@@ -220,7 +220,7 @@ public class CapbankController {
         return true;
     }
 
-    public static boolean isImportableCbc(PaoType type) {
+    public static boolean isValidCbc(PaoType type) {
         
         switch (type) {
             case CBC_7010:
@@ -233,6 +233,7 @@ public class CapbankController {
             case CBC_DNP:
             case CBC_EXPRESSCOM:
             case CBC_FP_2800:
+            case CAPBANKCONTROLLER:
                 return true;
             default: 
                 return false;

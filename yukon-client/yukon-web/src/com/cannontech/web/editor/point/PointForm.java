@@ -16,7 +16,6 @@ import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -33,9 +32,9 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.point.AnalogPoint;
-import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.CalcStatusPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointLogicalGroups;
 import com.cannontech.database.data.point.PointOffsetUtils;
@@ -63,7 +62,6 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class PointForm extends DBEditorForm
 {
-    private SelectItem[] emailNotifcations = null;
     private SelectItem[] stateGroups = null;
     private SelectItem[] initialStates = null;
     private SelectItem[] decimalDigits = null;
@@ -192,46 +190,6 @@ public class PointForm extends DBEditorForm
         
         return alarmCategories;
     }
-    
-    /**
-     * Return all the contacts the have at least 1 email.
-     * @return
-     */ 
-    public SelectItem[] getEmailNotifcations() {
-
-        if( emailNotifcations == null ) {     
-
-            final ArrayList<SelectItem> emailList = new ArrayList<SelectItem>();
-            SelectItem nullEntry = new SelectItem(
-                                                  LiteContact.NONE_LITE_CONTACT.getContactID(),
-                                                  LiteContact.NONE_LITE_CONTACT.toString());
-            emailList.add(nullEntry );
-            DaoFactory.getContactDao().callbackWithAllContacts(new SimpleCallback<LiteContact>() {
-                @Override
-                public void handle(LiteContact contact) throws Exception {
-
-                    int cntNotifID = findEmailContact(contact);
-
-                    if( cntNotifID != CtiUtilities.NONE_ZERO_ID ) {
-                        SelectItem selectItem = new SelectItem(
-                                                               cntNotifID,
-                                                               contact.toString());
-                        emailList.add(selectItem );
-                    }
-
-                }
-            });
-            emailNotifcations = new SelectItem[ emailList.size() ];
-            emailNotifcations = emailList.toArray( emailNotifcations );
-        }
-
-        return emailNotifcations;
-    }
-    
-    /**
-     * Return all the contacts the have at least 1 email.
-     * @return
-     */ 
     public SelectItem[] getNotifcationGrps() {
         
         if( notifGroups == null ) {         
@@ -340,7 +298,6 @@ public class PointForm extends DBEditorForm
      * 
      */
     public void resetForm() {
-        emailNotifcations = null;
         stateGroups = null;
         initialStates = null;
         notifGroups = null;

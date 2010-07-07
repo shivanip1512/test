@@ -12,11 +12,6 @@
 					<x:selectOneMenu id="Notifcation_Group_List" value="#{ptEditorForm.pointBase.pointAlarming.notificationGroupID}" >
 						<f:selectItems value="#{ptEditorForm.notifcationGrps}"/>
 					</x:selectOneMenu>
-				
-					<x:outputLabel for="Contact_List" value="Contact: "/>
-					<x:selectOneMenu id="Contact_List" value="#{ptEditorForm.pointBase.pointAlarming.recipientID}" >
-						<f:selectItems value="#{ptEditorForm.emailNotifcations}"/>
-					</x:selectOneMenu>
 				</x:panelGrid>
 				
 				<h:selectBooleanCheckbox id="Alarm_Acknowledge" value="#{ptEditorForm.pointBase.pointAlarming.notifyOnAck}"/>

@@ -118,7 +118,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
                 CapbankController controller = new CapbankController();
                 PaoType deviceType = PaoType.getForId(type);
                 
-                if (CapbankController.isImportableCbc(deviceType)) {
+                if (CapbankController.isValidCbc(deviceType)) {
                     controller.setScanGroup(0);
                     controller.setScanType(DeviceScanRate.TYPE_INTEGRITY);
                     controller.setIntervalRate(300);
@@ -126,9 +126,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
                     controller.setName(name);
                     controller.setType(deviceType);
                     
-                    if (CapbankController.isOneWayCbc(deviceType)) {
-                        controller.setRouteId(portId);
-                    } else {
+                    if (!CapbankController.isOneWayCbc(deviceType)) {
                         controller.setPortId(portId);
                     }
                     

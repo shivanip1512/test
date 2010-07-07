@@ -413,7 +413,7 @@ public class CapControlImportController {
 	    		}
 	    		PaoType deviceType = PaoType.getForId(typeId);
 	    		
-	    		if (CapbankController.isImportableCbc(deviceType)) {
+	    		if (CapbankController.isValidCbc(deviceType)) {
 	    		
     	    		int cbcSerialNumber = Integer.decode(line[2]);
     	    		String capBankName = line[3];
