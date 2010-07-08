@@ -823,7 +823,6 @@ public class LMControlHistoryUtil {
                     }
                     
                     hist.setStartInstant(histStartDate);
-                    hist.setControlDuration(new Duration(0));
                     starsCtrlHist.addControlHistory( hist );
                 }
 
@@ -842,7 +841,6 @@ public class LMControlHistoryUtil {
                     
                     hist = new ControlHistory();
                     hist.setStartInstant(histStartDate);
-                    hist.setControlDuration(new Duration(0));
                     starsCtrlHist.addControlHistory( hist );
                 }
 
@@ -866,6 +864,8 @@ public class LMControlHistoryUtil {
             }
         }
 
+        // Check and see if the load group is currently being controlled.  If it is, figure out the
+        // current control duration as of right now.
         for (ControlHistory controlHistory : starsCtrlHist.getControlHistory()) {
             if (controlHistory.isCurrentlyControlling()) {
                 starsCtrlHist.setBeingControlled(true);
