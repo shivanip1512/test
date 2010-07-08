@@ -777,10 +777,11 @@ public class LMControlHistoryUtil {
 
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
         DateTime periodStartDateTime = getPeriodStartTime( period, dateTimeZone );
+
+        Instant now = new Instant();
         
         ControlHistory hist = null;
         Instant lastStartTime = null;
-        Instant lastStopTime = null;
         Instant histStartDate = null;
         
         for (int i = 0; i < liteCtrlHist.getLmControlHistory().size(); i++) {
@@ -813,7 +814,6 @@ public class LMControlHistoryUtil {
                 // This is a new control
                 if (!StarsUtils.isReadableInsantEqual(lmCtrlHistStart, lastStartTime)) {
                     lastStartTime = lmCtrlHistStart;
-                    lastStopTime = lmCtrlHistStop;
 
                     if (StarsUtils.isReadableInsantBefore(lmCtrlHistStart,
                                                           periodStartDateTime)) {
@@ -825,11 +825,8 @@ public class LMControlHistoryUtil {
                     hist.setStartInstant(histStartDate);
                     hist.setControlDuration(new Duration(0));
                     starsCtrlHist.addControlHistory( hist );
-
-                // This is the continuation of the last control
-                } else {  
-                    lastStopTime = lmCtrlHistStop;
                 }
+
                 hist.setCurrentlyControlling(true);
 
             } else if (lmCtrlHist.getActiveRestore().equals("C") || 
@@ -839,9 +836,7 @@ public class LMControlHistoryUtil {
                 if (hist == null && 
                     StarsUtils.isReadableInsantBefore(lmCtrlHistStart,
                                                       periodStartDateTime)) {
-                    
                     lastStartTime = lmCtrlHistStart;
-                    lastStopTime = lmCtrlHistStop;
 
                     histStartDate = periodStartDateTime.toInstant();
                     
@@ -849,12 +844,6 @@ public class LMControlHistoryUtil {
                     hist.setStartInstant(histStartDate);
                     hist.setControlDuration(new Duration(0));
                     starsCtrlHist.addControlHistory( hist );
-
-                } else if (StarsUtils.isReadableInsantEqual(lastStartTime, lmCtrlHistStart)) {
-                    if (hist != null) {
-                        Duration controlHistoryDuration = new Duration(histStartDate, lmCtrlHistStop);
-                        hist.setControlDuration(controlHistoryDuration);
-                    }
                 }
 
             } else if (lmCtrlHist.getActiveRestore().equals("M") || 
@@ -864,7 +853,6 @@ public class LMControlHistoryUtil {
                     hist.setCurrentlyControlling(false);
                 }
                 if (StarsUtils.isReadableInsantEqual(lastStartTime, lmCtrlHistStart)) {
-                    lastStopTime = lmCtrlHistStop;
                     
                     if (hist != null) {
                         Duration controlHistoryDuration = new Duration(histStartDate,lmCtrlHistStop);
@@ -877,11 +865,15 @@ public class LMControlHistoryUtil {
                 hist = null;
             }
         }
-        
-        if (lastStopTime != null) {
-            starsCtrlHist.setBeingControlled(lastStopTime.isAfter(new DateTime()));
-        }
 
+        for (ControlHistory controlHistory : starsCtrlHist.getControlHistory()) {
+            if (controlHistory.isCurrentlyControlling()) {
+                starsCtrlHist.setBeingControlled(true);
+                Duration currentDuration = new  Duration(now, controlHistory.getStartInstant());
+                controlHistory.setControlDuration(currentDuration);
+            }
+        }
+        
         return starsCtrlHist;
     }
     
