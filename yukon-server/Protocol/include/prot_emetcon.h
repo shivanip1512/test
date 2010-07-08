@@ -69,6 +69,8 @@ public:
         GetValue_PropCount,
         GetValue_PhaseCurrent,
         GetValue_ControlTime,
+        GetValue_TransmitPower,
+        GetValue_Temperature,
 
         // PutValue Commands
         PutValue_IEDReset,
@@ -132,6 +134,9 @@ public:
         GetConfig_Freeze,           //    commands like this one, i don't like this being a big mess of non-general commands
         GetConfig_PhaseDetect,
         GetConfig_PhaseDetectArchive,
+        GetConfig_Softspec,
+        GetConfig_Substation,
+        GetConfig_AddressInfo,
 
         // PutConfig commands
         PutConfig_Install,

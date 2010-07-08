@@ -161,7 +161,25 @@ public:
         Key_FMU_DataLogStartIndex,
         Key_FMU_DataLogLastReportedIndex,
         Key_FMU_DataTransferPortSelectCommConfig,
-        Key_FMU_MonitorPortSelectCommConfig
+        Key_FMU_MonitorPortSelectCommConfig,
+
+        Key_LCR_SSpec,
+        Key_LCR_SSpecRevision,
+        Key_LCR_SerialAddress,
+        Key_LCR_Spid,
+        Key_LCR_GeoAddress,
+        Key_LCR_Substation,
+        Key_LCR_Feeder,
+        Key_LCR_ZipCode,
+        Key_LCR_Uda,
+        Key_LCR_ProgramAddressRelay1,
+        Key_LCR_ProgramAddressRelay2,
+        Key_LCR_ProgramAddressRelay3,
+        Key_LCR_ProgramAddressRelay4,
+        Key_LCR_SplinterAddressRelay1,
+        Key_LCR_SplinterAddressRelay2,
+        Key_LCR_SplinterAddressRelay3,
+        Key_LCR_SplinterAddressRelay4,
         //  make sure to add any new enum values to the string map
     };
 
@@ -308,6 +326,24 @@ protected:
     static const string _key_fmu_datalog_last_reported_index;
     static const string _key_fmu_datatransfer_port_select_comm_config;
     static const string _key_fmu_monitor_port_select_comm_config;
+
+    static const string _key_lcr_sspec;
+    static const string _key_lcr_sspec_revision;
+    static const string _key_lcr_sspec_serial;
+    static const string _key_lcr_sspec_spid;
+    static const string _key_lcr_sspec_geo_address;
+    static const string _key_lcr_relay1_program_address;
+    static const string _key_lcr_relay2_program_address;
+    static const string _key_lcr_relay3_program_address;
+    static const string _key_lcr_relay4_program_address;
+    static const string _key_lcr_relay1_splinter_address;
+    static const string _key_lcr_relay2_splinter_address;
+    static const string _key_lcr_relay3_splinter_address;
+    static const string _key_lcr_relay4_splinter_address;
+    static const string _key_lcr_substation;
+    static const string _key_lcr_feeder;
+    static const string _key_lcr_zipcode;
+    static const string _key_lcr_uda;
 
     typedef map<CtiApplication_t, const string *> owner_map_t;
     typedef map<PaoInfoKeys,             const string *> key_map_t;

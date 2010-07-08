@@ -47,6 +47,36 @@ public:
         return decodeGetValueControlTime(InMessage, TimeNow, vgList, retList, outList);
     }
 
+    std::vector<int> test_decodeMessageAddress( BYTE Message[] )
+    {
+        return decodeMessageAddress(Message);
+    }
+
+    std::vector<int> test_decodeMessageSoftspec( BYTE Message[] )
+    {
+        return decodeMessageSoftspec(Message);
+    }
+
+    std::vector<int> test_decodeMessageSubstation( BYTE Message[] )
+    {
+        return decodeMessageSubstation(Message);
+    }
+
+    int test_decodeMessageTime( BYTE Message[] )
+    {
+        return decodeMessageTime(Message);
+    }
+
+    std::vector<int> test_decodeMessageTemperature( BYTE Message[] )
+    {
+        return decodeMessageTemperature(Message);
+    }
+
+    int test_decodeMessageTransmitPower( BYTE Message[] )
+    {
+        return decodeMessageTransmitPower(Message);
+    }
+
 private:
     typedef std::map< int, point_info > point_results_map;
     typedef std::map< int, point_info >::iterator point_results_map_iter;
@@ -340,6 +370,128 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
 
     BOOST_CHECK_EQUAL(pi.value, expected_controlTime); // We are expecting the half seconds to be converted to seconds here!
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
+}
+
+BOOST_AUTO_TEST_CASE(test_data_read_address)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0] = 0x04;
+    InMessage.Buffer.DSt.Message[1] = 0x08;
+    InMessage.Buffer.DSt.Message[2] = 0x0f;
+    InMessage.Buffer.DSt.Message[3] = 0x10;
+    InMessage.Buffer.DSt.Message[4] = 0x17;
+    InMessage.Buffer.DSt.Message[5] = 0x2A;
+    InMessage.Buffer.DSt.Message[6] = 0x39;
+    InMessage.Buffer.DSt.Message[7] = 0x44;
+
+    std::vector<int> test_vec = test_device.test_decodeMessageAddress(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(test_vec.at(7),  4);
+    BOOST_CHECK_EQUAL(test_vec.at(6),  8);
+    BOOST_CHECK_EQUAL(test_vec.at(5), 15);
+    BOOST_CHECK_EQUAL(test_vec.at(4), 16);
+    BOOST_CHECK_EQUAL(test_vec.at(3), 23);
+    BOOST_CHECK_EQUAL(test_vec.at(2), 42);
+    BOOST_CHECK_EQUAL(test_vec.at(1), 57);
+    BOOST_CHECK_EQUAL(test_vec.at(0), 68);
+}
+
+BOOST_AUTO_TEST_CASE(test_data_read_sspec)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0]  = 0xb0;
+    InMessage.Buffer.DSt.Message[1]  = 0x10;
+    InMessage.Buffer.DSt.Message[2]  = 0x00;
+    InMessage.Buffer.DSt.Message[3]  = 0x00;
+    InMessage.Buffer.DSt.Message[4]  = 0x09;
+    InMessage.Buffer.DSt.Message[5]  = 0x00;
+    InMessage.Buffer.DSt.Message[6]  = 0x99;
+    InMessage.Buffer.DSt.Message[7]  = 0x88;
+    InMessage.Buffer.DSt.Message[8]  = 0xa4;
+    InMessage.Buffer.DSt.Message[9]  = 0x02;
+    InMessage.Buffer.DSt.Message[10] = 0x62;
+    InMessage.Buffer.DSt.Message[11] = 0xdc;
+    InMessage.Buffer.DSt.Message[12] = 0x19;
+
+    std::vector<int> test_vec = test_device.test_decodeMessageSoftspec(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(test_vec.at(4),     2480);
+    BOOST_CHECK_EQUAL(test_vec.at(3),       16);
+    BOOST_CHECK_EQUAL(test_vec.at(2), 10061988);
+    BOOST_CHECK_EQUAL(test_vec.at(1),      610);
+    BOOST_CHECK_EQUAL(test_vec.at(0),    56345);
+    BOOST_CHECK_EQUAL(InMessage.Buffer.DSt.Message[2], 0);
+    BOOST_CHECK_EQUAL(InMessage.Buffer.DSt.Message[3], 0);
+}
+
+BOOST_AUTO_TEST_CASE(test_data_read_substation)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0]  = 0x03;
+    InMessage.Buffer.DSt.Message[1]  = 0x09;
+    InMessage.Buffer.DSt.Message[2]  = 0x27;
+    InMessage.Buffer.DSt.Message[3]  = 0x10;
+    InMessage.Buffer.DSt.Message[4]  = 0xdb;
+    InMessage.Buffer.DSt.Message[5]  = 0xf0;
+    InMessage.Buffer.DSt.Message[6]  = 0x00;
+    InMessage.Buffer.DSt.Message[7]  = 0x03;
+    InMessage.Buffer.DSt.Message[8]  = 0x40;
+
+    std::vector<int> test_vec = test_device.test_decodeMessageSubstation(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(test_vec.at(3),      777);
+    BOOST_CHECK_EQUAL(test_vec.at(2),    10000);
+    BOOST_CHECK_EQUAL(test_vec.at(1), 14413824);
+    BOOST_CHECK_EQUAL(test_vec.at(0),      832);
+}
+
+BOOST_AUTO_TEST_CASE(test_data_read_time)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0]  = 0x49;
+    InMessage.Buffer.DSt.Message[1]  = 0x96;
+    InMessage.Buffer.DSt.Message[2]  = 0x02;
+    InMessage.Buffer.DSt.Message[3]  = 0xd2;
+
+    int utcSeconds = test_device.test_decodeMessageTime(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(utcSeconds, 1234567890);
+}
+
+BOOST_AUTO_TEST_CASE(test_data_read_power)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0]  = 0x0a;
+
+    int transmitPower = test_device.test_decodeMessageTransmitPower(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(transmitPower, 10);
+}
+
+BOOST_AUTO_TEST_CASE(test_data_read_temperature)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0]  = 0x0f;
+    InMessage.Buffer.DSt.Message[1]  = 0xa0;
+    InMessage.Buffer.DSt.Message[2]  = 0x07;
+    InMessage.Buffer.DSt.Message[3]  = 0xd0;
+
+    std::vector<int> test_vec = test_device.test_decodeMessageTemperature(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(test_vec.at(1), 4000);
+    BOOST_CHECK_EQUAL(test_vec.at(0), 2000);
 }
 
 };

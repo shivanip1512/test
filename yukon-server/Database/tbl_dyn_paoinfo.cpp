@@ -143,6 +143,24 @@ const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_channel          = "m
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_begin    = "mct llp interest request begin";
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_end      = "mct llp interest request end";
 
+const string CtiTableDynamicPaoInfo::_key_lcr_sspec                         = "lcr sspec";
+const string CtiTableDynamicPaoInfo::_key_lcr_sspec_revision                = "lcr sspec revision";
+const string CtiTableDynamicPaoInfo::_key_lcr_sspec_serial                  = "lcr serial address";
+const string CtiTableDynamicPaoInfo::_key_lcr_sspec_spid                    = "lcr ssid";
+const string CtiTableDynamicPaoInfo::_key_lcr_sspec_geo_address             = "lcr geo address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay1_program_address        = "lcr relay 1 program address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay2_program_address        = "lcr relay 2 program address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay3_program_address        = "lcr relay 3 program address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay4_program_address        = "lcr relay 4 program address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay1_splinter_address       = "lcr relay 1 splinter address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay2_splinter_address       = "lcr relay 2 splinter address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay3_splinter_address       = "lcr relay 3 splinter address";
+const string CtiTableDynamicPaoInfo::_key_lcr_relay4_splinter_address       = "lcr relay 4 splinter address";
+const string CtiTableDynamicPaoInfo::_key_lcr_substation                    = "lcr substation";
+const string CtiTableDynamicPaoInfo::_key_lcr_feeder                        = "lcr feeder";
+const string CtiTableDynamicPaoInfo::_key_lcr_zipcode                       = "lcr zip code";
+const string CtiTableDynamicPaoInfo::_key_lcr_uda                           = "lcr uda";
+
 const string CtiTableDynamicPaoInfo::_key_udp_ip       = "udp ip";
 const string CtiTableDynamicPaoInfo::_key_udp_port     = "udp port";
 const string CtiTableDynamicPaoInfo::_key_udp_sequence = "udp sequence";
@@ -271,6 +289,24 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_UDP_IP,       &_key_udp_ip));
     retval.insert(make_pair(Key_UDP_Port,     &_key_udp_port));
     retval.insert(make_pair(Key_UDP_Sequence, &_key_udp_sequence));
+
+    retval.insert(make_pair(Key_LCR_SSpec,                  &_key_lcr_sspec));
+    retval.insert(make_pair(Key_LCR_SSpecRevision,          &_key_lcr_sspec_revision));
+    retval.insert(make_pair(Key_LCR_SerialAddress,          &_key_lcr_sspec_serial));
+    retval.insert(make_pair(Key_LCR_Spid,                   &_key_lcr_sspec_spid));
+    retval.insert(make_pair(Key_LCR_GeoAddress,             &_key_lcr_sspec_geo_address));
+    retval.insert(make_pair(Key_LCR_Substation,             &_key_lcr_substation));
+    retval.insert(make_pair(Key_LCR_Feeder,                 &_key_lcr_feeder));
+    retval.insert(make_pair(Key_LCR_ZipCode,                &_key_lcr_zipcode));
+    retval.insert(make_pair(Key_LCR_Uda,                    &_key_lcr_uda));
+    retval.insert(make_pair(Key_LCR_ProgramAddressRelay1,   &_key_lcr_relay1_program_address));
+    retval.insert(make_pair(Key_LCR_ProgramAddressRelay2,   &_key_lcr_relay2_program_address));
+    retval.insert(make_pair(Key_LCR_ProgramAddressRelay3,   &_key_lcr_relay3_program_address));
+    retval.insert(make_pair(Key_LCR_ProgramAddressRelay4,   &_key_lcr_relay4_program_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay1_splinter_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay2_splinter_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay3_splinter_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay4_splinter_address));
 
     return retval;
 }

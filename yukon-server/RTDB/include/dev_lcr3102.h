@@ -40,6 +40,27 @@ protected:
         FuncRead_ControlTimeLen  = 5
     };
 
+    enum DataReads
+    {
+        DataRead_TransmitPowerPos  = 0xf9,
+        DataRead_TransmitPowerLen  = 1,
+                                  
+        DataRead_DeviceTimePos     = 0x40,
+        DataRead_DeviceTimeLen     = 4,
+                                  
+        DataRead_TemperaturePos    = 0x03,
+        DataRead_TemperatureLen    = 4,
+
+        DataRead_AddressInfoPos    = 0x02,
+        DataRead_AddressInfoLen    = 8,
+
+        DataRead_SubstationDataPos = 0x01,
+        DataRead_SubstationDataLen = 9,
+
+        DataRead_SoftspecPos       = 0x00,
+        DataRead_SoftspecLen       = 13
+    };
+
     enum PointOffsets
     {
         PointOffset_LastIntervalBase = 1,   //      PointOffset = Base# + (load/relay# - 1)
@@ -65,12 +86,27 @@ protected:
     int parseLoadValue(CtiCommandParser &parse);
     int parsePreviousValue(CtiCommandParser &parse);
 
+    INT decodeGetValueTransmitPower ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueTemperature   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueIntervalLast  ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValuePropCount     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueControlTime   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
     INT decodePutConfig             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetConfig             ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
+    INT decodeGetConfigRaw          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigSoftspec     ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigAddress      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigSubstation   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetConfigTime         ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+
+    std::vector<int> decodeMessageSoftspec      ( BYTE Message[] );
+    std::vector<int> decodeMessageAddress       ( BYTE Message[] );
+    std::vector<int> decodeMessageSubstation    ( BYTE Message[] );
+    std::vector<int> decodeMessageTemperature   ( BYTE Message[] );
+    int decodeMessageTime          ( BYTE Message[] );
+    int decodeMessageTransmitPower ( BYTE Message[] );
 
 public:
 

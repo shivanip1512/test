@@ -464,7 +464,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_load_runtime   (CtiString("runtime(( load| relay) ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
     static const boost::regex   re_load_shedtime  (CtiString("shedtime(( load| relay) ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
     static const boost::regex   re_propcount      (CtiString("propcount"));
-    static const boost::regex   re_control_time   (CtiString("controltime remaining( relay ") + str_num + CtiString(")?"));
+    static const boost::regex   re_control_time   (CtiString("controltime remaining(( load| relay) ") + str_num + CtiString(")?"));
 
     CtiTokenizer   tok(CmdStr);
 
@@ -833,12 +833,14 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             flag |= CMD_FLAG_GV_PEAK;
         }
-
+        if(CmdStr.contains(" temperature"))
+        {
+            flag |= CMD_FLAG_GV_TEMPERATURE;
+        }
         if(CmdStr.contains(" power"))
         {
             flag |= CMD_FLAG_GV_PFCOUNT;
         }
-
         if(CmdStr.contains(" update"))      // Sourcing from CmdStr, which is the entire command string.
         {
             flag |= CMD_FLAG_UPDATE;
@@ -1611,6 +1613,8 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         }
         if(CmdStr.contains(" address"))
         {
+            _cmd["address_info"] = CtiParseValue("TRUE");
+
             if(!(token = CmdStr.match(re_address)).empty())
             {
                 if(token.contains("group"))
@@ -1622,6 +1626,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                     _cmd["address_unique"] = CtiParseValue(TRUE);
                 }
             }
+
         }
         if(CmdStr.contains(" channels"))
         {
@@ -1789,6 +1794,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                     _cmd["display_parameters"] = CtiParseValue(true);
                 }
             }
+        }
+        if(CmdStr.contains(" substation"))
+        {
+            _cmd["substation"] = CtiParseValue("TRUE");
         }
         if(CmdStr.contains(" update"))
         {

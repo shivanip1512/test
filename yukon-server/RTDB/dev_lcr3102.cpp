@@ -150,6 +150,16 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodeGetValueHistoricalTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
+        case Emetcon::GetValue_Temperature:
+        {
+            status = decodeGetValueTemperature( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetValue_TransmitPower:
+        {
+            status = decodeGetValueTransmitPower( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
         case Emetcon::GetValue_ControlTime:
         {
             status = decodeGetValueControlTime( InMessage, TimeNow, vgList, retList, outList );
@@ -165,9 +175,29 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodePutConfig( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
+        case Emetcon::GetConfig_Substation:
+        {
+            status = decodeGetConfigSubstation( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetConfig_Softspec:
+        {
+            status = decodeGetConfigSoftspec( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetConfig_Time:
+        {
+            status = decodeGetConfigTime( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
+        case Emetcon::GetConfig_AddressInfo:
+        {
+            status = decodeGetConfigAddress( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
         case Emetcon::GetConfig_Raw:
         {
-            status = decodeGetConfig( InMessage, TimeNow, vgList, retList, outList );
+            status = decodeGetConfigRaw( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
         default:
@@ -180,6 +210,74 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
     return status;
 }
 
+INT LCR3102::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        std::vector<int> temperatureInfo = decodeMessageTemperature(DSt->Message);
+        int txTemp = temperatureInfo.at(1);
+        int boxTemp = temperatureInfo.at(0);
+
+        string results = getName() + " / TX Temperature: " + CtiNumStr(((double)txTemp)/100.0, 1) + " degrees Centigrade\n"
+                       + getName() + " / Ambient Box Temperature: " + CtiNumStr(((double)boxTemp)/100.0, 1) + " degrees Centigrade";
+
+        ReturnMsg->setResultString(results);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT LCR3102::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        int transmitPower= decodeMessageTransmitPower(DSt->Message);
+
+        string results = getName() + " / Current Transmit Power: " + CtiNumStr(transmitPower) + " percent";
+
+        ReturnMsg->setResultString(results);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
 
 INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
@@ -412,31 +510,42 @@ INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, lis
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        int relay         = DSt->Message[0]; // Relay is 1-4 here
-        int point_base    = PointOffset_ControlTimeBase;
-        string identifier = "Control Time Remaining";
+        int relay = DSt->Message[0]; // Relay is 1-4 here
 
-        const double halfSecondsPerSecond = 2.0;
+        if(relay > 0 && relay < 5)
+        {
+            int point_base    = PointOffset_ControlTimeBase;
+            string identifier = "Control Time Remaining";
+    
+            const double halfSecondsPerSecond = 2.0;
+    
+            point_info pi;
+    
+            // The LCR 3102 returns the control time remaining in half seconds: we want to return seconds.
+            int half_seconds = (DSt->Message[1] << 24) | (DSt->Message[2] << 16) | (DSt->Message[3] << 8) | (DSt->Message[4]);
+    
+            pi.value       = half_seconds / halfSecondsPerSecond; // Convert to seconds. Is this the unit we want for this?
+            pi.quality     = NormalQuality;
+            pi.freeze_bit  = false;
+            pi.description = "Control Time Remaining Relay " + CtiNumStr(relay);
+    
+            string results = getName() + " / " + identifier;
+            ReturnMsg->setResultString(results);
+    
+            int point_offset = point_base + relay - 1;
+    
+            insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
+    
+            decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Relay number " << relay << " is invalid. Point has not been inserted." << endl;
 
-        point_info pi;
-
-        // The LCR 3102 returns the control time remaining in half seconds: we want to return seconds.
-        int half_seconds = (DSt->Message[1] << 24) | (DSt->Message[2] << 16) | (DSt->Message[3] << 8) | (DSt->Message[4]);
-
-        pi.value       = half_seconds / halfSecondsPerSecond; // Convert to seconds. Is this the unit we want for this?
-        pi.quality     = NormalQuality;
-        pi.freeze_bit  = false;
-        pi.description = "Control Time Remaining Relay " + CtiNumStr(relay);
-
-        string results = getName() + " / " + identifier;
-        ReturnMsg->setResultString(results);
-
-        int point_offset = point_base + relay - 1;
-
-        insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
-
-        decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+            return BADRANGE;
+        }
     }
 
     return status;
@@ -523,7 +632,7 @@ INT LCR3102::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return status;
 }
 
-INT LCR3102::decodeGetConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT LCR3102::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -546,42 +655,31 @@ INT LCR3102::decodeGetConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         string results;
 
-        switch( InMessage->Sequence )
+        int rawloc = parse.getiValue("rawloc");
+
+        int rawlen = parse.isKeyValid("rawlen")
+            ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
+            : DSt->Length;
+
+        if( parse.isKeyValid("rawfunc") )
         {
-            case Emetcon::GetConfig_Raw:
+            for( int i = 0; i < rawlen; i++ )
             {
-                int rawloc = parse.getiValue("rawloc");
-
-                int rawlen = parse.isKeyValid("rawlen")
-                    ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
-                    : DSt->Length;
-
-                if( parse.isKeyValid("rawfunc") )
-                {
-                    for( int i = 0; i < rawlen; i++ )
-                    {
-                        results += getName()
-                                + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
-                                + " byte " + CtiNumStr(i).zpad(2)
-                                + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                                + "\n";
-                    }
-                }
-                else
-                {
-                    for( int i = 0; i < rawlen; i++ )
-                    {
-                        results += getName()
-                                + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
-                                + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                                + "\n";
-                    }
-                }
-                break;
+                results += getName()
+                        + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
+                        + " byte " + CtiNumStr(i).zpad(2)
+                        + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                        + "\n";
             }
-            default:
+        }
+        else
+        {
+            for( int i = 0; i < rawlen; i++ )
             {
-
+                results += getName()
+                        + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
+                        + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                        + "\n";
             }
         }
 
@@ -594,18 +692,305 @@ INT LCR3102::decodeGetConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return status;
 }
 
+INT LCR3102::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        // Softspec LSB, Revision, 0, 0, Softspec MSB, 4 byte Serial Number, 2 Byte Spid, 2 Byte Geo Address
+
+        std::vector<int> softspecInfo = decodeMessageSoftspec(DSt->Message);
+        int sspec  = softspecInfo.at(4), 
+            rev    = softspecInfo.at(3),
+            serial = softspecInfo.at(2),
+            spid   = softspecInfo.at(1),
+            geo    = softspecInfo.at(0);
+
+        results = getName() + " / Software Specification " + CtiNumStr(sspec) 
+                + " rev " + CtiNumStr(((double)rev) / 10.0, 1) + "\n"
+                + getName() + " / Serial Number: " + CtiNumStr(serial) + "\n"
+                + getName() + " / SPID Address: " + CtiNumStr(spid) + "\n"
+                + getName() + " / Geo Address: " + CtiNumStr(geo);
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpec,           (long)sspec);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision,   (long)rev);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SerialAddress,   (long)serial);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Spid,            (long)spid);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_GeoAddress,      (long)geo);
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT LCR3102::decodeGetConfigAddress( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        // 4 loads of Program Address, 4 loads of Splinter Address - 8 bytes
+
+        std::vector<int> addressInfo = decodeMessageAddress(DSt->Message);
+        int programAddressRelay1  = addressInfo.at(7),
+            programAddressRelay2  = addressInfo.at(6),
+            programAddressRelay3  = addressInfo.at(5),
+            programAddressRelay4  = addressInfo.at(4),
+            splinterAddressRelay1 = addressInfo.at(3),
+            splinterAddressRelay2 = addressInfo.at(2),
+            splinterAddressRelay3 = addressInfo.at(1),
+            splinterAddressRelay4 = addressInfo.at(0);
+
+        results = getName() + " / Program Address Relay 1:  " + CtiNumStr(programAddressRelay1 )  + "\n"
+                + getName() + " / Program Address Relay 2:  " + CtiNumStr(programAddressRelay2 )  + "\n"
+                + getName() + " / Program Address Relay 3:  " + CtiNumStr(programAddressRelay3 )  + "\n"
+                + getName() + " / Program Address Relay 4:  " + CtiNumStr(programAddressRelay4 )  + "\n"
+                + getName() + " / Splinter Address Relay 1: " + CtiNumStr(splinterAddressRelay1) + "\n"
+                + getName() + " / Splinter Address Relay 2: " + CtiNumStr(splinterAddressRelay2) + "\n"
+                + getName() + " / Splinter Address Relay 3: " + CtiNumStr(splinterAddressRelay3) + "\n"
+                + getName() + " / Splinter Address Relay 4: " + CtiNumStr(splinterAddressRelay4);
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay1,    (long)programAddressRelay1);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay2,    (long)programAddressRelay2);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay3,    (long)programAddressRelay3);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay4,    (long)programAddressRelay4);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay1,   (long)splinterAddressRelay1);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay2,   (long)splinterAddressRelay2);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay3,   (long)splinterAddressRelay3);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay4,   (long)splinterAddressRelay4);
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT LCR3102::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        // Current Time of device + Time Zone
+        int utcSeconds = decodeMessageTime(DSt->Message);
+
+        CtiTime time = CtiTime::fromLocalSeconds(utcSeconds);
+
+        results = getName() + " / Current Time: " + time.asString();
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT LCR3102::decodeGetConfigSubstation( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    CtiCommandParser parse(InMessage->Return.CommandStr);
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        string results;
+
+        // 2 byte Substation, 2 Byte Feeder, 3 byte Zipcode, 2 byte UDA
+        std::vector<int> substationInfo = decodeMessageSubstation(DSt->Message);
+        int substation = substationInfo.at(3), 
+            feeder     = substationInfo.at(2), 
+            zipcode    = substationInfo.at(1), 
+            uda        = substationInfo.at(0);
+
+        results = getName() + " / Substation Address: "     + CtiNumStr(substation) + "\n"
+                + getName() + " / Feeder Address: "         + CtiNumStr(feeder)     + "\n"
+                + getName() + " / Zip Code: "               + CtiNumStr(zipcode)    + "\n"
+                + getName() + " / User Defined Address: "   + CtiNumStr(uda);
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Substation,  (long)substation);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Feeder,      (long)feeder);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ZipCode,     (long)zipcode);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Uda,         (long)uda);
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString( results );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+std::vector<int> LCR3102::decodeMessageSoftspec( BYTE Message[] )
+{
+    std::vector<int> softspecInfo;
+
+    // Geo Address
+    softspecInfo.push_back( (Message[11] << 8) | Message[12] );
+
+    // SPID Address
+    softspecInfo.push_back( (Message[9] << 8) | Message[10] );  
+
+    // Serial Number
+    softspecInfo.push_back( (Message[5] << 24) | (Message[6] << 16) | (Message[7] << 8) | Message[8] );
+    
+    // Revision
+    softspecInfo.push_back( Message[1] );
+    
+    // Software Spec
+    softspecInfo.push_back( Message[0] | (Message[4] << 8) ); 
+    
+    return softspecInfo;         
+}
+
+std::vector<int> LCR3102::decodeMessageAddress( BYTE Message[] )
+{
+    std::vector<int> addressInfo;
+
+    addressInfo.push_back( Message[7] ); // Relay 4 Splinter Address
+    addressInfo.push_back( Message[6] ); // Relay 3 Splinter Address
+    addressInfo.push_back( Message[5] ); // Relay 2 Splinter Address
+    addressInfo.push_back( Message[4] ); // Relay 1 Splinter Address
+    addressInfo.push_back( Message[3] ); // Relay 4 Program Address
+    addressInfo.push_back( Message[2] ); // Relay 3 Program Address
+    addressInfo.push_back( Message[1] ); // Relay 2 Program Address
+    addressInfo.push_back( Message[0] ); // Relay 1 Program Address
+
+    return addressInfo;
+}
+
+std::vector<int> LCR3102::decodeMessageSubstation( BYTE Message[] )
+{
+    std::vector<int> substationInfo;
+
+    substationInfo.push_back( (Message[7] << 8) | Message[8]); // User Defined Address 
+    substationInfo.push_back( (Message[4] << 16) | (Message[5] << 8) | Message[6]); // Zip Code
+    substationInfo.push_back( (Message[2] << 8) | Message[3]); // Feeder Address   
+    substationInfo.push_back( (Message[0] << 8) | Message[1]); // Substation Address
+
+    return substationInfo;
+}
+
+int LCR3102::decodeMessageTime( BYTE Message[] )
+{
+    int utcSeconds = (Message[0] << 24) | (Message[1] << 16) | (Message[2] << 8) | Message[3];
+
+    return utcSeconds;
+}
+
+int LCR3102::decodeMessageTransmitPower( BYTE Message[])
+{
+    int transmitPower = Message[0];
+
+    return transmitPower;
+}
+
+std::vector<int> LCR3102::decodeMessageTemperature( BYTE Message[] )
+{
+    std::vector<int> temperatureInfo;
+
+    temperatureInfo.push_back( (Message[2] << 8) | Message[3] ); // Box Temp
+    temperatureInfo.push_back( (Message[0] << 8) | Message[1] ); // TX Temp
+  
+    return temperatureInfo;
+}
+
 LCR3102::CommandSet LCR3102::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,        Emetcon::IO_Function_Read, FuncRead_LastIntervalPos, FuncRead_LastIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast, Emetcon::IO_Function_Read, FuncRead_LastIntervalPos, FuncRead_LastIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Runtime,      Emetcon::IO_Function_Read, FuncRead_RuntimePos,      FuncRead_RuntimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Shedtime,     Emetcon::IO_Function_Read, FuncRead_ShedtimePos,     FuncRead_ShedtimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_PropCount,    Emetcon::IO_Function_Read, FuncRead_PropCountPos,    FuncRead_PropCountLen));
-    cs.insert(CommandStore(Emetcon::GetValue_ControlTime,  Emetcon::IO_Function_Read, FuncRead_ControlTimePos,  FuncRead_ControlTimeLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw,         Emetcon::IO_Write,         0,                        0));    // filled in later
-    cs.insert(CommandStore(Emetcon::GetConfig_Raw,         Emetcon::IO_Read,          0,                        0));    // ...ditto
+    /**************************** Function Reads ***************************/
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,           Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,   FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast,    Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,   FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Runtime,         Emetcon::IO_Function_Read, FuncRead_RuntimePos,        FuncRead_RuntimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Shedtime,        Emetcon::IO_Function_Read, FuncRead_ShedtimePos,       FuncRead_ShedtimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PropCount,       Emetcon::IO_Function_Read, FuncRead_PropCountPos,      FuncRead_PropCountLen));
+    cs.insert(CommandStore(Emetcon::GetValue_ControlTime,     Emetcon::IO_Function_Read, FuncRead_ControlTimePos,    FuncRead_ControlTimeLen));
+
+    /****************************** Data Reads *****************************/
+    cs.insert(CommandStore(Emetcon::GetValue_TransmitPower,   Emetcon::IO_Read, DataRead_TransmitPowerPos,  DataRead_TransmitPowerLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Time,           Emetcon::IO_Read, DataRead_DeviceTimePos,     DataRead_DeviceTimeLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Softspec,       Emetcon::IO_Read, DataRead_SoftspecPos,       DataRead_SoftspecLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Substation,     Emetcon::IO_Read, DataRead_SubstationDataPos, DataRead_SubstationDataLen)); 
+    cs.insert(CommandStore(Emetcon::GetConfig_AddressInfo,    Emetcon::IO_Read, DataRead_AddressInfoPos,    DataRead_AddressInfoLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Temperature,     Emetcon::IO_Read, DataRead_TemperaturePos,    DataRead_TemperatureLen));
+
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw, Emetcon::IO_Write, 0, 0));    // filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw, Emetcon::IO_Read,  0, 0));    // ...ditto
 
     return cs;
 }
@@ -694,6 +1079,16 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         {
             OutMessage->Buffer.BSt.Function += (load - 1);
         }
+    }
+    else if(parse.getFlags() & CMD_FLAG_GV_TEMPERATURE)
+    {
+        function = Emetcon::GetValue_Temperature;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+    }
+    else if(parse.getFlags() & CMD_FLAG_GV_PFCOUNT)
+    {
+        function = Emetcon::GetValue_TransmitPower;
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
@@ -857,6 +1252,26 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
             OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
         }
         OutMessage->Buffer.BSt.Length = std::min(parse.getiValue("rawlen", 13), 13);    //  default (and maximum) is 13 bytes
+    }
+    if(parse.isKeyValid("install"))
+    {
+        function = Emetcon::GetConfig_Softspec;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+    }
+    if(parse.isKeyValid("address_info"))
+    {
+        function = Emetcon::GetConfig_AddressInfo;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+    }
+    if(parse.isKeyValid("time"))
+    {
+        function = Emetcon::GetConfig_Time;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+    }
+    if(parse.isKeyValid("substation"))
+    {
+        function = Emetcon::GetConfig_Substation;
+        found = getOperation(function, OutMessage->Buffer.BSt);
     }
 
     if(!found)
