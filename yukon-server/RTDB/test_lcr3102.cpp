@@ -83,6 +83,11 @@ public:
         return decodeXfmrHistoricalRuntimeMessage( message );
     }
 
+    std::vector<int> test_decodeMessageDutyCycle( BYTE message[] )
+    {
+        return decodeMessageDutyCycle(message);
+    }
+
 private:
     typedef std::map< int, point_info > point_results_map;
     typedef std::map< int, point_info >::iterator point_results_map_iter;
@@ -522,6 +527,20 @@ BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)
     BOOST_CHECK_EQUAL(runtimeHours.at(5),  1);
     BOOST_CHECK_EQUAL(runtimeHours.at(6), 28);
     BOOST_CHECK_EQUAL(runtimeHours.at(7), 42);
+}
+
+BOOST_AUTO_TEST_CASE(test_duty_cycle)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0]  = 0x02;
+    InMessage.Buffer.DSt.Message[1]  = 0x2a;
+
+    std::vector<int> test_vec = test_device.test_decodeMessageDutyCycle(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(test_vec.at(1),  2);
+    BOOST_CHECK_EQUAL(test_vec.at(0), 42);
 }
 
 };

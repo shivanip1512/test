@@ -176,6 +176,11 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodeGetValuePropCount( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
+        case Emetcon::GetValue_DutyCycle:
+        {
+            status = decodeGetValueDutyCycle( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
         case Emetcon::PutConfig_Raw:
         {
             status = decodePutConfig( InMessage, TimeNow, vgList, retList, outList );
@@ -299,6 +304,61 @@ std::vector<int> LCR3102::decodeXfmrHistoricalRuntimeMessage( BYTE Message[] )
     runtimeHours.push_back(Message[5] & 0x3f);
 
     return runtimeHours;
+}
+
+INT LCR3102::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        point_info pi;
+        std::vector<int> dutyCycleInfo = decodeMessageDutyCycle(DSt->Message);
+
+        int currentTransformer = dutyCycleInfo.at(1);
+        int point_base = PointOffset_DutyCycleBase;
+
+        if(currentTransformer == 1 || currentTransformer == 2)
+        {
+            pi.value = dutyCycleInfo.at(0);
+            pi.quality = NormalQuality;
+            pi.description = "Duty Cycle CT " + CtiNumStr(currentTransformer);
+
+            string results = getName() + " / Duty Cycle CT " + CtiNumStr(currentTransformer) + ": " + CtiNumStr(pi.value);
+            ReturnMsg->setResultString(results);
+    
+            int point_offset = point_base + currentTransformer - 1;
+    
+            insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, pi.description);
+    
+            decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Value " << currentTransformer << " is not a valid current transformer number" << endl;
+
+            return BADPARAM;
+        }
+    }
+
+    return status;
 }
 
 INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
@@ -1066,6 +1126,16 @@ std::vector<int> LCR3102::decodeMessageTemperature( BYTE Message[] )
     return temperatureInfo;
 }
 
+std::vector<int> LCR3102::decodeMessageDutyCycle( BYTE Message[] )
+{
+    std::vector<int> dutyCycleInfo;
+
+    dutyCycleInfo.push_back( Message[1] ); // Duty Cycle (average minutes per hour over past 24 hours)
+    dutyCycleInfo.push_back( Message[0] ); // Current Transformer
+  
+    return dutyCycleInfo;
+}
+
 LCR3102::CommandSet LCR3102::initCommandStore()
 {
     CommandSet cs;
@@ -1077,6 +1147,7 @@ LCR3102::CommandSet LCR3102::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetValue_PropCount,         Emetcon::IO_Function_Read, FuncRead_PropCountPos,         FuncRead_PropCountLen));
     cs.insert(CommandStore(Emetcon::GetValue_ControlTime,       Emetcon::IO_Function_Read, FuncRead_ControlTimePos,       FuncRead_ControlTimeLen));
     cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT1, Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT1Pos, FuncRead_XfmrHistoricalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_DutyCycle,         Emetcon::IO_Function_Read, FuncRead_DutyCyclePos,         FuncRead_DutyCycleLen));
     cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT2, Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT2Pos, FuncRead_XfmrHistoricalLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,         0,                             0));    // filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,          0,                             0));    // ...ditto
@@ -1202,6 +1273,22 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         {
             function = Emetcon::GetValue_XfmrHistoricalCT1 + load - 1;
             found = getOperation(function, OutMessage->Buffer.BSt);
+        }
+    }
+    else if(parse.getFlags() & CMD_FLAG_GV_DUTYCYCLE)
+    {
+        function = Emetcon::GetValue_DutyCycle;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        int load = parseLoadValue(parse);
+
+        if(load == -1)
+        {
+            nRet = BADPARAM;
+        }
+        else
+        {
+            OutMessage->Buffer.BSt.Function += (load - 1);
         }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)

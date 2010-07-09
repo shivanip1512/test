@@ -73,6 +73,7 @@ public:
         GetValue_Temperature,
         GetValue_XfmrHistoricalCT1,
         GetValue_XfmrHistoricalCT2,
+        GetValue_DutyCycle,
 
         // PutValue Commands
         PutValue_IEDReset,

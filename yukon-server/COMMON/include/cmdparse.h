@@ -174,6 +174,7 @@ public:
 #define CMD_FLAG_GV_CONTROLTIME  0x00080000
 #define CMD_FLAG_GV_XFMR_HISTORICAL_RUNTIME 0x00100000
 #define CMD_FLAG_GV_TEMPERATURE  0x00200000
+#define CMD_FLAG_GV_DUTYCYCLE    0x00400000
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */

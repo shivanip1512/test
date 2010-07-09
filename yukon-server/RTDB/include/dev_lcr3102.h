@@ -41,7 +41,10 @@ protected:
 
         FuncRead_XfmrHistoricalCT1Pos  = 0x88,
         FuncRead_XfmrHistoricalCT2Pos  = 0x89,
-        FuncRead_XfmrHistoricalLen  = 6
+        FuncRead_XfmrHistoricalLen     = 6,
+
+        FuncRead_DutyCyclePos    = 0x90,
+        FuncRead_DutyCycleLen    = 2
     };
 
     enum DataReads
@@ -73,7 +76,7 @@ protected:
 
         PointOffset_PropCount        = 13,
         PointOffset_ControlTimeBase  = 15,  //      AND HERE
-
+        PointOffset_DutyCycleBase    = 19,  //      AND HERE
         PointOffset_XfmrHistorical   = 23,
 
         PointOffset_CommStatus       = 2000
@@ -100,6 +103,7 @@ protected:
     INT decodeGetValueHistoricalTime       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueControlTime          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueDutyCycle     	   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     INT decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
@@ -114,8 +118,9 @@ protected:
     std::vector<int> decodeMessageAddress              ( BYTE Message[] );
     std::vector<int> decodeMessageSubstation           ( BYTE Message[] );
     std::vector<int> decodeMessageTemperature          ( BYTE Message[] );
-    int decodeMessageTime          ( BYTE Message[] );
-    int decodeMessageTransmitPower ( BYTE Message[] );
+    std::vector<int> decodeMessageDutyCycle            ( BYTE Message[] );
+    int              decodeMessageTime                 ( BYTE Message[] );
+    int              decodeMessageTransmitPower        ( BYTE Message[] );
 
 public:
 
