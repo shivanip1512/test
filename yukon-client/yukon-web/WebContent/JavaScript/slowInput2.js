@@ -9,6 +9,8 @@ function slowInput2ButtonPress(id, formId, disableOtherButtons, onsubmit){
     }
 
     if (doSubmit) {
+    	// Calling form.submit() doesn't trigger code specified with the
+    	// onsubmit attribute so we manually do it here if necessary.
     	if (!$(formId).onsubmit || $(formId).onsubmit && $(formId).onsubmit()) {
         	$(formId).submit();
     	}
