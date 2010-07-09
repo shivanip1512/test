@@ -3378,6 +3378,20 @@
                 <unitofmeasure value="Seconds"/>
                 <decimalplaces value="3"/>
             </point>
+            <point type="Analog" offset="19">
+            	<init>true</init>
+                <name>CT1 Duty Cycle</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Percent"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="20">
+            	<init>true</init>
+                <name>CT2 Duty Cycle</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Percent"/>
+                <decimalplaces value="3"/>
+            </point>
             <point type="Status" offset="2000">
             	<init>true</init>
                 <name>Comm Status</name>
