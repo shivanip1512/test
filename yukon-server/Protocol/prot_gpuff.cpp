@@ -600,7 +600,8 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
                             bool hasTime, over = false, reset = false, calibrated, reed_triggered;
                             unsigned char flags = p_data[pos++];
 
-                            unsigned long emaxtime = 0, emintime = 0, time = CtiTime::now().seconds();
+                            CtiTime arrival_time, last_measurement_time;
+
                             int interval_cnt = 0, sample_rate = 0, rate, ts_max, ts_min;
                             float battery_voltage = 0.0, temperature = 0.0, min_reading, max_reading;
 
@@ -610,11 +611,15 @@ unsigned GpuffProtocol::decode( const unsigned char *p_data, unsigned last_seq, 
 
                             if( hasTime )
                             {
-                                time = convertBytes( p_data, pos, 4);
+                                unsigned long tmpTime = convertBytes( p_data, pos, 4);
 
                                 if( flags & 0x80 )
                                 {
-                                    time = CtiTime::now().seconds() - time;
+                                    last_measurement_time -= tmpTime;
+                                }
+                                else
+                                {
+                                    last_measurement_time  = tmpTime;
                                 }
                             }
 
@@ -672,31 +677,31 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
 **************************************************************/
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MaxCurrentReport, report_max, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MinCurrentReport, report_min, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_Battery, battery_voltage, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_Temperature, temperature, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_Period, rate, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_HighAlertSetpoint, threshold_hi, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
                             pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_ResetAlertSetpoint, threshold_lo, NormalQuality, AnalogPointType);
-                            pdm->setTime(time);
+                            pdm->setTime(arrival_time);
                             point_list.push_back(pdm);
 
 
@@ -721,11 +726,11 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
 */
 
                             // get the timestamp ready
-                            time -= rate * rec_num;
+                            CtiTime measurement_time = last_measurement_time - rate * rec_num;
 
                             for( int i = 0; i < rec_num; i++ )
                             {
-                                time += rate;
+								measurement_time += rate;
                                 max_reading = convertBytes( p_data, pos, 2) / 10.0;
                                 min_reading = convertBytes( p_data, pos, 2) / 10.0;
                                 ts_max = convertBytes( p_data, pos, 1) & 0x3f;
@@ -735,17 +740,17 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " interval time: " << CtiTime(time) <<
-                                        " min time " << CtiTime(time - ((interval_cnt - ts_min - 1) * sample_rate)) << " min amps: " << string(CtiNumStr(min_reading)) <<
-                                        " max time " << CtiTime(time - ((interval_cnt - ts_max - 1) * sample_rate)) << " max amps: " << string(CtiNumStr(max_reading)) <<
-                                        " ts_min/max: " << string(CtiNumStr(ts_min)) << "/" << string(CtiNumStr(ts_max)) << endl;
+                                        " min time " << measurement_time - ((interval_cnt - ts_max - 1) * sample_rate) << " min amps: " << CtiNumStr(min_reading) <<
+                                        " max time " << measurement_time - ((interval_cnt - ts_min - 1) * sample_rate) << " max amps: " << CtiNumStr(max_reading) <<
+                                        " ts_min/max: " << CtiNumStr(ts_min) << "/" << CtiNumStr(ts_max) << endl;
                                 }
 */
                                 pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MaxCurrentPeriod, max_reading, NormalQuality, AnalogPointType);
-                                pdm->setTime(CtiTime(time - ((interval_cnt - ts_max - 1) * sample_rate)));
+                                pdm->setTime(measurement_time - ((interval_cnt - ts_max - 1) * sample_rate));
                                 point_list.push_back(pdm);
 
                                 pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MinCurrentPeriod, min_reading, NormalQuality, AnalogPointType);
-                                pdm->setTime(CtiTime(time - ((interval_cnt - ts_min - 1) * sample_rate)));
+                                pdm->setTime(measurement_time - ((interval_cnt - ts_min - 1) * sample_rate));
                                 point_list.push_back(pdm);
                             }
 
@@ -759,28 +764,30 @@ GVAR1A_Analog_ResetAlertSetpoint =  12,
 
                             if(rec_e_valid)
                             {
+                                unsigned long emaxtime = 0, emintime = 0;
+
                                 if(reed_triggered)
                                 {
-                                    emaxtime = emintime = CtiTime::now().seconds(); // Time of arrival!
+                                    emaxtime = emintime = arrival_time.seconds(); // Time of arrival!
                                 }
                                 else if(reset)
                                 {
-                                    emintime = time + (ts_min + 1) * sample_rate;
+                                    emintime = measurement_time.seconds() + (ts_min + 1) * sample_rate;
                                     if(hasTime)
-                                        emaxtime = time + (ts_max + 1) * sample_rate;
+                                        emaxtime = measurement_time.seconds() + (ts_max + 1) * sample_rate;
                                     else
                                         emaxtime = 0;    // Invalid
                                 }
                                 else if(over)
                                 {
-                                    emaxtime = time + (ts_max + 1) * sample_rate;
+                                    emaxtime = measurement_time.seconds() + (ts_max + 1) * sample_rate;
                                     if(hasTime)
-                                        emintime = time + (ts_min + 1) * sample_rate;
+                                        emintime = measurement_time.seconds() + (ts_min + 1) * sample_rate;
                                     else
                                         emintime = 0;   // Invalid
                                 }
 
-                                if( emaxtime)
+                                if( emaxtime )
                                 {
                                     pdm = CTIDBG_new CtiPointDataMsg(GVAR1A_Analog_MaxCurrentPeriod, max_reading, NormalQuality, AnalogPointType);
                                     pdm->setTime(CtiTime(emaxtime));
