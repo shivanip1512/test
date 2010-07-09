@@ -147,6 +147,26 @@ public class VendorSpecificSqlBuilderFactory implements InitializingBean {
         public SqlBuilder lte(Object argument) {
             return this;
         }
+
+        @Override
+        public SqlBuilder contains(String argument) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder endsWith(String argument) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder in(SqlFragmentSource sqlFragmentSource) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder startsWith(String argument) {
+            return this;
+        }
         
     }
     
