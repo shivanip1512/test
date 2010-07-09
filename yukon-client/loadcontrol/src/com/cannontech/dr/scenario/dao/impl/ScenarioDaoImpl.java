@@ -21,14 +21,20 @@ public class ScenarioDaoImpl implements ScenarioDao {
 	
     private YukonJdbcOperations yukonJdbcOperations;
 
-    private final static String singleScenarioByIdQuery =
-        "SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ProgramCount " +
-        "FROM YukonPAObject PAO " +
-        "LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId " +
-        "WHERE PAO.Type = '"+PaoType.LM_SCENARIO.getDatabaseRepresentation()+"' ";
+    private SqlStatementBuilder singleScenarioByIdQuery;
+    {
+        singleScenarioByIdQuery = new SqlStatementBuilder();
+        singleScenarioByIdQuery.append("SELECT PAO.PAObjectId, PAO.PAOName, COUNT(LMCSP.ProgramId) ProgramCount");
+        singleScenarioByIdQuery.append("FROM YukonPAObject PAO");
+        singleScenarioByIdQuery.append("LEFT JOIN LMControlScenarioProgram LMCSP ON LMCSP.ScenarioId = PAO.PAObjectId");
+        singleScenarioByIdQuery.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO);
+    }
     
-    private final static String singleScenarioByIdQueryGroupBy = 
-        "GROUP BY PAO.PAObjectId, PAO.PAOName ";
+    private SqlStatementBuilder singleScenarioByIdQueryGroupBy;
+    {
+        singleScenarioByIdQueryGroupBy = new SqlStatementBuilder();
+        singleScenarioByIdQueryGroupBy.append("GROUP BY PAO.PAObjectId, PAO.PAOName");
+    }
     
     private final static ParameterizedRowMapper<Scenario> scenarioRowMapper =
         new ParameterizedRowMapper<Scenario>() {
@@ -60,7 +66,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
     @Override
     public Scenario getScenario(int scenarioId) {
 
-        SqlStatementBuilder sql = new SqlStatementBuilder(singleScenarioByIdQuery);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(singleScenarioByIdQuery);
         sql.append("AND PAO.PAObjectId").eq(scenarioId);
         sql.append(singleScenarioByIdQueryGroupBy);
         
@@ -70,7 +77,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
     @Override
     public List<Scenario> getAllScenarios() {
     	
-    	SqlStatementBuilder sql = new SqlStatementBuilder(singleScenarioByIdQuery);
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.appendFragment(singleScenarioByIdQuery);
     	sql.append(singleScenarioByIdQueryGroupBy);
     	
         return yukonJdbcOperations.query(sql, scenarioRowMapper);
@@ -83,7 +91,8 @@ public class ScenarioDaoImpl implements ScenarioDao {
         innerSql.append("FROM LMControlScenarioProgram LMCSP"); 
         innerSql.append("WHERE LMCSP.ProgramId").eq(programId);
         
-        SqlStatementBuilder sql = new SqlStatementBuilder(singleScenarioByIdQuery);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(singleScenarioByIdQuery);
         sql.append("AND PAO.PAObjectId").in(innerSql);
         sql.append(singleScenarioByIdQueryGroupBy);
         

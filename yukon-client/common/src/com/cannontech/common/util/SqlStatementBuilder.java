@@ -201,9 +201,9 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
-    public SqlStatementBuilder in(SqlStatementBuilder sqlStatementBuilder) {
+    public SqlStatementBuilder in(SqlFragmentSource sqlFragmentSource) {
         statement.append("in (");
-        append(sqlStatementBuilder);
+        appendFragment(sqlFragmentSource);
         statement.append(") ");
         return this;
     }

@@ -72,5 +72,13 @@ public interface SqlBuilder {
     public SqlBuilder lte(Object argument);
     
     public SqlBuilder in(Collection<?> list);
+    
+    public SqlBuilder in(SqlFragmentSource sqlFragmentSource);
+    
+    public SqlBuilder startsWith(String argument);
+    
+    public SqlBuilder endsWith(String argument);
+    
+    public SqlBuilder contains(String argument);
 
 }

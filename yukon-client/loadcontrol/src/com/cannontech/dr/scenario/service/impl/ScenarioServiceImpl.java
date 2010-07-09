@@ -34,7 +34,7 @@ public class ScenarioServiceImpl implements ScenarioService {
             SqlStatementBuilder retVal = new SqlStatementBuilder();
             retVal.append("SELECT PAO.PAObjectId, PAO.PAOName");
             retVal.append("FROM YukonPAObject PAO");
-            retVal.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO.getDatabaseRepresentation());
+            retVal.append("WHERE PAO.Type").eq(PaoType.LM_SCENARIO);
             return retVal;
         }
 

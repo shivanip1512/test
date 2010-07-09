@@ -32,7 +32,7 @@ public class Scenario implements DisplayablePao{
         this.programCount = programCount;
     }
 
-    public boolean hasPrograms() {
+    public boolean isHasPrograms() {
         return programCount > 0 ? true : false;
     }
 }

@@ -17,7 +17,7 @@ public class ScenarioShowActionField extends ScenarioBackingFieldBase {
         }
 
         // Check manual active
-        boolean hasPrograms = scenario.hasPrograms();
+        boolean hasPrograms = scenario.isHasPrograms();
 
         if (!hasPrograms) {
             return "hasNoPrograms";

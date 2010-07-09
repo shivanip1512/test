@@ -13,8 +13,8 @@ public class ScenarioProgram {
             int startOffsetInSeconds, int stopOffsetInSeconds, int startGear) {
         this.scenarioId = scenarioId;
         this.programId = programId;
-        this.startOffset = new Duration(startOffsetInSeconds * 1000);
-        this.stopOffset = new Duration(stopOffsetInSeconds * 1000);
+        this.startOffset = Duration.standardSeconds(startOffsetInSeconds);
+        this.stopOffset = Duration.standardSeconds(stopOffsetInSeconds);
         this.startGear = startGear;
     }
 
