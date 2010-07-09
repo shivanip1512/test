@@ -460,11 +460,12 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_dnp_accumulator(CtiString("dnp accumulator ") + str_num);
 
     // DR 2 way reads
-    static const boost::regex   re_interval_demand(CtiString("interval last"));
-    static const boost::regex   re_load_runtime   (CtiString("runtime(( load| relay) ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
-    static const boost::regex   re_load_shedtime  (CtiString("shedtime(( load| relay) ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
-    static const boost::regex   re_propcount      (CtiString("propcount"));
-    static const boost::regex   re_control_time   (CtiString("controltime remaining(( load| relay) ") + str_num + CtiString(")?"));
+    static const boost::regex   re_interval_demand  (CtiString("interval last"));
+    static const boost::regex   re_load_runtime     (CtiString("runtime(( load| relay) ")  + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
+    static const boost::regex   re_load_shedtime    (CtiString("shedtime(( load| relay) ") + str_num + CtiString(")?( previous ") + str_num + CtiString(")?"));
+    static const boost::regex   re_propcount        (CtiString("propcount"));
+    static const boost::regex   re_control_time     (CtiString("controltime remaining(( load| relay) ") + str_num + CtiString(")?"));
+    static const boost::regex   re_xfmr_historical  (CtiString("historical(( transformer| table) ") + str_num + CtiString(")?"));
 
     CtiTokenizer   tok(CmdStr);
 
@@ -769,7 +770,23 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
             if(!(temp = cmdtok()).empty())
             {
-                if(temp.contains("relay"))
+                if(temp.contains("load") || temp.contains("relay"))
+                {
+                    _cmd["load"] = atoi(cmdtok().c_str());
+                }
+            }
+        }
+        else if(!(token = CmdStr.match(re_xfmr_historical)).empty() )
+        {
+            flag |= CMD_FLAG_GV_XFMR_HISTORICAL_RUNTIME;
+
+            CtiTokenizer cmdtok(token);
+
+            cmdtok(); // Move past "historical"
+
+            if(!(temp = cmdtok()).empty())
+            {
+                if(temp.contains("transformer") || temp.contains("table"))
                 {
                     _cmd["load"] = atoi(cmdtok().c_str());
                 }

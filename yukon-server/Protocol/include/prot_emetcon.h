@@ -71,6 +71,8 @@ public:
         GetValue_ControlTime,
         GetValue_TransmitPower,
         GetValue_Temperature,
+        GetValue_XfmrHistoricalCT1,
+        GetValue_XfmrHistoricalCT2,
 
         // PutValue Commands
         PutValue_IEDReset,

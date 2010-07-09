@@ -165,6 +165,12 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodeGetValueControlTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
+        case Emetcon::GetValue_XfmrHistoricalCT1:
+        case Emetcon::GetValue_XfmrHistoricalCT2:
+        {
+            status = decodeGetValueXfmrHistoricalRuntime( InMessage, TimeNow, vgList, retList, outList );
+            break;
+        }
         case Emetcon::GetValue_PropCount:
         {
             status = decodeGetValuePropCount( InMessage, TimeNow, vgList, retList, outList );
@@ -277,6 +283,22 @@ INT LCR3102::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, l
     }
 
     return status;
+}
+
+std::vector<int> LCR3102::decodeXfmrHistoricalRuntimeMessage( BYTE Message[] )
+{
+    std::vector<int> runtimeHours;
+
+    runtimeHours.push_back((Message[0] & 0xfc) >> 2);
+    runtimeHours.push_back(((Message[0] & 0x03) << 4) | ((Message[1] & 0xf0) >> 4));
+    runtimeHours.push_back(((Message[1] & 0x0f) << 2) | ((Message[2] & 0xc0) >> 6));
+    runtimeHours.push_back(Message[2] & 0x3f);
+    runtimeHours.push_back((Message[3] & 0xfc) >> 2);
+    runtimeHours.push_back(((Message[3] & 0x03) << 4) | ((Message[4] & 0xf0) >> 4));
+    runtimeHours.push_back(((Message[4] & 0x0f) << 2) | ((Message[5] & 0xc0) >> 6));
+    runtimeHours.push_back(Message[5] & 0x3f);
+
+    return runtimeHours;
 }
 
 INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
@@ -489,6 +511,81 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
     return status;
 }
 
+INT LCR3102::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NOTNORMAL;
+
+    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
+    BSTRUCT       BSt;
+    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        // Assuming this is not a point, let's just dump the data to the screen for now.
+
+        const int NumHours = 8;
+        std::vector<int> runtimeHours = decodeXfmrHistoricalRuntimeMessage(DSt->Message);
+        getOperation(InMessage->Sequence, BSt);
+        int currentTransformer = BSt.Function - FuncRead_XfmrHistoricalCT1Pos + 1;
+
+        if(currentTransformer == 1 || currentTransformer == 2)
+        {
+            if( runtimeHours.size() != NumHours )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Decode did not return 8 hours of data!" << endl;
+        
+                return NOTNORMAL;
+            }
+            else
+            {
+                string results;
+
+                for(int i = 1; i <= NumHours; i++)
+                {
+                    int runtimeMins = runtimeHours.front();
+
+                    if( runtimeMins <= 60 )
+                    {
+                        results += getName() + " / Historical Runtime CT " + CtiNumStr(currentTransformer) + ": Hour -"
+                                 + CtiNumStr(i) + ": " + CtiNumStr((double)runtimeMins / 60.0, 1) + " percent";
+                        if(i != NumHours)
+                        {
+                            results += "\n";
+                        }
+                    }
+
+                    runtimeHours.erase(runtimeHours.begin());
+                }
+
+                ReturnMsg->setResultString(results);
+                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << "Value" << currentTransformer << " is not a valid CT identifier" << endl;
+    
+            return BADPARAM;
+        }
+    }
+
+    return status;
+}
+
 INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
@@ -512,7 +609,7 @@ INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, lis
 
         int relay = DSt->Message[0]; // Relay is 1-4 here
 
-        if(relay > 0 && relay < 5)
+        if( relay > 0 && relay < 5 )
         {
             int point_base    = PointOffset_ControlTimeBase;
             string identifier = "Control Time Remaining";
@@ -531,7 +628,7 @@ INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, lis
     
             string results = getName() + " / " + identifier;
             ReturnMsg->setResultString(results);
-    
+
             int point_offset = point_base + relay - 1;
     
             insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
@@ -973,14 +1070,17 @@ LCR3102::CommandSet LCR3102::initCommandStore()
 {
     CommandSet cs;
 
-    /**************************** Function Reads ***************************/
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,           Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,   FuncRead_LastIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast,    Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,   FuncRead_LastIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Runtime,         Emetcon::IO_Function_Read, FuncRead_RuntimePos,        FuncRead_RuntimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Shedtime,        Emetcon::IO_Function_Read, FuncRead_ShedtimePos,       FuncRead_ShedtimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_PropCount,       Emetcon::IO_Function_Read, FuncRead_PropCountPos,      FuncRead_PropCountLen));
-    cs.insert(CommandStore(Emetcon::GetValue_ControlTime,     Emetcon::IO_Function_Read, FuncRead_ControlTimePos,    FuncRead_ControlTimeLen));
-
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,      FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast,      Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,      FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Runtime,           Emetcon::IO_Function_Read, FuncRead_RuntimePos,           FuncRead_RuntimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Shedtime,          Emetcon::IO_Function_Read, FuncRead_ShedtimePos,          FuncRead_ShedtimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PropCount,         Emetcon::IO_Function_Read, FuncRead_PropCountPos,         FuncRead_PropCountLen));
+    cs.insert(CommandStore(Emetcon::GetValue_ControlTime,       Emetcon::IO_Function_Read, FuncRead_ControlTimePos,       FuncRead_ControlTimeLen));
+    cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT1, Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT1Pos, FuncRead_XfmrHistoricalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT2, Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT2Pos, FuncRead_XfmrHistoricalLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,         0,                             0));    // filled in later
+    cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,          0,                             0));    // ...ditto
+                                                                                                                        
     /****************************** Data Reads *****************************/
     cs.insert(CommandStore(Emetcon::GetValue_TransmitPower,   Emetcon::IO_Read, DataRead_TransmitPowerPos,  DataRead_TransmitPowerLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,           Emetcon::IO_Read, DataRead_DeviceTimePos,     DataRead_DeviceTimeLen));
@@ -1089,6 +1189,20 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     {
         function = Emetcon::GetValue_TransmitPower;
         found = getOperation(function, OutMessage->Buffer.BSt);
+    }
+    else if(parse.getFlags() & CMD_FLAG_GV_XFMR_HISTORICAL_RUNTIME)
+    {
+        int load = parseLoadValue(parse);
+
+        if( load == -1 )
+        {
+            nRet = BADPARAM;
+        }
+        else
+        {
+            function = Emetcon::GetValue_XfmrHistoricalCT1 + load - 1;
+            found = getOperation(function, OutMessage->Buffer.BSt);
+        }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_RUNTIME || parse.getFlags() & CMD_FLAG_GV_SHEDTIME)
     {
@@ -1373,16 +1487,7 @@ bool LCR3102::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 
 int LCR3102::parseLoadValue(CtiCommandParser &parse)
 {
-    int load = -1;      // signifies BADPARAM
-
-    if(parse.isKeyValid("load"))
-    {
-        load = parse.getiValue("load");
-    }
-    else
-    {
-        load = 1;       // default if none given
-    }
+    int load = parse.getiValue("load", 1);
 
     return (load >= 1 && load <= 4) ? load : -1;
 }

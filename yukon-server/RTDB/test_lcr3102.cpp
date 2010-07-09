@@ -47,6 +47,7 @@ public:
         return decodeGetValueControlTime(InMessage, TimeNow, vgList, retList, outList);
     }
 
+
     std::vector<int> test_decodeMessageAddress( BYTE Message[] )
     {
         return decodeMessageAddress(Message);
@@ -75,6 +76,11 @@ public:
     int test_decodeMessageTransmitPower( BYTE Message[] )
     {
         return decodeMessageTransmitPower(Message);
+    }
+
+    std::vector<int> test_decodeXfmrHistoricalRuntimeMessage( BYTE message[] )
+    {
+        return decodeXfmrHistoricalRuntimeMessage( message );
     }
 
 private:
@@ -492,6 +498,30 @@ BOOST_AUTO_TEST_CASE(test_data_read_temperature)
 
     BOOST_CHECK_EQUAL(test_vec.at(1), 4000);
     BOOST_CHECK_EQUAL(test_vec.at(0), 2000);
+}
+
+BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)
+{
+    INMESS InMessage;
+    test_LCR3102 test_device;
+
+    InMessage.Buffer.DSt.Message[0] = 0x04;
+    InMessage.Buffer.DSt.Message[1] = 0x08;
+    InMessage.Buffer.DSt.Message[2] = 0x0f;
+    InMessage.Buffer.DSt.Message[3] = 0x10;
+    InMessage.Buffer.DSt.Message[4] = 0x17;
+    InMessage.Buffer.DSt.Message[5] = 0x2a;
+
+    std::vector<int> runtimeHours = test_device.test_decodeXfmrHistoricalRuntimeMessage(InMessage.Buffer.DSt.Message);
+
+    BOOST_CHECK_EQUAL(runtimeHours.at(0),  1);
+    BOOST_CHECK_EQUAL(runtimeHours.at(1),  0);
+    BOOST_CHECK_EQUAL(runtimeHours.at(2), 32);
+    BOOST_CHECK_EQUAL(runtimeHours.at(3), 15);
+    BOOST_CHECK_EQUAL(runtimeHours.at(4),  4);
+    BOOST_CHECK_EQUAL(runtimeHours.at(5),  1);
+    BOOST_CHECK_EQUAL(runtimeHours.at(6), 28);
+    BOOST_CHECK_EQUAL(runtimeHours.at(7), 42);
 }
 
 };
