@@ -2006,12 +2006,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			}
 			
 			if (lpao != null) {
-				if( DeviceTypesFuncs.isMCT(lpao.getType()) || DeviceTypesFuncs.isRepeater(lpao.getType())) {
+			    if ( DeviceTypesFuncs.usesPlc(lpao.getType())) {
 					getYCCommandMenu().locateRoute.setEnabled(true);
-					
-					if(DeviceTypesFuncs.isMCT4XX(lpao.getType()))
-					    getYCCommandMenu().downloadSchedule.setEnabled(true);
 				}
+			    if(DeviceTypesFuncs.isMCT4XX(lpao.getType())) {
+                    getYCCommandMenu().downloadSchedule.setEnabled(true);
+			    }
 			}
 		}
 	}

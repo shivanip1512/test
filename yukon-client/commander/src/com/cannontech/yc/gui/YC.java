@@ -424,14 +424,14 @@ public class YC extends Observable implements MessageListener
 	
 		setLoopType( parseLoopCommand() );
 
-		Vector commandVec = getExecuteCmdsVector();
+		Vector<String> commandVec = getExecuteCmdsVector();
 		for (int i = 0; i < commandVec.size(); i++)
 		{	
 			String command = getExecuteCmdsVector().get(i);			
-			if ( DeviceTypesFuncs.isMCT(liteYukonPao.getType()) || DeviceTypesFuncs.isRepeater(liteYukonPao.getType()))
-			{
-				if( command.indexOf("noqueue") < 0)
-				getExecuteCmdsVector().setElementAt( command + getQueueCommandString(), i);	//replace the old command with this one
+			if ( DeviceTypesFuncs.usesPlc(liteYukonPao.getType())) {
+				if( command.indexOf("noqueue") < 0) {
+				    getExecuteCmdsVector().setElementAt( command + getQueueCommandString(), i);	//replace the old command with this one
+				}
 			}
 		}
 	
@@ -1698,4 +1698,15 @@ public class YC extends Observable implements MessageListener
 	public LiteYukonPAObject getLiteYukonPao(){
         return liteYukonPao;
     }
+	
+	private boolean isQueueable(LiteYukonPAObject liteYukonPao) {
+	    return DeviceTypesFuncs.isMCT(liteYukonPao.getType())
+	            || DeviceTypesFuncs.isRepeater(liteYukonPao.getType());
+	}
+	
+	private boolean isLocateRouteable(LiteYukonPAObject liteYukonPao) {
+        return DeviceTypesFuncs.isMCT(liteYukonPao.getType())
+                || DeviceTypesFuncs.isRepeater(liteYukonPao.getType());
+    }
+
 }
