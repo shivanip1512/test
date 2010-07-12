@@ -517,7 +517,7 @@
                                 
                                 <cti:img key="editConfig" href="${editMeterConfigUrl}${meter.deviceId}"/>
                                 
-                                <cti:checkRolesAndProperties value="METERING,APPLICATION_BILLING,SCHEDULER,DEVICE_ACTIONS">
+                                <cti:checkRolesAndProperties value="METERING">
                                     <cti:paoDetailUrl  yukonPao="${meter.yukonPao}">
                                         <cti:img key="meterDetail" />
                                     </cti:paoDetailUrl>
