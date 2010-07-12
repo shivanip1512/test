@@ -478,6 +478,23 @@ div.roundedContainer .bottomBar{
   width: 100%;
 }
 
+.widgetColumnsUnpadded {
+    border-collapse: collapse; /* removes an extra pixel from the center */
+}
+
+.widgetColumnsUnpadded td.widgetColumnCell .widgetContainer {
+  padding-bottom: 10px;
+}
+.widgetColumnsUnpadded td.widgetColumnCell {
+  padding: 0;
+  width: 50%;
+}
+
+.widgetColumnsUnpadded {
+  margin: auto 0;
+  width: 100%;
+}
+
 div.widgetInternalSectionHeader {
 	font-weight: bold;
 	padding-top: 5px; 

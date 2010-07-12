@@ -130,7 +130,10 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
 function display_status(cmd_name, msg_type, result, color) {
     var msg_div = $('cmd_msg_div');
     msg_div.style.color = color;
-    msg_div.innerHTML = msg_type + ' "' + cmd_name + '" ' + result;
+    if(cmd_name != ''){
+    	cmd_name = '"' + cmd_name + '"';
+    }
+    msg_div.innerHTML = msg_type + ' ' + cmd_name + ' ' + result;
     
     var timeout = 0;
     if (color == "red") {

@@ -2,7 +2,6 @@ package com.cannontech.cbc.web;
 
 import java.util.Date;
 import java.util.List;
-
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.point.PointQuality;
@@ -39,10 +38,19 @@ public class CapControlCommandExecutor
 	}
 	
 	public void execute(CapControlType controlType, int cmdId, int paoId, LiteYukonUser user) throws UnsupportedOperationException {
-	    execute(controlType, cmdId, paoId, null, null, user);
+	    execute(controlType, cmdId, paoId, CCVerifySubBus.DEFAULT_CB_INACT_TIME, user);
 	}
 	
-    public void execute(CapControlType controlType, int cmdId, int paoId, 
+	public void execute(CapControlType controlType, int cmdId, int paoId, float[] optParams, 
+	                    String operationalState, LiteYukonUser user) throws UnsupportedOperationException {
+	    execute(controlType, cmdId, paoId, CCVerifySubBus.DEFAULT_CB_INACT_TIME, optParams, operationalState, user);
+	}
+	
+	public void execute(CapControlType controlType, int cmdId, int paoId, long secondsNotOperatedIn, LiteYukonUser user) throws UnsupportedOperationException {
+	    execute(controlType, cmdId, paoId, secondsNotOperatedIn, null, null, user);
+	}
+	
+    public void execute(CapControlType controlType, int cmdId, int paoId, long secondsNotOperatedIn, 
     		float[] optParams, String operationalState, LiteYukonUser user) throws UnsupportedOperationException {
         
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
@@ -61,7 +69,7 @@ public class CapControlCommandExecutor
             }
             case SUBBUS : {
                 rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-                executeSubBusCommand(cmdId, paoId);
+                executeSubBusCommand(cmdId, paoId, secondsNotOperatedIn);
                 break;
             }
             case FEEDER : {
@@ -90,7 +98,6 @@ public class CapControlCommandExecutor
                                                               " for pao: " + paoId );
         }
     }
-    
 
     private int getOperationalState(String value) {
         if (value == null) return defaultOperationalState;
@@ -115,8 +122,7 @@ public class CapControlCommandExecutor
     private void executeSubStationCommand(int cmdId, int paoId) {
         if( cmdId == CapControlCommand.CONFIRM_SUBSTATION) {
             executeConfirmSubstation( paoId );
-        }
-        else if ((cmdId == CapControlCommand.CMD_ALL_BANKS) ||
+        } else if ((cmdId == CapControlCommand.CMD_ALL_BANKS) ||
             (cmdId == CapControlCommand.CMD_FQ_BANKS) ||
             (cmdId == CapControlCommand.CMD_FAILED_BANKS) ||
             (cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS) ||
@@ -128,7 +134,7 @@ public class CapControlCommandExecutor
         }
     }
 
-    private void executeSubBusCommand(int cmdId, int paoId) {
+    private void executeSubBusCommand(int cmdId, int paoId, long secondsNotOperatedIn) {
 		if (cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
 			executeConfirmSub( paoId );
 		}
@@ -136,11 +142,12 @@ public class CapControlCommandExecutor
 			(cmdId == CapControlCommand.CMD_FQ_BANKS) ||
 			(cmdId == CapControlCommand.CMD_FAILED_BANKS) ||
 			(cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS) ||
+			(cmdId == CapControlCommand.CMD_BANKS_NOT_OPERATED_IN) ||
 			(cmdId == CapControlCommand.CMD_DISABLE_VERIFY)	||
 			(cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY)	||
             (cmdId == CapControlCommand.CMD_STANDALONE_VERIFY))
 		{
-			executeVerifySub (paoId, cmdId);
+			executeVerifySub (paoId, cmdId, secondsNotOperatedIn);
 		}
 		else 
 		{
@@ -177,14 +184,14 @@ public class CapControlCommandExecutor
 		}
 	}
 	
-	private void executeVerifySub(int paoId, int cmdId) {
+	private void executeVerifySub(int paoId, int cmdId, long secondsNotOperatedIn) {
 		int action = 0;
 		if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
 			action = 1;
 		if (cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY)
 			action = 2;
-		int strat = cmdId - CapControlCommand.VERIFY_OFFSET;	
-		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, CCVerifySubBus.DEFAULT_CB_INACT_TIME, false);
+		int strat = cmdId - CapControlCommand.VERIFY_OFFSET;
+		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, secondsNotOperatedIn, false);
 		capControlCache.getConnection().write(msg);
 	}
 
@@ -200,7 +207,7 @@ public class CapControlCommandExecutor
 	}
 
 	public void executeCBCCommand(int paoId, float[] optParams) {
-        // Build up the manaual change message here, params[0] = new state ID
+        // Build up the manual change message here, params[0] = new state ID
         CapBankDevice bank = capControlCache.getCapBankDevice(paoId);
         
         final Date now = new Date();

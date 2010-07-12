@@ -31,7 +31,9 @@ public class ScheduleAssignmentCommandFilter implements
         retVal.add(new SqlFilter(){
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
-                String sql = "sa.Command = '" + command.getCommandName() + "'";
+                //must compare with LIKE, because the tail end of VerifyNotOperatedIn
+                //command is variable, depending on what min/hr/day/wk values are
+                String sql = "sa.Command LIKE '" + command.getCommandName() + "%'";
                 SqlStatementBuilder retVal = new SqlStatementBuilder(sql);
                 return retVal;
             }

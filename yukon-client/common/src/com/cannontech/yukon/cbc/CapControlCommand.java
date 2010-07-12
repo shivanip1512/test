@@ -71,11 +71,13 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int CMD_FQ_BANKS = VERIFY_OFFSET + 1;
     public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
     public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
-    public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
-    public static final int CMD_EMERGENCY_DISABLE_VERIFY = VERIFY_OFFSET + 5;
+    //Selected (not used) VERIFY_OFFSET + 4;
+    public static final int CMD_BANKS_NOT_OPERATED_IN = VERIFY_OFFSET + 5;
     
     public static final int CMD_STANDALONE_VERIFY = VERIFY_OFFSET + 6;
     public static final int CONFIRM_SUBSTATION = VERIFY_OFFSET + 7;
+    public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 8;
+    public static final int CMD_EMERGENCY_DISABLE_VERIFY = VERIFY_OFFSET + 9;
     
     public static final int LTC_SCAN_INTEGRITY = 70;
     public static final int LTC_REMOTE_ENABLE = 71;
@@ -149,12 +151,12 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "Verify Failed And Questionable Banks",
         "Verify Failed Banks",
         "Verify Questionable Banks", //63
-        "Verify Disabled Banks", //64
-        "Verify Banks Stopped",
-        "VerifyStandaloneBanks",
-        "Confirm Substation",
-        "",
-        "",
+        "", //64 - not used
+        "Verify Banks Not Operated In", //65
+        "VerifyStandaloneBanks", //66
+        "Confirm Substation", //67
+        "Verify Disabled Banks", //68
+        "Verify Banks Stopped", //69
         "Scan Ltc Integrity", //70
         "Enable Remote Control",
         "Disable Remote Control",
