@@ -26,29 +26,17 @@ PARAMETERS
  clearResult		- flag (not null)indicating to clear the resultText data field
  timeOut			- Time in millis to wait for a response to come back from YC before ignoring it.
  REDIRECT			- where the servlet should go after the post
- updateDB			- flag for writing command result to the database(RPH)
- action				- values [updateDB]
 */
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.bind.ServletRequestUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.bean.YCBean;
 
@@ -72,197 +60,69 @@ public class CommanderServlet extends javax.servlet.http.HttpServlet
 			localBean = (YCBean)session.getAttribute(ServletUtil.ATT_YC_BEAN);
 		}
 
-        String numDays = req.getParameter("numDays");
-        if( numDays != null)
-            localBean.setPeakProfileDays(Integer.valueOf(numDays));
-		
-		/**Debug print of all parameter names.*/
-/*		java.util.Enumeration enum1 = req.getParameterNames();
-		  while (enum1.hasMoreElements()) {
-			String ele = enum1.nextElement().toString();
-			 CTILogger.info(" --" + ele + "  " + req.getParameter(ele));
-		}
-*/
-		 
-		String redirectURL = req.getParameter("REDIRECT");
+	    String redirectURL = ServletRequestUtils.getStringParameter(req, "REDIRECT");
 
-		/** PointID is rarely collected, normally when no command is being issued, used for page reloads with pointID needed for rph data display*/
-		String pointID = req.getParameter("pointID");
-		if( pointID != null)
-			localBean.setPointID(Integer.parseInt(pointID));
-		
 		/**deviceID(opt1) or SerialNumber(opt2) must exist!
 		 * deviceID/serialNumber command is sent. */
-		String deviceID = req.getParameter("deviceID");
-		if( deviceID != null )
-			localBean.setLiteYukonPao(Integer.parseInt(deviceID));
-		else
-			localBean.setLiteYukonPao(PAOGroups.INVALID);
+        int deviceId = ServletRequestUtils.getIntParameter(req, "deviceID", PAOGroups.INVALID);
+		localBean.setLiteYukonPao(deviceId);
+
+        String serialNumber = ServletRequestUtils.getStringParameter(req, "serialNumber", PAOGroups.STRING_INVALID);    //system command string
+		localBean.setSerialNumber(serialNumber);
 		
-		String serialNumber = req.getParameter("serialNumber");
-		if( serialNumber != null)
-			localBean.setSerialNumber(serialNumber);
-		else
-			localBean.setSerialNumber(PAOGroups.STRING_INVALID);
-		
-		String lpDate = req.getParameter("lpDate");	//only applicable for retrieving historical data (such as lp data)
-		if( lpDate != null)
-			localBean.setLPDateStr(lpDate);
-			
 		//Flag to clear the resultText, no commands sent
-		String clear = req.getParameter("clearText");
+		String clear = ServletRequestUtils.getStringParameter(req, "clearText");
 
-		//Action to do:  "SelectDevice", set deviceID and redirect to commander page.
-		String action = req.getParameter("action");
-
-		if (clear != null)
+		if (clear != null) {
 			localBean.clearResultText();
-		else if( action != null && action.equalsIgnoreCase("SavePeakReport"))
-		{
-			resp.addHeader("Content-Disposition", "attachment; filename=PeakReport.txt");
 			
-			final ServletOutputStream out = resp.getOutputStream();
-		  	resp.setContentType("text/plain");
-//		  	CSVQuoter quoter = new CSVQuoter(",");
-
-            List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(localBean.getLiteYukonPao().getLiteID());
-			if( litePoints != null)
-			{
-                for (LitePoint point : litePoints) {
-					if(point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND)
-					{
-						out.write(new String("LP Peak Report - " + point.getPointName() + "\r\n").getBytes());
-						
-						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getLiteYukonPao().getLiteID(), PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);						
-						if( pointData != null)
-						{
-							String tempStr = pointData.getStr();
-							int beginIndex = 0;
-							int endIndex = tempStr.indexOf("\n");
-							while( endIndex > 0)
-							{
-								out.write((tempStr.substring(beginIndex, endIndex) + "\r\n").getBytes()); 
-								tempStr = tempStr.substring(endIndex+1);
-								endIndex = tempStr.indexOf("\n");
-							}
-							out.write(new String("\r\n").getBytes());
-						}
-					}
-					else if(point.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND)
-					{
-						out.write(new String("LP Peak Report - " + point.getPointName() + "\r\n").getBytes());
-						
-						PointData pointData = (PointData)localBean.getRecentPointData(localBean.getLiteYukonPao().getLiteID(), PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_PEAK_REPORT);						
-						if( pointData != null)
-						{
-							String tempStr = pointData.getStr();
-							int beginIndex = 0;
-							int endIndex = tempStr.indexOf("\n");
-							while( endIndex > 0)
-							{
-								out.write( (tempStr.substring(beginIndex, endIndex) + "\r\n").getBytes()); 
-								tempStr = tempStr.substring(endIndex+1);
-								endIndex = tempStr.indexOf("\n");
-							}
-							out.write(new String("\r\n").getBytes());
-						}
-					}
-				}
-			} 
-			return;
-		}
-		else if( action != null && action.equalsIgnoreCase("LoadRPHData"))
-		{
-			localBean.loadRPHData();	//reload the current RPH Data vector, based on selected pointid and timestamp		    
-		}
-		else if( action!= null && action.equalsIgnoreCase("SelectDevice"))
-		{
-			redirectURL = redirectURL.substring(0, redirectURL.lastIndexOf('/')+1).concat("CommandDevice.jsp");
-			System.out.println("Redirect: "+req.getParameter("REDIRECT"));
-			System.out.println("Referrer: "+req.getParameter("REFERRER"));
-		}
-		else
-		{
-			String function = req.getParameter("function");	//user friendly command string
-			String command = req.getParameter("command");	//system command string
-			/** Specific route to send on, only used in the case of loops or serial number is used
-			 * When sending to a device, the route is ignored and the porter connection takes care
-			 * of sending the command on the device's assigned route. */
-			String routeID = req.getParameter("routeID");
-			if( routeID != null) {
-				localBean.setRouteID(Integer.valueOf(routeID).intValue());
-			}
-
-			if (command.toLowerCase().startsWith("putconfig tou")) {
-				String schedID = req.getParameter("scheduleID");
-				if( schedID != null) {
-					command = localBean.buildTOUScheduleCommand(Integer.valueOf(schedID).intValue());
-				}
-			}
+		} else {
+			String command = ServletRequestUtils.getStringParameter(req, "command");	//system command string
 			//Set our yc bean command string by using a function lookup if null
 			if( command == null ) {
 				/** If we have no command string, see if there is a function and find it's
 				 * corresponding command string.  (Will substitute based on key=value
-				 * pairs found in the commands file directory for a particular device. */ 
+				 * pairs found in the commands file directory for a particular device. */
+			    String function = ServletRequestUtils.getStringParameter(req, "function");  //user friendly command string
 				if( function != null) {
 					command = localBean.getCommandFromLabel(function);
 				}
-				else {
-					//WE HAVE NO COMMAND?
-					command = "";
-				}
 			}
 
-			if( command.length() > 0 ) {
+			if( StringUtils.isNotBlank(command) ) {
 				
 			    try {
-					/** Time to wait for return to calling jsp
+		            /** Specific route to send on, only used in the case of loops or serial number is used
+		             * When sending to a device, the route is ignored and the porter connection takes care
+		             * of sending the command on the device's assigned route. */
+		            int routeID = ServletRequestUtils.getIntParameter(req, "routeID", -1);    //-1 is the default used in YCBean also
+		            localBean.setRouteID(routeID);
+			        
+			        /** Time to wait for return to calling jsp
 					 * Timeout is used to <hope to> assure there is some resultText to display when we do go back. */
-					String timeOut = req.getParameter("timeOut");
-					if( timeOut == null)
-						timeOut = "8000";	// 8 secs default
-					if( timeOut != null && command != null)	//adjust the timeout for multiple command strings, separated by '&'
-					{
-						int commandCount = 1;
-						for (int i = 0; i < command.length(); i++)
-						{
-							if( command.charAt(i) == '&')
-								commandCount++;
-						}
-						timeOut = String.valueOf(commandCount * Integer.valueOf(timeOut).intValue());
-					}
-			
-					localBean.setTimeOut(new Integer(timeOut).intValue());
-                        localBean.setCommandString(command);
+					int timeOut = ServletRequestUtils.getIntParameter(req, "timeOut", 8000);   //8 secs default 
+					int commandCount = 1 + StringUtils.countMatches(command, "&");
+					timeOut = (timeOut * commandCount);
+					localBean.setTimeOut(timeOut);
+					
+                    localBean.setCommandString(command);
 					localBean.clearErrorMsg();
-                    
 					localBean.executeCommand();
 		
 					/** Don't return to the jsp until we have the message or we've timed out.*/
-					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning()))
-					{
-						try
-						{
+					while( (localBean.getRequestMessageIDs_Executing().size() > 0 && localBean.isWatchRunning())) {
+						try {
 							Thread.sleep(5000);
-						}
-						catch (InterruptedException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+						} catch (InterruptedException e) {
+							CTILogger.error(e);
 						}
 					}
 					CTILogger.debug("ExecutingMessageIDs:" + localBean.getRequestMessageIDs_Executing().size() + " | Watching:" + localBean.isWatchRunning());
-
-					if ( command.toLowerCase().startsWith("getvalue lp channel"))
-					{
-					    localBean.loadRPHData();
-					}
 
                 } catch (PaoAuthorizationException e) {
                     localBean.setErrorMsg("You do not have permission to execute command: " + e.getPermission());
 			    }
 			}
-			
 		}
 		
 		if( redirectURL != null ) {

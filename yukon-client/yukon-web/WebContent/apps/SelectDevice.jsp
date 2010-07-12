@@ -191,18 +191,11 @@
 		
 		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 	  	<br>
-	  	<form name='DeviceForm' method='post' action="<cti:url value="/servlet/SOAPClient"/>">
-	    	<input id="redirect" type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
-			<input id="referrer" type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-	    	<input type='hidden' name='action' value='SelectDevice'>
-	    
 		    ${commandDeviceBean.deviceTableHTML}
 		
 			<div class="filterCancel">
 				<input type='button' name='Cancel' value='Cancel' onclick='location.href="../operator/Operations.jsp"'>
 			</div>
-	  	</form>
-	
 	</div>
 
 </cti:standardPage>

@@ -7,24 +7,16 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
-<%@ page import="com.cannontech.core.dynamic.PointValueHolder"%> 
-<%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
-<%@ page import="com.cannontech.database.data.point.PointTypes"%>
-<%@ page import="com.cannontech.database.db.point.RawPointHistory"%>
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.roles.application.CommanderRole"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
-<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
 <%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
+<%@page import="com.cannontech.database.data.device.DeviceTypesFuncs"%>
 
 <%
-    java.text.SimpleDateFormat dateTimeFormat = new java.text.SimpleDateFormat("MM/dd/yy HH:mm");
-    java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
-    java.text.DecimalFormat format_nv3 = new java.text.DecimalFormat("#0.000");
-    java.text.DecimalFormat format_nsec = new java.text.DecimalFormat("#0 secs");
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
     String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
     session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "");
@@ -36,8 +28,6 @@
 
 <%-- Grab the search criteria --%>
 <%
-	PointValueHolder pointValueHolder = null;
-
 	int invNo = -1;	//used for directing to different application starting points
 	int deviceID = PAOGroups.INVALID;
 	if( request.getParameter("deviceID") != null)
@@ -46,24 +36,20 @@
         if( YC_BEAN.getLiteYukonPao() != null &&
             YC_BEAN.getLiteYukonPao().getLiteID() != deviceID) {
             YC_BEAN.setLiteYukonPao(deviceID);
-            session.removeAttribute("CustomerDetail"); //delete this for now, we'll figure out a way to store per meter later
-            session.removeAttribute("ServLocDetail"); //delete this for now, we'll figure out a way to store per meter later
         }
-	} else {
+	} else if (YC_BEAN.getLiteYukonPao() != null) {
 		deviceID = YC_BEAN.getLiteYukonPao().getLiteID();
 	}
 
+    boolean usesDeviceMeterGroup = false;
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = null;
-    if (deviceID >= 0)
+    if (deviceID >= 0) {
         liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
-	
-	boolean manual = true;
-	boolean isMCT4XX = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(liteYukonPao.getType());
-	if( !isMCT4XX ) {	//MUST BE Manual...force it
-		manual = true;
-	}
-		
+        // just picked something easy to check against.  "Meters" use DeviceMeterGroup, which is what we want for the Meter Details link.
+        usesDeviceMeterGroup = DeviceTypesFuncs.usesDeviceMeterGroup(liteYukonPao.getType());
+    }
+
 	Vector serialNumbers;
 	String serialNum = "";
 	String serialType = "";
@@ -80,6 +66,7 @@
 		serialNum = request.getParameter("sa305");
 		serialType = "sa305";
 	}
+    
 %>
 
 <%@ include file="/apps/CommanderMenu.jspf" %>
@@ -87,23 +74,12 @@
 <cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
 	<cti:standardMenu menuSelection="<%= menuSelection %>" />
 	
-	<script language="JavaScript">
-		function setMspCommand(cmd)
-		{
-		    document.mspCommandForm.command.value = cmd;
-		    document.mspCommandForm.submit();
-		}
-	</script>
-    
     <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
     <cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
 	
 <% 
 	//"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID
     String redirect = request.getRequestURI()+ "?deviceID=" + deviceID;
-    if(manual) {
-    	redirect = redirect + "&manual";
-    }
     String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;
     String pageName = "CommandDevice.jsp?deviceID=" + deviceID;
     if( serialType.length() > 0 ) {
@@ -113,10 +89,9 @@
     }
 %>
 	
-	<c:set var="manual" scope="page" value="<%=manual%>"/>
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
-	<c:set var="isMCT4XX" scope="page" value="<%=isMCT4XX%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
+    <c:set var="usesDeviceMeterGroup" scope="page" value="<%=usesDeviceMeterGroup%>"/>
     
     <table border="0">
     
@@ -149,26 +124,10 @@
 			<div class="header">Go To...</div>
 			
 			<!-- Manual side menu section -->
-			<c:choose>
-				<c:when test="${manual}">
-					<div class="sideMenuLink selected">Manual</div>
-				</c:when>
-				<c:otherwise>
-					<c:choose>
-						<c:when test="${!empty param.InvNo}">
-							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&manual&command=null"/> 
-						</c:when>
-						<c:otherwise>
-							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&manual&command=null"/> 
-						</c:otherwise>
-					</c:choose>
-					<div class="sideMenuLink">
-						<a href="${link}" class="Link1">Manual</a>
-					</div>
-				</c:otherwise>
-			</c:choose>
+			<div class="sideMenuLink selected">Manual</div>
+			<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&command=null"/> 
 
-			<c:if test="${isMCT4XX}">
+			<c:if test="${usesDeviceMeterGroup}">
 			<div class="sideMenuLink">
 						<cti:url var="meterDetailsUrl" value="/spring/meter/home">
 							<cti:param name="deviceId" value="${deviceId}" />
@@ -190,7 +149,7 @@
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link1">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}" class="Link1">
 									${device.paoName}
 								</a>
 							</div>
@@ -212,7 +171,7 @@
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link1">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}" class="Link1">
 									${device.paoName}
 								</a>
 							</div>
@@ -229,7 +188,7 @@
 					</c:when>
 					<c:otherwise>
 						<div class="sideMenuLink">					
-							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205" class="Link1">
+							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&sa205" class="Link1">
 								DCU-205 Serial
 							</a>
 						</div>
@@ -247,7 +206,7 @@
 			} else {
 %>
 				<div class="sideMenuLink">
-					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa205=<%=sn%>" class="Link1">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&sa205=<%=sn%>" class="Link1">
 						<%=sn%>
 					</a>
 				</div>
@@ -266,7 +225,7 @@
 					</c:when>
 					<c:otherwise>
 						<div class="sideMenuLink">
-							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305" class="Link1">
+							<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&sa305" class="Link1">
 								DCU-305 Serial
 							</a>
 						</div>
@@ -285,7 +244,7 @@
 			} else {
 %>
 				<div class="sideMenuLink">
-					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&sa305=<%=sn%>" class="Link1">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&sa305=<%=sn%>" class="Link1">
 						<%=sn%>
 					</a>
 				</div>
@@ -306,7 +265,7 @@
 	} else {
 %>
 				<div class="sideMenuLink">
-			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom" class="Link1">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&xcom" class="Link1">
 			        	Expresscom Serial
 			        </a>
 			    </div>
@@ -323,7 +282,7 @@
 			} else {
 %>
 				<div class="sideMenuSubLink">
-					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&xcom=<%=sn%>" class="Link1">
+					<a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&xcom=<%=sn%>" class="Link1">
 						<%=sn%>
 					</a>
 				</div>
@@ -345,7 +304,7 @@
 	} else {
 %>
 				<div class="sideMenuLink">
-			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom" class="Link1">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&vcom" class="Link1">
 			        	Versacom Serial
 			        </a>
 			    </div>
@@ -362,7 +321,7 @@
 			} else {
 %>
 				<div class="sideMenuSubLink selected">
-			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&manual&vcom=<%=sn%>" class="Link1">
+			        <a href="CommandDevice.jsp?deviceID=<%=PAOGroups.INVALID%>&vcom=<%=sn%>" class="Link1">
 			        	<%=sn%>
 			        </a>
 			    </div>
@@ -386,7 +345,7 @@
 						</c:when>
 						<c:otherwise>
 							<div class="sideMenuLink">
-								<a href="CommandDevice.jsp?deviceID=${device.yukonID}${manual ? '&manual' : ''}" class="Link1">
+								<a href="CommandDevice.jsp?deviceID=${device.yukonID}" class="Link1">
 									${device.paoName}
 								</a>
 							</div>
