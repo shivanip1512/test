@@ -27,31 +27,32 @@ public class MacroGroupAddRemovePanel extends AddRemovePanel {
     @Override
     public boolean validateAddAction() {
         
-        Set<PaoIdentifier> parentMacroGroups = 
-            getAllParentMacroGroups(currentMacroGroup.getPaoIdentifier());
-        
-        Object[] selectedObjects = getLeftList().getSelectedValues();
-        
-        for(Object object : selectedObjects) {
-            LiteYukonPAObject group = (LiteYukonPAObject) object;
-            PaoIdentifier groupIdentifier = group.getPaoIdentifier();
+        if (currentMacroGroup != null) {
+            Set<PaoIdentifier> parentMacroGroups = 
+                getAllParentMacroGroups(currentMacroGroup.getPaoIdentifier());
             
-            // If this group is a macro group and is in the parent list, we 
-            // have a circular macro group reference
-            if(PaoType.MACRO_GROUP.equals(groupIdentifier.getPaoType())
-                    && parentMacroGroups.contains(groupIdentifier)) {
-
-                JOptionPane.showMessageDialog(this, 
-                                              group.getPaoName() 
-                                              + " is a parent macro group of " 
-                                              + currentMacroGroup.getName()
-                                              + ". You cannot circularly nest macro groups.",
-                                              "Circular reference", 
-                                              JOptionPane.ERROR_MESSAGE);
-                return false;
+            Object[] selectedObjects = getLeftList().getSelectedValues();
+            
+            for(Object object : selectedObjects) {
+                LiteYukonPAObject group = (LiteYukonPAObject) object;
+                PaoIdentifier groupIdentifier = group.getPaoIdentifier();
+                
+                // If this group is a macro group and is in the parent list, we 
+                // have a circular macro group reference
+                if(PaoType.MACRO_GROUP.equals(groupIdentifier.getPaoType())
+                        && parentMacroGroups.contains(groupIdentifier)) {
+    
+                    JOptionPane.showMessageDialog(this, 
+                                                  group.getPaoName() 
+                                                  + " is a parent macro group of " 
+                                                  + currentMacroGroup.getName()
+                                                  + ". You cannot circularly nest macro groups.",
+                                                  "Circular reference", 
+                                                  JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
             }
         }
-        
         return true;
     }
     
