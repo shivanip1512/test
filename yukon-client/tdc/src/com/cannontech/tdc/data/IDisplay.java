@@ -35,7 +35,6 @@ public interface IDisplay
 	public static final int LOAD_CONTROL_CLIENT_TYPE_INDEX = 2;
 	public static final int CAP_CONTROL_CLIENT_TYPE_INDEX = 3;
 	public static final int SCHEDULER_CLIENT_TYPE_INDEX = 4;
-	public static final int STATIC_CLIENT_TYPE_INDEX = 5;
 	//public static final int EEXCHANGE_CLIENT_TYPE_INDEX = 5;
 	
 	public static final int UNKNOWN_TYPE_INDEX = -1;
@@ -51,8 +50,7 @@ public interface IDisplay
 		/* All optional displays go below*/
 		"Load Management Client",
 		"Cap Control Client",
-		"Scheduler Client",
-		"Static Displays"
+		"Scheduler Client"
 		//"Energy Exchange Client"
 	};
 
@@ -65,8 +63,7 @@ public interface IDisplay
 		/* All optional displays go below*/
 		"Load Management Client",
 		"Cap Control Client",
-		"Scheduler Client",
-		"Yukon Servers"
+		"Scheduler Client"
 		//"Energy Exchange"
 	};
 

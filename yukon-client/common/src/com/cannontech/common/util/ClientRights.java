@@ -17,9 +17,6 @@ public interface ClientRights
 	public static final int HIDE_CAPCONTROL	= 0x00002000;
 	public static final int HIDE_LOADCONTROL	= 0x00004000;
 	public static final int HIDE_ALL				= 0x0000F000;
-	
-	/* Enable clients by name */
-	public static final int ENABLE_SERVICES	= 0x00010000;
 
    //Enable some company specific paramenters   
    public static final int SHOW_SPECIAL_RIPPLE = 0x10000000;

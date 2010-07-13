@@ -162,16 +162,6 @@ public static boolean isAlarmColorHidden( final long readOnlyInteger )
 	return (readOnlyInteger & ClientRights.HIDE_ALARM_COLORS) != 0;
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (3/5/2001 11:32:59 AM)
- * @return boolean
- */
-public static boolean isClientEnabled( final long readOnlyInteger )
-{
-	return (readOnlyInteger & ClientRights.ENABLE_SERVICES) != 0;
-}
-
 public static Calendar getCalendarDate(Date stopDate) {
     Calendar c = new GregorianCalendar();
     c.setTime (stopDate);

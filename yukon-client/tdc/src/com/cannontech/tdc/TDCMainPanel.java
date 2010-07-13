@@ -2215,8 +2215,6 @@ public void initializeTable()
 					enabled = !TDCDefines.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
 				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenMACS(TDCDefines.USER_RIGHTS);
-				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.STATIC_CLIENT_TYPE_INDEX]) )
-					enabled = TDCDefines.isClientEnabled(TDCDefines.USER_RIGHTS);
 
 				addClientRadioButtons( currentDisp.getTitle(), i, enabled );
 			}
