@@ -91,7 +91,6 @@
 				<config>/cbc/src/com/cannontech/cbc/cbcContext.xml</config>
 				<config>/loadcontrol/src/com/cannontech/loadcontrol/applicationContext.xml</config>
 				<config>/yukonappserver/src/com/cannontech/yukon/server/cache/cacheContext.xml</config>
-				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
 			</configs>
 		</configSet>

@@ -7,7 +7,7 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.core.dao.support.StandardDaoOperations;
 
 public interface CurtailmentEventDao extends StandardDaoOperations<CurtailmentEvent>,
-        CommonEventOperations {
+        CommonEventOperations<CurtailmentEvent> {
 
     List<CurtailmentEvent> getAllForProgram(Program program);
 

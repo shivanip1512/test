@@ -7,7 +7,7 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.core.dao.support.StandardDaoOperations;
 
 public interface AccountingEventDao extends StandardDaoOperations<AccountingEvent>,
-        CommonEventOperations {
+        CommonEventOperations<AccountingEvent> {
 
     List<AccountingEvent> getAllForProgram(Program program);
 

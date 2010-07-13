@@ -1,34 +1,16 @@
 package com.cannontech.cc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 import com.cannontech.database.data.notification.NotifMap;
 
-@Entity
-@Table(name = "CCurtGroupCustomerNotif",
-       uniqueConstraints=@UniqueConstraint(columnNames={"CCurtGroupId","CustomerId"}))
 public class GroupCustomerNotif {
     private Integer id;
     private CICustomerStub customer;
     private Group group;
     private NotifMap notifMap = new NotifMap();
     
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtGroupCustomerNotifId")
     public Integer getId() {
         return id;
     }
@@ -37,8 +19,6 @@ public class GroupCustomerNotif {
         this.id = id;
     }
     
-    @ManyToOne()
-    @JoinColumn(name="CustomerId")
     public CICustomerStub getCustomer() {
         return customer;
     }
@@ -47,8 +27,6 @@ public class GroupCustomerNotif {
         this.customer = customer;
     }
 
-    @ManyToOne()
-    @JoinColumn(name="CCurtGroupId")
     public Group getGroup() {
         return group;
     }
@@ -57,7 +35,6 @@ public class GroupCustomerNotif {
         this.group = group;
     }
 
-    @Column(nullable=false)
     public String getAttribs() {
         return notifMap.getAttribs();
     }
@@ -66,7 +43,6 @@ public class GroupCustomerNotif {
         notifMap.setAttribs(attribs);
     }
     
-    @Transient
     public NotifMap getNotifMap() {
         return notifMap;
     }
@@ -80,8 +56,7 @@ public class GroupCustomerNotif {
             return true;
         }
         GroupCustomerNotif rhs = (GroupCustomerNotif) obj;
-        return new EqualsBuilder().append(group, rhs.group)
-            .append(customer, rhs.customer).isEquals();
+        return new EqualsBuilder().append(group, rhs.group).append(customer, rhs.customer).isEquals();
     }
     
     @Override
@@ -93,6 +68,4 @@ public class GroupCustomerNotif {
     public String toString() {
         return "GroupCustomerNotif [" + id + "]@" + Integer.toHexString(System.identityHashCode(this));
     }
-
-
 }

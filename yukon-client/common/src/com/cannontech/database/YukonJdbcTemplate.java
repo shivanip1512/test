@@ -1,7 +1,5 @@
 package com.cannontech.database;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,21 +16,6 @@ import com.cannontech.common.util.SqlFragmentSource;
 
 public class YukonJdbcTemplate extends SimpleJdbcTemplate implements
         YukonJdbcOperations {
-
-    private static final class YukonRowMapperAdapter<T> implements ParameterizedRowMapper<T> {
-
-        private final YukonRowMapper<T> rm;
-
-        public YukonRowMapperAdapter(YukonRowMapper<T> rm) {
-            this.rm = rm;
-        }
-
-        @Override
-        public T mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return rm.mapRow(new YukonResultSet(rs));
-        }
-
-    }
 
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);

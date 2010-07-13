@@ -7,9 +7,9 @@ import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Program;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 
-public interface CommonEventOperations {
+public interface CommonEventOperations<T extends BaseEvent> {
 
-    List<BaseEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany);
-    List<BaseEvent> getAllForCustomer(CICustomerStub customer);
-    List<? extends BaseEvent> getAllForProgram(Program program);
+    List<T> getAllForEnergyCompany(LiteEnergyCompany energyCompany);
+    List<T> getAllForCustomer(CICustomerStub customer);
+    List<T> getAllForProgram(Program program);
 }

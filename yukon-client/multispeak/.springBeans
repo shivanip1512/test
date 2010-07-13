@@ -31,7 +31,6 @@
 				<config>/tools/src/com/cannontech/tools/toolsContext.xml</config>
 				<config>/yukonappserver/src/com/cannontech/yukon/server/cache/cacheContext.xml</config>
 				<config>src/com/cannontech/multispeak/client/applicationContext.xml</config>
-				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
 			</configs>
 		</configSet>

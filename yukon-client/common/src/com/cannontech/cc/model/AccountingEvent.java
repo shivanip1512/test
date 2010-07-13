@@ -2,24 +2,8 @@ package com.cannontech.cc.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-
 import com.cannontech.common.util.TimeUtil;
 
-
-
-@Entity
-@Table(name="CCurtAcctEvent")
 public class AccountingEvent extends BaseEvent {
     private Integer id;
     private Program program;
@@ -28,10 +12,6 @@ public class AccountingEvent extends BaseEvent {
     private Integer duration;
     private Integer identifier = new Integer(0);
 
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtAcctEventId")
     public Integer getId() {
         return id;
     }
@@ -40,8 +20,6 @@ public class AccountingEvent extends BaseEvent {
         this.id = id;
     }
 
-    @Type(type="com.cannontech.hibernate.HibernateEscapedString")
-    @Column(name="reason", nullable=false)
     public String getReason() {
         return reason;
     }
@@ -50,13 +28,10 @@ public class AccountingEvent extends BaseEvent {
         this.reason = reason;
     }
     
-    @Transient
     public Date getNotificationTime() {
         return startTime;
     }
     
-    @ManyToOne
-    @JoinColumn(name="CCurtProgramId", nullable=false)
     public Program getProgram() {
         return program;
     }
@@ -65,7 +40,6 @@ public class AccountingEvent extends BaseEvent {
         this.program = program;
     }
     
-    @Column(name="startTime", nullable=false)
     public Date getStartTime() {
         return startTime;
     }
@@ -78,17 +52,14 @@ public class AccountingEvent extends BaseEvent {
         this.duration = eventDuration;
     }
     
-    @Column(name="duration", nullable=false)
     public Integer getDuration() {
         return duration;
     }
     
-    @Transient
     public Date getStopTime() {
         return TimeUtil.addMinutes(getStartTime(), getDuration());
     }
     
-    @Column(nullable=false)
     public Integer getIdentifier() {
         return identifier;
     }
@@ -102,7 +73,7 @@ public class AccountingEvent extends BaseEvent {
         return "AccountingEvent " + getDisplayName() + " [" + id + "]";
     }
 
-    @Override @Transient
+    @Override 
     public String getStateDescription() {
         return "NORMAL";
     }

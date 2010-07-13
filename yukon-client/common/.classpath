@@ -85,16 +85,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.4-with-dependencies.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
@@ -213,7 +203,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/joda-time-1.6.jar" sourcepath="Z:/java/Third-Party Sources/joda-time-1.6-src.zip"/>
-	<classpathentry kind="lib" path="/third-party/hibernate-annotations.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-annotations-3.2.0.GA.zip"/>
 	<classpathentry kind="lib" path="/third-party/cglib-2.1.3.jar"/>
 	<classpathentry kind="lib" path="/third-party/asm.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/google-collect-1.0.jar" sourcepath="Z:/java/Third-Party Sources/google-collect-1.0-src.zip">

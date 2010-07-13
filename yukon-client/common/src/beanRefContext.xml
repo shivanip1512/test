@@ -16,7 +16,6 @@
         class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
         <constructor-arg index="0">
             <list>
-                <value>com/cannontech/hibernate/hibernateContext.xml</value>
                 <value>com/cannontech/mainContext.xml</value>
                 <value>com/cannontech/yukon/server/cache/cacheContext.xml</value>
                 <value>com/cannontech/common/device/deviceContext.xml</value>

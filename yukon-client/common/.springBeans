@@ -18,7 +18,6 @@
 		<config>src/com/cannontech/mainContext.xml</config>
 		<config>src/com/cannontech/jobs/jobContext.xml</config>
 		<config>src/com/cannontech/common/search/searchContext.xml</config>
-		<config>src/com/cannontech/hibernate/hibernateContext.xml</config>
 		<config>src/com/cannontech/common/device/config/deviceConfigurationContext.xml</config>
 		<config>src/com/cannontech/common/chart/chartContext.xml</config>
 	</configs>
@@ -41,7 +40,6 @@
 				<config>src/com/cannontech/core/dynamic/applicationContext.xml</config>
 				<config>src/com/cannontech/mainContext.xml</config>
 				<config>src/com/cannontech/jobs/jobContext.xml</config>
-				<config>src/com/cannontech/hibernate/hibernateContext.xml</config>
 			</configs>
 		</configSet>
 	</configSets>

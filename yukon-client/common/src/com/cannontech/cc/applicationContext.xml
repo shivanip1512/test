@@ -202,53 +202,43 @@
     <property name="requiredPointGroup" value="ISOC"/>
   </bean>
   
-  
-  <bean id="yukonHibeDao" abstract="true" 
-        class="com.cannontech.hibernate.YukonBaseHibernateDao">
-    <property name="sessionFactory" ref="hibernateSessionFactory" />
-  </bean>
-  
   <bean id="yukonJdbcDao" abstract="true" 
         class="com.cannontech.core.dao.support.YukonBaseJdbcDao">
     <property name="jdbcTemplate" ref="jdbcTemplate" />
   </bean>
   
-  <bean id="programDao" class="com.cannontech.cc.daohibe.ProgramDaoImpl" parent="yukonHibeDao">
+  <bean id="programDao" class="com.cannontech.cc.daojdbc.ProgramDaoImpl">
     <property name="programGroupDao" ref="availableProgramGroupDao"/>
     <property name="programParameterDao" ref="programParameterDao"/>
     <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
   </bean>
-  <bean id="programTypeDao" class="com.cannontech.cc.daohibe.ProgramTypeDaoImpl" parent="yukonHibeDao"/>
-  <bean id="groupDao" class="com.cannontech.cc.daohibe.GroupDaoImpl" parent="yukonHibeDao">
+  <bean id="programTypeDao" class="com.cannontech.cc.daojdbc.ProgramTypeDaoImpl"/>
+  <bean id="groupDao" class="com.cannontech.cc.daojdbc.GroupDaoImpl">
     <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
     <property name="programGroupDao" ref="availableProgramGroupDao"/>
   </bean>
-  <bean id="availableProgramGroupDao" class="com.cannontech.cc.daohibe.AvailableProgramGroupDaoImpl" parent="yukonHibeDao"/>
-  <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daohibe.GroupCustomerNotifDaoImpl" parent="yukonHibeDao"/>
-  <bean id="customerStubDao" class="com.cannontech.cc.daohibe.CustomerStubDaoImpl" parent="yukonHibeDao"/>
-  <bean id="curtailmentEventDao" class="com.cannontech.cc.daohibe.CurtailmentEventDaoImpl" parent="yukonHibeDao">
+  <bean id="availableProgramGroupDao" class="com.cannontech.cc.daojdbc.AvailableProgramGroupDaoImpl"/>
+  <bean id="groupCustomerNotifDao" class="com.cannontech.cc.daojdbc.GroupCustomerNotifDaoImpl"/>
+  <bean id="customerStubDao" class="com.cannontech.cc.daojdbc.CustomerStubDaoImpl"/>
+  <bean id="curtailmentEventDao" class="com.cannontech.cc.daojdbc.CurtailmentEventDaoImpl">
     <property name="curtailmentEventParticipantDao" ref="curtailmentEventParticipantDao"/>
   </bean>
-  <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daohibe.CurtailmentEventNotifDaoImpl" parent="yukonHibeDao"/>
-  <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daohibe.CurtailmentEventParticipantDaoImpl" parent="yukonHibeDao">
+  <bean id="curtailmentEventNotifDao" class="com.cannontech.cc.daojdbc.CurtailmentEventNotifDaoImpl"/>
+  <bean id="curtailmentEventParticipantDao" class="com.cannontech.cc.daojdbc.CurtailmentEventParticipantDaoImpl">
     <property name="curtailmentEventNotifDao" ref="curtailmentEventNotifDao"/>
   </bean>
-  <bean id="programParameterDao" class="com.cannontech.cc.daohibe.ProgramParameterDaoImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventDao" class="com.cannontech.cc.daohibe.EconomicEventDaoImpl" parent="yukonHibeDao">
+  <bean id="programParameterDao" class="com.cannontech.cc.daojdbc.ProgramParameterDaoImpl"/>
+  <bean id="economicEventDao" class="com.cannontech.cc.daojdbc.EconomicEventDaoImpl">
     <property name="economicEventParticipantDao" ref="economicEventParticipantDao"/>
   </bean>
-  <bean id="economicEventParticipantDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl" parent="yukonHibeDao">
+  <bean id="economicEventParticipantDao" class="com.cannontech.cc.daojdbc.EconomicEventParticipantDaoImpl">
     <property name="economicEventNotifDao" ref="economicEventNotifDao"/>
   </bean>
-  <bean id="economicEventNotifDao" class="com.cannontech.cc.daohibe.EconomicEventNotifDaoImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventParticipantSelectionDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionDaoImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventParticipantSelectionWindowDao" class="com.cannontech.cc.daohibe.EconomicEventParticipantSelectionWindowImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventPricingDao" class="com.cannontech.cc.daohibe.EconomicEventPricingDaoImpl" parent="yukonHibeDao"/>
-  <bean id="economicEventPricingWindowDao" class="com.cannontech.cc.daohibe.EconomicEventPricingWindowDaoImpl" parent="yukonHibeDao"/>
-  <bean id="accountingEventDao" class="com.cannontech.cc.daohibe.AccountingEventDaoImpl" parent="yukonHibeDao">
+  <bean id="economicEventNotifDao" class="com.cannontech.cc.daojdbc.EconomicEventNotifDaoImpl"/>
+  <bean id="accountingEventDao" class="com.cannontech.cc.daojdbc.AccountingEventDaoImpl">
     <property name="accountingEventParticipantDao" ref="accountingEventParticipantDao"/>
   </bean>
-  <bean id="accountingEventParticipantDao" class="com.cannontech.cc.daohibe.AccountingEventParticipantDaoImpl" parent="yukonHibeDao"/>
+  <bean id="accountingEventParticipantDao" class="com.cannontech.cc.daojdbc.AccountingEventParticipantDaoImpl"/>
   <bean id="programNotificationGroupDao" class="com.cannontech.cc.daojdbc.ProgramNotificationGroupDaoImpl" parent="yukonJdbcDao">
     <property name="notificationGroupDao" ref="notificationGroupDao"/>
   </bean>
@@ -261,7 +251,6 @@
       </set>
     </property>
   </bean>
-  
   
   <bean id="customerPointTypeHelper" class="com.cannontech.support.CustomerPointTypeHelper">
       <property name="customerStubDao" ref="customerStubDao" />

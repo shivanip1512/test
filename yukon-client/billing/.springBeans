@@ -29,7 +29,6 @@
 				<config>/common/src/com/cannontech/mainContext.xml</config>
 				<config>/yukonappserver/src/com/cannontech/yukon/server/cache/cacheContext.xml</config>
 				<config>src/com/cannontech/billing/billingContext.xml</config>
-				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
 			</configs>
 		</configSet>

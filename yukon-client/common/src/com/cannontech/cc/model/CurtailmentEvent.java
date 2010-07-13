@@ -2,27 +2,9 @@ package com.cannontech.cc.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.common.util.TimeUtil;
 
-
-
-@Entity
-@Table(name="CCurtCurtailmentEvent")
 public class CurtailmentEvent extends BaseEvent {
     private Program program;
     private Date startTime;
@@ -33,10 +15,6 @@ public class CurtailmentEvent extends BaseEvent {
     private Integer identifier = new Integer(0);
     private CurtailmentEventState state;
 
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtCurtailmentEventId")
     public Integer getId() {
         return id;
     }
@@ -45,8 +23,6 @@ public class CurtailmentEvent extends BaseEvent {
         this.id = id;
     }
 
-    @Type(type="com.cannontech.hibernate.HibernateEscapedString")
-    @Column(name="message", nullable=false)
     public String getMessage() {
         return message;
     }
@@ -55,7 +31,6 @@ public class CurtailmentEvent extends BaseEvent {
         this.message = message;
     }
     
-    @Column(name="notificationTime", nullable=false)
     public Date getNotificationTime() {
         return notificationTime;
     }
@@ -64,8 +39,6 @@ public class CurtailmentEvent extends BaseEvent {
         this.notificationTime = notificationTime;
     }
     
-    @ManyToOne
-    @JoinColumn(name="CCurtProgramId", nullable=false)
     public Program getProgram() {
         return program;
     }
@@ -74,7 +47,6 @@ public class CurtailmentEvent extends BaseEvent {
         this.program = program;
     }
     
-    @Column(name="startTime", nullable=false)
     public Date getStartTime() {
         return startTime;
     }
@@ -91,23 +63,18 @@ public class CurtailmentEvent extends BaseEvent {
         this.state = state;
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=10)
     public CurtailmentEventState getState() {
         return state;
     }
     
-    @Column(name="duration", nullable=false)
     public Integer getDuration() {
         return duration;
     }
     
-    @Transient
     public Date getStopTime() {
         return TimeUtil.addMinutes(getStartTime(), getDuration());
     }
     
-    @Column(nullable=false)
     public Integer getIdentifier() {
         return identifier;
     }
@@ -117,7 +84,6 @@ public class CurtailmentEvent extends BaseEvent {
     }
     
     @Override
-    @Transient
     public String getStateDescription() {
         return state.toString();
     }

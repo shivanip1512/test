@@ -19,7 +19,6 @@ Class-Path: ./
  SqlServer.jar 
  ojdbc6.jar 
  spring.jar 
- hibernate3.jar 
  commons-discovery.jar 
  commons-httpclient.jar 
  commons-collections-3.2.jar 

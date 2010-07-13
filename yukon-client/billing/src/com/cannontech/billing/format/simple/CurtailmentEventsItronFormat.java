@@ -16,7 +16,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.cc.dao.BaseEventDao;
 import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
-import com.cannontech.cc.daohibe.EconomicEventParticipantDaoImpl;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
@@ -138,7 +137,7 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	private String getEconomicDataString(CICustomerStub ciCustomerStub, EconomicEvent event) {
 		if (event.getState() != EconomicEventState.CANCELLED) {
 			EconomicService economicService = YukonSpringHook.getBean("economicService", EconomicService.class);
-			EconomicEventParticipantDao economicEventParticipantDao = YukonSpringHook.getBean("economicEventParticipantDao", EconomicEventParticipantDaoImpl.class);
+			EconomicEventParticipantDao economicEventParticipantDao = YukonSpringHook.getBean("economicEventParticipantDao", EconomicEventParticipantDao.class);
 			EconomicEventPricing eventPricing = event.getLatestRevision();
 
 			String eventDataStr = "";

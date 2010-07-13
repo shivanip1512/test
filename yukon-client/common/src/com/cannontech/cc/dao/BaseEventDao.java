@@ -19,15 +19,15 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
  * For the time being, the DB knows nothing about BaseEvent. Many of these operations could
  * probably be sped up if that was changed.
  */
-public class BaseEventDao implements CommonEventOperations {
-    private Set<CommonEventOperations> childDaos = new TreeSet<CommonEventOperations>();
+public class BaseEventDao implements CommonEventOperations<BaseEvent> {
+    private Set<CommonEventOperations<?>> childDaos = new TreeSet<CommonEventOperations<?>>();
 
     public BaseEventDao() {
     }
     
     public List<BaseEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany, Predicate<BaseEvent> predicate) {
         List<BaseEvent> allEvents = new LinkedList<BaseEvent>();
-        for (CommonEventOperations dao : childDaos) {
+        for (CommonEventOperations<?> dao : childDaos) {
             List<? extends BaseEvent> events = dao.getAllForEnergyCompany(energyCompany);
             for (BaseEvent event : events) {
                 if (predicate.evaluate(event)) {
@@ -55,7 +55,7 @@ public class BaseEventDao implements CommonEventOperations {
         // uses a LinkedList because the result is often filtered by
         // removing unwanted elements
         List<BaseEvent> allEvents = new LinkedList<BaseEvent>();
-        for (CommonEventOperations dao : childDaos) {
+        for (CommonEventOperations<?> dao : childDaos) {
             List<? extends BaseEvent> events = dao.getAllForCustomer(customer);
             for (BaseEvent event : events) {
                 if (predicate.evaluate(event)) {
@@ -77,7 +77,7 @@ public class BaseEventDao implements CommonEventOperations {
     
     public List<BaseEvent> getAllForProgram(Program program) {
         List<BaseEvent> allEvents = new LinkedList<BaseEvent>();
-        for (CommonEventOperations dao : childDaos) {
+        for (CommonEventOperations<?> dao : childDaos) {
             List<? extends BaseEvent> events = dao.getAllForProgram(program);
             allEvents.addAll(events);
         }
@@ -124,7 +124,7 @@ public class BaseEventDao implements CommonEventOperations {
     }
     // setters for dependency injection
     
-    public void setChildDaos(Set<CommonEventOperations> childDaos) {
+    public void setChildDaos(Set<CommonEventOperations<?>> childDaos) {
         this.childDaos = childDaos;
     }
 

@@ -23,16 +23,6 @@
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/hibernate-annotations.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-annotations-3.2.0.GA.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/third-party/commons-logging-1.1.jar" sourcepath="Z:/java/Third-Party Sources/commons-logging-1.1-src.zip">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>

@@ -20,17 +20,15 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.spring.CollectionResultSetExtractor;
 
 public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements ProgramNotificationGroupDao {
-    private static final String PROGRAM_NOTIF_GROUP_TABLENAME = "CCurtProgramNotifGroup";
     private NotificationGroupDao notificationGroupDao;
     
     public ProgramNotificationGroupDaoImpl() {
         super();
     }
 
-    @SuppressWarnings("unchecked")
     public Set<LiteNotificationGroup> getNotificationGroupsForProgram(Program program) {
         SqlStatementBuilder query = new SqlStatementBuilder();
-        query.append("select NotificationGroupId from", PROGRAM_NOTIF_GROUP_TABLENAME);
+        query.append("select NotificationGroupId from CCurtProgramNotifGroup");
         query.append("where CCurtProgramId = ?");
         Object[] args = new Object[] {program.getId()};
         RowMapper rowMapper = new RowMapper() {
@@ -54,7 +52,7 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
         Set<LiteNotificationGroup> toAdd = new HashSet<LiteNotificationGroup>(notificationGroups);
         toAdd.removeAll(currentDbSet);
         SqlStatementBuilder addSql = new SqlStatementBuilder();
-        addSql.append("insert into", PROGRAM_NOTIF_GROUP_TABLENAME, "(NotificationGroupId, CCurtProgramId)");
+        addSql.append("insert into CCurtProgramNotifGroup (NotificationGroupId, CCurtProgramId)");
         addSql.append("values (?, ?)");
         for (LiteNotificationGroup notifGroup : toAdd) {
             final int notifGroupId = notifGroup.getLiteID();
@@ -76,7 +74,7 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
             toDeleteInts.add(lng.getLiteID());
         }
         SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("delete from", PROGRAM_NOTIF_GROUP_TABLENAME);
+        deleteSql.append("delete from CCurtProgramNotifGroup");
         deleteSql.append("where NotificationGroupId in (", toDeleteInts, ")");
         deleteSql.append("and CCurtProgramId = ", program.getId());
         getJdbcTemplate().execute(deleteSql.toString());
@@ -85,7 +83,7 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
     public void deleteForProgram(Program program) {
         Object[] args = new Object[] {program.getId()};
         SqlStatementBuilder query = new SqlStatementBuilder();
-        query.append("delete from", PROGRAM_NOTIF_GROUP_TABLENAME);
+        query.append("delete from CCurtProgramNotifGroup");
         query.append("where CCurtProgramId = ?");
         
         getJdbcTemplate().update(query.toString(), args);

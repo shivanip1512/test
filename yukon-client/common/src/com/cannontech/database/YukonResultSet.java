@@ -77,6 +77,10 @@ public class YukonResultSet {
         return rs.getString(columnLabel);
     }
 
+    public Timestamp getTimestamp(String columnLabel) throws SQLException {
+        return rs.getTimestamp(columnLabel);
+    }
+    
     public Instant getInstant(String columnLabel) throws SQLException {
         Timestamp timestamp = rs.getTimestamp(columnLabel);
         if (timestamp == null) {

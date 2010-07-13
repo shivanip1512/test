@@ -151,7 +151,8 @@ public class CustomerPointTypeHelper {
         customerPoint.setPointId(pointId);
         customer.addPoint(customerPoint);
         
-        customerStubDao.save(customer);
+        //customerPointDataDao.save(customer, customerPoint);
+        customerStubDao.save(customerPoint);
     }
     
     protected LiteYukonPAObject getCustomerDevice(CICustomerStub customer) {

@@ -2,27 +2,13 @@ package com.cannontech.cc.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
-@Entity
-@Table(name = "CCurtCENotif")
 public class CurtailmentEventNotif implements EventNotif {
     private Integer id;
     private Integer notifTypeId;
@@ -31,10 +17,6 @@ public class CurtailmentEventNotif implements EventNotif {
     private CurtailmentEventParticipant participant;
     private NotificationReason reason;
     
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtCENotifId")
     public Integer getId() {
         return id;
     }
@@ -51,7 +33,6 @@ public class CurtailmentEventNotif implements EventNotif {
         this.notificationTime = notificationTime;
     }
 
-    @Column(nullable=false)
     public Integer getNotifTypeId() {
         return notifTypeId;
     }
@@ -60,7 +41,6 @@ public class CurtailmentEventNotif implements EventNotif {
         this.notifTypeId = notifTypeId;
     }
 
-    @Transient
     public NotifType getNotifType() {
         return NotifType.values()[notifTypeId];
     }
@@ -69,8 +49,6 @@ public class CurtailmentEventNotif implements EventNotif {
         this.notifTypeId = type.ordinal();
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=10)
     public NotificationState getState() {
         return state;
     }
@@ -79,8 +57,6 @@ public class CurtailmentEventNotif implements EventNotif {
         this.state = state;
     }
     
-    @ManyToOne
-    @JoinColumn(name="CCurtCEParticipantId", nullable=false)
     public CurtailmentEventParticipant getParticipant() {
         return participant;
     }
@@ -89,8 +65,6 @@ public class CurtailmentEventNotif implements EventNotif {
         this.participant = participant;
     }
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=10)
     public NotificationReason getReason() {
         return reason;
     }
@@ -99,7 +73,6 @@ public class CurtailmentEventNotif implements EventNotif {
         this.reason = reason;
     }
     
-    @Transient
     public CICustomerStub getCustomer() {
         return participant.getCustomer();
     }
@@ -125,6 +98,4 @@ public class CurtailmentEventNotif implements EventNotif {
     public String toString() {
         return "CurtailmentEventNotif [" + id + "]";
     }
-
-
 }

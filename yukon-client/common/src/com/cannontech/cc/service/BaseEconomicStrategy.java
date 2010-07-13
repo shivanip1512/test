@@ -20,10 +20,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.cc.dao.EconomicEventDao;
 import com.cannontech.cc.dao.EconomicEventNotifDao;
 import com.cannontech.cc.dao.EconomicEventParticipantDao;
-import com.cannontech.cc.dao.EconomicEventParticipantSelectionDao;
-import com.cannontech.cc.dao.EconomicEventParticipantSelectionWindowDao;
-import com.cannontech.cc.dao.EconomicEventPricingDao;
-import com.cannontech.cc.dao.EconomicEventPricingWindowDao;
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerPointData;
 import com.cannontech.cc.model.CICustomerStub;
@@ -58,10 +54,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private EconomicEventDao economicEventDao;
     private EconomicEventNotifDao economicEventNotifDao;
     private EconomicEventParticipantDao economicEventParticipantDao;
-    private EconomicEventPricingDao economicEventPricingDao;
-    private EconomicEventPricingWindowDao economicEventPricingWindowDao;
-    private EconomicEventParticipantSelectionDao eventParticipantSelectionDao;
-    private EconomicEventParticipantSelectionWindowDao eventParticipantSelectionWindowDao;
     private TransactionTemplate transactionTemplate;
     private EconomicService economicService;
     private PointDao pointDao;
@@ -791,39 +783,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
 
     public void setEconomicEventParticipantDao(EconomicEventParticipantDao economicEventParticipantDao) {
         this.economicEventParticipantDao = economicEventParticipantDao;
-    }
-
-    public EconomicEventPricingDao getEconomicEventPricingDao() {
-        return economicEventPricingDao;
-    }
-
-    public void setEconomicEventPricingDao(EconomicEventPricingDao economicEventPricingDao) {
-        this.economicEventPricingDao = economicEventPricingDao;
-    }
-
-    public EconomicEventPricingWindowDao getEconomicEventPricingWindowDao() {
-        return economicEventPricingWindowDao;
-    }
-
-    public void setEconomicEventPricingWindowDao(EconomicEventPricingWindowDao economicEventPricingWindowDao) {
-        this.economicEventPricingWindowDao = economicEventPricingWindowDao;
-    }
-
-    public EconomicEventParticipantSelectionDao getEventParticipantSelectionDao() {
-        return eventParticipantSelectionDao;
-    }
-
-    public void setEventParticipantSelectionDao(EconomicEventParticipantSelectionDao eventParticipantSelectionDao) {
-        this.eventParticipantSelectionDao = eventParticipantSelectionDao;
-    }
-
-    public EconomicEventParticipantSelectionWindowDao getEventParticipantSelectionWindowDao() {
-        return eventParticipantSelectionWindowDao;
-    }
-
-    public void setEventParticipantSelectionWindowDao(
-                                                      EconomicEventParticipantSelectionWindowDao eventParticipantSelectionWindowDao) {
-        this.eventParticipantSelectionWindowDao = eventParticipantSelectionWindowDao;
     }
 
     public EconomicService getEconomicService() {

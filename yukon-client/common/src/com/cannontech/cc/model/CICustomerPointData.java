@@ -1,12 +1,6 @@
 package com.cannontech.cc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.hibernate.annotations.Type;
+import org.apache.commons.lang.builder.EqualsBuilder;
 
 import com.cannontech.database.db.customer.CICustomerPointType;
 
@@ -18,23 +12,20 @@ import com.cannontech.database.db.customer.CICustomerPointType;
  * now this class will just have to be dealt with at the id level (although
  * there are some helper methods defined to ease the pain).
  */
-@Entity
-@Table(name = "CICustomerPointData")
 public class CICustomerPointData {
-    private CICustomerPointDataPk id = new CICustomerPointDataPk();
+    private CICustomerPointType type;
+    private Integer customerId;
     private Integer pointId;
     private String optionalLabel = "";
     
-    @Id
-    public CICustomerPointDataPk getId() {
-        return id;
+    public Integer getCustomerId() {
+        return customerId;
     }
     
-    public void setId(CICustomerPointDataPk id) {
-        this.id = id;
+    public void setCustomerId(Integer customerId) {
+        this.customerId = customerId;
     }
     
-    @Column(nullable=false)
     public Integer getPointId() {
         return pointId;
     }
@@ -43,13 +34,18 @@ public class CICustomerPointData {
         this.pointId = pointId;
     }
 
+    public CICustomerPointType getType() {
+        return type;
+    }
+    
+    public void setType(CICustomerPointType type) {
+        this.type = type;
+    }
 
     public CICustomerPointData() {
         super();
     }
 
-    @Type(type="com.cannontech.hibernate.HibernateEscapedString")
-    @Column(length=32, nullable=false)
     public String getOptionalLabel() {
         return optionalLabel;
     }
@@ -57,33 +53,16 @@ public class CICustomerPointData {
     public void setOptionalLabel(String optionalLabel) {
         this.optionalLabel = optionalLabel;
     }
-
-    @Transient
-    public Integer getCustomerId() {
-        return id.getCustomerId();
-    }
-
-    @Transient
-    public CICustomerPointType getType() {
-        return id.getType();
-    }
-
-    public void setCustomerId(Integer customerId) {
-        id.setCustomerId(customerId);
-    }
-
-    public void setType(CICustomerPointType type) {
-        id.setType(type);
-    }
     
-    /**
-     * Helper method to set the customer id. There can
-     * be no get for this, unfortunately.
-     * @param customer
-     */
-    public void setCustomer(CICustomerStub customer) {
-        id.setCustomerId(customer.getId());
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CICustomerPointData == false) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        CICustomerPointData rhs = (CICustomerPointData) obj;
+        return new EqualsBuilder().append(customerId, rhs.customerId).append(type, rhs.type).isEquals();
     }
-    
-
 }

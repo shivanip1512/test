@@ -1,17 +1,6 @@
 package com.cannontech.cc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
-import org.hibernate.annotations.GenericGenerator;
-
-@Entity
-@Table(name="CCurtProgramTypeParameter")
 public class ProgramTypeParameter {
     private Integer id;
     private ProgramType programType;
@@ -20,10 +9,6 @@ public class ProgramTypeParameter {
     private String parameterValueDefault;
     
     
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtProgramTypeParameterId")
     public Integer getId() {
         return id;
     }
@@ -32,7 +17,6 @@ public class ProgramTypeParameter {
         this.id = id;
     }
     
-    @Column(nullable=false)
     public String getParameterName() {
         return parameterName;
     }
@@ -41,7 +25,6 @@ public class ProgramTypeParameter {
         this.parameterName = parameterName;
     }
     
-    @Column(nullable=false)
     public String getParameterValueDefault() {
         return parameterValueDefault;
     }
@@ -50,8 +33,6 @@ public class ProgramTypeParameter {
         this.parameterValueDefault = parameterValueDefault;
     }
     
-    @ManyToOne
-    @JoinColumn(name="CCurtProgramTypeId", nullable=false)
     public ProgramType getProgramType() {
         return programType;
     }
@@ -60,7 +41,6 @@ public class ProgramTypeParameter {
         this.programType = programType;
     }
 
-    @Column(nullable=false)
     public String getParameterDisplay() {
         return parameterDisplay;
     }
@@ -68,5 +48,4 @@ public class ProgramTypeParameter {
     public void setParameterDisplay(String parameterDisplay) {
         this.parameterDisplay = parameterDisplay;
     }
-
 }

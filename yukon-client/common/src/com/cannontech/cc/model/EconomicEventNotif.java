@@ -2,27 +2,13 @@ package com.cannontech.cc.model;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
-@Entity
-@Table(name = "CCurtEconomicEventNotif")
 public class EconomicEventNotif implements EventNotif {
     private Integer id;
     private Integer notifTypeId;
@@ -32,10 +18,6 @@ public class EconomicEventNotif implements EventNotif {
     private EconomicEventPricing revision;
     private NotificationReason reason;
     
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name = "CCurtEconomicEventNotifId")
     public Integer getId() {
         return id;
     }
@@ -52,7 +34,6 @@ public class EconomicEventNotif implements EventNotif {
         this.notificationTime = notificationTime;
     }
 
-    @Column(nullable=false)
     public Integer getNotifTypeId() {
         return notifTypeId;
     }
@@ -61,7 +42,6 @@ public class EconomicEventNotif implements EventNotif {
         this.notifTypeId = notifTypeId;
     }
     
-    @Transient
     public NotifType getNotifType() {
         return NotifType.values()[notifTypeId];
     }
@@ -70,8 +50,6 @@ public class EconomicEventNotif implements EventNotif {
         this.notifTypeId = type.ordinal();
     }
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=10)
     public NotificationState getState() {
         return state;
     }
@@ -80,8 +58,6 @@ public class EconomicEventNotif implements EventNotif {
         this.state = state;
     }
     
-    @ManyToOne
-    @JoinColumn(name="CCurtEconomicParticipantId", nullable=false)
     public EconomicEventParticipant getParticipant() {
         return participant;
     }
@@ -90,8 +66,6 @@ public class EconomicEventNotif implements EventNotif {
         this.participant = participant;
     }
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable=false, length=10)
     public NotificationReason getReason() {
         return reason;
     }
@@ -100,8 +74,6 @@ public class EconomicEventNotif implements EventNotif {
         this.reason = reason;
     }
     
-    @ManyToOne
-    @JoinColumn(name="CCurtEEPricingId", nullable=false)
     public EconomicEventPricing getRevision() {
         return revision;
     }
@@ -110,7 +82,6 @@ public class EconomicEventNotif implements EventNotif {
         this.revision = revision;
     }
     
-    @Transient
     public CICustomerStub getCustomer() {
         return participant.getCustomer();
     }
@@ -136,6 +107,4 @@ public class EconomicEventNotif implements EventNotif {
     public String toString() {
         return "EconomicEventNotif [" + id + "]";
     }
-
-
 }

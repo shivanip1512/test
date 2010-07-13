@@ -3,24 +3,10 @@ package com.cannontech.cc.model;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 import com.cannontech.util.NaturalOrderComparator;
-
-@Entity
-@Table(name="CCurtProgram", 
-       uniqueConstraints=@UniqueConstraint(columnNames={"CCurtProgramName","CCurtProgramTypeId"}))
 
 public class Program implements Serializable, Comparable<Program> {
     private String name = "";
@@ -30,7 +16,6 @@ public class Program implements Serializable, Comparable<Program> {
     private String identifierPrefix = "";
     static private Comparator<String> comparator = new NaturalOrderComparator();
     
-    @Column(name="CCurtProgramName", nullable=false)
     public String getName() {
         return name;
     }
@@ -39,8 +24,6 @@ public class Program implements Serializable, Comparable<Program> {
         this.name = name;
     }
     
-    @ManyToOne()
-    @JoinColumn(name="CCurtProgramTypeId")
     public ProgramType getProgramType() {
         return programType;
     }
@@ -49,7 +32,6 @@ public class Program implements Serializable, Comparable<Program> {
         this.programType = programType;
     }
 
-    @Column(nullable=false)
     public String getIdentifierPrefix() {
         return identifierPrefix;
     }
@@ -58,7 +40,6 @@ public class Program implements Serializable, Comparable<Program> {
         this.identifierPrefix = identifierPrefix;
     }
 
-    @Column(nullable=false)
     public Integer getLastIdentifier() {
         return lastIdentifier;
     }
@@ -67,10 +48,6 @@ public class Program implements Serializable, Comparable<Program> {
         this.lastIdentifier = lastIdentifier;
     }
 
-    @Id
-    @GenericGenerator(name="yukon", strategy="com.cannontech.database.incrementer.HibernateIncrementer")
-    @GeneratedValue(generator="yukon")
-    @Column(name="CCurtProgramId")
     public Integer getId() {
         return id;
     }
@@ -103,5 +80,4 @@ public class Program implements Serializable, Comparable<Program> {
     public int compareTo(Program o) {
         return comparator.compare(name, o.name);
     }
-    
 }

@@ -28,7 +28,6 @@
 				<config>/common/src/com/cannontech/core/dynamic/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/mainContext.xml</config>
 				<config>src/com/cannontech/cbc/cbcContext.xml</config>
-				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
 			</configs>
 		</configSet>
