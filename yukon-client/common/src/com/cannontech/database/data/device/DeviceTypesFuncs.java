@@ -1567,13 +1567,4 @@ public static Object changeType (String newType,
                 return false;
         }
     }
-    
-    public static boolean usesPlc(int deviceType) {
-        if (isMCT(deviceType) || 
-            isRepeater(deviceType) ||
-            (deviceType == LCR3102) )  {
-            return true;
-        }
-        return false;
-    }
 }

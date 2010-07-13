@@ -47,6 +47,9 @@ import com.cannontech.common.gui.util.JTextPanePrintable;
 import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.login.ClientStartupHelper;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileFilter;
 import com.cannontech.common.util.NativeIntVector;
@@ -55,7 +58,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -89,7 +91,8 @@ import com.cannontech.yukon.conns.ConnPool;
 
 public class YukonCommander extends JFrame implements DBChangeLiteListener, ActionListener, FocusListener, KeyListener, TreeSelectionListener, MouseListener, Observer {
 	private YC yc;
-
+	private PaoDefinitionDao paoDefinitionDao;
+	
 	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = "Yukon_Commander_Help.chm";
@@ -1410,6 +1413,8 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		});
 		getYC().addObserver(this);
 		getTreeViewPanel().getTree().setSelectionInterval(0,0);
+		
+		paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
 		// user code end
 	}
 	
@@ -2006,10 +2011,10 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			}
 			
 			if (lpao != null) {
-			    if ( DeviceTypesFuncs.usesPlc(lpao.getType())) {
+			    if (paoDefinitionDao.isTagSupported(PaoType.getForId(lpao.getType()), PaoTag.LOCATE_ROUTE)) {
 					getYCCommandMenu().locateRoute.setEnabled(true);
 				}
-			    if(DeviceTypesFuncs.isMCT4XX(lpao.getType())) {
+			    if (paoDefinitionDao.isTagSupported(PaoType.getForId(lpao.getType()), PaoTag.TOU)) {
                     getYCCommandMenu().downloadSchedule.setEnabled(true);
 			    }
 			}

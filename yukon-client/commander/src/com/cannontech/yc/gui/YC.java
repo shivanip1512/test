@@ -428,7 +428,7 @@ public class YC extends Observable implements MessageListener
 		for (int i = 0; i < commandVec.size(); i++)
 		{	
 			String command = getExecuteCmdsVector().get(i);			
-			if ( DeviceTypesFuncs.usesPlc(liteYukonPao.getType())) {
+			if ( DeviceTypesFuncs.isCarrier(liteYukonPao.getType())) {
 				if( command.indexOf("noqueue") < 0) {
 				    getExecuteCmdsVector().setElementAt( command + getQueueCommandString(), i);	//replace the old command with this one
 				}

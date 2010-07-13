@@ -78,6 +78,13 @@
             </tag>
         </tags>
     </pao>
+    <pao id="SUPPORTS_LOCATE_ROUTE_TAG" abstract="true">
+        <tags>
+            <tag name="LOCATE_ROUTE">
+                <value>true</value>
+            </tag>
+        </tags>
+    </pao>
     
     <!-- MCT BASE -->
     <pao id="MCT_BASE" abstract="true">
@@ -3256,7 +3263,7 @@
     	<displayGroup>Two Way LCR</displayGroup>
     </pao>
     
-    <pao id="LCR3102" inherits="TWO_WAY_LCR_BASE">
+    <pao id="LCR3102" inherits="TWO_WAY_LCR_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>LCR-3102</displayName>
         <points>
             <point type="DemandAccumulator" offset="1">
@@ -3489,7 +3496,7 @@
     	<changeGroup>transmitter</changeGroup>
     </pao>
     
-    <pao id="REPEATER_BASE" abstract="true" inherits="SIGNAL_TRANSMITTER_BASE">
+    <pao id="REPEATER_BASE" abstract="true" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
     	<changeGroup>repeater</changeGroup>
     </pao>
     
@@ -3655,10 +3662,10 @@
     <pao id="REPEATER_850" inherits="REPEATER_BASE">
         <displayName>REPEATER 850</displayName>
     </pao>
-    <pao id="REPEATER_801" inherits="SIGNAL_TRANSMITTER_BASE">
+    <pao id="REPEATER_801" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>REPEATER 801</displayName>
     </pao>
-    <pao id="REPEATER_921" inherits="SIGNAL_TRANSMITTER_BASE">
+    <pao id="REPEATER_921" inherits="SIGNAL_TRANSMITTER_BASE, SUPPORTS_LOCATE_ROUTE_TAG">
         <displayName>REPEATER 921</displayName>
     </pao>
     <pao id="RTC" inherits="SIGNAL_TRANSMITTER_BASE">
