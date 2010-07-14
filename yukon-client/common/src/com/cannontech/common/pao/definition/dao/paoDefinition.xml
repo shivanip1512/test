@@ -85,6 +85,20 @@
             </tag>
         </tags>
     </pao>
+    <pao id="MCT_200_SERIES_TAG" abstract="true">
+        <tags>
+            <tag name="MCT_200_SERIES">
+                <value>true</value>
+            </tag>
+        </tags>
+    </pao>
+    <pao id="MCT_300_SERIES_TAG" abstract="true">
+        <tags>
+            <tag name="MCT_300_SERIES">
+                <value>true</value>
+            </tag>
+        </tags>
+    </pao>
     
     <!-- MCT BASE -->
     <pao id="MCT_BASE" abstract="true">
@@ -1758,7 +1772,7 @@
     </pao>
     
     <!-- MCT 360/370 BASE -->
-    <pao id="MCT_360_370_BASE" abstract="true" inherits="MCT_BASE">
+    <pao id="MCT_360_370_BASE" abstract="true" inherits="MCT_BASE, MCT_300_SERIES_TAG">
     	<points>
     		<point type="Analog" offset="1">
     			<init>true</init>
@@ -2303,7 +2317,7 @@
     </pao>
     
     <!-- MCT 318 BASE -->
-    <pao id="MCT_318_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG">
+    <pao id="MCT_318_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_300_SERIES_TAG">
     	<points>
     		<point type="PulseAccumulator" offset="1">
     			<init>true</init>
@@ -2549,7 +2563,7 @@
 	</pao> 
 	
 	<!-- MCT 310 BASE -->
-    <pao id="MCT_310_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG">
+    <pao id="MCT_310_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_300_SERIES_TAG">
     	<points>
             <point type="PulseAccumulator" offset="1">
             	<init>true</init>
@@ -2808,7 +2822,7 @@
 	</pao>
     
     <!-- MCT 240/248/250 BASE -->
-    <pao id="MCT_240_248_250_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG">
+    <pao id="MCT_240_248_250_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_200_SERIES_TAG">
         <points>
             <point type="PulseAccumulator" offset="1">
             	<init>true</init>
@@ -2945,7 +2959,7 @@
 	</pao>
 	
     <!-- MCT 210/213 BASE -->
-    <pao id="MCT_210_213_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG">
+    <pao id="MCT_210_213_BASE" abstract="true" inherits="MCT_BASE, SUPPORTS_OUTAGE_TAG, MCT_200_SERIES_TAG">
     	<points>
             <point type="PulseAccumulator" offset="1">
             	<init>true</init>
@@ -3510,7 +3524,7 @@
     <pao id="CCU721" inherits="SIGNAL_TRANSMITTER_BASE">
         <displayName>CCU-721</displayName>
     </pao>
-    <pao id="LCU415" inherits="TRANSMITTER_BASE">
+    <pao id="LCU415" inherits="TRANSMITTER_BASE" creatable="false">
         <displayName>LCU-415</displayName>
         <points>
             <point type="DemandAccumulator" offset="1">
@@ -3635,10 +3649,10 @@
             </point>
         </points>
     </pao>
-    <pao id="LCULG" inherits="TRANSMITTER_BASE">
+    <pao id="LCULG" inherits="TRANSMITTER_BASE" creatable="false">
         <displayName>LCU-LG</displayName>
     </pao>
-    <pao id="LCU_T3026" inherits="SIGNAL_TRANSMITTER_BASE">
+    <pao id="LCU_T3026" inherits="SIGNAL_TRANSMITTER_BASE" creatable="false">
         <displayName>LCU-T3026</displayName>
     </pao>
     <pao id="LCU_ER" inherits="SIGNAL_TRANSMITTER_BASE">
@@ -4117,7 +4131,7 @@
         <displayName>ALPHA A3</displayName>
 	</pao>  
 	-->
-    <pao id="DR_87" inherits="ELECTRONIC_METER_BASE">
+    <pao id="DR_87" inherits="ELECTRONIC_METER_BASE" creatable="false">
         <displayName>DR-87</displayName>
         <changeGroup>electronic</changeGroup>
 		<points>
@@ -4271,7 +4285,7 @@
 	<pao id="FOCUS" inherits="ELECTRONIC_METER_BASE">
         <displayName>FOCUS</displayName>
 	</pao>
-	<pao id="SIXNET" inherits="ELECTRONIC_METER_BASE">
+	<pao id="SIXNET" inherits="ELECTRONIC_METER_BASE" creatable="false">
         <displayName>SIXNET</displayName>
 	</pao>
 	
@@ -4406,16 +4420,16 @@
     	<displayGroup>RTU</displayGroup>
     </pao>
     
-    <pao id="DAVISWEATHER" inherits="RTU_BASE">
+    <pao id="DAVISWEATHER" inherits="RTU_BASE" creatable="false">
         <displayName>DAVIS WEATHER</displayName>
     </pao>
-    <pao id="RTU_DART" inherits="RTU_BASE">
+    <pao id="RTU_DART" inherits="RTU_BASE" creatable="false">
         <displayName>RTU-DART</displayName>
     </pao>
     <pao id="RTU_DNP" inherits="RTU_BASE">
         <displayName>RTU-DNP</displayName>
     </pao>
-    <pao id="RTUILEX" inherits="RTU_BASE">
+    <pao id="RTUILEX" inherits="RTU_BASE" creatable="false">
         <displayName>RTU-ILEX</displayName>
         <changeGroup>rtu</changeGroup>
     </pao>

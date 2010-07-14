@@ -134,4 +134,10 @@ public interface PaoDefinitionDao {
      * @return <T extends YukonPao> Iterable<T>
      */
     public <T extends YukonPao> Iterable<T> filterPaosForTag(Iterable<T> paos, PaoTag feature);
+
+    /**
+     * Method to return set of paoDefinitions that are creatable.
+     * @return set of paoDefinition
+     */
+    public Set<PaoDefinition> getCreatablePaoDefinitions();
 }

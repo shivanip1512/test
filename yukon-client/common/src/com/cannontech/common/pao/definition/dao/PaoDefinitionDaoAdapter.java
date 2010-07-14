@@ -123,4 +123,8 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
         throw new UnsupportedOperationException("not implemented");
     }
 
+    @Override
+    public Set<PaoDefinition> getCreatablePaoDefinitions() {
+        throw new UnsupportedOperationException("not implemented");
+    }
 }

@@ -1,5 +1,13 @@
 package com.cannontech.dbeditor.wizard.config;
 
+import java.util.Set;
+
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Sets;
+
 /**
  * This type was created in VisualAge.
  */
@@ -58,6 +66,15 @@ private javax.swing.JRadioButton getJRadioButton200Series() {
 			ivjJRadioButton200Series.setMnemonic('d');
 			ivjJRadioButton200Series.setText("200 Series MCT");
 			// user code begin {1}
+			
+			 // Build up a set of mct200 series definitions that are creatable
+            PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+            Set<PaoDefinition> mct200Series = paoDefinitionDao.getPaosThatSupportTag(PaoTag.MCT_200_SERIES);
+            Set<PaoDefinition> creatable = paoDefinitionDao.getCreatablePaoDefinitions();
+            Set<PaoDefinition> creatableMctSeries = Sets.intersection(mct200Series, creatable);
+
+            boolean isCreatable = !(creatableMctSeries.isEmpty());
+		    ivjJRadioButton200Series.setEnabled(isCreatable);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -81,6 +98,15 @@ private javax.swing.JRadioButton getJRadioButton300Series() {
 			ivjJRadioButton300Series.setMnemonic('c');
 			ivjJRadioButton300Series.setText("300 Series MCT");
 			// user code begin {1}
+			
+			// Build up a set of mct300 series definitions that are creatable
+		    PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+		    Set<PaoDefinition> mct300Series = paoDefinitionDao.getPaosThatSupportTag(PaoTag.MCT_300_SERIES);
+		    Set<PaoDefinition> creatable = paoDefinitionDao.getCreatablePaoDefinitions();
+		    Set<PaoDefinition> creatableMctSeries = Sets.intersection(mct300Series, creatable);
+
+	        boolean isCreatable = !(creatableMctSeries.isEmpty());
+            ivjJRadioButton300Series.setEnabled(isCreatable);
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -250,5 +276,4 @@ public void setFirstFocus()
         } 
     });    
 }
-
 }

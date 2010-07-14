@@ -109,6 +109,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<String, Set<PaoDefinition>> changeGroupPaosMap = null;
     private Map<PaoType, Set<CommandDefinition>> paoCommandMap = null;
     private Map<PaoType, Set<PaoTagDefinition>> paoFeatureMap = null;
+    private Set<PaoDefinition> creatablePaoDefinitions = null;
     private List<String> fileIdOrder = null;
     private ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao;
     
@@ -170,14 +171,14 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     public PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier) {
 
-    	int pointType = pointIdentifier.getType();
+    	int pointType = pointIdentifier.getPointType().getPointTypeId();
     	int offset = pointIdentifier.getOffset();
 
         Set<PointTemplate> allPointTemplates = this.getAllPointTemplates(paoType);
 
         for (PointTemplate template : allPointTemplates) {
 
-            if (template.getType() == pointType && template.getOffset() == offset) {
+            if (template.getPointType().getPointTypeId() == pointType && template.getOffset() == offset) {
                 return template;
             }
         }
@@ -280,6 +281,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         };
         
         return Iterables.filter(paos, supportsTagPredicate);    
+    }
+
+    @Override
+    public Set<PaoDefinition> getCreatablePaoDefinitions() {
+        return creatablePaoDefinitions;
     }
     
     public boolean isTagSupported(PaoDefinition paoDefiniton, PaoTag feature) {
@@ -389,6 +395,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         this.paoAttributeAttrDefinitionMap = new HashMap<PaoType, Map<Attribute, AttributeDefinition>>();
         this.paoCommandMap = new HashMap<PaoType, Set<CommandDefinition>>();
         this.paoFeatureMap = new HashMap<PaoType, Set<PaoTagDefinition>>();
+        this.creatablePaoDefinitions = new HashSet<PaoDefinition>();
         this.fileIdOrder = new ArrayList<String>();
         
         // definition resources (in order from lowest level overrides to highest)
@@ -626,7 +633,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                                                             group,
                                                             javaConstant,
                                                             pao.getChangeGroup(),
-                                                            pao.isCreateable());
+                                                            pao.isCreatable());
 
         // Add paoDefinition to type map
         this.paoTypeMap.put(paoType, paoDefinition);
@@ -714,6 +721,11 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
             featureSet.add(definition);
         }
         this.paoFeatureMap.put(paoType, featureSet);
+        
+        // Add pao to creatable list
+        if( paoDefinition.isCreatable()) {
+            this.creatablePaoDefinitions.add(paoDefinition);
+        }
     }
     
     /**
@@ -776,7 +788,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 throw new RuntimeException("Point name: " + pointRef.getName() + " not found for pao: " + paoName + ".  command pointRefs must reference a point name from the same pao in the paoDefinition.xml file. Point is not on pao, or point has been named incorrectly in a custom file.");
             }
             PointTemplate template = pointNameTemplateMap.get(pointRef.getName());
-            PointIdentifier pi = new PointIdentifier(template.getType(), template.getOffset());
+            PointIdentifier pi = new PointIdentifier(template.getPointType(), template.getOffset());
             definition.addAffectedPoint(pi);
         }
 
@@ -803,7 +815,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
      */
     private PointTemplate createPointTemplate(Point point) {
 
-        PointTemplate template = new PointTemplate(PointTypes.getType(point.getType()), point.getOffset());
+        PointTemplate template = new PointTemplate(PointType.getForString(point.getType()), point.getOffset());
 
         template.setName(point.getName());
 

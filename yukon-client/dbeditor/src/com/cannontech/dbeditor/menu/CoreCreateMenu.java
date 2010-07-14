@@ -3,7 +3,14 @@ package com.cannontech.dbeditor.menu;
 /**
  * This type was created in VisualAge.
  */
+import java.util.Set;
+
 import com.cannontech.common.gui.util.CommandableMenuItem;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoDefinition;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Sets;
 
 public class CoreCreateMenu extends javax.swing.JMenu {
 
@@ -65,7 +72,18 @@ private void initialize() {
 	add( billingGroupMenuItem );
 	add( portMenuItem );
 	add( deviceMenuItem );
-	add( config2WayMenuItem );
+
+	// Build up a set of mct200/300 series definitions that are creatable
+	PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+	Set<PaoDefinition> mct200Series = paoDefinitionDao.getPaosThatSupportTag(PaoTag.MCT_200_SERIES);
+	Set<PaoDefinition> mct300Series = paoDefinitionDao.getPaosThatSupportTag(PaoTag.MCT_300_SERIES);
+	Set<PaoDefinition> mcts = Sets.union(mct200Series, mct300Series);
+	Set<PaoDefinition> creatable = paoDefinitionDao.getCreatablePaoDefinitions();
+	Set<PaoDefinition> creatableMctSeries = Sets.intersection(mcts, creatable);
+	
+	if (!creatableMctSeries.isEmpty()) {
+	    add( config2WayMenuItem );
+    }
 	add( pointMenuItem );
 	add( routeMenuItem );
 	add( stateGroupMenuItem );

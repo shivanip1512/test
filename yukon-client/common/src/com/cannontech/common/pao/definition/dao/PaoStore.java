@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.definition.dao;
 
 import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -15,14 +16,14 @@ import com.cannontech.common.pao.definition.model.castor.Pao;
 import com.cannontech.common.pao.definition.model.castor.Point;
 import com.cannontech.common.pao.definition.model.castor.Tag;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointType;
 
 public class PaoStore {
 
 	// unique per pao
 	private String id;
 	private boolean enabled = true;
-	private boolean createable = true;
+	private boolean creatable = true;
 	private List<String> inheritedIds = new ArrayList<String>();
 	private boolean isAbstract = false;
 	private PaoType paoType = null;
@@ -42,7 +43,7 @@ public class PaoStore {
 		// set 
 		this.setId(castor.getId());
 		this.setEnabled(castor.getEnabled());
-		this.setCreateable(castor.getCreatable());
+		this.setCreatable(castor.getCreatable());
 		this.setAbstract(castor.getAbstract());
 		this.setInheritedIds(castor.getInherits());
 		
@@ -89,8 +90,8 @@ public class PaoStore {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
-	private void setCreateable(boolean createable) {
-        this.createable = createable;
+	private void setCreatable(boolean creatable) {
+        this.creatable = creatable;
     }
 	private void setInheritedIds(String inherits) {
 		if (inherits == null) {
@@ -134,7 +135,7 @@ public class PaoStore {
 		
 		for (Point inheritedPoint : points) {
 			
-			PointIdentifier id = new PointIdentifier(PointTypes.getType(inheritedPoint.getType()), inheritedPoint.getOffset());
+			PointIdentifier id = new PointIdentifier(PointType.getForString(inheritedPoint.getType()), inheritedPoint.getOffset());
 			Point exisitngPoint = this.points.get(id);
 			
 			if (exisitngPoint == null) {
@@ -235,8 +236,8 @@ public class PaoStore {
 	public boolean isEnabled() {
 		return enabled;
 	}
-	public boolean isCreateable() {
-        return createable;
+	public boolean isCreatable() {
+        return creatable;
     }
 	public List<String> getInheritedIds() {
 		return inheritedIds;
