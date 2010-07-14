@@ -1,7 +1,7 @@
 package com.cannontech.web.bulk;
 
 import java.util.LinkedHashMap;
-import java.util.List;
+
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,6 +35,7 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.Multimap;
 
 @CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
 public class ChangeDeviceTypeController extends BulkControllerBase {
@@ -62,7 +63,7 @@ public class ChangeDeviceTypeController extends BulkControllerBase {
         mav.addObject("deviceCollection", deviceCollection);
         
         Map<String, Integer> deviceTypes = new LinkedHashMap<String, Integer>();
-        Map<String, List<PaoDefinition>> deviceGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
+        Multimap<String, PaoDefinition> deviceGroupMap = paoDefinitionService.getPaoDisplayGroupMap();
         for (String key : deviceGroupMap.keySet()) {
             for (PaoDefinition def :  deviceGroupMap.get(key)) {
                 deviceTypes.put(def.getDisplayName(), def.getType().getDeviceTypeId());

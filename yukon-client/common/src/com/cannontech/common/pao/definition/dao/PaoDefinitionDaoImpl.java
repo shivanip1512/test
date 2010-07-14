@@ -84,8 +84,10 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.ListMultimap;
 
 /**
  * Implementation class for PaoDefinitionDao
@@ -105,7 +107,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private Map<PaoType, Set<PointTemplate>> paoAllPointTemplateMap = null;
     private Map<PaoType, Set<PointTemplate>> paoInitPointTemplateMap = null;
     private Map<PaoType, PaoDefinition> paoTypeMap = null;
-    private Map<String, List<PaoDefinition>> paoDisplayGroupMap = null;
+    private ListMultimap<String, PaoDefinition> paoDisplayGroupMap = null;
     private Map<String, Set<PaoDefinition>> changeGroupPaosMap = null;
     private Map<PaoType, Set<CommandDefinition>> paoCommandMap = null;
     private Map<PaoType, Set<PaoTagDefinition>> paoFeatureMap = null;
@@ -328,8 +330,8 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     	return allDefinitions;
     }
     
-    public Map<String, List<PaoDefinition>> getPaoDisplayGroupMap() {
-        return Collections.unmodifiableMap(this.paoDisplayGroupMap);
+    public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap() {
+        return this.paoDisplayGroupMap;
     }
     
     public PaoDefinition getPaoDefinition(PaoType paoType) {
@@ -390,7 +392,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         this.paoTypeMap = new LinkedHashMap<PaoType, PaoDefinition>();
         this.paoAllPointTemplateMap = new HashMap<PaoType, Set<PointTemplate>>();
         this.paoInitPointTemplateMap = new HashMap<PaoType, Set<PointTemplate>>();
-        this.paoDisplayGroupMap = new LinkedHashMap<String, List<PaoDefinition>>();
+        this.paoDisplayGroupMap = ArrayListMultimap.create();
         this.changeGroupPaosMap = new HashMap<String, Set<PaoDefinition>>();
         this.paoAttributeAttrDefinitionMap = new HashMap<PaoType, Map<Attribute, AttributeDefinition>>();
         this.paoCommandMap = new HashMap<PaoType, Set<CommandDefinition>>();
@@ -652,15 +654,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         }
 
         // Add paoDefinition to group map
-        if (group != null) {
-            List<PaoDefinition> typeList = this.paoDisplayGroupMap.get(group);
-            if (typeList == null) {
-                typeList = new ArrayList<PaoDefinition>();
-                this.paoDisplayGroupMap.put(group, typeList);
-            }
-
-            typeList.add(paoDefinition);
-        }
+        this.paoDisplayGroupMap.put(group, paoDefinition);
 
         // Add pao points
         Set<PointTemplate> pointSet = new HashSet<PointTemplate>();

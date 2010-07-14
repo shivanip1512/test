@@ -1,7 +1,5 @@
 package com.cannontech.common.pao.definition.dao;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -13,6 +11,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.google.common.collect.ListMultimap;
 
 public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
@@ -59,7 +58,7 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 	}
 
 	@Override
-	public Map<String, List<PaoDefinition>> getPaoDisplayGroupMap() {
+	public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap() {
 		throw new UnsupportedOperationException("not implemented");
 	}
 

@@ -1,11 +1,11 @@
 package com.cannontech.common.pao.definition.dao;
 
 import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
@@ -32,6 +32,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableSet.Builder;
 
 /**
@@ -163,7 +164,7 @@ public class PaoDefinitionDaoImplTest extends TestCase {
      */
     public void testGetDeviceDisplayGroupMap() {
 
-        Map<String, List<PaoDefinition>> deviceDisplayGroupMap = dao.getPaoDisplayGroupMap();
+        Multimap<String, PaoDefinition> deviceDisplayGroupMap = dao.getPaoDisplayGroupMap();
 
         // Make sure there are the correct number of device type groups
         assertEquals("There should be 2 device type groups", 2, deviceDisplayGroupMap.keySet()

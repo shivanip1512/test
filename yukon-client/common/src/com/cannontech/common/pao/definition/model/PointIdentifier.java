@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 
 public class PointIdentifier implements Comparable<PointIdentifier>, Serializable {
@@ -107,5 +108,17 @@ public class PointIdentifier implements Comparable<PointIdentifier>, Serializabl
     	if( type != identifier.getPointType())
     		return false;
     	return true;
+    }
+    
+    /**
+     * Helper method to create a pointIdentifier from a litePoint
+     * @param litePoint
+     * @param yukonPao
+     * @return
+     */
+    public static PointIdentifier createPointIdentifier(LitePoint litePoint) {
+        PointType pointType = PointType.getForId(litePoint.getPointType());
+        PointIdentifier pointIdentifier = new PointIdentifier(pointType, litePoint.getPointOffset());
+        return pointIdentifier;
     }
 }

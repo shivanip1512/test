@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,12 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.service.PointCreationService;
+import com.cannontech.common.util.MapUtil;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 
 /**
@@ -68,31 +68,22 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
         return pointList;
     }
 
-    public Map<String, List<PaoDefinition>> getPaoDisplayGroupMap() {
+    public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap() {
         return paoDefinitionDao.getPaoDisplayGroupMap();
     }
 
-    public Map<String, List<PaoDefinition>> getCreatablePaoDisplayGroupMap() {
-        
-        Map<String, List<PaoDefinition>> paoDisplayGroupMap = 
-            paoDefinitionDao.getPaoDisplayGroupMap();
-        
-        Map<String, List<PaoDefinition>> creatablePaoDisplayGroupMap = Maps.newLinkedHashMap();
-        
-        // Create a new map with only creatable paoDefinitions in it
-        for (Map.Entry<String, List<PaoDefinition>> entry : paoDisplayGroupMap.entrySet()) {
-            
-            List<PaoDefinition> paoDefinitionList = entry.getValue();
-            List<PaoDefinition> creatablePaoDefinitionList = Lists.newArrayList();
-            for (PaoDefinition paoDefinition : paoDefinitionList) {
-                if(paoDefinition.isCreatable()) {
-                    creatablePaoDefinitionList.add(paoDefinition);
-                }
+    private ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap(Predicate<PaoDefinition> predicate) {
+        ListMultimap<String, PaoDefinition> paoDisplayGroupMap = paoDefinitionDao.getPaoDisplayGroupMap();
+        return MapUtil.filterMultimap(paoDisplayGroupMap, predicate); 
+    }
+
+    @Override
+    public ListMultimap<String, PaoDefinition> getCreatablePaoDisplayGroupMap() {
+        return getPaoDisplayGroupMap(new Predicate<PaoDefinition>() {
+            public boolean apply(PaoDefinition input) {
+                return input.isCreatable();
             }
-            creatablePaoDisplayGroupMap.put(entry.getKey(), creatablePaoDefinitionList);
-        }
-        
-        return Collections.unmodifiableMap(creatablePaoDisplayGroupMap); 
+        });
     }
 
     public boolean isPaoTypeChangeable(YukonPao pao) {
@@ -223,16 +214,12 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
     	Set<PointTemplate> existingTemplates = paoDefinitionDao.getAllPointTemplates(pao.getPaoIdentifier().getPaoType());
     	
     	for (LitePoint litePoint : existingPoints) {
-    	    PointIdentifier pointIdentifier = getPaoPointIdentifier(litePoint);
+    	    PointIdentifier pointIdentifier = PointIdentifier.createPointIdentifier(litePoint);
 			for (PointTemplate template : existingTemplates) {
 				if (pointIdentifier.equals(template.getPointIdentifier()))
 					templates.add(template);
 			}
 		}
         return templates;
-    }
-    
-    private PointIdentifier getPaoPointIdentifier(LitePoint point) {
-        return new PointIdentifier(point.getPointType(), point.getPointOffset());
     }
 }

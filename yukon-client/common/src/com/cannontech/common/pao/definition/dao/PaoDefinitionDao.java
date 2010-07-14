@@ -1,7 +1,5 @@
 package com.cannontech.common.pao.definition.dao;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -13,6 +11,7 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.google.common.collect.ListMultimap;
 
 /**
  * Data access object for pao definition information
@@ -104,7 +103,7 @@ public interface PaoDefinitionDao {
      * @return An immutable map with key: display group name, value: list of
      *         pao display
      */
-    public abstract Map<String, List<PaoDefinition>> getPaoDisplayGroupMap();
+    public abstract ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap();
 
     /**
      * Method used to get a pao definition for a pao

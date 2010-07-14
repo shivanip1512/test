@@ -3,9 +3,8 @@ package com.cannontech.dbeditor.wizard.device;
  * This type was created in VisualAge.
  */
 import java.awt.Dimension;
+
 import java.awt.Frame;
-import java.util.List;
-import java.util.Map;
 
 import javax.swing.event.ListSelectionListener;
 
@@ -15,9 +14,10 @@ import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Multimap;
 
 public class DeviceTypePanel extends DataInputPanel implements ListSelectionListener {
-    private Map<String, List<PaoDefinition>> deviceDisplayGroupMap = null;
+    private Multimap<String, PaoDefinition> deviceDisplayGroupMap = null;
 
     private javax.swing.JLabel ivjTypeLabel = null;
 
