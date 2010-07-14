@@ -133,6 +133,11 @@ float DispatchPointDataRequest::ratioComplete(PointRequestType pointRequestType)
 {
     PointRequestTypeToPointIdMap::iterator itr = _requestTypeToPointId.find(pointRequestType);
 
+    if (itr == _requestTypeToPointId.end())
+    {
+        return 0.0;
+    }
+
     int complete = 0;
     int total = itr->second.size();
 
