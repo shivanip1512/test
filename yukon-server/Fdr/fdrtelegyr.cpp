@@ -1042,6 +1042,11 @@ bool CtiFDRTelegyr::loadGroupLists( void )
                successful = translateSinglePoint(myIterator->second);
             }
 
+            for (std::vector< CtiTelegyrGroup >::iterator group = _groupList.begin(); group != _groupList.end(); group++)
+            {
+               dout << CtiTime() << " " << group->getPointList().size() << endl;
+            }
+
             _reloadPending = true;
 
             delete pointList;
@@ -1202,7 +1207,6 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
 {
    CtiPointDataMsg      *pData      = NULL;
    CtiCommandMsg        *pCmdMsg    = NULL;
-   CtiFDRPoint          *point      = NULL;
    long                 pointid;
    bool                 returnCode;
    double               value;
@@ -1245,6 +1249,16 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
          }
       }
 
+      if (done == false)
+      {
+         if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+         {
+            CtiLockGuard<CtiLogger> doubt_guard( dout );
+            dout << CtiTime() << " Point not found for group id: " << groupid << " and index: " << index << endl;
+         }
+         return false;
+      }
+
       //get the quality of the point data
       if( !api_check_any_quality_bit_set( aPoint.sys_dependent_info ) )
       {
@@ -1256,6 +1270,12 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
          {
             quality = NonUpdatedQuality;
             nonUpdated = true;
+
+            if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
+            {
+               CtiLockGuard<CtiLogger> doubt_guard( dout );
+               dout << CtiTime() << " Telemetry fail bit set. Yukon point id: " << pointid << " and group id: " << groupid << endl;
+            }
          }
          else
          {
@@ -1269,7 +1289,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
 
          pCmdMsg->insert( -1 );                             // This is the dispatch token and is unimplemented at this time
          pCmdMsg->insert( OP_POINTID );                     // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-         pCmdMsg->insert( point->getPointID() );            // The id (device or point which failed)
+         pCmdMsg->insert( pointid );            // The id (device or point which failed)
          pCmdMsg->insert( ScanRateGeneral );                // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
          pCmdMsg->insert( UnknownError );                   // The error number from dsm2.h or yukon.h which was reported.
 

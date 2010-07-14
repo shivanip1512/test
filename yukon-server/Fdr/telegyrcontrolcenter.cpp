@@ -31,7 +31,21 @@ CtiTelegyrControlCenter::~CtiTelegyrControlCenter()
 
 CtiTelegyrControlCenter& CtiTelegyrControlCenter::operator=( const CtiTelegyrControlCenter &other )
 {
-   return *this;
+
+    if( this != &other )
+    {
+        _channelID = other._channelID;
+        _access = other._access;
+        _operatorName = other._operatorName;
+        _password = other._password;
+        _systemName = other._systemName;
+        _groupValid = other._groupValid;
+        _systemType = other._systemType;
+
+        //this is a vector of groups with a vector of pointnames for each
+        _telegyrGroupList = other._telegyrGroupList;
+    }
+    return *this;
 }
 
 //=================================================================================================================================

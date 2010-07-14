@@ -38,6 +38,8 @@ CtiTelegyrGroup& CtiTelegyrGroup::operator=( const CtiTelegyrGroup &other )
       _groupID = getGroupID();
       _groupType = other.getGroupName();
       _interval = getInterval();
+
+      _pointList = other._pointList;
    }
    return *this;
 }
