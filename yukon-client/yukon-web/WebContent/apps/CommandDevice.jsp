@@ -133,9 +133,7 @@
 
 			<c:if test="${meterDetailDisplayable}">
 			<div class="sideMenuLink">
-                <cti:paoDetailUrl yukonPao="${liteYukonPao}">
-                    <spring:escapeBody htmlEscape="true">${liteYukonPao.paoName}</spring:escapeBody>
-                </cti:paoDetailUrl>
+                <cti:paoDetailUrl yukonPao="${liteYukonPao}">Meter Details</cti:paoDetailUrl>
 			</div>
 			</c:if>
       
