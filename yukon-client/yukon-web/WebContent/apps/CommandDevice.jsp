@@ -2,6 +2,7 @@
 --%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ page import="java.util.*" %>
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
@@ -14,8 +15,9 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.yc.bean.CommandDeviceBean"%>
-<%@page import="com.cannontech.database.data.device.DeviceTypesFuncs"%>
-
+<%@page import="com.cannontech.common.pao.definition.model.PaoTag"%>
+<%@page import="com.cannontech.common.pao.definition.dao.PaoDefinitionDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
 <%
     LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
     String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
@@ -41,13 +43,14 @@
 		deviceID = YC_BEAN.getLiteYukonPao().getLiteID();
 	}
 
-    boolean usesDeviceMeterGroup = false;
+    boolean meterDetailDisplayable = false;
 	//get the liteYukonPao using the deviceID
 	LiteYukonPAObject liteYukonPao = null;
     if (deviceID >= 0) {
         liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
         // just picked something easy to check against.  "Meters" use DeviceMeterGroup, which is what we want for the Meter Details link.
-        usesDeviceMeterGroup = DeviceTypesFuncs.usesDeviceMeterGroup(liteYukonPao.getType());
+        PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
+        meterDetailDisplayable = paoDefinitionDao.isTagSupported(liteYukonPao.getPaoIdentifier().getPaoType(), PaoTag.METER_DETAIL_DISPLAYABLE);
     }
 
 	Vector serialNumbers;
@@ -91,7 +94,8 @@
 	
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
-    <c:set var="usesDeviceMeterGroup" scope="page" value="<%=usesDeviceMeterGroup%>"/>
+    <c:set var="meterDetailDisplayable" scope="page" value="<%=meterDetailDisplayable%>"/>
+    <c:set var="liteYukonPao" scope="page" value="<%=liteYukonPao %>"/>
     
     <table border="0">
     
@@ -127,12 +131,11 @@
 			<div class="sideMenuLink selected">Manual</div>
 			<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&command=null"/> 
 
-			<c:if test="${usesDeviceMeterGroup}">
+			<c:if test="${meterDetailDisplayable}">
 			<div class="sideMenuLink">
-						<cti:url var="meterDetailsUrl" value="/spring/meter/home">
-							<cti:param name="deviceId" value="${deviceId}" />
-						</cti:url>
-						<a href="${meterDetailsUrl}" class="Link1">Meter Details</a>
+                <cti:paoDetailUrl yukonPao="${liteYukonPao}">
+                    <spring:escapeBody htmlEscape="true">${liteYukonPao.paoName}</spring:escapeBody>
+                </cti:paoDetailUrl>
 			</div>
 			</c:if>
       
