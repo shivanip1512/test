@@ -16,8 +16,7 @@ public interface ControlHistoryEventDao {
      * migrate the data over to the new displayable objects..
      * 
      */
-    public StarsLMControlHistory getEventsByGroup(int customerAccountId, int lmGroupId, int inventoryId,
-                                                   ControlPeriod period, YukonUserContext yukonUserContext);
+    public StarsLMControlHistory getEventsByGroup(int accountId, int lmGroupId, int inventoryId, ControlPeriod period, YukonUserContext userContext, boolean past);
 
     /**
      * This method gets the latest control history event for the given inventory, program, and account.
@@ -25,10 +24,7 @@ public interface ControlHistoryEventDao {
      * actual account.
      * 
      */
-    public ControlHistoryEvent getLastControlHistoryEntry(int customerAccountId,
-                                                          int programId,
-                                                          int inventoryId,
-                                                          YukonUserContext yukonUserContext);
+    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, YukonUserContext userContext, boolean past);
     
     /**
      * This method takes in an old stars control history object and generates the
@@ -39,12 +35,12 @@ public interface ControlHistoryEventDao {
  
     /**
      * This method removes any invalid control history in regards to enrollment.
-     * 
+     * If past is true, removes control history for current enrollments. If false,
+     * removes control history for previous enrollments.
      * @param controlHistory
      * @param holder
+     * @param past What control history to filter out, past enrollments or current enrollments.
      */
-    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
-                                                      int inventoryId,
-                                                      int groupId);
+    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory, int inventoryId, int groupId, boolean past);
 
 }

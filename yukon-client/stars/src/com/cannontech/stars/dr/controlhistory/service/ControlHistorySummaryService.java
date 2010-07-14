@@ -11,9 +11,6 @@ public interface ControlHistorySummaryService {
      * enrolled in a program.
      * 
      */
-    public ControlHistorySummary getControlSummary(int customerAccountId,
-                                                   int inventoryId,
-                                                   int groupId,
-                                                   YukonUserContext userContext);
+    public ControlHistorySummary getControlSummary(int customerAccountId, int inventoryId, int groupId, YukonUserContext userContext, boolean past);
  
 }

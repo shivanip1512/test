@@ -8,9 +8,16 @@
     <cti:includeCss link="/WebConfig/yukon/styles/controlHistory.css"/>
     
     <div id="programs">
-        <dr:controlHistorySummary displayableProgramList="${displayablePrograms}"
+        <dr:controlHistorySummary displayableProgramList="${currentControlHistory}"
+                                  showControlHistorySummary="${true}" past="false"
+                                  completeHistoryUrl="${completeHistoryUrl}" titleKey="yukon.web.modules.operator.controlHistory.currentEnrollmentControlHistory"/>
+        
+        <br>
+        <br>
+        
+        <dr:controlHistorySummary displayableProgramList="${previousControlHistory}"
                                   showControlHistorySummary="${true}" 
-                                  completeHistoryUrl="${completeHistoryUrl}" />
+                                  completeHistoryUrl="${completeHistoryUrl}" titleKey="yukon.web.modules.operator.controlHistory.previousEnrollmentControlHistory" past="true"/>
     </div>
                             
 </cti:standardPage>

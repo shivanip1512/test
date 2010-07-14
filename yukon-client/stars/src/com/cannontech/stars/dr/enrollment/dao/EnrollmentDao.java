@@ -95,4 +95,12 @@ public interface EnrollmentDao {
      * @return true if the inventory is in service.
      */
 	public boolean isInService(int inventoryId);
+
+	/**
+	 * Returns true if the account is enrolled in any program,
+	 * false if not enrolled.
+	 * @param accountId Id of account to check enrollment.
+	 * @return True if account is enrolled, false otherwise.
+	 */
+    public boolean isAccountEnrolled(int accountId);
 }

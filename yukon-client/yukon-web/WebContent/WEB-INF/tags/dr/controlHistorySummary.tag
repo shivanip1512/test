@@ -1,6 +1,8 @@
 <%@ attribute name="displayableProgramList" required="true" type="java.util.List" %>
 <%@ attribute name="showControlHistorySummary" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="past" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="completeHistoryUrl" required="true" type="java.lang.String" %>
+<%@ attribute name="titleKey" required="true" type="java.lang.String" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -11,7 +13,7 @@
 
 <cti:msgScope paths=".controlHistorySummary, components.controlHistorySummary">
 	<c:choose>
-		<c:when test="${isNotEnrolled}">
+		<c:when test="${isNotEnrolled && not past}">
 			<span id="notEnrolledMessageSpan"> <i18n:inline key=".notEnrolledMessage" /></span>
 		</c:when>
 		<c:otherwise>
@@ -35,7 +37,7 @@
                  
                 <c:if test="${showControlHistorySummary}">
 					<tr>
-						<th colspan="3"></th>
+						<th colspan="3" style="text-align: left;"><i18n:inline key="${titleKey}"/></th>
 						<th>
 						    <i18n:inline key=".day" />
 							<a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
@@ -60,12 +62,12 @@
 					</tr>
 				</c:if>
 	
-				<c:forEach var="displayableProgram" items="${displayablePrograms}">
+				<c:forEach var="displayableProgram" items="${displayableProgramList}">
 					<c:set var="program" value="${displayableProgram.program}" />
 					<tr>
 						<td colspan="3" class="programLabel">
 						    <span class="programLabel"><spring:escapeBody htmlEscape="true"><cti:msg key="${program.displayName}" /></spring:escapeBody></span>
-							<span class="detailsLink"><a href="${completeHistoryUrl}?programId=${program.programId}<c:if test="${not empty accountId}">&accountId=${accountId}</c:if>"><i18n:inline key='.details' /></a></span>
+							<span class="detailsLink"><a href="${completeHistoryUrl}?programId=${program.programId}&past=${past}<c:if test="${not empty accountId}">&accountId=${accountId}</c:if>"><i18n:inline key='.details' /></a></span>
 						</td>
 						<c:if test="${showControlHistorySummary}">
 							<c:set var="programControlHistorySummary" value="${displayableProgram.displayableControlHistoryList[0].controlHistory.programControlHistorySummary}" />
@@ -112,8 +114,8 @@
 									<td>
 										<c:choose>
 											<c:when test="${not empty controlHistory.lastControlHistoryEvent.endDate}">
-												<cti:formatDate type="DATEHM" var="lastControledEndDate" value="${controlHistory.lastControlHistoryEvent.endDate}"/>
-												<i18n:inline key="${controlHistory.currentStatus.formatKey}" arguments="${lastControledEndDate}" /> 
+												<cti:formatDate type="DATEHM" var="lastControlledEndDate" value="${controlHistory.lastControlHistoryEvent.endDate}"/>
+												<i18n:inline key="${controlHistory.currentStatus.formatKey}" arguments="${lastControlledEndDate}" /> 
 											</c:when>
 											<c:otherwise>
 												<i18n:inline key="${controlHistory.currentStatus.formatKey}" /> 

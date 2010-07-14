@@ -490,12 +490,17 @@ public class LMControlHistoryUtil {
 		return ids;
 	}
 	
-	
-    public static StarsLMControlHistory getStarsLMControlHistory(int groupID, 
-                                                                   int inventoryId,
-                                                                   int accountId, 
-                                                                   StarsCtrlHistPeriod period, 
-                                                                   YukonUserContext yukonUserContext) {
+	/**
+	 * Returns the control history for the given load group, inventory and account over the given period.
+	 * @param groupId The load group id.
+	 * @param inventoryId The inventory id.
+	 * @param accountId The account id.
+	 * @param period The period to get history for ie: past day, past month, past year.
+	 * @param yukonUserContext The user requesting the control history.
+	 * @return StarsLMControlHistory The control history for the given group, inventory, and account for the given period.
+	 */
+    public static StarsLMControlHistory getStarsLMControlHistory(int groupId, int inventoryId, int accountId, StarsCtrlHistPeriod period, YukonUserContext yukonUserContext) {
+        DateTimeZone timeZone = yukonUserContext.getJodaTimeZone();
         /*
          * Don't forget that startDate is simply based on whether it was an ALL, WEEKLY, 
          * or MONTHLY choice on the UI page.  It isn't a true control period start date of any kind.
@@ -504,57 +509,34 @@ public class LMControlHistoryUtil {
          * by looking at all control history entries for a group and account each time we need to do
          * away with passing in this startDate, we need to override this every time with a value of ALL.
          */ 
-        DateTime startDate = getPeriodStartTime(period, yukonUserContext.getJodaTimeZone());
-        DateTime oneYearAgoDate = getPeriodStartTime(StarsCtrlHistPeriod.PASTYEAR, 
-                                                     yukonUserContext.getJodaTimeZone());
-
-        LiteStarsLMControlHistory liteCtrlHist;
-        if (period.getType() == StarsCtrlHistPeriod.ALL_TYPE) {
-            Instant startInstant = new Instant(0);
-            liteCtrlHist = 
-                StarsDatabaseCache.getInstance().getLMControlHistory(groupID,
-                                                                     startInstant);
-        /* Try to help performance a little bit here if we can.  
-         * loading a year is better than loading all entries if we don't need to.*/
-        } else {
-            liteCtrlHist = 
-                StarsDatabaseCache.getInstance().getLMControlHistory(groupID, oneYearAgoDate);
-        }
-        addActiveControlHistory( liteCtrlHist );
-        
-        //New enrollment, opt out, and control history tracking
-        //-------------------------------------------------------------------------------
-        LMHardwareControlGroupDao lmHardwareControlGroupDao = 
-            (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
-        List<LMHardwareControlGroup> enrollments = 
-            lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(
-                                          inventoryId, 
-                                          groupID, 
-                                          accountId, 
-                                          LMHardwareControlGroup.ENROLLMENT_ENTRY);
-        List<LMHardwareControlGroup> optOuts = 
-            lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(
-                                          inventoryId, 
-                                          groupID, 
-                                          accountId, 
-                                          LMHardwareControlGroup.OPT_OUT_ENTRY);
-        
-        StarsLMControlHistory starsCtrlHist = 
-            buildStarsControlHistoryForPeriod(liteCtrlHist, period, yukonUserContext.getJodaTimeZone());
-        /*
-         * Wait until now to iterate through starsCtrlHist since the totals have already been
-         * calculated from all types of ActiveRestore types
-         */
-        StarsLMControlHistory currentStarsLMControlHistory = 
-            adjustLMControlHistoryByEnrollmentAndOptOutTimes(starsCtrlHist, 
-                                                             startDate, 
-                                                             enrollments, 
-                                                             optOuts);
-        
+        DateTime startDate = getPeriodStartTime(period, timeZone);
+        DateTime oneYearAgoDate = getPeriodStartTime(StarsCtrlHistPeriod.PASTYEAR, timeZone);
+        StarsDatabaseCache cache = StarsDatabaseCache.getInstance();
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
+        LiteStarsLMControlHistory liteControlHistory;
         ControlSummary summaryForToday = new ControlSummary();
+
+        if (period.getType() == StarsCtrlHistPeriod.ALL_TYPE) {
+            liteControlHistory = cache.getLMControlHistory(groupId, new Instant(0));
+        } else {
+            /* Try to help performance a little bit here if we can.  
+             * Loading a year is better than loading all entries if we don't need to.*/
+            liteControlHistory = cache.getLMControlHistory(groupId, oneYearAgoDate);
+        }
+        
+        addActiveControlHistory( liteControlHistory );
+        
+        /* Get enrollments and opt outs. */
+        List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, groupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType( inventoryId, groupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
+        
+        StarsLMControlHistory starsLMControlHistory = buildStarsControlHistoryForPeriod(liteControlHistory, period, timeZone);
+        
+        /* Wait until now to iterate through starsLMControlHistory since the totals have already been calculated from all types of ActiveRestore types */
+        StarsLMControlHistory actualStarsLMControlHistory = adjustForEnrollmentAndOptOut(starsLMControlHistory, startDate, enrollments, optOuts);
         
         if(period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
-            /* have to do each period separately here, otherwise carry-over control gets missed 
+            /* We have to do each period separately here, otherwise carry-over control gets missed 
              * since StarsLMControlHistory objects are constructed differently from the original 
              * control history database entries depending on the period.
              * 
@@ -562,41 +544,22 @@ public class LMControlHistoryUtil {
              * show up for today's period as 7 hours of control even though it was 10 hours of total
              * control starting yesterday.
              */
-            StarsLMControlHistory periodCtrlHist = 
-                buildStarsControlHistoryForPeriod(liteCtrlHist, StarsCtrlHistPeriod.PASTYEAR, 
-                                                  yukonUserContext.getJodaTimeZone());
-            summaryForToday.setAnnualTime(
-                                calculateSummaryControlValueForPeriod(periodCtrlHist, 
-                                                                      StarsCtrlHistPeriod.PASTYEAR, 
-                                                                      yukonUserContext.getJodaTimeZone(),
-                                                                      enrollments));
+            StarsLMControlHistory pastYear = buildStarsControlHistoryForPeriod(liteControlHistory, StarsCtrlHistPeriod.PASTYEAR, timeZone);
+            summaryForToday.setAnnualTime(calculateSummaryControlValueForPeriod(pastYear, StarsCtrlHistPeriod.PASTYEAR, timeZone, enrollments));
             
-            periodCtrlHist = 
-                buildStarsControlHistoryForPeriod(liteCtrlHist, StarsCtrlHistPeriod.PASTMONTH, 
-                                                  yukonUserContext.getJodaTimeZone());
-            summaryForToday.setMonthlyTime(
-                                calculateSummaryControlValueForPeriod(periodCtrlHist, 
-                                                                      StarsCtrlHistPeriod.PASTMONTH, 
-                                                                      yukonUserContext.getJodaTimeZone(),
-                                                                      enrollments));
+            StarsLMControlHistory pastMonth  = buildStarsControlHistoryForPeriod(liteControlHistory, StarsCtrlHistPeriod.PASTMONTH, timeZone);
+            summaryForToday.setMonthlyTime(calculateSummaryControlValueForPeriod(pastMonth, StarsCtrlHistPeriod.PASTMONTH, timeZone, enrollments));
             
-            periodCtrlHist = 
-                buildStarsControlHistoryForPeriod(liteCtrlHist, StarsCtrlHistPeriod.PASTDAY, 
-                                                  yukonUserContext.getJodaTimeZone());
-            summaryForToday.setDailyTime(
-                                calculateSummaryControlValueForPeriod(periodCtrlHist, 
-                                                                      StarsCtrlHistPeriod.PASTDAY, 
-                                                                      yukonUserContext.getJodaTimeZone(),
-                                                                      enrollments));
+            StarsLMControlHistory pastDay = buildStarsControlHistoryForPeriod(liteControlHistory, StarsCtrlHistPeriod.PASTDAY, timeZone);
+            summaryForToday.setDailyTime(calculateSummaryControlValueForPeriod(pastDay, StarsCtrlHistPeriod.PASTDAY, timeZone, enrollments));
         }
         
-        currentStarsLMControlHistory.setControlSummary(summaryForToday);
-        currentStarsLMControlHistory.setBeingControlled(starsCtrlHist.getBeingControlled());
-        //-------------------------------------------------------------------------------
+        actualStarsLMControlHistory.setControlSummary(summaryForToday);
+        actualStarsLMControlHistory.setBeingControlled(starsLMControlHistory.getBeingControlled());
         
-        return currentStarsLMControlHistory;
+        return actualStarsLMControlHistory;
     }
-
+    
 	public static void updateActiveControlHistory() {
 		Hashtable<Integer, LiteStarsLMControlHistory> ctrlHistMap = 
 			new Hashtable<Integer, LiteStarsLMControlHistory> ( activeCtrlHist );
@@ -675,40 +638,35 @@ public class LMControlHistoryUtil {
         
         for(LMHardwareControlGroup enrollmentEntry : enrollments) {
             //wasn't enrolled with this entry at the time
-            if (enrollmentEntry.getGroupEnrollStart().isAfter(controlHistoryStopDateTime) ||
-                (enrollmentEntry.getGroupEnrollStop() != null && 
-                 enrollmentEntry.getGroupEnrollStop().isBefore(controlHistoryStartDateTime))) {
+            if (enrollmentEntry.getGroupEnrollStart().isAfter(controlHistoryStopDateTime) 
+                    || (enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().isBefore(controlHistoryStartDateTime))) {
+            
                 continue;
             
             } else {
                 //period falls cleanly within the enrollment range, total remains the same
-                if (enrollmentEntry.getGroupEnrollStart().isBefore(controlHistoryStartDateTime) &&
-                    (enrollmentEntry.getGroupEnrollStop() == null || 
-                     enrollmentEntry.getGroupEnrollStop().isAfter(controlHistoryStopDateTime))) {
+                if (enrollmentEntry.getGroupEnrollStart().isBefore(controlHistoryStartDateTime) 
+                        && (enrollmentEntry.getGroupEnrollStop() == null || enrollmentEntry.getGroupEnrollStop().isAfter(controlHistoryStopDateTime))) {
 
                     neverEnrolledDuringThisPeriod = false;
                     
                 //enrollment started after the beginning of the period, subtract the difference
                 } else if (enrollmentEntry.getGroupEnrollStart().isAfter(controlHistoryStartDateTime)) { 
 
-                    Duration priorEnrollmentDuration = 
-                        new Duration(controlHistoryStartDateTime, enrollmentEntry.getGroupEnrollStart());
+                    Duration priorEnrollmentDuration = new Duration(controlHistoryStartDateTime, enrollmentEntry.getGroupEnrollStart());
                     controlHistoryTotal = controlHistoryTotal.minus(priorEnrollmentDuration);
-
                     neverEnrolledDuringThisPeriod = false;
+                    
                 }
                 
                 //enrollment stopped before the end of the period, subtract the difference
-                else if(enrollmentEntry.getGroupEnrollStop() != null && 
-                         enrollmentEntry.getGroupEnrollStop().isBefore(controlHistoryStopDateTime)) {
+                else if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().isBefore(controlHistoryStopDateTime)) {
 
-                    Duration postEnrollmentDuration =
-                        new Duration(enrollmentEntry.getGroupEnrollStop(), controlHistoryStopDateTime);
+                    Duration postEnrollmentDuration = new Duration(enrollmentEntry.getGroupEnrollStop(), controlHistoryStopDateTime);
                     controlHistoryTotal = controlHistoryTotal.minus(postEnrollmentDuration);
-
                     neverEnrolledDuringThisPeriod = false;
-                }
 
+                }
             }
         }
         
@@ -718,47 +676,42 @@ public class LMControlHistoryUtil {
 
         for (LMHardwareControlGroup optOutEntry : optOuts) {
             // Control occurred entirely during an opt out.  Discard it.
-            if (optOutEntry.getOptOutStart().isBefore(controlHistoryStartDateTime) && 
-                (optOutEntry.getOptOutStop() == null || 
-                 optOutEntry.getOptOutStop().isAfter(controlHistoryStopDateTime))) {
+            if (optOutEntry.getOptOutStart().isBefore(controlHistoryStartDateTime) 
+                    && (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().isAfter(controlHistoryStopDateTime))) {
                 return Duration.ZERO;
             }
 
             // An opt out started during control, control stopped before opt out
             // ended.  Subtract the difference of opt out start and the period's
             // stop from duration.
-            else if (optOutEntry.getOptOutStart().isAfter(controlHistoryStartDateTime) && 
-                      optOutEntry.getOptOutStart().isBefore(controlHistoryStopDateTime) && 
-                      (optOutEntry.getOptOutStop() == null || 
-                       optOutEntry.getOptOutStop().isAfter(controlHistoryStopDateTime))) {
+            else if (optOutEntry.getOptOutStart().isAfter(controlHistoryStartDateTime) 
+                    && optOutEntry.getOptOutStart().isBefore(controlHistoryStopDateTime) 
+                    && (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().isAfter(controlHistoryStopDateTime))) {
 
-                Duration priorOptOutDuration =
-                    new Duration(optOutEntry.getOptOutStart(), controlHistoryStopDateTime);
+                Duration priorOptOutDuration = new Duration(optOutEntry.getOptOutStart(), controlHistoryStopDateTime);
                 controlHistoryTotal = controlHistoryTotal.minus(priorOptOutDuration);
             }
             
             // Control occurred during an already active opt out.  That opt out
             // then ended before control was complete.  Subtract the difference
             // of opt out stop and period start.
-            else if (optOutEntry.getOptOutStart().isBefore(controlHistoryStartDateTime) && 
-                      optOutEntry.getOptOutStop() != null && 
-                      optOutEntry.getOptOutStop().isAfter(controlHistoryStartDateTime) && 
-                      optOutEntry.getOptOutStop().isBefore(controlHistoryStopDateTime)) {
+            else if (optOutEntry.getOptOutStart().isBefore(controlHistoryStartDateTime) 
+                    && optOutEntry.getOptOutStop() != null 
+                    && optOutEntry.getOptOutStop().isAfter(controlHistoryStartDateTime) 
+                    && optOutEntry.getOptOutStop().isBefore(controlHistoryStopDateTime)) {
                 
-                Duration postOptOutDuration = 
-                    new Duration(controlHistoryStartDateTime, optOutEntry.getOptOutStop());
+                Duration postOptOutDuration = new Duration(controlHistoryStartDateTime, optOutEntry.getOptOutStop());
                 controlHistoryTotal = controlHistoryTotal.minus(postOptOutDuration);
             }
             
             // An opt out occurred completely in the middle of a control period.
             // Subtract the entire opt out duration from the control history
             // total.
-            else if (optOutEntry.getOptOutStart().isAfter(controlHistoryStartDateTime) && 
-                      optOutEntry.getOptOutStop() != null && 
-                      optOutEntry.getOptOutStop().isBefore(controlHistoryStopDateTime)) {
+            else if (optOutEntry.getOptOutStart().isAfter(controlHistoryStartDateTime) 
+                    && optOutEntry.getOptOutStop() != null 
+                    && optOutEntry.getOptOutStop().isBefore(controlHistoryStopDateTime)) {
                 
-                Duration postOptOut =
-                    new Duration(optOutEntry.getOptOutStart(), optOutEntry.getOptOutStop());
+                Duration postOptOut = new Duration(optOutEntry.getOptOutStart(), optOutEntry.getOptOutStop());
                 controlHistoryTotal = controlHistoryTotal.minus(postOptOut);
             }
         }
@@ -770,10 +723,7 @@ public class LMControlHistoryUtil {
         return controlHistoryTotal;
     }
     
-    private static StarsLMControlHistory 
-         buildStarsControlHistoryForPeriod(LiteStarsLMControlHistory liteCtrlHist, 
-                                           StarsCtrlHistPeriod period, 
-                                           DateTimeZone dateTimeZone) {
+    private static StarsLMControlHistory buildStarsControlHistoryForPeriod(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, DateTimeZone dateTimeZone) {
 
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
         DateTime periodStartDateTime = getPeriodStartTime( period, dateTimeZone );
@@ -785,12 +735,10 @@ public class LMControlHistoryUtil {
         Instant histStartDate = null;
         
         for (int i = 0; i < liteCtrlHist.getLmControlHistory().size(); i++) {
-            LiteLMControlHistory lmCtrlHist = 
-                (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
+            LiteLMControlHistory lmCtrlHist = (LiteLMControlHistory) liteCtrlHist.getLmControlHistory().get(i);
             
             
-            if (StarsUtils.isReadableInsantBefore(lmCtrlHist.getStopDateInstant(),
-                                                  periodStartDateTime)) {
+            if (StarsUtils.isReadableInsantBefore(lmCtrlHist.getStopDateInstant(), periodStartDateTime)) {
                 continue;
             }
                 
@@ -964,40 +912,32 @@ public class LMControlHistoryUtil {
      * This method goes through the supplied list of control history entries and 
      * fixes the entries to account for optOuts and enrollments.
      */
-    public static StarsLMControlHistory 
-         adjustLMControlHistoryByEnrollmentAndOptOutTimes(StarsLMControlHistory unadjustedCtrlHist,
-                                                          ReadableInstant startInstant,
-                                                          List<LMHardwareControlGroup> enrollments,
-                                                          List<LMHardwareControlGroup> optOuts) {
+    public static StarsLMControlHistory adjustForEnrollmentAndOptOut(StarsLMControlHistory unadjustedControlHistory, 
+                                                                     ReadableInstant startInstant, 
+                                                                     List<LMHardwareControlGroup> enrollments, 
+                                                                     List<LMHardwareControlGroup> optOuts) {
 
-        StarsLMControlHistory adjustedLMControlHistory = new StarsLMControlHistory();
+        StarsLMControlHistory adjustedControlHistory = new StarsLMControlHistory();
         
-        for(int j = 0; j < unadjustedCtrlHist.getControlHistoryCount(); j++) {
-            ControlHistory cntrlHist = unadjustedCtrlHist.getControlHistory(j);
+        for(int i = 0; i < unadjustedControlHistory.getControlHistoryCount(); i++) {
+            ControlHistory controlHistory = unadjustedControlHistory.getControlHistory(i);
             
-            Instant stopInstant = 
-                cntrlHist.getStartInstant().plus(cntrlHist.getControlDuration());
-            Duration newDuration = 
-                calculateRealControlPeriodTime(cntrlHist.getControlDuration(), 
-                                               cntrlHist.getStartInstant(), 
-                                               stopInstant, 
-                                               enrollments, 
-                                               optOuts);
+            Instant stopInstant = controlHistory.getStartInstant().plus(controlHistory.getControlDuration());
+            Duration newDuration = calculateRealControlPeriodTime(controlHistory.getControlDuration(), controlHistory.getStartInstant(), stopInstant, enrollments, optOuts);
 
             if (!newDuration.isEqual(Duration.ZERO)) {
-                cntrlHist.setControlDuration(newDuration);
+                controlHistory.setControlDuration(newDuration);
                 /* Calculate summary.  This used to be done using the values straight from the 
                  * LMControlHistory table on the most recent entry
                  */
-                Instant controlEndInstant = 
-                    cntrlHist.getStartInstant().plus(cntrlHist.getControlDuration());
+                Instant controlEndInstant = controlHistory.getStartInstant().plus(controlHistory.getControlDuration());
                 if (controlEndInstant.isAfter(startInstant)) {
-                    adjustedLMControlHistory.addControlHistory(cntrlHist);
+                    adjustedControlHistory.addControlHistory(controlHistory);
                 }
             }
         }
         
-        return adjustedLMControlHistory;
+        return adjustedControlHistory;
     }
     
     /**

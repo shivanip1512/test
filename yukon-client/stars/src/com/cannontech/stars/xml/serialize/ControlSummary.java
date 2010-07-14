@@ -64,4 +64,19 @@ public class ControlSummary {
         this.hasSeasonalTime = true;
     }
 
+    public void subtractDuration(Duration controlDuration) {
+        if(seasonalTime.isLongerThan(Duration.ZERO)) {
+            seasonalTime = seasonalTime.minus(controlDuration);
+        }
+        if(annualTime.isLongerThan(Duration.ZERO)) {
+            annualTime = annualTime.minus(controlDuration);
+        }
+        if(monthlyTime.isLongerThan(Duration.ZERO)) {
+            monthlyTime = monthlyTime.minus(controlDuration);
+        }
+        if(dailyTime.isLongerThan(Duration.ZERO)) {
+            dailyTime = dailyTime.minus(controlDuration);
+        }
+    }
+
 }

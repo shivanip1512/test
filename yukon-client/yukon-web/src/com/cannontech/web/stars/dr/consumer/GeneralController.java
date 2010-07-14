@@ -40,8 +40,8 @@ public class GeneralController extends AbstractConsumerController {
             YukonUserContext yukonUserContext, ModelMap map) {
         
         List<DisplayableProgram> displayablePrograms = 
-            displayableProgramDao.getControlHistorySummaryDisplayablePrograms(
-                                      customerAccount,
+            displayableProgramDao.getControlHistorySummary(
+                                      customerAccount.getAccountId(),
                                       yukonUserContext,
                                       ControlPeriod.PAST_DAY);
         map.addAttribute("displayablePrograms", displayablePrograms);

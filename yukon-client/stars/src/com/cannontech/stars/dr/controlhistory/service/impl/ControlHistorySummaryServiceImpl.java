@@ -19,33 +19,32 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
     public ControlHistorySummary getControlSummary(int customerAccountId,
                                                    int inventoryId,
                                                    int groupId,
-                                                   YukonUserContext userContext){
+                                                   YukonUserContext userContext, 
+                                                   boolean past){
     
         ControlHistorySummary controlHistorySummary = new ControlHistorySummary();
         
         // Past Day Summary
-        Duration dailySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, 
-                                                               ControlPeriod.PAST_DAY, userContext);
+        Duration dailySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, ControlPeriod.PAST_DAY, userContext, past);
         controlHistorySummary.setDailySummary(dailySummary);
         
         // Past Month Summary
-        Duration monthlySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, 
-                                                                 ControlPeriod.PAST_MONTH, userContext);;
+        Duration monthlySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, ControlPeriod.PAST_MONTH, userContext, past);
         controlHistorySummary.setMonthlySummary(monthlySummary);
         
         // Past Year Summary
-        Duration yearlySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, 
-                                                                ControlPeriod.PAST_YEAR, userContext);
+        Duration yearlySummary = getControlHistoryTotalDuration(customerAccountId, inventoryId, groupId, ControlPeriod.PAST_YEAR, userContext, past);
         controlHistorySummary.setYearlySummary(yearlySummary);
         
         return controlHistorySummary;
      }
     
     private Duration getControlHistoryTotalDuration(final int customerAccountId,
-                                               final int inventoryId,
-                                               final int groupId, 
-                                               final ControlPeriod period,
-                                               final YukonUserContext userContext) {
+                                               int inventoryId,
+                                               int groupId, 
+                                               ControlPeriod period,
+                                               YukonUserContext userContext,
+                                               boolean past) {
         Duration results = new Duration(0);
         
         
@@ -54,7 +53,8 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
                                                                                        groupId,
                                                                                        inventoryId,
                                                                                        period, 
-                                                                                       userContext));
+                                                                                       userContext,
+                                                                                       past));
 
         for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
             results = controlHistoryEvent.getDuration().plus(results);

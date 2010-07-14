@@ -41,6 +41,7 @@ function updateControlEvents(controlPeriod) {
         'method': 'POST', //IE caches GET requests
         'parameters': { 
             'programId': '${program.programId}',
+            'past': '${past}',
             'accountId': '${accountId}',
             'controlPeriod': controlPeriod
         }

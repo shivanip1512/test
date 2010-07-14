@@ -6,6 +6,7 @@ import java.util.List;
 import org.joda.time.ReadableInstant;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl.DistinctEnrollment;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
@@ -72,4 +73,27 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId);
 
     public List<HardwareConfigAction> getHardwareConfigActions(int accountId);
+
+    /**
+     * Returns a List<LMHardwareControlGroup> of past enrollments of an account. 
+     * @param accountId Account to get previously enrolled control groups for.
+     * @return List<LMHardwareControlGroup> of past enrollments.
+     */
+    public List<LMHardwareControlGroup> getForPastEnrollments(int accountId);
+
+    /**
+     * Retrieves a list of program id's that the account was previously enrolled in.
+     * @param accountId Account id to check for past enrollments.
+     * @return The list of program id's.
+     */
+    public List<Integer> getPastEnrollmentProgramIds(int accountId);
+
+    /**
+     * Retrieves enrollement data for all dintinct enrollments an account has had.
+     * IE: If an account has had a hardware that has been enrolled,  unenrolled and re-enrolled
+     * in the same program, this will only return one object, not two.
+     * @param accountId
+     * @return
+     */
+    public List<DistinctEnrollment> getDistinctEnrollments(int accountId);
 }

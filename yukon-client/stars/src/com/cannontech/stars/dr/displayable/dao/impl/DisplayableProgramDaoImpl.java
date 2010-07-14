@@ -6,12 +6,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.joda.time.Duration;
 import org.springframework.stereotype.Repository;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
+import com.cannontech.stars.dr.controlhistory.model.ControlHistoryStatus;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.displayable.dao.AbstractDisplayableDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableProgramDao;
@@ -29,27 +30,19 @@ import com.google.common.collect.Sets;
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
     
     @Override
-    public List<DisplayableProgram> getControlHistorySummaryDisplayablePrograms(
-                                         final CustomerAccount customerAccount, 
-                                         final YukonUserContext yukonUserContext,
-                                         final ControlPeriod controlPeriod) {
-        List<DisplayableProgram> displayableProgramList = 
-            doAction(customerAccount, yukonUserContext, controlPeriod, true);
-        List<DisplayableProgram> controlHistorySummaryDisplayablePrograms = 
-            filterEntriesForControlHistorySummary(displayableProgramList);
-        return controlHistorySummaryDisplayablePrograms;
+    public List<DisplayableProgram> getControlHistorySummary(final int accountId, final YukonUserContext userContext, final ControlPeriod controlPeriod) {
+        List<DisplayableProgram> displayableProgramList = getForAccount(accountId, userContext, controlPeriod, true, false);
+        List<DisplayableProgram> filteredList = filterEntriesForControlHistorySummary(displayableProgramList, false);
+        
+        return filteredList;
     }
-
+    
     @Override
-    public List<DisplayableProgram> getAllControlHistorySummaryDisplayablePrograms(
-                                         final CustomerAccount customerAccount, 
-                                         final YukonUserContext yukonUserContext,
-                                         final ControlPeriod controlPeriod) {
-        List<DisplayableProgram> displayableProgramList = 
-            doAction(customerAccount, yukonUserContext, controlPeriod, false);
-        List<DisplayableProgram> controlHistorySummaryDisplayablePrograms = 
-            filterEntriesForControlHistorySummary(displayableProgramList);
-        return controlHistorySummaryDisplayablePrograms;
+    public List<DisplayableProgram> getAllControlHistorySummary(int accountId, YukonUserContext userContext, ControlPeriod controlPeriod, boolean past) {
+        List<DisplayableProgram> displayableProgramList = getForAccount(accountId, userContext, controlPeriod, false, past);
+        List<DisplayableProgram> filteredList = filterEntriesForControlHistorySummary(displayableProgramList, past);
+        
+        return filteredList;
     }
 
     /**
@@ -70,9 +63,9 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         // Filter Rule #1
         if (applyFilters && controlHistoryList.isEmpty()) return null;
         
-        // Filter Rule #2 - This Filter will always be applied.
+        // Filter Rule #2
         boolean containsOnlyNotEnrolledHistory = controlHistoryService.containsOnlyNotEnrolledHistory(controlHistoryList);
-        if (containsOnlyNotEnrolledHistory) return null;
+        if (applyFilters && containsOnlyNotEnrolledHistory) return null;
         
         List<DisplayableControlHistory> displayableControlHistoryList = new ArrayList<DisplayableControlHistory>(controlHistoryList.size());
 
@@ -110,25 +103,27 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         }
     };
     
-    private List<DisplayableProgram> doAction(CustomerAccount customerAccount, 
-                                              YukonUserContext yukonUserContext,
-                                              ControlPeriod controlPeriod,
-                                              boolean applyFilters) {
-                                         
-        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
-        List<Program> programList = programDao.getByAppliances(applianceList);
+    private List<DisplayableProgram> getForAccount(int accountId, YukonUserContext userContext, ControlPeriod controlPeriod, boolean applyFilters, boolean past) {
+        List<Program> programList = Lists.newArrayList(); //TODO Get for account: probably based on whether previous or current
+        
+        if(!past) {
+            List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(accountId);
+            programList = programDao.getByAppliances(applianceList);
+        } else {
+            List<Integer> programIds = lmHardwareControlGroupDao.getPastEnrollmentProgramIds(accountId);
+            programList = programDao.getByProgramIds(programIds);
+        }
 
-        return doAction(customerAccount, yukonUserContext, controlPeriod, applyFilters, applianceList, programList);
+        return getForAccount(accountId, userContext, controlPeriod, applyFilters, programList, past);
     }
 
-    private List<DisplayableProgram> doAction(CustomerAccount customerAccount,
-                                              YukonUserContext yukonUserContext,
+    private List<DisplayableProgram> getForAccount(int accountId,
+                                              YukonUserContext userContext,
                                               ControlPeriod controlPeriod,
                                               boolean applyFilters,
-                                              List<Appliance> applianceList,
-                                              List<Program> programList) {
-        ListMultimap<Integer,ControlHistory> controlHistoryMap = 
-            controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext, controlPeriod);
+                                              List<Program> programList,
+                                              boolean past) {
+        ListMultimap<Integer,ControlHistory> controlHistoryMap = controlHistoryDao.getControlHistory(accountId, userContext, controlPeriod, past);
 
         final List<DisplayableProgram> displayableProgramList = new ArrayList<DisplayableProgram>(programList.size());
 
@@ -145,16 +140,10 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
         return displayableProgramList;
     }
     
-    public DisplayableProgram getDisplayableProgram(CustomerAccount customerAccount, 
-                                                    YukonUserContext yukonUserContext,
-                                                    Program program,
-                                                    ControlPeriod controlPeriod){
-
-        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
+    @Override
+    public DisplayableProgram getDisplayableProgram(int accountId, YukonUserContext userContext, Program program, ControlPeriod controlPeriod, boolean past){
         List<Program> programList = Collections.singletonList(program);
-
-        List<DisplayableProgram> displayableProgramList = 
-            doAction(customerAccount, yukonUserContext, controlPeriod, true, applianceList, programList);
+        List<DisplayableProgram> displayableProgramList = getForAccount(accountId, userContext, controlPeriod, true, programList, past);
         
         return displayableProgramList.get(0);
     }
@@ -165,35 +154,47 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
      * control history event for each device.  This method should only be used when
      * you want to display the control history summaries and should not be used 
      * for displaying actual control history events.
+     * 
+     * For past enrollment's control history, don't show programs that have no control history.
+     * Also fix the status for these history to reflect that they are past control history.
      */
-    private List<DisplayableProgram> filterEntriesForControlHistorySummary(
-                                          List<DisplayableProgram> displayablePrograms) {
+    private List<DisplayableProgram> filterEntriesForControlHistorySummary(List<DisplayableProgram> displayablePrograms, boolean past) {
         List<DisplayableProgram> results = Lists.newArrayList();
         
         for (DisplayableProgram displayableProgram : displayablePrograms) {
-
+            
             Set<InventoryBase> includedInventoryBases = Sets.newHashSet();
             List<DisplayableControlHistory> reducedControlHistory = Lists.newArrayList();
 
-            for (DisplayableControlHistory displayableControlHistory : 
-                     displayableProgram.getDisplayableControlHistoryList()) {
-
-                InventoryBase inventoryBase = 
-                    displayableControlHistory.getControlHistory().getInventory();
-                if (!includedInventoryBases.contains(inventoryBase)) {
+            for (DisplayableControlHistory displayableControlHistory : displayableProgram.getDisplayableControlHistoryList()) {
                 
+                if(past) {
+                    /* For past history if there was no control in the last year, skip it. */
+                    ControlHistory history = displayableControlHistory.getControlHistory();
+                    if(history.getControlHistorySummary().getYearlySummary().isEqual(Duration.ZERO)){
+                        continue;
+                    } else {
+                        history.setCurrentStatus(ControlHistoryStatus.CONTROLLED_PREVIOUSLY);
+                    }
+                }
+                
+                InventoryBase inventoryBase = displayableControlHistory.getControlHistory().getInventory();
+                if (!includedInventoryBases.contains(inventoryBase)) {
                     includedInventoryBases.add(inventoryBase);
                     reducedControlHistory.add(displayableControlHistory);
                 }
             }
             
-            DisplayableProgram reducedDisplayableProgram = 
-                new DisplayableProgram(displayableProgram.getProgram(),
-                                       reducedControlHistory);
+            if(past && reducedControlHistory.isEmpty()) {
+                continue;
+            }
+            
+            DisplayableProgram reducedDisplayableProgram = new DisplayableProgram(displayableProgram.getProgram(), reducedControlHistory);
             results.add(reducedDisplayableProgram);
             
         }
         
         return results;
     }
+
 }

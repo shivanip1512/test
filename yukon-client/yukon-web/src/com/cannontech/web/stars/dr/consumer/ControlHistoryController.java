@@ -37,8 +37,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
         List<Program> programList = programDao.getByAppliances(applianceList);
         
-        ListMultimap<Integer, ControlHistory> controlHistoryMap = 
-            controlHistoryDao.getControlHistory(customerAccount, applianceList, userContext, ControlPeriod.PAST_DAY);
+        ListMultimap<Integer, ControlHistory> controlHistoryMap = controlHistoryDao.getControlHistory(customerAccount.getAccountId(), userContext, ControlPeriod.PAST_DAY, false);
 
         programEnrollmentService.removeNonEnrolledPrograms(programList, controlHistoryMap);
 
@@ -52,10 +51,10 @@ public class ControlHistoryController extends AbstractConsumerController {
         map.addAttribute("totalDurationMap", totalDurationMap);
         
         List<DisplayableProgram> displayablePrograms = 
-            displayableProgramDao.getAllControlHistorySummaryDisplayablePrograms(
-                                      customerAccount, 
+            displayableProgramDao.getAllControlHistorySummary(
+                                      customerAccount.getAccountId(), 
                                       userContext, 
-                                      ControlPeriod.PAST_DAY);
+                                      ControlPeriod.PAST_DAY, false);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
         return viewName;
@@ -68,13 +67,11 @@ public class ControlHistoryController extends AbstractConsumerController {
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkProgram(user, programId);
         
-        List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(customerAccount.getAccountId());
-
         Program program = programDao.getByProgramId(programId);
         map.addAttribute("program", program);
 
         ListMultimap<Integer, ControlHistory> controlHistoryMap = 
-            controlHistoryDao.getControlHistory(customerAccount, applianceList, yukonUserContext, ControlPeriod.PAST_DAY);
+            controlHistoryDao.getControlHistory(customerAccount.getAccountId(), yukonUserContext, ControlPeriod.PAST_DAY, false);
         
         List<ControlHistory> controlHistoryList = controlHistoryMap.get(programId);
         
@@ -99,7 +96,7 @@ public class ControlHistoryController extends AbstractConsumerController {
         ControlPeriod controlPeriodEnum = ControlPeriod.valueOf(controlPeriod);
         
         DisplayableProgram displayableProgram = 
-            displayableProgramDao.getDisplayableProgram(customerAccount, yukonUserContext, program, controlPeriodEnum);
+            displayableProgramDao.getDisplayableProgram(customerAccount.getAccountId(), yukonUserContext, program, controlPeriodEnum, false);
         map.addAttribute("displayableControlHistoryMap", displayableProgram.getDisplayableControlHistoryList());
         
         return "consumer/controlhistory/innerCompleteControlHistory.jsp";

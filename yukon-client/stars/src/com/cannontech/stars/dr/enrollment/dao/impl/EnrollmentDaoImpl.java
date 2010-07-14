@@ -37,7 +37,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
      */
     private final String enrollmentSQLHeader = 
         "SELECT AB.applianceCategoryId, AB.programId, LMHCG.lmGroupId, "+
-        "       LMHCG.relay, LMHCG.inventoryId, AB.KWCapacity "+
+        "       LMHCG.relay, LMHCG.inventoryId, AB.KWCapacity, AB.ApplianceId "+
         "FROM LMHardwareControlGroup LMHCG "+
         "INNER JOIN LMHardwareConfiguration LMHC ON LMHC.inventoryId = LMHCG.inventoryId "+
         "INNER JOIN ApplianceBase AB ON LMHC.applianceId = AB.ApplianceId " + 
@@ -64,6 +64,20 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
             programEnrollment.setEnroll(true);
         }
         return programEnrollments;
+    }
+    
+    @Override
+    public boolean isAccountEnrolled(int accountId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM LMHardwareControlGroup");
+        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("  AND Type").eq(1);
+        sql.append("  AND GroupEnrollStop IS NULL");
+        
+        int activeEnrollments = yukonJdbcTemplate.queryForInt(sql);
+        
+        return activeEnrollments > 0;
     }
 
     @Override

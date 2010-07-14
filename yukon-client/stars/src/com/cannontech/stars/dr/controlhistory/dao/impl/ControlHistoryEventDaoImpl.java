@@ -16,6 +16,8 @@ import com.cannontech.stars.dr.controlhistory.model.ControlHistoryEvent;
 import com.cannontech.stars.dr.controlhistory.model.ControlPeriod;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.util.LMControlHistoryUtil;
+import com.cannontech.stars.xml.serialize.ControlHistory;
+import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 import com.cannontech.user.YukonUserContext;
@@ -30,22 +32,18 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         int inventoryId;
     }
     
-    public ControlHistoryEvent getLastControlHistoryEntry(int accountId,
-                                                          int programId,
-                                                          int inventoryId,
-                                                          YukonUserContext yukonUserContext){
+    public ControlHistoryEvent getLastControlHistoryEntry(int accountId, int programId, int inventoryId, YukonUserContext userContext, boolean past){
         List<LoadGroup> loadGroupList = loadGroupDao.getByStarsProgramId(programId);
        
         ControlHistoryEvent lastControlHistoryEvent = null;
         for (LoadGroup loadGroup : loadGroupList) {
-            StarsLMControlHistory starsLMControlHistory = 
-                getEventsByGroup(accountId, loadGroup.getLoadGroupId(), inventoryId, ControlPeriod.ALL, yukonUserContext);
+            StarsLMControlHistory starsLMControlHistory = getEventsByGroup(accountId, loadGroup.getLoadGroupId(), inventoryId, ControlPeriod.ALL, userContext, past);
             
             Holder holder = new Holder();
             holder.inventoryId = inventoryId;
             holder.groupId = loadGroup.getLoadGroupId();
 
-            removeInvalidEnrollmentControlHistory(starsLMControlHistory, holder);
+            removeInvalidEnrollmentControlHistory(starsLMControlHistory, holder, past);
             
             List<ControlHistoryEvent> controlHistoryEventList = toEventList(starsLMControlHistory);
             for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
@@ -61,93 +59,103 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
     
     
-    public StarsLMControlHistory getEventsByGroup(final int customerAccountId,  int lmGroupId, int inventoryId,
-                                                  final ControlPeriod period, final YukonUserContext yukonUserContext) {
+    public StarsLMControlHistory getEventsByGroup(int customerAccountId, int lmGroupId, int inventoryId, ControlPeriod period, YukonUserContext userContext, boolean past) {
 
         Holder holder = new Holder();
         holder.groupId = lmGroupId;
         holder.inventoryId = inventoryId;
     
-        return getEventsByGroup(customerAccountId, holder, period, yukonUserContext);
+        return getEventsByGroup(customerAccountId, holder, period, userContext, past);
     }
     
-    private StarsLMControlHistory getEventsByGroup(final int customerAccountId, 
-                                                    Holder holder, 
-                                                    final ControlPeriod period, 
-                                                    final YukonUserContext yukonUserContext) {
+    private StarsLMControlHistory getEventsByGroup(int accountId, Holder holder, ControlPeriod period, YukonUserContext userContext, boolean past) {
         StarsCtrlHistPeriod starsControlPeriod = StarsCtrlHistPeriod.valueOf(period.starsName());
-        StarsLMControlHistory controlHistory = 
-            LMControlHistoryUtil.getStarsLMControlHistory(holder.groupId,
+        StarsLMControlHistory controlHistory = LMControlHistoryUtil.getStarsLMControlHistory(holder.groupId,
                                                           holder.inventoryId,
-                                                          customerAccountId,
+                                                          accountId,
                                                           starsControlPeriod,
-                                                          yukonUserContext);
+                                                          userContext);
         
-        removeInvalidEnrollmentControlHistory(controlHistory, holder);
+        removeInvalidEnrollmentControlHistory(controlHistory, holder, past);
 
         return controlHistory;
     }
 
     /**
      * This method removes any invalid control history in regards to enrollment.
-     * 
      * @param controlHistory
      * @param holder
      */
-    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
-                                                      int inventoryId,
-                                                      int groupId) {
-    	
+    public void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory, int inventoryId, int groupId, boolean past) {
     	Holder holder = new Holder();
     	holder.inventoryId = inventoryId;
     	holder.groupId = groupId;
     	
-    	removeInvalidEnrollmentControlHistory(controlHistory, holder);
+    	removeInvalidEnrollmentControlHistory(controlHistory, holder, past);
     }
-
+    
     /**
-     * This method removes any invalid control history in regards to enrollment.
-     * 
-     * @param controlHistory
-     * @param holder
+     * This method removes any invalid control history in regards to enrollment. If past is true,
+     * control history will be filtered for only past enrollements. If past is false, control history
+     * will be filtered for only current enrollments.
+     * @param controlHistory The control history to filter.
+     * @param holder The holder of inventory and load group.
+     * @param past If true, calculates past enrollment control history. If false, calculates current
+     * control history.
      */
-    private void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory,
-                                                         Holder holder) {
-        ReadableInstant enrollmentStartInstant = 
-            enrollmentDao.findCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
+    private void removeInvalidEnrollmentControlHistory(StarsLMControlHistory controlHistory, Holder holder, boolean past) {
+        ReadableInstant currentEnrollmentStart = enrollmentDao.findCurrentEnrollmentStartDate(holder.inventoryId, holder.groupId);
+        List<ControlHistory> removeControlHistoryList = Lists.newArrayList();
 
-        // The inventory is not currently enrolled.  Remove all the past control history.
-        if (enrollmentStartInstant == null){
+        /* The inventory is not currently enrolled.  Remove all the past control history when filtering for current control history. */
+        if (currentEnrollmentStart == null && !past){
             controlHistory.removeAllControlHistory();
         }
         
-        List<com.cannontech.stars.xml.serialize.ControlHistory> removeControlHistoryList = Lists.newArrayList();
-        for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
-            com.cannontech.stars.xml.serialize.ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);
-            Instant controlHistoryStartDateTime = controlHistoryEntry.getStartInstant();
-            if (controlHistoryStartDateTime.isBefore(enrollmentStartInstant) ){
-                Instant controlHistoryEndDateTime = 
-                    controlHistoryStartDateTime.plus(controlHistoryEntry.getControlDuration());
-
-                // Remove any control history that was before the hardware was ever enrolled
-                if (controlHistoryEndDateTime.isBefore(enrollmentStartInstant)) {
-                    removeControlHistoryList.add(controlHistoryEntry);
+        if (!past) {
+            /* Remove all control history that did NOT happen during the current enrollment. */
+            for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
+                ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);
+                Instant controlHistoryStart = controlHistoryEntry.getStartInstant();
+                if (controlHistoryStart.isBefore(currentEnrollmentStart) ){
+                    Instant controlHistoryEnd = controlHistoryStart.plus(controlHistoryEntry.getControlDuration());
+    
+                    // Remove any control history that was before the hardware was ever enrolled
+                    if (controlHistoryEnd.isBefore(currentEnrollmentStart)) {
+                        removeControlHistoryList.add(controlHistoryEntry);
+                        
+                    // Update any control history that was already started when the hardware was enrolled
+                    } else {
+                        Duration newDuration = calculateNewDuration(controlHistoryEntry, currentEnrollmentStart);
+                        controlHistoryEntry.setStartInstant(new Instant(currentEnrollmentStart));
+                        controlHistoryEntry.setControlDuration(newDuration);
+                    }
+                }
+            }
+        } else {
+            if(currentEnrollmentStart == null) {
+                /* Not currently enrolled, means no current control history to remove. */
+                return;
+            } else {
+                /* Remove all control history that DID happen during the current enrollment. */
+                for (int i = 0;  i < controlHistory.getControlHistoryCount(); i++) {
+                    ControlHistory controlHistoryEntry = controlHistory.getControlHistory(i);
+                    Instant controlHistoryStart = controlHistoryEntry.getStartInstant();
                     
-                // Update any control history that was already started when the hardware was enrolled
-                } else {
-                    Duration newDuration = calculateNewDuration(controlHistoryEntry, enrollmentStartInstant);
-                    controlHistoryEntry.setStartInstant(new Instant(enrollmentStartInstant));
-                    controlHistoryEntry.setControlDuration(newDuration);
+                    if(controlHistoryStart.isAfter(currentEnrollmentStart)) {
+                        /* Control started during the current enrollment, remove it. */
+                        removeControlHistoryList.add(controlHistoryEntry);
+                    }
                 }
             }
         }
 
-        for (com.cannontech.stars.xml.serialize.ControlHistory removeControlHistoryEntry : removeControlHistoryList) {
+        for (ControlHistory removeControlHistoryEntry : removeControlHistoryList) {
             controlHistory.removeControlHistory(removeControlHistoryEntry);
         }
     }
 
-    private Duration calculateNewDuration(com.cannontech.stars.xml.serialize.ControlHistory controlHistoryEntry,
+    private Duration calculateNewDuration(ControlHistory controlHistoryEntry,
                                            ReadableInstant enrollmentStartDate) {
         
         Duration startTimeDifference = 
@@ -164,7 +172,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
         final List<ControlHistoryEvent> eventList = new ArrayList<ControlHistoryEvent>();
 
         for (int j = controlHistory.getControlHistoryCount() - 1; j >= 0; j--) {
-            com.cannontech.stars.xml.serialize.ControlHistory history = controlHistory.getControlHistory(j);
+            ControlHistory history = controlHistory.getControlHistory(j);
 
             Instant startDateTime = history.getStartInstant();
             Instant endDateTime = startDateTime.plus(history.getControlDuration());

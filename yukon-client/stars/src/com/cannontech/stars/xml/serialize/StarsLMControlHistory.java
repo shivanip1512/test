@@ -177,6 +177,7 @@ public class StarsLMControlHistory {
     public ControlHistory removeControlHistory(ControlHistory controlHistory)
     {
         _controlHistoryList.remove(controlHistory);
+        _controlSummary.subtractDuration(controlHistory.getControlDuration());
         return controlHistory;
     } //-- ControlHistory removeControlHistory(ControlHistory) 
 

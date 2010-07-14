@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -67,6 +68,70 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         groupIdRowMapper = LMHardwareControlGroupDaoImpl.createGroupIdRowMapper();
         
+    }
+    
+    public class DistinctEnrollment {
+        private int accountId;
+        private int inventoryId;
+        private int groupId;
+        private int programId;
+        
+        public int getAccountId() {
+            return accountId;
+        }
+        public void setAccountId(int accountId) {
+            this.accountId = accountId;
+        }
+        public int getInventoryId() {
+            return inventoryId;
+        }
+        public void setInventoryId(int inventoryId) {
+            this.inventoryId = inventoryId;
+        }
+        public int getGroupId() {
+            return groupId;
+        }
+        public void setGroupId(int groupId) {
+            this.groupId = groupId;
+        }
+        public int getProgramId() {
+            return programId;
+        }
+        public void setProgramId(int programId) {
+            this.programId = programId;
+        }
+    }
+    
+    public List<DistinctEnrollment> getDistinctEnrollments(int accountId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT InventoryId, LMGroupId, AccountId, ProgramId");
+        sql.append("FROM LMHardwareControlGroup");
+        sql.append("WHERE AccountID").eq(accountId);
+        sql.append("  AND Type").eq(1);
+        
+        return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<DistinctEnrollment> () {
+            @Override
+            public DistinctEnrollment mapRow(ResultSet rs, int rowNum) throws SQLException {
+                DistinctEnrollment enrollment = new DistinctEnrollment();
+                enrollment.setAccountId(rs.getInt("accountId"));
+                enrollment.setInventoryId(rs.getInt("inventoryId"));
+                enrollment.setGroupId(rs.getInt("LMGroupId"));
+                enrollment.setProgramId(rs.getInt("programId"));
+                return enrollment;
+            }
+        });
+    }
+    
+    @Override
+    public List<Integer> getPastEnrollmentProgramIds(int accountId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ProgramId");
+        sql.append("FROM LMHardwareControlGroup");
+        sql.append("WHERE AccountId").eq(accountId);
+        sql.append("AND Type").eq(1);
+        sql.append("AND GroupEnrollStop IS NOT NULL");
+        
+        return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -176,6 +241,14 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         SqlStatementBuilder selectByAccountId = new SqlStatementBuilder(selectAllSql);
         selectByAccountId.append("WHERE AccountId").eq(accountId);
 
+        return yukonJdbcTemplate.query(selectByAccountId, rowMapper);
+    }
+    
+    public List<LMHardwareControlGroup> getForPastEnrollments(int accountId) {
+        SqlStatementBuilder selectByAccountId = new SqlStatementBuilder(selectAllSql);
+        selectByAccountId.append("WHERE AccountId").eq(accountId);
+        selectByAccountId.append("AND GroupEnrollStop IS NOT NULL");
+        
         return yukonJdbcTemplate.query(selectByAccountId, rowMapper);
     }
     

@@ -11,7 +11,7 @@
     <h3><i:inline key=".header" /></h3>
     <br>
     <div id="programs">
-		<dr:controlHistorySummary displayableProgramList="${displayablePrograms}" completeHistoryUrl="${completeHistoryUrl}" />
+		<dr:controlHistorySummary displayableProgramList="${displayablePrograms}" completeHistoryUrl="${completeHistoryUrl}" titleKey="" past="false"/>
     </div>      
                             
 </cti:standardPage>

@@ -1,6 +1,5 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteBase;
