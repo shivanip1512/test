@@ -25,8 +25,10 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
 /**
@@ -36,6 +38,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     private YukonJdbcTemplate yukonTemplate = null;
     private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    private DatabaseVendorResolver databaseConnectionVendorResolver;
     
     private SqlFragmentSource buildSql(boolean startInclusive, int pointId, Date startDate, Date stopDate, boolean reverseOrder) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -250,8 +253,56 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return adjacentPointValues;
     }
     
-    private final class AdjacentPointValuesRse implements ResultSetExtractor {
     
+    public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh) throws SQLException {
+    	
+    	int pointId = pvh.getId();
+    	Date centerDate = pvh.getPointDataTimeStamp();
+    	
+    	List<PointValueHolder> pvhs = Lists.newArrayListWithCapacity(2);
+    	
+    	pvhs.addAll(getLimitedPointData(pointId, null, centerDate, true, false, 1));
+    	pvhs.addAll(getLimitedPointData(pointId, centerDate, null, false, false, 1));
+    	
+    	return pvhs;
+    }
+    
+    public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh, int changeId) throws SQLException {
+    	
+    	DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+    	
+    	if (databaseVendor == DatabaseVendor.MS2000) {
+    		
+    		return getImmediatelyAdjacentPointValues(pvh);
+    	
+    	} else {
+    		
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("SELECT *");
+    		sql.append("FROM (");
+    		sql.append("	SELECT rph_inner1.*, pt.PointType, ROW_NUMBER() OVER (ORDER BY timestamp, changeid) row1");
+    		sql.append("	FROM RAWPOINTHISTORY rph_inner1");
+    		sql.append("	JOIN Point pt ON (rph_inner1.PointId = pt.PointId)");
+    		sql.append("	WHERE rph_inner1.PointId").eq(pvh.getId());
+    		sql.append(") rph1");
+    		sql.append("WHERE PointId").eq(pvh.getId());
+    		sql.append("AND rph1.row1 - (");
+    		sql.append("	SELECT rph_inner2.row2 FROM (");
+    		sql.append("		SELECT rph_inner3.*, ROW_NUMBER() OVER (ORDER BY timestamp, changeid) row2");
+    		sql.append("		FROM RAWPOINTHISTORY rph_inner3");
+    		sql.append("		WHERE PointId").eq(pvh.getId());
+    		sql.append("	) rph_inner2");
+    		sql.append("	WHERE rph_inner2.changeid").eq(changeId);
+    		sql.append(")");
+    		sql.append("IN (-1,1)");
+    		
+    		List<PointValueHolder> pvhs = yukonTemplate.query(sql, new LiteRphRowMapper());
+    		return pvhs;
+    	}
+    }
+    
+    private final class AdjacentPointValuesRse implements ResultSetExtractor {
+    	
     	private Integer indexOfChange = null;
     	private List<PointValueQualityHolder> resultsTail = new ArrayList<PointValueQualityHolder>();
     	int minimumIndex;
@@ -326,5 +377,8 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         this.vendorSpecificSqlBuilderFactory = vendorSpecificSqlBuilderFactory;
     }
 
-
+    @Autowired
+    public void setDatabaseConnectionVendorResolver(DatabaseVendorResolver databaseConnectionVendorResolver) {
+		this.databaseConnectionVendorResolver = databaseConnectionVendorResolver;
+	}
 }

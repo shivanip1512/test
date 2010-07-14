@@ -21,7 +21,6 @@ import com.cannontech.common.validation.model.RphTag;
 import com.cannontech.common.validation.service.ValidationHelperService;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -111,7 +110,7 @@ public class VeeReviewController {
         		}
         	}
         	
-        	List<PointValueQualityHolder> adjacentPointValues = rawPointHistoryDao.getAdjacentPointValues(rp.getChangeId(), -1, 1);
+        	List<PointValueHolder> adjacentPointValues = rawPointHistoryDao.getImmediatelyAdjacentPointValues(rp.getPointValue());
         	ExtendedReviewPoint extRp = new ExtendedReviewPoint(rp, adjacentPointValues.get(0), adjacentPointValues.get(1), otherTags);
         	extendedReviewPoints.add(extRp);
         }
@@ -132,7 +131,7 @@ public class VeeReviewController {
         }
         
         // tag counts
-        Map<RphTag, Integer> tagCounts = rphTagUiDao.getTagCounts();
+        Map<RphTag, Integer> tagCounts = rphTagUiDao.getAllValidationTagCounts();
         mav.addObject("tagCounts", tagCounts);
         
         // mav

@@ -115,6 +115,29 @@ public interface RawPointHistoryDao {
    public List<PointValueQualityHolder> getAdjacentPointValues(final int changeId, int ... offsets) throws SQLException;
    
    /**
+    * Gets values immediately before and after (with respect to timestamp) of a given point value.
+    * Notes: 
+    * Implemented by making two calls to getLimitedPointData().
+    * This method seems to perform slightly better the other getImmediatelyAdjacentPointValues() method when run on MSSQL vs Oracle.
+    * @param pvh
+    * @return
+    * @throws SQLException
+    */
+   public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh) throws SQLException;
+   
+   /**
+    * Gets values immediately before and after (with respect to timestamp) of a given point value and it's rph changeId.
+    * Notes:
+    * Implemented by using a single complex query which is not compatible with MS2000. Will degrade to use the other version of getImmediatelyAdjacentPointValues().
+    * This method seems to perform slightly better than the other getImmediatelyAdjacentPointValues() method when run on Oracle vs MSSQL
+    * @param pvh
+    * @param changeId
+    * @return
+    * @throws SQLException
+    */
+   public List<PointValueHolder> getImmediatelyAdjacentPointValues(PointValueHolder pvh, int changeId) throws SQLException;
+   
+   /**
     * Delete a row of RawPointHistory by ChangeId.
     * @param changeId
     */

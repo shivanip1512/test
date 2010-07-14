@@ -11,7 +11,7 @@ public interface RphTagUiDao {
 
 	public List<ReviewPoint> getReviewPoints(int afterPaoId, int pageCount, List<RphTag> tags, boolean includeOk);
 	
-	public Map<RphTag, Integer> getTagCounts();
+	public Map<RphTag, Integer> getAllValidationTagCounts();
 
     /**
      * Returns the changeIds where the set of tags associated

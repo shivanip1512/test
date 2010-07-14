@@ -3,7 +3,6 @@ package com.cannontech.common.validation.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +10,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -25,6 +23,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class RphTagUiDaoImpl implements RphTagUiDao {
@@ -136,43 +135,26 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 		}
 	}
     
-    public Map<RphTag, Integer> getTagCounts() {
+    public Map<RphTag, Integer> getAllValidationTagCounts() {
     	
-    	SqlStatementBuilder sql = new SqlStatementBuilder();
-    	sql.append("SELECT");
-    	sql.append("rt.TagName,");
-    	sql.append("COUNT(*) c");
-    	sql.append("FROM (");
-    	sql.append("	SELECT rt2.*");
-    	sql.append("	FROM RphTag rt2");
-    	sql.append("	WHERE rt2.ChangeId NOT IN (");
-    	sql.append("		SELECT rt3.ChangeId");
-    	sql.append("		FROM RphTag rt3");
-    	sql.append("		WHERE rt3.TagName").eq(RphTag.OK);
-    	sql.append("	)");
-    	sql.append(") rt");
-    	sql.append("GROUP BY rt.TagName");
+    	Map<RphTag, Integer> countMap = Maps.newHashMapWithExpectedSize(RphTag.getAllValidation().size());
     	
-    	final Map<RphTag, Integer> countMap = new HashMap<RphTag, Integer>();
-    	
-    	RowCallbackHandler rch = new RowCallbackHandler() {
-			@Override
-			public void processRow(ResultSet rs) throws SQLException {
-				
-				RphTag rphTag = RphTag.valueOf(rs.getString("TagName"));
-				int count = rs.getInt("c");
-				countMap.put(rphTag, count);
-			}
-		};
-    	
-    	yukonJdbcTemplate.query(sql, rch);
-    	
-    	for (RphTag tag : RphTag.getAllValidation()) {
-    		if (!countMap.keySet().contains(tag)) {
-    			countMap.put(tag, 0);
-    		}
-    	}
+    	for (RphTag rphTag : RphTag.getAllValidation()) {
     		
+    		SqlStatementBuilder sql = new SqlStatementBuilder();
+    		sql.append("SELECT COUNT(*)");
+    		sql.append("FROM RphTag rt");
+    		sql.append("WHERE rt.TagName").eq(rphTag);
+    		sql.append("AND rt.ChangeId NOT IN (");
+        	sql.append("	SELECT rt3.ChangeId");
+        	sql.append("	FROM RphTag rt3");
+        	sql.append("	WHERE rt3.TagName").eq(RphTag.OK);
+        	sql.append(")");
+        	
+        	int c = yukonJdbcTemplate.queryForInt(sql);
+        	countMap.put(rphTag, c);
+    	}
+    	
     	return countMap;
     }
     
