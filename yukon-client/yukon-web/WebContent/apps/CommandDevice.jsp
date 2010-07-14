@@ -95,7 +95,6 @@
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
     <c:set var="meterDetailDisplayable" scope="page" value="<%=meterDetailDisplayable%>"/>
-    <c:set var="liteYukonPao" scope="page" value="<%=liteYukonPao %>"/>
     
     <table border="0">
     
