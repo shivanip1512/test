@@ -1213,6 +1213,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
    double               raw;
    USHORT               quality;
    bool                 nonUpdated = false;
+   string               translationName;
 
    if( API_VALID == aPoint.mea_valid )
    {
@@ -1229,6 +1230,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
          if( _controlCenter.getTelegyrGroupList()[x].getGroupID() == groupid )
          {
             pointid = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getPointID();
+            translationName = _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getTranslateName(0);
 
             value = value * ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getMultiplier() );
             value += ( _controlCenter.getTelegyrGroupList()[x].getPointList()[index].getOffset() );
@@ -1274,7 +1276,7 @@ bool CtiFDRTelegyr::processAnalog( APICLI_GET_MEA aPoint, int groupid, int group
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
                CtiLockGuard<CtiLogger> doubt_guard( dout );
-               dout << CtiTime() << " Telemetry fail bit set. Yukon point id: " << pointid << " and group id: " << groupid << endl;
+               dout << CtiTime() << " Telemetry fail bit set. Point Name: " << translationName << " Group Id: " << groupid <<  endl;
             }
          }
          else
