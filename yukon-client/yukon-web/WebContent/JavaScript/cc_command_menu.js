@@ -124,9 +124,9 @@ function execute_CapBankMoveBack (paoId, cmdId, redirectURL) {
 	});
 } 
 
-//function to display wheather the call to serlvlet went through
-//will pop up a div that has a header with 'cmd_name' with gray background
-//'msg' in the body that with 'color' for background
+//function to display whether the call to servlet went through
+//will pop up a div that has a header with 'cmd_name' with white background
+//'msg' text will be displayed in the specified color
 function display_status(cmd_name, msg_type, result, color) {
     var msg_div = $('cmd_msg_div');
     msg_div.style.color = color;

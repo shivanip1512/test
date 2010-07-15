@@ -8,7 +8,6 @@
 <cti:includeScript link="/JavaScript/itemPicker.js" />
 <cti:includeScript link="/JavaScript/tableCreation.js" />
 <cti:includeScript link="/JavaScript/paoPicker.js" />
-<cti:includeScript link="/JavaScript/cc.js" />
 <cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 
 <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
@@ -16,7 +15,7 @@
 <c:set var="notAuthorizedText" value="User is not authorized to perform this action" />
 <c:set value="Confirm Sub" var="confirmCommand" />
 <c:set value="Send Time Syncs" var="sendTimeSyncsCommand" />
-        
+
 <cti:standardPage title="Schedule Assignment" module="capcontrol">
 	<cti:standardMenu menuSelection="view|scheduleassignment"/>
 	<cti:breadCrumbs>
@@ -91,22 +90,23 @@
 	</script>
 	
 	<!-- Display success or failure message if a command was submitted -->
+
 	<c:if test="${param.success != null}">
 		<c:choose>
 			<c:when test="${param.success}">
-				<script type="text/javascript" language="JavaScript">
-					display_status('', '', '${param.resultText}', 'green');
+				<script type="text/javascript">
+					display_status('', '', '<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'green');
 				</script>
 			</c:when>
 			<c:otherwise>
-				<script type="text/javascript" language="JavaScript">
-					display_status('', '', '${param.resultText}', 'red');
+				<script type="text/javascript">
+					display_status('', '', '<spring:escapeBody javaScriptEscape="true">${param.resultText}</spring:escapeBody>', 'red');
 				</script>
 			</c:otherwise>
 		</c:choose>
 	</c:if>
 		
-	<table class="widgetColumnsUnpadded">
+	<table class="widgetColumns">
 		<tr>
 			<td class="widgetColumnCell" valign="top">
 				<div class="widgetContainer">
@@ -114,12 +114,12 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="pointer" title="Run multiple commands" 
-												onclick="$('startMultipleSchedulesPopup').toggle();" style="vertical-align:middle;">
+												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="tierImg" title="Run multiple commands" 
+												onclick="$('startMultipleSchedulesPopup').toggle();">
 										</c:when>
 										<c:otherwise>
-											<img src="/WebConfig/yukon/Icons/control_play_blue_disabled.gif" class="tierImage" 
-											title="${notAuthorizedText}" style="vertical-align:middle;">
+											<img src="/WebConfig/yukon/Icons/control_play_blue_disabled.gif" class="tierImg" 
+											title="${notAuthorizedText}">
 										</c:otherwise>
 									</c:choose>
 									Run Multiple Schedule Assignment Commands
@@ -127,12 +127,12 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="pointer" title="Stop multiple commands" 
-												onclick="$('stopMultipleSchedulesPopup').toggle();" style="vertical-align:middle;">
+												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="tierImg" title="Stop multiple commands" 
+												onclick="$('stopMultipleSchedulesPopup').toggle();">
 										</c:when>
 										<c:otherwise>
-											<img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.gif" class="tierImage" 
-											title="${notAuthorizedText}" style="vertical-align:middle;">
+											<img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.gif" class="tierImg" 
+											title="${notAuthorizedText}">
 										</c:otherwise>
 									</c:choose>
 									Stop Multiple Schedule Assignment Commands
@@ -140,12 +140,12 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasEditingRole == true}">
-												<img src="/WebConfig/yukon/Icons/add.gif" class="pointer" title="Create a new schedule assignment" 
-												onclick="$('newScheduleAssignmentPopup').toggle();" style="vertical-align:middle;">
+												<img src="/WebConfig/yukon/Icons/add.gif" class="tierImg" title="Create a new schedule assignment" 
+												onclick="$('newScheduleAssignmentPopup').toggle();">
 										</c:when>
 										<c:otherwise>
-											<img src="/WebConfig/yukon/Icons/add_disabled_gray.gif" class="tierImage" 
-											title="${notAuthorizedText}" style="vertical-align:middle;">
+											<img src="/WebConfig/yukon/Icons/add_disabled_gray.gif" class="tierImg" 
+											title="${notAuthorizedText}">
 										</c:otherwise>
 									</c:choose>
 									New Schedule Assignment
@@ -155,8 +155,10 @@
 			</td>
 			<td class="widgetColumnCell" valign="top"></td>
 		</tr>
-	</table>
-		
+		<tr>
+			<td class="widgetColumnCell" colspan="2">
+				<div class="widgetContainer">
+				
 	<tags:pagedBox title="Schedule Assignments" searchResult="${searchResult}"
 	    filterDialog="filterPopup" baseUrl="${baseUrl}"
 	    isFiltered="${isFiltered}" showAllUrl="${baseUrl}">
@@ -233,4 +235,8 @@
 			</c:otherwise>
 		</c:choose>
 	</tags:pagedBox>
+	
+	</div>
+	</td></tr></table>
+	
 </cti:standardPage>

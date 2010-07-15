@@ -31,10 +31,11 @@ public class ScheduleAssignmentCommandFilter implements
         retVal.add(new SqlFilter(){
             @Override
             public SqlFragmentSource getWhereClauseFragment() {
-                //must compare with LIKE, because the tail end of VerifyNotOperatedIn
-                //command is variable, depending on what min/hr/day/wk values are
-                String sql = "sa.Command LIKE '" + command.getCommandName() + "%'";
-                SqlStatementBuilder retVal = new SqlStatementBuilder(sql);
+                //must compare the first part of the command, because the tail end 
+                //of VerifyNotOperatedIn command is variable, depending on what 
+                //min/hr/day/wk values are
+                SqlStatementBuilder retVal = new SqlStatementBuilder();
+                retVal.append("sa.Command").startsWith(command.getCommandName());
                 return retVal;
             }
         });

@@ -12,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -174,31 +177,14 @@ public class ScheduleController {
                 log.error("Run schedule assignment command failed.  Invalid command: " + assignment.getCommandName());
             }
             
+            int commandId = schedCommand.getCapControlCommand();
+            long secondsNotOperatedIn = CCVerifySubBus.DEFAULT_CB_INACT_TIME;
+            
             //VerifyNotOperatedIn command is special.  It has a time value associated
             //with it that must be parsed from the command string.  If we're processing
             //a different command, pass the default time value, which will be ignored
-            long secondsNotOperatedIn = CCVerifySubBus.DEFAULT_CB_INACT_TIME;
-            int commandId = -1;
             if(schedCommand == ScheduleCommand.VerifyNotOperatedIn){
-                commandId = CapControlCommand.CMD_BANKS_NOT_OPERATED_IN;
                 secondsNotOperatedIn = parseSecondsNotOperatedIn(assignment);
-            } else {
-                //deal with all other possible commands
-                if(schedCommand == ScheduleCommand.ConfirmSub){
-                    commandId = CapControlCommand.CONFIRM_SUB;
-                } else if(schedCommand == ScheduleCommand.SendTimeSyncs){
-                    commandId = CapControlCommand.SEND_TIMESYNC;
-                } else if(schedCommand == ScheduleCommand.VerifyAll){
-                    commandId = CapControlCommand.CMD_ALL_BANKS;
-                } else if(schedCommand == ScheduleCommand.VerifyFailed){
-                    commandId = CapControlCommand.CMD_FAILED_BANKS;
-                } else if(schedCommand == ScheduleCommand.VerifyFailedAndQuestionable){
-                    commandId = CapControlCommand.CMD_FQ_BANKS;
-                } else if(schedCommand == ScheduleCommand.VerifyQuestionable){
-                    commandId = CapControlCommand.CMD_QUESTIONABLE_BANKS;
-                } else if(schedCommand == ScheduleCommand.VerifyStandalone){
-                    commandId = CapControlCommand.CMD_STANDALONE_VERIFY;
-                }
             }
             
             //if the command is valid, send it
@@ -305,32 +291,14 @@ public class ScheduleController {
                       + assignment.getCommandName());
 	    }
 	    
+	    int commandId = schedCommand.getCapControlCommand();
+	    long secondsNotOperatedIn = CCVerifySubBus.DEFAULT_CB_INACT_TIME;
+	    
 	    //VerifyNotOperatedIn command is special.  It has a time value associated
 	    //with it that must be parsed from the command string.  If we're processing
 	    //a different command, pass the default time value, which will be ignored
-	    long secondsNotOperatedIn = CCVerifySubBus.DEFAULT_CB_INACT_TIME;
-        int commandId = -1;
 	    if(schedCommand == ScheduleCommand.VerifyNotOperatedIn){
-	        commandId = CapControlCommand.CMD_BANKS_NOT_OPERATED_IN;
 	        secondsNotOperatedIn = parseSecondsNotOperatedIn(assignment);
-	    } else {
-    	    //Deal with all other possible commands:
-    	    //get command ID
-    	    if(schedCommand == ScheduleCommand.ConfirmSub){
-    	        commandId = CapControlCommand.CONFIRM_SUB;
-    	    } else if(schedCommand == ScheduleCommand.SendTimeSyncs){
-    	        commandId = CapControlCommand.SEND_TIMESYNC;
-    	    } else if(schedCommand == ScheduleCommand.VerifyAll){
-    	        commandId = CapControlCommand.CMD_ALL_BANKS;
-    	    } else if(schedCommand == ScheduleCommand.VerifyFailed){
-    	        commandId = CapControlCommand.CMD_FAILED_BANKS;
-    	    } else if(schedCommand == ScheduleCommand.VerifyFailedAndQuestionable){
-    	        commandId = CapControlCommand.CMD_FQ_BANKS;
-    	    } else if(schedCommand == ScheduleCommand.VerifyQuestionable){
-    	        commandId = CapControlCommand.CMD_QUESTIONABLE_BANKS;
-    	    } else if(schedCommand == ScheduleCommand.VerifyStandalone){
-    	        commandId = CapControlCommand.CMD_STANDALONE_VERIFY;
-    	    }
 	    }
 	    
 	    //send the command
@@ -479,20 +447,17 @@ public class ScheduleController {
 	 */
 	private long parseSecondsNotOperatedIn(PaoScheduleAssignment assignment){
             //parse min/hr/day/wk value from command string
-            long[] minHrDayWkValues = new long[4];
-            Pattern digitsPattern = Pattern.compile("\\d+");
-            Matcher matcher = digitsPattern.matcher(assignment.getCommandName());
-            for(int j = 0; j < 4; j++){
-                matcher.find();
-                String temp = matcher.group();
-                minHrDayWkValues[j] = Long.parseLong(temp);
-            }
-            long secondsNotOperatedIn = (minHrDayWkValues[0] * 60)  //minutes
-                + (minHrDayWkValues[1] * 60 * 60)                  //hours
-                + (minHrDayWkValues[2] * 60 * 60 * 24)             //days
-                + (minHrDayWkValues[3] * 60 * 60 * 24 * 7);        //weeks
+            PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
+            .appendLiteral("Verify CapBanks that have not operated in ")
+            .appendMinutes().appendLiteral(" min ")
+            .appendHours().appendLiteral(" hr ")
+            .appendDays().appendLiteral(" day ")
+            .appendWeeks().appendLiteral(" wk");
             
-            return secondsNotOperatedIn;
+            PeriodFormatter formatter = builder.toFormatter();
+            Period period = formatter.parsePeriod(assignment.getCommandName());
+            int seconds = period.toStandardSeconds().getSeconds();
+            return seconds;
 	}
 	
     /* 

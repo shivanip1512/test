@@ -7,7 +7,7 @@
 
 <%-- Filtering popup --%>
 <tags:simplePopup id="filterPopup" title="Schedule Assignment Filters">
-	<form name="filterForm" action="">
+	<form name="filterForm" action="/spring/capcontrol/schedule/scheduleAssignments">
 		<table class="filterSelection">
 			<tr>
 				<td>Schedules:</td>
