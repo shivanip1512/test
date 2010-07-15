@@ -75,6 +75,9 @@ class IVVCState
         void setShowNoLtcAttachedMsg(const bool flag);
         bool isShowNoLtcAttachedMsg() const;
 
+        void setCommsLost(const bool flag);
+        bool isCommsLost() const;
+
         void setReportedControllers(const std::set<long>& reportedControllers);
         const std::set<long>& getReportedControllers();
 
@@ -115,6 +118,7 @@ class IVVCState
         bool _showSubbusDisableMsg;
         bool _showLtcAutoModeMsg;
         bool _showNoLtcAttachedMsg;
+        bool _commsLost;
 
         unsigned long _commsRetryCount;
         std::set<long> _reportedControllers;

@@ -12,6 +12,7 @@ IVVCState::IVVCState() :
     _showLtcAutoModeMsg(true),
     _showNoLtcAttachedMsg(true),
     _remoteMode(false),
+    _commsLost(false),
     _firstPass(true)
 {
 }
@@ -199,3 +200,14 @@ const std::set<long>& IVVCState::getReportedControllers()
 {
     return _reportedControllers;
 }
+
+bool IVVCState::isCommsLost() const
+{
+    return _commsLost;
+}
+
+void IVVCState::setCommsLost(const bool flag)
+{
+    _commsLost = flag;
+}
+

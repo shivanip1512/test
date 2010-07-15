@@ -54,9 +54,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         return;
     }
 
-        bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
-
-        //This would be better if we had some method of executing a function at a scheduled time.
+    //This would be better if we had some method of executing a function at a scheduled time.
     //Have the Ltc update its flags
     ltcPtr->updateFlags();
 
@@ -66,7 +64,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     if ( ! subbus->getDisableFlag() )
     {
         //Is it time to send a keep alive?
-        if ((_IVVC_KEEPALIVE != 0) && (timeNow > state->getNextHeartbeatTime()))
+        if ((_IVVC_KEEPALIVE != 0) && (timeNow > state->getNextHeartbeatTime()) && !state->isCommsLost())
         {
             sendKeepAlive(subbus);
             state->setNextHeartbeatTime(timeNow + _IVVC_KEEPALIVE);  // _IVVC_KEEPALIVE is in seconds!
@@ -82,11 +80,26 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 if (bank->getControlStatus() == CtiCCCapBank::OpenPending ||
                     bank->getControlStatus() == CtiCCCapBank::ClosePending)
                 {
-                    state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
+//                    state->setState(IVVCState::IVVC_VERIFY_CONTROL_LOOP);
                     break;
                 }
             }
         }
+
+        state->setShowBusDisableMsg(true);
+
+    }
+    else
+    {
+        if (state->isShowBusDisableMsg())
+        {
+            state->setState(IVVCState::IVVC_WAIT);
+            state->setShowBusDisableMsg(false);
+
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << endl;
+        }
+        return;
     }
 
     DispatchConnectionPtr dispatchConnection = CtiCapController::getInstance()->getDispatchConnection();
@@ -96,24 +109,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     {
         case IVVCState::IVVC_DISABLED:
         {
-            bool busDisabled = subbus->getDisableFlag();
             bool remainDisabled = false;
-
-            if (busDisabled)
-            {
-                if (state->isShowBusDisableMsg())
-                {
-                    state->setShowBusDisableMsg(false);
-
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName() << ". The bus is disabled." << endl;
-                }
-                remainDisabled = true;
-            }
-            else
-            {
-                state->setShowBusDisableMsg(true);
-            }
+            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
 
             if (!remoteMode)
             {
@@ -154,6 +151,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 state->setState(IVVCState::IVVC_DISABLED);
                 return;
             }
+
+            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
 
             if (!remoteMode)// If we are in 'Auto' mode we don't want to run the algorithm.
             {
@@ -272,6 +271,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                     request->reportStatusToLog();
                     state->setState(IVVCState::IVVC_ANALYZE_DATA);
+                    state->setCommsLost(false);
                 }
             }
             else
@@ -415,6 +415,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             //Switch to LTC to automode.
             //save state so we know to re-enable remote when we start up again.
+            bool remoteMode = isLtcInRemoteMode(subbus->getLtcId());
+
             if (remoteMode)
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
@@ -425,7 +427,9 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 CtiCCExecutorFactory::createExecutor(new CtiCCCommand(CtiCCCommand::LTC_REMOTE_CONTROL_DISABLE,subbus->getLtcId()))->execute();
 
             }
-            state->setState(IVVCState::IVVC_DISABLED);
+//            state->setState(IVVCState::IVVC_DISABLED);
+            state->setState(IVVCState::IVVC_WAIT);
+            state->setCommsLost(true);
             break;
         }
         default:
