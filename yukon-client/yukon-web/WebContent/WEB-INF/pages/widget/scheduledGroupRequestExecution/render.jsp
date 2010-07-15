@@ -36,10 +36,7 @@
 				$('enableTd_' + jobId).hide();
 	        } else if (state == 'ENABLED') {
 				trEl.className = '';
-                var poop = 'disableTd_' + jobId;
-                console.log('poop: ' + poop);
-                var elem = $(poop);
-				elem.show();
+                $('disableTd_' + jobId).show();
 				$('enableTd_' + jobId).hide();
 	        }
 	    };
