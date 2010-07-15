@@ -36,7 +36,10 @@
 				$('enableTd_' + jobId).hide();
 	        } else if (state == 'ENABLED') {
 				trEl.className = '';
-				$('disableTd_' + jobId).show();
+                var poop = 'disableTd_' + jobId;
+                console.log('poop: ' + poop);
+                var elem = $(poop);
+				elem.show();
 				$('enableTd_' + jobId).hide();
 	        }
 	    };
@@ -87,8 +90,6 @@
 			<%-- actions --%>
 			<td>
 			
-				<cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>
-				
 				<a href="${viewScheduleDetailsUrl}" title="${viewScheduleDetailsTitleText} (${jobWrapper.name})" style="text-decoration:none;" >
 					<img src="${script}" onmouseover="javascript:this.src='${scriptOver}'" onmouseout="javascript:this.src='${script}'">
 				</a>
@@ -124,7 +125,7 @@
 			</c:if>
 					
 		</tr>
-	
+        <cti:dataUpdaterCallback function="setTrClassByJobState(${jobWrapper.job.id})" initialize="true" state="JOB/${jobWrapper.job.id}/STATE"/>   
 	</c:forEach>
 
 </table>
