@@ -44,13 +44,9 @@
 	}
 
     boolean meterDetailDisplayable = false;
-	//get the liteYukonPao using the deviceID
-	LiteYukonPAObject liteYukonPao = null;
-    if (deviceID >= 0) {
-        liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
-        // just picked something easy to check against.  "Meters" use DeviceMeterGroup, which is what we want for the Meter Details link.
+    if (YC_BEAN.getLiteYukonPao() != null) {
         PaoDefinitionDao paoDefinitionDao = YukonSpringHook.getBean("paoDefinitionDao", PaoDefinitionDao.class);
-        meterDetailDisplayable = paoDefinitionDao.isTagSupported(liteYukonPao.getPaoIdentifier().getPaoType(), PaoTag.METER_DETAIL_DISPLAYABLE);
+        meterDetailDisplayable = paoDefinitionDao.isTagSupported(YC_BEAN.getLiteYukonPao().getPaoIdentifier().getPaoType(), PaoTag.METER_DETAIL_DISPLAYABLE);
     }
 
 	Vector serialNumbers;
@@ -95,6 +91,7 @@
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
     <c:set var="meterDetailDisplayable" scope="page" value="<%=meterDetailDisplayable%>"/>
+    <c:set var="liteYukonPao" scope="page" value="<%=YC_BEAN.getLiteYukonPao()%>"/>
     
     <table border="0">
     
@@ -130,11 +127,13 @@
 			<div class="sideMenuLink selected">Manual</div>
 			<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&command=null"/> 
 
+            <cti:checkRolesAndProperties value="METERING">
 			<c:if test="${meterDetailDisplayable}">
 			<div class="sideMenuLink">
                 <cti:paoDetailUrl yukonPao="${liteYukonPao}">Meter Details</cti:paoDetailUrl>
 			</div>
 			</c:if>
+            </cti:checkRolesAndProperties>
       
 			<div class="horizontalRule" ></div>
 		

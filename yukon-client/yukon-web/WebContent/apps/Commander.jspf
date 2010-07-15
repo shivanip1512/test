@@ -58,7 +58,7 @@ div.scroll { font-size: 12px;
 	} else if( serialType.equals("sa305")) {
 		name = "DCU-305";
 	} else {
-		name = liteYukonPao.getPaoName();
+		name = YC_BEAN.getLiteYukonPao().getPaoName();
     }
 %>
 
@@ -112,7 +112,7 @@ div.scroll { font-size: 12px;
 	            	<select name="commonCommand" onChange="loadCommanderCommand(this, 'command');">
 	                	<option value="">Select a Command</option>                
 <%
-	Object commandObject = liteYukonPao;
+	Object commandObject = YC_BEAN.getLiteYukonPao();
 	if(serialType.length() > 0){
 		commandObject = serialType;
 	}
