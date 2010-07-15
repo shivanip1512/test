@@ -99,7 +99,7 @@
 	<entry key="yukon.web.modules.operator.accountImport.pageName">Account Import</entry>
 	<entry key="yukon.web.modules.operator.accountImport.fileUploadContainer.title">Upload CSV formatted file(s) containing required column headers for creating/updating/deleting accounts and hardware: </entry>
 	<entry key="yukon.web.modules.operator.accountImport.sampleFiles">Sample Files</entry>
-	<entry key="yukon.web.modules.operator.accountImport.canceledMessage">Operation was canceled by user after {0} was proccessed.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.canceledMessage">Operation was canceled by user after {0} was processed.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.noteLabel">Note:</entry>
 	<entry key="yukon.web.modules.operator.accountImport.noteText">Please enter the import file(s). Leave the field empty if you do not have the corresponding file.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.instructionsLabel">Instructions:</entry>
@@ -149,8 +149,8 @@
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.PASSWORD">Password of the customer contact. Maximum number of characters is 64.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.LOGIN_GROUP">Customer login group. The login group must match the name of customer login group assigned to the Energy Company. Maximum number of characters is 120.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.COMPANY_NAME">Name of company (commercial customer). Maximum number of characters is 80.</entry>
-	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_PIN">The ivr pin number of the account. Must be numeric. Maximum number of digits is 19.</entry>
-	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_USERNAME">The ivr username of the account. Must be numeric. Maximum number of digits is 19.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_PIN">The IVR pin number of the account. Must be numeric. Maximum number of digits is 19.</entry>
+	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_USERNAME">The IVR username of the account. Must be numeric. Maximum number of digits is 19.</entry>
 	
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.a.label">a.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.a.text">This field is required to insert, update, or remove a customer account in STARS.</entry>

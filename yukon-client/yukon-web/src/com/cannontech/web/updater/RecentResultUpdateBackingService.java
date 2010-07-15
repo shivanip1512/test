@@ -2,19 +2,13 @@ package com.cannontech.web.updater;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.util.FormattingTemplateProcessor;
-import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.common.util.TemplateProcessorFactory;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.user.YukonUserContext;
 
 public abstract class RecentResultUpdateBackingService implements UpdateBackingService {
 
-    private YukonUserContextMessageSourceResolver messageSourceResolver = null;
-    private TemplateProcessorFactory templateProcessorFactory;
+    private ObjectFormattingService objectFormattingService;
     
     public abstract Object getResultValue(String resultId, String resultTypeStr);
     
@@ -28,33 +22,12 @@ public abstract class RecentResultUpdateBackingService implements UpdateBackingS
         
         // get result value
         Object value = getResultValue(resultId, resultTypeStr);
+        return objectFormattingService.formatObjectAsString(value, userContext);
         
-        // check to handel ResolvableTemplate, or MessageSourceResolvable, else call toString
-        if (value instanceof ResolvableTemplate) {
-            
-            ResolvableTemplate resolvableValue = (ResolvableTemplate)value;
-            
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String template = messageSourceAccessor.getMessage(resolvableValue.getCode());
-            FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
-            return templateProcessor.process(template, resolvableValue.getData());
-        } else if (value instanceof MessageSourceResolvable) {
-            MessageSourceResolvable resolvableMessage = (MessageSourceResolvable)value;
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            return messageSourceAccessor.getMessage(resolvableMessage);
-        }
-        
-        return value.toString();
     }
 
     @Required
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Required
-    public void setTemplateProcessorFactory(
-            TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
+    public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
+        this.objectFormattingService = objectFormattingService;
     }
 }

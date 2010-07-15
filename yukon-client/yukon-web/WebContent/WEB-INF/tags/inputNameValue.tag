@@ -9,5 +9,4 @@
 
 <tags:nameValue2 nameKey="${nameKey}">
 	<tags:input path="${path}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" disabled="${pageScope.disabled}"/>
-    <jsp:doBody/>
 </tags:nameValue2>

@@ -20,7 +20,7 @@ public class BulkFileUploadUtils {
         if(ServletFileUpload.isMultipartContent(request)) {
 
             MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
-            MultipartFile dataFile = mRequest.getFile(StringUtils.isEmpty(fileInputName) ? "dataFile" : fileInputName);
+            MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(fileInputName, "dataFile"));
 
             try {
 

@@ -458,7 +458,7 @@ public class OperatorAccountController {
 	    this.accountImportService = accountImportService;
 	}
 	
-	@Resource(name="recentResultsCache")
+	@Resource(name="accountImportResultsCache")
     public void setRecentResultsCache(RecentResultsCache<AccountImportResult> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }

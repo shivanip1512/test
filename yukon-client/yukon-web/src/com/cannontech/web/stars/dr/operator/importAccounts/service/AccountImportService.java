@@ -67,7 +67,7 @@ import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 
 public class AccountImportService {
     
-    private static PrintWriter importLog;
+    private PrintWriter importLog;
     
     private StarsCustAccountInformationDao starsCustAccountInformationDao; 
     private StarsSearchDao starsSearchDao;
@@ -1200,7 +1200,7 @@ public class AccountImportService {
         importLog.println("Error found -Line "+lineNoKey+"= "+value[0]+"- Error="+value[1]);
     }
     
-    private static void automationCheck(String errorStr, boolean isAutomatedImport) throws WebClientException{
+    private void automationCheck(String errorStr, boolean isAutomatedImport) throws WebClientException{
         if(isAutomatedImport){
             importLog.println(errorStr);
         } else {

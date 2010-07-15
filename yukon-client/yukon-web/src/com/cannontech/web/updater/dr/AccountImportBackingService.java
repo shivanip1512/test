@@ -9,7 +9,7 @@ import com.cannontech.web.updater.RecentResultUpdateBackingService;
 
 public class AccountImportBackingService extends RecentResultUpdateBackingService {
 
-    private RecentResultsCache<AccountImportResult> resultsCache = null;
+    private RecentResultsCache<AccountImportResult> resultsCache;
     
     @Override
     public Object getResultValue(String resultId, String resultTypeStr) {

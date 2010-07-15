@@ -754,26 +754,22 @@
     </bean>
     
     <bean id="routeLocateBackingService" class="com.cannontech.web.updater.routeLocate.RouteLocateBackingService">
-        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="resultsCache" ref="routeLocateResultsCache" />
     </bean>
     
     <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService">
-        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
     </bean>
     
     <bean id="backgroundProcessBackingService" class="com.cannontech.web.updater.bulk.BackgroundProcessBackingService">
-        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="objectFormattingService" ref="objectFormattingService" />
         <property name="recentResultsCache" ref="recentResultsCache" />
     </bean>
     
     <bean id="groupMeterReadUpdateBackingService" class="com.cannontech.web.updater.groupMeterRead.GroupMeterReadUpdateBackingService">
-    	<property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="objectFormattingService" ref="objectFormattingService" />
     </bean>
     
     <bean id="commandRequestExecutionBackingService" class="com.cannontech.web.updater.commandRequestExecution.CommandRequestExecutionBackingService"/>
@@ -1566,12 +1562,13 @@
     <bean id="hardwareDtoValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.HardwareDtoValidator"/>
     <bean id="serialNumberValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.SerialNumberValidator"/>
     <bean id="meterConfigValidator" class="com.cannontech.web.stars.dr.operator.hardware.validator.MeterConfigValidator"/>
+    
+    <bean id="accountImportResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
     <bean id="accountImportDataValidator" class="com.cannontech.web.stars.dr.operator.validator.AccountImportDataValidator"/>
     <bean id="accountImportSerivce" class="com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService"/>
     <bean id="accountImportBackingService" class="com.cannontech.web.updater.dr.AccountImportBackingService">
-        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
-        <property name="resultsCache" ref="recentResultsCache" />
+        <property name="objectFormattingService" ref="objectFormattingService" />
+        <property name="resultsCache" ref="accountImportResultsCache" />
     </bean>
     
 </beans>
