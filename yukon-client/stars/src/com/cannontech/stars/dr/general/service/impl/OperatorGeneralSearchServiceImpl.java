@@ -50,7 +50,9 @@ public class OperatorGeneralSearchServiceImpl implements OperatorGeneralSearchSe
         
         if (error == null) {
        
-	        boolean adminManageMembers = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, userContext.getYukonUser());
+	        boolean adminManageMembers = 
+	            rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_MEMBERS, 
+	                                          userContext.getYukonUser());
 			boolean searchMembers = adminManageMembers && energyCompany.hasChildEnergyCompanies();
 			
 			// searchEnergyCompanyIds
