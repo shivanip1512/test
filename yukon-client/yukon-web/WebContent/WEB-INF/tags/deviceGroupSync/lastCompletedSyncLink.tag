@@ -12,7 +12,7 @@
 
 <span id="hasLinkableProgressLinkSpan${uniqueId}" style="display:none;">
 	<cti:url var="progressUrl" value="/spring/multispeak/setup/deviceGroupSync/progress"/>
-	<a href="${progressUrl}"><cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT"/></a>
+	<a href="${progressUrl}"><cti:dataUpdaterValue type="MSP_DEVICE_GROUP_SYNC" identifier="STATUS_TEXT_OR_LAST_SYNC_${lastRunTimestampValue.type}"/></a>
 </span>
 
 <cti:dataUpdaterCallback function="toggleElementsWhenTrue(['hasLinkableProgressLinkSpan${uniqueId}'], true)" initialize="true" value="MSP_DEVICE_GROUP_SYNC/HAS_LINKABLE_PROGRESS_${lastRunTimestampValue.type}" />

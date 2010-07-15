@@ -165,6 +165,22 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         	}
         });
         
+        // STATUS_TEXT_OR_LAST_SYNC_SUBSTATION
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		return getStatusTextObj(progress, MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, userContext);
+        	}
+        });
+
+        // STATUS_TEXT_OR_LAST_SYNC_BILLING_CYCLE
+        handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_TEXT_OR_LAST_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
+        	@Override
+        	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
+        		return getStatusTextObj(progress, MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, userContext);
+        	}
+        });
+        
         // STATUS_CLASS
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.STATUS_CLASS, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
@@ -225,17 +241,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_SUBSTATION, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		
-        		Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
-        		Instant instant = lastSyncInstants.get(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION);
-        		
-        		if (instant == null) {
-        			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        			return messageSourceAccessor.getMessage("yukon.web.defaults.na");
-        		}
-        		
-        		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
-        		return dateStr;
+        		return getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, userContext);
         	}
         });
 
@@ -243,19 +249,37 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         handlersMap.put(MultispeakDeviceGroupSyncUpdaterTypeEnum.LAST_COMPLETED_SYNC_BILLING_CYCLE, new MultispeakDeviceGroupSyncUpdaterHandler() {
         	@Override
         	public Object handle(MultispeakDeviceGroupSyncProgress progress, YukonUserContext userContext) {
-        		
-        		Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
-        		Instant instant = lastSyncInstants.get(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE);
-        		
-        		if (instant == null) {
-        			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        			return messageSourceAccessor.getMessage("yukon.web.defaults.na");
-        		}
-        		
-        		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
-        		return dateStr;
+        		return getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, userContext);
         	}
         });
+    }
+    
+    private Object getStatusTextObj(MultispeakDeviceGroupSyncProgress progress, MultispeakDeviceGroupSyncTypeProcessorType type, YukonUserContext userContext) {
+    	
+    	if (progress == null) {
+			return null;
+		}
+		
+		MultispeakDeviceGroupSyncProgressStatus status = progress.getStatus();
+		if (status != MultispeakDeviceGroupSyncProgressStatus.FINISHED) {
+			return status;
+		}
+		
+		return getLastCompletedSyncDateStr(type, userContext);
+    }
+    
+    private String getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType type, YukonUserContext userContext) {
+    	
+    	Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
+		Instant instant = lastSyncInstants.get(type);
+		
+		if (instant == null) {
+			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+			return messageSourceAccessor.getMessage("yukon.web.defaults.na");
+		}
+		
+		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
+		return dateStr;
     }
     
     @Autowired
