@@ -3376,28 +3376,28 @@
                 <name>Relay 1 Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
+                <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="16">
             	<init>true</init>
                 <name>Relay 2 Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
+                <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="17">
             	<init>true</init>
                 <name>Relay 3 Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
+                <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="18">
             	<init>true</init>
                 <name>Relay 4 Control Time</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
-                <decimalplaces value="3"/>
+                <decimalplaces value="0"/>
             </point>
             <point type="Analog" offset="19">
             	<init>true</init>
