@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/recursiv.h> 
 
 #include "lmgroupbase.h"
@@ -31,7 +30,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
 
     CtiLMGroupExpresscom();
-    CtiLMGroupExpresscom(RWDBReader& rdr);
+    CtiLMGroupExpresscom(Cti::RowReader &rdr);
     CtiLMGroupExpresscom(const CtiLMGroupExpresscom& groupexp);
 
     virtual ~CtiLMGroupExpresscom();
@@ -66,7 +65,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
 
 private:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

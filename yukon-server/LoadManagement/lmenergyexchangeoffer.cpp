@@ -17,8 +17,10 @@
 #include "lmid.h"
 #include "logger.h"
 #include "lmenergyexchangeoffer.h"
-#include "rwutil.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 using std::vector;
 
@@ -35,7 +37,7 @@ _offerid(0)
 {
 }
 
-CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer(RWDBReader& rdr)
+CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -191,78 +193,61 @@ CtiLMEnergyExchangeOfferRevision* CtiLMEnergyExchangeOffer::getCurrentOfferRevis
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 {
+    //need to get a new offer id from the database
+    static const string sql =  "SELECT XPO.offerid "
+                               "FROM lmenergyexchangeprogramoffer XPO "
+                               "ORDER BY XPO.offerid DESC";
 
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr(conn);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    rdr.setCommandText(sql);
+    rdr.execute();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
-
-            {//need to get a new offer id from the database
-                RWDBSelector selector = db.selector();
-                selector << lmEnergyExchangeProgramOfferTable["offerid"];
-
-                selector.from(lmEnergyExchangeProgramOfferTable);
-
-                selector.orderByDescending(lmEnergyExchangeProgramOfferTable["offerid"]);
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = selector.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-
-                if( rdr() )
-                {
-                    LONG tempLONG = 0;
-                    rdr["offerid"] >> tempLONG;
-                    setOfferId(tempLONG+1);
-                }
-                else
-                {
-                    setOfferId(1);
-                }
-
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer with offer id: " << getOfferId() << endl;
-                }
-            }
-
-            {
-                RWDBInserter inserter = lmEnergyExchangeProgramOfferTable.inserter();
-
-                inserter << getPAOId()
-                << getOfferId()
-                << string(getRunStatus())
-                << getOfferDate();
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                inserter.execute( conn );
-            }
-        }
-        else
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << loggedSQLstring << endl;
         }
+    }
+
+    if( rdr() )
+    {
+        LONG tempLONG = 0;
+        rdr["offerid"] >> tempLONG;
+        setOfferId(tempLONG+1);
+    }
+    else
+    {
+        setOfferId(1);
+    }
+
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer with offer id: " << getOfferId() << endl;
+    }
+
+    {
+        static const std::string sql_insert = "insert into lmenergyexchangeprogramoffer values (?, ?, ?, ?)";
+
+        Cti::Database::DatabaseConnection   conn;
+        Cti::Database::DatabaseWriter       inserter(conn, sql_insert);
+
+        inserter
+            << getPAOId()
+            << getOfferId()
+            << getRunStatus()
+            << getOfferDate();
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << inserter.asString() << endl;
+        }
+
+        inserter.execute();
     }
 }
 
@@ -271,92 +256,92 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& currentDateTime)
 {
     {
+        static const std::string sql_update = "update lmenergyexchangeprogramoffer"
+                                               " set "
+                                                    "runstatus = ?, "
+                                                    "offerdate = ?"
+                                               " where "
+                                                    "deviceid = ? and "
+                                                    "offerid = ?";
 
-        if( conn.isValid() )
+        Cti::Database::DatabaseConnection   connection;
+        Cti::Database::DatabaseWriter       updater(connection, sql_update);
+
+        updater
+            << getRunStatus()[0]
+            << getOfferDate()
+            << getPAOId()
+            << getOfferId();
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
-            RWDBUpdater updater = lmEnergyExchangeProgramOfferTable.updater();
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << updater.asString() << endl;
+        }
 
-            updater << lmEnergyExchangeProgramOfferTable["runstatus"].assign(getRunStatus()[0])
-            << lmEnergyExchangeProgramOfferTable["offerdate"].assign(toRWDBDT(getOfferDate()));
+        bool success = updater.execute();
 
-            updater.where(lmEnergyExchangeProgramOfferTable["deviceid"]==getPAOId() &&//will be paobjectid
-                          lmEnergyExchangeProgramOfferTable["offerid"]==getOfferId());
+        if( ! success )
+        {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
+
+            static const string sql =  "SELECT XPO.offerid "
+                                       "FROM lmenergyexchangeprogramoffer XPO "
+                                       "ORDER BY XPO.offerid DESC";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection);
+
+            rdr.setCommandText(sql);
+            rdr.execute();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                string loggedSQLstring = updater.asString();
+                string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            updater.execute( conn );
+            if( rdr() )
+            {
+                LONG tempLONG = 0;
+                rdr["offerid"] >> tempLONG;
+                setOfferId(tempLONG+1);
+            }
+            else
+            {
+                setOfferId(1);
+            }
 
-            if( updater.status().errorCode() != RWDBStatus::ok )
-            {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
-                RWDBSelector selector = db.selector();
-                selector << lmEnergyExchangeProgramOfferTable["offerid"];
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer: with offer id: " << getOfferId() << endl;
+            }
 
-                selector.from(lmEnergyExchangeProgramOfferTable);
+            {
+                static const std::string sql_insert = "insert into lmenergyexchangeprogramoffer values (?, ?, ?, ?)";
 
-                selector.orderByDescending(lmEnergyExchangeProgramOfferTable["offerid"]);
+                Cti::Database::DatabaseConnection   connection;
+                Cti::Database::DatabaseWriter       inserter(connection, sql_insert);
+
+                inserter
+                    << getPAOId()
+                    << getOfferId()
+                    << getRunStatus()
+                    << getOfferDate();
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = selector.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-
-                if( rdr() )
-                {
-                    LONG tempLONG = 0;
-                    rdr["offerid"] >> tempLONG;
-                    setOfferId(tempLONG+1);
-                }
-                else
-                {
-                    setOfferId(1);
-                }
-
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer: with offer id: " << getOfferId() << endl;
+                    dout << CtiTime() << " - " << inserter.asString() << endl;
                 }
 
-                RWDBInserter inserter = lmEnergyExchangeProgramOfferTable.inserter();
-
-                inserter << getPAOId()
-                << getOfferId()
-                << getRunStatus()
-                << getOfferDate();
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                inserter.execute( conn );
+                inserter.execute();
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
 }
@@ -368,34 +353,16 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(RWDBConne
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::deleteLMEnergyExchangeProgramOfferTable()
 {
+    static const std::string sql = "delete from lmenergyexchangeprogramoffer where deviceid = ? and offerid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    {
+    deleter 
+        << getPAOId()
+        << getOfferId();
 
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
-            RWDBDeleter deleter = lmEnergyExchangeProgramOfferTable.deleter();
-
-            deleter.where(lmEnergyExchangeProgramOfferTable["deviceid"]==getPAOId() &&//will be paobjectid
-                          lmEnergyExchangeProgramOfferTable["offerid"]==getOfferId());
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << deleter.asString().c_str() << endl;
-            }*/
-
-            deleter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
-    }
+    deleter.execute();
 }
 
 /*-------------------------------------------------------------------------
@@ -405,9 +372,6 @@ void CtiLMEnergyExchangeOffer::deleteLMEnergyExchangeProgramOfferTable()
 --------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::restoreGuts(RWvistream& istrm)
 {
-
-
-
     RWCollectable::restoreGuts( istrm );
 
     CtiTime tempTime;
@@ -428,9 +392,6 @@ void CtiLMEnergyExchangeOffer::restoreGuts(RWvistream& istrm)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::saveGuts(RWvostream& ostrm ) const
 {
-
-
-
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
@@ -447,8 +408,6 @@ void CtiLMEnergyExchangeOffer::saveGuts(RWvostream& ostrm ) const
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::operator=(const CtiLMEnergyExchangeOffer& right)
 {
-
-
     if( this != &right )
     {
         _paoid = right._paoid;
@@ -472,7 +431,6 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::operator=(const CtiLMEnergyE
 ---------------------------------------------------------------------------*/
 int CtiLMEnergyExchangeOffer::operator==(const CtiLMEnergyExchangeOffer& right) const
 {
-
     return( (getPAOId() == right.getPAOId()) && (getOfferId() == right.getOfferId()) );
 }
 
@@ -481,7 +439,6 @@ int CtiLMEnergyExchangeOffer::operator==(const CtiLMEnergyExchangeOffer& right) 
 ---------------------------------------------------------------------------*/
 int CtiLMEnergyExchangeOffer::operator!=(const CtiLMEnergyExchangeOffer& right) const
 {
-
     return !(operator==(right));
 }
 
@@ -498,12 +455,10 @@ CtiLMEnergyExchangeOffer* CtiLMEnergyExchangeOffer::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOffer::restore(RWDBReader& rdr)
+void CtiLMEnergyExchangeOffer::restore(Cti::RowReader &rdr)
 {
-
-
     rdr["deviceid"] >> _paoid;//will be paobjectid
     rdr["offerid"] >> _offerid;
     rdr["runstatus"] >> _runstatus;
@@ -517,10 +472,7 @@ void CtiLMEnergyExchangeOffer::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOffer::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
+    dumpDynamicData(CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -528,17 +480,17 @@ void CtiLMEnergyExchangeOffer::dumpDynamicData()
 
     Writes out the dynamic information for this energy exchange offer.
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOffer::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMEnergyExchangeOffer::dumpDynamicData(CtiTime& currentDateTime)
 {
-    updateLMEnergyExchangeProgramOfferTable(conn, currentDateTime);
+    updateLMEnergyExchangeProgramOfferTable(currentDateTime);
 }
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
 
-    Restores self's dynamic data given a RWDBReader
+    Restores self's dynamic data given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOffer::restoreDynamicData(RWDBReader& rdr)
+void CtiLMEnergyExchangeOffer::restoreDynamicData(Cti::RowReader &rdr)
 {
 }
 

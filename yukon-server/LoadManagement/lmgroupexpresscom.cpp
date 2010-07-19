@@ -34,7 +34,7 @@ CtiLMGroupExpresscom::CtiLMGroupExpresscom()
 {   
 }
 
-CtiLMGroupExpresscom::CtiLMGroupExpresscom(RWDBReader& rdr)
+CtiLMGroupExpresscom::CtiLMGroupExpresscom(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -658,9 +658,9 @@ CtiLMGroupBase* CtiLMGroupExpresscom::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMGroupExpresscom::restore(RWDBReader& rdr)
+void CtiLMGroupExpresscom::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
 }

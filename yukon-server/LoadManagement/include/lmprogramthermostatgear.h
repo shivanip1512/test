@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -29,7 +28,7 @@ class CtiLMProgramThermoStatGear : public CtiLMProgramDirectGear
 
 public:
 
-    CtiLMProgramThermoStatGear(RWDBReader& rdr);
+    CtiLMProgramThermoStatGear(Cti::RowReader &rdr);
     CtiLMProgramThermoStatGear(const CtiLMProgramThermoStatGear& thermogear);
 
     virtual ~CtiLMProgramThermoStatGear();
@@ -79,7 +78,7 @@ private:
     LONG _valuetf;
     float _rampRate;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

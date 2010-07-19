@@ -94,19 +94,21 @@ CtiDeviceDLCBase& CtiDeviceDLCBase::setCarrierSettings( const CtiTableDeviceCarr
     return *this;
 }
 
-
-void CtiDeviceDLCBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceDLCBase::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceCarrier::getSQL(db, keyTable, selector);
-    CtiTableDeviceRoute::getSQL(db, keyTable, selector);        //  leftOuter'd.
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, DCS.address, "
+                                     "RTS.routeid "
+                                   "FROM Device DV, DeviceCarrierSettings DCS, YukonPAObject YP LEFT OUTER JOIN "
+                                     "DeviceRoutes RTS ON YP.paobjectid = RTS.deviceid "
+                                   "WHERE YP.paobjectid = DCS.deviceid AND YP.paobjectid = DV.deviceid";
+
+    return sqlCore;
 }
 
-
-void CtiDeviceDLCBase::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceDLCBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
 
     Inherited::DecodeDatabaseReader(rdr);       //  get the base class handled
 

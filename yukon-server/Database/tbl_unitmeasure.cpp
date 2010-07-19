@@ -16,9 +16,6 @@
 #include "tbl_unitmeasure.h"
 #include "logger.h"
 
-
-#include "rwutil.h"
-
 CtiTableUnitMeasure::CtiTableUnitMeasure() :
    _calcType(0)
 {
@@ -44,24 +41,7 @@ CtiTableUnitMeasure& CtiTableUnitMeasure::operator=(const CtiTableUnitMeasure &a
     return *this;
 }
 
-void CtiTableUnitMeasure::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable tbl = db.table("UnitMeasure");
-
-   selector <<
-   //tbl["uomname"] <<
-   tbl["calctype"];// <<
-   //tbl["longname"] <<
-   //tbl["formula"];
-
-   selector.from(tbl);
-
-   selector.where( selector.where() &&
-                   (keyTable["uomid"] == tbl["uomid"]) );
-
-}
-
-void CtiTableUnitMeasure::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableUnitMeasure::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    //rdr  >> _uomName;
    rdr  >> _calcType;

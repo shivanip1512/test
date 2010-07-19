@@ -23,6 +23,7 @@ using std::iostream;
 #include "logger.h"
 #include "guard.h"
 #include "types.h"
+#include "rwutil.h"
 
 using std::string;
 using std::vector;

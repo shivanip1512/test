@@ -19,7 +19,11 @@
 #include <boost/bind.hpp>
 #include <iostream>
 
+#include <set>
 #include "queue.h"
+#include "dbaccess.h"
+#include "boostutil.h"
+#include <SQLAPI.h>
 
 using namespace std;
 using boost::unit_test_framework::test_suite;

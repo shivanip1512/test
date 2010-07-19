@@ -13,7 +13,6 @@
 
 #include "lmmessage.h"
 #include "lmid.h"
-#include "rwutil.h"
 #include "utility.h"
 #include <rw/collstr.h>
 #include <time.h>

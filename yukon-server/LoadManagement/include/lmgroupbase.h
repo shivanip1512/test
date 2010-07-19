@@ -23,16 +23,15 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
-
-#include "rwutil.h"
 
 #include "dbmemobject.h"
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 using std::vector;
 using std::string;
@@ -44,7 +43,7 @@ class CtiLMGroupBase : public RWCollectable, public CtiMemDBObject
 
 public:
     CtiLMGroupBase();
-    CtiLMGroupBase(RWDBReader& rdr);
+    CtiLMGroupBase(Cti::RowReader &rdr);
     CtiLMGroupBase(const CtiLMGroupBase& groupbase);
 
     virtual ~CtiLMGroupBase();
@@ -124,7 +123,7 @@ public:
     virtual CtiLMGroupBase& setLastControlString(const string& controlstr);
 
     virtual void dumpDynamicData();
-    virtual void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    virtual void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     //virtuals but not pure because only one type of group can handle each of the messages
     virtual CtiRequestMsg* createLatchingRequestMsg(bool do_shed, int priority) const;
@@ -176,7 +175,7 @@ public:
     BOOL _insertDynamicDataFlag;
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

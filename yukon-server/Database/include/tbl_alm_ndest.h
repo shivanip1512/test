@@ -21,6 +21,7 @@
 *-----------------------------------------------------------------------------*/
 
 #include <rw/thr/recursiv.h>
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableNotificationDestination
 {
@@ -78,15 +79,9 @@ public:
 
    void dump() const;
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
    static string getTableName();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Delete();
 
-   virtual void DecodeDatabaseReader(RWDBReader& rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
    CtiTableNotificationDestination& setDirty( bool dirt );
 

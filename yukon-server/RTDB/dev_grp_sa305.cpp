@@ -180,15 +180,21 @@ string CtiDeviceGroupSA305::getDescription(const CtiCommandParser & parse) const
     return tmpStr;
 }
 
-void CtiDeviceGroupSA305::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupSA305::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableSA305LoadGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, SA3.groupid, SA3.routeid, "
+                                     "SA3.addressusage, SA3.utilityaddress, SA3.groupaddress, SA3.divisionaddress, "
+                                     "SA3.substationaddress, SA3.individualaddress, SA3.ratefamily, SA3.ratemember, "
+                                     "SA3.ratehierarchy, SA3.loadnumber "
+                                   "FROM YukonPAObject YP, Device DV, lmgroupsa305 SA3 "
+                                   "WHERE upper (YP.type) = 'SA-305 GROUP' AND YP.paobjectid = SA3.groupid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SA-305 GROUP") && selector.where() );
+    return sqlCore;
 }
 
-void CtiDeviceGroupSA305::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGroupSA305::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

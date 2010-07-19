@@ -16,7 +16,7 @@ public:
 
     Controllable(StrategyManager * strategyManager);
 
-    Controllable(RWDBReader & rdr, StrategyManager * strategyManager);
+    Controllable(Cti::RowReader & rdr, StrategyManager * strategyManager);
 
     Controllable(const Controllable & rhs);
 

@@ -4,6 +4,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 
@@ -12,7 +13,8 @@ using namespace std;
 #include "logger.h"
 #include "calc.h"
 #include "utility.h"
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 extern ULONG _CALC_DEBUG;
 extern bool _ignoreTimeValidTag;
@@ -1133,24 +1135,18 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
         {
             try
             {
-                //  connect to the database
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection( );
-    
-                RWDBDatabase db             = conn.database();
-                RWDBTable    table     = db.table("RAWPOINTHISTORY");
-                RWDBSelector selector  = db.selector();
-    
-                selector << table["POINTID"]
-                << table["TIMESTAMP"]
-                << table["VALUE"];
-    
-                selector.from( table );
-    
-                selector.where( selector["POINTID"] == regressionPt );
-                selector.orderByDescending( selector["TIMESTAMP"] );
-    
-                RWDBReader  rdr = selector.reader( conn );
+                static const string sqlCore = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+                                              "FROM RAWPOINTHISTORY RPH "
+                                              "WHERE RPH.POINTID = ? ORDER BY TIMESTAMP DESC";
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sqlCore);
+
+                rdr << regressionPt;
+
+                rdr.execute();
     
                 int i = 0;
                 long pointid;

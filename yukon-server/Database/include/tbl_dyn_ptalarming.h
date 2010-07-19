@@ -19,13 +19,14 @@
 #ifndef __TBL_DYN_PTALARMING_H__
 #define __TBL_DYN_PTALARMING_H__
 
-#include <rw/db/db.h>
 
 #include "ctibase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "pointdefs.h"
 #include "yukon.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 
 #define CTITABLEDYNAMICPOINTALARMING_MAX_ACTION         60
@@ -61,18 +62,18 @@ public:
 
     static string getTableName();
 
-    RWDBStatus Insert(RWDBConnection &conn);
-    RWDBStatus Update(RWDBConnection &conn);
+    bool Insert(Cti::Database::DatabaseConnection &conn);
+    bool Update(Cti::Database::DatabaseConnection &conn);
 
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Delete();
+    virtual bool Insert();
+    virtual bool Update();
+    virtual bool Delete();
 
-    static RWDBStatus Delete(long pointid, int alarm_condition);
+    static bool Delete(long pointid, int alarm_condition);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeDatabaseReader(RWDBReader& rdr);
+    virtual string getSQLCoreStatement() const;
+
+    void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     LONG              getPointID() const;
     CtiTableDynamicPointAlarming&   setPointID(LONG id);

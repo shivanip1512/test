@@ -72,8 +72,7 @@ public:
     void setMeterGroupData( const string &meterNumber);
 
     //  getSQL has been modified to left-outer-join the metergroup table so's ION meters can be selected
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
     Cti::Protocol::Interface *getProtocol( void );

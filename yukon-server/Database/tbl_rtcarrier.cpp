@@ -18,7 +18,8 @@
 #include "tbl_rtcarrier.h"
 #include "logger.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableCarrierRoute::CtiTableCarrierRoute(INT b, INT f, INT v, INT a) :
 _routeID(-1),
@@ -152,28 +153,12 @@ CtiTableCarrierRoute& CtiTableCarrierRoute::setCCUVarBits( const INT aCCUVarBit 
     return *this;
 }
 
-void CtiTableCarrierRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable routetbl = db.table(getTableName().c_str());
-
-    selector <<
-    routetbl["busnumber"] <<
-    routetbl["ccufixbits"] <<
-    routetbl["ccuvariablebits"] <<
-    routetbl["userlocked"] <<
-    routetbl["resetrptsettings"];
-
-    selector.from(routetbl);
-
-    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(routetbl["routeid"]));
-}
-
 string CtiTableCarrierRoute::getTableName()
 {
     return "CarrierRoute";
 }
 
-void CtiTableCarrierRoute::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableCarrierRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -206,107 +191,3 @@ void CtiTableCarrierRoute::DecodeDatabaseReader(RWDBReader &rdr)
 
 }
 
-RWDBStatus CtiTableCarrierRoute::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["routeid"] <<
-    table["busnumber"] <<
-    table["ccufixbits"] <<
-    table["ccuvariablebits"] <<
-    table["userlocked"] <<
-    table["resetrptsettings"];
-
-    selector.where( table["routeid"] == getRouteID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableCarrierRoute::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getRouteID() <<
-    getBus() <<
-    getCCUFixBits() <<
-    getCCUVarBits() <<
-    getUserLocked() <<
-    getResetRPTSettings();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableCarrierRoute::Update()
-{
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["routeid"] == getRouteID() );
-
-    updater <<
-    table["busnumber"].assign( getBus() ) <<
-    table["ccufixbits"].assign( getCCUFixBits() ) <<
-    table["ccuvariablebits"].assign(getCCUVarBits()) <<
-    table["userlocked"].assign(getUserLocked()) <<
-    table["resetrptsettings"].assign(getResetRPTSettings());
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableCarrierRoute::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["routeid"] == getRouteID() );
-    deleter.execute( conn );
-    return deleter.status();
-}

@@ -38,8 +38,9 @@ public:
    CtiTablePointStatus  getPointStatus() const;
    CtiTablePointStatus& getPointStatus();
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   static string getSQLCoreStatement();
+
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void DumpData();
    virtual UINT adjustStaticTags(UINT &tag) const;
    virtual UINT getStaticTags();

@@ -31,7 +31,7 @@ CtiLMGroupVersacom::CtiLMGroupVersacom()
 {   
 }
 
-CtiLMGroupVersacom::CtiLMGroupVersacom(RWDBReader& rdr)
+CtiLMGroupVersacom::CtiLMGroupVersacom(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -207,9 +207,9 @@ CtiLMGroupBase* CtiLMGroupVersacom::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMGroupVersacom::restore(RWDBReader& rdr)
+void CtiLMGroupVersacom::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
 }

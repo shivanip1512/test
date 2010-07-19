@@ -25,7 +25,7 @@ CtiLMGroupMacro::CtiLMGroupMacro()
 {   
 }
 
-CtiLMGroupMacro::CtiLMGroupMacro(RWDBReader& rdr)
+CtiLMGroupMacro::CtiLMGroupMacro(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -49,7 +49,7 @@ CtiLMGroupBase* CtiLMGroupMacro::replicate() const
     return (CTIDBG_new CtiLMGroupMacro(*this));
 }
 
-void CtiLMGroupMacro::restore(RWDBReader& rdr)
+void CtiLMGroupMacro::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
 }

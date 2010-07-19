@@ -48,9 +48,9 @@ public:
 
    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+   virtual string getSQLCoreStatement() const;
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual LONG getLastIntervalDemandRate();
 

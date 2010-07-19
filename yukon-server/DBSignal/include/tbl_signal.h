@@ -23,11 +23,8 @@
 
 #include <windows.h>
 #include "ctitime.h"
-#include <rw/db/datetime.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
+#include "database_connection.h"
 
 
 #include "dbmemobject.h"
@@ -79,8 +76,8 @@ private:
     bool operator<(const CtiTableSignal& aRef) const;
     BOOL operator==(const CtiTableSignal& right) const;
 
-    void DecodeDatabaseReader( RWDBReader& rdr );
-    virtual void Insert(RWDBConnection &conn);
+    void DecodeDatabaseReader( Cti::RowReader& rdr );
+    virtual void Insert(Cti::Database::DatabaseConnection &conn);
     virtual void Insert();
     virtual void Restore();
     virtual void Update();
@@ -112,8 +109,6 @@ private:
     CtiTableSignal &setLogType(const INT &i);
     CtiTableSignal &setAdditionalInfo(const string &str);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    static void getSQLMaxID(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, LONG id);
     virtual void dump() const;
 
 };

@@ -3,7 +3,6 @@
 #include "calc.h"
 #include "logger.h"
 #include "utility.h"
-#include "rwutil.h"
 
 #include <rw/collect.h>
 #include <rw/thr/mutex.h>

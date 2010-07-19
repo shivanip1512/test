@@ -53,11 +53,7 @@
 
 #include <windows.h>
 
-#include <rw/db/select.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
+#include "row_reader.h"
 
 #include "yukon.h"
 #include "dlldefs.h"
@@ -102,12 +98,6 @@ public:
 
     static string getTableName();
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
-
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_LMG_GOLAY_H__

@@ -18,6 +18,8 @@
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_rtversacom.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableVersacomRoute::CtiTableVersacomRoute() :
     RouteID(0),
@@ -178,44 +180,16 @@ UINT  CtiTableVersacomRoute::getIndividual() const
     return Individual;
 }
 
-void CtiTableVersacomRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTableVersacomRoute::getSQLCoreStatement()
 {
-#if 1
-    keyTable = db.table(getTableName().c_str() );
+    static const string sql =  "SELECT VR.routeid, VR.utilityid, VR.sectionaddress, VR.classaddress, VR.divisionaddress, "
+                                   "VR.busnumber, VR.ampcardset "
+                               "FROM VersacomRoute VR";
 
-    selector <<
-    keyTable["routeid"] <<
-    keyTable["utilityid"] <<
-    keyTable["sectionaddress"] <<
-    keyTable["classaddress"] <<
-    keyTable["divisionaddress"] <<
-    keyTable["busnumber"] <<
-    keyTable["ampcardset"];
-
-    selector.from(keyTable);
-
-    // selector.where( selector.where() && keyTable["routeid"] == routetbl["routeid"] );
-#else
-    keyTable = db.table("Route");
-    RWDBTable routetbl = db.table(getTableName().c_str() );
-
-    selector <<
-    keyTable["routeid"] <<
-    routetbl["utilityid"] <<
-    routetbl["sectionaddress"] <<
-    routetbl["classaddress"] <<
-    routetbl["divisionaddress"] <<
-    routetbl["busnumber"] <<
-    routetbl["ampcardset"];
-
-    selector.from(keyTable);
-    selector.from(routetbl);
-
-    selector.where( selector.where() && keyTable["routeid"] == routetbl["routeid"] );
-#endif
+    return sql;
 }
 
-void CtiTableVersacomRoute::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableVersacomRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -258,114 +232,5 @@ string CtiTableVersacomRoute::getTableName()
 {
     return "VersacomRoute";
 }
-
-RWDBStatus CtiTableVersacomRoute::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["routeid"] <<
-    table["utilityid"] <<
-    table["sectionaddress"] <<
-    table["classaddress"] <<
-    table["divisionaddress"] <<
-    table["busnumber"] <<
-    table["ampcardset"];
-
-    selector.where( table["routeid"] == getRouteID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableVersacomRoute::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getRouteID() <<
-    getUtilityID() <<
-    getSection() <<
-    getClass() <<
-    getDivision() <<
-    getBus() <<
-    getAmp();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableVersacomRoute::Update()
-{
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["routeid"] == getRouteID() );
-
-    updater <<
-    table["utilityid"].assign( getUtilityID() ) <<
-    table["sectionaddress"].assign( getSection() ) <<
-    table["classaddress"].assign( getClass() ) <<
-    table["divisionaddress"].assign( getDivision() ) <<
-    table["busnumber"].assign( getBus() ) <<
-    table["ampcardset"].assign(getAmp());
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableVersacomRoute::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["routeid"] == getRouteID() );
-    deleter.execute( conn );
-    return deleter.status();
-}
-
 
 

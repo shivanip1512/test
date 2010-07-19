@@ -28,6 +28,7 @@
 #include "mgr_point.h"
 #include "pt_status.h"
 #include "devicetypes.h"
+#include "rwutil.h"
 
 #define BOOST_AUTO_TEST_MAIN "Test Device Group Base"
 using boost::unit_test_framework::test_suite;

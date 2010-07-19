@@ -122,14 +122,21 @@ public:
         return _idlc.getPostDelay();
     }
 
-
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+    virtual string getSQLCoreStatement() const
     {
-        Inherited::getSQL(db, keyTable, selector);
-        CtiTableDeviceIDLC::getSQL(db, keyTable, selector);
+        static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                         "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+                                         "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+                                         "DUS.baudrate, IDLC.address, IDLC.postcommwait, IDLC.ccuampusetype "
+                                       "FROM Device DV, DeviceIDLCRemote IDLC, DeviceDirectCommSettings CS, YukonPAObject YP "
+                                         "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
+                                       "WHERE YP.paobjectid = IDLC.deviceid AND YP.paobjectid = DV.deviceid AND "
+                                         "YP.paobjectid = CS.deviceid";
+
+        return sqlCore;
     }
 
-    virtual void DecodeDatabaseReader(RWDBReader &rdr)
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
     {
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

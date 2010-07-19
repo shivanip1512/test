@@ -605,7 +605,7 @@ ULONG CtiDeviceMCT470::calcNextLPScanTime( void )
 
                     CtiTablePointDispatch pd(pPoint->getPointID());
 
-                    if(pd.Restore().errorCode() == RWDBStatus::ok)
+                    if(pd.Restore())
                     {
                         _lp_info[i].collection_point = pd.getTimeStamp().seconds();
                     }
@@ -5475,10 +5475,9 @@ void CtiDeviceMCT470::getBytesFromString(string &values, BYTE* buffer, int buffL
     }
 }
 
-void CtiDeviceMCT470::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceMCT470::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
 
     Inherited::DecodeDatabaseReader(rdr);
 

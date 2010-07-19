@@ -2,10 +2,10 @@
 #pragma once
 
 #include "yukon.h"
-
+#include "row_reader.h"
+#include "rwutil.h"
 #include <string>
 
-#include <rw/db/db.h>
 #include <rw/vstream.h>
 
 class CapControlPao
@@ -23,7 +23,7 @@ class CapControlPao
     public:
 
         CapControlPao();
-        CapControlPao(RWDBReader& rdr);
+        CapControlPao(Cti::RowReader& rdr);
 
         int getPaoId() const;
         void setPaoId(int paoId);
@@ -51,7 +51,7 @@ class CapControlPao
 
         CapControlPao& operator=(const CapControlPao& right);
 
-        void CapControlPao::restore(RWDBReader& rdr);
+        void CapControlPao::restore(Cti::RowReader& rdr);
         void CapControlPao::saveGuts(RWvostream& ostrm) const;
 
         bool CapControlPao::operator == (const CapControlPao& right) const;

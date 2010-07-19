@@ -11,14 +11,14 @@ private:
 
     ScannableDeviceManager &operator=(const ScannableDeviceManager &);
 
-    void refreshScanRates    (id_range_t &paoids);
-    void refreshDeviceWindows(id_range_t &paoids);
+    void refreshScanRates    (Database::id_set &paoids);
+    void refreshDeviceWindows(Database::id_set &paoids);
 
 protected:
 
     typedef CtiDeviceManager Inherited;
 
-    virtual void refreshDeviceProperties(id_range_t &paoids, int type);
+    virtual void refreshDeviceProperties(Database::id_set &paoids, int type);
 
 public:
 

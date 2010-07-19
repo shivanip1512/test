@@ -13,7 +13,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/db/db.h>
 
 #include "mgr_port.h"
 
@@ -27,7 +26,8 @@
 #include "port_tcpipdirect.h"
 #include "port_tcp.h"
 #include "port_udp.h"
-
+#include "database_connection.h"
+#include "database_reader.h"
 
 /* SQL to get every column used */
 /* Seems far more efficient that using 4 simpler queries without outer join */
@@ -161,14 +161,12 @@ CtiPortManager::CtiPortManager(CTI_PORTTHREAD_FUNC_FACTORY_PTR fn) :
 _portThreadFuncFactory(fn)
 {}
 
-extern void cleanupDB();
-
 CtiPortManager::~CtiPortManager()
 {
     // cleanupDB();  // Deallocate all the DB stuff.
 }
 
-void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshList(CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
     ptr_type pTempPort;
 
@@ -186,23 +184,19 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             _smartMap.resetErrorCode();
 
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Direct Ports" << endl;
                 }
-                CtiPortDirect().getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+
+                static const string sql = CtiPortDirect::getSQLCoreStatement();
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00080000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -217,23 +211,18 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             }
 
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCPIP Terminal Server Ports" << endl;
                 }
-                CtiPortTCPIPDirect().getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                
+                static const string sql = CtiPortTCPIPDirect::getSQLCoreStatement();
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00080000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -248,26 +237,19 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             }
 
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for TCP Ports" << endl;
                 }
-                Cti::Ports::TcpPort().getSQL( db, keyTable, selector );
 
-                selector.where(selector.where() && keyTable["type"] == "TCP");
+                const string sql = string(Cti::Ports::TcpPort::getSQLCoreStatement() + " AND YP.type = 'TCP'");
 
-                RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00080000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -280,26 +262,19 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for TCP Ports" << endl;
                 }
             }
-
-
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for DialABLE Ports" << endl;
                 }
-                CtiPortDialable::getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+
+                static const string sql = CtiPortDialable::getSQLCoreStatement();
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00080000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -314,23 +289,17 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             }
 
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Pool Ports" << endl;
                 }
-                CtiPortPoolDialout().getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                static const string sql = CtiPortPoolDialout::getSQLCoreStatement();
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00080000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -346,24 +315,18 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             }
 
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00080000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Pool Ports Children" << endl;
                 }
 
-                CtiPortPoolDialout::getPooledPortsSQL(db,keyTable,selector);
-                RWDBReader  rdr = selector.reader( conn );
-                if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                static const string sql = CtiPortPoolDialout::getSQLPooledPortsStatement();
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00080000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -378,9 +341,7 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
                 }
             }
 
-            refreshExclusions();
-
-            if(_smartMap.getErrorCode() != RWDBStatus::ok)
+            if( !refreshExclusions() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -390,37 +351,26 @@ void CtiPortManager::RefreshList(CtiPort* (*Factory)(RWDBReader &), BOOL (*testF
             }
             else
             {
-                if(_smartMap.getErrorCode() != RWDBStatus::ok)
+                if(rowFound)
                 {
+                    // Now I need to check for any Port removals based upon the
+                    // Updated Flag being NOT set
+                    apply(ApplyInvalidateNotUpdated, NULL);
+                    pTempPort.reset();
+                    do
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
-                    }
-                }
-                else
-                {
-                    if(rowFound)
-                    {
-                        // Now I need to check for any Port removals based upon the
-                        // Updated Flag being NOT set
-                        apply(ApplyInvalidateNotUpdated, NULL);
-                        pTempPort.reset();
-                        do
+                        pTempPort = _smartMap.remove(isNotUpdated, NULL);
+                        if(pTempPort)
                         {
-                            pTempPort = _smartMap.remove(isNotUpdated, NULL);
-                            if(pTempPort)
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
-                                }
-                                pTempPort.reset();      // Free the thing!
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
                             }
+                            pTempPort.reset();      // Free the thing!
+                        }
 
-                        } while(pTempPort);
-                    }
+                    } while(pTempPort);
                 }
             }
         }   // Temporary results are destroyed to free the connection
@@ -538,7 +488,7 @@ CtiPortManager::ptr_type CtiPortManager::PortGetEqual(LONG pid)
     return p;
 }
 
-void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
     LONG     portID = 0;
     ptr_type tempPort;
@@ -547,7 +497,7 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
     string oldIP;
     int    oldPort;
 
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
         rdr["paobjectid"] >> portID;            // get the RouteID
@@ -617,12 +567,12 @@ void CtiPortManager::RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*
     }
 }
 
-void CtiPortManager::RefreshDialableEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
     LONG     lTemp = 0;
     ptr_type pTempPort;
 
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
         rdr["paobjectid"] >> lTemp;            // get the RouteID
@@ -690,7 +640,7 @@ CtiPortManager::spiterator CtiPortManager::end()
     return _smartMap.getMap().end();
 }
 
-void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
+void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg)
 {
     LONG     owner = 0;
     LONG     child = 0;
@@ -699,7 +649,7 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, C
 
     try
     {
-        while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+        while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
         {
             rowFound = true;
             rdr["paobjectid"] >> owner;            // get the Port's paoobject id
@@ -882,7 +832,7 @@ bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
 }
 
 
-void CtiPortManager::refreshExclusions(LONG id)
+bool CtiPortManager::refreshExclusions(LONG id)
 {
     LONG     lTemp = 0;
     ptr_type pTempPort;
@@ -904,37 +854,33 @@ void CtiPortManager::refreshExclusions(LONG id)
         apply(applyClearExclusions, NULL);
     }
 
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    // are out of scope when the release is called
-
-    RWDBDatabase db = conn.database();
-    RWDBSelector selector = conn.database().selector();
-    RWDBTable   keyTable;
-
     if(DebugLevel & 0x00080000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Port Exclusions" << endl;
     }
-    CtiTablePaoExclusion::getSQL( db, keyTable, selector );
+
+    const string sql = CtiTablePaoExclusion::getSQLCoreStatement(id) ;
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
 
     if(id > 0)
     {
-        selector.where(keyTable["paoid"] == id && selector.where());
+        rdr << id;
     }
 
-    RWDBReader  rdr = selector.reader( conn );
-    if(DebugLevel & 0x00080000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    rdr.execute();
+
+    if(DebugLevel & 0x00080000 || !rdr.isValid())
     {
-        string loggedSQLstring = selector.asString();
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rdr["paoid"] >> lTemp;            // get the RouteID
 
@@ -952,5 +898,7 @@ void CtiPortManager::refreshExclusions(LONG id)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Port Exclusions" << endl;
     }
+
+    return rdr.isValid();
 }
 

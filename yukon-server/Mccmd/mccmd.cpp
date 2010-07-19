@@ -22,6 +22,8 @@
 #include "mccmd.h"
 
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 #include "connection.h"
 #include "cparms.h"
 
@@ -56,6 +58,9 @@
 
 #include <rw\re.h>
 #include <rw/ctoken.h>
+
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 unsigned gMccmdDebugLevel = 0x00000000;
 bool gDoNotSendCancel = false;
@@ -2159,11 +2164,10 @@ long GetNotificationGroupID( const string& name)
     try
     {
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-
             string sql = "SELECT NotificationGroupID FROM NotificationGroup WHERE GroupName='" + name + "'";
-            RWDBReader rdr = ExecuteQuery(conn, sql);
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
 
             //Assume there is only one?
             if( rdr() )
@@ -2193,12 +2197,11 @@ static void GetDeviceName(long deviceID, string& name)
         ::sprintf(devStr, "%ld", deviceID);
 
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-
             string sql = "SELECT PAOName FROM YukonPAObject WHERE YukonPAObject.PAObjectID=";
             sql += devStr;
-            RWDBReader rdr = ExecuteQuery(conn, sql);
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
 
             if( rdr() )
             {
@@ -2222,13 +2225,12 @@ static long GetDeviceID(const string& name)
   try
     {
       {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
     string sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
     sql += name;
     sql += "'";
-    RWDBReader rdr = ExecuteQuery(conn, sql);
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
     if(rdr())
       {
         rdr >> id;
@@ -2473,11 +2475,9 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
     if( endVal > 0 && requestLogId > 0 )
     {
-        string connstr("meterlog");
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        Cti::Database::DatabaseConnection   conn;
 
-        conn.beginTransaction(connstr.c_str());
+        conn.beginTransaction();
 
         try
         {
@@ -2514,7 +2514,7 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
             }
         }
 
-        conn.commitTransaction(connstr.c_str());
+        conn.commitTransaction();
     }
 
     resultQueue.clear();

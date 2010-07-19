@@ -17,7 +17,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/db/db.h>
 #include <rw/toolpro/neterr.h>
 
 #include "dbaccess.h"

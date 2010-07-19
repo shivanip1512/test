@@ -421,7 +421,7 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
     return status;
 }
 
-void CtiPort::DecodeDialableDatabaseReader(RWDBReader &rdr)
+void CtiPort::DecodeDialableDatabaseReader(Cti::RowReader &rdr)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -431,7 +431,7 @@ void CtiPort::DecodeDialableDatabaseReader(RWDBReader &rdr)
     return;
 }
 
-void CtiPort::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     _tblPAO.DecodeDatabaseReader(rdr);
     _tblPortBase.DecodeDatabaseReader(rdr);
@@ -737,12 +737,6 @@ string CtiPort::getPhysicalPort() const
 string CtiPort::getModemInit() const
 {
     return string("");
-}
-
-void CtiPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    _tblPAO.getSQL(db, keyTable, selector);
-    CtiTablePortBase::getSQL(db, keyTable, selector);
 }
 
 HCTIQUEUE&  CtiPort::getPortQueueHandle()

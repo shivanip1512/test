@@ -20,7 +20,6 @@
 #include <string.h>
 #include <process.h>
 
-#include <rw/db/db.h>
 #include <rw\thr\mutex.h>
 
 #include "dsm2.h"

@@ -21,7 +21,8 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_pttag.h"
-#include "rwutil.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 CtiTableDynamicTag::CtiTableDynamicTag() :
 _instanceId(0),               // no two tags share the same one
@@ -88,27 +89,22 @@ string CtiTableDynamicTag::getTableName()
 }
 
 
-RWDBStatus CtiTableDynamicTag::Insert()
+bool CtiTableDynamicTag::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Insert(conn);
 }
 
-RWDBStatus CtiTableDynamicTag::Update()
+bool CtiTableDynamicTag::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Update(conn);
 }
 
-RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
+bool CtiTableDynamicTag::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
     if(getUserName().empty())
     {
         setUserName("(none)");
@@ -130,7 +126,12 @@ RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
         setTaggedForStr("(none)");
     }
 
-    inserter << getInstanceId()
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+    inserter
+        << getInstanceId()
         << getPointId()
         << getTagId()
         << getUserName()
@@ -142,40 +143,29 @@ RWDBStatus CtiTableDynamicTag::Insert(RWDBConnection &conn)
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
 
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    bool success = inserter.execute();
 
-    if(inserter.status().errorCode() != RWDBStatus::ok)    // error occured!
+    if( ! success )    // error occured!
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
     else
     {
         resetDirty(FALSE);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDynamicTag::Update(RWDBConnection &conn)
+bool CtiTableDynamicTag::Update(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["instanceid"] == getInstanceId() );
-
     if(getUserName().empty())
     {
         setUserName("(none)");
@@ -197,140 +187,81 @@ RWDBStatus CtiTableDynamicTag::Update(RWDBConnection &conn)
         setTaggedForStr("(none)");
     }
 
-    updater <<
-    table["instanceid"].assign(getInstanceId()) <<
-    table["pointid"].assign(getPointId()) <<
-    table["tagid"].assign(getTagId()) <<
-    table["username"].assign(getUserName().c_str()) <<
-    table["action"].assign(getActionStr().c_str()) <<
-    table["description"].assign(getDescriptionStr().c_str()) <<
-    table["tagtime"].assign(toRWDBDT(getTagTime())) <<
-    table["refstr"].assign(getReferenceStr().c_str()) <<
-    table["forstr"].assign(getTaggedForStr().c_str());
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "pointid = ?, "
+                                        "tagid = ?, "
+                                        "username = ?, "
+                                        "action = ?, "
+                                        "description = ?, "
+                                        "tagtime = ?, "
+                                        "refstr = ?, "
+                                        "forstr = ?"
+                                    " where "
+                                        "instanceid = ?";
 
-    long rowsAffected;
-    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    Cti::Database::DatabaseWriter   updater(conn, sql);
 
-    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    updater
+        << getPointId()
+        << getTagId()
+        << getUserName()
+        << getActionStr()
+        << getDescriptionStr()
+        << getTagTime()
+        << getReferenceStr()
+        << getTaggedForStr()
+        << getInstanceId();
+
+    bool success      = updater.execute();
+    long rowsAffected = updater.rowsAffected();
+
+    if( success && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        rwStat = Insert(conn);        // Try a vanilla insert if the update failed!
+        success = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
-    return rwStat;
+    return success;
 }
 
-RWDBStatus CtiTableDynamicTag::Restore()
+bool CtiTableDynamicTag::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-        table["instanceid"] <<
-        table["pointid"] <<
-        table["tagid"] <<
-        table["username"] <<
-        table["action"] <<
-        table["description"] <<
-        table["tagtime"] <<
-        table["refstr"] <<
-        table["forstr"];
-
-    selector.where( table["instanceid"] == getInstanceId() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are sirty and need to be
-     *  written into the database
-     */
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( TRUE );
-    }
-
-    return reader.status();
+    return Delete( getInstanceId() );
 }
-RWDBStatus CtiTableDynamicTag::Delete()
+
+bool CtiTableDynamicTag::Delete(int instance)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where instanceid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["instanceid"] == getInstanceId() );
+    deleter << instance;
 
     if(isDebugLudicrous())
-    {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
-    }
-
-    return deleter.execute( conn ).status();
-}
-
-RWDBStatus CtiTableDynamicTag::Delete(int instance)
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["instanceid"] == instance );
-
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
 
-    if(isDebugLudicrous())
-    {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
-    }
-
-    return deleter.execute( conn ).status();
+    return deleter.execute();
 }
 
-
-void CtiTableDynamicTag::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTableDynamicTag::getSQLCoreStatement()
 {
-    keyTable = db.table(CtiTableDynamicTag::getTableName().c_str());
+    static const string sql =  "SELECT DYT.instanceid, DYT.pointid, DYT.tagid, DYT.username, DYT.action, DYT.description, "
+                                  "DYT.tagtime, DYT.refstr, DYT.forstr "
+                               "FROM DynamicTags DYT";
 
-    selector <<
-    keyTable["instanceid"] <<
-    keyTable["pointid"] <<
-    keyTable["tagid"] <<
-    keyTable["username"] <<
-    keyTable["action"] <<
-    keyTable["description"] <<
-    keyTable["tagtime"] <<
-    keyTable["refstr"] <<
-    keyTable["forstr"];
-
-    selector.from(keyTable);
+    return sql;
 }
-void CtiTableDynamicTag::DecodeDatabaseReader(RWDBReader& rdr)
+
+void CtiTableDynamicTag::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     rdr["instanceid"]   >> _instanceId;
     rdr["pointid"]      >> _pointId;

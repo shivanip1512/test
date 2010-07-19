@@ -4,7 +4,6 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-#include <rw/db/connect.h>
 
 #include "connection.h"
 #include "ctinexus.h"

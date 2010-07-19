@@ -14,7 +14,6 @@
 #include "yukon.h"
 
 
-#include <rw/db/db.h>
 
 #include "dev_710.h"
 #include "dev_base.h"
@@ -99,12 +98,13 @@
 #include "resolvers.h"
 #include "slctdev.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 
-DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
+DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
 {
     string rwsType;
     string rwsPseudo;
@@ -132,7 +132,6 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 
     return NewDevice;
 }
-
 
 DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 {
@@ -313,7 +312,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
 
 
-DLLEXPORT CtiRouteBase* RouteFactory(RWDBReader &rdr)
+DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
 {
     string rwsType;
     string category;

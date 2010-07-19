@@ -20,14 +20,8 @@
 
 #include <limits.h>
 
-#include <rw/db/db.h>
 
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -38,7 +32,7 @@
 #include "resolvers.h"
 #include "desolvers.h"
 #include "yukon.h"
-
+#include "row_reader.h"
 
 #define ALARM_STATE_SIZE 32
 
@@ -117,16 +111,16 @@ public:
 
    CtiTablePointAlarming(LONG pid = 0);
    CtiTablePointAlarming(const CtiTablePointAlarming& aRef);
-   CtiTablePointAlarming(RWDBReader& rdr);
+   CtiTablePointAlarming(Cti::RowReader &rdr);
    virtual ~CtiTablePointAlarming();
 
    CtiTablePointAlarming& operator=(const CtiTablePointAlarming& aRef);
 
    bool operator<(const CtiTablePointAlarming &rhs) const;
 
-   static void getSQL(string &sql, LONG pointID = 0, LONG paoID = 0, const std::set<long> &pointIds = std::set<long>());
    static string getTableName();
 
+   static void getSQL(string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds);
    virtual UINT getAlarmCategory(const INT offset)  const;
    virtual UINT getExcludeNotifyStates()            const;
    virtual UINT getAutoAckStates()                  const;

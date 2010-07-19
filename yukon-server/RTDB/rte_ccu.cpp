@@ -952,13 +952,18 @@ INT CtiRouteCCU::getBus()        const  {   return Carrier.getBus();            
 INT CtiRouteCCU::getCCUFixBits() const  {   return Carrier.getCCUFixBits();     }
 INT CtiRouteCCU::getCCUVarBits() const  {   return Carrier.getCCUVarBits();     }
 
-void CtiRouteCCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiRouteCCU::getSQLCoreStatement()
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableCarrierRoute::getSQL(db, keyTable, selector);
+    static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                   "RT.routeid, RT.deviceid, RT.defaultroute, CRT.busnumber, CRT.ccufixbits, "
+                                   "CRT.ccuvariablebits, CRT.userlocked, CRT.resetrptsettings "
+                               "FROM YukonPAObject YP LEFT OUTER JOIN Route RT ON YP.paobjectid = RT.routeid "
+                                   "LEFT OUTER JOIN CarrierRoute CRT ON YP.paobjectid = CRT.routeid";
+
+    return sql;
 }
 
-void CtiRouteCCU::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiRouteCCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

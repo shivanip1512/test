@@ -20,6 +20,8 @@ using namespace std;
 #include <rw/thr/thrutil.h>
 
 #include "dbaccess.h"
+#include "row_reader.h"
+#include "database_connection.h"
 #include "tbl_pt_alarm.h"
 
 void main()

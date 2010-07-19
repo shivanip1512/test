@@ -778,19 +778,28 @@ CtiPortDirect::~CtiPortDirect()
     }
 }
 
-void CtiPortDirect::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiPortDirect::getSQLCoreStatement()
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTablePortLocalSerial::getSQL(db, keyTable, selector);
+    static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                   "YP.disableflag, CP.alarminhibit, CP.commonprotocol, CP.performancealarm, "
+                                   "CP.performthreshold, CP.sharedporttype, CP.sharedsocketnumber, "
+                                   "PST.baudrate, PST.cdwait, PST.linesettings, TMG.pretxwait, TMG.rtstotxwait, "
+                                   "TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, PLS.physicalport "
+                               "FROM YukonPAObject YP, CommPort CP, PortSettings PST, PortTiming TMG, "
+                                   "PortLocalSerial PLS "
+                               "WHERE YP.paobjectid = CP.portid AND YP.paobjectid = PST.portid AND "
+                                   "YP.paobjectid = TMG.portid AND YP.paobjectid = PLS.portid";
+
+    return sql;
 }
 
-void CtiPortDirect::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPortDirect::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
     _localSerial.DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
-void CtiPortDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)
+void CtiPortDirect::DecodeDialableDatabaseReader(Cti::RowReader &rdr)
 {
     if(_dialable)
     {

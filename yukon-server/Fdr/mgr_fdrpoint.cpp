@@ -18,7 +18,6 @@
 ****************************************************************************/
 #include "yukon.h"
 
-#include <rw/db/db.h>
 
 #include "dbaccess.h"
 #include "hashkey.h"
@@ -32,8 +31,6 @@
 #include "logger.h"
 #include "guard.h"
 #include "utility.h"
-
-#include "rwutil.h"
 
 /** local definitions **/
 const CHAR * CtiFDRManager::TBLNAME_FDRTRANSLATION =     "FDRTranslation";
@@ -106,43 +103,48 @@ CtiFDRManager & CtiFDRManager::setWhereSelectStr(string & aWhereSelectStr)
 *
 *************************************************************************
 */
-RWDBStatus CtiFDRManager::loadPointList()
+bool CtiFDRManager::loadPointList()
 {
-    RWDBStatus  retStatus = RWDBStatus::ok;
+    bool functionSuccess;
 
     ResetBreakAlloc();
 
     try
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        std::stringstream ss;
 
-        // are out of scope when the release is called
+        static const string sql =  "SELECT FDR.PointID, FDR.TRANSLATION, FDR.DESTINATION, FDR.DIRECTIONTYPE, PT.PointType, "
+                                     "PAL.MULTIPLIER, PAL.DATAOFFSET, PAC.MULTIPLIER, PAC.DATAOFFSET "
+                                   "FROM FDRTranslation FDR, Point PT "
+                                     "LEFT OUTER JOIN PointAnalog PAL ON PT.PointID = PAL.PointID "
+                                     "LEFT OUTER JOIN PointAccumulator PAC ON PT.PointID = PAC.PointID "
+                                   "WHERE FDR.PointID = PT.PointID";
 
-        RWDBDatabase db = conn.database();
-        RWDBTable fdrTranslation = db.table(TBLNAME_FDRTRANSLATION);
-        RWDBTable pointBaseTable = db.table(TBLNAME_PTBASE);
-        RWDBTable pointAnalogTable = db.table(TBLNAME_PTANALOG);
-        RWDBTable pointAccumulatorTable = db.table(TBLNAME_PTACCUM);
+        ss << sql;
 
-        RWDBSelector selector = db.selector();
-        buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable, pointAccumulatorTable);
-
-        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID] &&
-                        pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID]) &&
-                        pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAccumulatorTable[COLNAME_PTANALOG_POINTID]));
-
-        if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        if(getWhereSelectStr() != "")
         {
-            string loggedSQLstring = selector.asString();
+            ss << " AND FDR.INTERFACETYPE = '" << getInterfaceName() << "'";
+
+            // we now have control options so put those into the same list as a default
+            if(getWhereSelectStr() == string (FDR_INTERFACE_SEND))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << loggedSQLstring << endl;
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '"; 
+                ss << string(FDR_INTERFACE_SEND_FOR_CONTROL) << "')";
+            }
+            else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
+            {
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '";
+                ss << string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) << "')";
+            }
+            else
+            {
+                ss << " AND FDR.DIRECTIONTYPE = '" << getWhereSelectStr();
             }
         }
 
         std::map<long,CtiFDRPointSPtr> fdrTempMap;
-        retStatus = getPointsFromDB(selector,fdrTempMap);
+        functionSuccess = getPointsFromDB(ss,fdrTempMap);
 
         //move all from tempMap to main Map.
         for (std::map<long,CtiFDRPointSPtr>::iterator itr = fdrTempMap.begin(); itr != fdrTempMap.end(); itr++)
@@ -164,6 +166,8 @@ RWDBStatus CtiFDRManager::loadPointList()
             dout << "loadFDRList:  " << e.why() << endl;
         }
         RWTHROW(e);
+
+        functionSuccess = false;
     }
     catch(...)
     {
@@ -172,41 +176,56 @@ RWDBStatus CtiFDRManager::loadPointList()
             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
         }
         pointMap.removeAll(NULL, 0);
+
+        functionSuccess = false;
     }
-    return retStatus;
+
+    return functionSuccess;
 }
 
 
-RWDBStatus CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
+bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
 {
-    RWDBStatus  retStatus = RWDBStatus::ok;
+    bool functionStatus = false;
 
     ResetBreakAlloc();
 
     try
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        std::stringstream ss;
 
-        // are out of scope when the release is called
+        static const string sql =  "SELECT FDR.PointID, FDR.TRANSLATION, FDR.DESTINATION, FDR.DIRECTIONTYPE, PT.PointType, "
+                                     "PAL.MULTIPLIER, PAL.DATAOFFSET, PAC.MULTIPLIER, PAC.DATAOFFSET "
+                                   "FROM FDRTranslation FDR, Point PT "
+                                     "LEFT OUTER JOIN PointAnalog PAL ON PT.PointID = PAL.PointID "
+                                     "LEFT OUTER JOIN PointAccumulator PAC ON PT.PointID = PAC.PointID "
+                                   "WHERE PT.PointID = ";
 
-        RWDBDatabase db = conn.database();
-        RWDBTable fdrTranslation = db.table(TBLNAME_FDRTRANSLATION);
-        RWDBTable pointBaseTable = db.table(TBLNAME_PTBASE);
-        RWDBTable pointAnalogTable = db.table(TBLNAME_PTANALOG);
-        RWDBTable pointAccumulatorTable = db.table(TBLNAME_PTACCUM);
+        ss << sql << pointId;
 
-        RWDBSelector selector = db.selector();
-        buildFDRPointSelector(db,selector,fdrTranslation,pointBaseTable,pointAnalogTable, pointAccumulatorTable);
+        if(getWhereSelectStr() != "")
+        {
+            ss << " AND FDR.INTERFACETYPE = '" << getInterfaceName() << "'";
 
-        selector.where( selector.where() && fdrTranslation[COLNAME_FDR_POINTID] == pointBaseTable[COLNAME_PTBASE_POINTID]
-                        && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAnalogTable[COLNAME_PTANALOG_POINTID])
-                        && pointBaseTable[COLNAME_PTBASE_POINTID].leftOuterJoin(pointAccumulatorTable[COLNAME_PTANALOG_POINTID]));
-
-        selector.where( selector.where() && pointBaseTable[COLNAME_FDR_POINTID] == pointId);
+            // we now have control options so put those into the same list as a default
+            if(getWhereSelectStr() == string (FDR_INTERFACE_SEND))
+            {
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '"; 
+                ss << string(FDR_INTERFACE_SEND_FOR_CONTROL) << "')";
+            }
+            else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
+            {
+                ss << " AND (FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "' OR FDR.DIRECTIONTYPE = '";
+                ss << string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) << "')";
+            }
+            else
+            {
+                ss << " AND FDR.DIRECTIONTYPE = '" << getWhereSelectStr();
+            }
+        }
 
         std::map<long,CtiFDRPointSPtr > fdrTempMap;
-        retStatus = getPointsFromDB(selector,fdrTempMap);
+        functionStatus = getPointsFromDB(ss,fdrTempMap);
 
         if (fdrTempMap.size() == 1)
         {
@@ -223,7 +242,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
         fdrTempMap.clear();
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = ss.str();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << loggedSQLstring << endl;
@@ -246,7 +265,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
     }
     catch (FdrDatabaseException e)
     {
-        retStatus = RWDBStatus::ok;
+        functionStatus = false;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " DB Error: expected only one translation for point: " << pointId << endl;
@@ -254,7 +273,7 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
     }
     catch(...)
     {
-        retStatus = RWDBStatus::ok;
+        functionStatus = false;
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
@@ -262,61 +281,10 @@ RWDBStatus CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
         pointMap.removeAll(NULL, 0);
     }
 
-    return retStatus;
+    return functionStatus;
 }
 
-void CtiFDRManager::buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable, RWDBTable& pointAccumulatorTable)
-{
-   // Make sure all objects that that store results
-
-    selector << fdrTranslation[COLNAME_FDR_POINTID]
-    << fdrTranslation[COLNAME_FDRTRANSLATION]
-    << fdrTranslation[COLNAME_FDRDESTINATION]
-    << fdrTranslation[COLNAME_FDRDIRECTIONTYPE]
-    << pointBaseTable[COLNAME_PTBASE_POINTTYPE]
-    << pointAnalogTable[COLNAME_PTANALOG_MULT]
-    << pointAnalogTable[COLNAME_PTANALOG_OFFSET]
-    << pointAccumulatorTable[COLNAME_PTANALOG_MULT]
-    << pointAccumulatorTable[COLNAME_PTANALOG_OFFSET];
-
-    selector.from( fdrTranslation);
-    selector.from( pointBaseTable );
-    selector.from( pointAnalogTable);
-    selector.from( pointAccumulatorTable);
-
-
-    if(getWhereSelectStr() != "")
-    {
-        // we now have control options so put those into the same list as a default
-        if(getWhereSelectStr() == string (FDR_INTERFACE_SEND))
-        {
-            // use a direction clause
-            selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str() && (
-                                                                                             fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr().c_str() ||
-                                                                                             fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == string(FDR_INTERFACE_SEND_FOR_CONTROL).c_str() ));
-        }
-        else if(getWhereSelectStr() == string (FDR_INTERFACE_RECEIVE))
-        {
-            // use a direction clause
-            selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str() && (
-                                                                                             fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr().c_str() ||
-                                                                                             fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL).c_str()));
-        }
-        else
-        {
-            // use a direction clause
-            selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str() &&
-                           fdrTranslation[COLNAME_FDRDIRECTIONTYPE] == getWhereSelectStr().c_str());
-        }
-    }
-    else
-    {
-        // at least get the distination
-        selector.where(fdrTranslation[COLNAME_FDRINTERFACETYPE] == getInterfaceName().c_str());
-    }
-}
-
-RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,CtiFDRPointSPtr >& fdrPtrMap)
+bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,CtiFDRPointSPtr >& fdrPtrMap)
 {
     CtiFDRPointSPtr fdrPtr;
     long   pointID;
@@ -327,24 +295,33 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
     double dataOffset=0;
     string tmp;
     CtiPointType_t pointType = InvalidPointType;
+    bool functionSuccess;
 
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, ss.str());
 
-    RWDBStatus retStatus = conn.status();
-    if(retStatus.errorCode() == RWDBStatus::ok)
+    rdr.execute();
+
+    if( rdr.isValid() )
     {
-        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-        RWDBNullIndicator isNull;
+        if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+        {
+            string loggedSQLstring = rdr.asString();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " " << loggedSQLstring << endl;
+            }
+        }
+    
         while( rdr() )
         {
-
+    
             rdr[0]      >> pointID;
             rdr[1]   >> translation;
             rdr[2]   >> destination;
             rdr[3] >> direction;
             rdr[4] >> tmp;
-            rdr[5]    >> isNull;
-            if(!isNull)
+            if(!rdr[5].isNull())
             {
                 rdr[5]    >> multiplier;
             }
@@ -352,8 +329,7 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
             {
                 rdr[7]    >> multiplier;
             }
-            rdr[6]  >> isNull;
-            if(!isNull)
+            if(!rdr[6].isNull())
             {
                 rdr[6]  >> dataOffset;
             }
@@ -361,19 +337,19 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
             {
                 rdr[8]    >> dataOffset;
             }
-
-
+    
+    
             std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
-
+    
             if( itr != fdrPtrMap.end() )
                 fdrPtr = (*itr).second;
             else
                 fdrPtr = CtiFDRPointSPtr(new CtiFDRPoint( pointID ));
-
+    
             if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
             {
                 fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
-
+    
                 if((fdrPtr->getPointType() == AnalogPointType) ||
                    (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
                    (fdrPtr->getPointType() == DemandAccumulatorPointType) ||
@@ -382,7 +358,7 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
                     fdrPtr->setMultiplier(multiplier);
                     fdrPtr->setOffset (dataOffset);
                 }
-
+    
                 // set controllable
                 if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
                    direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL))
@@ -393,7 +369,7 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
                 {
                     fdrPtr->setControllable (false);
                 }
-
+    
                 CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
                 fdrPtr->getDestinationList().push_back(tmpDestination);
                 fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));
@@ -408,9 +384,11 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
                 fdrPtr->getDestinationList().push_back(tmpDestination);
             }
         }
+
+        return true;
     }
 
-    return retStatus;
+    return false;
 }
 
 /************************************************************************
@@ -421,9 +399,8 @@ RWDBStatus CtiFDRManager::getPointsFromDB(RWDBSelector& selector, std::map<long,
 *
 *************************************************************************
 */
-RWDBStatus CtiFDRManager::refreshPointList()
+bool CtiFDRManager::refreshPointList()
 {
-
     pointMap.removeAll(NULL, 0);
 
     return loadPointList();
@@ -454,9 +431,7 @@ CtiFDRPointSPtr CtiFDRManager::removeFDRPointID(long myPointId)
 
 bool CtiFDRManager::addFDRPointId(long myPointId, CtiFDRPointSPtr & point)
 {
-    RWDBStatus loaded = loadPoint(myPointId,point);
-
-    return (loaded.errorCode() == RWDBStatus::ok);
+    return loadPoint(myPointId,point);
 }
 
 void CtiFDRManager::printIds(CtiLogger& dout)

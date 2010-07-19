@@ -26,8 +26,9 @@ public:
 
     CtiDeviceGridAdvisor& operator=(const CtiDeviceGridAdvisor& aRef);
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual string getSQLCoreStatement() const;
+
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     //  virtual in case different GridAdvisor devices need to form up alternate requests for the same command
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);

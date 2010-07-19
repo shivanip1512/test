@@ -1,13 +1,12 @@
 #pragma once
 
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
-#include <rw/db/table.h>
+#include "rwutil.h"
 
 #include "types.h"
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbmemobject.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceIDLC : public CtiMemDBObject
 {
@@ -40,7 +39,6 @@ public:
    INT  getPostDelay() const;
    INT  getCCUAmpUseType() const;
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 

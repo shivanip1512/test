@@ -21,14 +21,17 @@
 
 #include "mgr_port.h"
 #include "dbaccess.h"
-#include "rwutil.h"
 #include "cparms.h"
 
 #include "portverify.h"
 #include "ctidate.h"
 #include "ctitime.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 using namespace std;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 extern CtiPortManager PortManager;
 
@@ -306,10 +309,11 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 {
     if( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        Cti::Database::DatabaseConnection   conn;
 
-        RWDBStatus dbstat = conn.beginTransaction("DynamicVerification");
+        bool dbstat;
+
+        conn.beginTransaction();
 
         while( !_work_queue.empty() && (purge || (_work_queue.top()->getExpiration() < second_clock::universal_time())) )
         {
@@ -379,7 +383,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
             //}
         }
 
-        conn.commitTransaction("DynamicVerification");
+        conn.commitTransaction();
     }
 }
 
@@ -477,13 +481,6 @@ void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
 
 void CtiPorterVerification::loadAssociations(void)
 {
-    RWDBConnection conn     = getConnection();
-    RWDBDatabase   db       = getDatabase();
-    RWDBSelector   selector = db.selector();
-
-    RWDBTable      tblVerification = db.table("DeviceVerification");
-
-    RWDBReader rdr;
     long tmp;
 
     if(DebugLevel & 0x00020000)
@@ -492,14 +489,14 @@ void CtiPorterVerification::loadAssociations(void)
     }
 
     {
-        selector << tblVerification["ReceiverID"]
-                 << tblVerification["TransmitterID"]
-                 << tblVerification["ResendOnFail"]
-                 << tblVerification["Disable"];
+        static const string sql = "SELECT DVR.ReceiverID, DVR.TransmitterID, DVR.ResendOnFail, DVR.Disable "
+                                  "FROM DeviceVerification DVR";
 
-        rdr = selector.reader(conn);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
-        if( rdr.status().errorCode() == RWDBStatus::ok )
+        if( rdr.isValid() )
         {
             while( rdr() )
             {
@@ -539,13 +536,12 @@ void CtiPorterVerification::loadAssociations(void)
 }
 
 
-void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWDBConnection &conn, RWDBStatus &dbstat)
+void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn, bool &dbstat)
 {
-    //  note that this should be called from within a trasnaction
+    //  note that this should be called from within a transaction
 
-    RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBInserter dbinserter = table.inserter();
-    RWDBStatus::ErrorCode err;
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     ptime now(second_clock::universal_time());
 
@@ -577,60 +573,62 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
         code_status = "(empty)";
     }
 
-    dbinserter << logIDGen()
-             << work.getSubmissionTime()
-             << 0
-             << transmitter_id
-             << command
-             << code
-             << sequence
-             << "-"
-             << CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Sent);
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-    if( err = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
+    inserter
+        << logIDGen()
+        << work.getSubmissionTime()
+        << 0
+        << transmitter_id
+        << command
+        << code
+        << sequence
+        << string("-")
+        << CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Sent);
+
+    if( ! inserter.execute()  )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        //  dout << "Data: ";
+        dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    for( r_itr = receipts.begin(); (r_itr != receipts.end()) && dbstat.isValid() && conn.isValid(); r_itr++ )
+    for( r_itr = receipts.begin(); (r_itr != receipts.end()) && dbstat; r_itr++ )
     {
-        dbinserter << logIDGen()
-                 << r_itr->second
-                 << r_itr->first
-                 << transmitter_id
-                 << command
-                 << code
-                 << sequence
-                 << "Y"
-                 << code_status;
+        inserter
+            << logIDGen()
+            << r_itr->second
+            << r_itr->first
+            << transmitter_id
+            << command
+            << code
+            << sequence
+            << string("Y")
+            << code_status;
 
-        if( err = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
+        if( ! inserter.execute() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            //  dout << "Data: ";
+            dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
-    for( e_itr = expectations.begin(); (e_itr != expectations.end()) && dbstat.isValid() && conn.isValid(); e_itr++ )
+    for( e_itr = expectations.begin(); (e_itr != expectations.end()) && dbstat; e_itr++ )
     {
-        dbinserter << logIDGen()
-                 << now
-                 << *e_itr
-                 << transmitter_id
-                 << command
-                 << code
-                 << sequence
-                 << "N"
-                 << code_status;
+        inserter
+            << logIDGen()
+            << now
+            << *e_itr
+            << transmitter_id
+            << command
+            << code
+            << sequence
+            << string("N")
+            << code_status;
 
-        if( err = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
+        if( ! inserter.execute() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            //  dout << "Data: ";
+            dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -638,12 +636,9 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, RWD
 
 void CtiPorterVerification::writeUnknown(const CtiVerificationReport &vReport)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBInserter dbinserter = table.inserter();
-    RWDBStatus::ErrorCode e;
     const string &cs = CtiVerificationBase::getCodeStatusName(CtiVerificationBase::CodeStatus_Unexpected);
     string code = vReport.getCode();
 
@@ -652,73 +647,65 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &vReport)
         code = "(empty)";
     }
 
-    dbinserter << logIDGen()
-             << vReport.getReceiptTime()
-             << vReport.getReceiverID()
-             << 0  //  unknown transmitter ID
-             << "-"
-             << code
-             << -1
-             << "Y"
-             << cs;
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << logIDGen()
+        << vReport.getReceiptTime()
+        << vReport.getReceiverID()
+        << 0  //  unknown transmitter ID
+        << string("-")
+        << code
+        << -1
+        << string("Y")
+        << cs;
 
     if( isDebugLudicrous() )
     {
-        string loggedSQLstring = dbinserter.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
 
-
-    if( e = ExecuteInserter(conn,dbinserter,__FILE__,__LINE__).errorCode() )
+    if( ! inserter.execute() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error \"" << e << "\" while inserting in CtiPorterVerification::writeUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        //  dout << "Data: ";
+        dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
 
 void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBDeleter deleter = table.deleter();
-    RWDBStatus::ErrorCode e;
+    static const string sql = "delete from " + getTableName() + " where timearrival < ?";
 
     unsigned long earliest = ::time(0) - age.total_seconds();
 
     CtiDate prune_time = CtiDate( CtiTime(earliest) );
     CtiDate prune_date = CtiDate( prune_time.day(), prune_time.year() );
 
-    deleter.where(table["timearrival"] < toRWDBDT(CtiTime(prune_date)));
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
+
+    deleter << CtiTime(prune_date);
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Beginning DynamicVerification prune. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Beginning DynamicVerification prune. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
-    if( e = deleter.execute(conn).status().errorCode() )
+
+    if( deleter.execute() )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error \"" << e << "\" while pruning entries in CtiPorterVerification::pruneEntries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        //  dout << "Data: ";
+        dout << CtiTime() << " DynamicVerification pruning successful (" << CtiTime(earliest) << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DynamicVerification pruning successful (" << CtiTime(earliest) << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - error while pruning entries in CtiPorterVerification::pruneEntries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 }
 
@@ -734,11 +721,10 @@ long CtiPorterVerification::logIDGen(bool force)
     static const CHAR sql[] = "SELECT MAX(LOGID) FROM DYNAMICVERIFICATION";
 
     if(!init_id || force)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery( conn, sql );
+    {
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
 
         if(rdr() && rdr.isValid())
         {

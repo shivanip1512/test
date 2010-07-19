@@ -17,7 +17,6 @@
 
 #include "tbl_port_settings.h"
 #include "logger.h"
-#include "rwutil.h"
 
 CtiTablePortSettings::CtiTablePortSettings() :
 _baudRate(0),
@@ -126,22 +125,7 @@ INT CtiTablePortSettings::getStopBits() const
    return stop;
 }
 
-
-void CtiTablePortSettings::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable portTbl  = db.table("PortSettings");
-
-   selector <<
-   portTbl["baudrate"] <<
-   portTbl["cdwait"]   <<
-   portTbl["linesettings"];
-
-   selector.from(portTbl);
-
-   selector.where( selector.where() && keyTable["paobjectid"] == portTbl["portid"] );
-}
-
-void CtiTablePortSettings::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortSettings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {

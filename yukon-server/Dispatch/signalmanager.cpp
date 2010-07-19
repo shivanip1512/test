@@ -23,6 +23,7 @@
 #include "signalmanager.h"
 #include "tbl_dyn_ptalarming.h"
 #include "tbl_pt_alarm.h"
+#include "database_connection.h"
 
 
 using std::pair;
@@ -762,55 +763,50 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     {
         if(!empty() && dirty())
         {
-            string dpa("dyn_pt_alm");
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection   conn;
 
-            if(conn.isValid())
+            conn.beginTransaction();
+
+            CtiTime start;
+            for(itr = _map.begin(); itr != _map.end(); itr++)
             {
-                conn.beginTransaction(dpa.c_str());
+                SigMgrMap_t::value_type vt = *itr;
+                SigMgrMap_t::key_type   key = vt.first;
 
-                CtiTime start;
-                for(itr = _map.begin(); conn.isValid() && itr != _map.end(); itr++)
+                pSig = vt.second;
+
+                if(pSig && _dirtySignals.find(pSig->getId()) != _dirtySignals.end())
                 {
-                    SigMgrMap_t::value_type vt = *itr;
-                    SigMgrMap_t::key_type   key = vt.first;
+                    CtiTableDynamicPointAlarming ptAlm;
 
-                    pSig = vt.second;
+                    ptAlm.setPointID( pSig->getId() );
+                    ptAlm.setAlarmCondition( pSig->getCondition() );
+                    ptAlm.setCategoryID( pSig->getSignalCategory() );
+                    ptAlm.setAlarmTime( pSig->getMessageTime() );
+                    ptAlm.setAction( pSig->getText() );
+                    ptAlm.setDescription( pSig->getAdditionalInfo() );
+                    ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
+                    ptAlm.setLogID( pSig->getLogID() );
 
-                    if(pSig && _dirtySignals.find(pSig->getId()) != _dirtySignals.end())
-                    {
-                        CtiTableDynamicPointAlarming ptAlm;
+                    ptAlm.setSOE( pSig->getSOE() );
+                    ptAlm.setLogType( pSig->getLogType() );
+                    ptAlm.setUser( pSig->getUser() );
 
-                        ptAlm.setPointID( pSig->getId() );
-                        ptAlm.setAlarmCondition( pSig->getCondition() );
-                        ptAlm.setCategoryID( pSig->getSignalCategory() );
-                        ptAlm.setAlarmTime( pSig->getMessageTime() );
-                        ptAlm.setAction( pSig->getText() );
-                        ptAlm.setDescription( pSig->getAdditionalInfo() );
-                        ptAlm.setTags( pSig->getTags() & SIGNAL_MANAGER_MASK );
-                        ptAlm.setLogID( pSig->getLogID() );
-
-                        ptAlm.setSOE( pSig->getSOE() );
-                        ptAlm.setLogType( pSig->getLogType() );
-                        ptAlm.setUser( pSig->getUser() );
-
-                        ptAlm.Update( conn );
-                        count++;
-                    }
-
-                    pSig = 0;
+                    ptAlm.Update( conn );
+                    count++;
                 }
 
-                conn.commitTransaction(dpa.c_str());
-                CtiTime stop;
+                pSig = 0;
+            }
 
-                if((stop.seconds() - start.seconds()) > 5)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Writing dynamic signals took " << (stop.seconds() - start.seconds()) 
-                         << " Seconds and wrote " << count << " entries." << endl;
-                }
+            conn.commitTransaction();
+            CtiTime stop;
+
+            if((stop.seconds() - start.seconds()) > 5)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Writing dynamic signals took " << (stop.seconds() - start.seconds()) 
+                     << " Seconds and wrote " << count << " entries." << endl;
             }
 
             setDirty(false, 0);

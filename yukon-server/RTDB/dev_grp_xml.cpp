@@ -20,35 +20,26 @@ XmlGroupDevice::~XmlGroupDevice()
 
 }
 
-void XmlGroupDevice::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string XmlGroupDevice::getSQLCoreStatement() const
 {
-    //  we need to bypass CtiDeviceGroupExpresscom (CDGE) because it adds yukonpaobject.type = "EXPRESSCOM GROUP"
-    //  we duplicate CDGE's SQL selectors here so we can rely on CDGE::DecodeDatabaseReader()
-    CtiDeviceGroupBase::getSQL(db, keyTable, selector);
-    CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, ECA.routeid, ECA.serialnumber, "
+                                     "ECA.serviceaddress, ECA.geoaddress, ECA.substationaddress, ECA.feederaddress, "
+                                     "ECA.zipcodeaddress, ECA.udaddress, ECA.programaddress, ECA.splinteraddress, "
+                                     "ECA.addressusage, ECA.relayusage, ECA.protocolpriority "
+                                   "FROM YukonPAObject YP, Device DV, ExpressComAddress_View ECA "
+                                   "WHERE upper (YP.type) = 'INTEGRATION GROUP' AND YP.paobjectid = ECA.lmgroupid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    //  "INTEGRATION GROUP" is the only difference from CtiDeviceGroupExpresscom's getSQL()
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("INTEGRATION GROUP") && selector.where() );
+    return sqlCore;
 }
-
-void XmlGroupDevice::getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    keyTable = db.table("LMGroupXMLParameter");
-    selector << keyTable["LMGroupXMLParameterId"]
-             << keyTable["lmgroupid"]
-             << keyTable["parametername"]
-             << keyTable["parametervalue"];
-    selector.from(keyTable);
-    selector.orderBy(keyTable["lmgroupid"]);
-}
-
 
 void XmlGroupDevice::clearParameters()
 {
     _parameters.clear();
 }
 
-void XmlGroupDevice::decodeParameters(RWDBReader &rdr)
+void XmlGroupDevice::decodeParameters(Cti::RowReader &rdr)
 {
     string param;
     string value;

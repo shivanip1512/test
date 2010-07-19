@@ -21,7 +21,7 @@
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include <rw/thr/recursiv.h>
-
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableContactNotification
 {
@@ -68,11 +68,10 @@ public:
 
   void dump() const;
 
-  static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
   static string getTableName();
-  virtual RWDBStatus Restore();
+  virtual bool Restore();
 
-  virtual void DecodeDatabaseReader(RWDBReader& rdr);
+  virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
 };
 #endif // #ifndef __TBL_CONTACT_NOTIFICATION__

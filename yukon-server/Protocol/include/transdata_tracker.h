@@ -20,7 +20,6 @@
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
 
-#include <rw/db/datetime.h>
 
 #include "xfer.h"
 #include "numstr.h"

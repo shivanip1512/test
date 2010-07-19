@@ -58,16 +58,7 @@ CtiTableDeviceRoute& CtiTableDeviceRoute::setRouteID( const LONG aRouteID )
    return *this;
 }
 
-void CtiTableDeviceRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable devTbl = db.table(getTableName().c_str() );
-
-   selector << devTbl["routeid"];
-   selector.from(devTbl);
-   selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );
-}
-
-void CtiTableDeviceRoute::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {

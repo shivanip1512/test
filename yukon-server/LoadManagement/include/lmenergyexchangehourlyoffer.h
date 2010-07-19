@@ -16,11 +16,11 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
+#include "row_reader.h"
 using std::vector;
 
 class CtiLMEnergyExchangeHourlyOffer : public RWCollectable
@@ -31,7 +31,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer )
 
     CtiLMEnergyExchangeHourlyOffer();
-    CtiLMEnergyExchangeHourlyOffer(RWDBReader& rdr);
+    CtiLMEnergyExchangeHourlyOffer(Cti::RowReader &rdr);
     CtiLMEnergyExchangeHourlyOffer(const CtiLMEnergyExchangeHourlyOffer& customer);
 
     virtual ~CtiLMEnergyExchangeHourlyOffer();
@@ -52,7 +52,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer )
 
     void addLMEnergyExchangeHourlyOfferTable();
     void updateLMEnergyExchangeHourlyOfferTable();
-    void restoreDynamicData(RWDBReader& rdr);
+    void restoreDynamicData();
     void dumpDynamicData();
     
     //Members inherited from RWCollectable
@@ -70,7 +70,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyOffer )
 
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

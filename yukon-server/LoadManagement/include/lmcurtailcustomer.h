@@ -16,13 +16,13 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
 #include "msg_pcrequest.h"
 #include "lmcicustomerbase.h"
+#include "database_connection.h"
                 
 class CtiLMCurtailCustomer : public CtiLMCICustomerBase
 {
@@ -32,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
 
     CtiLMCurtailCustomer();
-    CtiLMCurtailCustomer(RWDBReader& rdr);
+    CtiLMCurtailCustomer(Cti::RowReader &rdr);
     CtiLMCurtailCustomer(const CtiLMCurtailCustomer& customer);
 
     virtual ~CtiLMCurtailCustomer();
@@ -62,7 +62,7 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
     void addLMCurtailCustomerActivityTable();
     void restoreDynamicData();
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -80,7 +80,7 @@ RWDECLARE_COLLECTABLE( CtiLMCurtailCustomer )
 
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 
@@ -94,7 +94,7 @@ private:
     string _curtailmentnotes;
     BOOL _acklateflag;
 
-    void updateLMCurtailCustomerActivityTable(RWDBConnection& conn, CtiTime& currentDateTime);
+    void updateLMCurtailCustomerActivityTable(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 };
 #endif
 

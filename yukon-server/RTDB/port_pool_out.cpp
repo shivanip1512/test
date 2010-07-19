@@ -39,35 +39,33 @@ INT CtiPortPoolDialout::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMess
     return status;
 }
 
-void CtiPortPoolDialout::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiPortPoolDialout::getSQLCoreStatement()
 {
-    Inherited::getSQL(db, keyTable, selector);
-    selector.where( selector.where() && rwdbUpper(keyTable["type"]) == "DIALOUT POOL");
+    static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                   "CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, "
+                                   "CP.sharedporttype, CP.sharedsocketnumber "
+                               "FROM YukonPAObject YP, CommPort CP "
+                               "WHERE YP.paobjectid = CP.portid AND upper (YP.type) = 'DIALOUT POOL'";
+
+    return sql;
 }
 
-void CtiPortPoolDialout::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPortPoolDialout::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     CtiPortPoolDialout::_poolDebugLevel = gConfigParms.getValueAsULong("PORTPOOL_DEBUGLEVEL", 0, 16);
     Inherited::DecodeDatabaseReader(rdr);
 }
 
-void CtiPortPoolDialout::getPooledPortsSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiPortPoolDialout::getSQLPooledPortsStatement()
 {
-    RWDBTable paoTable = db.table( "YukonPAObject" );
-    keyTable = db.table( "PaoOwner" );
+    static const string sql =  "SELECT YP.paobjectid, PO.ownerid, PO.childid "
+                               "FROM YukonPAObject YP, PaoOwner PO "
+                               "WHERE PO.ownerid = YP.paobjectid AND upper (YP.category) = 'PORT'";
 
-    selector <<
-    paoTable["paobjectid"] <<
-    keyTable["ownerid"] <<
-    keyTable["childid"];
-
-    selector.from(paoTable);
-    selector.from(keyTable);
-
-    selector.where( keyTable["ownerid"] == paoTable["paobjectid"] && rwdbUpper(paoTable["category"]) == "PORT");
+    return sql;
 }
 
-void CtiPortPoolDialout::DecodePooledPortsDatabaseReader(RWDBReader &rdr)
+void CtiPortPoolDialout::DecodePooledPortsDatabaseReader(Cti::RowReader &rdr)
 {
     long owner;
     long child;

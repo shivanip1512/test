@@ -135,10 +135,8 @@ public:
     virtual INT setPortWriteTimeOut(USHORT millitimeout);
     virtual INT waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse = NULL);
 
-
-    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    virtual void DecodeDialableDatabaseReader(Cti::RowReader &rdr);
 
     HCTIQUEUE&  getPortQueueHandle();
     INT writeQueue(ULONG Request, LONG  DataSize, PVOID Data, ULONG Priority, HANDLE hQuit = NULL);

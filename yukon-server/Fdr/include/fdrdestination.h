@@ -30,6 +30,7 @@
 #include <string>
 #include "dlldefs.h"
 #include "fdr.h"
+#include "rwutil.h"
 
 using std::string;
 

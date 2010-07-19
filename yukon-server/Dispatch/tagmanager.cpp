@@ -26,6 +26,8 @@
 #include "sema.h"
 #include "tagmanager.h"
 #include "tbl_dyn_pttag.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -561,40 +563,32 @@ void CtiTagManager::processDynamicQueue()
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         if(tlg.isAcquired())
         {
-            string dpa("dyn_tag");
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection   conn;
 
-            if(conn.isValid())
+            TagTblDynamicMap_t::iterator itr;
+            conn.beginTransaction();
+
+            for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
             {
-                TagTblDynamicMap_t::iterator itr;
-                conn.beginTransaction(dpa.c_str());
+                TagTblDynamicMap_t::value_type vt = *itr;
+                CtiTableDynamicTag &Tag = vt.second;
 
-                for(itr = _dynTagLogMap.begin(); itr != _dynTagLogMap.end(); itr++)
+                if( ! Tag.Update(conn) )
                 {
-                    TagTblDynamicMap_t::value_type vt = *itr;
-                    CtiTableDynamicTag &Tag = vt.second;
-
-                    if( Tag.Update(conn).errorCode() != RWDBStatus::ok &&
-                        Tag.Update(conn).errorCode() != RWDBStatus::endOfFetch )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            Tag.dump();
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Error code " << Tag.Update(conn).errorCode() << endl;
-                        }
-
-                        failed = true;
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        Tag.dump();
                     }
+
+                    failed = true;
+                    break;
                 }
-
-                conn.commitTransaction(dpa.c_str());
-
-                if(!failed) _dynTagLogMap.clear();
             }
+
+            conn.commitTransaction();
+
+            if(!failed) _dynTagLogMap.clear();
         }
     }
 }
@@ -608,33 +602,27 @@ void CtiTagManager::processTagLogQueue()
         {
             CtiTableTagLog *pTag = 0;
 
-            string dpa("dyn_tag");
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection   conn;
 
-            if(conn.isValid())
+            conn.beginTransaction();
+
+            while((pTag = _tagLogQueue.getQueue(500)) != 0)
             {
-                conn.beginTransaction(dpa.c_str());
-
-                while((pTag = _tagLogQueue.getQueue(500)) != 0)
+                if( ! pTag->Update(conn) )
                 {
-                    if( pTag->Update(conn).errorCode() != RWDBStatus::ok )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Unable to update TagLog. RWDBStatus::errorCode() = " << pTag->Update().errorCode() << endl;
-                            pTag->dump();
-                        }
-
-                        break;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        pTag->dump();
                     }
-                    else
-                        delete pTag;
-                }
 
-                conn.commitTransaction(dpa.c_str());
+                    break;
+                }
+                else
+                    delete pTag;
             }
+
+            conn.commitTransaction();
         }
     }
 }
@@ -784,21 +772,15 @@ int CtiTagManager::loadDynamicTags()
     int loadcount = 0;
 
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = CtiTableDynamicTag::getSQLCoreStatement();
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
-        CtiTableDynamicTag::getSQL( db, keyTable, selector );
-
-        rdr = selector.reader( conn );
-
-        if(rdr.status().errorCode() != RWDBStatus::ok)
+        if(!rdr.isValid())
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -836,21 +818,15 @@ int CtiTagManager::loadStaticTags()
     int loadcount = 0;
 
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = CtiTableTag::getSQLCoreStatement();
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
-        CtiTableTag::getSQL( db, keyTable, selector );
-
-        rdr = selector.reader( conn );
-
-        if(rdr.status().errorCode() != RWDBStatus::ok)
+        if(!rdr.isValid())
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

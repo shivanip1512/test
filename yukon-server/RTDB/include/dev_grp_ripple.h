@@ -23,7 +23,7 @@
 #include "dev_grp.h"
 #include "tbl_dv_lmg_ripple.h"
 
-class CtiDeviceGroupRipple : public CtiDeviceGroupBase
+class IM_EX_DEVDB CtiDeviceGroupRipple : public CtiDeviceGroupBase
 {
 private:
 
@@ -51,8 +51,9 @@ public:
     virtual LONG getRouteID();
     virtual string getDescription(const CtiCommandParser & parse) const;
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual string getSQLCoreStatement() const;
+
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual INT processTrxID( int trx, list< CtiMessage* >  &vgList );

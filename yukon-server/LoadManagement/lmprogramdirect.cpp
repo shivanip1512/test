@@ -18,7 +18,6 @@
 #include <queue>
 
 #include "dbaccess.h"
-#include "rwutil.h"
 
 #include "lmprogramdirect.h"
 #include "lmprogramdirectgear.h"
@@ -42,7 +41,7 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "utility.h"
-
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 extern std::queue<CtiTableLMProgramHistory> _PROGRAM_HISTORY_QUEUE;
@@ -70,7 +69,7 @@ _insertDynamicDataFlag(false)
 {
 }
 
-CtiLMProgramDirect::CtiLMProgramDirect(RWDBReader& rdr) :
+CtiLMProgramDirect::CtiLMProgramDirect(Cti::RowReader &rdr) :
 _notify_active_time(gInvalidCtiTime),
 _notify_inactive_time(gInvalidCtiTime),
 _startedrampingout(gInvalidCtiTime),
@@ -5275,14 +5274,13 @@ CtiLMProgramBaseSPtr CtiLMProgramDirect::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramDirect::restore(RWDBReader& rdr)
+void CtiLMProgramDirect::restore(Cti::RowReader &rdr)
 {
     CtiLMProgramBase::restore(rdr);
 
     string tempBoolString;
-    RWDBNullIndicator isNull;
     _insertDynamicDataFlag = FALSE;
 
     rdr["heading"] >> _message_subject;
@@ -5292,9 +5290,8 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
     rdr["restoreoffset"] >> _trigger_restore_offset;
     rdr["notifyactiveoffset"] >> _notify_active_offset;
     rdr["notifyinactiveoffset"] >> _notify_inactive_offset;
-    rdr["currentgearnumber"] >> isNull;
 
-    if( !isNull )
+    if( !rdr["currentgearnumber"].isNull() )
     {
         rdr["currentgearnumber"] >> _currentgearnumber;
         rdr["lastgroupcontrolled"] >> _lastgroupcontrolled;
@@ -5340,8 +5337,7 @@ void CtiLMProgramDirect::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramDirect::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -5351,7 +5347,7 @@ void CtiLMProgramDirect::dumpDynamicData()
 
     Writes out the dynamic information for this direct program.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMProgramDirect::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     if( !isDirty() )
     {
@@ -5360,56 +5356,68 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
 
     CtiLMProgramBase::dumpDynamicData(conn,currentDateTime);
 
+    string additionalInfo = getAdditionalInfo();
+    if( !additionalInfo.length() )
     {
-        if( conn.isValid() )
+        additionalInfo = "(none)";
+    }
+
+    if( !_insertDynamicDataFlag )
+    {
+        static const std::string sql_update = "update dynamiclmprogramdirect"
+                                               " set "
+                                                    "currentgearnumber = ?, "
+                                                    "lastgroupcontrolled = ?, "
+                                                    "starttime = ?, "
+                                                    "stoptime = ?, "
+                                                    "timestamp = ?, "
+                                                    "notifyactivetime = ?, "
+                                                    "startedrampingout = ?, "
+                                                    "notifyinactivetime = ?, "
+                                                    "constraintoverride = ?, "
+                                                    "additionalinfo = ?, "
+                                                    "currentlogid = ?"
+                                               " where "
+                                                    "deviceid = ?";
+
+        Cti::Database::DatabaseWriter   updater(conn, sql_update);
+
+        updater
+            << getCurrentGearNumber()
+            << getLastGroupControlled()
+            << getDirectStartTime()
+            << getDirectStopTime()
+            << currentDateTime
+            << getNotifyActiveTime()
+            << getStartedRampingOutTime()
+            << getNotifyInactiveTime()
+            << ( getConstraintOverride() ? std::string("Y") : std::string("N") )
+            << additionalInfo
+            << getCurrentHistLogId()
+            << getPAOId();
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            string additionalInfo = getAdditionalInfo();
-            if( !additionalInfo.length() )
-            {
-                additionalInfo = "(none)";
-            }
-            RWDBTable dynamicLMProgramDirectTable = getDatabase().table( "dynamiclmprogramdirect" );
-            if( !_insertDynamicDataFlag )
-            {
-                RWDBUpdater updater = dynamicLMProgramDirectTable.updater();
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << updater.asString() << endl;
+        }
 
-                updater << dynamicLMProgramDirectTable["currentgearnumber"].assign( getCurrentGearNumber() )
-                << dynamicLMProgramDirectTable["lastgroupcontrolled"].assign(getLastGroupControlled())
-                << dynamicLMProgramDirectTable["starttime"].assign(toRWDBDT(getDirectStartTime()))
-                << dynamicLMProgramDirectTable["stoptime"].assign(toRWDBDT(getDirectStopTime()))
-                << dynamicLMProgramDirectTable["timestamp"].assign(toRWDBDT(currentDateTime))
-                << dynamicLMProgramDirectTable["notifyactivetime"].assign(toRWDBDT(getNotifyActiveTime()))
-                << dynamicLMProgramDirectTable["startedrampingout"].assign(toRWDBDT(getStartedRampingOutTime()))
-                << dynamicLMProgramDirectTable["notifyinactivetime"].assign(toRWDBDT(getNotifyInactiveTime()))
-                << dynamicLMProgramDirectTable["constraintoverride"].assign( (getConstraintOverride() ? "Y":"N") )
-                << dynamicLMProgramDirectTable["additionalinfo"].assign(additionalInfo.c_str())
-                << dynamicLMProgramDirectTable["currentlogid"].assign(getCurrentHistLogId());
+        updater.execute();
+    }
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Inserted program direct into DynamicLMProgramDirect: " << getPAOName() << endl;
+        }
 
-                updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
+        {
+            static const std::string sql_insert = "insert into dynamiclmprogramdirect values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
+            Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
 
-                updater.execute( conn );
-                _dynamictimestamp = currentDateTime;
-                setDirty(false);
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserted program direct into DynamicLMProgramDirect: " << getPAOName() << endl;
-                }
-
-                RWDBInserter inserter = dynamicLMProgramDirectTable.inserter();
-
-                inserter << getPAOId()
+            inserter
+                << getPAOId()
                 << getCurrentGearNumber()
                 << getLastGroupControlled()
                 << getDirectStartTime()
@@ -5418,31 +5426,24 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 << getNotifyActiveTime()
                 << getStartedRampingOutTime()
                 << getNotifyInactiveTime()
-                << string( ( getConstraintOverride() ? "Y": "N" ) )
+                << ( getConstraintOverride() ? std::string("Y") : std::string("N") )
                 << additionalInfo
                 << getCurrentHistLogId();
 
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                inserter.execute( conn );
-                _dynamictimestamp = currentDateTime;
-                _insertDynamicDataFlag = FALSE;
-                setDirty(false);
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString() << endl;
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid database connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+
+            _insertDynamicDataFlag = FALSE;
+
+            inserter.execute();
         }
     }
+
+    _dynamictimestamp = currentDateTime;
+    setDirty(false);
 }
 
 /*

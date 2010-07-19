@@ -16,7 +16,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/db/db.h>
 
 
 #include "tbl_route.h"
@@ -86,7 +85,7 @@ DLLEXPORT void ReloadStateNames(void)
         for(sgit = _stateGroupSet.begin(); sgit != _stateGroupSet.end(); sgit++ )
         {
             CtiTableStateGroup &theGroup = *sgit;
-            if(theGroup.Restore().errorCode() != RWDBStatus::ok)
+            if(!theGroup.Restore())
             {
                 reloadFailed = true;
                 break;

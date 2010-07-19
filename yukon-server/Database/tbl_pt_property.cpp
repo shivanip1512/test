@@ -15,13 +15,12 @@
 
 #include "tbl_pt_property.h"
 #include "logger.h"
-#include "rwutil.h"
 using namespace std;
 
 CtiTablePointProperty::~CtiTablePointProperty()
 {}
 
-CtiTablePointProperty::CtiTablePointProperty(RWDBReader &rdr)
+CtiTablePointProperty::CtiTablePointProperty(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -49,16 +48,12 @@ void CtiTablePointProperty::dump() const
     dout << " Value        : " << _floatAttributeValue << endl;
 }
 
-void CtiTablePointProperty::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTablePointProperty::getSQLCoreStatement()
 {
-    keyTable = db.table(getTableName().c_str() );
+    static const string sql = "SELECT PPV.pointid, PPV.pointpropertycode, PPV.fltvalue "
+                              "FROM PointPropertyValue PPV";
 
-    selector <<
-    keyTable["pointid"] <<
-    keyTable["pointpropertycode"] <<
-    keyTable["fltvalue"];
-
-    selector.from(keyTable);
+    return sql;
 }
 
 bool CtiTablePointProperty::operator<(const CtiTablePointProperty &rhs) const

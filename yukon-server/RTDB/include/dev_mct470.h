@@ -494,6 +494,6 @@ public:
     virtual ULONG calcNextLPScanTime( void );
     virtual void changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
 
-    virtual void DecodeDatabaseReader( RWDBReader &rdr );
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 

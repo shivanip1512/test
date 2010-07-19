@@ -16,7 +16,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/db/db.h>
 // #include "rtdb.h"
 #include "mgr_mempoint.h"
 #include "dlldefs.h"

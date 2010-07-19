@@ -85,11 +85,10 @@ void CtiRouteXCU::DumpData()
     Inherited::DumpData();
 }
 
-void CtiRouteXCU::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiRouteXCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
-
+    
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -97,12 +96,6 @@ void CtiRouteXCU::DecodeDatabaseReader(RWDBReader &rdr)
     }
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
-
-void CtiRouteXCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-}
-
 
 INT CtiRouteXCU::ExecuteRequest(CtiRequestMsg               *pReq,
                                 CtiCommandParser            &parse,

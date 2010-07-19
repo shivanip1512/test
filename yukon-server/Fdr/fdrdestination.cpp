@@ -22,7 +22,6 @@
 
 #include "fdrpoint.h"
 #include "fdrdestination.h"
-#include "rwutil.h"
 #include "logger.h"
 #include "guard.h"
 /** local definitions **/

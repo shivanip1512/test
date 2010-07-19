@@ -15,7 +15,7 @@
 #ifndef CTIPAOEVENT_H
 #define CTIPAOEVENT_H
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "ctibase.h"
 #include "logger.h"
@@ -28,7 +28,7 @@ public:
 
     CtiPAOEvent();
     CtiPAOEvent(long eventId, long schedId, long paoId, const string& command, BOOL disableOvUv);
-    CtiPAOEvent(RWDBReader& rdr);
+    CtiPAOEvent(Cti::RowReader& rdr);
     virtual ~CtiPAOEvent();
 
     long getEventId()const;

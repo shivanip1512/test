@@ -496,7 +496,6 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
 {
     bool successful = false;
     bool foundPoint = false;
-    RWDBStatus listStatus;
 
     int entries;
 
@@ -505,10 +504,8 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
         // make a list with all received points
         CtiFDRManager *pointList = new CtiFDRManager(getInterfaceName(), aDirection);
 
-        listStatus = pointList->loadPointList();
-
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList() )
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -563,7 +560,7 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
     }   // end try block
@@ -693,11 +690,9 @@ bool CtiFDR_Inet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
 bool CtiFDR_Inet::loadClientList()
 {
     bool                successful(FALSE);
-    CtiFDRPointSPtr translationPoint;
-    string           receiveConnections;
+    CtiFDRPointSPtr     translationPoint;
+    string              receiveConnections;
     int                 entries;
-    RWDBStatus          listStatus;
-
 
     try
     {
@@ -705,10 +700,8 @@ bool CtiFDR_Inet::loadClientList()
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_SEND));
 
-        listStatus = pointList->loadPointList();
-
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList() )
         {
             CtiLockGuard<CtiMutex> destGuard(iClientListMux);
             iClientList.erase (iClientList.begin(),iClientList.end());
@@ -748,7 +741,7 @@ bool CtiFDR_Inet::loadClientList()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
         // we're always newing this so delete it everytime through

@@ -15,8 +15,9 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include <iostream>
+#include <sstream>
 
-#include "rwutil.h"
 #include "dev_base_lite.h"
 
 CtiDeviceBaseLite::CtiDeviceBaseLite(LONG id) :
@@ -128,27 +129,24 @@ bool CtiDeviceBaseLite::operator()(const CtiDeviceBaseLite& aRef) const
     return operator<(aRef);
 }
 
-void CtiDeviceBaseLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceBaseLite::getSQLCoreStatement(long paoid)
 {
-    keyTable = db.table(getTableName().c_str());
-    RWDBTable devtable = getDatabase().table( "Device" );
+    static const string sqlNoID = "SELECT YP.paobjectid, YP.paoclass, YP.paoname, YP.type, YP.description, YP.disableflag, "
+                                    "DV.controlinhibit "
+                                  "FROM YukonPAObject YP "
+                                  "JOIN Device DV ON YP.paobjectid = DV.deviceid";
 
-    selector <<
-    keyTable["paobjectid"] <<
-    keyTable["paoclass"] <<
-    keyTable["paoname"] <<
-    keyTable["type"] <<
-    keyTable["description"] <<
-    keyTable["disableflag"] <<
-    devtable["controlinhibit"];
-
-    selector.from(keyTable);
-    selector.from(devtable);
-
-    selector.where( keyTable["paobjectid"] == devtable["deviceid"] );
+    if( paoid )
+    {
+        return string(sqlNoID + " WHERE YP.paobjectid = ?");
+    }
+    else 
+    {
+        return sqlNoID;
+    }
 }
 
-void CtiDeviceBaseLite::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceBaseLite::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     rdr["paobjectid"] >> _deviceID;
     rdr["paoclass"] >> _class;
@@ -164,46 +162,29 @@ string CtiDeviceBaseLite::getTableName()
     return string("YukonPAObject");
 }
 
-RWDBStatus CtiDeviceBaseLite::Restore()
+bool CtiDeviceBaseLite::Restore()
 {
-    RWDBSelector selector;
-    RWDBStatus dbstat = selector.status(); // Make it a not initialized ....
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema, 5000);
-
-    if(cg.isAcquired())
     {
-        RWDBConnection conn = getConnection();
+        static const string sql =  "SELECT YP.paobjectid, YP.paoclass, YP.paoname, YP.type, YP.description, "
+                                       "YP.disableflag, DV.controlinhibit "
+                                   "FROM YukonPAObject YP "
+                                   "JOIN Device DV ON YP.paobjectid = DV.deviceid "
+                                   "WHERE YP.paobjectid = ?";
 
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        rdr << getID();
+
+        rdr.execute();
+
+        if( rdr() )
         {
-            RWDBTable table = getDatabase().table( getTableName().c_str() );
-            RWDBTable devtable = getDatabase().table( "Device" );
-
-            selector = getDatabase().selector();
-
-            selector << table["paobjectid"];
-            selector << table["paoclass"];
-            selector << table["paoname"];
-            selector << table["type"];
-            selector << table["description"];
-            selector << table["disableflag"];
-            selector << devtable["controlinhibit"];
-
-            selector.from(table);
-            selector.from(devtable);
-
-            selector.where( table["paobjectid"] == getID() && devtable["deviceid"] == getID() );
-
-            RWDBReader reader = selector.reader( conn );
-            dbstat = selector.status();
-
-            if( reader() )
-            {
-                DecodeDatabaseReader( reader );
-            }
+            DecodeDatabaseReader( rdr );
+            return true;
         }
     }
-
-    return dbstat;
+    return false;
 }
 
 CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)

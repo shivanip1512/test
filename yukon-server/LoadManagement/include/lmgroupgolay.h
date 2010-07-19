@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 
 #include "lmgroupbase.h"
                 
@@ -27,7 +26,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupGolay )
 
     CtiLMGroupGolay();
-    CtiLMGroupGolay(RWDBReader& rdr);
+    CtiLMGroupGolay(Cti::RowReader &rdr);
     CtiLMGroupGolay(const CtiLMGroupGolay& groupexp);
 
     virtual ~CtiLMGroupGolay();
@@ -57,7 +56,7 @@ private:
 
     int _nominal_timeout;
     
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

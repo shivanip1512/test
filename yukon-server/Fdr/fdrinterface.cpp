@@ -94,10 +94,7 @@
  */
 #include "yukon.h"
 
-#include <rw/db/connect.h>
-#include <rw/db/reader.h>
-#include <rw/db/table.h>
-#include <rw/db/result.h>
+#include "row_reader.h"
 #include <rw/ctoken.h>
 #include <rw/collstr.h>
 
@@ -215,13 +212,12 @@ CtiFDRInterface& CtiFDRInterface::setReceiveFromList (CtiFDRPointList &aList)
 long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 {
     bool                successful(false);
-    CtiFDRPointSPtr  translationPoint;
-    CtiFDRPointSPtr  point;
-    string           translationName;
+    CtiFDRPointSPtr     translationPoint;
+    CtiFDRPointSPtr     point;
+    string              translationName;
     bool                foundPoint = false, translatedPoint(false);
-    string           controlDirection;
+    string              controlDirection;
     long                retID=0;
-    RWDBStatus          listStatus;
 
     try
     {
@@ -229,10 +225,8 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
         CtiFDRManager *pointList = new CtiFDRManager(string (FDR_SYSTEM),
                                                        string (FDR_INTERFACE_LINK_STATUS));
 
-        listStatus = pointList->loadPointList();
-
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList() )
         {
             // get iterator on list
             CtiFDRManager::spiterator myIterator = (pointList->getMap()).begin();
@@ -292,7 +286,7 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }   // end try block
 
@@ -1511,7 +1505,7 @@ INT CtiFDRInterface::reRegisterWithDispatch(  )
     CtiFDRManager   *tmpList = new CtiFDRManager(iInterfaceName, string(FDR_INTERFACE_SEND));
 
     // try and reload the outbound list
-    if (tmpList->loadPointList().errorCode() == (RWDBStatus::ok))
+    if (tmpList->loadPointList())
     {
         // destroy the old one and set it to the new one
         delete iOutBoundPoints;

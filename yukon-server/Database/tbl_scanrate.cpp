@@ -17,7 +17,8 @@
 
 #include "tbl_scanrate.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableDeviceScanRate::CtiTableDeviceScanRate() :
 _deviceID(-1),
@@ -107,25 +108,51 @@ CtiTableDeviceScanRate& CtiTableDeviceScanRate::setUpdated( const BOOL aBool )
     return *this;
 }
 
-void CtiTableDeviceScanRate::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTableDeviceScanRate::addIDSQLClause(const Cti::Database::id_set &paoids)
 {
-    keyTable = db.table("Device");
-    RWDBTable devTbl = db.table(getTableName().c_str());
+    string sqlIDs;
 
-    selector <<
-    keyTable["deviceid"] <<
-    devTbl["scantype"] <<
-    devTbl["intervalrate"] <<
-    devTbl["scangroup"] <<
-    devTbl["alternaterate"];
+    if( !paoids.empty() )
+    {
+        std::ostringstream in_list;
 
-    selector.from(keyTable);
-    selector.from(devTbl);
+        if( paoids.size() == 1 )
+        {
+            //  special single id case
+    
+            in_list << *(paoids.begin());
+             
+            sqlIDs += "AND DV.deviceid = " + in_list.str();
+    
+            return sqlIDs;
+        }
+        else
+        {
+            in_list << "(";
+        
+            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, std::ostringstream>(in_list));
+        
+            in_list << ")";
 
-    selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
+            sqlIDs += "AND DV.deviceid IN " + in_list.str();
+
+            return sqlIDs;
+        }
+    }
+
+    return string();
 }
 
-void CtiTableDeviceScanRate::DecodeDatabaseReader(RWDBReader &rdr)
+string CtiTableDeviceScanRate::getSQLCoreStatement()
+{
+    static const string sqlCore =  "SELECT DV.deviceid, DSR.scantype, DSR.intervalrate, DSR.scangroup, DSR.alternaterate "
+                                   "FROM Device DV, DeviceScanRate DSR "
+                                   "WHERE DV.deviceid = DSR.deviceid";
+
+    return sqlCore;
+}
+
+void CtiTableDeviceScanRate::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -171,106 +198,4 @@ CtiTableDeviceScanRate& CtiTableDeviceScanRate::setDeviceID( const LONG deviceID
 string CtiTableDeviceScanRate::getTableName()
 {
     return "DeviceScanRate";
-}
-
-RWDBStatus CtiTableDeviceScanRate::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["deviceid"] <<
-    table["scantype"] <<
-    table["intervalrate"] <<
-    table["scangroup"] <<
-    table["alternaterate"];
-
-    selector.where( (table["deviceid"] == getDeviceID() ) && (table["scantype"] == desolveScanType(getScanType()).c_str()) );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceScanRate::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID() <<
-    desolveScanType(getScanType() ) <<
-    getScanRate() <<
-    getScanGroup() <<
-    getAlternateRate();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableDeviceScanRate::Update()
-{
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater <<
-    table["scantype"].assign(desolveScanType(getScanType()).c_str() ) <<
-    table["intervalrate"].assign(getScanRate() ) <<
-    table["scangroup"].assign(getScanGroup() ) <<
-    table["alternaterate"].assign(getAlternateRate() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableDeviceScanRate::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() && (table["scantype"] == desolveScanType(getScanType()).c_str()));
-    deleter.execute( conn );
-    return deleter.status();
 }

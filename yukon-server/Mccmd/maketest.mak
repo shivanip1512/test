@@ -15,6 +15,7 @@ INCLPATHS+= \
 -I$(TCL)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(SQLAPI)\include \
 
 
 
@@ -95,7 +96,7 @@ deps:
 
 #UPDATE#
 test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
-		thread.h mutex.h guard.h numstr.h ctitime.h \
-		CtiPCPtrQueue.h utility.h queues.h cticalls.h os2_2w32.h \
-		types.h sorted_vector.h
+		thread.h mutex.h guard.h utility.h ctitime.h queues.h \
+		cticalls.h os2_2w32.h types.h numstr.h sorted_vector.h \
+		CtiPCPtrQueue.h
 #ENDUPDATE#

@@ -59,6 +59,8 @@
 #include "statistics.h"
 #include "utility.h"
 #include "debug_timer.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 using namespace Cti;
@@ -381,28 +383,48 @@ void statisticsRecord()
 
         // Ok, now we stuff the dirtyStatCol out on the DB.  WITHOUT BLOCKING OPERATIONS!
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection conn;
 
-            if(conn.isValid())
+            int sCount = 0, total = dirty_stats.size();
+
+            bool dbstat = true;
+
+            vector< CtiStatistics * >::iterator dirty_itr;
+
+            conn.beginTransaction();
+            for(dirty_itr = dirty_stats.begin(); dirty_itr != dirty_stats.end(); dirty_itr++)
             {
-                //  unused - should we handle errors here?
-                RWDBStatus dbstat;
+                dbstat = (*dirty_itr)->Record(conn);
 
-                int sCount = 0, total = dirty_stats.size();
+                if( !(++sCount % 1000) )
+                {
+                    ticklePerfThreadMonitor();
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
+                }
+            }
+            conn.commitTransaction();
 
-                vector< CtiStatistics * >::iterator dirty_itr;
+            if( sCount % 1000 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
+            }
+
+            if( gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10) > 0 )
+            {
+                sCount = 0;
 
                 conn.beginTransaction();
                 for(dirty_itr = dirty_stats.begin(); dirty_itr != dirty_stats.end(); dirty_itr++)
                 {
-                    dbstat = (*dirty_itr)->Record(conn);
+                    dbstat = (*dirty_itr)->InsertDaily(conn);
 
                     if( !(++sCount % 1000) )
                     {
                         ticklePerfThreadMonitor();
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
+                        dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
                     }
                 }
                 conn.commitTransaction();
@@ -410,48 +432,23 @@ void statisticsRecord()
                 if( sCount % 1000 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " statisticsRecord() : committed " << sCount << " / " << total << " statistics records." << endl;
+                    dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
                 }
 
-                if( gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10) > 0 )
+                conn.beginTransaction();
                 {
-                    sCount = 0;
-
-                    conn.beginTransaction();
-                    for(dirty_itr = dirty_stats.begin(); dirty_itr != dirty_stats.end(); dirty_itr++)
-                    {
-                        dbstat = (*dirty_itr)->InsertDaily(conn);
-
-                        if( !(++sCount % 1000) )
-                        {
-                            ticklePerfThreadMonitor();
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
-                        }
-                    }
-                    conn.commitTransaction();
-
-                    if( sCount % 1000 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " statisticsRecord() : InsertDaily : committed " << sCount << " / " << total << " statistics records." << endl;
-                    }
-
-                    conn.beginTransaction();
-                    {
-                        CtiStatistics::PruneDaily(conn);
-                    }
-                    conn.commitTransaction();
-
-                    if( sCount % 1000 )
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " statisticsRecord() : PruneDaily : complete." << endl;
-                    }
+                    CtiStatistics::PruneDaily(conn);
                 }
+                conn.commitTransaction();
 
-                delete_container(dirty_stats);
+                if( sCount % 1000 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " statisticsRecord() : PruneDaily : complete." << endl;
+                }
             }
+
+            delete_container(dirty_stats);
         }
     }
     catch(...)
@@ -531,27 +528,21 @@ void initStatisticsRecords(const set<long> &ids)
 
     Timing::DebugTimer timer("initStatisticsRecords()");
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-
-    RWDBConnection conn = getConnection();
-    RWDBDatabase   db   = getDatabase();
-
     int loaded = 0, created = 0, total = ids_to_load.size();
 
     while( id_itr != id_end )
     {
         vector<long>::iterator chunk_end = id_itr + min(distance(id_itr, id_end), max_ids_per_select);
 
-        RWDBSelector   selector = db.selector();
-        RWDBTable      keyTable;
+        const string sql = CtiStatistics::getSQLCoreStatement(id_itr, chunk_end);
 
-        CtiStatistics::getSQL(db, keyTable, selector, id_itr, chunk_end);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
-        RWDBReader rdr = selector.reader(conn);
-
-        if( DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok )
+        if( DebugLevel & 0x00020000 || !rdr.isValid() )
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << loggedSQLstring << endl;

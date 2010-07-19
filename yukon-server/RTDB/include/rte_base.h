@@ -21,8 +21,6 @@
 #include "boostutil.h"
 using boost::shared_ptr;
 
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
 
 #include "dsm2.h"
 #include "dbmemobject.h"
@@ -93,13 +91,7 @@ public:
     virtual INT  getCCUVarBits() const                 { return 0;}
     virtual INT  getStages() const                     { return 0;}
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-    {
-        _tblPAO.getSQL(db, keyTable, selector);
-        CtiTableCommRoute::getSQL(db, keyTable, selector);
-    }
-
-    virtual void DecodeDatabaseReader(RWDBReader &rdr)
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
     {
         CtiLockGuard<CtiMutex> guard(_classMutex);
         _tblPAO.DecodeDatabaseReader(rdr);

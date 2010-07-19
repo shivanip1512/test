@@ -19,7 +19,7 @@
 
 #include <time.h>
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "mc.h"
 #include "dbmemobject.h"
@@ -83,8 +83,7 @@ public:
     // true if simple, false is scripted
     bool isSimpleSchedule() const;
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    bool DecodeDatabaseReader(RWDBReader &rdr);
+    bool DecodeDatabaseReader(Cti::RowReader &rdr);
 
     // Update and insert into the database
     bool Update();

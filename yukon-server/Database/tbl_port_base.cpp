@@ -18,7 +18,6 @@
 #include "tbl_port_base.h"
 #include "logger.h"
 
-#include "rwutil.h"
 using std::transform;
 
 CtiTablePortBase::CtiTablePortBase() :
@@ -127,24 +126,7 @@ CtiTablePortBase& CtiTablePortBase::setPerformanceThreshold( const INT aPerforma
    return *this;
 }
 
-void CtiTablePortBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable devTbl  = db.table(getTableName().c_str());
-
-   selector <<
-      devTbl["alarminhibit"] <<
-      devTbl["commonprotocol"] <<
-      devTbl["performancealarm"] <<
-      devTbl["performthreshold"] <<
-      devTbl["sharedporttype"] <<
-      devTbl["sharedsocketnumber"];
-
-   selector.from(devTbl);
-
-   selector.where( keyTable["paobjectid"] == devTbl["portid"] && selector.where() );
-}
-
-void CtiTablePortBase::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    INT iTemp;
    string rwsTemp;

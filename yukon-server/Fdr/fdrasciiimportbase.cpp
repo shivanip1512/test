@@ -308,7 +308,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
 {
     bool successful = false;
     bool foundPoint = false;
-    RWDBStatus listStatus;
+    bool loadPointSuccess = false;
 
     try
     {
@@ -317,10 +317,10 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                                                        string (FDR_INTERFACE_RECEIVE));
 
         // keep the status
-        listStatus = pointList->loadPointList();
+        loadPointSuccess = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( loadPointSuccess )
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -379,7 +379,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
 

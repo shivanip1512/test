@@ -21,7 +21,6 @@
 #include "guard.h"
 #include "logger.h"
 #include "transdata_datalink.h"
-#include "rwutil.h"
 #include "utility.h"
 
 //=====================================================================================================================

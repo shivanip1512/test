@@ -19,9 +19,10 @@
 #include "pointdefs.h"
 #include "logger.h"
 #include "resolvers.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 #include "utility.h"
-//#include "rwutil.h"
 using namespace std;
 extern ULONG _CC_DEBUG;
 extern BOOL _USE_FLIP_FLAG;
@@ -94,7 +95,7 @@ _dirty(true)
     _ovuvSituationFlag = false;
 }
 
-CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
+CtiCCCapBank::CtiCCCapBank(Cti::RowReader& rdr)
 {
     restore(rdr);
      _monitorPoint.clear();
@@ -2184,11 +2185,10 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 /*---------------------------------------------------------------------------
     restore
 
-    Restores self's state given a RWDBReader
+    Restores self's state given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCCapBank::restore(RWDBReader& rdr)
+void CtiCCCapBank::restore(Cti::RowReader& rdr)
 {
-    RWDBNullIndicator isNull;
     CtiTime currentDateTime = CtiTime();
     CtiTime dynamicTimeStamp;
     string tempBoolString;
@@ -2273,7 +2273,7 @@ BOOL CtiCCCapBank::getInsertDynamicDataFlag() const
     return _insertDynamicDataFlag;
 }
 
-void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
+void CtiCCCapBank::setDynamicData(Cti::RowReader& rdr)
 {
 
     CtiTime dynamicTimeStamp;
@@ -2378,26 +2378,11 @@ BOOL CtiCCCapBank::isDirty() const
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCCapBank::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-
-        RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
         {
 
@@ -2443,31 +2428,48 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+18)));
             _additionalFlags.append(char2string(*(addFlags+19)));
 
-            RWDBUpdater updater = dynamicCCCapBankTable.updater();
+            static const string updaterSql = "update dynamiccccapbank set "
+                                             "controlstatus = ?, "
+                                             "totaloperations = ?, "
+                                             "laststatuschangetime = ?, "
+                                             "tagscontrolstatus = ?, "
+                                             "ctitimestamp = ?, "
+                                             "assumedstartverificationstatus = ?, "
+                                             "prevverificationcontrolstatus = ?, "
+                                             "verificationcontrolindex = ?, "
+                                             "additionalflags = ?, "
+                                             "currentdailyoperations = ?, "
+                                             "twowaycbcstate = ?, "
+                                             "twowaycbcstatetime = ?, "
+                                             "beforevar = ?, "
+                                             "aftervar = ?, "
+                                             "changevar = ?, "
+                                             "twowaycbclastcontrol = ?, "
+                                             "partialphaseinfo = ? "
+                                             " where capbankid = ?";
 
-            updater.where(dynamicCCCapBankTable["capbankid"]==getPaoId());
+            Cti::Database::DatabaseWriter updater(conn, updaterSql);
 
-            updater << dynamicCCCapBankTable["controlstatus"].assign( _controlstatus )
-            << dynamicCCCapBankTable["totaloperations"].assign( _totaloperations )
-            << dynamicCCCapBankTable["laststatuschangetime"].assign( toRWDBDT((CtiTime)_laststatuschangetime) )
-            << dynamicCCCapBankTable["tagscontrolstatus"].assign( _tagscontrolstatus )
-            << dynamicCCCapBankTable["ctitimestamp"].assign(toRWDBDT((CtiTime)currentDateTime))
-            << dynamicCCCapBankTable["assumedstartverificationstatus"].assign(_assumedOrigCapBankPos)
-            << dynamicCCCapBankTable["prevverificationcontrolstatus"].assign(_prevVerificationControlStatus)
-            << dynamicCCCapBankTable["verificationcontrolindex"].assign(_vCtrlIndex)
-            << dynamicCCCapBankTable["additionalflags"].assign(string2RWCString(_additionalFlags))
-            << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
-            << dynamicCCCapBankTable["twowaycbcstate"].assign(_reportedCBCState)
-            << dynamicCCCapBankTable["twowaycbcstatetime"].assign( toRWDBDT((CtiTime)_reportedCBCStateTime) )
-            << dynamicCCCapBankTable["beforevar"].assign( string2RWCString(_sBeforeVars) )
-            << dynamicCCCapBankTable["aftervar"].assign( string2RWCString(_sAfterVars) )
-            << dynamicCCCapBankTable["changevar"].assign( string2RWCString(_sPercentChange) )
-            << dynamicCCCapBankTable["twowaycbclastcontrol"].assign( _reportedCBCLastControlReason)
-            << dynamicCCCapBankTable["partialphaseinfo"].assign(  string2RWCString(_partialPhaseInfo) );
+            updater << _controlstatus
+            << _totaloperations
+            << _laststatuschangetime
+            << _tagscontrolstatus
+            << currentDateTime
+            << _assumedOrigCapBankPos
+            << _prevVerificationControlStatus
+            << _vCtrlIndex
+            << _additionalFlags
+            << _currentdailyoperations
+            << _reportedCBCState
+            << _reportedCBCStateTime
+            << _sBeforeVars
+            << _sAfterVars
+            << _sPercentChange
+            << _reportedCBCLastControlReason
+            << _partialPhaseInfo
+            << getPaoId();
 
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
@@ -2493,7 +2495,11 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
-            RWDBInserter dbInserter = dynamicCCCapBankTable.inserter();
+            static const string inserterSql = "insert into dynamiccccapbank values ( "
+                                             "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                             "?, ?, ?, ?, ?, ?, ? ?)";
+
+            Cti::Database::DatabaseWriter dbInserter(conn, inserterSql);
 
             dbInserter << getPaoId()
             << _controlstatus
@@ -2504,7 +2510,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << _assumedOrigCapBankPos
             << _prevVerificationControlStatus
             << _vCtrlIndex
-            << string2RWCString(addFlags)
+            << addFlags
             << _currentdailyoperations
             << _reportedCBCState
             << _reportedCBCStateTime
@@ -2523,9 +2529,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                 }
             }
 
-            dbInserter.execute( conn );
-
-            if(dbInserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;

@@ -18,13 +18,8 @@
 #ifndef __TBL_SCANRATE_H__
 #define __TBL_SCANRATE_H__
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
@@ -38,6 +33,7 @@
 #include "yukon.h"
 #include "types.h"
 #include "logger.h"
+#include "database_connection.h"
 
 /*-----------------------------------------------------------------------------*
  *  Makes use of resolveScanType(string)
@@ -82,18 +78,15 @@ public:
    BOOL getUpdated() const;
    CtiTableDeviceScanRate& setUpdated( const BOOL aBool );
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   static string getSQLCoreStatement();
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   static string addIDSQLClause(const Cti::Database::id_set &paoids);
+
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
 
    static string getTableName();
-
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
 
 };
 #endif // #ifndef __TBL_SCANRATE_H__

@@ -18,13 +18,8 @@
 
 #include <limits.h>
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -76,12 +71,13 @@ public:
    CtiTablePortDialup&           setSuffixString(const string& str);
 
    static string              getTableName();
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+
+   static string getSQLCoreStatement();
 
    LONG                          getPortID() const;
    CtiTablePortDialup&           setPortID( const LONG ptid );
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
 #endif // #ifndef __TBL_PORT_DIALUP_H__

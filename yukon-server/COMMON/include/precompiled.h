@@ -42,7 +42,6 @@
 #include <rw/thr/recursiv.h>
 #include <rw/thr/mutex.h>
 
-#include <rw/db/db.h>
 
 
 //  for boost/bimap.hpp

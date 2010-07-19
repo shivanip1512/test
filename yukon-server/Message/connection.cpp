@@ -20,15 +20,11 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/toolpro/neterr.h>
 #include <rw\thr\mutex.h>
 
-
 #include "collectable.h"
 #include "connection.h"
 #include "message.h"
 #include "numstr.h"
 #include "dlldefs.h"
-
-#include "rwutil.h"
-
 
 #include "logger.h"
 

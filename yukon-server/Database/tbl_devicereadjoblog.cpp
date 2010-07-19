@@ -19,7 +19,8 @@
 #include "logger.h"
 #include "dbaccess.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiTblDeviceReadJobLog::CtiTblDeviceReadJobLog( long jobLogId, long scheduleId, CtiTime& start, CtiTime& stop) :
 _jobLogId(jobLogId),
@@ -98,55 +99,59 @@ string CtiTblDeviceReadJobLog::getTableName()
     return "DeviceReadJobLog";
 }
 
-RWDBStatus CtiTblDeviceReadJobLog::Insert()
+bool CtiTblDeviceReadJobLog::Insert()
 {
-    RWDBStatus retVal;
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?)";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    inserter 
+        << getJobLogId()
+        << getScheduleId()
+        << getStartTime()
+        << getStopTime();
 
-    inserter <<
-    getJobLogId() <<
-    getScheduleId() <<
-    getStartTime() <<
-    getStopTime();
-
-    return ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode();
+    return inserter.execute();
 }
 
-RWDBStatus CtiTblDeviceReadJobLog::UpdateStopTime()
+bool CtiTblDeviceReadJobLog::UpdateStopTime()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "stoptime = ?"
+                                    " where "
+                                        "devicereadjoblogid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater.where( table["devicereadjoblogid"] == getJobLogId() );
+    updater 
+        << getStopTime()
+        << getJobLogId();
 
-    updater << table["stoptime"].assign( toRWDBDT(getStopTime()) );
-
-    return ExecuteUpdater(conn,updater,__FILE__,__LINE__);
+    return updater.execute();
 }
 
-RWDBStatus CtiTblDeviceReadJobLog::Update()
+bool CtiTblDeviceReadJobLog::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "scheduleid = ?, "
+                                        "starttime = ?, "
+                                        "stoptime = ?"
+                                   " where "
+                                        "devicereadjoblogid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater.where( table["devicereadjoblogid"] == getJobLogId() );
+    updater 
+        << getScheduleId()
+        << getStartTime()
+        << getStopTime()
+        << getJobLogId();
 
-    updater <<
-    table["scheduleid"].assign( getScheduleId() ) <<
-    table["starttime"].assign( toRWDBDT(getStartTime()) ) <<
-    table["stoptime"].assign( toRWDBDT(getStopTime()) );
-
-    return ExecuteUpdater(conn,updater,__FILE__,__LINE__);
+    return updater.execute();
 }
 

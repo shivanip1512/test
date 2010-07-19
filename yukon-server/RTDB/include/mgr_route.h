@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw/db/connect.h>
-#include <rw/db/db.h>
 
 #include "repeaterrole.h"
 #include "rte_base.h"
@@ -28,10 +26,10 @@ private:
 
     CtiSmartMap< CtiRouteBase > _smartMap;
 
-    void RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
-    void RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRouteBase* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
+    void RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg);
 
 public:
 
@@ -50,7 +48,7 @@ public:
     void DumpList(void);
     void DeleteList(void);
 
-    void RefreshList(CtiRouteBase* (*Factory)(RWDBReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
+    void RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &) = RouteFactory, BOOL (*fn)(CtiRouteBase*,void*) = isARoute, void *d = NULL);
     ptr_type getEqual( LONG rid );
     ptr_type getEqualByName( string &rname );
 

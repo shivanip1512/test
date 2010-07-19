@@ -959,7 +959,7 @@ int CtiDeviceMarkV::sendCommResult( INMESS *InMessage )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiDeviceMarkV::DecodeDatabaseReader( RWDBReader &rdr )
+void CtiDeviceMarkV::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader( rdr );       // get the base class handled
 

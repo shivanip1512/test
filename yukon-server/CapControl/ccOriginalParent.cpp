@@ -15,6 +15,8 @@
 #include "yukon.h"
 #include "ccoriginalparent.h"
 #include "ccid.h"
+#include "row_reader.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
  
@@ -31,7 +33,7 @@ CtiCCOriginalParent::CtiCCOriginalParent()
 };
 
 
-CtiCCOriginalParent::CtiCCOriginalParent(RWDBReader& rdr)
+CtiCCOriginalParent::CtiCCOriginalParent(Cti::RowReader& rdr)
 {
     restore(rdr);
 };
@@ -137,7 +139,7 @@ void CtiCCOriginalParent::setOriginalTripOrder(float order)
 
 
 
-void CtiCCOriginalParent::restore(RWDBReader& rdr)
+void CtiCCOriginalParent::restore(Cti::RowReader& rdr)
 {
     rdr["originalparentid"] >> _originalParentId;
     rdr["originalswitchingorder"] >>  _originalSwitchingOrder;
@@ -153,33 +155,26 @@ BOOL CtiCCOriginalParent::isDirty()
 {
     return _dirty;
 }
-void CtiCCOriginalParent::dumpDynamicData()
+void CtiCCOriginalParent::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-void CtiCCOriginalParent::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
-{
-
     {
-
-        RWDBTable dynamicCtiCCOriginalParent = getDatabase().table( "dynamicccoriginalparent" );
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCtiCCOriginalParent.updater();
+            static const string updaterSql = "update dynamicccoriginalparent set "
+                                         "originalparentid = ?, "
+                                         "originalswitchingorder = ?, "
+                                         "originalcloseorder = ?, "
+                                         "originaltriporder = ? "
+                                         " where paobjectid = ?";
+            Cti::Database::DatabaseWriter updater(conn, updaterSql);
 
-            updater.where(dynamicCtiCCOriginalParent["paobjectid"] == _paoId);
+            updater << _originalParentId
+                    << _originalSwitchingOrder
+                    << _originalCloseOrder
+                    << _originalTripOrder
+                    << _paoId;
 
-            updater << dynamicCtiCCOriginalParent["originalparentid"].assign( _originalParentId )
-                    << dynamicCtiCCOriginalParent["originalswitchingorder"].assign( _originalSwitchingOrder )
-                    << dynamicCtiCCOriginalParent["originalcloseorder"].assign( _originalCloseOrder )
-                    << dynamicCtiCCOriginalParent["originaltriporder"].assign( _originalTripOrder );
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
@@ -202,7 +197,8 @@ void CtiCCOriginalParent::dumpDynamicData(RWDBConnection& conn, CtiTime& current
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted CC Original Parent Info into DynamicCtiCCOriginalParentInfo: " << getPAOId() << endl;
             }
-            RWDBInserter inserter = dynamicCtiCCOriginalParent.inserter();
+            static const string inserterSql = "insert into dynamicccoriginalparent values (?, ?, ?, ? ?)";
+            Cti::Database::DatabaseWriter inserter(conn, inserterSql);
             
             inserter << _paoId
                     << _originalParentId
@@ -219,9 +215,7 @@ void CtiCCOriginalParent::dumpDynamicData(RWDBConnection& conn, CtiTime& current
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(inserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;

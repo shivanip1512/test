@@ -69,8 +69,9 @@ public:
     CtiTablePortDialup& getTablePortDialup();
     CtiPortDialable& setTablePortDialup(const CtiTablePortDialup& aRef);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeDatabaseReader(RWDBReader &rdr);
+    static string getSQLCoreStatement();
+
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
 

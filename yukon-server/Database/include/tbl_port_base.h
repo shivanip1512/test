@@ -23,6 +23,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTablePortBase : public CtiMemDBObject
 {
@@ -77,9 +78,8 @@ private:
     INT& getPerformanceThreshold();
     CtiTablePortBase& setPerformanceThreshold( const INT aPerformanceThreshold );
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     static string getTableName();
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual void DumpData();
 };
 #endif // #ifndef __TBL_PORT_BASE_H__

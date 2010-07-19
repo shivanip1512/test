@@ -15,7 +15,6 @@
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rwutil.h>
 RWDEFINE_COLLECTABLE( CtiMCScript, MSG_MC_SCRIPT )
 
 string CtiMCScript::_path("..\\scripts");

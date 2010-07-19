@@ -188,18 +188,22 @@ string CtiDeviceGroupSADigital::getDescription(const CtiCommandParser & parse) c
 //===================================================================================================================
 //===================================================================================================================
 
-void CtiDeviceGroupSADigital::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupSADigital::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableSASimpleGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LMS.groupid, LMS.routeid, "
+                                     "LMS.operationaladdress, LMS.nominaltimeout, LMS.markindex, LMS.spaceindex "
+                                   "FROM YukonPAObject YP, Device DV, LMGroupSASimple LMS "
+                                   "WHERE upper (YP.type) = 'SA-DIGITAL GROUP' AND YP.paobjectid = LMS.groupid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SA-DIGITAL GROUP") && selector.where() );
+    return sqlCore;
 }
 
 //===================================================================================================================
 //===================================================================================================================
 
-void CtiDeviceGroupSADigital::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGroupSADigital::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

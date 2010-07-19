@@ -21,8 +21,8 @@
 #include "logger.h"
 #include "tbl_paoexclusion.h"
 #include "utility.h"
-#include "rwutil.h"
-
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTablePaoExclusion::CtiTablePaoExclusion(long xid,
                                            long paoid,
@@ -154,25 +154,24 @@ string CtiTablePaoExclusion::getTableName()
     return "PaoExclusion";
 }
 
-void CtiTablePaoExclusion::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTablePaoExclusion::getSQLCoreStatement(long id)
 {
-    keyTable = db.table(getTableName().c_str());
+    static const string sqlNoID =  "SELECT PEX.exclusionid, PEX.paoid, PEX.excludedpaoid, PEX.pointid, PEX.value, "
+                                     "PEX.functionid, PEX.funcname, PEX.funcrequeue, PEX.funcparams "
+                                   "FROM PaoExclusion PEX "
+                                   "WHERE PEX.functionid != 3";
 
-    selector <<
-    keyTable["exclusionid"] <<
-    keyTable["paoid"] <<
-    keyTable["excludedpaoid"] <<
-    keyTable["pointid"] <<
-    keyTable["value"] <<
-    keyTable["functionid"] <<
-    keyTable["funcname"] <<
-    keyTable["funcrequeue"] <<
-    keyTable["funcparams"];
-
-    selector.from(keyTable);
+    if(id > 0)
+    {
+        return string(sqlNoID + " AND PEX.paoid = ?");
+    }
+    else
+    {
+        return sqlNoID;
+    }
 }
 
-void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePaoExclusion::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
     {
@@ -228,95 +227,6 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(RWDBReader &rdr)
 
     }
 
-}
-
-RWDBStatus CtiTablePaoExclusion::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["exclusionid"] <<
-    table["paoid"] <<
-    table["excludedpaoid"] <<
-    table["pointid"] <<
-    table["value"] <<
-    table["functionid"] <<
-    table["funcname"] <<
-    table["funcrequeue"] <<
-    table["funcparams"];
-
-    selector.where( table["exclusionid"] == getExclusionId() );  //??
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-
-    return reader.status();
-}
-
-RWDBStatus CtiTablePaoExclusion::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    return Insert(conn);
-}
-
-RWDBStatus CtiTablePaoExclusion::Insert(RWDBConnection &conn)
-{
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return inserter.status();
-}
-
-
-RWDBStatus CtiTablePaoExclusion::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTablePaoExclusion::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return deleter.status();
 }
 
 void CtiTablePaoExclusion::dump() const

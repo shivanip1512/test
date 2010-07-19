@@ -19,7 +19,8 @@
 #include "dbaccess.h"
 #include "tbl_state.h"
 #include "logger.h"
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 LONG CtiTableState::getStateGroupID() const
 {
@@ -60,112 +61,37 @@ CtiTableState& CtiTableState::setText( const string &str )
     return *this;
 }
 
-void CtiTableState::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+bool CtiTableState::Restore()
 {
-    keyTable = db.table( getTableName().c_str() );
-
-    selector <<
-    keyTable["stategroupid"] <<
-    keyTable["rawstate"] <<
-    keyTable["text"];
-
-    selector.from(keyTable);
-}
-
-RWDBStatus CtiTableState::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-
-
-    inserter <<
-    getStateGroupID() <<
-    getText() <<
-    getRawState() <<
-    (INT)0 <<      // Foreground
-    (INT)6;        // Background
-
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableState::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-
-
-    updater.where( table["stategroupid"] == getStateGroupID() && table["rawstate"] == getRawState());
-
-    updater << table["text"].assign( getText().c_str() );
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableState::Restore()
-{
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBStatus dbstat;
-
     {
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBSelector selector = getDatabase().selector();
+        static const string sql =  "SELECT ST.stategroupid, ST.rawstate, ST.text "
+                                   "FROM State ST "
+                                   "WHERE ST.stategroupid = ? AND ST.rawstate = ?";
 
-        selector << table["stategroupid"]
-        << table["rawstate"]
-        << table["text"];
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader reader(connection, sql);
 
-        selector.where( table["stategroupid"] == getStateGroupID() && table["rawstate"] == getRawState());
+        reader << getStateGroupID()
+               << getRawState();
 
-        RWDBReader reader = selector.reader( conn );
-
-        dbstat = selector.status();
+        reader.execute();
 
         if( reader() )
         {
             DecodeDatabaseReader( reader );
+            return true;
         }
         else
         {
             char temp[40];
             sprintf(temp, "Unknown State. Value = %d", getRawState());
             _text = string(temp);
+            return false;
         }
     }
-
-    return dbstat;
 }
 
-RWDBStatus CtiTableState::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["stategroupid"] == getStateGroupID() && table["rawstate"] == getRawState());
-
-    return deleter.execute( conn ).status();
-}
-
-void CtiTableState::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableState::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
 
 

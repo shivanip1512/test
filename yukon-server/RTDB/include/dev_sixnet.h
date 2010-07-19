@@ -323,7 +323,7 @@ public:
    virtual INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority);
    virtual INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList,  list< CtiMessage* > &retList, list< OUTMESS* > &outList);
    virtual INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore);
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 
    INT decodeResultLoadProfile(INMESS *InMessage,CtiTime &TimeNow, list< CtiMessage* >   &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);

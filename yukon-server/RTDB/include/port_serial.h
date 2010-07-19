@@ -47,8 +47,7 @@ public:
         return _tblPortTimings;
     }
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual CtiPort &setBaudRate(INT baudRate);
     virtual INT getBaudRate() const;

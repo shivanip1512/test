@@ -28,8 +28,8 @@
 
 #include "tbl_mcsched.h"
 #include "dbaccess.h"
-#include "rwutil.h"
-
+#include "database_connection.h"
+#include "database_writer.h"
 
 //Name of the database table
 const char* CtiTableMCSchedule::_table_name = "MACSchedule";
@@ -88,93 +88,49 @@ CtiTableMCSchedule::~CtiTableMCSchedule()
 {
 }
 
-void CtiTableMCSchedule::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+bool CtiTableMCSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    keyTable = db.table(_table_name);
 
-    selector                            <<
-    keyTable["scheduleid"]          <<
-    keyTable["categoryname"]        <<
-    keyTable["holidayscheduleid"]   <<
-    keyTable["commandfile"]         <<
-    keyTable["currentstate"]        <<
-    keyTable["startpolicy"]         <<
-    keyTable["stoppolicy"]          <<
-    keyTable["lastruntime"]         <<
-    keyTable["lastrunstatus"]       <<
-    keyTable["startday"]            <<
-    keyTable["startmonth"]          <<
-    keyTable["startyear"]           <<
-    keyTable["starttime"]           <<
-    keyTable["stoptime"]            <<
-    keyTable["validweekdays"]       <<
-    keyTable["duration"]            <<
-    keyTable["manualstarttime"]     <<
-    keyTable["manualstoptime"]      <<
-    keyTable["template"];
-
-    selector.from(keyTable);
-}
-
-bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
-{
-    RWDBNullIndicator isNull;
-
-    // RWDBReader has no operator>>(string&) so use
-    // a temporary string and then copy it
     string temp;
 
     rdr["scheduleid"]       >> _schedule_id;
 
-    rdr["categoryname"]     >> temp;
-    _category_name = temp;
+    rdr["categoryname"]     >> _category_name;
 
     rdr["holidayscheduleid"] >> _holiday_schedule_id;
 
-    rdr["commandfile"]      >> temp;
-    _command_file = temp;
+    rdr["commandfile"]      >> _command_file;
 
-    rdr["currentstate"]     >> temp;
-    _current_state = temp;
+    rdr["currentstate"]     >> _current_state;
 
-    rdr["startpolicy"]      >> temp;
-    _start_policy = temp;
+    rdr["startpolicy"]      >> _start_policy;
 
-    rdr["stoppolicy"]       >> temp;
-    _stop_policy = temp;
+    rdr["stoppolicy"]       >> _stop_policy;
 
     rdr["lastruntime"]      >> _last_run_time;
 
-    rdr["lastrunstatus"]    >> temp;
-    _last_run_status = temp;
+    rdr["lastrunstatus"]    >> _last_run_status;
 
     rdr["startday"]         >> _start_day;
     rdr["startmonth"]       >> _start_month;
     rdr["startyear"]        >> _start_year;
 
-    rdr["starttime"]        >> temp;
-    _start_time = temp;
+    rdr["starttime"]        >> _start_time;
 
-    rdr["stoptime"]         >> temp;
-    _stop_time = temp;
+    rdr["stoptime"]         >> _stop_time;
 
-    rdr["validweekdays"]    >> temp;
-    _valid_week_days = temp;
+    rdr["validweekdays"]    >> _valid_week_days;
 
     rdr["duration"]         >> _duration;
 
-    rdr["manualstarttime"] >> isNull;
-
     // a null man start or stop time indicates there isn't one
     // so set them to invalid if that is what we find
-    if( isNull )
+    if( rdr["manualstarttime"].isNull() )
         _manual_start_time = CtiTime( (unsigned long) 0 );
     else
         rdr["manualstarttime"] >> _manual_start_time;
 
-    rdr["manualstoptime"] >> isNull;
-
-    if( isNull )
+    if( rdr["manualstoptime"].isNull() )
         _manual_stop_time = CtiTime( (unsigned long) 0 );
     else
         rdr["manualstoptime"] >> _manual_stop_time;
@@ -186,228 +142,180 @@ bool CtiTableMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CtiTableMCSchedule::Update()
 {
-    bool ret_val = false;
-    string sql;
+    static const string sql =  "update " + std::string(_table_name) + 
+                                " set "
+                                    "CategoryName = ?, "
+                                    "HolidayScheduleID = ?, "
+                                    "CommandFile = ?, "
+                                    "CurrentState = ?, "
+                                    "StartPolicy = ?, "
+                                    "StopPolicy = ?, "
+                                    "LastRunTime = ?, "
+                                    "LastRunStatus = ?, "
+                                    "StartDay = ?, "
+                                    "StartMonth = ?, "
+                                    "StartYear = ?, "
+                                    "StartTime = ?, "
+                                    "StopTime = ?, "
+                                    "ValidWeekDays = ?, "
+                                    "Duration = ?, "
+                                    "ManualStartTime = ?, "
+                                    "ManualStopTime = ?, "
+                                    "Template = ?"
+                                " where "
+                                    "ScheduleID = ?";
 
-    try
-    {
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-            RWDBTable t = conn.database().table( _table_name );
+    updater
+        << getCategoryName()
+        << getHolidayScheduleID()
+        << getCommandFile()
+        << getCurrentState()
+        << getStartPolicy()
+        << getStopPolicy();
 
-            RWDBUpdater updater = t.updater();
-
-            updater.where( t["ScheduleID"] == getScheduleID() );
-
-            updater << t["CategoryName"].assign((const char*) getCategoryName().c_str());
-
-            updater << t["HolidayScheduleID"].assign(getHolidayScheduleID());
-
-            updater << t["CommandFile"].assign((const char*) getCommandFile().c_str());
-
-            updater << t["CurrentState"].assign((const char*) getCurrentState().c_str());
-
-            updater << t["StartPolicy"].assign((const char*) getStartPolicy().c_str());
-
-            updater << t["StopPolicy"].assign((const char*) getStopPolicy().c_str());
-
-            if( getLastRunTime().isValid() )
-                updater << t["LastRunTime"].assign( toRWDBDT(getLastRunTime()) );
-
-            updater << t["LastRunStatus"].assign((const char*) getLastRunStatus().c_str());
-
-            updater << t["StartDay"].assign( getStartDay() );
-            updater << t["StartMonth"].assign( getStartMonth() );
-            updater << t["StartYear"].assign( getStartYear() );
-
-            updater << t["StartTime"].assign((const char*) getStartTime().c_str());
-
-            updater << t["StopTime"].assign((const char*) getStopTime().c_str());
-
-            updater << t["ValidWeekDays"].assign((const char*) getValidWeekDays().c_str());
-
-            updater << t["Duration"].assign( getDuration() );
-
-            /* manual start and stop times updating is disbled until
-               a way is found to insert a null or invalid date */
-
-
-            if( getManualStartTime().isValid() )
-                updater << t["ManualStartTime"].assign( toRWDBDT(getManualStartTime()) );
-            else
-                updater << t["ManualStartTime"].assign( RWDBValue() );
-
-            if( getManualStopTime().isValid() )
-                updater << t["ManualStopTime"].assign( toRWDBDT(getManualStopTime()) );
-            else
-                updater << t["ManualStopTime"].assign( RWDBValue() );
-
-            updater << t["Template"].assign( getTemplateType() );
-
-            sql = (const char*) updater.asString().data();
-
-            RWDBResult result = updater.execute(conn);
-
-            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-        }
+    if( getLastRunTime().isValid() )
+    {    
+        updater << getLastRunTime();
     }
-    catch(...)
+    else
+    {
+        updater << Cti::Database::DatabaseWriter::Null;
+    }
+
+    updater
+        << getLastRunStatus()
+        << getStartDay()
+        << getStartMonth()
+        << getStartYear()
+        << getStartTime()
+        << getStopTime()
+        << getValidWeekDays()
+        << getDuration();
+
+    if( getManualStartTime().isValid() )
+    {    
+        updater << getManualStartTime();
+    }
+    else
+    {
+        updater << Cti::Database::DatabaseWriter::Null;
+    }
+
+    if( getManualStopTime().isValid() )
+    {    
+        updater << getManualStopTime();
+    }
+    else
+    {
+        updater << Cti::Database::DatabaseWriter::Null;
+    }
+
+    updater
+        << getTemplateType()
+        << getScheduleID();
+
+    bool success = updater.execute();
+
+    if( ! success )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " An exception occured updating table \""
-        << _table_name
-        << "\""
-        << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << updater.asString() << endl;
     }
 
-    if( !ret_val )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " "
-        << sql
-        << endl;
-    }
-
-    return ret_val;
+    return success;
 }
 
 bool CtiTableMCSchedule::Insert()
 {
-    bool ret_val = false;
-    string sql;
+    static const std::string sql = "insert into " + std::string(_table_name) +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    try
-    {
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-            RWDBTable t = conn.database().table( _table_name );
-            RWDBInserter inserter = t.inserter();
+    inserter
+        << getScheduleID()
+        << getCategoryName()
+        << getHolidayScheduleID()
+        << getCommandFile()
+        << getCurrentState()
+        << getStartPolicy()
+        << getStopPolicy();
 
-            inserter << getScheduleID();
-
-            inserter << (const char*) getCategoryName().c_str();
-
-            inserter << getHolidayScheduleID();
-
-            inserter << (const char*) getCommandFile().c_str();
-
-            inserter << (const char*) getCurrentState().c_str();
-
-            inserter << (const char*) getStartPolicy().c_str();
-
-            inserter << (const char*) getStopPolicy().c_str();
-
-            if( getLastRunTime().isValid() )
-                inserter << CtiTime( getLastRunTime() );
-            else
-                inserter << RWDBValue(); //null
-
-            inserter << (const char*) getLastRunStatus().c_str();
-
-            inserter << getStartDay();
-            inserter << getStartMonth();
-            inserter << getStartYear();
-
-            inserter << (const char*) getStartTime().c_str();
-
-            inserter << (const char*) getStopTime().c_str();
-
-            inserter << (const char*) getValidWeekDays().c_str();
-
-            inserter << getDuration();
-
-            if( getManualStartTime().isValid() )
-                inserter << CtiTime( getManualStartTime() );
-            else
-                inserter << RWDBValue(); //null
-
-            if( getManualStopTime().isValid() )
-                inserter << CtiTime( getManualStopTime() );
-            else
-                inserter << RWDBValue(); //null
-
-            inserter << getTemplateType();
-
-            sql = (const char*) inserter.asString().data();
-
-            RWDBResult result = inserter.execute(conn);
-
-            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-
-        }
+    if( getLastRunTime().isValid() )
+    {    
+        inserter << CtiTime( getLastRunTime() );
     }
-    catch(...)
+    else
+    {    
+        inserter << Cti::Database::DatabaseWriter::Null;
+    }
+
+    inserter
+        << getLastRunStatus()
+        << getStartDay()
+        << getStartMonth()
+        << getStartYear()
+        << getStartTime()
+        << getStopTime()
+        << getValidWeekDays()
+        << getDuration();
+
+    if( getManualStartTime().isValid() )
+    {    
+        inserter << CtiTime( getManualStartTime() );
+    }
+    else
+    {    
+        inserter << Cti::Database::DatabaseWriter::Null;
+    }
+
+    if( getManualStopTime().isValid() )
+    {    
+        inserter << CtiTime( getManualStopTime() );
+    }
+    else
+    {    
+        inserter << Cti::Database::DatabaseWriter::Null;
+    }
+
+    inserter << getTemplateType();
+
+    bool success = inserter.execute();
+
+    if( ! success )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " An exception occured inserting into table \""
-        << _table_name
-        << "\""
-        << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << inserter.asString() << endl;
     }
 
-    if( !ret_val )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " "
-        << sql
-        << endl;
-    }
-
-    return ret_val;
-
+    return success;
 }
 
 bool CtiTableMCSchedule::Delete()
 {
-    bool ret_val = false;
-    string sql;
+    static const std::string sql = "delete from " + std::string(_table_name) + " where ScheduleID = ?";
 
-    try
-    {
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-            RWDBTable t = conn.database().table( _table_name );
-            RWDBDeleter deleter = t.deleter();
+    deleter << getScheduleID();
 
-            deleter.where( t["ScheduleID"] == getScheduleID() );
-
-            sql = (const char*) deleter.asString().data();
-
-            RWDBResult result = deleter.execute();
-            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " An exception occured deleting from table \""
-        << _table_name
-        << "\""
-        << endl;
-    }
+    bool ret_val = deleter.execute();
 
     if( !ret_val )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " "
-        << sql
-        << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
 
     return ret_val;
-
 }
 /*========Setters and Getters Below========*/
 

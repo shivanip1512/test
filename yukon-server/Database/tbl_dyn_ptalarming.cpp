@@ -21,7 +21,9 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_ptalarming.h"
-#include "rwutil.h"
+#include "database_reader.h"
+#include "database_writer.h"
+
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
 #define DEFAULT_USERLENGTH          64
@@ -77,28 +79,22 @@ string CtiTableDynamicPointAlarming::getTableName()
 }
 
 
-RWDBStatus CtiTableDynamicPointAlarming::Insert()
+bool CtiTableDynamicPointAlarming::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Insert(conn);
 }
 
-RWDBStatus CtiTableDynamicPointAlarming::Update()
+bool CtiTableDynamicPointAlarming::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Update(conn);
 }
 
-RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
+bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-
     if(getAction().empty())
     {
         setAction("(none)");
@@ -111,6 +107,10 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
     {
         setUser("(none)");
     }
+
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
 
     inserter <<
     getPointID() <<
@@ -127,40 +127,29 @@ RWDBStatus CtiTableDynamicPointAlarming::Insert(RWDBConnection &conn)
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
 
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    bool success = inserter.execute();
 
-    if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
+    if( ! success )     // Error occured!
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
     else
     {
         resetDirty(FALSE);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
+bool CtiTableDynamicPointAlarming::Update(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
-
     if(getAction().empty())
     {
         setAction("(none)");
@@ -195,160 +184,101 @@ RWDBStatus CtiTableDynamicPointAlarming::Update(RWDBConnection &conn)
         setUser(temp);
     }
 
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "categoryid = ?, "
+                                        "alarmtime = ?, "
+                                        "action = ?, "
+                                        "description = ?, "
+                                        "tags = ?, "
+                                        "logid = ?, "
+                                        "soe_tag = ?, "
+                                        "type = ?, "
+                                        "username = ?"
+                                    " where "
+                                        "pointid = ? and "
+                                        "alarmcondition = ?";
 
-    updater <<
-    table["categoryid"].assign(getCategoryID()) <<
-    table["alarmtime"].assign(toRWDBDT(getAlarmTime())) <<
-    table["action"].assign(getAction().c_str()) <<
-    table["description"].assign(getDescription().c_str()) <<
-    table["tags"].assign(getTags()) <<
-    table["logid"].assign(getLogID());
-    table["soe_tag"].assign(getSOE());
-    table["type"].assign(getLogType());
-    table["username"].assign(getUser().c_str());
+    Cti::Database::DatabaseWriter   updater(conn, sql);
 
-    long rowsAffected;
-    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    updater
+        << getCategoryID()
+        << getAlarmTime()
+        << getAction().c_str()
+        << getDescription().c_str()
+        << getTags()
+        << getLogID()
+        << getSOE()
+        << getLogType()
+        << getUser().c_str()
+        << getPointID()
+        << getAlarmCondition();
+
+    bool success      = updater.execute();
+    long rowsAffected = updater.rowsAffected();
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = updater.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << updater.asString() << endl;
     }
 
-    if( rwStat.errorCode() != RWDBStatus::ok )
+    if( ! success )
     {
-        string loggedSQLstring = updater.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << rwStat.errorCode() << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << updater.asString() << endl;
     }
 
-    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    if( success && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        rwStat = Insert(conn);        // Try a vanilla insert if the update failed!
+        success = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
-    return rwStat;
+    return success;
 }
 
-RWDBStatus CtiTableDynamicPointAlarming::Restore()
+bool CtiTableDynamicPointAlarming::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["pointid"] <<
-    table["alarmcondition"] <<
-    table["categoryid"] <<
-    table["alarmtime"] <<
-    table["action"] <<
-    table["description"] <<
-    table["tags"]  <<
-    table["logid"] <<
-    table["soe_tag"] <<
-    table["type"] <<
-    table["username"];
-
-    selector.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are sirty and need to be
-     *  written into the database
-     */
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( TRUE );
-    }
-
-    return reader.status();
+    return Delete( getPointID(), getAlarmCondition() );
 }
-RWDBStatus CtiTableDynamicPointAlarming::Delete()
+
+bool CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where pointid = ? and alarmcondition = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["pointid"] == getPointID() && table["alarmcondition"] == getAlarmCondition() );
+    deleter 
+        << pointid
+        << alarm_condition;
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
 
-    return deleter.execute( conn ).status();
+    return deleter.execute();
 }
 
-RWDBStatus CtiTableDynamicPointAlarming::Delete(long pointid, int alarm_condition)
+string CtiTableDynamicPointAlarming::getSQLCoreStatement() const
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql = "SELECT D.pointid, D.alarmcondition, D.categoryid, D.alarmtime, D.action, D.description, "
+                                 "D.tags, D.logid, D.soe_tag, D.type, D.username "
+                              "FROM DynamicPointAlarming D";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["pointid"] == pointid && table["alarmcondition"] == alarm_condition );
-
-    if(isDebugLudicrous())
-    {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
-    }
-
-    return deleter.execute( conn ).status();
+    return sql;
 }
 
-
-void CtiTableDynamicPointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table(CtiTableDynamicPointAlarming::getTableName().c_str());
-
-    selector <<
-    keyTable["pointid"] <<
-    keyTable["alarmcondition"] <<
-    keyTable["categoryid"] <<
-    keyTable["alarmtime"] <<
-    keyTable["action"] <<
-    keyTable["description"] <<
-    keyTable["tags"]  <<
-    keyTable["logid"] <<
-    keyTable["soe_tag"] <<
-    keyTable["type"] <<
-    keyTable["username"];
-
-    selector.from(keyTable);
-}
-void CtiTableDynamicPointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableDynamicPointAlarming::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     rdr["pointid"] >> _pointID;
     rdr["alarmcondition"] >> _alarmCondition;

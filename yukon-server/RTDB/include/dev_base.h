@@ -136,11 +136,11 @@ public:
     CtiDeviceBase&       setPointManager(CtiPointManager* aPtr);
 
     //  name hiding allows us to take this over from tbl_pao_lite
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual void getParametersSelector(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
-    virtual void decodeParameters(RWDBReader &rdr);
+    virtual string getSQLCoreStatement() const;
+
+    virtual void decodeParameters(Cti::RowReader &rdr);
     virtual void clearParameters();
 
     /*

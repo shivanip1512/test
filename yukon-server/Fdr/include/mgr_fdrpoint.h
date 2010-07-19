@@ -22,12 +22,13 @@
 
 
 /** include files **/
-#include <rw/db/connect.h>
 
 #include "dlldefs.h"
 #include "smartmap.h"
 #include "fdrpoint.h"
 #include "logger.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -61,9 +62,9 @@ class IM_EX_FDRBASE CtiFDRManager
         string       getWhereSelectStr();
         CtiFDRManager & setWhereSelectStr(string &);
 
-        RWDBStatus loadPointList(void);
-        RWDBStatus loadPoint(long pointId, CtiFDRPointSPtr & point);
-        RWDBStatus refreshPointList(void);
+        bool loadPointList(void);
+        bool loadPoint(long pointId, CtiFDRPointSPtr & point);
+        bool refreshPointList(void);
 
         CtiFDRPointSPtr findFDRPointID(LONG myPointId);
         CtiFDRPointSPtr removeFDRPointID(long myPointId);
@@ -93,8 +94,7 @@ class IM_EX_FDRBASE CtiFDRManager
 
 
     private:
-        RWDBStatus getPointsFromDB(RWDBSelector& selector, std::map<long,CtiFDRPointSPtr >& fdrPtrMap);
-        void buildFDRPointSelector(RWDBDatabase& db, RWDBSelector& selector, RWDBTable& fdrTranslation, RWDBTable& pointBaseTable, RWDBTable& pointAnalogTable, RWDBTable& pointAccumulatorTable);
+        bool getPointsFromDB(const std::stringstream &ss, std::map<long,CtiFDRPointSPtr >& fdrPtrMap);
 
         // private data
         string   iInterfaceName;

@@ -21,6 +21,9 @@
 #include "loadmanager.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -36,7 +39,7 @@ _revisionnumber(0)
 {
 }
 
-CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply(RWDBReader& rdr)
+CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -392,9 +395,9 @@ int CtiLMEnergyExchangeCustomerReply::operator!=(const CtiLMEnergyExchangeCustom
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeCustomerReply::restore(RWDBReader& rdr)
+void CtiLMEnergyExchangeCustomerReply::restore(Cti::RowReader &rdr)
 {
 
 
@@ -416,51 +419,34 @@ void CtiLMEnergyExchangeCustomerReply::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 {
+    static const std::string sql = "insert into lmenergyexchangecustomerreply values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
-        if( conn.isValid() )
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;
-            }
-
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
-
-            RWDBInserter inserter = lmEnergyExchangeCustomerReplyTable.inserter();
-
-            inserter << getCustomerId()
-            << getOfferId()
-            << getAcceptStatus()
-            << getAcceptDateTime()
-            << getRevisionNumber()
-            << getIPAddressOfAcceptUser()
-            << getUserIdName()
-            << getNameOfAcceptPerson()
-            << getEnergyExchangeNotes();
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            inserter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;
     }
+
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << getCustomerId()
+        << getOfferId()
+        << getAcceptStatus()
+        << getAcceptDateTime()
+        << getRevisionNumber()
+        << getIPAddressOfAcceptUser()
+        << getUserIdName()
+        << getNameOfAcceptPerson()
+        << getEnergyExchangeNotes();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << inserter.asString() << endl;
+    }
+
+    inserter.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -470,46 +456,40 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeCustomerReply::updateLMEnergyExchangeCustomerReplyTable()
 {
+    static const std::string sql = "update lmenergyexchangecustomerreply"
+                                   " set "
+                                        "acceptstatus = ?, "
+                                        "acceptdatetime = ?, "
+                                        "ipaddressofacceptuser = ?, "
+                                        "useridname = ?, "
+                                        "nameofacceptperson = ?, "
+                                        "energyexchangenotes = ?"
+                                   " where "
+                                        "customerid = ? and "
+                                        "offerid = ? and "
+                                        "revisionnumber = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater
+        << getAcceptStatus()[0]
+        << getAcceptDateTime()
+        << getIPAddressOfAcceptUser()[0]
+        << getUserIdName()[0]
+        << getNameOfAcceptPerson()[0]
+        << getEnergyExchangeNotes()[0]
+        << getCustomerId()
+        << getOfferId()
+        << getRevisionNumber();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
-            RWDBUpdater updater = lmEnergyExchangeCustomerReplyTable.updater();
-
-            updater << lmEnergyExchangeCustomerReplyTable["acceptstatus"].assign(getAcceptStatus()[0])
-            << lmEnergyExchangeCustomerReplyTable["acceptdatetime"].assign(toRWDBDT(getAcceptDateTime()))
-            << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"].assign(getIPAddressOfAcceptUser()[0])
-            << lmEnergyExchangeCustomerReplyTable["useridname"].assign(getUserIdName()[0])
-            << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"].assign(getNameOfAcceptPerson()[0])
-            << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"].assign(getEnergyExchangeNotes()[0]);
-
-            updater.where(lmEnergyExchangeCustomerReplyTable["customerid"]==getCustomerId() &&
-                          lmEnergyExchangeCustomerReplyTable["offerid"]==getOfferId() &&
-                          lmEnergyExchangeCustomerReplyTable["revisionnumber"]==getRevisionNumber());
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            updater.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    updater.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -527,62 +507,40 @@ void CtiLMEnergyExchangeCustomerReply::dumpDynamicData()
 /*---------------------------------------------------------------------------
     restoreDynamicData
 
-    Restores self's dynamic data given a RWDBReader
+    Restores self's dynamic data given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(RWDBReader& rdr)
+void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(Cti::RowReader &rdr)
 {
+/*    static const string sql =  "SELECT XCR.offerid, XCR.acceptstatus, XCR.acceptdatetime, XCR.revisionnumber, "
+                                   "XCR.ipaddressofacceptuser, XCR.useridname, XCR.nameofacceptperson, "
+                                   "XCR.energyexchangenotes "
+                               "FROM lmenergyexchangecustomerreply XCR "
+                               "WHERE XCR.deviceid = ? "
+                               "ORDER BY XCR.offerid DESC";
 
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
 
-    /*CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    rdr << getDeviceId();
+
+    rdr.execute();
+
+    if( _LM_DEBUG )
     {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << rdr.asString().c_str() << endl;
+    }
 
-        if ( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
-            RWDBSelector selector = db.selector();
-            selector << lmEnergyExchangeCustomerReplyTable["offerid"]
-                     << lmEnergyExchangeCustomerReplyTable["acceptstatus"]
-                     << lmEnergyExchangeCustomerReplyTable["acceptdatetime"]
-                     << lmEnergyExchangeCustomerReplyTable["revisionnumber"]
-                     << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"]
-                     << lmEnergyExchangeCustomerReplyTable["useridname"]
-                     << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"]
-                     << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"];
-
-            selector.from(lmEnergyExchangeCustomerReplyTable);
-
-            selector.where(lmEnergyExchangeCustomerReplyTable["deviceid"]==getDeviceId());
-
-            selector.orderByDescending(lmEnergyExchangeCustomerReplyTable["offerid"]);
-
-            if( _LM_DEBUG )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << selector.asString().c_str() << endl;
-            }
-
-            RWDBReader rdr = selector.reader(conn);
-
-            if(rdr())
-            {
-                rdr["offerid"] >> _offerid;
-                rdr["acceptstatus"] >> _acceptstatus;
-                rdr["acceptdatetime"] >> _acceptdatetime;
-                rdr["revisionnumber"] >> _revisionnumber;
-                rdr["ipaddressofacceptuser"] >> _ipaddressofacceptuser;
-                rdr["useridname"] >> _useridname;
-                rdr["nameofacceptperson"] >> _nameofacceptperson;
-                rdr["energyexchangenotes"] >> _energyexchangenotes;
-            }
-
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+    if(rdr())
+    {
+        rdr["offerid"] >> _offerid;
+        rdr["acceptstatus"] >> _acceptstatus;
+        rdr["acceptdatetime"] >> _acceptdatetime;
+        rdr["revisionnumber"] >> _revisionnumber;
+        rdr["ipaddressofacceptuser"] >> _ipaddressofacceptuser;
+        rdr["useridname"] >> _useridname;
+        rdr["nameofacceptperson"] >> _nameofacceptperson;
+        rdr["energyexchangenotes"] >> _energyexchangenotes;
     }*/
 }
 

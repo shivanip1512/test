@@ -19,7 +19,8 @@
 
 #include "resolvers.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTablePointHistory::CtiTablePointHistory() :
     PointID(0),
@@ -65,82 +66,7 @@ string CtiTablePointHistory::getTableName() const
     return "PointHistory";
 }
 
-void CtiTablePointHistory::Restore()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector << table["pointid"]
-    << table["timestamp"]
-    << table["quality"]
-    << table["value"];
-
-    selector.where( table["pointid"] == getPointID() &&
-                    table["timestamp"] == toRWDBDT(getTimeStamp()) );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( true );
-    }
-}
-
-void CtiTablePointHistory::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["pointid"] == getPointID() &&
-                   table["timestamp"] == toRWDBDT(getTimeStamp()) );
-
-    updater << table["quality"].assign(getQuality())
-    << table["value"].assign(getValue());
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-}
-
-void CtiTablePointHistory::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter << getPointID()
-    << getTimeStamp()
-    << getQuality()
-    << getValue();
-
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
-}
-
-void CtiTablePointHistory::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["pointid"] == getPointID() &&
-                   table["timestamp"] == toRWDBDT(getTimeStamp()) );
-
-    deleter.execute( conn );
-}
-
-void CtiTablePointHistory::DecodeDatabaseReader(RWDBReader& rdr )
+void CtiTablePointHistory::DecodeDatabaseReader(Cti::RowReader& rdr )
 {
     rdr >> PointID >> TimeStamp >> Quality >> Value;
 }

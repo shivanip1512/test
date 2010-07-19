@@ -2,11 +2,9 @@
 
 #include "lmfactory.h"
 
-#include <rw/db/db.h>
 
 #include "guard.h"
 #include "logger.h"
-#include "rwutil.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 
@@ -23,20 +21,16 @@
 #include "lmgroupgolay.h"
 #include "lmgroupmacro.h"
 
-CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(RWDBReader& rdr)
+CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
 {
     CtiLMGroupBase* lm_group = 0;
     string category;
     string paotype;
 
-    RWDBNullIndicator cat_null, type_null;
-
-    rdr["category"] >> cat_null;
-    rdr["type"] >> type_null;
-    if(cat_null || type_null)
+    if(rdr["category"].isNull() || rdr["type"].isNull())
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " - " << "No paotype available in the given RWDBReader:" << endl;
+        dout << CtiTime() << " - " << "No paotype available in the given Reader:" << endl;
         return CtiLMGroupPtr();
     }
 

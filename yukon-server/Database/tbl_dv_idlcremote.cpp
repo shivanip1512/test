@@ -5,8 +5,6 @@
 
 #include "tbl_dv_idlcremote.h"
 
-#include "rwutil.h"
-
 CtiTableDeviceIDLC::CtiTableDeviceIDLC() :
 _deviceID(-1),
 _address(-1),
@@ -91,21 +89,7 @@ INT CtiTableDeviceIDLC::getAmp()
     }
 }
 
-void CtiTableDeviceIDLC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector <<
-    devTbl["address"] <<
-    devTbl["postcommwait"] <<
-    devTbl["ccuampusetype"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );
-}
-
-void CtiTableDeviceIDLC::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceIDLC::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 

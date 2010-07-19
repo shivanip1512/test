@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -25,12 +24,19 @@
 #include "types.h"
 #include "ctitime.h"
 #include "logger.h"
+#include "row_reader.h"
+
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 class CtiCCOriginalParent
 {
 public:
     CtiCCOriginalParent();
-    CtiCCOriginalParent(RWDBReader& rdr);
+    CtiCCOriginalParent(Cti::RowReader& rdr);
     ~CtiCCOriginalParent();
 
     LONG getPAOId() const;
@@ -51,11 +57,10 @@ public:
     int operator!=(const CtiCCOriginalParent& right) const;
 
     BOOL isDirty();
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
 
 private:
 

@@ -15,7 +15,7 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "dsm2.h"
 #include "devicetypes.h"
@@ -92,21 +92,19 @@ CtiDeviceMacro &CtiDeviceMacro::addDevice( CtiDeviceSPtr toAdd )
     return *this;
 }
 
-
-void CtiDeviceMacro::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
+string CtiDeviceMacro::getSQLCoreStatement() const
 {
-    Inherited::getSQL( db, keyTable, selector );
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit "
+                                   "FROM YukonPAObject YP, Device DV "
+                                   "WHERE upper (YP.paoclass) = 'GROUP' AND upper (YP.type) = 'MACRO GROUP' "
+                                     "AND YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["paoclass"]) == RWDBExpr("GROUP") &&
-                    rwdbUpper(keyTable["type"])     == RWDBExpr("MACRO GROUP") &&
-                    selector.where( ) );
+    return sqlCore;
 }
 
-
-void CtiDeviceMacro::DecodeDatabaseReader( RWDBReader &rdr )
+void CtiDeviceMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    RWDBNullIndicator isNull;
-
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     if( getDebugLevel( ) & DEBUGLEVEL_DATABASE )

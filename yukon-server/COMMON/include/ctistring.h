@@ -14,14 +14,13 @@
  * Please refer to string document to see its functionalities.
  */
 
-
-
 #ifndef  __STRING_WRAPER_H__
 #define  __STRING_WRAPER_H__
 
-#include "rwutil.h"
 #include <string.h>
 #include <boost/regex.hpp>
+#include "dlldefs.h"
+
 using std::string;
 
 class IM_EX_CTIBASE CtiString : public string

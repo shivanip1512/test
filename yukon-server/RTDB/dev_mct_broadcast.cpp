@@ -24,7 +24,6 @@
 #include "dev_mct4xx.h"
 #include "ctidate.h"
 #include "ctitime.h"
-#include "rwutil.h"
 
 
 using Cti::Protocol::Emetcon;
@@ -43,16 +42,20 @@ CtiDeviceMCTBroadcast::~CtiDeviceMCTBroadcast()
 {
 }
 
-
-void CtiDeviceMCTBroadcast::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceMCTBroadcast::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.address, "
+                                     "RTS.routeid "
+                                   "FROM Device DV, DeviceCarrierSettings CS, YukonPAObject YP "
+                                     "LEFT OUTER JOIN DeviceRoutes RTS ON YP.paobjectid = RTS.deviceid "
+                                   "WHERE upper (YP.type) = 'MCT BROADCAST' AND YP.paobjectid = CS.deviceid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["type"]) == "MCT BROADCAST" && selector.where() );
+    return sqlCore;
 }
 
-
-void CtiDeviceMCTBroadcast::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceMCTBroadcast::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 }

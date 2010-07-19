@@ -22,10 +22,17 @@
 
 #include "dlldefs.h"
 #include "ctitime.h"
+#include "row_reader.h"
 
 #define STATISTICS_REPORT_ON_MSGFLAGS  0x00000001
 #define STATISTICS_COMPENSATED_RESULTS 0x00000010
 #define STATISTICS_REPORT_ON_RESULTS   0x00000020
+
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 class IM_EX_CTIBASE CtiStatistics
 {
@@ -48,13 +55,13 @@ public:
     void incrementAttempts(const CtiTime &stattime, int CompletionStatus);        // This is a retry scenario
     void incrementCompletion(const CtiTime &stattime, int CompletionStatus);
 
-    static void getSQL(RWDBDatabase &db, RWDBTable &table, RWDBSelector &selector, std::vector<long>::iterator id_begin, std::vector<long>::iterator id_end);
-    static void Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored);
+    static string getSQLCoreStatement(std::vector<long>::iterator id_begin, std::vector<long>::iterator id_end);
+        
+    static void Factory(Cti::RowReader &rdr, vector<CtiStatistics *> &restored);
 
-    RWDBStatus::ErrorCode Record(RWDBConnection &conn);
-    RWDBStatus::ErrorCode Restore();
-    RWDBStatus::ErrorCode InsertDaily(RWDBConnection &conn);
-    static RWDBStatus::ErrorCode PruneDaily(RWDBConnection &conn);
+    bool Record(Cti::Database::DatabaseConnection &conn);
+    bool InsertDaily(Cti::Database::DatabaseConnection &conn);
+    static bool PruneDaily(Cti::Database::DatabaseConnection &conn);
 
     static bool isCommFail( int CompletionStatus );
 
@@ -109,8 +116,8 @@ private:
 
     void rotateCounters(const CtiTime &newtime);
 
-    RWDBStatus::ErrorCode Update(RWDBConnection &conn, int counter);
-    RWDBStatus::ErrorCode Insert(RWDBConnection &conn, int counter);
+    bool Update(Cti::Database::DatabaseConnection &conn, int counter);
+    bool Insert(Cti::Database::DatabaseConnection &conn, int counter);
 
     inline void incrementCounter( int statTypeIndex, int statBinIndex)
     {

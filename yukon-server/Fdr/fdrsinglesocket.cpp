@@ -278,16 +278,14 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
     bool foundPoint = false;
 
     static bool firstPassHackFlag = false;// yuck
-    RWDBStatus listStatus;
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), aDirection);
-        listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList() )
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -346,7 +344,7 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
     }   // end try block

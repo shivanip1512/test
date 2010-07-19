@@ -20,6 +20,7 @@
 #include "pointdefs.h"
 #include "logger.h"
 #include "resolvers.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
 extern double _IVVC_DEFAULT_DELTA;
@@ -33,7 +34,7 @@ CtiCCPointResponse::CtiCCPointResponse()
 {
 }
 
-CtiCCPointResponse::CtiCCPointResponse(RWDBReader& rdr)
+CtiCCPointResponse::CtiCCPointResponse(Cti::RowReader& rdr)
 {
     restore(rdr);
 }
@@ -213,9 +214,9 @@ int CtiCCPointResponse::operator!=(const CtiCCPointResponse& right) const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores self's state given a RWDBReader
+    Restores self's state given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCPointResponse::restore(RWDBReader& rdr)
+void CtiCCPointResponse::restore(Cti::RowReader& rdr)
 {
     rdr["bankid"] >> _bankId;
     rdr["pointid"] >> _pointId;
@@ -233,9 +234,9 @@ void CtiCCPointResponse::restore(RWDBReader& rdr)
 /*---------------------------------------------------------------------------
     restore
 
-    Restores self's state given a RWDBReader
+    Restores self's state given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCPointResponse::setDynamicData(RWDBReader& rdr)
+void CtiCCPointResponse::setDynamicData(Cti::RowReader& rdr)
 {
     LONG temp1;
     LONG temp2;
@@ -275,53 +276,35 @@ BOOL CtiCCPointResponse::isDirty() const
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCPointResponse::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCPointResponse::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCMonitorPointResponseTable = getDatabase().table( "dynamicccmonitorpointresponse" );
         if( !_insertDynamicDataFlag )
         {
 
+            static const string updateSql = "update dynamicccmonitorpointresponse set "
+                                            "preopvalue = ?, "
+                                            "delta = ? "
+                                            " where "
+                                            "bankid = ? AND "
+                                            "pointid = ?";
 
-            RWDBUpdater updater = dynamicCCMonitorPointResponseTable.updater();
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater.where(dynamicCCMonitorPointResponseTable["bankid"]==_bankId &&
-                          dynamicCCMonitorPointResponseTable["pointid"]==_pointId );
+            updater 
+                << _preOpValue
+                << _delta
+                << _bankId
+                << _pointId;
 
-            updater << dynamicCCMonitorPointResponseTable["preopvalue"].assign( _preOpValue )
-                    << dynamicCCMonitorPointResponseTable["delta"].assign( _delta );
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().data() << endl;
-            }*/
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -339,38 +322,35 @@ void CtiCCPointResponse::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted Point into dynamicCCMonitorPointResponseTable: " << endl;
             }
-            RWDBInserter inserter = dynamicCCMonitorPointResponseTable.inserter();
+            static const string insertSql = "insert into dynamicccmonitorpointresponse values( "
+                                            "?, ?, ?, ?)";
 
-            inserter <<  _bankId
+            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
+
+            dbInserter <<  _bankId
                 << _pointId
                 << _preOpValue
                 << _delta;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
+                    string loggedSQLstring = dbInserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

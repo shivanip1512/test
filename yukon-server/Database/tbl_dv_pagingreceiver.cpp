@@ -17,6 +17,8 @@
 
 #include "tbl_dv_pagingreceiver.h"
 #include "logger.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiTableDevicePagingReceiver::CtiTableDevicePagingReceiver() :
 _frequency(0),
@@ -92,24 +94,7 @@ float CtiTableDevicePagingReceiver::getCapcode(int codeNumber) const
     }
 }
 
-
-void CtiTableDevicePagingReceiver::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str());
-
-    selector << devTbl ["deviceid"] << devTbl["frequency"] << devTbl["capcode1"] << devTbl["capcode2"] << devTbl["capcode3"]
-        << devTbl["capcode4"] << devTbl["capcode5"] << devTbl["capcode6"]
-        << devTbl["capcode7"] << devTbl["capcode8"] << devTbl["capcode9"]
-        << devTbl["capcode10"] << devTbl["capcode11"] << devTbl["capcode12"]
-        << devTbl["capcode13"] << devTbl["capcode14"] << devTbl["capcode15"]
-        << devTbl["capcode16"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
-void CtiTableDevicePagingReceiver::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDevicePagingReceiver::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -148,93 +133,68 @@ LONG CtiTableDevicePagingReceiver::getDeviceID() const
 }
 
 
-RWDBStatus CtiTableDevicePagingReceiver::Restore()
+bool CtiTableDevicePagingReceiver::Insert()
 {
-    char temp[32];
+#if 0
+    static const std::string sql = "insert into " + getTableName() + " values (?, ...)";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-/*
-    selector << devTbl["deviceid"] << devTbl["frequency"] << devTbl["capcode1"] << devTbl["capcode2"] << devTbl["capcode3"]
-        << devTbl["capcode4"] << devTbl["capcode5"] << devTbl["capcode6"]
-        << devTbl["capcode7"] << devTbl["capcode8"] << devTbl["capcode9"]
-        << devTbl["capcode10"] << devTbl["capcode11"] << devTbl["capcode12"]
-        << devTbl["capcode13"] << devTbl["capcode14"] << devTbl["capcode15"]
-        << devTbl["capcode16"];
-*/
-    selector.where( table["deviceid"] == getDeviceID() );
+    inserter
+        << getDeviceID()
+        << ... ;
 
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader  );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableDevicePagingReceiver::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-  //  inserter <<
-  //  getDeviceID() <<
-  //  getPagerNumber();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    bool success = inserter.execute();
+#else
+    bool success = true;
+#endif
+    if ( success )
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDevicePagingReceiver::Update()
+bool CtiTableDevicePagingReceiver::Update()
 {
-    char temp[32];
+#if 0
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        " ... "
+                                   " where "
+                                        "deviceid = :???";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    updater 
+        << ...
+        << getDeviceID();
 
-    updater.where( table["deviceid"] == getDeviceID() );
-
-   // updater <<
-   // table["pagernumber"].assign(getPagerNumber() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    bool success = updater.execute();
+#else
+    bool success = true;
+#endif
+    if ( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableDevicePagingReceiver::Delete()
+bool CtiTableDevicePagingReceiver::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
+    deleter << getDeviceID();
+
+    return deleter.execute();
 }
 
 

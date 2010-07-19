@@ -18,13 +18,8 @@
 #ifndef __TBL_RTCOMM_H__
 #define __TBL_RTCOMM_H__
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/datetime.h>
 
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
@@ -82,15 +77,7 @@ public:
    bool  getDefaultRoute() const;
    CtiTableCommRoute& setDefaultRoute( const bool aDefaultRoute );
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    static string getTableName();
-
-   virtual RWDBStatus Restore();  //object from db
-   virtual RWDBStatus Insert();   //object into db from mem
-   virtual RWDBStatus Update();   //db from object
-   virtual RWDBStatus Delete();   //object from db
-
 };
 #endif // #ifndef __TBL_RTCOMM_H__

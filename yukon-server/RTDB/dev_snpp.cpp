@@ -686,13 +686,7 @@ void CtiDeviceSnppPagingTerminal::resetStates()
 }
 
 //Database Functions
-void CtiDeviceSnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-    _table.getSQL(db, keyTable, selector);
-}
-
-void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

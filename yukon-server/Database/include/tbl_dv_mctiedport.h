@@ -16,13 +16,7 @@
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -32,6 +26,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceMCTIEDPort : public CtiMemDBObject
 {
@@ -92,16 +87,13 @@ public:
     int                      &getRealTimeScanFlag();
     CtiTableDeviceMCTIEDPort  setRealTimeScanFlag(int flag);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-    void DecodeDatabaseReader(RWDBReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     static string getTableName();
 
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
+    virtual bool Insert();
+    virtual bool Update();
+    virtual bool Delete();
 
 };
 #endif // #ifndef __TBL_DV_MCTIEDPORT_H__

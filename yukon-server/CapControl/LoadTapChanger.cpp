@@ -17,7 +17,7 @@ LoadTapChanger::LoadTapChanger() : CapControlPao(),
 
 }
 
-LoadTapChanger::LoadTapChanger(RWDBReader& rdr) : CapControlPao(rdr),
+LoadTapChanger::LoadTapChanger(Cti::RowReader& rdr) : CapControlPao(rdr),
                                                   _updated(true),
                                                   _manualLocalMode(false),
                                                   _lowerTap(false),

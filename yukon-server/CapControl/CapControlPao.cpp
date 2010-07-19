@@ -1,7 +1,6 @@
 #include "yukon.h"
 
 #include "CapControlPao.h"
-#include "rwutil.h"
 #include "resolvers.h"
 
 using std::string;
@@ -13,12 +12,12 @@ CapControlPao::CapControlPao() :
 
 }
 
-CapControlPao::CapControlPao(RWDBReader& rdr)
+CapControlPao::CapControlPao(Cti::RowReader& rdr)
 {
     restore(rdr);
 }
 
-void CapControlPao::restore(RWDBReader& rdr)
+void CapControlPao::restore(Cti::RowReader& rdr)
 {
     string tempString;
 

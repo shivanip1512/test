@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -33,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
 
     CtiLMEnergyExchangeCustomer();
-    CtiLMEnergyExchangeCustomer(RWDBReader& rdr);
+    CtiLMEnergyExchangeCustomer(Cti::RowReader &rdr);
     CtiLMEnergyExchangeCustomer(const CtiLMEnergyExchangeCustomer& customer);
 
     virtual ~CtiLMEnergyExchangeCustomer();
@@ -58,7 +57,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeCustomer )
 
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

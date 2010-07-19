@@ -20,6 +20,19 @@ public:
    TcpPort() {};
    virtual ~TcpPort() {};
 
+   static string getSQLCoreStatement()
+   {
+       static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                      "CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, "
+                                      "CP.sharedporttype, CP.sharedsocketnumber, PST.baudrate, PST.cdwait, PST.linesettings, "
+                                      "TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout "
+                                  "FROM YukonPAObject YP, CommPort CP, PortSettings PST, PortTiming TMG "
+                                  "WHERE YP.paobjectid = CP.portid AND YP.paobjectid = PST.portid AND "
+                                      "YP.paobjectid = TMG.portid";
+
+       return sql;
+   }
+
    virtual INT inMess(CtiXfer &Xfer, CtiDeviceSPtr Dev, list<CtiMessage *> &traceList)
    {
        return 0;

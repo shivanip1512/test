@@ -19,13 +19,13 @@
 #define __TBL_RTROUTE_H__
 
 #include "yukon.h"
-#include <rw/db/db.h>
 #include <rw\thr\mutex.h>
 
 
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "ctibase.h"
+#include "row_reader.h"
 
 
 IM_EX_CTIBASE INT getDebugLevel(void);
@@ -55,15 +55,9 @@ public:
    static string& getSQLTables(string &str);
    static string& getSQLConditions(string &str);
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    static void getSQL(string &Columns, string &Tables, string &Conditions);
 
-   virtual void Insert();
-   virtual void Update();
-   virtual void Delete();
-   virtual void Restore();
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual string getTableName() const;
 

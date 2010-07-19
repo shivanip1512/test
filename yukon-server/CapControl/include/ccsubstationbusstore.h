@@ -20,7 +20,6 @@
 
 
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/onlyptr.h>
 #include <rw/thr/thread.h>
 #include <rw/collect.h>
@@ -260,12 +259,12 @@ public:
                                   multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
     void reloadTimeOfDayStrategyFromDatabase(long strategyId);
-    void reloadStrategyFromDatabase(long strategyId);
+    bool reloadStrategyFromDatabase(long strategyId);
     void reloadMiscFromDatabase();
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,
                                       map< long, long> *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
-    void reloadOperationStatsFromDatabase(RWDBConnection& conn, long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+    void reloadOperationStatsFromDatabase(long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                                         map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                                         map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                                         map< long, CtiCCSubstationPtr > *paobject_substation_map,
@@ -515,7 +514,7 @@ private:
     void reset();
     //bool CtiCCSubstationBusStore::findPointId(long pointId);
     void checkAMFMSystemForUpdates();
-    void handleAMFMChanges(RWDBReader& rdr);
+    void handleAMFMChanges(Cti::RowReader& rdr);
     void shutdown();
 
     void feederReconfigureM3IAMFM( string& capacitor_id_string, LONG circt_id_normal,
@@ -532,6 +531,8 @@ private:
                                          LONG capswitchingorder);
     void capOutOfServiceM3IAMFM(LONG feederid, LONG capid, string& enableddisabled, string& fixedswitched);
     void feederOutOfServiceM3IAMFM(LONG feederid, string& fixedswitched, string& enableddisabled);
+
+    bool updateDisableFlag(unsigned int paoid, bool isDisabled);
 
     void doResetThr();
     void doAMFMThr();

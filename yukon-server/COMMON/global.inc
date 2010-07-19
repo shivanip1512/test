@@ -55,6 +55,7 @@ $(TCL)\lib\tcl81.lib
 
 BOOST           = $(CPP_LIBRARIES)\boost\1.37.0
 
+SQLAPI          = $(CPP_LIBRARIES)\sqlapi\2010.06.08
 ACTIVEMQ        = $(CPP_LIBRARIES)\activemq-cpp\3.0.1
 
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
@@ -109,6 +110,8 @@ CFLAGS  = /nologo /Zc:wchar_t- /Zi /Od /EHa     /MDd /Zm200 /D_DEBUG  $(D_VERSIO
 DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 XERCES_LIB = xerces-c_3D
 XERCES_DLL = xerces-c_3_0D
+SQLAPI_LIB = sqlapid
+SQLAPI_DLL = sqlapid
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
@@ -116,6 +119,8 @@ CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D
 DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 XERCES_LIB = xerces-c_3
 XERCES_DLL = xerces-c_3_0
+SQLAPI_LIB = sqlapi
+SQLAPI_DLL = sqlapi
 !ENDIF
 
 XERCES_LIBS = $(XERCES)\lib\$(XERCES_LIB).lib

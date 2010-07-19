@@ -22,11 +22,7 @@
 #include <map>
 using std::map;
 
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
+#include "row_reader.h"
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -35,6 +31,8 @@ using std::map;
 #include "yukon.h"
 #include "dbmemobject.h"
 #include "utility.h"
+#include "database_connection.h"
+
 
 /*
     #define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
@@ -177,31 +175,30 @@ public:
     static string getTableName();
     static string getDynamicTableName();
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-    RWDBStatus RestoreControlTimes();
-    void DecodeControlTimes(RWDBReader &rdr);
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Insert(RWDBConnection &conn);
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
+    void DecodeControlTimes(Cti::RowReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    virtual bool Restore();
+    virtual bool Insert();
+    virtual bool Insert(Cti::Database::DatabaseConnection &conn);
+    virtual bool Update();
+    virtual bool Delete();
 
     void dump() const;
-    static void getSQLForOutstandingControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeOutstandingControls(RWDBReader &rdr);
+    void DecodeOutstandingControls(Cti::RowReader &rdr);
 
-    static RWDBStatus deleteOutstandingControls();
-    static RWDBStatus updateCompletedOutstandingControls();
-    static void getSQLForIncompleteControls(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static bool deleteOutstandingControls();
+    static bool updateCompletedOutstandingControls();
+ 
+    static string getSQLCoreStatement();
+    static string getSQLCoreStatementIncomplete();
+    static string getSQLCoreStatementOutstanding();
+    static string getSQLCoreStatementDynamic();
 
-    static void getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    static void decodeDynamicControls(RWDBReader &rdr);
+    static void decodeDynamicControls(Cti::RowReader &rdr);
 
-    RWDBStatus UpdateDynamic();
-    RWDBStatus UpdateDynamic(RWDBConnection &conn);
-    RWDBStatus InsertDynamic(RWDBConnection &conn);
+    bool UpdateDynamic();
+    bool UpdateDynamic(Cti::Database::DatabaseConnection &conn);
+    bool InsertDynamic(Cti::Database::DatabaseConnection &conn);
 
 };
 #endif // #ifndef __TBL_LM_CONTROLHIST_H__

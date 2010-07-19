@@ -30,7 +30,7 @@ CtiLMGroupMCT::CtiLMGroupMCT()
 {   
 }
 
-CtiLMGroupMCT::CtiLMGroupMCT(RWDBReader& rdr)
+CtiLMGroupMCT::CtiLMGroupMCT(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }

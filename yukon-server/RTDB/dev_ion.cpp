@@ -346,7 +346,7 @@ void CtiDeviceION::initEventLogPosition( void )
         {
             CtiTablePointDispatch pd(tmpPoint->getPointID());
 
-            if(pd.Restore().errorCode() == RWDBStatus::ok)
+            if(pd.Restore())
             {
                 _ion.setEventLogLastPosition(pd.getValue());
             }
@@ -901,15 +901,7 @@ INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return retCode;
 }
 
-
-void CtiDeviceION::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceAddress::getSQL(db, keyTable, selector);
-}
-
-
-void CtiDeviceION::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceION::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _address.DecodeDatabaseReader(rdr);

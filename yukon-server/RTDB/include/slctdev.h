@@ -18,15 +18,17 @@
 #define __SLCTDEV_H__
 #pragma warning (disable : 4786)
 
-#include <rw/db/db.h>
 
 #include "dlldefs.h"
 #include "dev_base.h"
 #include "rte_base.h"
+#include "row_reader.h"
 
-IM_EX_DEVDB CtiDeviceBase *DeviceFactory(RWDBReader &rdr);
+class SACommand;
+
+IM_EX_DEVDB CtiDeviceBase *DeviceFactory(Cti::RowReader &rdr);
 IM_EX_DEVDB CtiDeviceBase *createDeviceType(int type);
-IM_EX_DEVDB CtiRouteBase  *RouteFactory(RWDBReader &rdr);
+IM_EX_DEVDB CtiRouteBase  *RouteFactory(Cti::RowReader &rdr);
 
 IM_EX_DEVDB bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d);
 

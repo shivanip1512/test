@@ -54,9 +54,9 @@ public:
    CtiTableDeviceMeterGroup& getMeterGroup();
    CtiDeviceMeter& setMeterGroup( const CtiTableDeviceMeterGroup & aMeterGroup );
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+   virtual string getSQLCoreStatement() const;
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    bool shouldRetrieveLoadProfile(ULONG &aLPTime, int aIntervalLength);
 

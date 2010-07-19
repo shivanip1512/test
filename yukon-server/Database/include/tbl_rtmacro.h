@@ -19,13 +19,8 @@
 #define __TBL_RTMACRO_H__
 
 #include <limits.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
 
-#include <rw/db/reader.h>
-#include <rw/db/nullind.h>
-#include <rw/db/datetime.h>
+#include "row_reader.h"
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -36,7 +31,6 @@
 #include <windows.h>
 #include <limits.h>
 
-#include <rw/db/datetime.h>
 
 
 #include "dlldefs.h"
@@ -92,13 +86,8 @@ public:
 
    static string getTableName();
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   static string getSQLCoreStatement();
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual RWDBStatus Restore();  //object from db
-   virtual RWDBStatus Insert();   //object into db from mem
-   virtual RWDBStatus Update();   //db from object
-   virtual RWDBStatus Delete();   //object from db
-
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_RTMACRO_H__

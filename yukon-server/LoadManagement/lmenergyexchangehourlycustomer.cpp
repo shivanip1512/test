@@ -19,6 +19,8 @@
 #include "logger.h"
 #include "loadmanager.h"
 #include "resolvers.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -36,7 +38,7 @@ _amountcommitted(0)
 {
 }
 
-CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer(RWDBReader& rdr)
+CtiLMEnergyExchangeHourlyCustomer::CtiLMEnergyExchangeHourlyCustomer(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -261,9 +263,9 @@ int CtiLMEnergyExchangeHourlyCustomer::operator!=(const CtiLMEnergyExchangeHourl
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyCustomer::restore(RWDBReader& rdr)
+void CtiLMEnergyExchangeHourlyCustomer::restore(Cti::RowReader &rdr)
 {
 
 
@@ -281,47 +283,30 @@ void CtiLMEnergyExchangeHourlyCustomer::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 {
+    static const std::string sql = "insert into lmenergyexchangehourlycustomer values (?, ?, ?, ?, ?)";
 
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
-        if( conn.isValid() )
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeHourlyCustomer, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revisionnumber: " << getRevisionNumber() << endl;
-            }
-
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeHourlyCustomerTable = db.table("lmenergyexchangehourlycustomer");
-
-            RWDBInserter inserter = lmEnergyExchangeHourlyCustomerTable.inserter();
-
-            inserter << getCustomerId()
-            << getOfferId()
-            << getRevisionNumber()
-            << getHour()
-            << getAmountCommitted();
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            inserter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeHourlyCustomer, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revisionnumber: " << getRevisionNumber() << endl;
     }
+
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << getCustomerId()
+        << getOfferId()
+        << getRevisionNumber()
+        << getHour()
+        << getAmountCommitted();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << inserter.asString() << endl;
+    }
+
+    inserter.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -331,42 +316,32 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyCustomer::updateLMEnergyExchangeHourlyCustomerTable()
 {
+    static const std::string sql = "update lmenergyexchangehourlycustomer"
+                                   " set "
+                                        "amountcommitted = ?"
+                                   " where "
+                                        "customerid = ? and "
+                                        "offerid = ? and "
+                                        "revisionnumber = ? and "
+                                        "hour = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater
+        << getAmountCommitted()
+        << getCustomerId()
+        << getOfferId()
+        << getRevisionNumber()
+        << getHour();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeHourlyCustomerTable = db.table("lmenergyexchangehourlycustomer");
-            RWDBUpdater updater = lmEnergyExchangeHourlyCustomerTable.updater();
-
-            updater << lmEnergyExchangeHourlyCustomerTable["amountcommitted"].assign(getAmountCommitted());
-
-            updater.where(lmEnergyExchangeHourlyCustomerTable["customerid"]==getCustomerId() &&
-                          lmEnergyExchangeHourlyCustomerTable["offerid"]==getOfferId() &&
-                          lmEnergyExchangeHourlyCustomerTable["revisionnumber"]==getRevisionNumber() &&
-                          lmEnergyExchangeHourlyCustomerTable["hour"]==getHour());
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            updater.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    updater.execute();
 }
 
 // Static Members

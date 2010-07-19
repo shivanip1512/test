@@ -18,6 +18,8 @@
 #include "mgr_mcsched.h"
 #include "dbaccess.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
 using namespace std;
 
 ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr )
@@ -360,45 +362,28 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
                                                   &sched_map )
 {
     bool success = true;
-    string sql;
+    static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.description, "
+                                   "YP.disableflag, YP.paostatistics, MAC.scheduleid, MAC.categoryname, "
+                                   "MAC.holidayscheduleid, MAC.commandfile, MAC.currentstate, MAC.startpolicy, "
+                                   "MAC.stoppolicy, MAC.lastruntime, MAC.lastrunstatus, MAC.startday, MAC.startmonth, "
+                                   "MAC.startyear, MAC.starttime, MAC.stoptime, MAC.validweekdays, MAC.duration, "
+                                   "MAC.manualstarttime, MAC.manualstoptime, MAC.template, MSS.scheduleid, "
+                                   "MSS.targetselect, MSS.startcommand, MSS.stopcommand, MSS.repeatinterval "
+                               "FROM YukonPAObject YP, MACSchedule MAC, MACSimpleSchedule MSS "
+                               "WHERE YP.category = 'Schedule' AND YP.type = 'Simple' AND "
+                                   "MAC.scheduleid = YP.paobjectid AND MSS.scheduleid = YP.paobjectid AND "
+                                   "MAC.scheduleid = MSS.scheduleid";
 
     try
     {
         {
             // Make sure all objects that that store results
             // are out of scope when the release is called
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+            rdr.execute();
 
-
-            RWDBDatabase   db       = conn.database();
-            RWDBSelector   selector = conn.database().selector();
-            RWDBTable      pao_table;
-            RWDBTable      mc_sched_table;
-            RWDBTable      mc_simple_sched_table;
-            RWDBReader     rdr;
-            RWDBStatus     status;
-
-
-            //First grab the simple schedules
-            CtiTblPAO().getSQL( db, pao_table, selector );
-            CtiMCSchedule::getSQL( db, mc_sched_table, selector );
-            CtiTableMCSimpleSchedule::getSQL( db, mc_simple_sched_table, selector );
-            selector.where( selector.where() &&
-                            pao_table["category"] == RWDBExpr("Schedule") &&
-                            pao_table["type"] == RWDBExpr("Simple") &&
-                            mc_sched_table["scheduleid"] == pao_table["paobjectid"] &&
-                            mc_simple_sched_table["scheduleid"] == pao_table["paobjectid"] &&
-                            mc_sched_table["scheduleid"] == mc_simple_sched_table["scheduleid"]);
-
-            //mc_simple_sched_table["scheduleid"] == mc_sched_table["scheduleid"] &&
-            //mc_sched_table["scheduletype"]==RWDBExpr("Simple") );
-
-            rdr = selector.reader(conn);
-            sql = selector.asString();
-            status = selector.status();
-
-            if( status.errorCode() == RWDBStatus::ok )
+            if( rdr.isValid() )
             {
                 while( rdr() )
                 {
@@ -460,40 +445,25 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
                                                     &sched_map )
 {
     bool success = true;
-    string sql;
+    static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.description, "
+                                   "YP.disableflag, YP.paostatistics, MAC.scheduleid, MAC.categoryname, "
+                                   "MAC.holidayscheduleid, MAC.commandfile, MAC.currentstate, MAC.startpolicy, "
+                                   "MAC.stoppolicy, MAC.lastruntime, MAC.lastrunstatus, MAC.startday, MAC.startmonth, "
+                                   "MAC.startyear, MAC.starttime, MAC.stoptime, MAC.validweekdays, MAC.duration, "
+                                   "MAC.manualstarttime, MAC.manualstoptime, MAC.template "
+                               "FROM YukonPAObject YP, MACSchedule MAC "
+                               "WHERE YP.category = 'Schedule' AND YP.type = 'Script' AND MAC.scheduleid = YP.paobjectid";
 
     try
     {
         {
             // Make sure all objects that that store results
             // are out of scope when the release is called
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+            rdr.execute();
 
-
-            RWDBDatabase   db       = conn.database();
-            RWDBSelector   selector = conn.database().selector();
-            RWDBTable      pao_table;
-            RWDBTable      mc_sched_table;
-            RWDBReader     rdr;
-
-            RWDBStatus     status;
-
-            CtiTblPAO().getSQL( db, pao_table, selector );
-            CtiMCSchedule::getSQL( db, mc_sched_table, selector );
-            selector.where( pao_table["category"] == RWDBExpr("Schedule") &&
-                            pao_table["type"] == RWDBExpr("Script") &&
-                            mc_sched_table["scheduleid"] == pao_table["paobjectid"] );
-
-
-            //    selector.where() &&  mc_sched_table["scheduletype"]==RWDBExpr("Script") );
-
-            rdr = selector.reader(conn);
-
-            sql = selector.asString();
-            status = selector.status();
-
-            if( status.errorCode() == RWDBStatus::ok )
+            if( rdr.isValid() )
             {
                 while( rdr() )
                 {

@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>  
-#include "rwutil.h"
 
 #include "configval.h"
 

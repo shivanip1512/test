@@ -64,15 +64,13 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-//#include <rw/db/table.h>
-//#include <rw/db/reader.h>
+////#include "row_reader.h"
 
 #include "dbaccess.h"
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "logger.h"
 #include "tbl_dv_rtc.h"
-#include "rwutil.h"
 
 CtiTableDeviceRTC::CtiTableDeviceRTC() :
     _deviceID(-1),
@@ -104,21 +102,7 @@ int  CtiTableDeviceRTC::getLBTMode() const
     return _lbtMode;
 }
 
-
-void CtiTableDeviceRTC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector << devTbl["rtcaddress"] <<
-        devTbl["response"] <<
-        devTbl["lbtmode"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
-void CtiTableDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceRTC::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -141,46 +125,6 @@ void CtiTableDeviceRTC::DecodeDatabaseReader(RWDBReader &rdr)
 string CtiTableDeviceRTC::getTableName()
 {
     return "DeviceRTC";
-}
-
-RWDBStatus CtiTableDeviceRTC::Restore()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableDeviceRTC::Insert()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableDeviceRTC::Update()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableDeviceRTC::Delete()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
 }
 
 

@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "database_writer.h"
 
 using namespace std;
 extern ULONG _CC_DEBUG;
@@ -45,7 +46,7 @@ _dirty(false)
 {
 }
 
-CtiCCMonitorPoint::CtiCCMonitorPoint(RWDBReader& rdr)
+CtiCCMonitorPoint::CtiCCMonitorPoint(Cti::RowReader& rdr)
 {
     restore(rdr);
 }
@@ -401,11 +402,10 @@ int CtiCCMonitorPoint::operator!=(const CtiCCMonitorPoint& rght) const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores self's state given a RWDBReader
+    Restores self's state given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCMonitorPoint::restore(RWDBReader& rdr)
+void CtiCCMonitorPoint::restore(Cti::RowReader& rdr)
 {
-    RWDBNullIndicator isNull;
     CtiTime currentDateTime = CtiTime();
 
     CtiTime dynamicTimeStamp;
@@ -434,7 +434,7 @@ void CtiCCMonitorPoint::restore(RWDBReader& rdr)
 
 }
 
-void CtiCCMonitorPoint::setDynamicData(RWDBReader& rdr)
+void CtiCCMonitorPoint::setDynamicData(Cti::RowReader& rdr)
 {
     string tempBoolString;
 
@@ -483,54 +483,36 @@ BOOL CtiCCMonitorPoint::isDirty() const
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCMonitorPoint::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
     Writes out the dynamic information for this cc cap bank.
 ---------------------------------------------------------------------------*/
-void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCMonitorBankHistoryTable = getDatabase().table( "dynamicccmonitorbankhistory" );
         if( !_insertDynamicDataFlag )
         {
+            static const string updateSql = "update dynamicccmonitorbankhistory set "
+                                            "value = ?, "
+                                            "datetime = ?, "
+                                            "scaninprogress = ? "
+                                            " where "
+                                            "bankid = ? AND "
+                                            "pointid = ?";
 
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            RWDBUpdater updater = dynamicCCMonitorBankHistoryTable.updater();
+            updater 
+            << _value
+            << _timeStamp
+            << (string)(_scanInProgress?"Y":"N")
+            << _bankId
+            << _pointId;
 
-            updater.where(dynamicCCMonitorBankHistoryTable["bankid"]==_bankId &&
-                          dynamicCCMonitorBankHistoryTable["pointid"]==_pointId );
-
-            updater << dynamicCCMonitorBankHistoryTable["value"].assign( _value )
-            << dynamicCCMonitorBankHistoryTable["datetime"].assign( toRWDBDT((CtiTime)_timeStamp) )
-            << dynamicCCMonitorBankHistoryTable["scaninprogress"].assign( (_scanInProgress?"Y":"N") );
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().data() << endl;
-            }*/
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -548,14 +530,18 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted Monitor Point into dynamicCCMonitorBankHistoryTable: " << endl;
             }
-            RWDBInserter dbInserter = dynamicCCMonitorBankHistoryTable.inserter();
-            //LONG tempTime = toRWDBDT((CtiTime)_timeStamp);
+            
+            
+            static const string insertSql = "insert into   values( "
+                                            "?, ?, ?, ?, ?)";
+
+            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
 
             dbInserter << _bankId
             <<  _pointId
             << _value
-            << toRWDBDT((CtiTime)_timeStamp)
-            << (_scanInProgress?"Y":"N");
+            << _timeStamp
+            << (string)(_scanInProgress?"Y":"N");
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -566,19 +552,13 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 }
             }
 
-            dbInserter.execute( conn );
-
-            if(dbInserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = dbInserter.asString();

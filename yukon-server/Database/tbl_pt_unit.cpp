@@ -58,7 +58,7 @@ CtiTablePointUnit::~CtiTablePointUnit()
 {}
 
 
-void CtiTablePointUnit::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointUnit::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -103,23 +103,6 @@ void CtiTablePointUnit::dump() const
     dout << " Decimal Digits                           : " << _decimalDigits << endl;
     //dout << " High Reasonabiliy Limit                  : " << _highReasonablityLimit << endl;
     //dout << " Low  Reasonabiliy Limit                  : " << _lowReasonablityLimit << endl;
-}
-
-void CtiTablePointUnit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable tbl = db.table(getTableName().c_str() );
-
-    selector <<
-    tbl["uomid"] <<
-    tbl["decimalplaces"] <<
-    tbl["decimaldigits"];
-
-    selector.from(tbl);
-
-    selector.where( selector.where() &&
-                    (keyTable["pointid"] == tbl["pointid"]));
-
-    CtiTableUnitMeasure::getSQL(db, tbl, selector);
 }
 
 string CtiTablePointUnit::getTableName()

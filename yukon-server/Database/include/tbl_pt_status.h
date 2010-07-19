@@ -20,13 +20,8 @@
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -93,13 +88,10 @@ public:
 
    static string getTableName();
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   void DecodeDatabaseReader(RWDBReader &rdr);
+   void DecodeDatabaseReader(Cti::RowReader &rdr);
    void dump() const;
 
    UINT getStaticTags() const;
    UINT adjustStaticTags(UINT &tags) const;
-
-   void Update();
 };
 #endif // #ifndef __TBL_PT_STATUS_H__

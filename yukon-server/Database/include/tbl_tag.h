@@ -20,12 +20,12 @@
 #define __TBL_TAG_H__
 
 
-#include <rw/db/db.h>
 
 #include "ctibase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableTag : public CtiMemDBObject
 {
@@ -52,10 +52,10 @@ public:
     virtual int operator==(const CtiTableTag& aRef) const;
 
     static string getTableName();
-    virtual RWDBStatus Restore();
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeDatabaseReader(RWDBReader& rdr);
+    static string getSQLCoreStatement();
+
+    void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     int getTagId() const;
     bool getInhibit() const;

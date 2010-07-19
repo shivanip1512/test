@@ -19,6 +19,7 @@
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTablePortSettings : public CtiMemDBObject
@@ -55,9 +56,7 @@ public:
    INT getParity() const;
    INT getStopBits() const;
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_PORT_SETTINGS_H__
 

@@ -197,18 +197,22 @@ string CtiDeviceGroupGolay::getDescription(const CtiCommandParser & parse) const
 //===================================================================================================================
 //===================================================================================================================
 
-void CtiDeviceGroupGolay::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupGolay::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableSASimpleGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LMS.groupid, LMS.routeid, "
+                                     "LMS.operationaladdress, LMS.nominaltimeout, LMS.markindex, LMS.spaceindex "
+                                   "FROM YukonPAObject YP, Device DV, LMGroupSASimple LMS "
+                                   "WHERE upper (YP.type) = 'GOLAY GROUP' AND YP.paobjectid = LMS.groupid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("GOLAY GROUP") && selector.where() );
+    return sqlCore;
 }
 
 //===================================================================================================================
 //===================================================================================================================
 
-void CtiDeviceGroupGolay::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

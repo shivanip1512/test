@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -33,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
 
     CtiLMProgramEnergyExchange();
-    CtiLMProgramEnergyExchange(RWDBReader& rdr);
+    CtiLMProgramEnergyExchange(Cti::RowReader &rdr);
     CtiLMProgramEnergyExchange(const CtiLMProgramEnergyExchange& energyexchangeprog);
 
     virtual ~CtiLMProgramEnergyExchange();
@@ -57,12 +56,11 @@ RWDECLARE_COLLECTABLE( CtiLMProgramEnergyExchange )
     BOOL isOfferWithId(LONG offerid);
     BOOL isOfferRevisionOpen(LONG offerID, LONG revisionNumber);
     CtiLMEnergyExchangeOffer* getOfferWithId(LONG offerid);
-    //void restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr);
+    //void restoreEnergyExchangeSpecificDatabaseEntries(Cti::RowReader &rdr);
     void notifyCustomers(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiNotifMsg);
     void notifyCustomersOfCancel(CtiLMEnergyExchangeOffer* offer, CtiMultiMsg* multiNotifMsg);
-    void restoreDynamicData(RWDBReader& rdr);
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(CtiTime& currentDateTime);
 
     virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
@@ -95,7 +93,7 @@ private:
     std::vector<CtiLMEnergyExchangeOffer*>     _lmenergyexchangeoffers;
     std::vector<CtiLMEnergyExchangeCustomer*>  _lmenergyexchangecustomers;
                                                
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 
 #if VSLICK_TAG_WORKAROUND

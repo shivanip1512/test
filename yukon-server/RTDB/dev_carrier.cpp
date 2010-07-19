@@ -51,16 +51,24 @@ boost::shared_ptr<DataAccessLoadProfile> CtiDeviceCarrier::getLoadProfile()
     return boost::static_pointer_cast<DataAccessLoadProfile>(loadProfile);
 }
 
-void CtiDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceCarrier::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceLoadProfile::getSQL(db, keyTable, selector);
-    //  only used/decoded in the MCT 360/370/470 - so left outer joined
-    CtiTableDeviceMCTIEDPort::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, DCS.address, "
+                                     "RTS.routeid, DLP.lastintervaldemandrate, DLP.loadprofiledemandrate, "
+                                     "DLP.loadprofilecollection, DLP.voltagedmdinterval, DLP.voltagedmdrate, MCT.deviceid, "
+                                     "MCT.connectedied, MCT.password, MCT.iedscanrate, MCT.defaultdataclass, "
+                                     "MCT.defaultdataoffset, MCT.realtimescan "
+                                   "FROM Device DV, DeviceLoadProfile DLP, DeviceCarrierSettings DCS, YukonPAObject YP "
+                                     "LEFT OUTER JOIN DeviceRoutes RTS ON YP.paobjectid = RTS.deviceid "
+                                     "LEFT OUTER JOIN DeviceMCTIEDPort MCT ON YP.paobjectid = MCT.deviceid "
+                                   "WHERE YP.paobjectid = DLP.deviceid AND YP.paobjectid = DCS.deviceid AND "
+                                     "YP.paobjectid = DV.deviceid";
+
+    return sqlCore;
 }
 
-
-void CtiDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceCarrier::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
 

@@ -19,8 +19,8 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "tbl_pao_lite.h"
-
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using std::transform;
 
@@ -96,58 +96,7 @@ string CtiTblPAOLite::getTableName()
     return "YukonPAObject";
 }
 
-void CtiTblPAOLite::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table(getTableName().c_str());
-
-    selector <<
-    keyTable["paobjectid"] <<
-    keyTable["category"] <<
-    keyTable["paoclass"] <<
-    keyTable["paoname"] <<
-    keyTable["type"] <<
-    keyTable["disableflag"];
-
-    selector.from(keyTable);
-
-    // No where clause here! selector.where( selector.where() == devTbl["paobjectid"] );
-}
-
-RWDBStatus CtiTblPAOLite::Restore()
-{
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["paobjectid"] <<
-    table["category"] <<
-    table["paoclass"] <<
-    table["paoname"] <<
-    table["type"] <<
-    table["disableflag"];
-
-    selector.where( table["paobjectid"] == getID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-void CtiTblPAOLite::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTblPAOLite::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
     string rwsTemp, category;

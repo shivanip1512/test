@@ -19,6 +19,9 @@
 #include "logger.h"
 #include "loadmanager.h"
 #include "resolvers.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -36,7 +39,7 @@ _amountrequested(0)
 {
 }
 
-CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer(RWDBReader& rdr)
+CtiLMEnergyExchangeHourlyOffer::CtiLMEnergyExchangeHourlyOffer(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -272,9 +275,9 @@ int CtiLMEnergyExchangeHourlyOffer::operator!=(const CtiLMEnergyExchangeHourlyOf
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyOffer::restore(RWDBReader& rdr)
+void CtiLMEnergyExchangeHourlyOffer::restore(Cti::RowReader &rdr)
 {
 
 
@@ -292,47 +295,30 @@ void CtiLMEnergyExchangeHourlyOffer::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
 {
+    static const std::string sql = "insert into lmenergyexchangehourlyoffer values (?, ?, ?, ?, ?)";
 
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
-        if( conn.isValid() )
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
-            }
-
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangehourlyoffer");
-
-            RWDBInserter inserter = lmEnergyExchangeOfferRevisionTable.inserter();
-
-            inserter << getOfferId()
-            << getRevisionNumber()
-            << getHour()
-            << getPrice()
-            << getAmountRequested();
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            inserter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
     }
+
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << getOfferId()
+        << getRevisionNumber()
+        << getHour()
+        << getPrice()
+        << getAmountRequested();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << inserter.asString() << endl;
+    }
+
+    inserter.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -342,42 +328,32 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeHourlyOffer::updateLMEnergyExchangeHourlyOfferTable()
 {
+    static const std::string sql = "update lmenergyexchangehourlyoffer"
+                                   " set "
+                                        "price = ?, "
+                                        "amountrequested = ?"
+                                   " where "
+                                        "offerid = ? and "
+                                        "revisionnumber = ? and "
+                                        "hour = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater
+        << getPrice()
+        << getAmountRequested()
+        << getOfferId()
+        << getRevisionNumber()
+        << getHour();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
-            RWDBUpdater updater = lmEnergyExchangeHourlyOfferTable.updater();
-
-            updater << lmEnergyExchangeHourlyOfferTable["price"].assign(getPrice())
-            << lmEnergyExchangeHourlyOfferTable["amountrequested"].assign(getAmountRequested());
-
-            updater.where(lmEnergyExchangeHourlyOfferTable["offerid"]==getOfferId() &&
-                          lmEnergyExchangeHourlyOfferTable["revisionnumber"]==getRevisionNumber() &&
-                          lmEnergyExchangeHourlyOfferTable["hour"]==getHour());
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            updater.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    updater.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -395,57 +371,45 @@ void CtiLMEnergyExchangeHourlyOffer::dumpDynamicData()
 /*---------------------------------------------------------------------------
     restoreDynamicData
 
-    Restores self's dynamic data given a RWDBReader
+    Restores self's dynamic data given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData(RWDBReader& rdr)
+void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData()
 {
+    static const string sql =  "SELECT XHO.price, XHO.amountrequested "
+                               "FROM lmenergyexchangehourlyoffer XHO "
+                               "WHERE XHO.offerid = ? "
+                               "ORDER BY XHO.revisionnumber DESC";
 
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    rdr << getOfferId();
+
+    rdr.execute();
+
+    if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
-            RWDBSelector selector = db.selector();
-            selector << lmEnergyExchangeHourlyOfferTable["price"]
-            << lmEnergyExchangeHourlyOfferTable["amountrequested"];
-
-            selector.from(lmEnergyExchangeHourlyOfferTable);
-
-            selector.where(lmEnergyExchangeHourlyOfferTable["offerid"]==getOfferId());
-
-            selector.orderByDescending(lmEnergyExchangeHourlyOfferTable["revisionnumber"]);
-
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
-            {
-                string loggedSQLstring = selector.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            RWDBReader rdr = selector.reader(conn);
-
-            if(rdr())
-            {
-                string tempBoolString;
-                rdr["offerid"] >> _offerid;
-                rdr["revisionnumber"] >> _revisionnumber;
-                rdr["hour"] >> _hour;
-                rdr["price"] >> _price;
-                rdr["amountrequested"] >> _amountrequested;
-            }
-
-        }
-        else
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << loggedSQLstring << endl;
         }
+    }
+
+    if(rdr())
+    {
+        string tempBoolString;
+        rdr["offerid"] >> _offerid;
+        rdr["revisionnumber"] >> _revisionnumber;
+        rdr["hour"] >> _hour;
+        rdr["price"] >> _price;
+        rdr["amountrequested"] >> _amountrequested;
+    }
+
+    if( !rdr.isValid() )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 }
 

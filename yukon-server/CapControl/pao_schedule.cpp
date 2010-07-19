@@ -30,7 +30,7 @@ _disabledFlag(false)
 {
 }
 
-CtiPAOSchedule::CtiPAOSchedule(RWDBReader& rdr)
+CtiPAOSchedule::CtiPAOSchedule(Cti::RowReader& rdr)
 {    
     string tempBoolString;
 

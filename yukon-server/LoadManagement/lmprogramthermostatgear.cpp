@@ -28,7 +28,7 @@ extern ULONG _LM_DEBUG;
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(RWDBReader& rdr)
+CtiLMProgramThermoStatGear::CtiLMProgramThermoStatGear(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -213,9 +213,9 @@ CtiLMProgramDirectGear* CtiLMProgramThermoStatGear::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramThermoStatGear::restore(RWDBReader& rdr)
+void CtiLMProgramThermoStatGear::restore(Cti::RowReader &rdr)
 {
     CtiLMProgramDirectGear::restore(rdr);
 

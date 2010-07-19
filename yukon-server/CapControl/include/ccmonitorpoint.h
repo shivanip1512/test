@@ -18,7 +18,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include <list>
@@ -29,6 +28,12 @@
 #include "ctitime.h"
 #include "ctidate.h"
 
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
+
 class CtiCCMonitorPoint : public RWCollectable
 {
 
@@ -36,7 +41,7 @@ public:
 
   RWDECLARE_COLLECTABLE( CtiCCMonitorPoint )
     CtiCCMonitorPoint();
-    CtiCCMonitorPoint(RWDBReader& rdr);
+    CtiCCMonitorPoint(Cti::RowReader& rdr);
     CtiCCMonitorPoint(const CtiCCMonitorPoint& point);
 
     virtual ~CtiCCMonitorPoint();
@@ -69,10 +74,9 @@ public:
     virtual int compareTo(const RWCollectable* right) const;
 
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    void setDynamicData(RWDBReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -102,7 +106,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
     
 
 };

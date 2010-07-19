@@ -77,6 +77,11 @@ public:
         _map.clear();                   // The shared_ptrs are deleted when all references are de-scoped.
     }
 
+    void clear()
+    {
+        _map.clear();
+    }
+
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d)
     {
         reader_lock_guard_t guard(_lock);

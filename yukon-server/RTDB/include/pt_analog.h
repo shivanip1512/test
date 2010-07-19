@@ -57,13 +57,19 @@ public:
    CtiTablePointAnalog     getPointAnalog() const      { return _pointAnalog; }
    CtiTablePointAnalog&    getPointAnalog()            { return _pointAnalog; }
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+   static string getSQLCoreStatement()
    {
-      Inherited::getSQL(db, keyTable, selector);
-      CtiTablePointAnalog::getSQL(db, keyTable, selector);
+      static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
+                                    "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
+                                    "PT.archiveinterval, UNT.uomid, UNT.decimalplaces, UNT.decimaldigits, UM.calctype, "
+                                    "ALG.multiplier, ALG.dataoffset, ALG.deadband "
+                                 "FROM Point PT, PointUnit UNT, UnitMeasure UM, PointAnalog ALG "
+                                 "WHERE PT.pointid = UNT.pointid AND UNT.uomid = UM.uomid AND PT.pointid = ALG.pointid";
+
+      return sql;
    }
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr)
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
    {
       if(getDebugLevel() & DEBUGLEVEL_DATABASE)
       {

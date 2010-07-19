@@ -17,7 +17,6 @@
 
 #include "tbl_port_serial.h"
 #include "logger.h"
-#include "rwutil.h"
 
 CtiTablePortLocalSerial::CtiTablePortLocalSerial()
 {}
@@ -47,19 +46,7 @@ CtiTablePortLocalSerial&   CtiTablePortLocalSerial::setPhysicalPort(const string
    return *this;
 }
 
-void CtiTablePortLocalSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable portLocalSerial    = db.table("PortLocalSerial");
-
-   selector << portLocalSerial["physicalport"];
-
-   selector.from(portLocalSerial);
-
-   selector.where( selector.where() && keyTable["paobjectid"] == portLocalSerial["portid"] );
-}
-
-
-void CtiTablePortLocalSerial::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortLocalSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {

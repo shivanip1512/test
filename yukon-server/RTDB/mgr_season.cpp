@@ -18,10 +18,14 @@
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "mgr_season.h"
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 #include "ctidate.h"
 
 using std::multimap;
 using std::make_pair;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 const string CtiSeasonManager::_season_sql = "select seasonscheduleid, seasonstartmonth, seasonstartday, seasonendmonth, seasonendday from dateofseason";
 
@@ -81,9 +85,9 @@ void CtiSeasonManager::refresh()
     {
         _season_map.clear();
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, _season_sql);
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, _season_sql);
+            rdr.execute();
 
             while( rdr() )
             {

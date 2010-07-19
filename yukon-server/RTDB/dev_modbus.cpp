@@ -691,14 +691,7 @@ string Modbus::getDescription(const CtiCommandParser &parse) const
    return getName();
 }
 
-
-void Modbus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-   Inherited::getSQL(db, keyTable, selector);
-   CtiTableDeviceAddress::getSQL(db, keyTable, selector);
-}
-
-void Modbus::DecodeDatabaseReader(RWDBReader &rdr)
+void Modbus::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _modbus_address.DecodeDatabaseReader(rdr);

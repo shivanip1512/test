@@ -85,7 +85,7 @@ public:
       return *this;
    }
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr)
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
    {
       //if(isA(rdr))
       {
@@ -98,31 +98,6 @@ public:
             dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
            }
       }*/
-   }
-
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-   {
-       cout << " AAAAAAGHHHHH " << endl;
-   }
-
-   void DecodeCalcElementsDatabaseReader(RWDBReader &rdr)
-   {
-      INT iTemp;
-      RWDBNullIndicator isNull;
-
-      rdr["itemorder"] >> isNull;
-      rdr["itemorder"] >> iTemp;
-
-      if(!isNull)
-      {
-         LONG pid;
-         string Op;
-
-         rdr["calcpointid"]   >> pid;
-         rdr["operation"]     >> Op;
-
-         // CtiPointCalculation(iTemp, pid, Op );        // FIX FIX FIX
-      }
    }
 
    INT      getUpdateFrequency() const          { return UpdateFrequency; }

@@ -21,7 +21,7 @@
 #include "numstr.h"
 #include "tbl_gateway_end_device.h"
 
-#include "rwutil.h"
+#include "database_writer.h"
 
 CtiTableGatewayEndDevice::CtiTableGatewayEndDevice() :
     _hardwareType(0),
@@ -121,121 +121,112 @@ string CtiTableGatewayEndDevice::getTableName()
 {
     return string("GatewayEndDevice");
 }
-void CtiTableGatewayEndDevice::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable tbl = db.table( getTableName().c_str() );
 
-    selector <<
-        tbl["serialnumber"] <<
-        tbl["hardwaretype"] <<
-        tbl["datatype"] <<
-        tbl["datavalue"];
-
-    selector.from(tbl);
-}
 void CtiTableGatewayEndDevice::DumpData()
 {
 
 }
-void CtiTableGatewayEndDevice::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableGatewayEndDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << CtiTime() << " **** ACHACHACHACHACHACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 }
 
-RWDBStatus CtiTableGatewayEndDevice::Insert()
+bool CtiTableGatewayEndDevice::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Insert(conn);
 }
 
-RWDBStatus CtiTableGatewayEndDevice::Insert(RWDBConnection &conn)
+bool CtiTableGatewayEndDevice::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?)";
 
-    dbInserter <<
-        getSerialNumber() <<
-        getHardwareType() <<
-        getDataType() <<
-        getDataValue();
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-    if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    inserter
+        << getSerialNumber()
+        << getHardwareType()
+        << getDataType()
+        << getDataValue();
+
+    bool success = inserter.execute();
+
+    if( success )
     {
         setDirty(false);
     }
     else
     {
-        RWDBStatus rwStat =  ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
+        success = inserter.execute();
 
-        if( rwStat.errorCode() != RWDBStatus::ok )
+        if( ! success )
         {
-            string loggedSQLstring = dbInserter.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << rwStat.errorCode() << endl;
-                dout << "   " << loggedSQLstring << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Unable to insert GatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            dout << "   " << inserter.asString() << endl;
         }
         else
         {
-            string loggedSQLstring = dbInserter.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "   " << loggedSQLstring << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " InsertedGatewayEndDevice for serial number " << getSerialNumber() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << "   " << inserter.asString() << endl;
             setDirty(false);
         }
     }
-    return dbInserter.status();
+    return success;
 }
 
 
-RWDBStatus CtiTableGatewayEndDevice::Update()
+bool CtiTableGatewayEndDevice::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "datavalue = ?"
+                                    " where "
+                                        "serialnumber = ? and "
+                                        "hardwaretype = ? and "
+                                        "datatype = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater.where( table["serialnumber"] == getSerialNumber().c_str() &&
-                   table["hardwaretype"] == getHardwareType() &&
-                   table["datatype"] == getDataType() );
+    updater
+        << getDataValue().c_str()
+        << getSerialNumber().c_str()
+        << getHardwareType()
+        << getDataType();
 
-    updater << table["datavalue"].assign( getDataValue().c_str() );
+    bool success      = updater.execute();
+    long rowsAffected = updater.rowsAffected();
 
-    long rowsAffected;
-    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
-
-    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    if( success && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        rwStat = Insert();        // Try a vanilla insert if the update failed!
+        success = Insert();        // Try a vanilla insert if the update failed!
     }
 
-    return rwStat;
+    return success;
 }
 
-RWDBStatus CtiTableGatewayEndDevice::Delete()
+bool CtiTableGatewayEndDevice::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where "
+                                   "serialnumber = ? and hardwaretype = ? and datatype = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["serialnumber"] == getSerialNumber().c_str() &&
-                   table["hardwaretype"] == getHardwareType() &&
-                   table["datatype"] == getDataType() );
-    deleter.execute( conn );
-    return deleter.status();
+    deleter 
+        << getSerialNumber()
+        << getHardwareType()
+        << getDataType();
+
+    return deleter.execute();
 }
 
 

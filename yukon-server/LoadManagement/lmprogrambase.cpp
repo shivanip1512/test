@@ -26,6 +26,7 @@
 #include "mgr_season.h"
 #include "utility.h"
 #include "lmutility.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_PROGRAM_LIST;
@@ -62,7 +63,7 @@ _controlArea(NULL)
 {
 }
 
-CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr) :
+CtiLMProgramBase::CtiLMProgramBase(Cti::RowReader &rdr) :
 _lastsentstate(-1), _controlArea(NULL)
 {
     restore(rdr);
@@ -988,8 +989,7 @@ int CtiLMProgramBase::operator!=(const CtiLMProgramBase& right) const
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -999,80 +999,77 @@ void CtiLMProgramBase::dumpDynamicData()
 
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     if( !isDirty() )
     {
         return;
     }
+
+    if( !_insertDynamicDataFlag )
     {
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable dynamicLMProgramTable = db.table( "dynamiclmprogram" );
-            if( !_insertDynamicDataFlag )
-            {
-                RWDBUpdater updater = dynamicLMProgramTable.updater();
+        static const std::string sql_update = "update dynamiclmprogram"
+                                               " set "
+                                                    "programstate = ?, "
+                                                    "reductiontotal = ?, "
+                                                    "startedcontrolling = ?, "
+                                                    "lastcontrolsent = ?, "
+                                                    "manualcontrolreceivedflag = ?, "
+                                                    "timestamp = ?"
+                                               " where "
+                                                    "deviceid = ?";
 
-                updater << dynamicLMProgramTable["programstate"].assign( getProgramState() )
-                << dynamicLMProgramTable["reductiontotal"].assign( getReductionTotal() )
-                << dynamicLMProgramTable["startedcontrolling"].assign( toRWDBDT(getStartedControlling()) )
-                << dynamicLMProgramTable["lastcontrolsent"].assign( toRWDBDT(getLastControlSent()) )
-                << dynamicLMProgramTable["manualcontrolreceivedflag"].assign(( (getManualControlReceivedFlag() ? "Y":"N") ))
-                << dynamicLMProgramTable["timestamp"].assign(toRWDBDT(currentDateTime));
+        Cti::Database::DatabaseWriter   updater(conn, sql_update);
 
-                updater.where(dynamicLMProgramTable["deviceid"]==getPAOId());//will be paobjectid
+        updater
+            << getProgramState()
+            << getReductionTotal()
+            << getStartedControlling()
+            << getLastControlSent()
+            << ( getManualControlReceivedFlag() ? std::string("Y") : std::string("N") )
+            << currentDateTime
+            << getPAOId();
 
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-                updater.execute( conn );
-                setDirty(false);
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserted program into DynamicLMProgram: " << getPAOName() << endl;
-                }
-
-                RWDBInserter inserter = dynamicLMProgramTable.inserter();
-
-                inserter << getPAOId()
-                << getProgramState()
-                << getReductionTotal()
-                << getStartedControlling()
-                << getLastControlSent()
-                << ( ( getManualControlReceivedFlag() ? "Y": "N" ) )
-                << currentDateTime;
-
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                inserter.execute( conn );
-
-                _insertDynamicDataFlag = FALSE;
-                setDirty(false);
-            }
-        }
-        else
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << updater.asString() << endl;
         }
+
+        updater.execute();
     }
+    else
+    {
+        static const std::string sql_insert = "insert into dynamiclmprogram values (?, ?, ?, ?, ?, ?, ?)";
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Inserted program into DynamicLMProgram: " << getPAOName() << endl;
+        }
+
+        Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
+
+        inserter
+            << getPAOId()
+            << getProgramState()
+            << getReductionTotal()
+            << getStartedControlling()
+            << getLastControlSent()
+            << ( getManualControlReceivedFlag() ? std::string("Y") : std::string("N") )
+            << currentDateTime;
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << inserter.asString() << endl;
+        }
+
+        _insertDynamicDataFlag = FALSE;
+
+        inserter.execute();
+    }
+
+    setDirty(false);
 }
 
 /*---------------------------------------------------------------------------
@@ -1127,11 +1124,10 @@ CtiLMControlArea* CtiLMProgramBase::getControlArea()
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramBase::restore(RWDBReader& rdr)
+void CtiLMProgramBase::restore(Cti::RowReader &rdr)
 {
-    RWDBNullIndicator isNull;
     string tempBoolString;
     string tempTypeString;
     _insertDynamicDataFlag = FALSE;
@@ -1162,8 +1158,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     rdr["holidayscheduleid"] >> _holidayscheduleid;
     rdr["seasonscheduleid"] >> _seasonscheduleid;
 
-    rdr["programstate"] >> isNull;
-    if( !isNull )
+    if( !rdr["programstate"].isNull() )
     {
         rdr["programstate"] >> _programstate;
         rdr["reductiontotal"] >> _reductiontotal;
@@ -1191,8 +1186,7 @@ void CtiLMProgramBase::restore(RWDBReader& rdr)
     }
 
     setProgramStatusPointId(0);
-    rdr["pointid"] >> isNull;
-    if( !isNull )
+    if( !rdr["pointid"].isNull() )
     {
         LONG tempPointId = 0;
         LONG tempPointOffset = 0;

@@ -21,7 +21,6 @@
 #include <map>
 
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/onlyptr.h>
 #include <rw/thr/thread.h>
 #include <rw/collect.h>

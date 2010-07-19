@@ -20,10 +20,10 @@
 #include <vector>
 #include <string.h>
 #include <rw/vstream.h>
-#include <rw/db/reader.h>
+#include "database_connection.h"
+#include "database_reader.h"
 #include <rw/rwdate.h>
 #include <rw/rwtime.h>
-#include <rw/db/datetime.h>
 #include <algorithm>
 #include "ctitime.h"
 #include "boost_time.h"
@@ -32,82 +32,7 @@
 #include "boostutil.h"
 
 /*
- * for RWDBDateTime
- */
-inline RWDBDateTime toRWDBDT(const CtiTime& ct)
-{
-    RWTime temptime(ct.toRwSeconds());
-    RWDBDateTime rwdb(temptime);
-    return rwdb;
-}
-
-inline date to_boost_date(const RWDate& rw_date){
-    return date(rw_date.year(), rw_date.month(), rw_date.dayOfMonth());
-}
-
-inline ptime to_boost_ptime(const RWTime& rw_time){
-    struct tm tm;
-    rw_time.extract(&tm);
-    time_t tt = mktime(&tm);
-    return boost::posix_time::from_time_t(tt);
-}
-
-inline ptime to_boost_ptime(const RWDBDateTime& rwdb_datetime)
-{
-    struct tm tm;
-    rwdb_datetime.extract(&tm);
-    time_t tt = mktime(&tm);
-    return boost::posix_time::from_time_t(tt);
-}
-
-/* DataBase functions
- *
- */
-
-inline RWDBReader& operator>>(RWDBReader& rdr, std::string& s)
-{
-    RWCString rw_str;
-    rdr >> rw_str;
-    s = (const char*) rw_str.data();
-    return rdr ;
-}
-
-inline RWDBReader&   operator>>(RWDBReader&   rdr, ptime& p)
-{
-    RWTime t;
-    rdr >> t;
-    p = to_boost_ptime(t);
-    return rdr;
-}
-
-inline RWDBInserter& operator<<(RWDBInserter& ins, const std::string &s)
-{
-    return ins << RWCString(s.c_str());
-}
-
-inline RWDBInserter& operator<<(RWDBInserter& ins, const ptime& p)
-{
-    RWDBDateTime dbdt(RWTime(ptime_to_utc_seconds(p) + rwEpoch));
-    return ins << dbdt;
-}
-inline RWDBInserter& operator<<(RWDBInserter& ins, const CtiTime &ct)
-{
-    RWDBDateTime rwdb = toRWDBDT(ct);
-    return ins << rwdb;
-}
-inline RWDBReader&   operator>>(RWDBReader&   rdr, CtiTime& ct)
-{
-    RWDBDateTime rwdb;
-    rdr >> rwdb;
-    struct tm ctime;
-    rwdb.extract(&ctime);
-    ct = CtiTime(&ctime);
-    return rdr;
-}
-
-
-/*RWfile
- *
+ *  RWfile 
  */
 inline RWFile& operator>>(RWFile &f, std::string &str){
     RWCString s;
@@ -117,12 +42,8 @@ inline RWFile& operator>>(RWFile &f, std::string &str){
 
 }
 
-
-
-
-
 /*
- * RW stream operators.  seralize bool
+ *  RW stream operators.  seralize bool
  */
 inline RWvostream& operator<<(RWvostream &strm, bool b)
 {
@@ -137,8 +58,6 @@ inline RWvistream& operator>>(RWvistream &strm, bool& b)
     b = (bool) i;
     return strm;
 }    
-
-
 
 /*
  * RW stream operators.  serialize stl containers

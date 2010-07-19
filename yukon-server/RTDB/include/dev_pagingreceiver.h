@@ -63,8 +63,7 @@ public:
     virtual int sendCommResult(INMESS *InMessage);
     bool isTransactionComplete();
 
-    void DecodeDatabaseReader(RWDBReader &rdr);
-    void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    int decode(CtiXfer &xfer, int commReturnValue);
    int generate(CtiXfer &xfer);

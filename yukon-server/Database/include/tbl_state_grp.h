@@ -25,10 +25,7 @@ using std::set;
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "rwutil.h"
 
 
 #include "dlldefs.h"
@@ -69,14 +66,10 @@ public:
 
    string getRawState(LONG rawValue);
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    static string getTableName();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Delete();
+   virtual bool Restore();
 
-   virtual void DecodeDatabaseReader(RWDBReader& rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
    bool operator<( const CtiTableStateGroup &rhs ) const;
    bool operator==( const CtiTableStateGroup &rhs ) const;

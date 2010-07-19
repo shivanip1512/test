@@ -22,8 +22,6 @@
 using boost::shared_ptr;
 #include <set>
 
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
 #include "ctistring.h"
 
 typedef set<long>           DisableList;

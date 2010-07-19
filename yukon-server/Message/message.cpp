@@ -20,7 +20,6 @@
 #include "logger.h"
 #include "numstr.h" 
 
-
 #define DEFAULT_SYSTEM_USER "(yukon system)"
 RWDEFINE_COLLECTABLE( CtiMessage, MSG_DEFAULT );
 

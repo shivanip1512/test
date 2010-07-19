@@ -21,7 +21,6 @@ using boost::shared_ptr;
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <list>
@@ -39,6 +38,12 @@ using boost::shared_ptr;
 #include "TimeOfDayStrategy.h"
 #include "ccmonitorpoint.h"
 #include "Controllable.h"
+
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 //For Sorted Vector, the vector will use this to determine position in the vector.
@@ -71,7 +76,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus();
     CtiCCSubstationBus(StrategyManager * strategyManager);
-    CtiCCSubstationBus(RWDBReader& rdr, StrategyManager * strategyManager);
+    CtiCCSubstationBus(Cti::RowReader& rdr, StrategyManager * strategyManager);
     CtiCCSubstationBus(const CtiCCSubstationBus& bus);
 
     virtual ~CtiCCSubstationBus();
@@ -368,9 +373,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void performDataOldAndFallBackNecessaryCheck();
 
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
-    void setDynamicData(RWDBReader& rdr);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+    void setDynamicData(Cti::RowReader& rdr);
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
@@ -507,7 +511,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal);
 
 

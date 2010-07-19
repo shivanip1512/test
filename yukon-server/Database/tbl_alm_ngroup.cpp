@@ -16,16 +16,14 @@
  * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
  *-----------------------------------------------------------------------------*/
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 
 #include "dbaccess.h"
 #include "tbl_alm_ngroup.h"
 #include "logger.h"
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -84,100 +82,31 @@ string CtiTableNotificationGroup::getTableName()
     return string("NotificationGroup");
 }
 
-RWDBStatus CtiTableNotificationGroup::Insert()
+bool CtiTableNotificationGroup::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
-
-    dbInserter <<
-        getGroupID() <<
-        getGroupName() <<
-        string( ( isDisabled() ? "Y": "N" ) );
-
-    ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
-
-    return dbInserter.status();
-}
-
-RWDBStatus CtiTableNotificationGroup::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["notificationgroupid"] == getGroupID() );
-
-    updater <<
-        table["groupname"].assign( getGroupName().c_str() ) <<
-        table["disableflag"].assign( isDisabled() );
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableNotificationGroup::Restore()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBStatus dbstat;
-
-{
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-        table["notificationgroupid"] <<
-        table["groupname"] <<
-        table["disableflag"];
-
-    selector.where( table["notificationgroupid"] == getGroupID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    dbstat = selector.status();
-
-    if( reader() )
     {
-        DecodeDatabaseReader( reader );
+        static const string sql = "SELECT NG.notificationgroupid, NG.groupname, NG.disableflag "
+                                  "FROM NotificationGroup NG "
+                                  "WHERE NG.notificationgroupid = ?";
+    
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader reader(connection, sql);
+
+        reader << getGroupID();
+
+        reader.execute();
+    
+        if( reader() )
+        {
+            DecodeDatabaseReader( reader );
+            return true;
+        }
     }
+    
+    return false;
 }
 
-return dbstat;
-}
-
-RWDBStatus CtiTableNotificationGroup::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["notificationgroupid"] == getGroupID() );
-
-    return deleter.execute( conn ).status();
-}
-
-void CtiTableNotificationGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table( getTableName().c_str() );
-
-    selector <<
-        keyTable["notificationgroupid"] <<
-        keyTable["groupname"] <<
-        keyTable["disableflag"];
-
-    selector.from(keyTable);
-}
-
-void CtiTableNotificationGroup::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableNotificationGroup::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     string temp;
 

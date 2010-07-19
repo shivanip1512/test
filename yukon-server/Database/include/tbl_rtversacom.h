@@ -18,15 +18,13 @@
 #ifndef __TBL_RTVERSACOM_H__
 #define __TBL_RTVERSACOM_H__
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
 
 #include "dbmemobject.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "resolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTableVersacomRoute : public CtiMemDBObject
@@ -79,16 +77,11 @@ public:
    LONG getRouteID() const;
    CtiTableVersacomRoute& setRouteID( const LONG rid );
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   static string getSQLCoreStatement();
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    static string getTableName();
-
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
-   virtual RWDBStatus Restore();
 
    INT  getSPID() const;
    INT  getGeo() const;

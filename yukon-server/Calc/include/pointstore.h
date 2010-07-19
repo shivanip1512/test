@@ -146,7 +146,7 @@ public:
         return _dependents.entries();
     }
 
-    void readLimits( RWDBReader &rdr )
+    void readLimits( Cti::RowReader &rdr )
     {
         int limitnum;
         rdr["limitnumber"] >> limitnum;

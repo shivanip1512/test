@@ -1834,7 +1834,7 @@ INT CtiDeviceSixnet::ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< Cti
     return retCode;
 }
 
-void CtiDeviceSixnet::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceSixnet::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     // really only have this data.
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled

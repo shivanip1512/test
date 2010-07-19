@@ -24,7 +24,6 @@
 #include "ccarea.h"
 #include "ccsparea.h"
 #include "ccstate.h"
-//#include "rwutil.h"
 #include "LoadTapChanger.h"
 
 typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;

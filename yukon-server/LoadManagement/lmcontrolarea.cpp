@@ -33,9 +33,9 @@
 #include "lmconstraint.h"
 #include "ctidate.h"
 #include "ctitime.h"
-#include "rwutil.h"
 #include "utility.h"
 #include "lmutility.h"
+#include "database_writer.h"
 
 using std::transform;
 
@@ -66,7 +66,7 @@ _currentdailystoptime(0)
 {
 }
 
-CtiLMControlArea::CtiLMControlArea(RWDBReader& rdr)
+CtiLMControlArea::CtiLMControlArea(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -2498,8 +2498,7 @@ void CtiLMControlArea::updateTimedPrograms(LONG secondsFromBeginningOfDay)
 ---------------------------------------------------------------------------*/
 void CtiLMControlArea::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -2509,35 +2508,44 @@ void CtiLMControlArea::dumpDynamicData()
 
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicLMControlAreaTable = getDatabase().table( "dynamiclmcontrolarea" );
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicLMControlAreaTable.updater();
+            static const std::string sql_update = "update dynamiclmcontrolarea"
+                                                  " set "
+                                                    "nextchecktime = ?, "
+                                                    "newpointdatareceivedflag = ?, "
+                                                    "updatedflag = ?, "
+                                                    "controlareastate = ?, "
+                                                    "currentpriority = ?, "
+                                                    "timestamp = ?, "
+                                                    "currentdailystarttime = ?, "
+                                                    "currentdailystoptime = ?"
+                                                  " where "
+                                                    "deviceid = ?";
 
-            updater << dynamicLMControlAreaTable["nextchecktime"].assign(toRWDBDT(getNextCheckTime()))
-            << dynamicLMControlAreaTable["newpointdatareceivedflag"].assign(( (getNewPointDataReceivedFlag() ? "Y":"N") ))
-            << dynamicLMControlAreaTable["updatedflag"].assign(( (getUpdatedFlag() ? "Y":"N") ))
-            << dynamicLMControlAreaTable["controlareastate"].assign( getControlAreaState() )
-            << dynamicLMControlAreaTable["currentpriority"].assign( getCurrentStartPriority() )
-            << dynamicLMControlAreaTable["timestamp"].assign(toRWDBDT(currentDateTime))
-            << dynamicLMControlAreaTable["currentdailystarttime"].assign( _currentdailystarttime )
-            << dynamicLMControlAreaTable["currentdailystoptime"].assign( _currentdailystoptime );
+            Cti::Database::DatabaseWriter   updater(conn, sql_update);
 
-            updater.where(dynamicLMControlAreaTable["deviceid"]==getPAOId());//will be paobjectid
+            updater
+                << getNextCheckTime()
+                << ( getNewPointDataReceivedFlag() ? std::string("Y") : std::string("N") )
+                << ( getUpdatedFlag() ? std::string("Y") : std::string("N") )
+                << getControlAreaState()
+                << getCurrentStartPriority()
+                << currentDateTime
+                << _currentdailystarttime
+                << _currentdailystoptime
+                << getPAOId();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << updater.asString() << endl;
             }
 
-            updater.execute( conn );
+            updater.execute();
         }
         else
         {
@@ -2546,28 +2554,28 @@ void CtiLMControlArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
                 dout << CtiTime() << " - Inserted control area into DynamicLMControlArea: " << getPAOName() << endl;
             }
 
-            RWDBInserter inserter = dynamicLMControlAreaTable.inserter();
+            static const std::string sql_insert = "insert into dynamiclmcontrolarea values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            inserter << getPAOId()
-            << getNextCheckTime()
-            << ( getNewPointDataReceivedFlag() ? "Y": "N" )
-            << ( getUpdatedFlag() ? "Y": "N" )
-            << getControlAreaState()
-            << getCurrentStartPriority()
-            << currentDateTime
-            << _currentdailystarttime
-            << _currentdailystoptime;
+            Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
+
+            inserter
+                << getPAOId()
+                << getNextCheckTime()
+                << ( getNewPointDataReceivedFlag() ? std::string("Y") : std::string("N") )
+                << ( getUpdatedFlag() ? std::string("Y") : std::string("N") )
+                << getControlAreaState()
+                << getCurrentStartPriority()
+                << currentDateTime
+                << _currentdailystarttime
+                << _currentdailystoptime;
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString() << endl;
             }
 
-            inserter.execute( conn );
+            inserter.execute();
 
             _insertDynamicDataFlag = FALSE;
         }
@@ -2726,13 +2734,10 @@ CtiLMControlArea* CtiLMControlArea::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMControlArea::restore(RWDBReader& rdr)
+void CtiLMControlArea::restore(Cti::RowReader &rdr)
 {
-
-
-    RWDBNullIndicator isNull;
     CtiTime dynamicTimeStamp;
     string tempBoolString;
     string tempTypeString;
@@ -2758,8 +2763,8 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
     setRequireAllTriggersActiveFlag(tempBoolString=="t"?TRUE:FALSE);
 
     setControlAreaStatusPointId(0);
-    rdr["pointid"] >> isNull;
-    if( !isNull )
+    
+    if( !rdr["pointid"].isNull() )
     {
         LONG tempPointId = 0;
         LONG tempPointOffset = 0;
@@ -2774,8 +2779,7 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         }
     }
 
-    rdr["nextchecktime"] >> isNull;
-    if( !isNull )
+    if( !rdr["nextchecktime"].isNull() )
     {
         rdr["nextchecktime"] >> _nextchecktime;
         rdr["newpointdatareceivedflag"] >> tempBoolString;

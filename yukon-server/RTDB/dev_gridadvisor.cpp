@@ -266,19 +266,19 @@ INT CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser
     return status;
 }
 
-
-void CtiDeviceGridAdvisor::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGridAdvisor::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, "
+                                     "AD.masteraddress, AD.slaveaddress, AD.postcommwait, CS.portid "
+                                   "FROM YukonPAObject YP, Device DV, DeviceAddress AD, DeviceDirectCommSettings CS "
+                                   "WHERE upper (YP.paoclass) = 'GRIDADVISOR' AND YP.paobjectid = AD.deviceid AND "
+                                     "YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
 
-    CtiTableDeviceAddress::getSQL(db, keyTable, selector);
-    CtiTableDeviceDirectComm::getSQL(db, keyTable, selector);
-
-    selector.where( rwdbUpper(keyTable["paoclass"]) == "GRIDADVISOR" && selector.where() );
+    return sqlCore;
 }
 
-
-void CtiDeviceGridAdvisor::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGridAdvisor::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

@@ -14,7 +14,6 @@
 #include "yukon.h"
 
 
-#include <rw/db/db.h>
 
 #include "mgr_route.h"
 #include "rte_xcu.h"
@@ -27,10 +26,10 @@
 #include "tbl_rtmacro.h"
 
 #include "dbaccess.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiRouteManager::CtiRouteManager() {}
-
-extern void cleanupDB();
 
 CtiRouteManager::~CtiRouteManager()
 {
@@ -109,7 +108,7 @@ void ApplyInvalidateNotUpdated(const long key, CtiRouteSPtr pPt, void* d)
     return;
 }
 
-void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     ptr_type pTempCtiRoute;
     bool rowFound = false;
@@ -142,24 +141,23 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
              */
             {
                 // Make sure all objects that that store results
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CCU, LCU, TCU, & CCURPT Routes" << endl;
                 }
-                CtiRouteCCU().getSQL( db, keyTable, selector );
-                selector.where( rwdbUpper(keyTable["category"]) == RWDBExpr("ROUTE") && selector.where());
-                RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+
+                string sql = CtiRouteCCU::getSQLCoreStatement();
+
+                sql += " WHERE upper (YP.category) = 'ROUTE'";
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection,  sql);
+
+                rdr.execute();
+
+                if(DebugLevel & 0x00040000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -174,23 +172,19 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
 
             {
                 // Make sure all objects that that store results
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Routes" << endl;
                 }
-                CtiTableVersacomRoute::getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                
+                static const string sql = CtiTableVersacomRoute::getSQLCoreStatement();
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00040000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -205,23 +199,18 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
 
             {
                 // Make sure all objects that that store results
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-
-                RWDBTable   keyTable;
-
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Repeater Information" << endl;
                 }
-                CtiTableRepeaterRoute::getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                
+                static const string sql = CtiTableRepeaterRoute::getSQLCoreStatement();
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00040000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -236,22 +225,19 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
 
             {
                 // Make sure all objects that that store results
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-                RWDBDatabase db = conn.database();
-                RWDBSelector selector = conn.database().selector();
-
-                RWDBTable   keyTable;
                 if(DebugLevel & 0x00040000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Routes" << endl;
                 }
-                CtiTableMacroRoute::getSQL( db, keyTable, selector );
-                RWDBReader  rdr = selector.reader(conn);
-                if(DebugLevel & 0x00040000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+
+                static const string sql = CtiTableMacroRoute::getSQLCoreStatement();
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+                rdr.execute();
+                if(DebugLevel & 0x00040000 || !rdr.isValid())
                 {
-                    string loggedSQLstring = selector.asString();
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -264,23 +250,12 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
                 }
             }
 
-            if(_smartMap.getErrorCode() != RWDBStatus::ok)
+            if(rowFound)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
-                }
-            }
-            else
-            {
-                if(rowFound)
-                {
-                    // Now I need to check for any Route removals based upon the
-                    // Updated Flag being NOT set
+                // Now I need to check for any Route removals based upon the
+                // Updated Flag being NOT set
 
-                    apply(ApplyInvalidateNotUpdated, NULL);
-                }
+                apply(ApplyInvalidateNotUpdated, NULL);
             }
 
         }   // Temporary results are destroyed to free the connection
@@ -295,12 +270,12 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(RWDBReader &), BOOL (
 }
 
 
-void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBase* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshRoutes(bool &rowFound, Cti::RowReader& rdr, CtiRouteBase* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG lTemp = 0;
     ptr_type pTempCtiRoute;
 
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
         rdr["paobjectid"] >> lTemp;            // get the RouteID
@@ -337,9 +312,9 @@ void CtiRouteManager::RefreshRoutes(bool &rowFound, RWDBReader& rdr, CtiRouteBas
     }
 }
 
-void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
 
@@ -374,12 +349,12 @@ bool CtiRouteManager::isRepeaterRelevantToRoute(long repeater_id, long route_id)
 }
 
 
-void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG lTemp = 0;
     ptr_type pTempCtiRoute;
 
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
 
@@ -403,12 +378,12 @@ void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, RWDBReader& rdr, BOOL (
     apply(ApplyMacroRouteSort, NULL);
 }
 
-void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
+void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr, BOOL (*testFunc)(CtiRouteBase*,void*), void *arg)
 {
     LONG        lTemp = 0;
     ptr_type    pTempCtiRoute;
 
-    while( (_smartMap.setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
         CtiRouteBase* pSp = NULL;

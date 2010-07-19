@@ -82,17 +82,13 @@ FDRWabash::~FDRWabash(){
 
 bool FDRWabash::loadTranslationLists()
 {
-    RWDBStatus       listStatus;
-
     try
     {
         // make a list with all received points
         CtiFDRManager *pointList = new CtiFDRManager(getInterfaceName(),string (FDR_INTERFACE_SEND)); //check into what the second parameter means for the manager
-        // keep the status
-        listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList() )
         {
             if(pointList->entries() > 0)
             {

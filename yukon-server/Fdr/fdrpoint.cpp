@@ -54,7 +54,6 @@ using namespace std;
 #include "pointdefs.h"
 
 #include "logger.h"
-#include "rwutil.h"
 #include "utility.h"
 
 /** local definitions **/

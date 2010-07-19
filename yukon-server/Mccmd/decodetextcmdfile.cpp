@@ -38,7 +38,6 @@ Function #  Comment in the file, will get moved to the exported file if needed
 
 #include <vector>
 #include "decodeTextCmdFile.h"
-#include "rwutil.h"
 #include "utility.h"
 
 /***************************

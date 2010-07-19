@@ -66,6 +66,8 @@
 #include "repeaterrole.h"
 #include "rte_ccu.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 #include "ctistring.h"
 
@@ -1484,13 +1486,6 @@ void CtiPILServer::schedulerThread()
 
 int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids )
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-
-    RWDBTable deviceGroupMember, deviceGroup_parent, deviceGroup_child;
-    RWDBSelector selector = db.selector();
-
     int deviceid;
 
     if(DebugLevel & 0x00020000)
@@ -1511,46 +1506,73 @@ int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids 
         groupname.erase(slashpos);
     }
 
-    deviceGroupMember  = db.table("DeviceGroupMember");
-    deviceGroup_parent = db.table("DeviceGroup");
+    std::stringstream ss;
 
-    selector << deviceGroupMember["yukonpaoid"];
+    const string basicSQL = "SELECT DGM.yukonpaoid "
+                            "FROM DeviceGroupMember DGM";
 
-    selector.where(deviceGroup_parent["parentdevicegroupid"].isNull());
+    unsigned group_size = group_taxonomy.size();
+
+    ss << basicSQL;
+
+    for(int i = group_size; i >= 0; i--)
+    {
+        ss << ", DeviceGroup GP" << i;
+    }
+
+    ss << " WHERE GP0.parentdevicegroupid IS NULL";
+
+    if(group_size)
+    {
+        ss << " AND GP" << group_size << ".devicegroupid = DGM.devicegroupid";
+    }
+    else
+    {
+        ss << " AND GP0.devicegroupid = DGM.devicegroupid";
+    }
 
     while( !group_taxonomy.empty() )
     {
-        deviceGroup_child = db.table("DeviceGroup");
+        ss << " AND GP" << group_size - 1 << ".devicegroupid = GP" << group_size << ".parentdevicegroupid AND ";
+        ss << "lower (GP" << group_size << ".groupname) = ";
 
-        selector.where(deviceGroup_parent["devicegroupid"] == deviceGroup_child["parentdevicegroupid"] &&
-                       rwdbLower(deviceGroup_child["groupname"]) == group_taxonomy.back().c_str() && selector.where());
+        const string str = group_taxonomy.front().c_str();
 
-        group_taxonomy.pop_back();
+        if(str.size() == 0)
+        {
+                ss << "NULL";
+        }
+        else
+        {
+                ss << "'" << str << "'";
+        }
 
-        deviceGroup_parent = deviceGroup_child;
+        group_taxonomy.erase(group_taxonomy.begin());
+
+        group_size--;
     }
 
-    selector.where(deviceGroup_parent["devicegroupid"] == deviceGroupMember["devicegroupid"] && selector.where());
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, ss.str());
+    rdr.execute();
 
-    RWDBReader rdr = selector.reader(conn);
-
-    if( DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok )
+    if( DebugLevel & 0x00020000 || !rdr.isValid() )
     {
-        string loggedSQLstring = selector.asString();
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    while( rdr() )
     {
         rdr[0] >> deviceid;
 
         paoids.push_back(deviceid);
     }
 
-    return rdr.status().errorCode();
+    return rdr.isValid() ? 0 : 1;
 }
 
 

@@ -20,7 +20,8 @@ using namespace std;
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_ptdispatch.h"
-#include "rwutil.h"
+#include "database_reader.h"
+#include "database_writer.h"
 #include "ctidate.h"
 #include "ctitime.h"
 
@@ -99,46 +100,34 @@ string CtiTablePointDispatch::getTableName()
     return "DynamicPointDispatch";
 }
 
-void CtiTablePointDispatch::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTablePointDispatch::getSQLCoreStatement(long id)
 {
-    keyTable = db.table(CtiTablePointDispatch::getTableName().c_str());
+    static const string sqlNoID = "SELECT DPD.pointid, DPD.timestamp, DPD.quality, DPD.value, DPD.tags, DPD.nextarchive, "
+                                      "DPD.millis "
+                                  "FROM DynamicPointDispatch DPD";
 
-    selector <<
-    keyTable["pointid"]     <<
-    keyTable["timestamp"]   <<
-    keyTable["quality"]     <<
-    keyTable["value"]       <<
-    keyTable["tags"]        <<
-    keyTable["nextarchive"] <<
-    //keyTable["stalecount"]  <<
-    //keyTable["lastalarmlogid"] <<
-    keyTable["millis"];
-
-    selector.from(keyTable);
+    if( id )
+    {
+        return string(sqlNoID + " WHERE DPD.pointid = ?");
+    }
+    else
+    {
+        return sqlNoID;
+    }
 }
 
-RWDBStatus CtiTablePointDispatch::Restore()
+bool CtiTablePointDispatch::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql =  "SELECT DD.pointid, DD.timestamp, DD.quality, DD.value, DD.tags, DD.nextarchive, DD.millis "
+                               "FROM DynamicPointDispatch DD "
+                               "WHERE DD.pointid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-    selector <<
-    table["pointid"] <<
-    table["timestamp"] <<
-    table["quality"] <<
-    table["value"] <<
-    table["tags"] <<
-    table["nextarchive"] <<
-    //table["stalecount"]  <<
-    //table["lastalarmlogid"] <<
-    table["millis"];
+    reader << getPointID();
 
-    selector.where( table["pointid"] == getPointID() );
-
-    RWDBReader reader = selector.reader( conn );
+    reader.execute();
 
     /*
      *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are sirty and need to be
@@ -147,125 +136,18 @@ RWDBStatus CtiTablePointDispatch::Restore()
     if( reader() )
     {
         DecodeDatabaseReader( reader );
+        return true;
     }
     else
     {
         setDirty( TRUE );
+        return false;
     }
-
-    return reader.status();
 }
 
-RWDBStatus CtiTablePointDispatch::Update()
+void CtiTablePointDispatch::DecodeDatabaseReader(Cti::RowReader& rdr )
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    return Update(conn);
-}
-
-RWDBStatus CtiTablePointDispatch::Update(RWDBConnection &conn)
-{
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-    try
-    {
-
-        updater.where( table["pointid"] == getPointID() );
-
-        updater <<
-        table["timestamp"].assign(toRWDBDT(getTimeStamp())) <<
-        table["quality"].assign(getQuality()) <<
-        table["value"].assign(getValue()) <<
-        table["tags"].assign(getTags()) <<
-        table["nextarchive"].assign(toRWDBDT(getNextArchiveTime())) <<
-        table["stalecount"].assign(getStaleCount())  <<
-        //table["lastalarmlogid"].assign(getLastAlarmLogID()) <<
-        table["millis"].assign(getTimeStampMillis());
-
-        ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-        if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-        {
-            resetDirty(FALSE);
-        }
-        else
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << loggedSQLstring << endl;
-            }
-        }
-    }catch(...)
-    {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTablePointDispatch::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    return Insert(conn);
-}
-
-RWDBStatus CtiTablePointDispatch::Insert(RWDBConnection &conn)
-{
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
-
-    dbInserter <<
-    getPointID() <<
-    toRWDBDT(getTimeStamp()) <<
-    getQuality() <<
-    getValue() <<
-    getTags() <<
-    toRWDBDT( getNextArchiveTime() ) <<
-    getStaleCount() <<
-    getLastAlarmLogID() <<
-    getTimeStampMillis();
-
-    ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
-
-    if(dbInserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
-    {
-        string loggedSQLstring = dbInserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
-    }
-    else
-    {
-        resetDirty(FALSE);
-    }
-
-    return dbInserter.status();
-}
-
-RWDBStatus CtiTablePointDispatch::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["pointid"] == getPointID() );
-
-    return deleter.execute( conn ).status();
-}
-
-void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
-{
-    static const RWCString pointid = "pointid";
+    static const string pointid = "pointid";
     INT millis;
 
     rdr[pointid] >> _pointID;
@@ -279,6 +161,83 @@ void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
     setTimeStampMillis(millis);
 
     resetDirty(FALSE);
+}
+
+bool CtiTablePointDispatch::Update(Cti::Database::DatabaseConnection &conn)
+{
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "timestamp = ?, "
+                                        "quality = ?, "
+                                        "value = ?, "
+                                        "tags = ?, "
+                                        "nextarchive = ?, "
+                                        "stalecount = ?, "
+                                        "millis = ?"
+                                   " where "
+                                        "pointid = ?";
+
+    Cti::Database::DatabaseWriter   updater(conn, sql);
+
+    updater
+        << getTimeStamp()
+        << getQuality()
+        << getValue()
+        << getTags()
+        << getNextArchiveTime()
+        << getStaleCount()
+        << getTimeStampMillis()
+        << getPointID();
+
+    bool success = updater.execute();
+
+    if( success )    // No error occured!
+    {
+        resetDirty(FALSE);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << updater.asString() << endl;
+    }
+
+    return success;
+}
+
+
+bool CtiTablePointDispatch::Insert(Cti::Database::DatabaseConnection &conn)
+{
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+    inserter
+        << getPointID()
+        << getTimeStamp()
+        << getQuality()
+        << getValue()
+        << getTags()
+        << getNextArchiveTime()
+        << getStaleCount()
+        << getLastAlarmLogID()
+        << getTimeStampMillis();
+
+    bool success = inserter.execute();
+
+    if( success )    // No error occured!
+    {
+        resetDirty(FALSE);
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
+    }
+
+    return success;
 }
 
 LONG CtiTablePointDispatch::getPointID() const

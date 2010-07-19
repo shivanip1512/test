@@ -20,8 +20,6 @@
 #include "tbl_lmg_sasimple.h"
 #include "prot_sa3rdparty.h"
 
-#include "rwutil.h"
-
 //=====================================================================================================================
 //=====================================================================================================================
 
@@ -182,27 +180,7 @@ string CtiTableSASimpleGroup::getTableName( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTableSASimpleGroup::getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector )
-{
-    RWDBTable devTbl = db.table( getTableName().c_str() );
-
-    selector <<
-        devTbl["groupid"] <<        //are these supposed to be case sensitive? the table scripts are caps!
-        devTbl["routeid"] <<
-        devTbl["operationaladdress"] <<
-        devTbl["nominaltimeout"] <<
-        devTbl["markindex"] <<
-        devTbl["spaceindex"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["groupid"] && selector.where() );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
+void CtiTableSASimpleGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     rdr["groupid"]              >> _lmGroupId;
     rdr["routeid"]              >> _routeId;
@@ -228,37 +206,6 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader( RWDBReader &rdr )
     }
 }
 
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTableSASimpleGroup::Restore()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTableSASimpleGroup::Insert()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTableSASimpleGroup::Update()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTableSASimpleGroup::Delete()
-{
-    return RWDBStatus::notSupported;
-}
 
 string CtiTableSASimpleGroup::getGolayOperationalAddress() const
 {

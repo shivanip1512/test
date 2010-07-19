@@ -136,7 +136,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 
                     CtiTablePointDispatch pd(pPoint->getPointID());
 
-                    if(pd.Restore().errorCode() == RWDBStatus::ok)
+                    if(pd.Restore())
                     {
                         _lastLPTime[i] = pd.getTimeStamp().seconds();
                     }

@@ -27,7 +27,7 @@ RWDEFINE_COLLECTABLE( CtiLMGroupSADigitalORGolay, CTILMGROUPSADIGITALORGOLAY_ID 
 {   
 }
 
-CtiLMGroupSADigitalORGolay::CtiLMGroupSADigitalORGolay(RWDBReader& rdr)
+CtiLMGroupSADigitalORGolay::CtiLMGroupSADigitalORGolay(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -172,9 +172,9 @@ CtiLMGroupBase* CtiLMGroupSADigitalORGolay::replicate() const
 /*---------------------------------------------------------------------------
   restore
     
-  Restores given a RWDBReader
+  Restores given a Reader
   ---------------------------------------------------------------------------*/
-void CtiLMGroupSADigitalORGolay::restore(RWDBReader& rdr)
+void CtiLMGroupSADigitalORGolay::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
 }

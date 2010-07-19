@@ -28,9 +28,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
-#include <rw/db/db.h>
-#include <rw/db/connect.h>
-#include <rw/db/status.h>
 
 #include "cparms.h"
 #include "msg_multi.h"

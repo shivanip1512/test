@@ -33,11 +33,11 @@
 
 #include <string>
 
-#include <rw/db/db.h>
 
 #include "mutex.h"
 #include "guard.h"
 #include "logger.h"
+#include "row_reader.h"
 
 class CtiTableMCSimpleSchedule
 {
@@ -62,8 +62,7 @@ public:
     CtiTableMCSimpleSchedule& setStopCommand(const string& stop_command);
     CtiTableMCSimpleSchedule& setRepeatInterval(long repeat_interval);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    bool DecodeDatabaseReader(RWDBReader &rdr);
+    bool DecodeDatabaseReader(Cti::RowReader &rdr);
 
     //database operations
     bool Update();

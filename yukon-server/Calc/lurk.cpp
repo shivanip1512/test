@@ -4,8 +4,7 @@
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
-//#include <rw/db/connect.h>
-
+//
 #include "cparms.h"
 #include "message.h"
 #include "connection.h"

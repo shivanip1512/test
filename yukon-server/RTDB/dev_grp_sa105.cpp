@@ -26,7 +26,6 @@
 #include "msg_pdata.h"
 #include "numstr.h"
 #include "utility.h"
-#include "rwutil.h"
 
 //====================================================================================================================
 //====================================================================================================================
@@ -117,18 +116,22 @@ string CtiDeviceGroupSA105::getDescription(const CtiCommandParser & parse) const
 //====================================================================================================================
 //====================================================================================================================
 
-void CtiDeviceGroupSA105::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
+string CtiDeviceGroupSA105::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableSA205105Group::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, SA1.groupid, SA1.routeid, "
+                                     "SA1.operationaladdress, SA1.loadnumber "
+                                   "FROM YukonPAObject YP, Device DV, LMGroupSA205105 SA1 "
+                                   "WHERE upper (YP.type) = 'SA-205 GROUP' AND YP.paobjectid = SA1.groupid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("SA-205 GROUP") && selector.where() );
+    return sqlCore;
 }
 
 //====================================================================================================================
 //====================================================================================================================
 
-void CtiDeviceGroupSA105::DecodeDatabaseReader( RWDBReader &rdr )
+void CtiDeviceGroupSA105::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

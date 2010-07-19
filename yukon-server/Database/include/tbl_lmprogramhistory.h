@@ -10,12 +10,8 @@
 #ifndef __TBL_LMPROGHIST_H__
 #define __TBL_LMPROGHIST_H__
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 
 #include "dbmemobject.h"
 #include "dbaccess.h"
@@ -59,7 +55,7 @@ public:
 
     CtiTableLMProgramHistory& operator=(const CtiTableLMProgramHistory &aRef);
 
-    RWDBStatus Insert();
+    bool Insert();
 
     static long getNextProgramHistId();
 };

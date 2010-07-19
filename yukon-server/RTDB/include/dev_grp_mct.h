@@ -22,7 +22,7 @@
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 
-class CtiDeviceGroupMCT : public CtiDeviceGroupBase
+class IM_EX_DEVDB CtiDeviceGroupMCT : public CtiDeviceGroupBase
 {
 
 private:
@@ -58,11 +58,12 @@ public:
 
     CtiDeviceGroupMCT& operator=( const CtiDeviceGroupMCT &aRef );
 
+    virtual string getSQLCoreStatement() const;
+
     virtual LONG getRouteID();
     virtual LONG getAddress() const;
     virtual string getDescription( const CtiCommandParser &parse ) const;
-    virtual void getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const;
-    virtual void DecodeDatabaseReader( RWDBReader &rdr );
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT executeControl( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 

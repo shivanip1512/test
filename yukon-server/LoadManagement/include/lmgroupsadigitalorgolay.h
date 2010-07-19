@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 
 #include "lmgroupbase.h"
                 
@@ -27,7 +26,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupSADigitalORGolay )
 
     CtiLMGroupSADigitalORGolay();
-    CtiLMGroupSADigitalORGolay(RWDBReader& rdr);
+    CtiLMGroupSADigitalORGolay(Cti::RowReader &rdr);
     CtiLMGroupSADigitalORGolay(const CtiLMGroupSADigitalORGolay& groupexp);
 
     virtual ~CtiLMGroupSADigitalORGolay();
@@ -52,7 +51,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupSADigitalORGolay )
 
 private:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

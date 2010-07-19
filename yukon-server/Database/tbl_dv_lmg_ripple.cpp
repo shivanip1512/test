@@ -19,7 +19,8 @@
 #include "logger.h"
 #include "tbl_dv_lmg_ripple.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiTableRippleLoadGroup::CtiTableRippleLoadGroup() :
 _controlBits((size_t)7, (char)0),      // 7 zeros
@@ -106,22 +107,6 @@ CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setRestoreBit( INT pos, const 
     return *this;
 }
 
-void CtiTableRippleLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector <<
-    devTbl["shedtime"] <<
-    devTbl["controlvalue"] <<
-    devTbl["restorevalue"] <<
-    devTbl["routeid"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-    // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
-}
-
 string CtiTableRippleLoadGroup::getTableName()
 {
     return string("LMGroupRipple");
@@ -154,7 +139,7 @@ CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setShedTime( const LONG shedTi
     return *this;
 }
 
-void CtiTableRippleLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableRippleLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -170,107 +155,71 @@ void CtiTableRippleLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["routeid"] >> _routeID;
 }
 
-RWDBStatus CtiTableRippleLoadGroup::Restore()
+bool CtiTableRippleLoadGroup::Insert()
 {
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?)";
 
-    char temp[32];
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    inserter 
+        << getDeviceID()
+        << getRouteID()
+        << getShedTime()
+        << getControlBits()
+        << getRestoreBits();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    bool success = inserter.execute();
 
-    selector <<
-    table["deviceid"] <<
-    table["routeid"] <<
-    table["shedtime"] <<
-    table["controlvalue"] <<
-    table["controlvalue"] <<
-    table["restorevalue"];
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader  );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableRippleLoadGroup::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID() <<
-    getRouteID() <<
-    getShedTime() <<
-    getControlBits() <<
-    getRestoreBits();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if ( success )
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableRippleLoadGroup::Update()
+bool CtiTableRippleLoadGroup::Update()
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "routeid = ?, "
+                                        "shedtime = ?, "
+                                        "controlvalue = ?, "
+                                        "restorevalue = ?"
+                                   " where "
+                                        "deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
+    updater 
+        << getRouteID()
+        << getShedTime()
+        << getControlBits()
+        << getRestoreBits()
+        << getDeviceID();
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    bool success = updater.execute();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater <<
-    table["controlvalue"].assign(getControlBits().c_str() ) <<
-    table["restorevalue"].assign(getRestoreBits().c_str() ) <<
-    table["shedtime"].assign(getShedTime() ) <<
-    table["routeid"].assign(getRouteID() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    if ( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableRippleLoadGroup::Delete()
+bool CtiTableRippleLoadGroup::Delete()
 {
+    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    deleter << getDeviceID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
+    return deleter.execute();
 }
 
 

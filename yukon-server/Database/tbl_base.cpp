@@ -18,8 +18,6 @@
 #include "tbl_base.h"
 #include "resolvers.h"
 
-#include "rwutil.h"
-
 using std::transform;
 
 CtiTableDeviceBase::CtiTableDeviceBase() :
@@ -93,20 +91,6 @@ bool  CtiTableDeviceBase::useRadioDelays() const
 
 string CtiTableDeviceBase::getTableName() { return string("Device"); }
 
-void CtiTableDeviceBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table( getTableName().c_str() );
-
-    selector <<
-        devTbl["deviceid"] <<
-        devTbl["alarminhibit"] <<
-        devTbl["controlinhibit"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );
-}
-
 void CtiTableDeviceBase::DumpData()
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -114,10 +98,10 @@ void CtiTableDeviceBase::DumpData()
     dout << "Control Inhibit                             : " << _controlInhibit << endl;
 }
 
-void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    const RWCString alarminhibit   = "alarminhibit";
-    const RWCString controlinhibit = "controlinhibit";
+    const string alarminhibit   = "alarminhibit";
+    const string controlinhibit = "controlinhibit";
 
     string sTemp;
 
@@ -133,4 +117,3 @@ void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
     rdr[controlinhibit] >> sTemp;
     _controlInhibit = !sTemp.empty() && (sTemp[0] == 'y' || sTemp[0] == 'Y');
 }
-

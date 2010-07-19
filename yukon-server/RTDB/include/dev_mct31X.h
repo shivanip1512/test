@@ -127,6 +127,6 @@ public:
     INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     virtual bool calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
-    virtual void DecodeDatabaseReader( RWDBReader &rdr );
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __DEV_MCT31X_H__

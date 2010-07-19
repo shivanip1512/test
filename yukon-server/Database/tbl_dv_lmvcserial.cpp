@@ -18,7 +18,8 @@
 #include "tbl_dv_lmvcserial.h"
 #include "logger.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableLMGroupVersacomSerial::CtiTableLMGroupVersacomSerial() :
 _deviceID(-1),
@@ -147,21 +148,6 @@ CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setRouteID( const 
     return *this;
 }
 
-void CtiTableLMGroupVersacomSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector <<
-    devTbl["serialnumber"] <<
-    devTbl["deviceidofgroup"] <<
-    devTbl["relayusage"] <<
-    devTbl["routeid"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
 string CtiTableLMGroupVersacomSerial::getTableName()
 {
     return "LMGroupVersacomSerial";
@@ -180,7 +166,7 @@ CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setDeviceID( const
     return *this;
 }
 
-void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -202,103 +188,3 @@ void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(RWDBReader &rdr)
     _addressUsage = 0;                     // This is a serial number ok!
 
 }
-
-RWDBStatus CtiTableLMGroupVersacomSerial::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["deviceid"] <<
-    table["serialnumber"] <<
-    table["deviceidofgroup"] <<
-    table["routeid"];
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader  );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableLMGroupVersacomSerial::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID() <<
-    getSerial() <<
-    getGroupID() <<
-    getRouteID();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableLMGroupVersacomSerial::Update()
-{
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater <<
-    table["serialnumber"].assign(getSerial() ) <<
-    table["deviceidofgroup"].assign(getGroupID() ) <<
-    table["routeid"].assign(getRouteID() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableLMGroupVersacomSerial::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
-}
-

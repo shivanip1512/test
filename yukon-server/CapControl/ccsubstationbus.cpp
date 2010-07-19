@@ -32,6 +32,7 @@
 #include "utility.h"
 #include "tbl_pt_alarm.h"
 #include "IVVCStrategy.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -240,7 +241,7 @@ CtiCCSubstationBus::CtiCCSubstationBus(StrategyManager * strategyManager)
     regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr, StrategyManager * strategyManager)
+CtiCCSubstationBus::CtiCCSubstationBus(Cti::RowReader& rdr, StrategyManager * strategyManager)
     : Controllable(rdr, strategyManager)
 {
     restore(rdr);
@@ -6536,136 +6537,13 @@ BOOL CtiCCSubstationBus::isDirty() const
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCSubstationBus::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
     Writes out the dynamic information for this substation bus.
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCSubstationBus::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCSubstationBusTable = getDatabase().table( "dynamicccsubstationbus" );
-
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCCSubstationBusTable.updater();
-
-            updater.where(dynamicCCSubstationBusTable["substationbusid"]==getPaoId());
-
-            updater << dynamicCCSubstationBusTable["currentvarpointvalue"].assign( _currentvarloadpointvalue )
-            << dynamicCCSubstationBusTable["currentwattpointvalue"].assign( _currentwattloadpointvalue )
-            << dynamicCCSubstationBusTable["nextchecktime"].assign( toRWDBDT(_nextchecktime) )
-            << dynamicCCSubstationBusTable["newpointdatareceivedflag"].assign( ((_newpointdatareceivedflag?"Y":"N")) )
-            << dynamicCCSubstationBusTable["busupdatedflag"].assign( ((_busupdatedflag?"Y":"N")) );
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().data() << endl;
-            }*/
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
-
-            updater.clear();
-
-            updater.where(dynamicCCSubstationBusTable["substationbusid"]==getPaoId());
-
-            updater << dynamicCCSubstationBusTable["lastcurrentvarupdatetime"].assign( toRWDBDT(_lastcurrentvarpointupdatetime) )
-            << dynamicCCSubstationBusTable["estimatedvarpointvalue"].assign( _estimatedvarloadpointvalue )
-            << dynamicCCSubstationBusTable["currentdailyoperations"].assign( _currentdailyoperations )
-            << dynamicCCSubstationBusTable["peaktimeflag"].assign( ((_peaktimeflag?"Y":"N")) );
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
-
-            updater.clear();
-
-            updater.where(dynamicCCSubstationBusTable["substationbusid"]==getPaoId());
-
-            updater << dynamicCCSubstationBusTable["recentlycontrolledflag"].assign( ((_recentlycontrolledflag?"Y":"N")) )
-            << dynamicCCSubstationBusTable["lastoperationtime"].assign( toRWDBDT(_lastoperationtime ))
-            << dynamicCCSubstationBusTable["varvaluebeforecontrol"].assign( _varvaluebeforecontrol )
-            << dynamicCCSubstationBusTable["lastfeederpaoid"].assign( _lastfeedercontrolledpaoid );
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_verificationFlag?'Y':'N');
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
@@ -6693,58 +6571,107 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                                         +char2string(*(addFlags+15)) +char2string(*(addFlags+16)) +char2string(*(addFlags+17)));
             _additionalFlags.append("NN");
 
-            updater.clear();
+            static const string updateSql = "update dynamicccsubstationbus set "
+                                            "currentvarpointvalue = ?, "
+                                            "currentwattpointvalue = ?, "
+                                            "nextchecktime = ?, "
+                                            "newpointdatareceivedflag = ?, "
+                                            "busupdatedflag = ?, "
+                                            "lastcurrentvarupdatetime = ?, "
+                                            "estimatedvarpointvalue = ?, "
+                                            "currentdailyoperations = ?, "
+                                            "peaktimeflag = ?, "
+                                            "recentlycontrolledflag = ?, "
+                                            "lastoperationtime = ?, "
+                                            "varvaluebeforecontrol = ?, "
+                                            "lastfeederpaoid = ?, "
+                                            "lastfeederposition = ?, "
+                                            "ctitimestamp = ?, "
+                                            "powerfactorvalue = ?, "
+                                            "kvarsolution = ?, "
+                                            "estimatedpfvalue = ?, "
+                                            "currentvarpointquality = ?, "
+                                            "waivecontrolflag = ?, "
+                                            "additionalflags = ?, "
+                                            "currverifycbid = ?, "
+                                            "currverifyfeederid = ?, "
+                                            "currverifycborigstate = ?, "
+                                            "verificationstrategy = ?, "
+                                            "cbinactivitytime = ?, "
+                                            "currentvoltpointvalue = ?, "
+                                            "switchPointStatus = ?, "
+                                            "altSubControlValue = ?, "
+                                            "eventSeq = ?, "
+                                            "currentwattpointquality = ?, "
+                                            "currentvoltpointquality = ?, "
+                                            "ivcontroltot = ?, "
+                                            "ivcount = ?, "
+                                            "iwcontroltot = ?, "
+                                            "iwcount = ?, "
+                                            "phaseavalue = ?, "
+                                            "phasebvalue = ?, "
+                                            "phasecvalue = ?, "
+                                            "lastwattpointtime = ?, "
+                                            "lastvoltpointtime = ?, "
+                                            "phaseavaluebeforecontrol = ?, "
+                                            "phasebvaluebeforecontrol = ?, "
+                                            "phasecvaluebeforecontrol = ?"
+                                            " where substationbusid = ?";
 
-            updater.where(dynamicCCSubstationBusTable["substationbusid"]==getPaoId());
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater << dynamicCCSubstationBusTable["lastfeederposition"].assign( _lastfeedercontrolledposition )
-            << dynamicCCSubstationBusTable["ctitimestamp"].assign(toRWDBDT(currentDateTime))
-            << dynamicCCSubstationBusTable["powerfactorvalue"].assign( _powerfactorvalue )
-            << dynamicCCSubstationBusTable["kvarsolution"].assign( _kvarsolution )
-            << dynamicCCSubstationBusTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
-            << dynamicCCSubstationBusTable["currentvarpointquality"].assign( _currentvarpointquality )
-            << dynamicCCSubstationBusTable["waivecontrolflag"].assign( (_waivecontrolflag?"Y":"N"))
-            << dynamicCCSubstationBusTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
-            << dynamicCCSubstationBusTable["currverifycbid"].assign( _currentVerificationCapBankId )
-            << dynamicCCSubstationBusTable["currverifyfeederid"].assign( _currentVerificationFeederId )
-            << dynamicCCSubstationBusTable["currverifycborigstate"].assign( _currentCapBankToVerifyAssumedOrigState )
-            << dynamicCCSubstationBusTable["verificationstrategy"].assign( _verificationStrategy )
-            << dynamicCCSubstationBusTable["cbinactivitytime"].assign( _capBankToVerifyInactivityTime )
-            << dynamicCCSubstationBusTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
-            << dynamicCCSubstationBusTable["switchPointStatus"].assign( (_switchOverStatus?"Y":"N") )
-            << dynamicCCSubstationBusTable["altSubControlValue"].assign( _altSubControlValue )
-            << dynamicCCSubstationBusTable["eventSeq"].assign( _eventSeq )
-            << dynamicCCSubstationBusTable["currentwattpointquality"].assign( _currentwattpointquality )
-            << dynamicCCSubstationBusTable["currentvoltpointquality"].assign( _currentvoltpointquality )
-            << dynamicCCSubstationBusTable["ivcontroltot"].assign( _iVControlTot )
-            << dynamicCCSubstationBusTable["ivcount"].assign( _iVCount )
-            << dynamicCCSubstationBusTable["iwcontroltot"].assign( _iWControlTot )
-            << dynamicCCSubstationBusTable["iwcount"].assign( _iWCount )
-            << dynamicCCSubstationBusTable["phaseavalue"].assign( _phaseAvalue )
-            << dynamicCCSubstationBusTable["phasebvalue"].assign( _phaseBvalue )
-            << dynamicCCSubstationBusTable["phasecvalue"].assign( _phaseCvalue )
-            << dynamicCCSubstationBusTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
-            << dynamicCCSubstationBusTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) )
-            << dynamicCCSubstationBusTable["phaseavaluebeforecontrol"].assign( _phaseAvalueBeforeControl )
-            << dynamicCCSubstationBusTable["phasebvaluebeforecontrol"].assign( _phaseBvalueBeforeControl )
-            << dynamicCCSubstationBusTable["phasecvaluebeforecontrol"].assign( _phaseCvalueBeforeControl );
+            updater << _currentvarloadpointvalue 
+                    << _currentwattloadpointvalue 
+                    << _nextchecktime
+                    << (string)(_newpointdatareceivedflag?"Y":"N")
+                    << (string)(_busupdatedflag?"Y":"N")
+                    << _lastcurrentvarpointupdatetime
+                    << _estimatedvarloadpointvalue 
+                    << _currentdailyoperations 
+                    << (string)(_peaktimeflag?"Y":"N")
+                    << (string)(_recentlycontrolledflag?"Y":"N")
+                    << _lastoperationtime
+                    << _varvaluebeforecontrol 
+                    << _lastfeedercontrolledpaoid
+                    << _lastfeedercontrolledposition
+                    << currentDateTime
+                    << _powerfactorvalue
+                    << _kvarsolution
+                    << _estimatedpowerfactorvalue
+                    << _currentvarpointquality
+                    << (string)(_waivecontrolflag?"Y":"N")
+                    << _additionalFlags
+                    << _currentVerificationCapBankId 
+                    << _currentVerificationFeederId 
+                    << _currentCapBankToVerifyAssumedOrigState 
+                    << _verificationStrategy 
+                    << _capBankToVerifyInactivityTime 
+                    << _currentvoltloadpointvalue 
+                    << (string)(_switchOverStatus?"Y":"N")
+                    << _altSubControlValue 
+                    << _eventSeq 
+                    << _currentwattpointquality 
+                    << _currentvoltpointquality 
+                    << _iVControlTot 
+                    << _iVCount 
+                    << _iWControlTot 
+                    << _iWCount 
+                    << _phaseAvalue 
+                    << _phaseBvalue 
+                    << _phaseCvalue 
+                    << _lastWattPointTime
+                    << _lastVoltPointTime
+                    << _phaseAvalueBeforeControl 
+                    << _phaseBvalueBeforeControl 
+                    << _phaseCvalueBeforeControl
+                    << getPaoId();
 
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     string loggedSQLstring = updater.asString();
@@ -6762,21 +6689,28 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted substation bus into DynamicCCSubstationBus: " << getPaoName() << endl;
             }
-            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
+            static const string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
-            RWDBInserter inserter = dynamicCCSubstationBusTable.inserter();
+            static const string insertSql = "insert into dynamicccsubstationbus values ( "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ? )";
 
-            inserter << getPaoId()
+            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
+
+            dbInserter << getPaoId()
             << _currentvarloadpointvalue
             << _currentwattloadpointvalue
             << _nextchecktime
-            << ((_newpointdatareceivedflag?"Y":"N"))
-            << ((_busupdatedflag?"Y":"N"))
+            << (string)(_newpointdatareceivedflag?"Y":"N")
+            << (string)(_busupdatedflag?"Y":"N")
             << _lastcurrentvarpointupdatetime
             << _estimatedvarloadpointvalue
             << _currentdailyoperations
-            << ((_peaktimeflag?"Y":"N"))
-            << ((_recentlycontrolledflag?"Y":"N"))
+            << (string)(_peaktimeflag?"Y":"N")
+            << (string)(_recentlycontrolledflag?"Y":"N")
             << _lastoperationtime
             << _varvaluebeforecontrol
             << _lastfeedercontrolledpaoid
@@ -6786,23 +6720,23 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _kvarsolution
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
-            << string((_waivecontrolflag?"Y":"N"))
-            << string2RWCString(addFlags)
+            << (string)(_waivecontrolflag?"Y":"N")
+            << addFlags
             << _currentVerificationCapBankId
             << _currentVerificationFeederId
             << _currentCapBankToVerifyAssumedOrigState
             << _verificationStrategy
             << _capBankToVerifyInactivityTime
             << _currentvoltloadpointvalue
-            << string((_switchOverStatus?"Y":"N"))
+            << (string)(_switchOverStatus?"Y":"N")
             << _altSubControlValue
             << _eventSeq
             << _currentwattpointquality
             << _currentvoltpointquality
             << _iVControlTot
             << _iVCount
-            <<  _iWControlTot
-            <<  _iWCount
+            << _iWControlTot
+            << _iWCount
             << _phaseAvalue
             << _phaseBvalue
             << _phaseCvalue
@@ -6815,16 +6749,14 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
@@ -6837,7 +6769,7 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
+                    string loggedSQLstring = dbInserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -9803,9 +9735,9 @@ CtiCCSubstationBus* CtiCCSubstationBus::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::restore(RWDBReader& rdr)
+void CtiCCSubstationBus::restore(Cti::RowReader& rdr)
 {
     string tempBoolString;
 
@@ -9951,119 +9883,113 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setLtcId(0);
 }
 
-void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
+void CtiCCSubstationBus::setDynamicData(Cti::RowReader& rdr)
 {
-    RWDBNullIndicator isNull;
     CtiTime dynamicTimeStamp;
     string tempBoolString;
 
+    rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
+    rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
+    rdr["nextchecktime"] >> _nextchecktime;
+    rdr["newpointdatareceivedflag"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["busupdatedflag"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _busupdatedflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
+    rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
+    rdr["currentdailyoperations"] >> _currentdailyoperations;
+    rdr["peaktimeflag"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _peaktimeflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["recentlycontrolledflag"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["lastoperationtime"] >> _lastoperationtime;
+    rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
+    rdr["lastfeederpaoid"] >> _lastfeedercontrolledpaoid;
+    rdr["lastfeederposition"] >> _lastfeedercontrolledposition;
+    rdr["ctitimestamp"] >> dynamicTimeStamp;
+    rdr["powerfactorvalue"] >> _powerfactorvalue;
+    rdr["kvarsolution"] >> _kvarsolution;
+    rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
+    rdr["currentvarpointquality"] >> _currentvarpointquality;
+    rdr["waivecontrolflag"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
 
-    /*rdr["currentvarpointvalue"] >> isNull;
-    if( !isNull )
-    { */
-        rdr["currentvarpointvalue"] >> _currentvarloadpointvalue;
-        rdr["currentwattpointvalue"] >> _currentwattloadpointvalue;
-        rdr["nextchecktime"] >> _nextchecktime;
-        rdr["newpointdatareceivedflag"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-        _newpointdatareceivedflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["busupdatedflag"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-        _busupdatedflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["lastcurrentvarupdatetime"] >> _lastcurrentvarpointupdatetime;
-        rdr["estimatedvarpointvalue"] >> _estimatedvarloadpointvalue;
-        rdr["currentdailyoperations"] >> _currentdailyoperations;
-        rdr["peaktimeflag"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-        _peaktimeflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["recentlycontrolledflag"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-        _recentlycontrolledflag = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["lastoperationtime"] >> _lastoperationtime;
-        rdr["varvaluebeforecontrol"] >> _varvaluebeforecontrol;
-        rdr["lastfeederpaoid"] >> _lastfeedercontrolledpaoid;
-        rdr["lastfeederposition"] >> _lastfeedercontrolledposition;
-        rdr["ctitimestamp"] >> dynamicTimeStamp;
-        rdr["powerfactorvalue"] >> _powerfactorvalue;
-        rdr["kvarsolution"] >> _kvarsolution;
-        rdr["estimatedpfvalue"] >> _estimatedpowerfactorvalue;
-        rdr["currentvarpointquality"] >> _currentvarpointquality;
-        rdr["waivecontrolflag"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-        _waivecontrolflag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["additionalflags"] >> _additionalFlags;
+    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
+    _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+    _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
+    _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+    _overlappingSchedulesVerificationFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
+    _preOperationMonitorPointScanFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
+    _operationSentWaitFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
+    _postOperationMonitorPointScanFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
+    _reEnableBusFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
+    _waitForReCloseDelayFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
+    _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
+    _maxDailyOpsHitFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
+    _ovUvDisabledFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
+    _correctionNeededNoBankAvailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE);
+    _likeDayControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
+    _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
+    _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?TRUE:FALSE);
+    _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
+    _primaryBusFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
 
-        rdr["additionalflags"] >> _additionalFlags;
-        std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
-        _verificationFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
-        _performingVerificationFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
-        _verificationDoneFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
-        _overlappingSchedulesVerificationFlag = (_additionalFlags[3]=='y'?TRUE:FALSE);
-        _preOperationMonitorPointScanFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
-        _operationSentWaitFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
-        _postOperationMonitorPointScanFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
-        _reEnableBusFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
-        _waitForReCloseDelayFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
-        _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
-        _maxDailyOpsHitFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
-        _ovUvDisabledFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
-        _correctionNeededNoBankAvailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE);
-        _likeDayControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
-        _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
-        _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?TRUE:FALSE);
-        _disableOvUvVerificationFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
-        _primaryBusFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
+    if (!_TIME_OF_DAY_VAR_CONF)
+    {
+        setSendMoreTimeControlledCommandsFlag(FALSE);
+    }
+    if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod)||
+        _likeDayControlFlag)
+        figureNextCheckTime();
+    if (_voltReductionControlId <= 0 )
+    {
+        setVoltReductionFlag(FALSE);
+    }
 
-        if (!_TIME_OF_DAY_VAR_CONF)
-        {
-            setSendMoreTimeControlledCommandsFlag(FALSE);
-        }
-        if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::TimeOfDayControlMethod)||
-            _likeDayControlFlag)
-            figureNextCheckTime();
-        if (_voltReductionControlId <= 0 )
-        {
-            setVoltReductionFlag(FALSE);
-        }
+    rdr["currverifycbid"] >> _currentVerificationCapBankId;
+    rdr["currverifyfeederid"] >> _currentVerificationFeederId;
+    rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
+    rdr["verificationstrategy"] >> _verificationStrategy;
+    rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
+    rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
 
-        rdr["currverifycbid"] >> _currentVerificationCapBankId;
-        rdr["currverifyfeederid"] >> _currentVerificationFeederId;
-        rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;
-        rdr["verificationstrategy"] >> _verificationStrategy;
-        rdr["cbinactivitytime"] >> _capBankToVerifyInactivityTime;
-        rdr["currentvoltpointvalue"] >> _currentvoltloadpointvalue;
+    rdr["switchPointStatus"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _switchOverStatus = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["altSubControlValue"] >> _altSubControlValue;
+    rdr["eventSeq"] >> _eventSeq;
+    rdr["currentwattpointquality"] >> _currentwattpointquality;
+    rdr["currentvoltpointquality"] >> _currentvoltpointquality;
 
-        rdr["switchPointStatus"] >> tempBoolString;
-        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-        _switchOverStatus = (tempBoolString=="y"?TRUE:FALSE);
-        rdr["altSubControlValue"] >> _altSubControlValue;
-        rdr["eventSeq"] >> _eventSeq;
-        rdr["currentwattpointquality"] >> _currentwattpointquality;
-        rdr["currentvoltpointquality"] >> _currentvoltpointquality;
+    _altSubVoltVal = _currentvoltloadpointvalue;
+    _altSubVarVal = _currentvarloadpointvalue;
+    _altSubWattVal = _currentwattloadpointvalue;
 
-        _altSubVoltVal = _currentvoltloadpointvalue;
-        _altSubVarVal = _currentvarloadpointvalue;
-        _altSubWattVal = _currentwattloadpointvalue;
+    rdr["ivcontroltot"] >> _iVControlTot;
+    rdr["ivcount"] >> _iVCount;
+    rdr["iwcontroltot"] >> _iWControlTot;
+    rdr["iwcount"] >> _iWCount;
 
-        rdr["ivcontroltot"] >> _iVControlTot;
-        rdr["ivcount"] >> _iVCount;
-        rdr["iwcontroltot"] >> _iWControlTot;
-        rdr["iwcount"] >> _iWCount;
+    rdr["phaseavalue"] >> _phaseAvalue;
+    rdr["phasebvalue"] >> _phaseBvalue;
+    rdr["phasecvalue"] >> _phaseCvalue;
 
-        rdr["phaseavalue"] >> _phaseAvalue;
-        rdr["phasebvalue"] >> _phaseBvalue;
-        rdr["phasecvalue"] >> _phaseCvalue;
+    rdr["lastwattpointtime"] >> _lastWattPointTime;
+    rdr["lastvoltpointtime"] >> _lastVoltPointTime;
 
-        rdr["lastwattpointtime"] >> _lastWattPointTime;
-        rdr["lastvoltpointtime"] >> _lastVoltPointTime;
+    rdr["phaseavaluebeforecontrol"] >> _phaseAvalueBeforeControl;
+    rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
+    rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
 
-        rdr["phaseavaluebeforecontrol"] >> _phaseAvalueBeforeControl;
-        rdr["phasebvaluebeforecontrol"] >> _phaseBvalueBeforeControl;
-        rdr["phasecvaluebeforecontrol"] >> _phaseCvalueBeforeControl;
+    _insertDynamicDataFlag = FALSE;
 
-        _insertDynamicDataFlag = FALSE;
-
-        _dirty = false;
-    //}
+    _dirty = false;
 }
 
 /*---------------------------------------------------------------------------

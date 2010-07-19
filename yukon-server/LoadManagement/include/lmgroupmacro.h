@@ -17,7 +17,6 @@
 
 #include <vector>
 
-#include <rw/db/db.h>
 #include <rw/thr/recursiv.h> 
 
 #include "lmgroupbase.h"
@@ -29,7 +28,7 @@ class CtiLMGroupMacro : public CtiLMGroupBase
 public:
 
     CtiLMGroupMacro();
-    CtiLMGroupMacro(RWDBReader& rdr);
+    CtiLMGroupMacro(Cti::RowReader &rdr);
 
     virtual ~CtiLMGroupMacro();
 
@@ -48,6 +47,6 @@ private:
 
 protected:
     
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif

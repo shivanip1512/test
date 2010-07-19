@@ -18,16 +18,13 @@
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "database_connection.h"
+#include "database_reader.h"
 
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "tbl_contact_notification.h"
 #include "logger.h"
-#include "rwutil.h"
 
 CtiTableContactNotification::CtiTableContactNotification(LONG id) :
   _contactNotifID(id),
@@ -134,38 +131,29 @@ void CtiTableContactNotification::dump() const {
   dout << "Dirty: " << isDirty() << endl;
 }
 
-RWDBStatus CtiTableContactNotification::Restore() {
-  CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-  RWDBConnection conn = getConnection();
+bool CtiTableContactNotification::Restore() 
+{
+    static const string sql =  "SELECT CTN.contactnotifid, CTN.contactid, CTN.notificationcategoryid, CTN.disableflag, "
+                                   "CTN.notification "
+                               "FROM ContactNotification CTN "
+                               "WHERE CTN.contactnotifid = ?";
 
-  RWDBStatus dbstat;
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-  {
-    RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBSelector selector = getDatabase().selector();
+    reader << getContactNotificationID();
 
-    selector <<
-      table["contactnotifid"] <<
-      table["contactid"] <<
-      table["notificationcategoryid"] <<
-      table["disableflag"] <<
-      table["notification"];
-
-    selector.where(table["contactnotifid"] == getContactNotificationID());
-
-    RWDBReader reader = selector.reader( conn );
-
-    dbstat = selector.status();
+    reader.execute();
 
     if( reader() ) {
       DecodeDatabaseReader(reader);
+      return true;
     }
-  }
 
-    return dbstat;
+    return false;
 }
 
-void CtiTableContactNotification::DecodeDatabaseReader(RWDBReader& rdr) {
+void CtiTableContactNotification::DecodeDatabaseReader(Cti::RowReader& rdr) {
   string rwstemp;
 
   rdr["contactnotifid"] >> _contactNotifID;
@@ -182,18 +170,5 @@ void CtiTableContactNotification::DecodeDatabaseReader(RWDBReader& rdr) {
 
 string CtiTableContactNotification::getTableName() {
   return string("ContactNotification");
-}
-
-void CtiTableContactNotification::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) {
-  keyTable = db.table(getTableName().c_str());
-
-  selector <<
-    keyTable["contactnotificationid"] <<
-    keyTable["contactid"] <<
-    keyTable["notificationcategoryid"] <<
-    keyTable["disableflag"] <<
-    keyTable["notification"];
-
-  selector.from(keyTable);
 }
 

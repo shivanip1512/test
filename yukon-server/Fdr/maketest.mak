@@ -13,6 +13,7 @@ INCLPATHS+= \
 -I$(CPARMS)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(SQLAPI)\include \
 -I$(FDR)\Telegyr\inc \
 -I$(FDR)\OSIPI\inc \
 -I$(FDR)\LiveData
@@ -76,7 +77,8 @@ $(BIN)\fdrtelegyr.lib \
 $(BIN)\fdrxa21lm.lib \
 $(BIN)\fdrlivedata.lib \
 $(BIN)\fdrwabash.lib \
-$(BIN)\fdrtristatesub.lib
+$(BIN)\fdrtristatesub.lib \
+$(BIN)\cti_fdr.lib \
 
 
 ALL:      fdrtest
@@ -127,26 +129,30 @@ deps:
 #UPDATE#
 test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		fdrinterface.h message.h ctidbgmem.h collectable.h rwutil.h \
-		yukon.h precompiled.h ctitime.h boost_time.h boostutil.h \
+		yukon.h precompiled.h database_connection.h dbaccess.h \
+		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
+		guard.h utility.h ctitime.h queues.h numstr.h sorted_vector.h \
+		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		msg_dbchg.h connection.h exchange.h logger.h thread.h \
+		CtiPCPtrQueue.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h mgr_fdrpoint.h smartmap.h \
+		readers_writer_lock.h critical_section.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		TextFileInterfaceParts.h ctistring.h ctidate.h
+test_fdrtristatesub.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
+		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h msg_dbchg.h connection.h exchange.h dllbase.h \
-		dsm2.h mutex.h guard.h cticonnect.h netports.h dsm2err.h \
-		words.h logger.h thread.h CtiPCPtrQueue.h msg_multi.h \
+		sorted_vector.h CtiPCPtrQueue.h ctistring.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		database_reader.h row_reader.h boost_time.h boostutil.h \
+		fdrTriStateSub.h fdrftpinterface.h fdrinterface.h message.h \
+		collectable.h msg_dbchg.h connection.h exchange.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h mgr_fdrpoint.h \
 		smartmap.h readers_writer_lock.h critical_section.h \
 		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h TextFileInterfaceParts.h ctistring.h ctidate.h
-test_fdrtristatesub.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
-		dlldefs.h ctidate.h logger.h thread.h mutex.h guard.h \
-		numstr.h CtiPCPtrQueue.h utility.h queues.h cticalls.h \
-		os2_2w32.h types.h sorted_vector.h ctistring.h rwutil.h \
-		boost_time.h boostutil.h fdrTriStateSub.h fdrftpinterface.h \
-		fdrinterface.h message.h collectable.h msg_dbchg.h \
-		connection.h exchange.h dllbase.h dsm2.h cticonnect.h \
-		netports.h dsm2err.h words.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h configkey.h configval.h mgr_fdrpoint.h smartmap.h \
-		readers_writer_lock.h critical_section.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h
+		fdrpointlist.h
 #ENDUPDATE#

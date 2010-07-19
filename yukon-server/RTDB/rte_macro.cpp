@@ -13,7 +13,7 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "dsm2.h"
 #include "message.h"
@@ -75,17 +75,10 @@ CtiRouteMacro::CtiRoutePtrList_t   CtiRouteMacro::getRoutePtrList() const
     return RoutePtrList;
 }
 
-
-void CtiRouteMacro::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-}
-
-void CtiRouteMacro::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
-
+    
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
@@ -255,7 +248,7 @@ INT CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, 
 }
 
 
-void CtiRouteMacro::DecodeMacroReader(RWDBReader &rdr)
+void CtiRouteMacro::DecodeMacroReader(Cti::RowReader &rdr)
 {
     CtiTableMacroRoute   MacroRoute;
 

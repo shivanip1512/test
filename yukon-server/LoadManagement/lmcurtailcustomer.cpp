@@ -20,6 +20,9 @@
 #include "loadmanager.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -40,7 +43,7 @@ _acklateflag(false)
 {
 }
 
-CtiLMCurtailCustomer::CtiLMCurtailCustomer(RWDBReader& rdr)
+CtiLMCurtailCustomer::CtiLMCurtailCustomer(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -239,9 +242,9 @@ CtiLMCurtailCustomer& CtiLMCurtailCustomer::operator=(const CtiLMCurtailCustomer
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
+void CtiLMCurtailCustomer::restore(Cti::RowReader &rdr)
 {
     CtiLMCICustomerBase::restore(rdr);
     string tempBoolString;
@@ -268,50 +271,30 @@ void CtiLMCurtailCustomer::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "insert into lmcurtailcustomeractivity values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << getCustomerId()
+        << getCurtailReferenceId()
+        << getAcknowledgeStatus()
+        << getAckDateTime()
+        << getIPAddressOfAckUser()
+        << getUserIdName()
+        << getNameOfAckPerson()
+        << getCurtailmentNotes()
+        << getCustomerDemandLevel()
+        << ( ( getAckLateFlag() ? std::string("Y") : std::string("N") ) );
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        if( conn.isValid() )
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted customer activity area into LMCurtailCustomerActivity: " << getCompanyName() << endl;
-            }
-
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmCurtailCustomerActivityTable = db.table("lmcurtailcustomeractivity");
-
-            RWDBInserter inserter = lmCurtailCustomerActivityTable.inserter();
-
-            inserter << getCustomerId()
-                     << getCurtailReferenceId()
-                     << getAcknowledgeStatus()
-                     << getAckDateTime()
-                     << getIPAddressOfAckUser()
-                     << getUserIdName()
-                     << getNameOfAckPerson()
-                     << getCurtailmentNotes()
-                     << getCustomerDemandLevel()
-                     << ( ( getAckLateFlag() ? "Y": "N" ) );
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            inserter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << inserter.asString() << endl;
     }
+
+    inserter.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -319,44 +302,43 @@ void CtiLMCurtailCustomer::addLMCurtailCustomerActivityTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    static const std::string sql = "update lmcurtailcustomeractivity"
+                                   " set "
+                                        "acknowledgestatus = ?, "
+                                        "ackdatetime = ?, "
+                                        "ipaddressofackuser = ?, "
+                                        "useridname = ?, "
+                                        "nameofackperson = ?, "
+                                        "curtailmentnotes = ?, "
+                                        "currentpdl = ?, "
+                                        "acklateflag = ?"
+                                   " where "
+                                        "customerid = ? and "
+                                        "curtailreferenceid = ?";
+
+    Cti::Database::DatabaseWriter   updater(conn, sql);
+
+    updater
+        << getAcknowledgeStatus()[0]
+        << getAckDateTime()
+        << getIPAddressOfAckUser()[0]
+        << getUserIdName()[0]
+        << getNameOfAckPerson()[0]
+        << getCurtailmentNotes()[0]
+        << getCustomerDemandLevel()
+        << ( getAckLateFlag() ? std::string("Y") : std::string("N") )
+        << getCustomerId()
+        << getCurtailReferenceId();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmCurtailCustomerActivityTable = db.table("lmcurtailcustomeractivity");
-            RWDBUpdater updater = lmCurtailCustomerActivityTable.updater();
-
-            updater << lmCurtailCustomerActivityTable["acknowledgestatus"].assign(getAcknowledgeStatus()[0])
-                    << lmCurtailCustomerActivityTable["ackdatetime"].assign(toRWDBDT(getAckDateTime()))
-                    << lmCurtailCustomerActivityTable["ipaddressofackuser"].assign(getIPAddressOfAckUser()[0])
-                    << lmCurtailCustomerActivityTable["useridname"].assign(getUserIdName()[0])
-                    << lmCurtailCustomerActivityTable["nameofackperson"].assign(getNameOfAckPerson()[0])
-                    << lmCurtailCustomerActivityTable["curtailmentnotes"].assign(getCurtailmentNotes()[0])
-                    << lmCurtailCustomerActivityTable["currentpdl"].assign(getCustomerDemandLevel())
-                    << lmCurtailCustomerActivityTable["acklateflag"].assign(( (getAckLateFlag() ? "Y":"N") ));
-
-            updater.where(lmCurtailCustomerActivityTable["customerid"]==getCustomerId() &&
-                          lmCurtailCustomerActivityTable["curtailreferenceid"]==getCurtailReferenceId());
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            updater.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    updater.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -366,8 +348,7 @@ void CtiLMCurtailCustomer::updateLMCurtailCustomerActivityTable(RWDBConnection& 
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -376,7 +357,7 @@ void CtiLMCurtailCustomer::dumpDynamicData()
 
     Writes out the dynamic information for this customer.
 ---------------------------------------------------------------------------*/
-void CtiLMCurtailCustomer::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMCurtailCustomer::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     updateLMCurtailCustomerActivityTable(conn, currentDateTime);
 }
@@ -384,66 +365,46 @@ void CtiLMCurtailCustomer::dumpDynamicData(RWDBConnection& conn, CtiTime& curren
 /*---------------------------------------------------------------------------
     restoreDynamicData
 
-    Restores self's dynamic data given a RWDBReader
+    Restores self's dynamic data
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailCustomer::restoreDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql =  "SELECT CCA.curtailreferenceid, CCA.acknowledgestatus, CCA.ackdatetime, "
+                                   "CCA.ipaddressofackuser, CCA.useridname, CCA.nameofackperson, CCA.curtailmentnotes, "
+                                   "CCA.acklateflag "
+                               "FROM lmcurtailcustomeractivity CCA "
+                               "WHERE CCA.customerid = ? "
+                               "ORDER BY CCA.curtailreferenceid DESC";
+
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr(conn, sql);
+
+    rdr << getCustomerId();
+
+    rdr.execute();
+
+    if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmCurtailCustomerActivityTable = db.table("lmcurtailcustomeractivity");
-            RWDBSelector selector = db.selector();
-            selector << lmCurtailCustomerActivityTable["curtailreferenceid"]
-                     << lmCurtailCustomerActivityTable["acknowledgestatus"]
-                     << lmCurtailCustomerActivityTable["ackdatetime"]
-                     << lmCurtailCustomerActivityTable["ipaddressofackuser"]
-                     << lmCurtailCustomerActivityTable["useridname"]
-                     << lmCurtailCustomerActivityTable["nameofackperson"]
-                     << lmCurtailCustomerActivityTable["curtailmentnotes"]
-                     << lmCurtailCustomerActivityTable["acklateflag"];
-
-            selector.from(lmCurtailCustomerActivityTable);
-
-            selector.where(lmCurtailCustomerActivityTable["customerid"]==getCustomerId());
-
-            selector.orderByDescending(lmCurtailCustomerActivityTable["curtailreferenceid"]);
-
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
-            {
-                string loggedSQLstring = selector.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            RWDBReader rdr = selector.reader(conn);
-
-            if(rdr())
-            {
-                string tempBoolString;
-                rdr["curtailreferenceid"] >> _curtailreferenceid;
-                rdr["acknowledgestatus"] >> _acknowledgestatus;
-                rdr["ackdatetime"] >> _ackdatetime;
-                rdr["ipaddressofackuser"] >> _ipaddressofackuser;
-                rdr["useridname"] >> _useridname;
-                rdr["nameofackperson"] >> _nameofackperson;
-                rdr["curtailmentnotes"] >> _curtailmentnotes;
-                rdr["acklateflag"] >> tempBoolString;
-                std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
-                setAckLateFlag(tempBoolString=="y"?TRUE:FALSE);
-            }
-
-        }
-        else
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << loggedSQLstring << endl;
         }
+    }
+
+    if(rdr())
+    {
+        string tempBoolString;
+        rdr["curtailreferenceid"] >> _curtailreferenceid;
+        rdr["acknowledgestatus"] >> _acknowledgestatus;
+        rdr["ackdatetime"] >> _ackdatetime;
+        rdr["ipaddressofackuser"] >> _ipaddressofackuser;
+        rdr["useridname"] >> _useridname;
+        rdr["nameofackperson"] >> _nameofackperson;
+        rdr["curtailmentnotes"] >> _curtailmentnotes;
+        rdr["acklateflag"] >> tempBoolString;
+        std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+        setAckLateFlag(tempBoolString=="y"?TRUE:FALSE);
     }
 }
 

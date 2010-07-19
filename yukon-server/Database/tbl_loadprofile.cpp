@@ -18,7 +18,8 @@
 #include "tbl_loadprofile.h"
 #include "logger.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableDeviceLoadProfile::CtiTableDeviceLoadProfile() :
     _deviceID(-1),
@@ -56,21 +57,7 @@ INT  CtiTableDeviceLoadProfile::getVoltageProfileRate()      const  {  return _v
 
 bool CtiTableDeviceLoadProfile::isChannelValid(int channel)  const  {  return _channelsValid[channel];   }
 
-void CtiTableDeviceLoadProfile::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector << devTbl["lastintervaldemandrate"]
-             << devTbl["loadprofiledemandrate"]
-             << devTbl["loadprofilecollection"]
-             << devTbl["voltagedmdinterval"]
-             << devTbl["voltagedmdrate"];
-
-    selector.from(devTbl);
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
-void CtiTableDeviceLoadProfile::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceLoadProfile::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string temp_str;
 
@@ -127,89 +114,5 @@ string CtiTableDeviceLoadProfile::getTableName()
 LONG CtiTableDeviceLoadProfile::getDeviceID() const
 {
     return _deviceID;
-}
-
-RWDBStatus CtiTableDeviceLoadProfile::Restore()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector << table["deviceid"]
-             << table["lastintervaldemandrate"]
-             << table["loadprofiledemandrate"];
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceLoadProfile::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter << getDeviceID()
-             << getLastIntervalDemandRate()
-             << getLoadProfileDemandRate();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableDeviceLoadProfile::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater << table["lastintervaldemandrate"].assign(getLastIntervalDemandRate())
-            << table["loadprofiledemandrate" ].assign(getLoadProfileDemandRate());
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableDeviceLoadProfile::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-
-    return deleter.status();
 }
 

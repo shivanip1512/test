@@ -33,7 +33,7 @@ CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer()
 {
 }
 
-CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(RWDBReader& rdr)
+CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -143,9 +143,9 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLME
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeCustomer::restore(RWDBReader& rdr)
+void CtiLMEnergyExchangeCustomer::restore(Cti::RowReader &rdr)
 {
     CtiLMCICustomerBase::restore(rdr);
 }

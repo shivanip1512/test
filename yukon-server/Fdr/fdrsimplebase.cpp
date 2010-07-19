@@ -25,9 +25,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw/ctoken.h>
 #include "ctitime.h"
 #include "ctidate.h"
-#include <rw/db/db.h>
-#include <rw/db/connect.h>
-#include <rw/db/status.h>
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -225,10 +222,7 @@ bool CtiFDRSimple::loadTranslationLists()
     CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                    string (FDR_INTERFACE_RECEIVE));
 
-
-    RWDBStatus dbStatus = pointList->loadPointList();
-
-    if (dbStatus.errorCode() == (RWDBStatus::ok))
+    if (pointList->loadPointList())
     {
       const int minExpectedOld = 2; // somewhat arbitrary, see note in fdrsinglesocket.cpp
       if (pointList->entries() == 0 && aList.getPointList()->entries() > minExpectedOld)
@@ -272,7 +266,7 @@ bool CtiFDRSimple::loadTranslationLists()
     else
     {
       CtiLockGuard<CtiLogger> doubt_guard(dout);
-      logNow() << "error in db read code " << pointList->loadPointList().errorCode() << endl;
+      logNow() << "error in db read code " << endl;
       successful = false;
     }
   }   // end try block

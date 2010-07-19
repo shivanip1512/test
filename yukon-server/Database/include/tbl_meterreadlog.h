@@ -24,12 +24,13 @@
 
 #include <windows.h>
 #include "ctitime.h"
-#include <rw/db/datetime.h>
 
 #include "dlldefs.h"
 #include "pointdefs.h"
 #include "utility.h"
 #include "yukon.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
@@ -73,10 +74,10 @@ public:
    virtual RWBoolean operator<(const CtiTableMeterReadLog& aRef) const;
 
    virtual void Insert();
-   virtual void Insert(RWDBConnection &conn);
+   virtual void Insert(Cti::Database::DatabaseConnection &conn);
    virtual string getTableName() const;
 
-   virtual void DecodeDatabaseReader( RWDBReader& rdr );
+   virtual void DecodeDatabaseReader( Cti::RowReader& rdr );
 
    LONG                    getLogID() const;
    LONG                    getDeviceID() const;

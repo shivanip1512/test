@@ -66,6 +66,7 @@
 #include "utility.h"
 #include "dllyukon.h"
 #include "thread_monitor.h"
+#include "database_connection.h"
 
 #include "millisecond_timer.h"
 
@@ -1658,34 +1659,30 @@ INT RecordDynamicData()
          */
         ScannerDeviceManager.apply(applyGenerateScannerDataRows, (void*)&dirtyData);
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        Cti::Database::DatabaseConnection   conn;
 
-        if(conn.isValid())
+        conn.beginTransaction();
+
+        try
         {
-            conn.beginTransaction();
+            vector< CtiTableDeviceScanData >::iterator dirtyit;
 
-            try
+            for(dirtyit = dirtyData.begin(); dirtyit != dirtyData.end(); dirtyit++)
             {
-                vector< CtiTableDeviceScanData >::iterator dirtyit;
-
-                for(dirtyit = dirtyData.begin(); dirtyit != dirtyData.end(); dirtyit++)
-                {
-                    CtiTableDeviceScanData &dirty = *dirtyit;
-                    dirty.Update(conn);
-                }
+                CtiTableDeviceScanData &dirty = *dirtyit;
+                dirty.Update(conn);
             }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
-                    dout << " Trying to commit transaction on DynamicDeviceScanData" << endl;
-
-                }
-            }
-            conn.commitTransaction();
         }
+        catch(...)
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") ";
+                dout << " Trying to commit transaction on DynamicDeviceScanData" << endl;
+
+            }
+        }
+        conn.commitTransaction();
     }
 
     return status;

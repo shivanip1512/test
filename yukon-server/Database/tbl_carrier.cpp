@@ -17,6 +17,9 @@
 
 #include "tbl_carrier.h"
 #include "logger.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 CtiTableDeviceCarrier::CtiTableDeviceCarrier() :
 _deviceID(-1),
@@ -59,23 +62,8 @@ string CtiTableDeviceCarrier::getTableName()
     return "DeviceCarrierSettings";
 }
 
-void CtiTableDeviceCarrier::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiTableDeviceCarrier::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    RWDBTable devTbl = db.table( getTableName().c_str() );
-
-    selector << devTbl["address"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
-void CtiTableDeviceCarrier::DecodeDatabaseReader(RWDBReader &rdr)
-{
-    INT iTemp;
-    RWDBNullIndicator isNull;
-    string   rwsTemp;
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -99,96 +87,57 @@ CtiTableDeviceCarrier& CtiTableDeviceCarrier::setDeviceID( const LONG deviceID )
     return *this;
 }
 
-RWDBStatus CtiTableDeviceCarrier::Restore()
+bool CtiTableDeviceCarrier::Insert()
 {
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?)";
 
-    char temp[32];
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    inserter 
+        << getDeviceID()
+        << getAddress();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    bool success = inserter.execute();
 
-    selector <<
-    table["deviceid"] <<
-    table["address"];
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceCarrier::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID() <<
-    getAddress();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if ( success )
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceCarrier::Update()
+bool CtiTableDeviceCarrier::Update()
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() + " set address = ? where deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
+    updater 
+        << getAddress()
+        << getDeviceID();
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    bool success = updater.execute();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater << table["address"].assign(getAddress() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    if ( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceCarrier::Delete()
+bool CtiTableDeviceCarrier::Delete()
 {
+    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    deleter << getDeviceID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
+    return deleter.execute();
 }
-
 

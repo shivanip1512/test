@@ -21,6 +21,9 @@
 #include "loadmanager.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 using std::vector;
 
@@ -37,7 +40,7 @@ _revisionnumber(0)
 {
 }
 
-CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision(RWDBReader& rdr)
+CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -381,9 +384,9 @@ int CtiLMEnergyExchangeOfferRevision::operator!=(const CtiLMEnergyExchangeOfferR
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOfferRevision::restore(RWDBReader& rdr)
+void CtiLMEnergyExchangeOfferRevision::restore(Cti::RowReader &rdr)
 {
 
 
@@ -402,48 +405,31 @@ void CtiLMEnergyExchangeOfferRevision::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 {
+    static const std::string sql = "insert into lmenergyexchangeofferrevision values (?, ?, ?, ?, ?, ?)";
 
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     {
-
-        if( conn.isValid() )
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
-            }
-
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
-
-            RWDBInserter inserter = lmEnergyExchangeOfferRevisionTable.inserter();
-
-            inserter << getOfferId()
-            << getRevisionNumber()
-            << getActionDateTime()
-            << getNotificationDateTime()
-            << getOfferExpirationDateTime()
-            << getAdditionalInfo();
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            inserter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
     }
+
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << getOfferId()
+        << getRevisionNumber()
+        << getActionDateTime()
+        << getNotificationDateTime()
+        << getOfferExpirationDateTime()
+        << getAdditionalInfo();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << inserter.asString() << endl;
+    }
+
+    inserter.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -453,43 +439,34 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeOfferRevision::updateLMEnergyExchangeOfferRevisionTable()
 {
+    static const std::string sql = "update lmenergyexchangeofferrevision"
+                                   " set "
+                                        "actiondatetime = ?, "
+                                        "notificationdatetime = ?, "
+                                        "offerexpirationdatetime = ?, "
+                                        "additionalinfo = ?"
+                                   " where "
+                                        "offerid = ? and "
+                                        "revisionnumber = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater
+        << getActionDateTime()
+        << getNotificationDateTime()
+        << getOfferExpirationDateTime()
+        << getAdditionalInfo()[0]
+        << getOfferId()
+        << getRevisionNumber();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
-            RWDBUpdater updater = lmEnergyExchangeOfferRevisionTable.updater();
-
-            updater << lmEnergyExchangeOfferRevisionTable["actiondatetime"].assign(toRWDBDT(getActionDateTime()))
-            << lmEnergyExchangeOfferRevisionTable["notificationdatetime"].assign(toRWDBDT(getNotificationDateTime()))
-            << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"].assign(toRWDBDT(getOfferExpirationDateTime()))
-            << lmEnergyExchangeOfferRevisionTable["additionalinfo"].assign(getAdditionalInfo()[0]);
-
-            updater.where(lmEnergyExchangeOfferRevisionTable["offerid"]==getOfferId() &&
-                          lmEnergyExchangeOfferRevisionTable["revisionnumber"]==getRevisionNumber());
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-            {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            updater.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    updater.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -507,62 +484,41 @@ void CtiLMEnergyExchangeOfferRevision::dumpDynamicData()
 /*---------------------------------------------------------------------------
     restoreDynamicData
 
-    Restores self's dynamic data given a RWDBReader
+    Restores self's dynamic data
 ---------------------------------------------------------------------------*/
-void CtiLMEnergyExchangeOfferRevision::restoreDynamicData(RWDBReader& rdr)
+void CtiLMEnergyExchangeOfferRevision::restoreDynamicData()
 {
+    static const string sql =  "SELECT XOR.offerid, XOR.revisionnumber, XOR.actiondatetime, XOR.notificationdatetime, "
+                                   "XOR.offerexpirationdatetime, XOR.additionalinfo "
+                               "FROM lmenergyexchangeofferrevision XOR "
+                               "WHERE XOR.offerid = ? "
+                               "ORDER BY XOR.revisionnumber DESC";
 
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    rdr << getOfferId();
+
+    rdr.execute();
+
+    if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
-            RWDBSelector selector = db.selector();
-            selector << lmEnergyExchangeOfferRevisionTable["offerid"]
-            << lmEnergyExchangeOfferRevisionTable["revisionnumber"]
-            << lmEnergyExchangeOfferRevisionTable["actiondatetime"]
-            << lmEnergyExchangeOfferRevisionTable["notificationdatetime"]
-            << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"]
-            << lmEnergyExchangeOfferRevisionTable["additionalinfo"];
-
-            selector.from(lmEnergyExchangeOfferRevisionTable);
-
-            selector.where(lmEnergyExchangeOfferRevisionTable["offerid"]==getOfferId());
-
-            selector.orderByDescending(lmEnergyExchangeOfferRevisionTable["revisionnumber"]);
-
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
-            {
-                string loggedSQLstring = selector.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
-            }
-
-            RWDBReader rdr = selector.reader(conn);
-
-            if(rdr())
-            {
-                string tempBoolString;
-                rdr["offerid"] >> _offerid;
-                rdr["revisionnumber"] >> _revisionnumber;
-                rdr["actiondatetime"] >> _actiondatetime;
-                rdr["notificationdatetime"] >> _notificationdatetime;
-                rdr["offerexpirationdatetime"] >> _offerexpirationdatetime;
-                rdr["additionalinfo"] >> _additionalinfo;
-            }
-
-        }
-        else
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << loggedSQLstring << endl;
         }
+    }
+
+    if(rdr())
+    {
+        string tempBoolString;
+        rdr["offerid"] >> _offerid;
+        rdr["revisionnumber"] >> _revisionnumber;
+        rdr["actiondatetime"] >> _actiondatetime;
+        rdr["notificationdatetime"] >> _notificationdatetime;
+        rdr["offerexpirationdatetime"] >> _offerexpirationdatetime;
+        rdr["additionalinfo"] >> _additionalinfo;
     }
 }
 

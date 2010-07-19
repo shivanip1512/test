@@ -23,6 +23,7 @@
 #include "resolvers.h"
 #include "ccid.h"
 #include "ccoperationstats.h"
+#include "database_writer.h"
 
 using namespace capcontrol;
 
@@ -438,38 +439,36 @@ BOOL CtiCCOperationStats::isDirty()
 {
     return _dirty;
 }
-void CtiCCOperationStats::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
 
     {
-
-        RWDBTable dynamicCCOpStats = getDatabase().table( "dynamicccoperationstatistics" );
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCCOpStats.updater();
+            static const string updateSql = "update dynamicccoperationstatistics set "
+                                            "userdefopcount = ?, "
+                                            "userdefconffail = ?, "
+                                            "dailyopcount = ?, "
+                                            "dailyconffail = ?, "
+                                            "weeklyopcount = ?, "
+                                            "weeklyconffail = ?, "
+                                            "monthlyopcount = ?, "
+                                            "monthlyconffail = ? "
+                                            " where paobjectid = ?";
 
-            updater.where(dynamicCCOpStats["paobjectid"] == _paoid);
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater << dynamicCCOpStats["userdefopcount"].assign( _userDefOpCount )
-                    << dynamicCCOpStats["userdefconffail"].assign( _userDefConfFail )
-                    << dynamicCCOpStats["dailyopcount"].assign(   _dailyOpCount )
-                    << dynamicCCOpStats["dailyconffail"].assign( _dailyConfFail )
-                    << dynamicCCOpStats["weeklyopcount"].assign( _weeklyOpCount )
-                    << dynamicCCOpStats["weeklyconffail"].assign( _weeklyConfFail )
-                    << dynamicCCOpStats["monthlyopcount"].assign( _monthlyOpCount )
-                    << dynamicCCOpStats["monthlyconffail"].assign( _monthlyConfFail);
-            ;
+            updater << _userDefOpCount
+                    << _userDefConfFail
+                    << _dailyOpCount
+                    << _dailyConfFail
+                    << _weeklyOpCount
+                    << _weeklyConfFail
+                    << _monthlyOpCount
+                    << _monthlyConfFail
+                    << _paoid;
 
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
@@ -477,11 +476,10 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
             {
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = updater.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
+                        dout << "  " << updateSql << endl;
                     }
                 }
             }
@@ -492,7 +490,8 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted CC Operation Statistics into DynamicCCOperationStatistics: " << getPAOId() << endl;
             }
-            RWDBInserter inserter = dynamicCCOpStats.inserter();
+            static const string insertSql = "insert into dynamicccoperationstatistics values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            Cti::Database::DatabaseWriter inserter(conn, insertSql);
             
             inserter << _paoid
                 << _userDefOpCount  
@@ -506,16 +505,15 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    dout << CtiTime() << " - " << insertSql << endl;
                 }
             }
 
-            inserter.execute( conn );
+            
 
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(inserter.execute( ))    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
@@ -524,11 +522,10 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
             {
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
+                        dout << "  " << insertSql << endl;
                     }
                 }
             }
@@ -617,7 +614,7 @@ BOOL CtiCCOperationStats::setSuccessPercentPointId(LONG tempPointId, LONG tempPo
     return retVal;
 
 }
-void CtiCCOperationStats::setDynamicData(RWDBReader& rdr)
+void CtiCCOperationStats::setDynamicData(Cti::RowReader& rdr)
 {
     rdr["paobjectid"] >> _paoid;
 

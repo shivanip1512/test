@@ -16,8 +16,6 @@
 #include "pt_base.h"
 #include "tbl_pt_alarm.h"
 #include "logger.h"
-#include "rwutil.h"
-
 
 CtiPointBase::~CtiPointBase()
 {
@@ -106,12 +104,12 @@ CtiPointBase& CtiPointBase::operator=(const CtiPointBase& aRef)
     return *this;
 }
 
-void CtiPointBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiPointBase::getSQLCoreStatement()
 {
-    CtiTablePointBase::getSQL(db, keyTable, selector);
+    return CtiTablePointBase::getSQLCoreStatement();
 }
 
-void CtiPointBase::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPointBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     _pointBase.DecodeDatabaseReader(rdr);
 
@@ -203,7 +201,7 @@ int CtiPointBase::getControlExpirationTime() const
 /*
  * This method makes certain this object should be able to decode with this reader.
  */
-bool CtiPointBase::isA(RWDBReader &rdr) const
+bool CtiPointBase::isA(Cti::RowReader &rdr) const
 {
     bool I_is = false;
     int pttype;

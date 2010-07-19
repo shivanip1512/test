@@ -33,11 +33,11 @@
 
 #include <string>
 
-#include <rw/db/db.h>
 
 #include "mutex.h"
 #include "guard.h"
 #include "logger.h"
+#include "row_reader.h"
 
 class CtiTableMCSchedule
 {
@@ -66,8 +66,7 @@ public:
 
     virtual ~CtiTableMCSchedule();
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    bool DecodeDatabaseReader(RWDBReader &rdr);
+    bool DecodeDatabaseReader(Cti::RowReader &rdr);
 
     //database operations
     bool Update();

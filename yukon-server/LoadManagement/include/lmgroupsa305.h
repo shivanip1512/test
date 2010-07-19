@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 
 #include "lmgroupbase.h"
                 
@@ -27,7 +26,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupSA305 )
 
     CtiLMGroupSA305();
-    CtiLMGroupSA305(RWDBReader& rdr);
+    CtiLMGroupSA305(Cti::RowReader &rdr);
     CtiLMGroupSA305(const CtiLMGroupSA305& groupexp);
 
     virtual ~CtiLMGroupSA305();
@@ -52,7 +51,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupSA305 )
 
 private:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

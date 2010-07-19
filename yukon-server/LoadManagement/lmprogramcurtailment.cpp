@@ -24,6 +24,9 @@
 #include "msg_notif_email.h"
 #include "lmcontrolareatrigger.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -39,7 +42,7 @@ _curtailreferenceid(0)
 {
 }
 
-CtiLMProgramCurtailment::CtiLMProgramCurtailment(RWDBReader& rdr)
+CtiLMProgramCurtailment::CtiLMProgramCurtailment(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -720,82 +723,65 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 {
+    //need to get a new curtail reference id from the database
+    static const string sql =  "SELECT CPA.curtailreferenceid "
+                               "FROM lmcurtailprogramactivity CPA "
+                               "ORDER BY CPA.curtailreferenceid DESC";
 
+    Cti::Database::DatabaseConnection conn;
+    Cti::Database::DatabaseReader rdr(conn);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    rdr.setCommandText(sql);
+    rdr.execute();
+
+    if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmCurtailProgramActivityTable = db.table("lmcurtailprogramactivity");
-
-            {//need to get a new curtail reference id from the database
-                RWDBSelector selector = db.selector();
-                selector << lmCurtailProgramActivityTable["curtailreferenceid"];
-
-                selector.from(lmCurtailProgramActivityTable);
-
-                selector.orderByDescending(lmCurtailProgramActivityTable["curtailreferenceid"]);
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    string loggedSQLstring = selector.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-
-                if( rdr() )
-                {
-                    LONG tempLONG = 0;
-                    rdr["curtailreferenceid"] >> tempLONG;
-                    setCurtailReferenceId(tempLONG+1);
-                }
-                else
-                {
-                    setCurtailReferenceId(1);
-                }
-
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
-                }
-            }
-
-            {
-                RWDBInserter inserter = lmCurtailProgramActivityTable.inserter();
-
-                inserter << getPAOId()
-                << getCurtailReferenceId()
-                << getActionDateTime()
-                << getNotificationDateTime()
-                << getCurtailmentStartTime()
-                << getCurtailmentStopTime()
-                << getRunStatus()
-                << getAdditionalInfo();
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                inserter.execute( conn );
-            }
-        }
-        else
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << loggedSQLstring << endl;
         }
+    }
+
+    if( rdr() )
+    {
+        LONG tempLONG = 0;
+        rdr["curtailreferenceid"] >> tempLONG;
+        setCurtailReferenceId(tempLONG+1);
+    }
+    else
+    {
+        setCurtailReferenceId(1);
+    }
+
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
+    }
+
+    {
+        static const std::string sql_insert = "insert into lmcurtailprogramactivity values (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        Cti::Database::DatabaseConnection   conn;
+        Cti::Database::DatabaseWriter       inserter(conn, sql_insert);
+
+        inserter
+            << getPAOId()
+            << getCurtailReferenceId()
+            << getActionDateTime()
+            << getNotificationDateTime()
+            << getCurtailmentStartTime()
+            << getCurtailmentStopTime()
+            << getRunStatus()
+            << getAdditionalInfo();
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << inserter.asString() << endl;
+        }
+
+        inserter.execute();
     }
 }
 
@@ -804,73 +790,81 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
     .
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
+    static const std::string sql_update = "update lmcurtailprogramactivity"
+                                           " set "
+                                                "curtailmentstoptime = ?, "
+                                                "runstatus = ?, "
+                                                "additionalinfo = ?"
+                                           " where "
+                                                "deviceid = ? and "
+                                                "curtailreferenceid = ?";
 
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseWriter       updater(connection, sql_update);
+
+    updater
+        << getCurtailmentStopTime()
+        << getRunStatus()[0]
+        << getAdditionalInfo()[0]
+        << getPAOId()
+        << getCurtailReferenceId();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-        if( conn.isValid() )
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
+    }
+
+    bool success = updater.execute();
+
+    if( ! success )
+    {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
+
+        static const string sql =  "SELECT CPA.curtailreferenceid "
+                                   "FROM lmcurtailprogramactivity CPA "
+                                   "ORDER BY CPA.curtailreferenceid DESC";
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
+
+        rdr.setCommandText(sql);
+        rdr.execute();
+
+        if( _LM_DEBUG & LM_DEBUG_DATABASE )
         {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmCurtailProgramActivityTable = db.table("lmcurtailprogramactivity");
-            RWDBUpdater updater = lmCurtailProgramActivityTable.updater();
-
-            updater << lmCurtailProgramActivityTable["curtailmentstoptime"].assign(toRWDBDT(getCurtailmentStopTime()))
-            << lmCurtailProgramActivityTable["runstatus"].assign(getRunStatus()[0])
-            << lmCurtailProgramActivityTable["additionalinfo"].assign(getAdditionalInfo()[0]);
-
-            updater.where(lmCurtailProgramActivityTable["deviceid"]==getPAOId() &&//will be paobjectid
-                          lmCurtailProgramActivityTable["curtailreferenceid"]==getCurtailReferenceId());
-
-            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            string loggedSQLstring = rdr.asString();
             {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
             }
+        }
 
-            updater.execute( conn );
+        if( rdr() )
+        {
+            LONG tempLONG = 0;
+            rdr["curtailreferenceid"] >> tempLONG;
+            setCurtailReferenceId(tempLONG+1);
+        }
+        else
+        {
+            setCurtailReferenceId(1);
+        }
 
-            if( updater.status().errorCode() != RWDBStatus::ok )
-            {// If update failed, we should try to insert the record because it means that there probably wasn't a entry for this object yet
-                RWDBSelector selector = db.selector();
-                selector << lmCurtailProgramActivityTable["curtailreferenceid"];
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
+        }
 
-                selector.from(lmCurtailProgramActivityTable);
+        {
+            static const std::string sql_insert = "insert into lmcurtailprogramactivity values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-                selector.orderByDescending(lmCurtailProgramActivityTable["curtailreferenceid"]);
+            Cti::Database::DatabaseConnection   conn;
+            Cti::Database::DatabaseWriter       inserter(conn, sql_insert);
 
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    string loggedSQLstring = selector.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-
-                if( rdr() )
-                {
-                    LONG tempLONG = 0;
-                    rdr["curtailreferenceid"] >> tempLONG;
-                    setCurtailReferenceId(tempLONG+1);
-                }
-                else
-                {
-                    setCurtailReferenceId(1);
-                }
-
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
-                }
-
-                RWDBInserter inserter = lmCurtailProgramActivityTable.inserter();
-
-                inserter << getPAOId()
+            inserter
+                << getPAOId()
                 << getCurtailReferenceId()
                 << getActionDateTime()
                 << getNotificationDateTime()
@@ -879,22 +873,13 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
                 << getRunStatus()
                 << getAdditionalInfo();
 
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                inserter.execute( conn );
+            if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString() << endl;
             }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+
+            inserter.execute();
         }
     }
 }
@@ -906,34 +891,16 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(RWDBConnection
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
 {
+    static const std::string sql = "delete from lmcurtailprogramactivity where deviceid = ? and curtailreferenceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    {
+    deleter 
+        << getPAOId()
+        << getCurtailReferenceId();
 
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable lmCurtailProgramActivityTable = db.table("lmcurtailprogramactivity");
-            RWDBDeleter deleter = lmCurtailProgramActivityTable.deleter();
-
-            deleter.where(lmCurtailProgramActivityTable["deviceid"]==getPAOId() &&//will be paobjectid
-                          lmCurtailProgramActivityTable["curtailreferenceid"]==getCurtailReferenceId());
-
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << deleter.asString().c_str() << endl;
-            }*/
-
-            deleter.execute( conn );
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
-    }
+    deleter.execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -1082,9 +1049,9 @@ CtiLMProgramBaseSPtr CtiLMProgramCurtailment::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
+void CtiLMProgramCurtailment::restore(Cti::RowReader &rdr)
 {
     CtiLMProgramBase::restore(rdr);
 
@@ -1111,8 +1078,7 @@ void CtiLMProgramCurtailment::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -1122,7 +1088,7 @@ void CtiLMProgramCurtailment::dumpDynamicData()
 
     Writes out the dynamic information for this curtailment program.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramCurtailment::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMProgramCurtailment::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     if( getManualControlReceivedFlag() )
     {
@@ -1133,65 +1099,44 @@ void CtiLMProgramCurtailment::dumpDynamicData(RWDBConnection& conn, CtiTime& cur
 /*---------------------------------------------------------------------------
     restoreDynamicData
 
-    Restores self's dynamic data given a RWDBReader
+    Restores self's dynamic data
 ---------------------------------------------------------------------------*/
 void CtiLMProgramCurtailment::restoreDynamicData()
 {
-
-
     if( getManualControlReceivedFlag() )
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql =  "SELECT CPA.curtailreferenceid, CPA.actiondatetime, CPA.notificationdatetime, "
+                                       "CPA.curtailmentstarttime, CPA.curtailmentstoptime, CPA.runstatus, "
+                                       "CPA.additionalinfo "
+                                   "FROM lmcurtailprogramactivity CPA "
+                                   "WHERE CPA.deviceid = ? "
+                                   "ORDER BY CPA.actiondatetime DESC";
+
+        Cti::Database::DatabaseConnection conn;
+        Cti::Database::DatabaseReader rdr(conn, sql);
+
+        rdr << getPAOId();
+
+        rdr.execute();
+
+        if( _LM_DEBUG & LM_DEBUG_DATABASE )
         {
-
-            if( conn.isValid() )
-            {
-                RWDBDatabase db = getDatabase();
-                RWDBTable lmCurtailProgramActivityTable = db.table("lmcurtailprogramactivity");
-                RWDBSelector selector = db.selector();
-                selector << lmCurtailProgramActivityTable["curtailreferenceid"]
-                << lmCurtailProgramActivityTable["actiondatetime"]
-                << lmCurtailProgramActivityTable["notificationdatetime"]
-                << lmCurtailProgramActivityTable["curtailmentstarttime"]
-                << lmCurtailProgramActivityTable["curtailmentstoptime"]
-                << lmCurtailProgramActivityTable["runstatus"]
-                << lmCurtailProgramActivityTable["additionalinfo"];
-
-                selector.from(lmCurtailProgramActivityTable);
-
-                selector.where(lmCurtailProgramActivityTable["deviceid"]==getPAOId());//will be paobjectid
-
-                selector.orderByDescending(lmCurtailProgramActivityTable["actiondatetime"]);
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    string loggedSQLstring = selector.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-
-                if(rdr())
-                {
-                    rdr["curtailreferenceid"] >> _curtailreferenceid;
-                    rdr["actiondatetime"] >> _actiondatetime;
-                    rdr["notificationdatetime"] >> _notificationdatetime;
-                    rdr["curtailmentstarttime"] >> _curtailmentstarttime;
-                    rdr["curtailmentstoptime"] >> _curtailmentstoptime;
-                    rdr["runstatus"] >> _runstatus;
-                    rdr["additionalinfo"] >> _additionalinfo;
-                }
-
-            }
-            else
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+                dout << CtiTime() << " - " << loggedSQLstring << endl;
             }
+        }
+
+        if(rdr())
+        {
+            rdr["curtailreferenceid"] >> _curtailreferenceid;
+            rdr["actiondatetime"] >> _actiondatetime;
+            rdr["notificationdatetime"] >> _notificationdatetime;
+            rdr["curtailmentstarttime"] >> _curtailmentstarttime;
+            rdr["curtailmentstoptime"] >> _curtailmentstoptime;
+            rdr["runstatus"] >> _runstatus;
+            rdr["additionalinfo"] >> _additionalinfo;
         }
     }
 }

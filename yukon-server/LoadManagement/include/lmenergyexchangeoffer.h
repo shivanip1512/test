@@ -16,12 +16,13 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
 #include "lmenergyexchangeofferrevision.h"
+#include "row_reader.h"
+#include "rwutil.h"
 
 class CtiLMEnergyExchangeOffer : public RWCollectable
 {
@@ -31,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
 
     CtiLMEnergyExchangeOffer();
-    CtiLMEnergyExchangeOffer(RWDBReader& rdr);
+    CtiLMEnergyExchangeOffer(Cti::RowReader &rdr);
     CtiLMEnergyExchangeOffer(const CtiLMEnergyExchangeOffer& energyexchangeoffer);
 
     virtual ~CtiLMEnergyExchangeOffer();
@@ -48,11 +49,11 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOffer )
     CtiLMEnergyExchangeOffer& setOfferDate(const CtiTime& offdate);
 
     void addLMEnergyExchangeProgramOfferTable();
-    void updateLMEnergyExchangeProgramOfferTable(RWDBConnection& conn, CtiTime& currentDateTime);
+    void updateLMEnergyExchangeProgramOfferTable(CtiTime& currentDateTime);
     void deleteLMEnergyExchangeProgramOfferTable();
-    void restoreDynamicData(RWDBReader& rdr);
+    void restoreDynamicData(Cti::RowReader &rdr);
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(CtiTime& currentDateTime);
     CtiLMEnergyExchangeOfferRevision* getCurrentOfferRevision();
 
     CtiLMEnergyExchangeOffer* replicate() const;
@@ -90,7 +91,7 @@ private:
 
     std::vector<CtiLMEnergyExchangeOfferRevision*> _lmenergyexchangeofferrevisions;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

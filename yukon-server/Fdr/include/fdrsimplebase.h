@@ -26,7 +26,6 @@
 #endif
 
 #include <windows.h>
-#include <rw/db/status.h>
 #include <vector>
 #include <map>
 

@@ -81,8 +81,7 @@ public:
     Modbus& operator=(const Modbus& aRef);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     int recvCommRequest( OUTMESS *OutMessage );

@@ -16,12 +16,12 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include "ctitime.h"
 #include "lmenergyexchangehourlyoffer.h"
 #include "observe.h"
+#include "row_reader.h"
                 
 class CtiLMEnergyExchangeOfferRevision : public RWCollectable
 {
@@ -31,7 +31,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
 
     CtiLMEnergyExchangeOfferRevision();
-    CtiLMEnergyExchangeOfferRevision(RWDBReader& rdr);
+    CtiLMEnergyExchangeOfferRevision(Cti::RowReader &rdr);
     CtiLMEnergyExchangeOfferRevision(const CtiLMEnergyExchangeOfferRevision& revision);
 
     virtual ~CtiLMEnergyExchangeOfferRevision();
@@ -57,7 +57,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
     void updateLMEnergyExchangeOfferRevisionTable();
     LONG getFirstCurtailHour() const;
     LONG getLastCurtailHour() const;
-    void restoreDynamicData(RWDBReader& rdr);
+    void restoreDynamicData();
     void dumpDynamicData();
     
     //Members inherited from RWCollectable
@@ -75,7 +75,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeOfferRevision )
 
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

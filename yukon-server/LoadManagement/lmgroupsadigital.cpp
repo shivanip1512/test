@@ -30,7 +30,7 @@ _nominal_timeout(0)
 {   
 }
 
-CtiLMGroupSADigital::CtiLMGroupSADigital(RWDBReader& rdr)
+CtiLMGroupSADigital::CtiLMGroupSADigital(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -211,23 +211,10 @@ CtiLMGroupBase* CtiLMGroupSADigital::replicate() const
 /*---------------------------------------------------------------------------
   restore
     
-  Restores given a RWDBReader
+  Restores given a Reader
   ---------------------------------------------------------------------------*/
-void CtiLMGroupSADigital::restore(RWDBReader& rdr)
+void CtiLMGroupSADigital::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
-#ifdef _THISNEEDSTOBEADDEDBACK_    
-    RWDBNullIndicator isNull;
-    rdr["sasimplenominaltimeout"] >> isNull;
-    if(!isNull)
-    {
-	rdr["sasimplenominaltimeout"] >> _nominal_timeout;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << " SADigital LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
-#endif    
 }
 

@@ -30,21 +30,7 @@ CtiTablePointAccumulator& CtiTablePointAccumulator::operator=(const CtiTablePoin
    return *this;
 }
 
-void CtiTablePointAccumulator::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable tbl = db.table(getTableName().c_str() );
-
-   selector <<
-      tbl["multiplier"] <<
-      tbl["dataoffset"];
-
-   selector.from(tbl);
-
-   selector.where( selector.where() && keyTable["pointid"] == tbl["pointid"] );
-
-}
-
-void CtiTablePointAccumulator::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointAccumulator::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    rdr       >> _multiplier;
    rdr       >> _dataOffset;

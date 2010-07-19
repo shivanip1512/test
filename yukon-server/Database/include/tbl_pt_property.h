@@ -14,14 +14,9 @@
 #ifndef __TBL_PT_PROPERTY_H__
 #define __TBL_PT_PROPERTY_H__
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -50,7 +45,7 @@ private:
 
 public:
 
-    CtiTablePointProperty(RWDBReader &rdr);
+    CtiTablePointProperty(Cti::RowReader &rdr);
     CtiTablePointProperty(long pointID, unsigned int propertyID, float attributeValue);
     virtual ~CtiTablePointProperty();
 
@@ -62,7 +57,8 @@ public:
     float  getFloatProperty() const;
     int    getIntProperty  () const;
 
-    static void   getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static string getSQLCoreStatement();
+
     void          dump() const;
     static string getTableName();
 

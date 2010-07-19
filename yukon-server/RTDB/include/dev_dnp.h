@@ -96,9 +96,10 @@ public:
 
     DNP& operator=(const DNP& aRef);
 
+    virtual string getSQLCoreStatement() const;
+
     virtual string getDescription(const CtiCommandParser & parse) const;
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     LONG getAddress() const;
     LONG getMasterAddress() const;

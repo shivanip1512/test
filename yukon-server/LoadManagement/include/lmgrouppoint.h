@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -33,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupPoint )
 
     CtiLMGroupPoint();
-    CtiLMGroupPoint(RWDBReader& rdr);
+    CtiLMGroupPoint(Cti::RowReader &rdr);
     CtiLMGroupPoint(const CtiLMGroupPoint& grouppoint);
 
     virtual ~CtiLMGroupPoint();
@@ -69,7 +68,7 @@ private:
     LONG _pointidusage;
     LONG _startcontrolrawstate;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

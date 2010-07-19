@@ -24,7 +24,6 @@
 #include <rw/thr/mutex.h>
 #include <rw/thr/barrier.h>
 #include <rw/thr/condtion.h>
-#include <rw/db/connect.h>
 #include <rw/tvhset.h>
 #include <rw/tvdeque.h>
 #include <rw/ordcltn.h>

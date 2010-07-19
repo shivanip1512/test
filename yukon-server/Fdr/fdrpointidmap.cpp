@@ -20,7 +20,6 @@
 
 
 /** include files **/
-#include <rw/db/db.h>
 
 #include "dbaccess.h"
 #include "fdrpointidmap.h"

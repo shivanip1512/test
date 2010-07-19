@@ -89,8 +89,9 @@ public:
    virtual INT  getCCUFixBits() const;
    virtual INT  getCCUVarBits() const;
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   static string getSQLCoreStatement();
+
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual void addRepeater(const CtiTableRepeaterRoute &Rpt);
 };
 

@@ -62,8 +62,10 @@ public:
     {
     }
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    static string getSQLCoreStatement();
+    static string getSQLPooledPortsStatement();
+
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);
     virtual INT inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessage* > &traceList);
@@ -71,8 +73,7 @@ public:
 
     virtual size_t addPort(CtiPortSPtr port);
 
-    void DecodePooledPortsDatabaseReader(RWDBReader &rdr);
-    static void getPooledPortsSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    void DecodePooledPortsDatabaseReader(Cti::RowReader &rdr);
 
     CtiPortSPtr getAvailableChildPort(CtiDeviceSPtr  Device);
     INT allocateQueueEntsToChildPort();

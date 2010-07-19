@@ -37,7 +37,7 @@ _availablestoptime(0)
 {   
 }
 
-CtiLMProgramControlWindow::CtiLMProgramControlWindow(RWDBReader& rdr)
+CtiLMProgramControlWindow::CtiLMProgramControlWindow(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -241,9 +241,9 @@ CtiLMProgramControlWindow* CtiLMProgramControlWindow::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramControlWindow::restore(RWDBReader& rdr)
+void CtiLMProgramControlWindow::restore(Cti::RowReader &rdr)
 {
 
 

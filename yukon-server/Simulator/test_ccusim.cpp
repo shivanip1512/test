@@ -20,7 +20,6 @@
 #include "CCU711.h"
 #include "Ccu721.h"
 #include "yukon.h"
-#include "rwutil.h"
 #include "numstr.h"
 #include "Mct410.h"
 #include "EmetconWords.h"

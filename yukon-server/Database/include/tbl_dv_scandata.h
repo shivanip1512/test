@@ -20,15 +20,13 @@
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
-#include <rw/db/datetime.h>
+#include "row_reader.h"
 
 #include "dbmemobject.h"
 #include "yukon.h"
+#include "rwutil.h"
 
+#include "database_connection.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceScanData : public CtiMemDBObject
 {
@@ -76,14 +74,13 @@ private:
    CtiTableDeviceScanData& setLastCommunicationTime( int i, const CtiTime& tme );
 
 
-   void DecodeDatabaseReader( RWDBReader& rdr );
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
+   void DecodeDatabaseReader( Cti::RowReader& rdr );
+   virtual bool Insert();
+   virtual bool Restore();
+   virtual bool Update();
    virtual string getTableName() const;
 
-   RWDBStatus Update(RWDBConnection &conn);
+   bool Update(Cti::Database::DatabaseConnection &conn);
 
 };
 #endif // #ifndef __TBL_DV_SCANDATA_H__

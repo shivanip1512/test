@@ -29,7 +29,7 @@ RWDEFINE_COLLECTABLE( CtiLMGroupSA105, CTILMGROUPSA105_ID )
 {   
 }
 
-CtiLMGroupSA105::CtiLMGroupSA105(RWDBReader& rdr)
+CtiLMGroupSA105::CtiLMGroupSA105(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -204,9 +204,9 @@ CtiLMGroupBase* CtiLMGroupSA105::replicate() const
 /*---------------------------------------------------------------------------
   restore
     
-  Restores given a RWDBReader
+  Restores given a Reader
   ---------------------------------------------------------------------------*/
-void CtiLMGroupSA105::restore(RWDBReader& rdr)
+void CtiLMGroupSA105::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
 }

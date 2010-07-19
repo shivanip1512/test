@@ -16,6 +16,8 @@
 #include "yukon.h"
 
 #include "tbl_rtmacro.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableMacroRoute::CtiTableMacroRoute(LONG routeId, INT routeOrder) :
     RouteID(0),
@@ -105,26 +107,16 @@ RWBoolean CtiTableMacroRoute::operator==(const CtiTableMacroRoute& t2)
     return( getRouteID() == t2.getRouteID() && getRouteOrder() == t2.getRouteOrder() );
 }
 
-void CtiTableMacroRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTableMacroRoute::getSQLCoreStatement()
 {
-    keyTable = db.table("Route");
-    RWDBTable routetbl = db.table(getTableName().c_str() );
+    static const string sql =  "SELECT RT.routeid, MR.singlerouteid, MR.routeorder "
+                               "FROM Route RT, MacroRoute MR "
+                               "WHERE RT.routeid = MR.routeid ORDER BY MR.routeid ASC, MR.routeorder ASC";
 
-    selector <<
-    keyTable["routeid"] <<
-    routetbl["singlerouteid"] <<
-    routetbl["routeorder"];
-
-    selector.from(keyTable);
-    selector.from(routetbl);
-
-    selector.where( selector.where() && keyTable["routeid"] == routetbl["routeid"]);
-
-    selector.orderBy(routetbl["routeid"]);
-    selector.orderBy(routetbl["routeorder"]);
+    return sql;
 }
 
-void CtiTableMacroRoute::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableMacroRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -143,99 +135,3 @@ string CtiTableMacroRoute::getTableName()
 {
     return "MacroRoute";
 }
-
-RWDBStatus CtiTableMacroRoute::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["singlerouteid"] <<
-    table["routeorder"];
-
-    selector.where( table["routeid"] == getRouteID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableMacroRoute::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getRouteID() <<
-    getSingleRouteID() <<
-    getRouteOrder();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableMacroRoute::Update()
-{
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["routeid"] == getRouteID() );
-
-    updater <<
-    table["singlerouteid"].assign( getSingleRouteID() ) <<
-    table["routeorder"].assign(getRouteOrder());
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableMacroRoute::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["routeid"] == getRouteID() );
-    deleter.execute( conn );
-    return deleter.status();
-}
-

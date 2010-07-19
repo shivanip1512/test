@@ -119,32 +119,9 @@ string CtiTablePointGroup::getTableName( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiTablePointGroup::getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector )
+void CtiTablePointGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string ps("PointStatus");
-    RWDBTable grpTbl = db.table( getTableName().c_str() );
-    RWDBTable ptStatTbl = db.table( ps.c_str() );
-
-    selector <<
-        grpTbl["deviceid"] <<
-        grpTbl["deviceidusage"] <<
-        grpTbl["pointidusage"] <<
-        grpTbl["startcontrolrawstate"] <<
-        ptStatTbl["statezerocontrol"] <<
-        ptStatTbl["stateonecontrol"];
-
-    selector.from(grpTbl);
-    selector.from(ptStatTbl);
-
-    selector.where( ptStatTbl["pointid"] == grpTbl["pointidusage"] && grpTbl["deviceid"] == keyTable["paobjectid"] && selector.where() );
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiTablePointGroup::DecodeDatabaseReader( RWDBReader &rdr )
-{
-    RWCString tStr;
+    string tStr;
 
     rdr["deviceid"]             >> _lmGroupId;
     rdr["deviceidusage"]        >> _controlDevice;
@@ -161,39 +138,4 @@ void CtiTablePointGroup::DecodeDatabaseReader( RWDBReader &rdr )
     }
     #endif
 }
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTablePointGroup::Restore()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTablePointGroup::Insert()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTablePointGroup::Update()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=====================================================================================================================
-//=====================================================================================================================
-
-RWDBStatus CtiTablePointGroup::Delete()
-{
-    return RWDBStatus::notSupported;
-}
-
-
-
 

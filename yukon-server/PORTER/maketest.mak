@@ -15,6 +15,7 @@ INCLPATHS+= \
 -I$(SERVER)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(SQLAPI)\include \
 
 
 .PATH.cpp = .

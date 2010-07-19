@@ -2,17 +2,21 @@
 
 
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_writer.h"
 #include "logger.h"
 #include "numstr.h"
 #include "pointdefs.h"
 #include "utility.h"
-#include "rwutil.h"
 #include "ctidate.h"
 #include "devicetypes.h"
 
 #include <boost/regex.hpp>
 
 using namespace std;
+
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 LONG GetMaxLMControl(long pao)
 {
@@ -21,12 +25,11 @@ LONG GetMaxLMControl(long pao)
 
     sql = string(("SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY WHERE PAOBJECTID = ")) + CtiNumStr(pao) + string(" AND ACTIVERESTORE != 'N'");
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr >> id;
     }
@@ -61,13 +64,12 @@ LONG LMControlHistoryIdGen(bool force)
     if(guard.isAcquired())
     {
         if(!init_id || force)
-        {   // Make sure all objects that that store results
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            // are out of scope when the release is called
-            RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-            if(rdr() && rdr.isValid())
+        {
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
+        
+            if(rdr())
             {
                 rdr >> tempid;
             }
@@ -122,13 +124,12 @@ LONG CommErrorHistoryIdGen(bool force)
         if(guard.isAcquired())
         {
             if(!init_id || force)
-            {   // Make sure all objects that that store results
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                // are out of scope when the release is called
-                RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-                if(rdr() && rdr.isValid())
+            {
+                DatabaseConnection conn;
+                DatabaseReader rdr(conn, sql);
+                rdr.execute();
+            
+                if(rdr())
                 {
                     rdr >> tempid;
                 }
@@ -213,12 +214,11 @@ LONG VerificationSequenceGen(bool force, int force_value)
                 //  do we need to do a database select?
                 if( !init_id || force )
                 {
-                    // Make sure all objects that that store results are out of scope when the release is called
-                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                    RWDBConnection conn = getConnection();
-                    RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-                    if( rdr() && rdr.isValid() )
+                    DatabaseConnection conn;
+                    DatabaseReader rdr(conn, sql);
+                    rdr.execute();
+                
+                    if(rdr())
                     {
                         rdr >> tempid;
                     }
@@ -264,13 +264,12 @@ INT ChangeIdGen(bool force)
     static const CHAR sql[] = "SELECT MAX(CHANGEID) FROM RAWPOINTHISTORY";
 
     if(!init_id || force)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-        if(rdr() && rdr.isValid())
+    {
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
+        if(rdr())
         {
             rdr >> tempid;
         }
@@ -300,13 +299,12 @@ INT SystemLogIdGen()
 
 
     if(!init_id)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-        if(rdr() && rdr.isValid())
+    {
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
+        if(rdr())
         {
             rdr >> id;
         }
@@ -325,27 +323,6 @@ INT SystemLogIdGen()
 
 INT PAOIdGen()
 {
-    /*static RWMutexLock mux;
-    static const CHAR sql[] = "SELECT MAX(PAOBJECTID) FROM YUKONPAOBJECT";
-    INT id = 0;
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
-
-    if(rdr() && rdr.isValid())
-    {
-        rdr >> id;
-    }
-    else
-    {
-        RWMutexLock::LockGuard  guard(coutMux);
-        cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return ++id;*/
     return SynchronizedIdGen("paobjectid", 1);
 }
 
@@ -357,12 +334,11 @@ INT CCEventActionIdGen(LONG capBankPointId)
 
     sql = string(("SELECT MAX(ACTIONID) FROM CCEVENTLOG WHERE POINTID  = ")) + CtiNumStr(capBankPointId);
 
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr >> id;
     }
@@ -384,13 +360,12 @@ INT CCEventLogIdGen()
 
 
     if(!init_id)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-        if(rdr() && rdr.isValid())
+    {
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
+        if(rdr())
         {
             rdr >> id;
         }
@@ -416,13 +391,12 @@ INT CCEventSeqIdGen()
 
 
     if(!init_id)
-    {   // Make sure all objects that that store results
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-        // are out of scope when the release is called
-        RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-        if(rdr() && rdr.isValid())
+    {
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
+        if(rdr())
         {
             rdr >> id;
         }
@@ -442,32 +416,31 @@ INT CCEventSeqIdGen()
 // Reserve <values_needed> values for the sequence named <name>
 INT SynchronizedIdGen(string name, int values_needed)
 {
-    int status = NORMAL;
+    bool status = false;
     INT last = 0;
 
     if(values_needed > 0 && name.length() > 1)
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         // In this case, we poke at the PAO table
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
+        Cti::Database::DatabaseConnection connection;
+        connection.beginTransaction();
 
-        RWDBTable yukonSequenceTable = getDatabase().table("sequencenumber");
-        RWDBUpdater updater = yukonSequenceTable.updater();
+        static const string updaterSql = "update sequencenumber set lastvalue = lastvalue + ?"
+                                         " where sequencename = ?";
+        Cti::Database::DatabaseWriter updater(connection, updaterSql);
 
-        updater.where( yukonSequenceTable["sequencename"] == name.c_str() );
-        updater << yukonSequenceTable["lastvalue"].assign( yukonSequenceTable["lastvalue"] + values_needed );
+        updater << values_needed << name;
+        
+        status = updater.execute();
 
-        conn.beginTransaction();
-        status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
-
-        if(status == NORMAL)
+        if(status)
         {
-            RWDBSelector selector = db.selector();
-            selector << yukonSequenceTable["lastvalue"];
-            selector.where( yukonSequenceTable["sequencename"] == name.c_str() );
+            static const string readerSql = "select lastvalue from sequencenumber where sequencename = ?";
+            
+            Cti::Database::DatabaseReader rdr(connection, readerSql);
+            rdr << name;
 
-            RWDBReader rdr = selector.reader(conn);
+            rdr.execute();
 
             if(rdr() && rdr.isValid())
             {
@@ -480,7 +453,7 @@ INT SynchronizedIdGen(string name, int values_needed)
             }
         }
 
-        conn.commitTransaction();
+        connection.commitTransaction();
     }
 
     return(last);
@@ -788,12 +761,11 @@ LONG GetPAOIdOfPoint(long pid)
 
     sql += CtiNumStr(pid);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery(conn, sql);
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr >> id;
     }
@@ -818,12 +790,11 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
     sql += " AND POINTOFFSET = ";
     sql += CtiNumStr(offset);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr >> id;
     }
@@ -849,12 +820,11 @@ INT GetPIDFromDeviceAndControlOffset(int device, int offset)
     sql += CtiNumStr(device);
     sql += ")";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr >> id;
     }
@@ -882,12 +852,11 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
     sql += type;
     sql += "'";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr >> id;
     }
@@ -2463,12 +2432,11 @@ LONG GetPAOIdOfEnergyPro(long devicesn)
 
     INT id = 0;
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
-
-    if(rdr() && rdr.isValid())
+    if(rdr())
     {
         rdr["PAOBJECTID"] >> id;
     }
@@ -2491,10 +2459,9 @@ vector<int> getPointIdsOnPao(long paoid)
 
     vector<int> ids;
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     if(rdr.isValid())
     {
@@ -2524,10 +2491,9 @@ std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId)
 
     std::vector< std::vector<string> > params;
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     if(rdr.isValid())
     {
@@ -2561,10 +2527,9 @@ void GetPseudoPointIDs(std::vector<unsigned long> &pointIDs)
 {
     string sql("SELECT pointid FROM point WHERE pseudoflag = 'P'");
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBReader  rdr = ExecuteQuery( conn, sql );
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     if(rdr.isValid())
     {
@@ -2592,12 +2557,11 @@ string getEncodingTypeForPort(long portId)
 
     string type = "";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader rdr = ExecuteQuery( conn, sql );
-
-    if(rdr.isValid() && rdr() )
+    if(rdr())
     {
         rdr["encodingtype"] >> type;
     }
@@ -2621,12 +2585,11 @@ string getEncodingKeyForPort(long portId)
 
     string type = "";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    RWDBReader rdr = ExecuteQuery( conn, sql );
-
-    if(rdr.isValid() && rdr() )
+    if(rdr())
     {
         rdr["encodingkey"] >> type;
     }

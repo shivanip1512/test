@@ -53,8 +53,7 @@ public:
                               list< CtiMessage* >      &retList,
                               list< OUTMESS* >         &outList);
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeVersacomDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   virtual void DecodeVersacomDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __RTE_EXPRESSCOM_H__

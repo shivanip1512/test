@@ -17,7 +17,8 @@
 #include "resolvers.h"
 #include "logger.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiTableVersacomLoadGroup::CtiTableVersacomLoadGroup() :
 _deviceID(-1),
@@ -190,26 +191,7 @@ CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setRouteID( const LONG a_r
     return *this;
 }
 
-void CtiTableVersacomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector <<
-    devTbl["serialaddress"] <<
-    devTbl["utilityaddress"] <<
-    devTbl["sectionaddress"] <<
-    devTbl["classaddress"] <<
-    devTbl["divisionaddress"] <<
-    devTbl["addressusage"] <<
-    devTbl["relayusage"] <<
-    devTbl["routeid"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
-void CtiTableVersacomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableVersacomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -249,134 +231,36 @@ CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setDeviceID( const LONG de
     return *this;
 }
 
-RWDBStatus CtiTableVersacomLoadGroup::Restore()
+bool CtiTableVersacomLoadGroup::Insert()
 {
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["deviceid"] <<
-    table["routeid"] <<
-    table["serialaddress"] <<
-    table["utilityaddress"] <<
-    table["sectionaddress"] <<
-    table["classaddress"] <<
-    table["divisionaddress"] <<
-    table["addressusage"] <<
-    table["relayusage"];
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableVersacomLoadGroup::Insert()
-{
-#if 0
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID()     <<
-    getRouteID() <<
-    getUtilityID() <<
-    getSection() <<
-    getClass() <<
-    getDivision() <<
-    getAddressUsage() <<
-    getRelayMask();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-#else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return RWDBStatus::notSupported;
-#endif
+    return false;
 }
 
-RWDBStatus CtiTableVersacomLoadGroup::Update()
+bool CtiTableVersacomLoadGroup::Update()
 {
-#if 0
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater <<
-    table["routeid"].assign(getRouteID() ) <<
-    table["utilityaddress"].assign(getUtilityID() ) <<
-    table["sectionaddress"].assign(getSection() ) <<
-    table["classaddress"].assign(getClass() ) <<
-    table["divisionaddress"].assign(getDivision() ) <<
-    table["addressusage"].assign(getAddressUsage() ) <<
-    table["relayusage"].assign(getRelayMask() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-#else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return RWDBStatus::notSupported;
-#endif
+    return false;
 }
 
-RWDBStatus CtiTableVersacomLoadGroup::Delete()
+bool CtiTableVersacomLoadGroup::Delete()
 {
+    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    deleter << getDeviceID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
+    return deleter.execute();
 }
 
 string CtiTableVersacomLoadGroup::getTableName()

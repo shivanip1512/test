@@ -18,7 +18,8 @@
 #include "logger.h"
 #include "tbl_metergrp.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiTableDeviceMeterGroup::CtiTableDeviceMeterGroup():
 _deviceID(-1)
@@ -58,18 +59,7 @@ CtiTableDeviceMeterGroup& CtiTableDeviceMeterGroup::setMeterNumber( const string
     return *this;
 }
 
-void CtiTableDeviceMeterGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str());
-
-    selector <<
-    devTbl["meternumber"];
-
-    selector.from(devTbl);
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-}
-
-void CtiTableDeviceMeterGroup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceMeterGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -86,90 +76,64 @@ string CtiTableDeviceMeterGroup::getTableName()
     return "DeviceMeterGroup";
 }
 
-RWDBStatus CtiTableDeviceMeterGroup::Restore()
+
+bool CtiTableDeviceMeterGroup::Insert()
 {
-    char temp[32];
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?)";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    inserter
+        << getDeviceID()
+        << getMeterNumber();
 
-    selector <<
-    table["deviceid"] <<
-    table["meternumber"];
+    bool success = inserter.execute();
 
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceMeterGroup::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID() <<
-    getMeterNumber();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if( success )
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceMeterGroup::Update()
+bool CtiTableDeviceMeterGroup::Update()
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "meternumber = ?"
+                                   " where "
+                                        "deviceid = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    updater
+        << getMeterNumber()
+        << getDeviceID();
 
-    updater.where( table["deviceid"] == getDeviceID() );
+    bool success = updater.execute();
 
-    updater << table["meternumber"].assign(getMeterNumber().c_str() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    if( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceMeterGroup::Delete()
+bool CtiTableDeviceMeterGroup::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
+    deleter << getDeviceID();
+
+    return deleter.execute();
 }
 
 

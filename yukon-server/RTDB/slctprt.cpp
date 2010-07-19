@@ -14,7 +14,6 @@
 #include "yukon.h"
 
 
-#include <rw/db/db.h>
 
 #include "port_dialout.h"
 #include "port_dialin.h"
@@ -32,7 +31,7 @@
 using namespace Cti;
 using namespace Ports;
 
-DLLEXPORT CtiPort* PortFactory(RWDBReader &rdr)
+DLLEXPORT CtiPort* PortFactory(Cti::RowReader &rdr)
 {
    string rwsType;
    string rwsPseudo;

@@ -67,10 +67,8 @@ public:
    CtiRoutePtrList_t & getRoutePtrList();
    CtiRoutePtrList_t   getRoutePtrList() const;
 
-
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeMacroReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   virtual void DecodeMacroReader(Cti::RowReader &rdr);
 
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,

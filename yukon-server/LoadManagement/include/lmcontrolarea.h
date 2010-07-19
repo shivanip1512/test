@@ -18,7 +18,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -29,6 +28,8 @@
 #include "lmprogrambase.h"
 #include "lmcontrolareatrigger.h"
 #include "msg_pcrequest.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 class CtiLMControlArea : public CtiMemDBObject, public RWCollectable
 {
@@ -40,7 +41,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     static LONG numberOfReferences;
 
     CtiLMControlArea();
-    CtiLMControlArea(RWDBReader& rdr);
+    CtiLMControlArea(Cti::RowReader &rdr);
     CtiLMControlArea(const CtiLMControlArea& controlarea);
 
     virtual ~CtiLMControlArea();
@@ -128,7 +129,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     void updateTimedPrograms(LONG secondsFromBeginningOfDay);
     
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -184,7 +185,7 @@ private:
     //don't stream
     BOOL _insertDynamicDataFlag;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
     string* getAutomaticallyStartedSignalString();
 };
 #endif

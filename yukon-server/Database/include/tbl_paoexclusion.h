@@ -18,10 +18,8 @@
 #ifndef __TBL_PAOEXCLUSION_H__
 #define __TBL_PAOEXCLUSION_H__
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-
+#include "row_reader.h"
+#include "rwutil.h"
 
 class IM_EX_CTIYUKONDB CtiTablePaoExclusion
 {
@@ -87,15 +85,11 @@ public:
     string getFunctionParams() const;
     CtiTablePaoExclusion& setFunctionParams(string val);
 
-    static string getTableName();
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static string getSQLCoreStatement(long id = 0);
 
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Insert(RWDBConnection &conn);
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
+    static string getTableName();
+
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     void dump() const;
 

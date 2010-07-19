@@ -33,7 +33,7 @@ _startcontrolrawstate(0)
 {   
 }
 
-CtiLMGroupPoint::CtiLMGroupPoint(RWDBReader& rdr)
+CtiLMGroupPoint::CtiLMGroupPoint(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -261,25 +261,10 @@ CtiLMGroupBase* CtiLMGroupPoint::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMGroupPoint::restore(RWDBReader& rdr)
+void CtiLMGroupPoint::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
-#ifdef _OLD_DBRELOAD_
-    RWDBNullIndicator isNull;
-    rdr["pointdeviceidusage"] >> isNull;
-    if( !isNull )
-    {
-        rdr["pointdeviceidusage"] >> _deviceidusage;
-        rdr["pointpointidusage"] >> _pointidusage;
-        rdr["pointstartcontrolrawstate"] >> _startcontrolrawstate;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-#endif
 }
 

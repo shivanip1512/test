@@ -22,6 +22,7 @@ using boost::shared_ptr;
 #include "pt_dyn_dispatch.h"
 #include "tbl_pt_trigger.h"
 #include "pttrigger.h"
+#include "database_reader.h"
 using namespace std;
 
 CtiPointTriggerManager::CtiPointTriggerManager()
@@ -46,25 +47,14 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
     {
         LockGuard guard(_mapMux);
 
-        start = start.now();
-        {   // Make sure all objects that that store results
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            // are out of scope when the release is called
-
-            RWDBDatabase   db       = conn.database();
-            RWDBSelector   selector = conn.database().selector();
-            RWDBTable      keyTable;
-            RWDBReader     rdr;
-
+        {   
             start = start.now();
             if(DebugLevel & 0x00010000)
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Trigger Information" << endl;
             }
 
-            keyTable = db.table("PointTrigger");
-            CtiTablePointTrigger().getSQL( db, keyTable, selector, ptID );
+            const string sql = CtiTablePointTrigger::getSQLCoreStatement(ptID);
 
             //Pick just the 1 point if thats all I requested
             if(ptID != 0)
@@ -72,10 +62,18 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
                 erase(ptID);
             }
 
-            rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || selector.status().errorCode() != RWDBStatus::ok)
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            if( ptID != 0 )
             {
-                string loggedSQLstring = selector.asString();
+                rdr << ptID;
+            }
+
+            rdr.execute();
+            if(DebugLevel & 0x00010000 || !rdr.isValid())
+            {
+                string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << loggedSQLstring << endl;
@@ -120,7 +118,7 @@ void CtiPointTriggerManager::refreshList(long ptID, CtiPointManager& pointMgr)
     }
 }
 
-void CtiPointTriggerManager::refreshTriggerData(long pointID, RWDBReader& rdr, CtiPointManager &pointMgr)
+void CtiPointTriggerManager::refreshTriggerData(long pointID, Cti::RowReader& rdr, CtiPointManager &pointMgr)
 {
     LONG        ptID = 0;
     spiterator tempIter;

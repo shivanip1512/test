@@ -20,18 +20,16 @@
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-//#include <rw/db/datetime.h>
-#include <rw/thr/recursiv.h>
+#include "row_reader.h"
+//#include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "yukon.h"
 #include "utility.h"
+#include "database_connection.h"
+
 
 #define MAX_COMMAND_LENGTH  50
 #define MAX_OUTMESS_LENGTH  160
@@ -103,15 +101,12 @@ public:
 
    static string getTableName();
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Insert(RWDBConnection &conn);
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
-   static  RWDBStatus Prune(CtiDate &earliestDate);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   virtual bool Insert();
+   virtual bool Insert(Cti::Database::DatabaseConnection &conn);
+   virtual bool Update();
+   virtual bool Delete();
+   static  bool Prune(CtiDate &earliestDate);
 
 };
 #endif // #ifndef __TBL_COMMERRHIST_H__

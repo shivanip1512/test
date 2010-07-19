@@ -17,7 +17,6 @@
 
 #include "tbl_port_statistics.h"
 #include "logger.h"
-#include "rwutil.h"
 
 CtiTablePortStatistics::CtiTablePortStatistics() :
    _type(0),
@@ -99,28 +98,7 @@ CtiTablePortStatistics& CtiTablePortStatistics::getStopTime(const CtiTime& t)
 }
 
 /* These guys are handled different since they are multi-keyed */
-
-void CtiTablePortStatistics::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable portTbl       = db.table("PortStatistics");
-   keyTable      = db.table("CommPort");
-
-   selector <<
-      keyTable["portid"] <<
-      portTbl["statistictype"] <<
-      portTbl["attempts"] <<
-      portTbl["dataerrors"] <<
-      portTbl["systemerrors"] <<
-      portTbl["startdatetime"] <<
-      portTbl["stopdatetime"];
-
-   selector.from(keyTable);
-   selector.from(portTbl);
-
-   selector.where( keyTable["portid"] == portTbl["portid"] );
-}
-
-void CtiTablePortStatistics::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortStatistics::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {

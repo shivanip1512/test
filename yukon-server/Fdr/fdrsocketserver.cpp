@@ -194,7 +194,6 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
     bool successful = true;
     string translationName;
     bool foundPoint = false, translatedPoint = false;
-    RWDBStatus listStatus;
     bool isSend = (aDirection == FDR_INTERFACE_SEND);
 
     try
@@ -202,13 +201,11 @@ bool CtiFDRSocketServer::loadList(string &aDirection,  CtiFDRPointList &aList)
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),aDirection);
 
-        listStatus = pointList->loadPointList();
-
         // if status is ok, we were able to read the database at least
-        if (listStatus.errorCode() != RWDBStatus::ok)
+        if (!pointList->loadPointList())
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Error in loadList(), DB read code " << listStatus.errorCode()  << endl;
+            logNow() << "Error in loadList()" << endl;
             delete pointList;
             return false;
         }

@@ -23,6 +23,7 @@
 #include "logger.h"
 #include "loadmanager.h"
 #include "utility.h"
+#include "database_writer.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -50,7 +51,7 @@ _insertDynamicDataFlag(false)
 {
 }
 
-CtiLMControlAreaTrigger::CtiLMControlAreaTrigger(RWDBReader& rdr)
+CtiLMControlAreaTrigger::CtiLMControlAreaTrigger(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -754,12 +755,11 @@ CtiLMControlAreaTrigger* CtiLMControlAreaTrigger::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
+void CtiLMControlAreaTrigger::restore(Cti::RowReader &rdr)
 {
 
-    RWDBNullIndicator isNull;
     _insertDynamicDataFlag = FALSE;
 
     rdr["triggerid"] >> _trigger_id;
@@ -777,8 +777,7 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
     rdr["peakpointid"] >> _peakpointid;
 
     setProjectedPointValue(0.0);
-    rdr["pointvalue"] >> isNull;
-    if( !isNull )
+    if( !rdr["pointvalue"].isNull() )
     {
         rdr["pointvalue"] >> _pointvalue;
         rdr["lastpointvaluetimestamp"] >> _lastpointvaluetimestamp;
@@ -805,8 +804,7 @@ void CtiLMControlAreaTrigger::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaTrigger::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -816,31 +814,36 @@ void CtiLMControlAreaTrigger::dumpDynamicData()
 
     Writes out the dynamic information for this strategy.
 ---------------------------------------------------------------------------*/
-void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicLMControlAreaTriggerTable = getDatabase().table( "dynamiclmcontrolareatrigger" );
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicLMControlAreaTriggerTable.updater();
+            static const std::string sql_update = "update dynamiclmcontrolareatrigger"
+                                                  " set "
+                                                    "pointvalue = ?, "
+                                                    "lastpointvaluetimestamp = ?, "
+                                                    "peakpointvalue = ?, "
+                                                    "lastpeakpointvaluetimestamp = ?"
+                                                  " where "
+                                                    "triggerid = ?";
 
-            updater << dynamicLMControlAreaTriggerTable["pointvalue"].assign(getPointValue())
-            << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"].assign(toRWDBDT(getLastPointValueTimestamp()))
-            << dynamicLMControlAreaTriggerTable["peakpointvalue"].assign(getPeakPointValue())
-            << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"].assign(toRWDBDT(getLastPeakPointValueTimestamp()));
+            Cti::Database::DatabaseWriter   updater(conn, sql_update);
 
-            updater.where( dynamicLMControlAreaTriggerTable["triggerid"] == getTriggerId() );
+            updater
+                << getPointValue()
+                << getLastPointValueTimestamp()
+                << getPeakPointValue()
+                << getLastPeakPointValueTimestamp()
+                << getTriggerId();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                string loggedSQLstring = updater.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << updater.asString() << endl;
             }
 
-            updater.execute( conn );
+            updater.execute();
         }
         else
         {
@@ -849,26 +852,26 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, CtiTime& cur
                 dout << CtiTime() << " - Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber() << endl;
             }
 
-            RWDBInserter inserter = dynamicLMControlAreaTriggerTable.inserter();
+            static const std::string sql_insert = "insert into dynamiclmcontrolareatrigger values (?, ?, ?, ?, ?, ?, ?)";
 
-            inserter << getPAOId()
-            << getTriggerNumber()
-            << getPointValue()
-            << getLastPointValueTimestamp()
-            << getPeakPointValue()
-            << getLastPeakPointValueTimestamp()
-            << getTriggerId();
+            Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
+
+            inserter
+                << getPAOId()
+                << getTriggerNumber()
+                << getPointValue()
+                << getLastPointValueTimestamp()
+                << getPeakPointValue()
+                << getLastPeakPointValueTimestamp()
+                << getTriggerId();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString() << endl;
             }
 
-            inserter.execute( conn );
+            inserter.execute();
 
             _insertDynamicDataFlag = FALSE;
         }

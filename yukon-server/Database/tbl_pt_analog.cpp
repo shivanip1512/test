@@ -18,8 +18,6 @@
 #include "tbl_pt_analog.h"
 #include "logger.h"
 
-#include "rwutil.h"
-
 CtiTablePointAnalog& CtiTablePointAnalog::operator=(const CtiTablePointAnalog& aRef)
 {
    if(this != &aRef)
@@ -32,24 +30,7 @@ CtiTablePointAnalog& CtiTablePointAnalog::operator=(const CtiTablePointAnalog& a
    return *this;
 }
 
-void CtiTablePointAnalog::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable tbl = db.table("PointAnalog");
-
-   selector <<
-   tbl["multiplier"] <<
-   tbl["dataoffset"] <<
-   tbl["deadband"];
-   //tbl["transducertype"];
-
-   selector.from(tbl);
-
-   selector.where( selector.where() &&
-                   keyTable["pointid"] == tbl["pointid"] );
-
-}
-
-void CtiTablePointAnalog::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointAnalog::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
 
    rdr >> _multiplier;

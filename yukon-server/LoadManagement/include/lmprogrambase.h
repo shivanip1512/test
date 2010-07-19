@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -27,7 +26,9 @@
 #include "lmgroupbase.h"
 #include "lmcontrolareatrigger.h"
 #include "ctidate.h"
-
+#include "row_reader.h"
+#include "database_connection.h"
+         
 class CtiLMProgramControlWindow;
 class CtiLMControlArea;
 
@@ -47,7 +48,7 @@ public:
     static LONG numberOfReferences;
 #endif
     CtiLMProgramBase();
-    CtiLMProgramBase(RWDBReader& rdr);
+    CtiLMProgramBase(Cti::RowReader &rdr);
     CtiLMProgramBase(const CtiLMProgramBase& lmprog);
 
     virtual ~CtiLMProgramBase();
@@ -120,7 +121,7 @@ public:
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
 
     virtual void dumpDynamicData();
-    virtual void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    virtual void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
     void setControlArea(CtiLMControlArea *controlArea);
@@ -172,7 +173,7 @@ public:
 protected:
 
     
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
     

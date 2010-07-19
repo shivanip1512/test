@@ -167,11 +167,9 @@ public:
 
     CtiDeviceSingle&     setRateTables(const INT i, const CtiTableDeviceScanRate* aScanRate);
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual void DecodeScanRateDatabaseReader(RWDBReader &rdr);
-    virtual void DecodeDeviceWindowDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    virtual void DecodeScanRateDatabaseReader(Cti::RowReader &rdr);
+    virtual void DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr);
     void applySignaledRateChange(LONG aOpen, LONG aDuration);
 
     virtual void DumpData();

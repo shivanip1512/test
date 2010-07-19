@@ -15,10 +15,11 @@
 #include "yukon.h"
 
 #include "dbaccess.h"
-#include "rwutil.h"
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_dyn_paoinfo.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 using namespace std;
 
@@ -385,30 +386,26 @@ bool CtiTableDynamicPaoInfo::hasRow() const
 }
 
 
-RWDBStatus CtiTableDynamicPaoInfo::Insert()
+bool CtiTableDynamicPaoInfo::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Insert(conn);
 }
 
 
-RWDBStatus CtiTableDynamicPaoInfo::Update()
+bool CtiTableDynamicPaoInfo::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     long rowsAffected = 0;
 
     return Update(conn, rowsAffected);
 }
 
-RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
+bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
-    RWDBStatus retval(RWDBStatus::ok);
+    bool success = true;
 
     const string *tmp_owner = 0, *tmp_key = 0;
     string tmp_value;
@@ -431,40 +428,37 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
 
     if( (getPaoID() >= 0) && tmp_owner && tmp_key )
     {
-        dbInserter <<  getEntryID()  //  MUST be set before we try to insert
-                 <<  getPaoID()
-                 << *tmp_owner
-                 << *tmp_key
-                 <<  tmp_value
-                 <<  CtiTime();
+        static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?)";
+
+        Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+        inserter 
+            << getEntryID()     //  MUST be set before we try to insert
+            << getPaoID()
+            << *tmp_owner
+            << *tmp_key
+            << tmp_value
+            << CtiTime();
 
         if(isDebugLudicrous())
         {
-            string loggedSQLstring = dbInserter.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << loggedSQLstring << endl << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << inserter.asString() << endl;
         }
 
-        ExecuteInserter(conn,dbInserter,__FILE__,__LINE__);
+        success = inserter.execute();
 
-        if(dbInserter.status().errorCode() != RWDBStatus::ok)    // error occured!
+        if( ! success )    // error occured!
         {
-            string loggedSQLstring = dbInserter.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << loggedSQLstring << endl;
-            }
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << inserter.asString() << endl;
         }
         else
         {
             resetDirty(FALSE);
         }
-
-        retval = dbInserter.status();
     }
     else
     {
@@ -477,13 +471,12 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
         }
     }
 
-    return retval;
+    return success;
 }
 
-RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffected)
+bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, long &rowsAffected)
 {
-    RWDBStatus  rwStat(RWDBStatus::ok);
-    RWDBTable   table = getDatabase().table( getTableName().c_str() );
+    bool success = true;
 
     const string *tmp_owner = 0, *tmp_key = 0;
     string tmp_value;
@@ -498,7 +491,6 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffect
         tmp_key = (_key_map.find(getKey()))->second;
     }
 
-
     getValue(tmp_value);
     if( tmp_value.empty() )
     {
@@ -507,18 +499,28 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffect
 
     if( getEntryID() && tmp_owner && tmp_key )
     {
-        RWDBUpdater updater = table.updater();
+        static const std::string sql = "update " + getTableName() +
+                                       " set "
+                                            "value = ?, "
+                                            "updatetime = ?"
+                                        " where "
+                                            "paobjectid = ? and "
+                                            "owner = ? and "
+                                            "infokey = ?";
 
-        updater.where(table["paobjectid"] == getPaoID() &&
-                      table["owner"]      == tmp_owner->data() &&
-                      table["infokey"]    == tmp_key->data());
+        Cti::Database::DatabaseWriter   updater(conn, sql);
 
-        updater << table["value"].assign(tmp_value.c_str())
-                << table["updatetime"].assign(toRWDBDT(CtiTime::now()));
+        updater
+            << tmp_value.c_str()
+            << CtiTime::now()
+            << getPaoID()
+            << tmp_owner->data()
+            << tmp_key->data();
 
-        rwStat = ExecuteUpdater(conn, updater, __FILE__, __LINE__, &rowsAffected);
+        success      = updater.execute();
+        rowsAffected = updater.rowsAffected();
 
-        if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+        if( success && rowsAffected > 0)
         {
             setDirty(false);
         }
@@ -529,87 +531,51 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffect
         }*/
     }
 
-    return rwStat;
+    return success;
 }
 
-RWDBStatus CtiTableDynamicPaoInfo::Restore()
+
+bool CtiTableDynamicPaoInfo::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where entryid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    selector << table["entryid"]
-             << table["paobjectid"]
-             << table["owner"]
-             << table["infokey"]
-             << table["value"];
-
-    selector.where( table["entryid"] == getEntryID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are dirty and need to be
-     *  written into the database
-     */
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( TRUE );
-    }
-
-    return reader.status();
-}
-
-RWDBStatus CtiTableDynamicPaoInfo::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where(table["entryid"] == getEntryID());
+    deleter << getEntryID();
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
 
-    return deleter.execute(conn).status();
+    return deleter.execute();
 }
 
-void CtiTableDynamicPaoInfo::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector, CtiApplication_t app_id)
+string CtiTableDynamicPaoInfo::getSQLCoreStatement(CtiApplication_t _app_id)
 {
-    keyTable = db.table(CtiTableDynamicPaoInfo::getTableName().c_str());
     owner_map_t::const_iterator o_itr;
 
-    selector << keyTable["entryid"]
-             << keyTable["paobjectid"]
-             << keyTable["owner"]
-             << keyTable["infokey"]
-             << keyTable["value"];
+    static const string sqlStart =  "SELECT DPI.entryid, DPI.paobjectid, DPI.owner, DPI.infokey, DPI.value "
+                                    "FROM DynamicPaoInfo DPI ";
 
-    selector.from(keyTable);
+    o_itr = _owner_map.find(_app_id);
 
-    o_itr = _owner_map.find(app_id);
     if( o_itr != _owner_map.end() && o_itr->second )
     {
-        selector.where(keyTable["owner"] == o_itr->second->data());
+        const string data = o_itr->second->data();
+        const string sqlWhere = "WHERE DPI.owner = '" + data + "'";
+        return string(sqlStart + sqlWhere);
+    }
+    else
+    {
+        return string("");
     }
 }
 
-void CtiTableDynamicPaoInfo::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableDynamicPaoInfo::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     string tmp_owner, tmp_key, tmp_value;
     long tmp_entryid, tmp_paoid;

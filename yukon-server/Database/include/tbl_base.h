@@ -19,13 +19,13 @@
 #ifndef __TBL_BASE_H__
 #define __TBL_BASE_H__
 
-#include <rw/db/db.h>
 
 
 
 #include "dllbase.h"
 #include "logger.h"
 #include "dbmemobject.h"
+#include "row_reader.h"
 
 /*----------------------------------------------------------------------------------------*
  * CtiTableDeviceBase is the base class for all device objects in the YUKON system.
@@ -60,9 +60,8 @@ public:
     bool  getRadioDelay() const;
     bool  useRadioDelays() const;
     static string getTableName();
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DumpData();
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 
 #endif

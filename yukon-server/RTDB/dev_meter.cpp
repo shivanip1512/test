@@ -86,18 +86,24 @@ int CtiDeviceMeter::readDSTFile( string &id )
     return tmpDSTFlag;
 }
 
-
-void CtiDeviceMeter::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceMeter::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceMeterGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+                                     "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+                                     "DUS.baudrate, IED.password, IED.slaveaddress, DMG.meternumber "
+                                   "FROM Device DV, DeviceMeterGroup DMG, DeviceIED IED, DeviceDirectCommSettings CS, "
+                                     "YukonPAObject YP LEFT OUTER JOIN DeviceDialupSettings DUS ON "
+                                     "YP.paobjectid = DUS.deviceid "
+                                   "WHERE YP.paobjectid = DMG.deviceid AND YP.paobjectid = IED.deviceid "
+                                     "AND YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
+
+    return sqlCore;
 }
 
-
-void CtiDeviceMeter::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceMeter::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

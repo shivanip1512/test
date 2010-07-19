@@ -199,64 +199,13 @@ string CtiTableSA205105Group::getTableName( void )
 //=============================================================================================================
 //=============================================================================================================
 
-void CtiTableSA205105Group::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table( getTableName().c_str() );
-
-    selector <<
-        devTbl["groupid"] <<        //are these supposed to be case sensitive? the table scripts are caps!
-        devTbl["routeid"] <<
-        devTbl["operationaladdress"] <<
-        devTbl["loadnumber"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["groupid"] && selector.where() );
-}
-
-//=============================================================================================================
-//=============================================================================================================
-
-void CtiTableSA205105Group::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableSA205105Group::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     rdr["groupid"] >> _lmGroupId;
     rdr["routeid"] >> _routeId;
     rdr["operationaladdress"] >> _operationalAddress;
     rdr["loadnumber"] >> _loadNumber;
 }
-
-//=============================================================================================================
-//=============================================================================================================
-
-RWDBStatus CtiTableSA205105Group::Restore()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=============================================================================================================
-//=============================================================================================================
-
-RWDBStatus CtiTableSA205105Group::Insert()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=============================================================================================================
-//=============================================================================================================
-
-RWDBStatus CtiTableSA205105Group::Update()
-{
-    return RWDBStatus::notSupported;
-}
-
-//=============================================================================================================
-//=============================================================================================================
-
-RWDBStatus CtiTableSA205105Group::Delete()
-{
-    return RWDBStatus::notSupported;
-}
-
 
 
 

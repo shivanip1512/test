@@ -10,6 +10,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(SQLAPI)\include \
 
 
 

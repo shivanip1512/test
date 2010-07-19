@@ -22,7 +22,6 @@
 #include "guard.h"
 #include "tbl_state_grp.h"
 #include "logger.h"
-#include "rwutil.h"
 
 using namespace std;
 
@@ -66,67 +65,25 @@ string CtiTableStateGroup::getTableName()
     return string("StateGroup");
 }
 
-RWDBStatus CtiTableStateGroup::Insert()
+bool CtiTableStateGroup::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
-
-
-
+    bool retVal = false;
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+        static const string sql =  "SELECT SG.stategroupid, SG.name "
+                                   "FROM StateGroup SG "
+                                   "WHERE SG.stategroupid = ?";
 
-    return dbInserter.status();
-}
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader reader(connection, sql);
 
-RWDBStatus CtiTableStateGroup::Update()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+        reader << getStateGroupID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+        reader.execute();
 
-
-
-    updater.where( table["locationid"] == getStateGroupID() );
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableStateGroup::Restore()
-{
-
-    RWDBStatus dbstat;
-
-
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
+        if( reader() )
         {
-            RWDBTable table = getDatabase().table( getTableName().c_str() );
-            RWDBSelector selector = getDatabase().selector();
-
-            selector << table["stategroupid"] << table["name"];
-
-            selector.where( table["stategroupid"] == getStateGroupID() );
-
-            RWDBReader reader = selector.reader( conn );
-
-            dbstat = selector.status();
-
-            if( reader() )
-            {
-                DecodeDatabaseReader( reader );
-            }
+            DecodeDatabaseReader( reader );
+            retVal = true;
         }
     }
 
@@ -143,7 +100,7 @@ RWDBStatus CtiTableStateGroup::Restore()
             {
                 CtiTableState &theState = *sit;
 
-                if(theState.Restore().errorCode() != RWDBStatus::ok)
+                if(!theState.Restore())
                 {
                     // There is something very very wrong with this state, it should be blown away.
                     bStatesBad = true;
@@ -158,23 +115,9 @@ RWDBStatus CtiTableStateGroup::Restore()
         }
     }
 
-    return dbstat;
+    return retVal;
 }
 
-RWDBStatus CtiTableStateGroup::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["stategroupid"] == getStateGroupID() );
-
-    return deleter.execute( conn ).status();
-}
 
 bool CtiTableStateGroup::operator<( const CtiTableStateGroup &rhs ) const
 {
@@ -194,18 +137,7 @@ bool CtiTableStateGroup::operator()(const CtiTableStateGroup& aRef) const
     return operator<(aRef);
 }
 
-void CtiTableStateGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table( getTableName().c_str() );
-
-    selector <<
-    keyTable["stategroupid"] <<
-    keyTable["name"];
-
-    selector.from(keyTable);
-}
-
-void CtiTableStateGroup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableStateGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
 
 
@@ -246,7 +178,7 @@ string CtiTableStateGroup::getRawState(LONG rawValue)
     if( sit == _stateSet.end() )
     {
         // We need to load it up, and/or then insert it!
-        if( mystate.Restore().errorCode() == RWDBStatus::ok )
+        if( mystate.Restore() )
         {
             pair< CtiStateSet_t::iterator, bool > resultpair;
 

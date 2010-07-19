@@ -18,7 +18,6 @@
 #define __SLCTPNT_H__
 #pragma warning (disable : 4786)
 
-#include <rw/db/db.h>
 
 #include "dlldefs.h"
 #include "pt_base.h"

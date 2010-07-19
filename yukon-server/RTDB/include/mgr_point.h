@@ -54,7 +54,7 @@ private:
     lru_timeslice_map    _lru_timeslices;
     lru_point_lookup_map _lru_points;
 
-    void refreshPoints(std::set<long> &pointIdsFound, RWDBReader& rdr);
+    void refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr);
 
     void updateAccess(long pointid, time_t time_now=time(0));
 

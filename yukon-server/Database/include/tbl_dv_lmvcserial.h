@@ -17,13 +17,8 @@
 #ifndef __TBL_DV_LMVCSERIAL_H__
 #define __TBL_DV_LMVCSERIAL_H__
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -86,15 +81,9 @@ public:
    LONG  getRouteID() const;
    CtiTableLMGroupVersacomSerial& setRouteID( const LONG a_routeID );
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
    static string getTableName();
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
 #endif // #ifndef __TBL_DV_LMVCSERIAL_H__

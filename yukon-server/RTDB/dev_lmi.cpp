@@ -411,17 +411,24 @@ void CtiDeviceLMI::processInboundData(INMESS *InMessage, CtiTime &TimeNow, list<
     vgList.push_back(vgMsg);
 }
 
-
-void CtiDeviceLMI::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceLMI::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+                                     "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+                                     "DUS.baudrate, AD.masteraddress, AD.slaveaddress, AD.postcommwait, RTU.deviceid, "
+                                     "RTU.ticktime, RTU.transmitoffset, RTU.savehistory, RTU.powervaluehighlimit, "
+                                     "RTU.powervaluelowlimit, RTU.powervaluemultiplier, RTU.powervalueoffset, RTU.startcode, "
+                                     "RTU.stopcode, RTU.retries "
+                                   "FROM Device DV, deviceseries5rtu RTU, DeviceAddress AD, DeviceDirectCommSettings CS, "
+                                     "YukonPAObject YP LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
+                                   "WHERE YP.paobjectid = RTU.deviceid AND YP.paobjectid = AD.deviceid AND "
+                                     "YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
 
-    _address.getSQL(db, keyTable, selector);
-    _seriesv.getSQL(db, keyTable, selector);
+    return sqlCore;
 }
 
-
-void CtiDeviceLMI::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceLMI::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 

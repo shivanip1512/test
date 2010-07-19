@@ -30,7 +30,6 @@
 #include "mc_msg.h"
 #include "ctibase.h"
 #include "ctidate.h"
-#include "rwutil.h"
 #include "utility.h"
 #include "errno.h"
 

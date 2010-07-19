@@ -29,7 +29,8 @@
 
 #include "tbl_mcsimpsched.h"
 #include "dbaccess.h"
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 //Name of the database table
 const char* CtiTableMCSimpleSchedule::_table_name = "MACSimpleSchedule";
@@ -110,187 +111,95 @@ CtiTableMCSimpleSchedule::setRepeatInterval(long repeat_interval)
     return *this;
 }
 
-void CtiTableMCSimpleSchedule::getSQL(  RWDBDatabase &db,
-                                        RWDBTable &keyTable,
-                                        RWDBSelector &selector)
+bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    keyTable = db.table(_table_name);
-
-    selector                            <<
-    keyTable["scheduleid"]          <<
-    keyTable["targetpaobjectid"]        <<
-    keyTable["startcommand"]        <<
-    keyTable["stopcommand"]         <<
-    keyTable["repeatinterval"];
-
-    selector.from(keyTable);
-
-}
-
-bool CtiTableMCSimpleSchedule::DecodeDatabaseReader(RWDBReader &rdr)
-{
-    //CtiLockGuard< CtiMutex > guard( _mux );
-
-    string temp;
-
     rdr["scheduleid"]       >> _schedule_id;
 
-    rdr["targetpaobjectid"]     >> _target_id;
+    rdr["targetpaobjectid"] >> _target_id;
 
-    rdr["startcommand"]    >> _start_command;
-    rdr["stopcommand"]     >> _stop_command;
+    rdr["startcommand"]     >> _start_command;
+    rdr["stopcommand"]      >> _stop_command;
 
-    rdr["repeatinterval"]  >> _repeat_interval;
+    rdr["repeatinterval"]   >> _repeat_interval;
 
     return true;
 }
 
 bool CtiTableMCSimpleSchedule::Update()
 {
-    bool ret_val = false;
-    string sql;
+    static const string sql =  "update " + std::string(_table_name) + 
+                                " set "
+                                    "TargetPaobjectID = ?, "
+                                    "StartCommand = ?, "
+                                    "StopCommand = ?, "
+                                    "RepeatInterval = ?"
+                                " where "
+                                    "ScheduleID = ?";
 
-    try
-    {
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-            RWDBTable t = conn.database().table( _table_name );
+    updater
+        << getTargetPaoId()
+        << getStartCommand()
+        << getStopCommand()
+        << getRepeatInterval()
+        << getScheduleID();
 
-            RWDBUpdater updater = t.updater();
+    bool success = updater.execute();
 
-            updater.where( t["ScheduleID"] == getScheduleID() );
-
-            updater << t["TargetPaobjectID"].assign(getTargetPaoId());
-
-            updater << t["StartCommand"].assign((const char*) getStartCommand().c_str());
-
-            updater << t["StopCommand"].assign((const char*) getStopCommand().c_str());
-
-            updater << t["RepeatInterval"].assign(getRepeatInterval());
-
-            sql = (const char*) updater.asString().data();
-
-            RWDBResult result = updater.execute(conn);
-
-            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-        }
-    }
-    catch(...)
+    if( ! success )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " An exception occured updating table \""
-        << _table_name
-        << "\""
-        << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << updater.asString() << endl;
     }
 
-    if( !ret_val )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " "
-        << sql
-        << endl;
-    }
-
-    return ret_val;
+    return success;
 }
 
 bool CtiTableMCSimpleSchedule::Insert()
 {
-    bool ret_val = false;
-    string sql;
+    static const std::string sql = "insert into " + std::string(_table_name) + " values (?, ?, ?, ?, ?)";
 
-    try
-    {
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-            RWDBTable t = conn.database().table( _table_name );
-            RWDBInserter inserter = t.inserter();
+    inserter
+        << getScheduleID()
+        << getTargetPaoId()
+        << getStartCommand()
+        << getStopCommand()
+        << getRepeatInterval();
 
-            inserter << getScheduleID();
+    bool success = inserter.execute();
 
-            inserter << getTargetPaoId();
-
-            inserter << (const char*) getStartCommand().c_str();
-
-            inserter << (const char*) getStopCommand().c_str();
-
-            inserter << getRepeatInterval();
-
-            sql = (const char*) inserter.asString().data();
-            RWDBResult result = inserter.execute();
-
-            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-
-        }
-    }
-    catch(...)
+    if( ! success )
     {
         CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " An exception occured inserting to table \""
-        << _table_name
-        << "\""
-        << endl;
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << inserter.asString() << endl;
     }
 
-    if( !ret_val )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " "
-        << sql
-        << endl;
-    }
-
-    return ret_val;
+    return success;
 }
 
 bool CtiTableMCSimpleSchedule::Delete()
 {
-    bool ret_val = false;
-    string sql;
+    static const std::string sql = "delete from " + std::string(_table_name) + " where ScheduleID = ?";
 
-    try
-    {
-        {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-            RWDBTable t = conn.database().table( _table_name );
-            RWDBDeleter deleter = t.deleter();
+    deleter << getScheduleID();
 
-            deleter.where( t["ScheduleID"] == getScheduleID() );
-
-            sql = (const char*) deleter.asString().data();
-
-            RWDBResult result = deleter.execute();
-            ret_val = ( result.status().errorCode() == RWDBStatus::ok );
-        }
-    }
-    catch(...)
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " An exception occured deleting from table \""
-        << _table_name
-        << "\""
-        << endl;
-    }
+    bool ret_val = deleter.execute();
 
     if( !ret_val )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-        << " "
-        << sql
-        << endl;
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
 
     return ret_val;

@@ -16,7 +16,7 @@
 #pragma warning( disable : 4786)
 
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <boost/shared_ptr.hpp>
 #include "boostutil.h"
 #include "boost/weak_ptr.hpp"
@@ -63,10 +63,10 @@ public:
 
    CtiPointBase& operator=(const CtiPointBase& aRef);
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+   static string getSQLCoreStatement();
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   void DecodeAttributeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   void DecodeAttributeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
 
@@ -116,7 +116,7 @@ public:
 
    bool isNumeric() const;
    bool isStatus() const;
-   bool isA(RWDBReader &rdr) const;
+   bool isA(Cti::RowReader &rdr) const;
 
    virtual int getControlOffset() const { return 0; }
 };

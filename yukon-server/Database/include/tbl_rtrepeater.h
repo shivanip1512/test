@@ -1,8 +1,6 @@
 #pragma once
 
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
-#include <rw/db/table.h>
+#include "row_reader.h"
 
 #include "dlldefs.h"
 #include "dllbase.h"
@@ -19,7 +17,7 @@ private:
 
 public:
 
-   CtiTableRepeaterRoute(RWDBReader &rdr);
+   CtiTableRepeaterRoute(Cti::RowReader &rdr);
 
    void DumpData();
 
@@ -28,7 +26,7 @@ public:
    INT  getVarBit()        const {  return VarBit;         };
    INT  getRepeaterOrder() const {  return RepeaterOrder;  };
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   static string getSQLCoreStatement();
 
    RWBoolean operator<( const CtiTableRepeaterRoute& t2 );
    RWBoolean operator==( const CtiTableRepeaterRoute& t2 );

@@ -570,7 +570,7 @@ ULONG CtiDeviceMCT410::calcNextLPScanTime( void )
 
                 CtiTablePointDispatch pd(pPoint->getPointID());
 
-                if(pd.Restore().errorCode() == RWDBStatus::ok)
+                if(pd.Restore())
                 {
                     _lp_info[i].collection_point = pd.getTimeStamp().seconds();
                 }

@@ -1,7 +1,6 @@
 #include "yukon.h"
 #include "msg_server_resp.h"
 #include "logger.h"
-#include "rwutil.h"
 
 RWDEFINE_COLLECTABLE( CtiServerResponseMsg, MSG_SERVER_RESPONSE );
 

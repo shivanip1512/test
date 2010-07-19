@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 
 #include "lmgroupbase.h"
                 
@@ -27,7 +26,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupSADigital )
 
     CtiLMGroupSADigital();
-    CtiLMGroupSADigital(RWDBReader& rdr);
+    CtiLMGroupSADigital(Cti::RowReader &rdr);
     CtiLMGroupSADigital(const CtiLMGroupSADigital& groupexp);
 
     virtual ~CtiLMGroupSADigital();
@@ -56,7 +55,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupSADigital )
 private:
     int _nominal_timeout;
     
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

@@ -50,17 +50,10 @@ void CtiRouteVersacom::DumpData()
     Versacom.DumpData();
 }
 
-
-void CtiRouteVersacom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-}
-
-void CtiRouteVersacom::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiRouteVersacom::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
-
+    
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
@@ -72,7 +65,7 @@ void CtiRouteVersacom::DecodeDatabaseReader(RWDBReader &rdr)
     // Versacom specific data is picked up in the VersacomDecode
 }
 
-void CtiRouteVersacom::DecodeVersacomDatabaseReader(RWDBReader &rdr)
+void CtiRouteVersacom::DecodeVersacomDatabaseReader(Cti::RowReader &rdr)
 {
     LONG                    RID;
 

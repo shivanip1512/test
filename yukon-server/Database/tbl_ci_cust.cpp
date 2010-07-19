@@ -18,10 +18,8 @@
 * Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "database_connection.h"
+#include "database_reader.h"
 
 #include "dbaccess.h"
 #include "logger.h"
@@ -60,116 +58,122 @@ string CtiTableCICustomerBase::getTableName()
     return string("CICustomerBase");
 }
 
-RWDBStatus CtiTableCICustomerBase::Restore()
+bool CtiTableCICustomerBase::Restore()
 {
     int contactid;
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     vector< int > contactIDs;
 
-    RWDBStatus dbstat;
+    bool retVal = true;
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection);
 
     {
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBSelector selector = getDatabase().selector();
+        static const string sql =  "SELECT CMB.customerid "
+                                   "FROM CICustomerBase CMB "
+                                   "WHERE CMB.customerid = ?";
 
-        selector << table["customerid"];
+        reader.setCommandText(sql);
 
-        selector.where( table["customerid"] == getID() );
+        reader << getID();
 
-        RWDBReader reader = selector.reader( conn );
-
-        dbstat = selector.status();
+        reader.execute();
 
         if( reader() )
         {
             DecodeDatabaseReader( reader );
         }
+        else
+        {
+            retVal = false;
+        }
     }
 
     //Must hit customer table now to get the primary contact id
-    if(dbstat.errorCode() == RWDBStatus::ok)
-      {
-	RWDBDatabase db = getDatabase();
-	RWDBTable table = db.table("Customer");
-	RWDBSelector selector = db.selector();
+    if( retVal )
+    {
+        static const string sql =  "SELECT CST.primarycontactid "
+                                   "FROM Customer CST "
+                                   "WHERE CST.customerid = ?";
 
-	selector << table["primarycontactid"];
-	selector.from(table);
-	selector.where(table["customerid"] == getID());
-	
-	RWDBReader reader = selector.execute(conn).table().reader();
-	dbstat = selector.status();
-	
-	while(reader())
-	  {
-	    reader["primarycontactid"] >> contactid;
-	    contactIDs.push_back(contactid);
-	  }
-      }
+        reader.setCommandText(sql);
+        
+        reader << getID();
+
+        reader.execute();
+
+        retVal = false;
+        while( reader() )
+        {
+            retVal = true;
+            reader["primarycontactid"] >> contactid;
+            contactIDs.push_back(contactid);
+        }
+    }
 
     // Now hit the CustomerAdditionalContact table to get the rest of the contact ids
-    if(dbstat.errorCode() == RWDBStatus::ok)
-      {
-	RWDBDatabase db = getDatabase();
-	RWDBTable table = db.table("CustomerAdditionalContact");
-	RWDBSelector selector = db.selector();
+    if( retVal )
+    {
+        static const string sql =  "SELECT CAD.contactid "
+                                   "FROM CustomerAdditionalContact CAD "
+                                   "WHERE CAD.customerid = ?";
 
-	selector << table["contactid"];
-	selector.from(table);
-	selector.where(table["customerid"] == getID());
+        reader.setCommandText(sql);
 
-	RWDBReader reader = selector.execute(conn).table().reader();
-	dbstat = selector.status();
+        reader << getID();
 
-	while(reader()) 
-	  {
-	    reader["contactid"] >> contactid;
-	    contactIDs.push_back(contactid);
-	  }
-      }
+        reader.execute();
+
+        retVal = false;
+        while( reader() )
+        {
+            retVal = true;
+            reader["contactid"] >> contactid;
+            contactIDs.push_back(contactid);
+        }
+    }
 
     // Hit the ContactNotification table to get all the notification ids
     // thats what were are going to squirrel away
-    if(dbstat.errorCode() == RWDBStatus::ok) 
-      {
-	RWDBDatabase db = getDatabase();
-	RWDBTable table = db.table("ContactNotification");
-	RWDBSelector selector = db.selector();
+    if( retVal )
+    {
+        std::stringstream ss;
 
-	selector << table["contactnotifid"];
-	selector.from(table);
-	for(vector< int >::iterator iter = contactIDs.begin();
-	    iter != contactIDs.end();
-	    iter++ )
-	  {
-	    selector.where(selector.where() || table["contactid"] == *iter);
-	  }
+        static const string sql = "SELECT CNF.contactnotifid "
+                                  "FROM ContactNotification CNF";
 
-	RWDBReader reader = selector.execute(conn).table().reader();
-	dbstat = selector.status();
-	
-	while(reader())
-	  {
-	    reader["contactnotifid"] >> contactid;
-	    _contactNotificationIDs.insert(contactid);
-	  }
-      }
+        ss << sql;
 
-    return dbstat;
+        if( !contactIDs.empty() )
+        {
+            ss << " WHERE";
+        }
+
+        for( vector< int >::iterator iter = contactIDs.begin(); iter != contactIDs.end(); iter++ )
+        {
+            if(iter != contactIDs.begin())
+            {
+                    ss << " OR";
+            }
+            ss << " CNF.contactid = " << *iter;
+        }
+
+        reader.setCommandText(ss.str());
+        reader.execute();
+
+        retVal = false;
+        while( reader() )
+        {
+            retVal = true;
+            reader["contactnotifid"] >> contactid;
+            _contactNotificationIDs.insert(contactid);
+        }
+    }
+
+    return retVal;
 }
 
-void CtiTableCICustomerBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table( getTableName().c_str() );
-
-    selector <<
-    keyTable["customerid"];
-
-    selector.from(keyTable);
-}
-
-void CtiTableCICustomerBase::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableCICustomerBase::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     string temp;
 

@@ -14,18 +14,13 @@
 #include "yukon.h"
 
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include <strstream>
 
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_pt_alarm.h"
-
-#include "rwutil.h"
 
 using namespace std;
 
@@ -243,9 +238,9 @@ bool CtiTablePointAlarming::isAutoAcked( int alarm) const
 }
 
 
-CtiTablePointAlarming::CtiTablePointAlarming(RWDBReader& rdr)
+CtiTablePointAlarming::CtiTablePointAlarming(Cti::RowReader &rdr)
 {
-    static const RWCString pointid = "pointid";
+    static const string pointid = "pointid";
     string temp;
 
     rdr[pointid] >> _pointID;

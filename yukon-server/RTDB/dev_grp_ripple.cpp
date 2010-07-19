@@ -81,12 +81,18 @@ string CtiDeviceGroupRipple::getDescription(const CtiCommandParser & parse) cons
     return string(tdesc);
 }
 
-void CtiDeviceGroupRipple::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupRipple::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableRippleLoadGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LGR.shedtime, LGR.controlvalue, "
+                                     "LGR.restorevalue, LGR.routeid "
+                                   "FROM YukonPAObject YP, Device DV, LMGroupRipple LGR "
+                                   "WHERE YP.paobjectid = LGR.deviceid AND YP.paobjectid = DV.deviceid";
+
+    return sqlCore;
 }
-void CtiDeviceGroupRipple::DecodeDatabaseReader(RWDBReader &rdr)
+
+void CtiDeviceGroupRipple::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {

@@ -24,7 +24,6 @@
 
 #include <windows.h>
 #include "ctitime.h"
-#include <rw/db/datetime.h>
 
 #include "dlldefs.h"
 #include "pointdefs.h"
@@ -59,8 +58,8 @@ public:
 
     CtiTblDeviceReadRequestLog& operator=(const CtiTblDeviceReadRequestLog& aRef);
 
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
+    virtual bool Insert();
+    virtual bool Update();
     virtual string getTableName();
 
 

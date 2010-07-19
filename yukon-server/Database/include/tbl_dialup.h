@@ -19,13 +19,7 @@
 
 #include <limits.h>
 
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -35,6 +29,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTableDeviceDialup : public CtiMemDBObject
@@ -72,19 +67,16 @@ public:
     string getLineSettings() const;
     void setLineSettings(const string &lstr);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     LONG getDeviceID() const;
     CtiTableDeviceDialup& setDeviceID( const LONG did);
 
     static string getTableName();
 
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
+    virtual bool Insert();
+    virtual bool Update();
+    virtual bool Delete();
 
     INT getStopBits() const;
     INT getParity() const;

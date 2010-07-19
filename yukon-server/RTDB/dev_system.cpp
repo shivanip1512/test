@@ -767,12 +767,7 @@ CtiDeviceSystem& CtiDeviceSystem::operator=(const CtiDeviceSystem& aRef)
     return *this;
 }
 
-void CtiDeviceSystem::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-}
-
-void CtiDeviceSystem::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceSystem::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }

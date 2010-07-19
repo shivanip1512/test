@@ -15,12 +15,11 @@
 #include "yukon.h"
 
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "tbl_dv_lmgmct.h"
 #include "dllbase.h"
 #include "logger.h"
-#include "rwutil.h"
 
 CtiTableLMGroupMCT::CtiTableLMGroupMCT() :
 _address(0),
@@ -88,27 +87,7 @@ long CtiTableLMGroupMCT::getMCTUniqueAddress() const
     return _mctUniqueAddress;
 }
 
-
-void CtiTableLMGroupMCT::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl       = db.table(getTableName().c_str());
-    RWDBTable mctAddrTable = db.table("devicecarriersettings");
-
-    selector << devTbl["deviceid"  ] <<
-                devTbl["mctaddress"] <<
-                devTbl["mctlevel"  ] <<
-                devTbl["relayusage"] <<
-                devTbl["routeid"   ] <<
-                mctAddrTable["address"];
-
-    selector.from(devTbl);
-    selector.from(mctAddrTable);
-
-    selector.where(keyTable["paobjectid"] == devTbl["deviceid"] && devTbl["mctdeviceid"].leftOuterJoin(mctAddrTable["deviceid"]) && selector.where());
-}
-
-
-void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableLMGroupMCT::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string tmpStr;
     char *buf;
@@ -175,47 +154,5 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["routeid"] >> _routeID;
     rdr["address"] >> _mctUniqueAddress;
-}
-
-
-RWDBStatus CtiTableLMGroupMCT::Restore()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-
-RWDBStatus CtiTableLMGroupMCT::Insert()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-
-RWDBStatus CtiTableLMGroupMCT::Update()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return RWDBStatus::notSupported;
-}
-
-
-RWDBStatus CtiTableLMGroupMCT::Delete()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return RWDBStatus::notSupported;
 }
 

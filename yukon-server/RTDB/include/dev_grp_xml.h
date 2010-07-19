@@ -28,10 +28,9 @@ public:
     XmlGroupDevice();
     ~XmlGroupDevice();
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+    virtual string getSQLCoreStatement() const;
 
-    virtual void getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void decodeParameters(RWDBReader &rdr);
+    virtual void decodeParameters(Cti::RowReader &rdr);
 
     virtual void clearParameters();
 

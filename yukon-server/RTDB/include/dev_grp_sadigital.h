@@ -73,10 +73,11 @@ public:
     CtiTableSASimpleGroup& getLoadGroup();
     CtiDeviceGroupSADigital& setLoadGroup(const CtiTableSASimpleGroup& aRef);
 
+    virtual string getSQLCoreStatement() const;
+
     virtual LONG getRouteID();
     virtual string getDescription(const CtiCommandParser & parse) const;
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 };

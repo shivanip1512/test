@@ -26,18 +26,13 @@
 #include <windows.h>
 #include <limits.h>
 
-#include <rw/db/reader.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
 #include "dbmemobject.h"
+#include "row_reader.h"
 
 //This is the lite version of CtiTblPAO. The only string stored by this object is the name.
 class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject
@@ -75,10 +70,8 @@ public:
     bool isInhibited() const;
 
     static string getTableName();
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
-    virtual RWDBStatus Restore();
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual void DumpData();
 };

@@ -32,6 +32,8 @@
 #include "tbl_pt_alarm.h"
 #include "ccutil.h"
 #include "ccsubstationbus.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -204,7 +206,7 @@ CtiCCFeeder::CtiCCFeeder(StrategyManager * strategyManager)
     regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr, StrategyManager * strategyManager)
+CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     : Controllable(rdr, strategyManager)
 {
     restore(rdr);
@@ -6029,113 +6031,11 @@ BOOL CtiCCFeeder::isDirty() const
 
     Writes out the dynamic information for this cc feeder.
 ---------------------------------------------------------------------------*/
-void CtiCCFeeder::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-
-        RWDBTable dynamicCCFeederTable = getDatabase().table( "dynamicccfeeder" );
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCCFeederTable.updater();
-
-            updater.where(dynamicCCFeederTable["feederid"]==getPaoId());
-
-            updater << dynamicCCFeederTable["currentvarpointvalue"].assign( _currentvarloadpointvalue )
-            << dynamicCCFeederTable["currentwattpointvalue"].assign( _currentwattloadpointvalue )
-            << dynamicCCFeederTable["newpointdatareceivedflag"].assign( _newpointdatareceivedflag?"Y":"N" )
-            << dynamicCCFeederTable["lastcurrentvarupdatetime"].assign( toRWDBDT((CtiTime)_lastcurrentvarpointupdatetime) );
-
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
-
-            updater.clear();
-
-            updater.where(dynamicCCFeederTable["feederid"]==getPaoId());
-
-            updater << dynamicCCFeederTable["estimatedvarpointvalue"].assign( _estimatedvarloadpointvalue )
-            << dynamicCCFeederTable["currentdailyoperations"].assign( _currentdailyoperations )
-            << dynamicCCFeederTable["recentlycontrolledflag"].assign( _recentlycontrolledflag?"Y":"N" )
-            << dynamicCCFeederTable["lastoperationtime"].assign( toRWDBDT((CtiTime)_lastoperationtime) );
-
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
-
-            updater.clear();
-
-            updater.where(dynamicCCFeederTable["feederid"]==getPaoId());
-
-            updater << dynamicCCFeederTable["varvaluebeforecontrol"].assign( _varvaluebeforecontrol )
-            << dynamicCCFeederTable["lastcapbankdeviceid"].assign( _lastcapbankcontrolleddeviceid )
-            << dynamicCCFeederTable["busoptimizedvarcategory"].assign( _busoptimizedvarcategory )
-            << dynamicCCFeederTable["busoptimizedvaroffset"].assign( _busoptimizedvaroffset );
-
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_verificationFlag?'Y':'N');
             addFlags[1] = (_performingVerificationFlag?'Y':'N');
@@ -6166,81 +6066,33 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             _additionalFlags.append(char2string(*(addFlags+12)));
             _additionalFlags.append("NNNNNNN");
 
-            updater.clear();
+            static const string updateSql = "update dynamicccfeeder set "
+                                            "currentvarpointvalue = ?, currentwattpointvalue = ?, "
+                                            "newpointdatareceivedflag = ?, lastcurrentvarupdatetime = ?, "
+                                            "estimatedvarpointvalue = ?, currentdailyoperations = ?, "
+                                            "recentlycontrolledflag = ?, lastoperationtime = ?, "
+                                            "varvaluebeforecontrol = ?, lastcapbankdeviceid = ?, "
+                                            "busoptimizedvarcategory = ?, busoptimizedvaroffset = ?, "
+                                            "ctitimestamp = ?, powerfactorvalue = ?, kvarsolution = ?, "
+                                            "estimatedpfvalue = ?, currentvarpointquality = ?, waivecontrolflag = ?, "
+                                            "additionalflags = ?, currentvoltpointvalue = ?, eventseq = ?, "
+                                            "currverifycbid = ?, currverifycborigstate = ?, currentwattpointquality = ?, "
+                                            "currentvoltpointquality = ?, ivcontroltot = ?, ivcount = ?, "
+                                            "iwcontroltot = ?, iwcount = ?, phaseavalue = ?, phasebvalue = ?, "
+                                            "phasecvalue = ?, lastwattpointtime = ?, lastvoltpointtime = ?, "
+                                            "retryindex = ?, phaseavaluebeforecontrol = ?, "
+                                            "phasebvaluebeforecontrol = ?, phasecvaluebeforecontrol = ?"
+                                            " where feederid = ?";
 
-            updater.where(dynamicCCFeederTable["feederid"]==getPaoId());
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater << dynamicCCFeederTable["ctitimestamp"].assign(toRWDBDT(currentDateTime))
-            << dynamicCCFeederTable["powerfactorvalue"].assign( _powerfactorvalue )
-            << dynamicCCFeederTable["kvarsolution"].assign( _kvarsolution )
-            << dynamicCCFeederTable["estimatedpfvalue"].assign( _estimatedpowerfactorvalue )
-            << dynamicCCFeederTable["currentvarpointquality"].assign( _currentvarpointquality )
-            << dynamicCCFeederTable["waivecontrolflag"].assign( (_waivecontrolflag?"Y":"N"))
-            << dynamicCCFeederTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
-            << dynamicCCFeederTable["currentvoltpointvalue"].assign( _currentvoltloadpointvalue )
-            << dynamicCCFeederTable["eventseq"].assign( _eventSeq )
-            << dynamicCCFeederTable["currverifycbid"].assign(_currentVerificationCapBankId)
-            << dynamicCCFeederTable["currverifycborigstate"].assign(_currentCapBankToVerifyAssumedOrigState)
-            << dynamicCCFeederTable["currentwattpointquality"].assign(_currentwattpointquality)
-            << dynamicCCFeederTable["currentvoltpointquality"].assign(_currentvoltpointquality)
-            << dynamicCCFeederTable["ivcontroltot"].assign(_iVControlTot)
-            << dynamicCCFeederTable["ivcount"].assign(_iVCount)
-            << dynamicCCFeederTable["iwcontroltot"].assign(_iWControlTot)
-            << dynamicCCFeederTable["iwcount"].assign(_iWCount)
-            << dynamicCCFeederTable["phaseavalue"].assign(_phaseAvalue)
-            << dynamicCCFeederTable["phasebvalue"].assign(_phaseBvalue)
-            << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue)
-            << dynamicCCFeederTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
-            << dynamicCCFeederTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) )
-            << dynamicCCFeederTable["retryindex"].assign(_retryIndex)
-            << dynamicCCFeederTable["phaseavaluebeforecontrol"].assign(_phaseAvalueBeforeControl)
-            << dynamicCCFeederTable["phasebvaluebeforecontrol"].assign(_phaseBvalueBeforeControl)
-            << dynamicCCFeederTable["phasecvaluebeforecontrol"].assign(_phaseCvalueBeforeControl);
-
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
-                _dirty = FALSE;
-            }
-            else
-            {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
-                _dirty = TRUE;
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
-                }
-            }
-
-            updater.clear();
-        }
-        else
-        {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted Feeder into DynamicCCFeeder: " << getPaoName() << endl;
-            }
-            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
-
-            RWDBInserter inserter = dynamicCCFeederTable.inserter();
-
-            inserter << getPaoId()
-            << _currentvarloadpointvalue
+            updater << _currentvarloadpointvalue
             << _currentwattloadpointvalue
-            << (_newpointdatareceivedflag?"Y":"N")
+            << (string)(_newpointdatareceivedflag?"Y":"N")
             << _lastcurrentvarpointupdatetime
             << _estimatedvarloadpointvalue
             << _currentdailyoperations
-            << (_recentlycontrolledflag?"Y":"N")
+            << (string)(_recentlycontrolledflag?"Y":"N")
             << _lastoperationtime
             << _varvaluebeforecontrol
             << _lastcapbankcontrolleddeviceid
@@ -6251,8 +6103,81 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _kvarsolution
             << _estimatedpowerfactorvalue
             << _currentvarpointquality
-            << (_waivecontrolflag?"Y":"N")
-            << string2RWCString(addFlags)
+            << (string)(_waivecontrolflag?"Y":"N")
+            << _additionalFlags
+            << _currentvoltloadpointvalue
+            << _eventSeq
+            << _currentVerificationCapBankId
+            << _currentCapBankToVerifyAssumedOrigState
+            << _currentwattpointquality
+            << _currentvoltpointquality
+            << _iVControlTot
+            << _iVCount
+            << _iWControlTot
+            << _iWCount
+            << _phaseAvalue
+            << _phaseBvalue
+            << _phaseCvalue
+            << _lastWattPointTime
+            << _lastVoltPointTime
+            << _retryIndex
+            << _phaseAvalueBeforeControl
+            << _phaseBvalueBeforeControl
+            << _phaseCvalueBeforeControl
+            << getPaoId();
+
+            if(updater.execute())    // No error occured!
+            {
+                _dirty = FALSE;
+            }
+            else
+            {
+                _dirty = TRUE;
+                {
+                    string loggedSQLstring = updater.asString();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << "  " << loggedSQLstring << endl;
+                    }
+                }
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Inserted Feeder into DynamicCCFeeder: " << getPaoName() << endl;
+            }
+            static const string inserterSql = "insert into dynamicccfeeder values ( "
+                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                              "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                              "?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            static const string addFlags ="NNNNNNNNNNNNNNNNNNNN";
+
+            Cti::Database::DatabaseWriter dbInserter(conn, inserterSql);
+
+            dbInserter << getPaoId()
+            << _currentvarloadpointvalue
+            << _currentwattloadpointvalue
+            << (string)(_newpointdatareceivedflag?"Y":"N")
+            << _lastcurrentvarpointupdatetime
+            << _estimatedvarloadpointvalue
+            << _currentdailyoperations
+            << (string)(_recentlycontrolledflag?"Y":"N")
+            << _lastoperationtime
+            << _varvaluebeforecontrol
+            << _lastcapbankcontrolleddeviceid
+            << _busoptimizedvarcategory
+            << _busoptimizedvaroffset
+            << currentDateTime
+            << _powerfactorvalue
+            << _kvarsolution
+            << _estimatedpowerfactorvalue
+            << _currentvarpointquality
+            << (string)(_waivecontrolflag?"Y":"N")
+            << addFlags
             << _currentvoltloadpointvalue
             << _eventSeq
             << _currentVerificationCapBankId
@@ -6276,29 +6201,23 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
+                    string loggedSQLstring = dbInserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -6520,12 +6439,11 @@ CtiCCFeeder* CtiCCFeeder::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
 
-void CtiCCFeeder::restore(RWDBReader& rdr)
+void CtiCCFeeder::restore(Cti::RowReader& rdr)
 {
-    RWDBNullIndicator isNull;
     CtiTime currentDateTime;
     CtiTime dynamicTimeStamp;
     string tempBoolString;
@@ -6634,7 +6552,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     _originalParent.setPAOId(getPaoId());
 }
 
-void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
+void CtiCCFeeder::setDynamicData(Cti::RowReader& rdr)
 {
 
     CtiTime dynamicTimeStamp;

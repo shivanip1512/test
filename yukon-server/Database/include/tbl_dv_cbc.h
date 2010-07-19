@@ -20,13 +20,7 @@
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -36,6 +30,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceCBC : public CtiMemDBObject
 {
@@ -66,9 +61,7 @@ public:
 
    CtiTableDeviceCBC& setRouteID( const LONG a_routeID );
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    static string getTableName();
 
@@ -76,9 +69,8 @@ public:
 
    CtiTableDeviceCBC& setDeviceID( const LONG did);
 
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
+   virtual bool Insert();
+   virtual bool Update();
+   virtual bool Delete();
 };
 #endif // #ifndef __TBL_DV_CBC_H__

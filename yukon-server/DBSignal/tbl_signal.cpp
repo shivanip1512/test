@@ -3,7 +3,8 @@
 #include "tbl_signal.h"
 #include "dbaccess.h"
 #include "logger.h"
-#include "rwutil.h"
+#include "database_writer.h"
+#include "database_reader.h"
 
 #define DEFAULT_ACTIONLENGTH        60
 #define DEFAULT_DESCRIPTIONLENGTH   120
@@ -87,7 +88,7 @@ CtiTableSignal& CtiTableSignal::operator=(const CtiTableSignal& aRef)
     return *this;
 }
 
-void CtiTableSignal::DecodeDatabaseReader( RWDBReader& rdr )
+void CtiTableSignal::DecodeDatabaseReader( Cti::RowReader& rdr )
 {
     rdr["logid"]        >> _logID;
     rdr["pointid"]      >> _pointID;
@@ -101,10 +102,10 @@ void CtiTableSignal::DecodeDatabaseReader( RWDBReader& rdr )
     rdr["millis"]       >> _millis;
 }
 
-void CtiTableSignal::Insert(RWDBConnection &conn)
+void CtiTableSignal::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if(getAdditionalInfo().length() >= DEFAULT_ACTIONLENGTH)
     {
@@ -127,70 +128,50 @@ void CtiTableSignal::Insert(RWDBConnection &conn)
         setUser(temp);
     }
 
-    inserter << getLogID()
-             << getPointID()
-             << getTime()
-             << getSOE()
-             << getLogType()
-             << getPriority()
-             << getAdditionalInfo()
-             << getText()
-             << getUser()
-             << getMillis();
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-    RWDBStatus dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    inserter
+        << getLogID()
+        << getPointID()
+        << getTime()
+        << getSOE()
+        << getLogType()
+        << getPriority()
+        << getAdditionalInfo()
+        << getText()
+        << getUser()
+        << getMillis();
 
-    if(dbstat.vendorError1() == 1401)
+    bool success = inserter.execute();
+
+    if( !success )
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << dbstat.errorCode() << endl;
-            dout << loggedSQLstring << endl;
-        }
-    }
-
-    if( dbstat.errorCode() != RWDBStatus::ok )
-    {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Error Code = " << dbstat.errorCode() << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << " **** SQL Insert Error." << endl;
+        dout << inserter.asString() << endl;
     }
 }
 
 void CtiTableSignal::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     Insert(conn);
 }
 
 void CtiTableSignal::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql =  "SELECT SL.logid, SL.pointid, SL.datetime, SL.soe_tag, SL.type, SL.priority, "
+                                 "SL.action, SL.description, SL.username, SL.millis "
+                               "FROM Systemlog SL "
+                               "WHERE SL.logid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-    selector << table["logid"]
-             << table["pointid"]
-             << table["datetime"]
-             << table["soe_tag"]
-             << table["type"]
-             << table["priority"]
-             << table["action"]
-             << table["description"]
-             << table["username"]
-             << table["millis"];
+    reader << getLogID();
 
-    selector.where( table["logid"] == getLogID() );
-
-    RWDBReader reader = selector.reader( conn );
+    reader.execute();
 
     if( reader() )
     {
@@ -204,6 +185,20 @@ void CtiTableSignal::Restore()
 
 void CtiTableSignal::Update()
 {
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "pointid = ?, "
+                                        "datetime = ?, "
+                                        "soe_tag = ?, "
+                                        "type = ?, "
+                                        "priority = ?, "
+                                        "action = ?, "
+                                        "description = ?, "
+                                        "username = ?, "
+                                        "millis = ?"
+                                   " where "
+                                        "logid = ?";
+
     if(getAdditionalInfo().length() >= DEFAULT_ACTIONLENGTH)
     {
         getAdditionalInfo().resize(DEFAULT_ACTIONLENGTH - 1);
@@ -214,39 +209,34 @@ void CtiTableSignal::Update()
         getText().resize(DEFAULT_DESCRIPTIONLENGTH - 1);
     }
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater
+        << getPointID()
+        << getTime()
+        << getSOE()
+        << getLogType()
+        << getPriority()
+        << getAdditionalInfo()
+        << getText()
+        << getUser()
+        << getMillis()
+        << getLogID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater << table["pointid" ].assign(getPointID())
-            << table["datetime"].assign(toRWDBDT(getTime()))
-            << table["soe_tag" ].assign(getSOE())
-            << table["type"    ].assign(getLogType())
-            << table["priority"].assign(getPriority())
-            << table["action"  ].assign(getAdditionalInfo().c_str())
-            << table["description"].assign(getText().c_str())
-            << table["username"].assign(getUser().c_str())
-            << table["millis"  ].assign(getMillis());
-
-    updater.where( table["logid"] == getLogID() );
-
-    ExecuteUpdater(conn,updater,__FILE__,__LINE__);
+    updater.execute();
 }
 
 void CtiTableSignal::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where logid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["logid"] == getLogID() );
+    deleter << getLogID();
 
-    deleter.execute( conn );
+    deleter.execute();
 }
 
 
@@ -407,48 +397,3 @@ CtiTableSignal* CtiTableSignal::replicate() const
 {
     return(CTIDBG_new CtiTableSignal(*this));
 }
-
-void CtiTableSignal::getSQLMaxID(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, LONG id)
-{
-    keyTable = db.table("SystemLog");
-
-    selector << keyTable["logid"];
-
-    selector.from(keyTable);
-
-    selector.where(keyTable["priority"] > SignalEvent && keyTable["pointid"] == id);
-
-    selector.orderByDescending(keyTable["logid"]);
-
-#if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << selector.asString() << endl;
-    }
-#endif
-
-}
-
-
-void CtiTableSignal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table("SystemLog");
-
-    selector << keyTable["logid"]
-             << keyTable["pointid"]
-             << keyTable["datetime"]
-             << keyTable["soe_tag"]
-             << keyTable["type"]
-             << keyTable["priority"]
-             << keyTable["action"]
-             << keyTable["description"]
-             << keyTable["username"]
-             << keyTable["millis"];
-
-
-    selector.from(keyTable);
-
-    // No where clause...  User should provide!
-}
-

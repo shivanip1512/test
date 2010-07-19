@@ -82,9 +82,9 @@ public:
         Command_Timesync
     };
 
-    virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const;
+    virtual string getSQLCoreStatement() const;
 
-    void DecodeDatabaseReader(RWDBReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
 

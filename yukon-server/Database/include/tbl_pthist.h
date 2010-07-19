@@ -17,13 +17,13 @@
 
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
-#include <rw/db/db.h>
 
 #include "yukon.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
 #include "ctibase.h"
 #include "ctitime.h"
+#include "row_reader.h"
 
 class CtiTablePointHistory : public CtiMemDBObject
 {
@@ -50,12 +50,7 @@ public:
 
     virtual string getTableName() const;
 
-    virtual void Insert();
-    virtual void Update();
-    virtual void Restore();
-    virtual void Delete();
-
-    virtual void DecodeDatabaseReader(RWDBReader& rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     LONG getPointID() const;
     CtiTablePointHistory& setPointID(LONG pointID);

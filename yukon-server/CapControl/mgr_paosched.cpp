@@ -19,6 +19,9 @@
 #include "utility.h"
 #include "msg_signal.h"
 #include "ctistring.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 #include <stdlib.h>
 
@@ -724,62 +727,43 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
         tempSchedules.clear();
         try
         {
-
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            //if( _CC_DEBUG )
             {
-                //if( _CC_DEBUG )
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Resetting PAOSchedules - sync with database..." << endl;
+            }
+
+            static const string sql =  "SELECT PAS.scheduleid, PAS.schedulename, PAS.nextruntime, PAS.lastruntime, "
+                                         "PAS.intervalrate, PAS.disabled "
+                                       "FROM paoschedule PAS";
+            
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection);
+
+            rdr.setCommandText(sql);
+            rdr.execute();
+            
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Resetting PAOSchedules - sync with database..." << endl;
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
+            }
 
-                if ( conn.isValid() )
-                {
-                    RWDBDatabase db = getDatabase();
-                    RWDBTable paoScheduleTable = db.table("paoschedule");
-                    {
-                        RWDBSelector selector = db.selector();
-                        selector << paoScheduleTable["scheduleid"]
-                        << paoScheduleTable["schedulename"]
-                        << paoScheduleTable["nextruntime"]
-                        << paoScheduleTable["lastruntime"]
-                        << paoScheduleTable["intervalrate"]
-                        << paoScheduleTable["disabled"];
+            CtiPAOSchedule* currentPAOSchedule = NULL;
 
+            while ( rdr() )
+            {
+                currentPAOSchedule = new CtiPAOSchedule(rdr);
 
-                        selector.from(paoScheduleTable);
-                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-                        RWDBReader rdr = selector.reader(conn);
-                        CtiPAOSchedule* currentPAOSchedule = NULL;
-
-                        while ( rdr() )
-                        {
-                            currentPAOSchedule = new CtiPAOSchedule(rdr);
-
-                            if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " -currentPAOSchedule.getScheduleId()" << currentPAOSchedule->getScheduleId()<<endl;
-                            }
-                            tempSchedules.push_back(currentPAOSchedule);
-                        }
-                    }
-                }
-                else
+                if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Unable to get valid database connection." << endl;
-                    setValid(FALSE);
-                    return;
+                    dout << CtiTime() << " -currentPAOSchedule.getScheduleId()" << currentPAOSchedule->getScheduleId()<<endl;
                 }
+                tempSchedules.push_back(currentPAOSchedule);
             }
         }
         catch (...)
@@ -813,61 +797,42 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
         tempEvents.clear();
         try
         {
-
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            //if( _CC_DEBUG )
             {
-                //if( _CC_DEBUG )
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Resetting PAOEvents - sync with database..." << endl;
+            }
+
+            static const string sql = "SELECT PSA.eventid, PSA.scheduleid, PSA.paoid, PSA.command, PSA.disableovuv "
+                                      "FROM paoscheduleassignment PSA";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection);
+
+            rdr.setCommandText(sql);
+            rdr.execute();
+
+            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Resetting PAOEvents - sync with database..." << endl;
+                    dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
+            }
 
-                if ( conn.isValid() )
-                {
-                    RWDBDatabase db = getDatabase();
-                    RWDBTable paoEventTable = db.table("paoscheduleassignment");
-                    {
-                        RWDBSelector selector = db.selector();
-                        selector << paoEventTable["eventid"]
-                        << paoEventTable["scheduleid"]
-                        << paoEventTable["paoid"]
-                        << paoEventTable["command"]
-                        << paoEventTable["disableovuv"];
+            CtiPAOEvent* currentPAOEvent = NULL;
 
+            while ( rdr() )
+            {
+                currentPAOEvent = new CtiPAOEvent(rdr);
 
-                        selector.from(paoEventTable);
-                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-                        RWDBReader rdr = selector.reader(conn);
-                        CtiPAOEvent* currentPAOEvent = NULL;
-
-                        while ( rdr() )
-                        {
-                            currentPAOEvent = new CtiPAOEvent(rdr);
-
-                            if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " -currentPAOEvent.getEventId()" << currentPAOEvent->getEventId()<<endl;
-                            }
-                            tempEvents.push_back(currentPAOEvent);
-                        }
-                    }
-                }
-                else
+                if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Unable to get valid database connection." << endl;
-                    setValid(FALSE);
-                    return;
+                    dout << CtiTime() << " -currentPAOEvent.getEventId()" << currentPAOEvent->getEventId()<<endl;
                 }
+                tempEvents.push_back(currentPAOEvent);
             }
         }
         catch (...)
@@ -902,12 +867,10 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
         if ( !schedules.empty() )
         {
             CtiTime currentDateTime = CtiTime();
-            string schedulerPAO("schedulerPAO");
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            
+            Cti::Database::DatabaseConnection   conn;
 
-            RWDBTable paoSchedule = getDatabase().table( "paoschedule" );
-            conn.beginTransaction(string2RWCString(schedulerPAO));
+            conn.beginTransaction();
 
             do
             {
@@ -917,47 +880,41 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
 
                 if ( currentSchedule->isDirty() )
                 {
-                    try
+                    static const std::string sql_update = "update paoschedule"
+                                                           " set "
+                                                                "nextruntime = ?, "
+                                                                "lastruntime = ?"
+                                                           " where "
+                                                                "scheduleid = ?";
+
+                    Cti::Database::DatabaseWriter   updater(conn, sql_update);
+
+                    updater
+                        << currentSchedule->getNextRunTime()
+                        << currentSchedule->getLastRunTime()
+                        << currentSchedule->getScheduleId();
+
+                    bool success = updater.execute();
+
+                    if( updater.execute() )    // No error occured!
                     {
-
-                        RWDBUpdater updater = paoSchedule.updater();
-
-                        updater.where(paoSchedule["scheduleid"]==currentSchedule->getScheduleId());
-
-                        updater << paoSchedule["nextruntime"].assign( toRWDBDT(currentSchedule->getNextRunTime()) )
-                                << paoSchedule["lastruntime"].assign( toRWDBDT(currentSchedule->getLastRunTime()) );
-
-                        updater.execute( conn );
-
-                        if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
-                        {
-                            currentSchedule->setDirty(FALSE);
-                        }
-                        else
-                        {
-                            currentSchedule->setDirty(TRUE);
-                            {
-                                string loggedSQLstring = updater.asString();
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  " << loggedSQLstring << endl;
-                                }
-                            }
-                        }
-
-                        updater.clear();
+                        currentSchedule->setDirty(FALSE);
                     }
-                    catch(...)
+                    else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        currentSchedule->setDirty(TRUE);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << "  " << updater.asString() << endl;
+                        }
                     }
                 }
                 //delete currentSchedule;
-            }while(!schedules.empty());
+            }
+            while(!schedules.empty());
 
-            conn.commitTransaction(string2RWCString(schedulerPAO));
+            conn.commitTransaction();
         }
     }
     catch(...)

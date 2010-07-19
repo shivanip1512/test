@@ -18,7 +18,9 @@
 #include "tbl_dialup.h"
 #include "logger.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 CtiTableDeviceDialup::CtiTableDeviceDialup() :
 _deviceID(-1),
@@ -109,24 +111,7 @@ void CtiTableDeviceDialup::setLineSettings(const string &lstr)
     LineSettings = lstr;
 }
 
-void CtiTableDeviceDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table( getTableName().c_str() );
-
-    selector <<
-    devTbl["phonenumber"] <<
-    devTbl["minconnecttime"] <<
-    devTbl["maxconnecttime"] <<
-    devTbl["linesettings"] <<
-    devTbl["baudrate"];
-
-    selector.from(devTbl);
-
-    // selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );
-}
-
-void CtiTableDeviceDialup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceDialup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -161,109 +146,74 @@ LONG CtiTableDeviceDialup::getDeviceID() const
     return _deviceID;
 }
 
-RWDBStatus CtiTableDeviceDialup::Restore()
+bool CtiTableDeviceDialup::Insert()
 {
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?)";
 
-    char temp[32];
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    inserter 
+        << getDeviceID()
+        << getPhoneNumber()
+        << getMinConnectTime()
+        << getMaxConnectTime()
+        << getLineSettings()
+        << getBaudRate();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    bool success = inserter.execute();
 
-    selector <<
-    table["deviceid"] <<
-    table["phonenumber"] <<
-    table["minconnecttime"] <<
-    table["maxconnecttime"] <<
-    table["linesettings"] <<
-    table["baudrate"];
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceDialup::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getDeviceID() <<
-    getPhoneNumber() <<
-    getMinConnectTime() <<
-    getMaxConnectTime() <<
-    getLineSettings() <<
-    getBaudRate();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if ( success )
     {
         setDirty(false);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceDialup::Update()
+bool CtiTableDeviceDialup::Update()
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "phonenumber = ?, "
+                                        "minconnecttime = ?, "
+                                        "maxconnecttime = ?, "
+                                        "linesettings = ?, "
+                                        "baudrate = ?"
+                                   " where "
+                                        "deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
+    updater 
+        << getPhoneNumber()
+        << getMinConnectTime()
+        << getMaxConnectTime()
+        << getLineSettings()
+        << getBaudRate()
+        << getDeviceID();
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    bool success = updater.execute();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getDeviceID() );
-
-    updater <<
-    table["phonenumber"].assign(getPhoneNumber().c_str() ) <<
-    table["minconnecttime"].assign(getMinConnectTime() ) <<
-    table["maxconnecttime"].assign(getMaxConnectTime() ) <<
-    table["linesettings"].assign(getLineSettings().c_str() ) <<
-    table["baudrate"].assign(getBaudRate() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    if ( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceDialup::Delete()
+bool CtiTableDeviceDialup::Delete()
 {
+    static const std::string sql = "delete from " + getTableName() + " where deviceid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    deleter << getDeviceID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
+    return deleter.execute();
 }
 
 

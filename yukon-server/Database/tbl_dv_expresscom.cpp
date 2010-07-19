@@ -18,8 +18,6 @@
 #include "resolvers.h"
 #include "tbl_dv_expresscom.h"
 
-#include "rwutil.h"
-
 CtiTableExpresscomLoadGroup::CtiTableExpresscomLoadGroup() :
 _lmGroupId(-1),
 _routeId(-1),
@@ -206,32 +204,7 @@ string CtiTableExpresscomLoadGroup::getTableName()
     return string("ExpressComAddress_View");
 }
 
-void CtiTableExpresscomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector <<
-    devTbl["routeid"           ] <<
-    devTbl["serialnumber"      ] <<
-    devTbl["serviceaddress"    ] <<
-    devTbl["geoaddress"        ] <<
-    devTbl["substationaddress" ] <<
-    devTbl["feederaddress"     ] <<
-    devTbl["zipcodeaddress"    ] <<
-    devTbl["udaddress"         ] <<
-    devTbl["programaddress"    ] <<
-    devTbl["splinteraddress"   ] <<
-    devTbl["addressusage"      ] <<
-    devTbl["relayusage"        ] <<
-    devTbl["protocolpriority"  ];
-
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["lmgroupid"] && selector.where() );
-}
-
-void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -281,42 +254,32 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     _loads = resolveRelayUsage(rwsTemp.c_str());
 }
 
-RWDBStatus CtiTableExpresscomLoadGroup::Restore()
+bool CtiTableExpresscomLoadGroup::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return RWDBStatus::notSupported;
+    return false;
 }
 
-RWDBStatus CtiTableExpresscomLoadGroup::Insert()
+bool CtiTableExpresscomLoadGroup::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-    return RWDBStatus::notSupported;
+    return false;
 }
 
-RWDBStatus CtiTableExpresscomLoadGroup::Update()
+bool CtiTableExpresscomLoadGroup::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableExpresscomLoadGroup::Delete()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return RWDBStatus::notSupported;
+    return false;
 }
 
 BOOL CtiTableExpresscomLoadGroup::useRelay(const INT r) const

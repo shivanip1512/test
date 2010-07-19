@@ -1340,7 +1340,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), string (FDR_INTERFACE_RECEIVE));
 
-        if (pointList->loadPointList().errorCode() == (RWDBStatus::ok))
+        if (pointList->loadPointList())
         {
             // get iterator on list
             CtiFDRManager::spiterator myIterator = pointList->getMap().begin();
@@ -1376,7 +1376,7 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " db read code " << pointList->loadPointList().errorCode() << endl;
+            dout << " Unable to load points from database." << endl;
             successful = false;
         }
     }   // end try block

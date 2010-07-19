@@ -1,6 +1,5 @@
 #include "yukon.h"
 #include "msg_notif_lmcontrol.h"
-#include "rwutil.h"
 
 RWDEFINE_COLLECTABLE( CtiNotifLMControlMsg, NOTIF_LMCONTROL_MSG_ID );
 

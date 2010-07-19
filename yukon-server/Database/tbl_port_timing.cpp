@@ -58,23 +58,7 @@ ULONG  CtiTablePortTimings::getDelay(int Offset) const
    return _delays[Offset];
 }
 
-void CtiTablePortTimings::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable portTbl = db.table(getTableName().c_str() );
-
-   selector <<
-      portTbl["pretxwait"] <<
-      portTbl["rtstotxwait"] <<
-      portTbl["posttxwait"] <<
-      portTbl["receivedatawait"] <<
-      portTbl["extratimeout"];
-
-   selector.from(portTbl);
-
-   selector.where( selector.where() && keyTable["paobjectid"] == portTbl["portid"] );
-}
-
-void CtiTablePortTimings::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortTimings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    ULONG    uTemp;
 

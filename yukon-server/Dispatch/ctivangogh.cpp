@@ -72,6 +72,9 @@
 #include "slctpnt.h"
 
 #include "logger.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 
 // #include "slctdev.h"
@@ -2986,21 +2989,16 @@ INT CtiVanGogh::loadPendingSignals()
 
     CtiServerExclusion pmguard(_server_exclusion);
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = CtiTableDynamicPointAlarming().getSQLCoreStatement();
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-        CtiTableDynamicPointAlarming::getSQL( db, keyTable, selector );
+        rdr.execute();
 
-        rdr = selector.reader( conn );
-
-        if(rdr.status().errorCode() != RWDBStatus::ok)
+        if(!rdr.isValid())
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -3052,59 +3050,47 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
            || justdoit == true )                                 // Only chase the queue once per DUMP_RATE seconds.
         {
             {
-                string signals("signals");
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
+                Cti::Database::DatabaseConnection   conn;
 
-                if(conn.isValid())
+                conn.beginTransaction();
+
+                try
                 {
-                    conn.beginTransaction(signals.c_str());
-
-                    try
+                    do
                     {
-                        do
+                        sigMsg = _signalMsgQueue.getQueue(0);
+
+                        if(sigMsg != NULL)
                         {
-                            sigMsg = _signalMsgQueue.getQueue(0);
+                            CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
 
-                            if(sigMsg != NULL)
+                            if(!sigMsg->getText().empty() || !sigMsg->getAdditionalInfo().empty())
                             {
-                                CtiTableSignal sig(sigMsg->getId(), sigMsg->getMessageTime(), sigMsg->getSignalMillis(), sigMsg->getText(), sigMsg->getAdditionalInfo(), sigMsg->getSignalCategory(), sigMsg->getLogType(), sigMsg->getSOE(), sigMsg->getUser(), sigMsg->getLogID());
-
-                                if(!sigMsg->getText().empty() || !sigMsg->getAdditionalInfo().empty())
-                                {
-                                    // No text, no point then is there now?
-                                    sig.Insert(conn);
-                                }
-
-                                if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
-                                {
-                                    postList.push_back(sigMsg);
-                                }
-                                else
-                                {
-                                    delete sigMsg;
-                                }
+                                // No text, no point then is there now?
+                                sig.Insert(conn);
                             }
 
-                        } while( conn.isValid() && sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
-                    }
-                    catch(...)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            if(!(sigMsg->getTags() & TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL))
+                            {
+                                postList.push_back(sigMsg);
+                            }
+                            else
+                            {
+                                delete sigMsg;
+                            }
                         }
-                    }
 
-                    conn.commitTransaction(signals.c_str());
+                    } while( sigMsg != NULL && (justdoit || (panicCounter++ < 500)));
                 }
-                else
+                catch(...)
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to acquire a valid connection to the database" << endl;
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
                 }
+
+                conn.commitTransaction();
             }
 
             if(panicCounter > 0)
@@ -3240,35 +3226,33 @@ void CtiVanGogh::writeCommErrorHistoryToDB(bool justdoit)
         {
             if(comment > 0)
             {
-                string commError("commError");
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-                {
-                    RWDBStatus dbstat = conn.beginTransaction(commError.c_str());
+                bool success = true;
+                Cti::Database::DatabaseConnection   conn;
 
-                    while( dbstat.isValid() && conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
+                conn.beginTransaction();
+
+                while( success && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _commErrorHistoryQueue.getQueue(0)) != NULL)
+                {
+                    if(pTblEntry)
                     {
-                        if(pTblEntry)
+                        if(isDeviceIdValid(pTblEntry->getPAOID()))
                         {
-                            if(isDeviceIdValid(pTblEntry->getPAOID()))
-                            {
-                                panicCounter++;
-                                dbstat = pTblEntry->Insert(conn);
-                            }
-                            delete pTblEntry;
-                            pTblEntry = 0;
+                            panicCounter++;
+                            success = pTblEntry->Insert(conn);
                         }
-                        else
+                        delete pTblEntry;
+                        pTblEntry = 0;
+                    }
+                    else
+                    {
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
-
-                    conn.commitTransaction(commError.c_str());
                 }
+
+                conn.commitTransaction();
             }
 
             if( panicCounter > 0 )
@@ -3996,24 +3980,19 @@ void CtiVanGogh::loadAlarmToDestinationTranslation()
 
         if(guard.isAcquired())
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            static const string sql = "SELECT AC.alarmcategoryid, AC.categoryname, AC.notificationgroupid "
+                                      "FROM AlarmCategory AC";
 
-            RWDBDatabase   db       = conn.database();
-            RWDBSelector   selector = conn.database().selector();
-            RWDBTable      table    = db.table( "AlarmCategory" );
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection);
 
-            selector <<
-            table["alarmcategoryid"] <<
-            table["categoryname"] <<
-            table["notificationgroupid"];
+            rdr.setCommandText(sql);
 
-            selector.from(table);
+            rdr.execute();
 
-            RWDBReader  rdr = selector.reader( conn );
-            if(rdr.status().errorCode() != RWDBStatus::ok)
+            if(!rdr.isValid())
             {
-                string loggedSQLstring = selector.asString();
+                string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -5063,26 +5042,18 @@ void CtiVanGogh::loadDeviceLites(LONG id)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Loading DeviceLites " << endl;
     }
-
-
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        const string sql = CtiDeviceBaseLite().getSQLCoreStatement(id);
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-        /* Go after the system defined points! */
-        CtiDeviceBaseLite().getSQL( db, keyTable, selector );
-
-        if(id != 0)
+        if(id)
         {
-            selector.where( keyTable["paobjectid"] == id && selector.where() );
+            rdr << id;
         }
 
-        rdr = selector.reader(conn);
+        rdr.execute();
 
         while( rdr() )
         {
@@ -5123,7 +5094,7 @@ void CtiVanGogh::loadDeviceNames()
         for(dnit = _deviceLiteSet.begin(); dnit != _deviceLiteSet.end(); dnit++ )
         {
             CtiDeviceBaseLite &dLite = *dnit;
-            if(dLite.Restore().errorCode() != RWDBStatus::ok)
+            if(!dLite.Restore())
             {
                 reloadFailed = true;
                 break;
@@ -5164,7 +5135,7 @@ void CtiVanGogh::loadCICustomers(LONG id)
             for(it = _ciCustSet.begin(); it != _ciCustSet.end(); it++ )
             {
                 CtiTableCICustomerBase &theCust = *it;
-                if(theCust.Restore().errorCode() != RWDBStatus::ok)
+                if(!theCust.Restore())
                 {
                     reloadFailed = true;
                     break;
@@ -5773,9 +5744,7 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
         if( dliteit == _deviceLiteSet.end() )
         {
             // We need to load it up, and/or then insert it!
-            RWDBStatus dbstat = dLite.Restore();
-
-            if(dbstat.errorCode() == RWDBStatus::ok)
+            if(dLite.Restore())
             {
                 pair< CtiDeviceLiteSet_t::iterator, bool > resultpair;
 
@@ -6046,32 +6015,30 @@ INT CtiVanGogh::updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, s
     CtiServerExclusion smguard(_server_exclusion, 10000);
     if(smguard.isAcquired())
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        Cti::Database::DatabaseConnection   conn;
+
         {
-            // In this case, we poke at the PAO table
-            RWDBConnection conn = getConnection();
+            static const std::string sql_pao_update = "update yukonpaobject set disableflag = ? where paobjectid = ?";
 
-            RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
-            RWDBUpdater updater = yukonPAObjectTable.updater();
+            Cti::Database::DatabaseWriter   updater(conn, sql_pao_update);
 
-            updater.where( yukonPAObjectTable["paobjectid"] == did );
-            updater << yukonPAObjectTable["disableflag"].assign( (TAG_DISABLE_DEVICE_BY_DEVICE & setmask?"Y":"N") );
+            updater
+                << ( TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
+                << did;
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
+            status = updater.execute() ? NORMAL : UnknownError;
         }
 
-
         {
-            // In this case, we poke at the base device table.
-            RWDBConnection conn = getConnection();
+            static const std::string sql_device_update = "update device set controlinhibit = ? where deviceid = ?";
 
-            RWDBTable deviceTable = getDatabase().table("device");
-            RWDBUpdater updater = deviceTable.updater();
+            Cti::Database::DatabaseWriter   updater(conn, sql_device_update);
 
-            updater.where( deviceTable["deviceid"] == did );
-            updater << deviceTable["controlinhibit"].assign( (TAG_DISABLE_CONTROL_BY_DEVICE & setmask?"Y":"N") );
+            updater
+                << ( TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? std::string("Y") : std::string("N") )
+                << did;
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
+            status = updater.execute() ? NORMAL : UnknownError;
         }
     }
 
@@ -6090,34 +6057,32 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
     CtiServerExclusion smguard(_server_exclusion, 10000);
     if(smguard.isAcquired())
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-
-        if(TAG_DISABLE_POINT_BY_POINT & tagmask)
+        if (TAG_DISABLE_POINT_BY_POINT & tagmask)
         {
-            // In this case, we poke at the PAO table
-            RWDBConnection conn = getConnection();
+            static const std::string sql_point_update = "update point set serviceflag = ? where pointid = ?";
 
-            RWDBTable tbl = getDatabase().table("point");
-            RWDBUpdater updater = tbl.updater();
+            Cti::Database::DatabaseConnection   conn;
+            Cti::Database::DatabaseWriter       updater(conn, sql_point_update);
 
-            updater.where( tbl["pointid"] == pid );
-            updater << tbl["serviceflag"].assign( (TAG_DISABLE_POINT_BY_POINT & setmask?"Y":"N") );
+            updater
+                << ( TAG_DISABLE_POINT_BY_POINT & setmask ? std::string("Y") : std::string("N") )
+                << pid;
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
+            status = updater.execute() ? NORMAL : UnknownError;
         }
 
-        if(TAG_DISABLE_CONTROL_BY_POINT & tagmask)
+        if (TAG_DISABLE_CONTROL_BY_POINT & tagmask)
         {
-            // In this case, we poke at the base device table.
-            RWDBConnection conn = getConnection();
+            static const std::string sql_pointstatus_update = "update pointstatus set controlinhibit = ? where pointid = ?";
 
-            RWDBTable tbl = getDatabase().table("pointstatus");
-            RWDBUpdater updater = tbl.updater();
+            Cti::Database::DatabaseConnection   conn;
+            Cti::Database::DatabaseWriter       updater(conn, sql_pointstatus_update);
 
-            updater.where( tbl["pointid"] == pid );
-            updater << tbl["controlinhibit"].assign( (TAG_DISABLE_CONTROL_BY_POINT & setmask?"Y":"N") );
+            updater
+                << ( TAG_DISABLE_CONTROL_BY_POINT & setmask ? std::string("Y") : std::string("N") )
+                << pid;
 
-            status = (ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok ? NORMAL: UnknownError);
+            status = updater.execute() ? NORMAL : UnknownError;
         }
     }
 
@@ -6229,15 +6194,13 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
     {
         CtiTableRawPointHistory *pTblEntry;
 
-        string raw("raw");
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        Cti::Database::DatabaseConnection   conn;
 
-        conn.beginTransaction(raw.c_str());
+        conn.beginTransaction();
 
         try
         {
-            while( conn.isValid() && ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
+            while( ( justdoit || (panicCounter < maxrowstowrite) ) && (pTblEntry = _archiverQueue.getQueue(0)) != NULL)
             {
                 panicCounter++;
                 pTblEntry->Insert(conn);
@@ -6252,7 +6215,7 @@ UINT CtiVanGogh::writeRawPointHistory(bool justdoit, int maxrowstowrite)
             }
         }
 
-        conn.commitTransaction(raw.c_str());
+        conn.commitTransaction();
     }
     catch(...)
     {
@@ -7241,20 +7204,21 @@ int CtiVanGogh::loadPendingControls()
 
     // This block will clean up any non closed control blocks.
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        CtiTime todaynow;
+        CtiTime thepast = todaynow.addDays( -5 );
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
+        static const string sql = CtiTableLMControlHistory().getSQLCoreStatementIncomplete();
 
-        CtiTableLMControlHistory::getSQLForIncompleteControls( db, keyTable, selector );
-        rdr = selector.reader( conn );
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-        if(rdr.status().errorCode() != RWDBStatus::ok)
+        rdr << thepast;
+
+        rdr.execute();
+
+        if(!rdr.isValid())
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -7340,21 +7304,16 @@ int CtiVanGogh::loadPendingControls()
     }
 
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = CtiTableLMControlHistory().getSQLCoreStatementOutstanding();
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-        CtiTableLMControlHistory::getSQLForOutstandingControls( db, keyTable, selector );
+        rdr.execute();
 
-        rdr = selector.reader( conn );
-
-        if(rdr.status().errorCode() != RWDBStatus::ok)
+        if(!rdr.isValid())
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

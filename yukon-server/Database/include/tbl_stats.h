@@ -17,13 +17,8 @@
 
 #define __TBL_STATS_H__
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -34,9 +29,6 @@
 #include "resolvers.h"
 #include "desolvers.h"
 #include "yukon.h"
-
-
-#include "rwutil.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceStatistics : CtiMemDBObject
 {
@@ -94,15 +86,9 @@ public:
    CtiTableDeviceStatistics& setDeviceID( const LONG did);
 
    /* These guys are handled different since they are multi-keyed */
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
    static string getTableName();
 
 };

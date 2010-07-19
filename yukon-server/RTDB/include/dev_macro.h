@@ -62,8 +62,9 @@ public:
 
     virtual LONG getRouteID() { return 0L; }
 
-    void DecodeDatabaseReader( RWDBReader &rdr );
-    virtual void getSQL( RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector ) const;
+    virtual string getSQLCoreStatement() const;
+
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT processTrxID( int trx, list< CtiMessage* >  &vgList );
     virtual INT initTrxID( int trx, CtiCommandParser &parse, list< CtiMessage* >  &vgList );

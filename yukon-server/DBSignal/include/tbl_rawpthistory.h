@@ -24,12 +24,13 @@
 
 #include <windows.h>
 #include "ctitime.h"
-#include <rw/db/datetime.h>
 
 #include "dlldefs.h"
 #include "pointdefs.h"
 #include "utility.h"
 #include "yukon.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 class IM_EX_SIGNAL CtiTableRawPointHistory
 {
@@ -72,12 +73,12 @@ public:
    virtual RWBoolean operator<(const CtiTableRawPointHistory& aRef) const;
 
    virtual void Insert();
-   virtual void Insert(RWDBConnection &conn);
+   virtual void Insert(Cti::Database::DatabaseConnection &conn);
    virtual void Restore();
    void RestoreMax();
    virtual string getTableName() const;
 
-   virtual void DecodeDatabaseReader( RWDBReader& rdr );
+   virtual void DecodeDatabaseReader( Cti::RowReader& rdr );
 
 
    LONG                       getChangeID() const;

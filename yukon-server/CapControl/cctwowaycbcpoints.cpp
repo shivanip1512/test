@@ -21,6 +21,7 @@
 #include "logger.h"
 #include "resolvers.h"
 #include "msg_ptreg.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -139,7 +140,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     return;
 }
 
-CtiCCTwoWayPoints::CtiCCTwoWayPoints(RWDBReader& rdr)
+CtiCCTwoWayPoints::CtiCCTwoWayPoints(Cti::RowReader& rdr)
 {
     //restore(rdr);
 }
@@ -1445,21 +1446,48 @@ BOOL CtiCCTwoWayPoints::isDirty()
 {
     return _dirty;
 }
-void CtiCCTwoWayPoints::dumpDynamicData()
+void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
-{
-
     {
-
-        RWDBTable dynamicCCTwoWayTable = getDatabase().table( "dynamiccctwowaycbc" );
         if( !_insertDynamicDataFlag )
         {
+            static const string updateSql = "update dynamiccctwowaycbc set "
+                                            "recloseblocked = ?, "
+                                            "controlmode = ?, "
+                                            "autovoltcontrol = ?, "
+                                            "lastcontrol = ?, "
+                                            "condition = ?, "
+                                            "opfailedneutralcurrent = ?, "
+                                            "neutralcurrentfault = ?, "
+                                            "badrelay = ?, "
+                                            "dailymaxops = ?, "
+                                            "voltagedeltaabnormal = ?, "
+                                            "tempalarm = ?, "
+                                            "dstactive = ?, "
+                                            "neutrallockout = ?, "
+                                            "ignoredindicator = ?, "
+                                            "voltage = ?, "
+                                            "highvoltage = ?, "
+                                            "lowvoltage = ?, "
+                                            "deltavoltage = ?, "
+                                            "analoginputone = ?, "
+                                            "temp = ?, "
+                                            "rssi = ?, "
+                                            "ignoredreason = ?, "
+                                            "totalopcount = ?, "
+                                            "uvopcount = ?, "
+                                            "ovopcount = ?, "
+                                            "ovuvcountresetdate = ?, "
+                                            "uvsetpoint = ?, "
+                                            "ovsetpoint = ?, "
+                                            "ovuvtracktime = ?, "
+                                            "lastovuvdatetime = ?, "
+                                            "neutralcurrentsensor = ?, "
+                                            "neutralcurrentalarmsetpoint = ?, "
+                                            "ipaddress = ?, "
+                                            "udpport = ?"
+                                            " where deviceid = ?";
+
             _lastControlReason = ( ( _lastControlRemote & 0x01)            ||
                                 ((_lastControlLocal & 0x01 )        << 1 ) ||
                                 ((_lastControlOvUv & 0x01 )         << 2 ) ||
@@ -1476,48 +1504,46 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             else
                 condition = 0;
 
-            RWDBUpdater updater = dynamicCCTwoWayTable.updater();
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater.where(dynamicCCTwoWayTable["deviceid"] == _paoid);
+            updater 
+                << (string)(_reCloseBlocked?"Y":"N")
+                << (string)(_controlMode?"Y":"N")
+                << (string)(_autoVoltControl?"Y":"N") 
+                << _lastControlReason 
+                << condition 
+                << (string)(_opFailedNeutralCurrent?"Y":"N") 
+                << (string)(_neutralCurrentFault?"Y":"N")
+                << (string)(_badRelay?"Y":"N")
+                << (string)(_dailyMaxOps?"Y":"N")
+                << (string)(_voltageDeltaAbnormal?"Y":"N")
+                << (string)(_tempAlarm?"Y":"N") 
+                << (string)(_DSTActive?"Y":"N")
+                << (string)(_neutralLockout?"Y":"N") 
+                << (string)(_ignoredIndicator?"Y":"N") 
+                << _voltage 
+                << _highVoltage 
+                << _lowVoltage 
+                << _deltaVoltage 
+                << _analogInput1 
+                << _temperature 
+                << _rssi 
+                << _ignoredReason 
+                << _totalOpCount 
+                << _uvCount 
+                << _ovCount
+                << _ovuvCountResetDate
+                << _uvSetPoint 
+                << _ovSetPoint 
+                << _ovuvTrackTime 
+                << _lastOvUvDateTime
+                << _neutralCurrentSensor 
+                << _neutralCurrentAlarmSetPoint 
+                << _udpIpAddress 
+                << _udpPortNumber 
+                << _paoid;
 
-            updater << dynamicCCTwoWayTable["recloseblocked"].assign( _reCloseBlocked?"Y":"N")
-            << dynamicCCTwoWayTable["controlmode"].assign( _controlMode?"Y":"N")
-            << dynamicCCTwoWayTable["autovoltcontrol"].assign( _autoVoltControl?"Y":"N" )
-            << dynamicCCTwoWayTable["lastcontrol"].assign( _lastControlReason )
-            << dynamicCCTwoWayTable["condition"].assign( condition )
-            << dynamicCCTwoWayTable["opfailedneutralcurrent"].assign( _opFailedNeutralCurrent?"Y":"N" )
-            << dynamicCCTwoWayTable["neutralcurrentfault"].assign(_neutralCurrentFault?"Y":"N")
-            << dynamicCCTwoWayTable["badrelay"].assign(_badRelay?"Y":"N")
-            << dynamicCCTwoWayTable["dailymaxops"].assign(_dailyMaxOps?"Y":"N")
-            << dynamicCCTwoWayTable["voltagedeltaabnormal"].assign(_voltageDeltaAbnormal?"Y":"N")
-            << dynamicCCTwoWayTable["tempalarm"].assign( _tempAlarm?"Y":"N" )
-            << dynamicCCTwoWayTable["dstactive"].assign(_DSTActive?"Y":"N")
-            << dynamicCCTwoWayTable["neutrallockout"].assign( _neutralLockout?"Y":"N" )
-            << dynamicCCTwoWayTable["ignoredindicator"].assign( _ignoredIndicator?"Y":"N" )
-            << dynamicCCTwoWayTable["voltage"].assign( _voltage )
-            << dynamicCCTwoWayTable["highvoltage"].assign( _highVoltage )
-            << dynamicCCTwoWayTable["lowvoltage"].assign( _lowVoltage )
-            << dynamicCCTwoWayTable["deltavoltage"].assign( _deltaVoltage )
-            << dynamicCCTwoWayTable["analoginputone"].assign( _analogInput1 )
-            << dynamicCCTwoWayTable["temp"].assign( _temperature )
-            << dynamicCCTwoWayTable["rssi"].assign( _rssi )
-            << dynamicCCTwoWayTable["ignoredreason"].assign( _ignoredReason )
-            << dynamicCCTwoWayTable["totalopcount"].assign( _totalOpCount )
-            << dynamicCCTwoWayTable["uvopcount"].assign( _uvCount )
-            << dynamicCCTwoWayTable["ovopcount"].assign( _ovCount)
-            << dynamicCCTwoWayTable["ovuvcountresetdate"].assign( toRWDBDT((CtiTime)_ovuvCountResetDate) ) //toADD
-            << dynamicCCTwoWayTable["uvsetpoint"].assign( _uvSetPoint )
-            << dynamicCCTwoWayTable["ovsetpoint"].assign( _ovSetPoint )
-            << dynamicCCTwoWayTable["ovuvtracktime"].assign( _ovuvTrackTime )
-            << dynamicCCTwoWayTable["lastovuvdatetime"].assign( toRWDBDT((CtiTime)_lastOvUvDateTime) ) //toAdd
-            << dynamicCCTwoWayTable["neutralcurrentsensor"].assign( _neutralCurrentSensor )
-            << dynamicCCTwoWayTable["neutralcurrentalarmsetpoint"].assign( _neutralCurrentAlarmSetPoint )
-            << dynamicCCTwoWayTable["ipaddress"].assign( _udpIpAddress )
-            << dynamicCCTwoWayTable["udpport"].assign( _udpPortNumber );
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
@@ -1540,7 +1566,14 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId() << endl;
             }
-            RWDBInserter inserter = dynamicCCTwoWayTable.inserter();
+            static const string insertSql = "insert into dynamiccctwowaycbc values ( "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
+                                            "?, ?, ?, ?)";
+
+            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
+
             INT lastControl = ( ( _lastControlLocal & 0x01)||
                                 (_lastControlRemote & 0x02 ) ||
                                 (_lastControlOvUv & 0x04 ) ||
@@ -1558,21 +1591,21 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
                 condition = 0;
 
 
-            inserter << _paoid
-                     << (_reCloseBlocked?"Y":"N")
-                     << (_controlMode?"Y":"N")
-                     << (_autoVoltControl?"Y":"N")
+            dbInserter << _paoid
+                     << ((string)(_reCloseBlocked?"Y":"N"))
+                     << ((string)(_controlMode?"Y":"N"))
+                     << ((string)(_autoVoltControl?"Y":"N"))
                      << lastControl
                      << condition
-                     << (_opFailedNeutralCurrent?"Y":"N")
-                     << (_neutralCurrentFault?"Y":"N")
-                     << (_badRelay?"Y":"N")
-                     << (_dailyMaxOps?"Y":"N")
-                     << (_voltageDeltaAbnormal?"Y":"N")
-                     << (_tempAlarm?"Y":"N")
-                     << (_DSTActive?"Y":"N")
-                     << (_neutralLockout?"Y":"N")
-                     << (_ignoredIndicator?"Y":"N")
+                     << (string)(_opFailedNeutralCurrent?"Y":"N")
+                     << (string)(_neutralCurrentFault?"Y":"N")
+                     << (string)(_badRelay?"Y":"N")
+                     << (string)(_dailyMaxOps?"Y":"N")
+                     << (string)(_voltageDeltaAbnormal?"Y":"N")
+                     << (string)(_tempAlarm?"Y":"N")
+                     << (string)(_DSTActive?"Y":"N")
+                     << (string)(_neutralLockout?"Y":"N")
+                     << (string)(_ignoredIndicator?"Y":"N")
                      << _voltage
                      << _highVoltage
                      << _lowVoltage
@@ -1596,29 +1629,23 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
+                string loggedSQLstring = dbInserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
+                    string loggedSQLstring = dbInserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2368,7 +2395,7 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::addAllCBCPointsToRegMsg(std::set<long>& po
 }
 
 
-void CtiCCTwoWayPoints::setDynamicData(RWDBReader& rdr)
+void CtiCCTwoWayPoints::setDynamicData(Cti::RowReader& rdr)
 {
     INT lastControl;
     INT condition = 0;

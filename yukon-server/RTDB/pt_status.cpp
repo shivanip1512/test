@@ -49,13 +49,20 @@ CtiTablePointStatus& CtiPointStatus::getPointStatus()
     return _pointStatus;
 }
 
-void CtiPointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiPointStatus::getSQLCoreStatement()
 {
-   Inherited::getSQL(db, keyTable, selector);
-   CtiTablePointStatus::getSQL(db, keyTable, selector);
+    static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
+                                   "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
+                                   "PT.archiveinterval, STS.initialstate, STS.controlinhibit, STS.controltype, "
+                                   "STS.controloffset, STS.closetime1, STS.closetime2, STS.statezerocontrol, "
+                                   "STS.stateonecontrol, STS.commandtimeout "
+                               "FROM Point PT, PointStatus STS "
+                               "WHERE PT.pointid = STS.pointid";
+
+    return sql;
 }
 
-void CtiPointStatus::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPointStatus::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     //if(isA(rdr))
     {

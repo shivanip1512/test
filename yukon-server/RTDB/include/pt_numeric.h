@@ -19,8 +19,7 @@
 #include "boostutil.h"
 using boost::shared_ptr;
 
-#include <rw/db/reader.h>
-#include <rw/db/nullind.h>
+#include "row_reader.h"
 
 #include <limits.h>
 #include "yukon.h"
@@ -47,10 +46,10 @@ public:
    virtual ~CtiPointNumeric();
 
    CtiPointNumeric& operator=(const CtiPointNumeric& aRef);
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   static void getLimitSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   
+   static string getSQLCoreStatement();
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    INT getRateOfChange() const;
    CtiPointNumeric setRateOfChange(INT rate);
 

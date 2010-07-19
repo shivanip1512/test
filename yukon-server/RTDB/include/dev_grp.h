@@ -77,12 +77,7 @@ public:
         return *this;
     }
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-    {
-        Inherited::getSQL(db, keyTable, selector);
-    }
-
-    virtual void DecodeDatabaseReader(RWDBReader &rdr)
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
     {
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     }

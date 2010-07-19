@@ -18,7 +18,6 @@
 #define __SLCTPRT_H__
 #pragma warning( disable : 4786)
 
-#include <rw/db/db.h>
 
 #include "dlldefs.h"
 #include "dev_base.h"
@@ -26,6 +25,6 @@
 #include "pt_base.h"
 #include "port_base.h"
 
-IM_EX_PRTDB CtiPort*       PortFactory(RWDBReader &rdr);
+IM_EX_PRTDB CtiPort*       PortFactory(Cti::RowReader &rdr);
 
 #endif // #ifndef __SLCTPRT_H__

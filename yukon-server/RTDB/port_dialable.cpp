@@ -143,12 +143,12 @@ INT CtiPortDialable::waitForResponse(PULONG ResponseSize, PCHAR Response, ULONG 
     return status;
 }
 
-void CtiPortDialable::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiPortDialable::getSQLCoreStatement()
 {
-    CtiTablePortDialup::getSQL(db, keyTable, selector);
+    return CtiTablePortDialup::getSQLCoreStatement();
 }
 
-void CtiPortDialable::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPortDialable::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     _tblPortDialup.DecodeDatabaseReader(rdr);       // get the base class handled
 }

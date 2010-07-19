@@ -18,32 +18,31 @@
 #include "dbaccess.h"
 #include "logger.h"
 #include "ctitime.h"
-#include "rwutil.h"
+#include "database_writer.h"
 
 
 void CtiTableMeterReadLog::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     Insert(conn);
 }
 
-void CtiTableMeterReadLog::Insert(RWDBConnection &conn)
+void CtiTableMeterReadLog::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = conn.database().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?)";
+
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
 
     inserter <<
-    getLogID() <<
-    getDeviceID() <<
-    getTime() <<
-    getStatusCode() <<
-    getRequestLogID();
+        getLogID() <<
+        getDeviceID() <<
+        getTime() <<
+        getStatusCode() <<
+        getRequestLogID();
 
-    RWDBStatus rwStat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
-
-    if( rwStat.errorCode() != RWDBStatus::ok )
+    if( ! inserter.execute() )
     {
         LONG newcid = SynchronizedIdGen("DeviceReadLog", 1);
 
@@ -58,16 +57,21 @@ void CtiTableMeterReadLog::Insert(RWDBConnection &conn)
             }
 
             setLogID( newcid );
-            rwStat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-            if( rwStat.errorCode() != RWDBStatus::ok )
+            Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+            inserter <<
+                getLogID() <<
+                getDeviceID() <<
+                getTime() <<
+                getStatusCode() <<
+                getRequestLogID();
+
+            if( ! inserter.execute() )
             {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unable to insert log for device id " << getDeviceID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unable to insert log for device id " << getDeviceID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << inserter.asString() << endl;
             }
         }
     }
@@ -165,7 +169,7 @@ CtiTableMeterReadLog& CtiTableMeterReadLog::setTime(const CtiTime &rwt)
     return *this;
 }
 
-void CtiTableMeterReadLog::DecodeDatabaseReader( RWDBReader& rdr )
+void CtiTableMeterReadLog::DecodeDatabaseReader( Cti::RowReader& rdr )
 {
     rdr["deviceid"]     >> _deviceID;
     rdr["foreignid"]    >> _requestID;

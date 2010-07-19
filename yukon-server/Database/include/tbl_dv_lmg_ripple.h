@@ -20,13 +20,7 @@
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -36,6 +30,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableRippleLoadGroup : public CtiMemDBObject
 {
@@ -75,8 +70,6 @@ public:
    CtiTableRippleLoadGroup& setRestoreBits( const string str );
    CtiTableRippleLoadGroup& setRestoreBit( INT pos, const BYTE ch );
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
    LONG getDeviceID() const;
    LONG getShedTime() const;
 
@@ -86,11 +79,10 @@ public:
    CtiTableRippleLoadGroup& setDeviceID( const LONG did);
 
    //corey's original .h has no decodedatabasereader()...
-   void DecodeDatabaseReader( RWDBReader& rdr );
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
+   void DecodeDatabaseReader(Cti::RowReader &rdr);
+   virtual bool Insert();
+   virtual bool Update();
+   virtual bool Delete();
 
    bool copyMessage(BYTE *bptr, bool shed) const;
 };

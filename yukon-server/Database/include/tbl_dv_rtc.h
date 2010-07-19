@@ -32,6 +32,7 @@
 #define __TBL_DV_RTC_H__
 
 #include "dlldefs.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceRTC
 {
@@ -65,15 +66,8 @@ public:
     bool getResponseBit() const;
     int  getLBTMode() const;
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     static string getTableName();
-
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
-
 };
 #endif // #ifndef __TBL_DV_RTC_H__

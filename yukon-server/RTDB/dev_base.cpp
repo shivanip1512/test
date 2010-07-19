@@ -434,12 +434,17 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
     return *this;
 }
 
-void CtiDeviceBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceBase::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceBase::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit "
+                                   "FROM YukonPAObject YP, Device DV "
+                                   "WHERE YP.paobjectid = DV.deviceid";
+
+    return sqlCore;
 }
-void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
+
+void CtiDeviceBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
     _singleDevice = resolveIsDeviceTypeSingle(getType());
@@ -450,23 +455,11 @@ void CtiDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
 }
 
 /**
- * Setup the selector for the parameters
- *
- * @param db
- * @param keyTable
- * @param selector
- */
-void CtiDeviceBase::getParametersSelector(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-
-}
-
-/**
  * Process parameters from the database
  *
  * @param rdr
  */
-void CtiDeviceBase::decodeParameters(RWDBReader &rdr)
+void CtiDeviceBase::decodeParameters(Cti::RowReader &rdr)
 {
 
 }

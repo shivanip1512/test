@@ -332,7 +332,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
 {
     bool successful = false;
     bool foundPoint = false;
-    RWDBStatus          listStatus;
+    bool loadPointStatus = false;
 
     try
     {
@@ -341,10 +341,10 @@ bool CtiFDR_BEPC::loadTranslationLists()
                                                        string (FDR_INTERFACE_SEND));
 
         // keep the status
-        listStatus = pointList->loadPointList();
+        loadPointStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( loadPointStatus )
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -404,7 +404,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
 

@@ -87,24 +87,7 @@ void CtiTablePointControl::dump() const
    dout << " State One Control String                 : " << _stateOneControl << endl;
 }
 
-void CtiTablePointControl::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   RWDBTable tbl = db.table("PointControl");
-
-   selector <<
-      tbl["controloffset"] <<
-      tbl["closetime1"] <<
-      tbl["closetime2"] <<
-      tbl["statezerocontrol"] <<
-      tbl["stateonecontrol"];
-
-   selector.from(tbl);
-
-   selector.where( selector.where() &&
-                   keyTable["pointid"].leftOuterJoin( tbl["pointid"] ));
-}
-
-void CtiTablePointControl::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointControl::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
    {

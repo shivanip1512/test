@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <rw/sortvec.h>
@@ -37,6 +36,12 @@
 #include "sorted_vector.h"
 #include "regression.h"
 #include "Controllable.h"
+
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less
@@ -93,7 +98,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCFeeder();
     CtiCCFeeder(StrategyManager * strategyManager);
-    CtiCCFeeder(RWDBReader& rdr, StrategyManager * strategyManager);
+    CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager);
     CtiCCFeeder(const CtiCCFeeder& feeder);
 
     virtual ~CtiCCFeeder();
@@ -358,8 +363,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCOriginalParent& getOriginalParent();
 
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -368,7 +372,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCFeeder* replicate() const;
 
-    void setDynamicData(RWDBReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
 
     std::vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
@@ -484,7 +488,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
     string doubleToString(DOUBLE doubleVal, LONG decimalPlaces);
 
     std::list <long> _pointIds;

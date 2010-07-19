@@ -4,7 +4,7 @@
 #include "ControlStrategy.h"
 #include "NoStrategy.h"
 #include "Controllable.h"
-
+#include "database_reader.h"
 
 Controllable::Controllable()
     : CapControlPao(),
@@ -24,7 +24,7 @@ Controllable::Controllable(StrategyManager * strategyManager)
 }
 
 
-Controllable::Controllable(RWDBReader & rdr, StrategyManager * strategyManager)
+Controllable::Controllable(Cti::RowReader & rdr, StrategyManager * strategyManager)
     : CapControlPao(rdr),
       _strategyManager(strategyManager),
       _strategyID(-1)

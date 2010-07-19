@@ -26,12 +26,7 @@
 #include <windows.h>
 #include <limits.h>
 
-#include <rw/db/reader.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
+#include "row_reader.h"
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 #include <rw/thr/recursiv.h>
@@ -108,15 +103,12 @@ public:
     string getStatisticsStr() const;
     CtiTblPAO& setStatisticsStr(const string& );
 
-
     static string getTableName();
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
-    RWDBStatus Restore();
-    RWDBStatus Update();
-    RWDBStatus Insert();
-    RWDBStatus Delete();
-    void DecodeDatabaseReader(RWDBReader &rdr);
+    bool Update();
+    bool Insert();
+    bool Delete();
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     void DumpData();
 };

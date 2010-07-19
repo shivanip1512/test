@@ -1564,13 +1564,23 @@ CtiDeviceTapPagingTerminal& CtiDeviceTapPagingTerminal::setTap(const CtiTableDev
     return *this;
 }
 
-void CtiDeviceTapPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceTapPagingTerminal::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceTapPaging::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+                                     "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+                                     "DUS.baudrate, IED.password, IED.slaveaddress, TPS.pagernumber, TPS.sender, "
+                                     "TPS.securitycode, TPS.postpath "
+                                   "FROM Device DV, DeviceTapPagingSettings TPS, DeviceIED IED, DeviceDirectCommSettings CS, "
+                                     "YukonPAObject YP LEFT OUTER JOIN DeviceDialupSettings DUS ON "
+                                     "YP.paobjectid = DUS.deviceid "
+                                   "WHERE YP.paobjectid = TPS.deviceid AND YP.paobjectid = IED.deviceid AND "
+                                     "YP.paobjectid = DV.deviceid AND YP.paobjectid = CS.deviceid";
+
+    return sqlCore;
 }
 
-void CtiDeviceTapPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceTapPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

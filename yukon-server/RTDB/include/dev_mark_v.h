@@ -143,7 +143,7 @@ public:
                                int timeID,
                                int dateID );
 
-   void DecodeDatabaseReader( RWDBReader &rdr );
+   void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
 

@@ -8,11 +8,7 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
+#include "row_reader.h"
 
 
 #include "tbl_lmprogramhistory.h"
@@ -20,7 +16,9 @@
 #include "dbaccess.h"
 #include "logger.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 using std::transform;
 
@@ -65,24 +63,27 @@ CtiTableLMProgramHistory& CtiTableLMProgramHistory::operator=(const CtiTableLMPr
     return *this;
 }
 
-RWDBStatus CtiTableLMProgramHistory::Insert()
+bool CtiTableLMProgramHistory::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     validateData();
 
     if( _action == Start )
     {
-        RWDBTable table = getDatabase().table( "LMProgramHistory" );
-        RWDBInserter inserter = table.inserter();
+        static const std::string sql_program_history = "insert into LMProgramHistory values (?, ?, ?)";
 
-        inserter << _lmProgramHistID << _programName << _programID;
+        Cti::Database::DatabaseWriter   inserter(conn, sql_program_history);
+
+        inserter
+            << _lmProgramHistID
+            << _programName
+            << _programID;
         
-        if( RWDBStatus::ErrorCode err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+        if( ! inserter.execute() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in LMProgramHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - SQL Error while inserting in LMProgramHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             //We had an error, force a reload
             CurrentLMProgramHistoryId = 0;
             CurrentLMGearHistoryId    = 0;
@@ -91,30 +92,34 @@ RWDBStatus CtiTableLMProgramHistory::Insert()
 
     long gearHistId = getNextGearHistId();
 
-    RWDBTable table = getDatabase().table( "LMProgramGearHistory" );
-    RWDBInserter inserter = table.inserter();
+    static const std::string sql_program_gear_history = "insert into LMProgramGearHistory values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    inserter <<
-    gearHistId <<
-    _lmProgramHistID <<
-    _time <<
-    getStrFromAction(_action) <<
-    _user <<
-    _gearName <<
-    _gearID <<
-    _reason;
+    Cti::Database::DatabaseWriter   inserter(conn, sql_program_gear_history);
 
-    if( RWDBStatus::ErrorCode err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+    inserter
+        << gearHistId
+        << _lmProgramHistID
+        << _time
+        << getStrFromAction(_action)
+        << _user
+        << _gearName
+        << _gearID
+        << _reason;
+
+    bool success = inserter.execute();
+
+
+    if( ! success )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in LMProgramGearHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - SQL Error while inserting in LMProgramGearHistory **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
         //We had an error, force a reload
         CurrentLMProgramHistoryId = 0;
         CurrentLMGearHistoryId    = 0;
     }
 
-    return inserter.status();
+    return success;
 }
 
 // Get the next program id from local store or the database
@@ -130,16 +135,12 @@ long CtiTableLMProgramHistory::getNextProgramHistId()
     {
         // Not yet initialized. Default to 1 and try to load from database.
         CurrentLMProgramHistoryId = 1;
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = "SELECT MAX (PH.LMProgramHistoryId) "
+                                  "FROM LMProgramHistory PH";
 
-        RWDBTable programTable = getDatabase().table( "LMProgramHistory" );
-        RWDBSelector selector = conn.database().selector();
-
-        selector << rwdbMax(programTable["LMProgramHistoryId"]);
-        selector.from(programTable);
-
-        RWDBReader rdr = selector.reader(conn);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
         if( rdr() )
         {
@@ -164,15 +165,12 @@ long CtiTableLMProgramHistory::getNextGearHistId()
         // Not yet initialized. Default to 1 and try to load from database.
         CurrentLMGearHistoryId = 1;
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = "SELECT MAX (PGH.LMProgramGearHistoryId) "
+                                  "FROM LMProgramGearHistory PGH";
 
-        RWDBTable gearTable = getDatabase().table( "LMProgramGearHistory" );
-        RWDBSelector selector = conn.database().selector();
-
-        selector << rwdbMax(gearTable["LMProgramGearHistoryId"]);
-        selector.from(gearTable);
-        RWDBReader rdr = selector.reader(conn);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
         if( rdr() )
         {

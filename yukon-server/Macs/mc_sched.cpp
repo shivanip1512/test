@@ -30,7 +30,6 @@
 #include "utility.h"
 #include "ctidate.h"
 #include <rw/collstr.h>
-#include <rwutil.h>
 
 using namespace std;
 
@@ -163,12 +162,7 @@ CtiMCSchedule::~CtiMCSchedule()
 
 }
 
-void CtiMCSchedule::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    CtiTableMCSchedule::getSQL(db,keyTable,selector);
-}
-
-bool CtiMCSchedule::DecodeDatabaseReader(RWDBReader &rdr)
+bool CtiMCSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if( !checkSchedule() )
     {
@@ -209,7 +203,7 @@ bool CtiMCSchedule::Update()
 
     if( getScheduleID() != 0 )
     {
-        ret = ( _pao_table.Update().errorCode() == RWDBStatus::ok );
+        ret =  _pao_table.Update();
     }
 
     if( ret )
@@ -249,7 +243,7 @@ bool CtiMCSchedule::Insert()
         setScheduleID(PAOIdGen());
     }
 
-    bool ret = ( _pao_table.Insert().errorCode() == RWDBStatus::ok );
+    bool ret = _pao_table.Insert();
 
     if( ret )
     {
@@ -308,7 +302,7 @@ bool CtiMCSchedule::Delete()
 
     if( ret )
     {
-        ret = ( _pao_table.Delete().errorCode() == RWDBStatus::ok );
+        ret = _pao_table.Delete();
     }
 
     if( !checkSchedule() )

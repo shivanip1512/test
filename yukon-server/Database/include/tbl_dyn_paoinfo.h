@@ -18,7 +18,6 @@
 #ifndef __TBL_DYN_PAOINFO_H__
 #define __TBL_DYN_PAOINFO_H__
 
-#include <rw/db/db.h>
 
 #include <string>
 #include <map>
@@ -28,6 +27,8 @@
 #include "dbmemobject.h"
 #include "pointdefs.h"
 #include "yukon.h"
+#include "database_connection.h"
+#include "rwutil.h"
 
 using std::map;
 using std::string;
@@ -382,16 +383,16 @@ public:
 
     bool hasRow() const;
 
-    RWDBStatus Insert(RWDBConnection &conn);
-    RWDBStatus Update(RWDBConnection &conn, long &rowsAffected);
+    bool Insert(Cti::Database::DatabaseConnection &conn);
+    bool Update(Cti::Database::DatabaseConnection &conn, long &rowsAffected);
 
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Delete();
+    virtual bool Insert();
+    virtual bool Update();
+    virtual bool Delete();
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, CtiApplication_t app_id);
-    void DecodeDatabaseReader(RWDBReader& rdr);
+    static string getSQLCoreStatement(CtiApplication_t _app_id);
+
+    void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     long             getPaoID()   const;
     long             getEntryID() const;

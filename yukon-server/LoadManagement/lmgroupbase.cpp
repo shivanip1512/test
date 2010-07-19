@@ -21,6 +21,7 @@
 #include "resolvers.h"
 #include "numstr.h"
 #include "ctidate.h"
+#include "database_writer.h"
 
 #include <algorithm>
 
@@ -47,7 +48,7 @@ _insertDynamicDataFlag(TRUE)
     CtiLMGroupBase::resetInternalState();
 }
 
-CtiLMGroupBase::CtiLMGroupBase(RWDBReader& rdr)
+CtiLMGroupBase::CtiLMGroupBase(Cti::RowReader &rdr)
 : _next_control_time(gInvalidCtiTime),
 _controlstarttime(gInvalidCtiTime),
 _controlcompletetime(gInvalidCtiTime),
@@ -1144,11 +1145,10 @@ BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMGroupBase::restore(RWDBReader& rdr)
+void CtiLMGroupBase::restore(Cti::RowReader &rdr)
 {
-    RWDBNullIndicator isNull;
     CtiTime dynamicTimeStamp;
     string tempBoolString;
     string tempTypeString;
@@ -1279,8 +1279,7 @@ void CtiLMGroupBase::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMGroupBase::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     dumpDynamicData(conn,CtiTime());
 }
@@ -1290,96 +1289,96 @@ void CtiLMGroupBase::dumpDynamicData()
 
     Writes out the dynamic information for this group.
 ---------------------------------------------------------------------------*/
-void CtiLMGroupBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     if( !isDirty() )
     {
         return;
     }
 
+    if( !_insertDynamicDataFlag )
     {
-        if( conn.isValid() )
-        {
-            RWDBDatabase db = getDatabase();
-            RWDBTable dynamicLMGroupTable = db.table( "dynamiclmgroup" );
-            if( !_insertDynamicDataFlag )
-            {
-                RWDBUpdater updater = dynamicLMGroupTable.updater();
+        static const std::string sql_update = "update dynamiclmgroup"
+                                               " set "
+                                                    "groupcontrolstate = ?, "
+                                                    "currenthoursdaily = ?, "
+                                                    "currenthoursmonthly = ?, "
+                                                    "currenthoursseasonal = ?, "
+                                                    "currenthoursannually = ?, "
+                                                    "lastcontrolsent = ?, "
+                                                    "timestamp = ?, "
+                                                    "controlstarttime = ?, "
+                                                    "controlcompletetime = ?, "
+                                                    "nextcontroltime = ?, "
+                                                    "internalstate = ?, "
+                                                    "dailyops = ?"
+                                               " where "
+                                                    "deviceid = ?";
 
-                updater << dynamicLMGroupTable["groupcontrolstate"].assign( getGroupControlState() )
-                << dynamicLMGroupTable["currenthoursdaily"].assign( getCurrentHoursDaily() )
-                << dynamicLMGroupTable["currenthoursmonthly"].assign( getCurrentHoursMonthly() )
-                << dynamicLMGroupTable["currenthoursseasonal"].assign( getCurrentHoursSeasonal() )
-                << dynamicLMGroupTable["currenthoursannually"].assign( getCurrentHoursAnnually() )
-                << dynamicLMGroupTable["lastcontrolsent"].assign( toRWDBDT(getLastControlSent()) )
-                << dynamicLMGroupTable["timestamp"].assign( toRWDBDT(currentDateTime) )
-                << dynamicLMGroupTable["controlstarttime"].assign( toRWDBDT(getControlStartTime()) )
-                << dynamicLMGroupTable["controlcompletetime"].assign( toRWDBDT(getControlCompleteTime()) )
-                << dynamicLMGroupTable["nextcontroltime"].assign( toRWDBDT(getNextControlTime()) )
-                << dynamicLMGroupTable["internalstate"].assign( _internalState )
-                << dynamicLMGroupTable["dailyops"].assign( getDailyOps() );
+        Cti::Database::DatabaseWriter   updater(conn, sql_update);
 
+        updater
+            << getGroupControlState()
+            << getCurrentHoursDaily()
+            << getCurrentHoursMonthly()
+            << getCurrentHoursSeasonal()
+            << getCurrentHoursAnnually()
+            << getLastControlSent()
+            << currentDateTime
+            << getControlStartTime()
+            << getControlCompleteTime()
+            << getNextControlTime()
+            << _internalState
+            << getDailyOps()
+            << getPAOId();
 
-                updater.where(dynamicLMGroupTable["deviceid"]==getPAOId());
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                updater.execute( conn );
-                _dynamic_timestamp = currentDateTime;
-                setDirty(false);
-            }
-            else
-            {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Inserted group into DynamicLMGroup: " << getPAOName() << endl;
-                }
-
-                RWDBInserter inserter = dynamicLMGroupTable.inserter();
-
-                inserter << getPAOId()
-                << getGroupControlState()
-                << getCurrentHoursDaily()
-                << getCurrentHoursMonthly()
-                << getCurrentHoursSeasonal()
-                << getCurrentHoursAnnually()
-                << getLastControlSent()
-                << currentDateTime
-                << getControlStartTime()
-                << getControlCompleteTime()
-                << getNextControlTime()
-                << _internalState
-                << getDailyOps();
-
-                if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-                {
-                    string loggedSQLstring = inserter.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
-                }
-
-                _insertDynamicDataFlag = FALSE;
-
-                inserter.execute( conn );
-                _dynamic_timestamp = currentDateTime;
-                setDirty(false);
-            }
-        }
-        else
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+            dout << CtiTime() << " - " << updater.asString() << endl;
         }
+
+        updater.execute();
     }
+    else
+    {
+        static const std::string sql_insert = "insert into dynamiclmgroup values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Inserted group into DynamicLMGroup: " << getPAOName() << endl;
+        }
+
+        Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
+
+        inserter
+            << getPAOId()
+            << getGroupControlState()
+            << getCurrentHoursDaily()
+            << getCurrentHoursMonthly()
+            << getCurrentHoursSeasonal()
+            << getCurrentHoursAnnually()
+            << getLastControlSent()
+            << currentDateTime
+            << getControlStartTime()
+            << getControlCompleteTime()
+            << getNextControlTime()
+            << _internalState
+            << getDailyOps();
+
+        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << inserter.asString() << endl;
+        }
+
+        _insertDynamicDataFlag = FALSE;
+
+        inserter.execute();
+    }
+
+    _dynamic_timestamp = currentDateTime;
+    setDirty(false);
 }
 
 /*----------------------------------------------------------------------------

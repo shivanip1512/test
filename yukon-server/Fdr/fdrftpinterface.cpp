@@ -448,16 +448,14 @@ bool CtiFDRFtpInterface::loadTranslationLists()
 {
     bool successful = false;
     bool foundPoint = false;
-    RWDBStatus listStatus;
 
     try
     {
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(), string (FDR_INTERFACE_RECEIVE));
-        listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
-        if (listStatus.errorCode() == (RWDBStatus::ok))
+        if (pointList->loadPointList())
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -515,7 +513,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
 

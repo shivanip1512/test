@@ -28,8 +28,8 @@
 
 #include <windows.h>
 
-#include <rw/db/db.h>
 #include <rw/thr/recursiv.h>
+#include "row_reader.h"
 
 #include "dlldefs.h"
 #include "yukon.h"
@@ -81,9 +81,8 @@ public:
    void dump() const;
 
    static string getTableName();
-   virtual RWDBStatus Restore();
+   virtual bool Restore();
 
-   static void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_CI_CUST_H__

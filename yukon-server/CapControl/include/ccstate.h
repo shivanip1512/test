@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -33,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCState )
 
     CtiCCState();
-    CtiCCState(RWDBReader& rdr);
+    CtiCCState(Cti::RowReader& rdr);
     CtiCCState(const CtiCCState& state);
 
     virtual ~CtiCCState();
@@ -60,7 +59,7 @@ private:
     LONG _foregroundcolor;
     LONG _backgroundcolor;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
 };
 
 //typedef shared_ptr<CtiCCState> CtiCCStatePtr; 

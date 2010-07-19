@@ -10,12 +10,14 @@
 #include "tbl_dv_wnd.h"
 
 #include "debug_timer.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 
 namespace Cti {
 
-void ScannableDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
+void ScannableDeviceManager::refreshDeviceProperties(Database::id_set &paoids, int type)
 {
     Inherited::refreshDeviceProperties(paoids, type);
 
@@ -30,53 +32,43 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
 {
     if( !paoID )
     {
-        map<int, vector<long> > type_paoids;
+        map<int, Cti::Database::id_set > type_paoids;
 
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            static const string sql =  "SELECT YP.paobjectid, YP.type "
+                                       "FROM yukonpaobject YP "
+                                       "WHERE YP.paobjectid IN (SELECT DSR.deviceid "
+                                                               "FROM devicescanrate DSR "
+                                                               "UNION "
+                                                               "SELECT DLP.deviceid "
+                                                               "FROM deviceloadprofile DLP "
+                                                               "WHERE DLP.loadprofilecollection != 'NNNN')";
 
-            RWDBConnection conn     = getConnection();
-            RWDBDatabase   db       = getDatabase();
-            RWDBSelector   selector             = db.selector(),
-                           scanrate_selector    = db.selector(),
-                           loadprofile_selector = db.selector();
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
 
-            RWDBTable      tbl_paobject         (db.table("yukonpaobject")),
-                           tbl_devicescanrate   (db.table("devicescanrate")),
-                           tbl_deviceloadprofile(db.table("deviceloadprofile"));
+            rdr.execute();
 
-            scanrate_selector << tbl_devicescanrate["deviceid"];
-
-            loadprofile_selector << tbl_deviceloadprofile["deviceid"];
-
-            loadprofile_selector.where(tbl_deviceloadprofile["loadprofilecollection"] != "NNNN");
-
-            selector << tbl_paobject["paobjectid"];
-            selector << tbl_paobject["type"];
-
-            selector.where(tbl_paobject["paobjectid"].in(scanrate_selector.union_(loadprofile_selector)));
-
+            if( !rdr.isValid() )
             {
-                string loggedSQLstring = selector.asString();
+                string loggedSQLstring = rdr.asString();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << loggedSQLstring << endl;
                 }
             }
 
-            RWDBReader  rdr = selector.reader(conn);
-
             int i = 0;
 
             while( rdr() )
             {
                 long id;
-                RWCString temp;
+                string temp;
 
                 rdr[0] >> id;
                 rdr[1] >> temp;
 
-                type_paoids[resolveDeviceType(temp.data())].push_back(id);
+                type_paoids[resolveDeviceType(temp)].insert(id);
 
                 if( !(++i % 1000) )
                 {
@@ -93,11 +85,12 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
             }
         }
 
-        map<int, vector<long> >::const_iterator itr, itr_end = type_paoids.end();
+        //map<int, vector<long> >::const_iterator itr, itr_end = type_paoids.end();
+        map<int, Cti::Database::id_set >::iterator itr, itr_end = type_paoids.end();
 
         for( itr = type_paoids.begin(); itr != itr_end; ++itr )
         {
-            Inherited::refreshList(id_range_t(itr->second.begin(), itr->second.end()), itr->first);
+            Inherited::refreshList(itr->second, itr->first);
         }
     }
     else
@@ -107,32 +100,36 @@ void ScannableDeviceManager::refresh(LONG paoID, string category, string devicet
 }
 
 
-void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
+void ScannableDeviceManager::refreshScanRates(Database::id_set &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn     = getConnection();
-    RWDBDatabase   db       = getDatabase();
-    RWDBSelector   selector = db.selector();
-    RWDBTable      keyTable;
+    const string sqlCore  = CtiTableDeviceScanRate::getSQLCoreStatement();
+    const string idClause = CtiTableDeviceScanRate::addIDSQLClause(paoids);
 
-    CtiTableDeviceScanRate::getSQL(db, keyTable, selector);
+    string sql = sqlCore;
 
-    addIDClause(selector, keyTable["deviceid"], set<long>(paoids.begin(), paoids.end()));
-
-    RWDBReader rdr = selector.reader(conn);
-
-    if( DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    if( !idClause.empty() )
     {
-        string loggedSQLstring = selector.asString();
+        sql += " ";
+        sql += idClause;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
+
+    if( DebugLevel & 0x00020000 || !rdr.isValid() )
+    {
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    if( setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
+    if( setErrorCode(rdr.isValid() ? 0 : 1) == 0 )
     {
         // Mark all Scan Rate elements as needing refresh..
         if( paoids.empty() )
@@ -147,7 +144,7 @@ void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
         }
         else
         {
-            for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+            for( Cti::Database::id_set_itr paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
             {
                 //  is this check necessary?
                 if( *paoid_itr > 0 )
@@ -159,7 +156,7 @@ void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
         }
     }
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( setErrorCode(rdr.isValid() ? 0 : 1) == 0 && rdr() )
     {
         LONG device_id = 0;
 
@@ -180,7 +177,7 @@ void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
         }
     }
 
-    if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok || setErrorCode(rdr.status().errorCode()) == RWDBStatus::endOfFetch)
+    if(setErrorCode(rdr.isValid() ? 0 : 1) == 0)
     {
         // Remove any scan rates which were NOT refreshed, but only if we read a few correctly!
         spiterator itr, itr_end = end();
@@ -192,23 +189,13 @@ void ScannableDeviceManager::refreshScanRates(id_range_t &paoids)
     }
 }
 
-void ScannableDeviceManager::refreshDeviceWindows(id_range_t &paoids)
+void ScannableDeviceManager::refreshDeviceWindows(Database::id_set &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn     = getConnection();
-    RWDBDatabase   db       = getDatabase();
-    RWDBSelector   selector = db.selector();
-    RWDBTable      keyTable;
-
-    CtiTableDeviceWindow::getSQL(db, keyTable, selector);
-
-    addIDClause(selector, keyTable["deviceid"], set<long>(paoids.begin(), paoids.end()));
-
     if( !paoids.empty() )
     {
-        for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+        for( Cti::Database::id_set_itr paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
         {
             CtiDeviceSPtr devsptr = getDeviceByID(*paoid_itr);
 
@@ -220,18 +207,32 @@ void ScannableDeviceManager::refreshDeviceWindows(id_range_t &paoids)
         }
     }
 
+    static const string sqlCore = CtiTableDeviceWindow::getSQLCoreStatement();
+    const string idClause = CtiTableDeviceWindow::addIDSQLClause(paoids);
+
+    string sql = sqlCore;
+
+    if( !idClause.empty() )
+    {
+        sql += " ";
+        sql += idClause;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
+
     if( DebugLevel & 0x00020000 )
     {
-        string loggedSQLstring = selector.asString();
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    RWDBReader rdr = selector.reader(conn);
-
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( setErrorCode(rdr.isValid() ? 0 : 1) == 0 && rdr() )
     {
         long device_id = 0;
 

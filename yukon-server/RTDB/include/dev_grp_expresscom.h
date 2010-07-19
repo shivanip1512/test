@@ -51,10 +51,11 @@ public:
     CtiTableExpresscomLoadGroup&  getExpresscomGroup();
     CtiDeviceGroupExpresscom&     setExpresscomGroup(const CtiTableExpresscomLoadGroup& aRef);
 
+    virtual string getSQLCoreStatement() const;
+
     virtual LONG getRouteID();
     virtual string getDescription(const CtiCommandParser & parse) const;
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual string getPutConfigAssignment(UINT modifier = 0);
     virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string(""), int priority = 0 );

@@ -59,16 +59,19 @@ string CtiDeviceGroupMCT::getDescription( const CtiCommandParser &parse ) const
     return getName();
 }
 
-
-void CtiDeviceGroupMCT::getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector ) const
+string CtiDeviceGroupMCT::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LGM.deviceid, LGM.mctaddress, "
+                                     "LGM.mctlevel, LGM.relayusage, LGM.routeid, DCS.address "
+                                   "FROM Device DV, YukonPAObject YP, lmgroupmct LGM LEFT OUTER JOIN devicecarriersettings DCS "
+                                     "ON LGM.mctdeviceid = DCS.deviceid "
+                                   "WHERE YP.paobjectid = LGM.deviceid AND YP.paobjectid = DV.deviceid";
 
-    _lmGroupMCT.getSQL(db, keyTable, selector);
+    return sqlCore;
 }
 
-
-void CtiDeviceGroupMCT::DecodeDatabaseReader( RWDBReader &rdr )
+void CtiDeviceGroupMCT::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 

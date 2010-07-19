@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -32,7 +31,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupEmetcon )
 
     CtiLMGroupEmetcon();
-    CtiLMGroupEmetcon(RWDBReader& rdr);
+    CtiLMGroupEmetcon(Cti::RowReader &rdr);
     CtiLMGroupEmetcon(const CtiLMGroupEmetcon& groupemet);
 
     virtual ~CtiLMGroupEmetcon();
@@ -63,6 +62,6 @@ private:
     BOOL _refreshsent;
 
 protected:
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif

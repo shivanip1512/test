@@ -35,7 +35,6 @@
 #include "msg_reg.h"
 #include "connection.h"
 
-#include "rwutil.h"
 #include <time.h>
 #include <algorithm>
 #include <utility.h>

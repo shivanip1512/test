@@ -1,115 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-*    FILE NAME: fdrtextexport.cpp
-*
-*    DATE: 04/11/2003
-*
-*    PVCS KEYWORDS:
-*    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextexport.cpp-arc  $
-*    REVISION     :  $Revision: 1.18.2.1 $
-*    DATE         :  $Date: 2008/11/13 17:23:48 $
-*
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE:  ascii export
-*
-*    DESCRIPTION:
-*
-*    ---------------------------------------------------
-*    History:
-      $Log: fdrtextexport.cpp,v $
-      Revision 1.18.2.1  2008/11/13 17:23:48  jmarks
-      YUK-5273 Upgrade Yukon tool chain to Visual Studio 2005/2008
-
-      Responded to reviewer comments again.
-
-      I eliminated excess references to windows.h .
-
-      This still left over 100 references to it where "yukon.h" or "precompiled.h" was not obviously included.  Some other chaining of references could still be going on, and of course it is potentially possible that not all the files in the project that include windows.h actually need it - I didn't check for that.
-
-      None-the-less, I than added the NOMINMAX define right before each place where windows.h is still included.
-      Special note:  std::min<LONG>(TimeOut, 500); is still required for compilation.
-
-      In this process I occasionally deleted a few empty lines, and when creating the define, also added some.
-
-      This may not have affected every file in the project, but while mega-editing it certainly seemed like it did.
-
-      Revision 1.18  2008/10/02 23:57:15  tspar
-      YUK-5013 Full FDR reload should not happen with every point
-
-      YUKRV-325  review changes
-
-      Revision 1.17  2008/09/23 15:14:58  tspar
-      YUK-5013 Full FDR reload should not happen with every point db change
-
-      Review changes. Most notable is mgr_fdrpoint.cpp now encapsulates CtiSmartMap instead of extending from rtdb.
-
-      Revision 1.16  2008/09/15 21:08:48  tspar
-      YUK-5013 Full FDR reload should not happen with every point db change
-
-      Changed interfaces to handle points on an individual basis so they can be added
-      and removed by point id.
-
-      Changed the fdr point manager to use smart pointers to help make this transition possible.
-
-      Revision 1.15  2006/11/16 16:54:41  mfisher
-      removing RWTime and rwEpoch references
-
-      Revision 1.14  2006/06/07 22:34:04  tspar
-      _snprintf  adding .c_str() to all strings. Not having this does not cause compiler errors, but does cause runtime errors. Also tweaks and fixes to FDR due to some differences in STL / RW
-
-      Revision 1.13  2006/05/23 17:17:43  tspar
-      bug fix: boost iterator used incorrectly in loop.
-
-      Revision 1.12  2006/04/24 14:47:33  tspar
-      RWreplace: replacing a few missed or new Rogue Wave elements
-
-      Revision 1.11  2006/01/16 21:09:35  mfisher
-      removed RogueWave stuff
-
-      Revision 1.10  2006/01/03 20:23:38  tspar
-      Moved non RW string utilities from rwutil.h to utility.h
-
-      Revision 1.9  2005/12/20 17:17:15  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.8  2005/12/14 16:04:18  dsutton
-      Added a file format that allows us to integrate to a Survalent SCADA system.
-      Format specification is triggered via a CPARM which defaults to our standard output
-
-      Revision 1.7  2005/02/10 23:23:51  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.6  2004/10/08 20:38:06  dsutton
-      Text export was occasionally exporting default values from the point list
-      Happened consistently when there was a lot of database activity causing
-      reloads.  FDR would reload the database but the export timer would go off
-      before FDR received the new values from dispatch.  This list had defaulted
-      values (bad) and put those in the file instead.
-
-      Revision 1.5  2004/09/29 17:47:48  dsutton
-      Updated all interfaces to default the db reload rate to once a day (86400)
-
-      Revision 1.4  2004/09/24 14:36:53  eschmit
-      Added Boost includes and libraries, misc fixes for ptime support
-
-      Revision 1.3  2003/10/20 20:28:17  dsutton
-      Bug:  The application wasn't locking the point list down before looking for a
-      point.  The database reload does lock the list down before reloading.  If the
-      lookup and the reload happened at the same time,  the lookup lost and threw
-      and exception
-
-      Revision 1.2  2003/04/22 20:44:44  dsutton
-      Interfaces FDRTextExport and FDRTextImport and all the pieces needed
-      to make them compile and work
-
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*
-*/
 #include "yukon.h"
 #include <wininet.h>
 #include <fcntl.h>
@@ -129,7 +17,6 @@
 #include "guard.h"
 #include "fdrtextfilebase.h"
 #include "fdrtextexport.h"
-#include "rwutil.h"
 #include "utility.h"
 
 CtiFDR_TextExport * textExportInterface;
@@ -397,7 +284,6 @@ bool CtiFDR_TextExport::loadTranslationLists()
 {
     bool successful = true;
     bool foundPoint = false;
-    RWDBStatus listStatus;
 
     try
     {
@@ -405,11 +291,8 @@ bool CtiFDR_TextExport::loadTranslationLists()
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_SEND));
 
-        // keep the status
-        listStatus = pointList->loadPointList();
-
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList())
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -477,7 +360,7 @@ bool CtiFDR_TextExport::loadTranslationLists()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             successful = false;
         }
 

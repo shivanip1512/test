@@ -19,7 +19,8 @@
 #include "logger.h"
 #include "dbaccess.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiTblDeviceReadRequestLog::CtiTblDeviceReadRequestLog( long requestLogId, long requestId, string& cmd_line, CtiTime& start, CtiTime& stop, long jobId) :
 _requestLogId(requestLogId),
@@ -124,46 +125,47 @@ string CtiTblDeviceReadRequestLog::getTableName()
     return "DeviceReadRequestLog";
 }
 
-RWDBStatus CtiTblDeviceReadRequestLog::Insert()
+bool CtiTblDeviceReadRequestLog::Insert()
 {
-    RWDBStatus retVal;
+    static const std::string sql = "insert into " + getTableName() + " values (?, ?, ?, ?, ?, ?)";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    inserter 
+        << getRequestLogId()
+        << getRequestId()
+        << getCommand()
+        << getStartTime()
+        << getStopTime()
+        << getReadJobId();
 
-    inserter <<
-    getRequestLogId() <<
-    getRequestId() <<
-    getCommand() <<
-    getStartTime() <<
-    getStopTime()<<
-    getReadJobId();
-
-    return ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode();
+    return inserter.execute();
 }
 
-RWDBStatus CtiTblDeviceReadRequestLog::Update()
+bool CtiTblDeviceReadRequestLog::Update()
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "requestid = ?, "
+                                        "command = ?, "
+                                        "starttime = ?, "
+                                        "stoptime = ?, "
+                                        "devicereadjoblogid = ?"
+                                   " where "
+                                        "devicereadrequestlogid = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    updater 
+        << getRequestId()
+        << getCommand()
+        << getStartTime()
+        << getStopTime()
+        << getReadJobId()
+        << getRequestLogId();
 
-    updater.where( table["devicereadrequestlogid"] == getRequestLogId() );
-
-    updater <<
-    table["requestid"].assign( getRequestId() ) <<
-    table["command"].assign( getCommand().c_str() ) <<
-    table["starttime"].assign( toRWDBDT(getStartTime()) ) <<
-    table["stoptime"].assign( toRWDBDT(getStopTime()) ) <<
-    table["devicereadjoblogid"].assign( getReadJobId() );
-
-    return ExecuteUpdater(conn,updater,__FILE__,__LINE__);
+    return updater.execute();
 }
 

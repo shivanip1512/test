@@ -17,7 +17,7 @@
 #ifndef CTIPAOSCHEDULE_H
 #define CTIPAOSCHEDULE_H
 
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "ctibase.h"
 #include "logger.h"
@@ -30,7 +30,7 @@ public:
 
     CtiPAOSchedule();
     virtual ~CtiPAOSchedule();
-    CtiPAOSchedule(RWDBReader& rdr);
+    CtiPAOSchedule(Cti::RowReader& rdr);
 
     long getScheduleId() const;
     const string& getScheduleName() const;

@@ -87,21 +87,7 @@ void CtiTableDeviceAddress::setPostDelay(int d)
     _postdelay = d;
 }
 
-void CtiTableDeviceAddress::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector << devTbl["masteraddress"] <<
-                devTbl["slaveaddress"]  <<
-                devTbl["postcommwait"];
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["deviceid"] && selector.where() );  //later: == getDeviceID());
-    // selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] );
-}
-
-void CtiTableDeviceAddress::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceAddress::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -122,44 +108,34 @@ string CtiTableDeviceAddress::getTableName()
     return "DeviceAddress";
 }
 
-RWDBStatus CtiTableDeviceAddress::Restore()
+bool CtiTableDeviceAddress::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return RWDBStatus::notSupported;
+    return false;
 }
 
-RWDBStatus CtiTableDeviceAddress::Insert()
+bool CtiTableDeviceAddress::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return RWDBStatus::notSupported;
+    return false;
 }
 
-RWDBStatus CtiTableDeviceAddress::Update()
+bool CtiTableDeviceAddress::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableDeviceAddress::Delete()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
+    return false;
 }
 
 

@@ -22,7 +22,6 @@ using std::list;
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <list>
@@ -41,6 +40,11 @@ using std::list;
 #include "ccsubstationbus.h"
 #include "CapControlPao.h"
 
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 class CtiCCSubstation : public RWCollectable, public CapControlPao
 {
@@ -50,7 +54,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     CtiCCSubstation();
-    CtiCCSubstation(RWDBReader& rdr);
+    CtiCCSubstation(Cti::RowReader& rdr);
     CtiCCSubstation(const CtiCCSubstation& substation);
 
     virtual ~CtiCCSubstation();
@@ -94,9 +98,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& checkAndUpdateRecentlyControlledFlag();
     CtiCCSubstation& checkAndUpdateChildVoltReductionFlags();
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
-    void setDynamicData(RWDBReader& rdr);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+    void setDynamicData(Cti::RowReader& rdr);
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -134,7 +137,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     std::list <long> _subBusIds;
     std::list <long> _pointIds;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
 
 
 };

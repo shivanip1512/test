@@ -17,12 +17,12 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
 #include "ctidate.h"
+#include "row_reader.h"
 
 class CtiLMProgramControlWindow : public RWCollectable
 {
@@ -32,7 +32,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMProgramControlWindow )
 
     CtiLMProgramControlWindow();
-    CtiLMProgramControlWindow(RWDBReader& rdr);
+    CtiLMProgramControlWindow(Cti::RowReader &rdr);
     CtiLMProgramControlWindow(const CtiLMProgramControlWindow& lmprogcontwindow);
 
     virtual ~CtiLMProgramControlWindow();
@@ -67,7 +67,7 @@ private:
     LONG _availablestarttime;
     LONG _availablestoptime;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

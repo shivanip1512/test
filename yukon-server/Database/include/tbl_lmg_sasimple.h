@@ -27,11 +27,6 @@
 
 #include <windows.h>
 
-#include <rw/db/select.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
-#include <rw/db/db.h>
 
 #include "yukon.h"
 #include "dlldefs.h"
@@ -39,6 +34,7 @@
 #include "dllbase.h"
 #include "dbaccess.h"
 #include "resolvers.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTableSASimpleGroup : public CtiMemDBObject
@@ -82,12 +78,7 @@ public:
 
     static string getTableName( void );
 
-    static void getSQL( RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector );
-    virtual void DecodeDatabaseReader( RWDBReader &rdr );
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
 };
 #endif // #ifndef __TBL_LMG_SA_SIMPLE_H__

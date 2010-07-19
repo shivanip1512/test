@@ -3,32 +3,32 @@
 #include "dbaccess.h"
 #include "logger.h"
 #include "ctitime.h"
-#include "rwutil.h"
+#include "database_writer.h"
+#include "database_reader.h"
 
 void CtiTableRawPointHistory::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     Insert(conn);
 }
 
-void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
+void CtiTableRawPointHistory::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = conn.database().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?)";
 
-    inserter <<
-    getChangeID() <<
-    getPointID() <<
-    getTime() <<
-    getQuality() <<
-    getValue() <<
-    getMillis();
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
 
-    RWDBStatus dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    inserter 
+        << getChangeID()
+        << getPointID()
+        << getTime()
+        << getQuality()
+        << getValue()
+        << getMillis();
 
-    if( dbstat.errorCode() != RWDBStatus::ok )
+    if( ! inserter.execute() )
     {
         LONG newcid = ChangeIdGen(true);
 
@@ -43,16 +43,24 @@ void CtiTableRawPointHistory::Insert(RWDBConnection &conn)
             }
 
             setChangeID( newcid );
-            dbstat = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
 
-            if( dbstat.errorCode() != RWDBStatus::ok )
+            // Try again with new ChangeID
+
+            Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+            inserter 
+                << getChangeID()
+                << getPointID()
+                << getTime()
+                << getQuality()
+                << getValue()
+                << getMillis();
+
+            if( ! inserter.execute() )
             {
-                string loggedSQLstring = inserter.asString();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unable to insert point change for point id " << getPointID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   " << loggedSQLstring << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Unable to insert point change for point id " << getPointID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << inserter.asString() << endl;
             }
         }
     }
@@ -172,22 +180,16 @@ CtiTableRawPointHistory& CtiTableRawPointHistory::setValue(const DOUBLE &val)
 
 void CtiTableRawPointHistory::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql =  "SELECT RPH.changeid, RPH.pointid, RPH.timestamp, RPH.quality, RPH.value, RPH.millis "
+                               "FROM rawpointhistory RPH "
+                               "WHERE RPH.pointid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-    selector << table["changeid"]
-    << table["pointid"]
-    << table["timestamp"]
-    << table["quality"]
-    << table["value"]
-    << table["millis"];
+    reader << getPointID();
 
-    selector.where( table["pointid"] == getPointID() );
-
-    RWDBReader reader = selector.reader( conn );
+    reader.execute();
 
     if( reader() )
     {
@@ -197,26 +199,19 @@ void CtiTableRawPointHistory::Restore()
 
 void CtiTableRawPointHistory::RestoreMax()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql =  "SELECT RPH.changeid, RPH.pointid, RPH.timestamp, RPH.quality, RPH.value, RPH.millis "
+                               "FROM rawpointhistory RPH "
+                               "WHERE RPH.pointid = ? AND RPH.timestamp = (select max(timestamp) "
+                                                                          "from rawpointhistory "
+                                                                          "where pointid = ?)";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-    char temp[80];
+    reader << getPointID()
+           << getPointID();
 
-    sprintf(temp, "select max(timestamp) from rawpointhistory where pointid=%ld", getPointID() );
-
-    selector << table["changeid"]
-    << table["pointid"]
-    << table["timestamp"]
-    << table["quality"]
-    << table["value"]
-    << table["millis"];
-
-    selector.where( table["pointid"] == getPointID() &&  table["timestamp"] == temp);
-
-    RWDBReader reader = selector.reader( conn );
+    reader.execute();
 
     if( reader() )
     {
@@ -224,7 +219,7 @@ void CtiTableRawPointHistory::RestoreMax()
     }
 }
 
-void CtiTableRawPointHistory::DecodeDatabaseReader( RWDBReader& rdr )
+void CtiTableRawPointHistory::DecodeDatabaseReader( Cti::RowReader& rdr )
 {
     CtiTime dt;
     INT millis;

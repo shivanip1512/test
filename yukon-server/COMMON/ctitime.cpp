@@ -5,6 +5,7 @@
 #include <boost/thread/tss.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <utility>
+#include <rw/rwtime.h>
 
 #include "ctidate.h"
 #include "ctitime.h"

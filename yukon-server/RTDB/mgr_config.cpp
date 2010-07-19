@@ -14,10 +14,10 @@
 #include "yukon.h"
 
 #include "mgr_config.h"
-#include <rw/db/db.h>
 #include "dbaccess.h"
 #include "config_device.h"
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using std::string;
 
@@ -182,31 +182,36 @@ void CtiConfigManager::loadData(long configID)
 
     start = start.now();
     {
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
+        static const string sqlNoID = "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
+                                      "FROM DeviceConfigurationItem DCI "
+                                      "ORDER BY DCI.deviceconfigurationid ASC";
 
-        RWDBSelector selector = db.selector();
+        static const string sqlID =  "SELECT DCI.deviceconfigurationid, DCI.fieldname, DCI.value "
+                                     "FROM DeviceConfigurationItem DCI "
+                                     "WHERE DCI.deviceconfigurationid = ? "
+                                     "ORDER BY DCI.deviceconfigurationid ASC";
 
-        RWDBTable itemValTbl = db.table( string2RWCString(getConfigItemTableName()) );
-        selector //<< itemValTbl["deviceconfigurationitemid"]
-            << itemValTbl["deviceconfigurationid"]
-            << itemValTbl["fieldname"]
-            << itemValTbl["value"];
-        selector.from(itemValTbl);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        if( configID != 0 )
+        if(configID != 0)
         {
-            selector.where(itemValTbl["deviceconfigurationid"] == configID && selector.where());
+            rdr.setCommandText(sqlID);
+            rdr << configID;
         }
-        selector.orderBy(itemValTbl["deviceconfigurationid"]); //This should make loading faster.
+        else
+        {
+            rdr.setCommandText(sqlNoID);
+        }
 
-        RWDBReader rdr = selector.reader(conn);
+        rdr.execute();
+
         long oldDeviceConfigID = 0;
         CtiConfigDeviceSPtr config;
         long deviceConfigID;
         string value,valueName;
 
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        while( rdr() )
         {
             //rdr["deviceconfigurationitemid"] >> itemID;
             rdr["deviceconfigurationid"] >> deviceConfigID;
@@ -245,33 +250,34 @@ void CtiConfigManager::loadConfigs(long configID)
 {
     CtiTime start, stop;
 
-    if( configID != 0 )
-    {
-        _deviceConfig.remove(configID);//Give us a fresh start
-    }
-
     start = start.now();
     {
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
-
-        RWDBSelector selector = db.selector();
-
-        RWDBTable configTbl = db.table( string2RWCString(getConfigTableName()) );
-
-        selector << configTbl["deviceconfigurationid"]
-            << configTbl["name"]
-            << configTbl["type"];;
-
-        selector.from(configTbl);
-        if( configID != 0 )
+        string sql =  "SELECT DCF.deviceconfigurationid, DCF.name, DCF.type "
+                      "FROM DeviceConfiguration DCF";
+                   
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
+          
+        if(configID != 0)
         {
-            selector.where( configTbl["deviceconfigurationid"] == configID && selector.where() );
+            _deviceConfig.remove(configID);//Give us a fresh start
+            sql += " WHERE DCF.deviceconfigurationid = ?";
+        }
+        else
+        {
+            _deviceConfig.clear();
         }
 
-        RWDBReader rdr = selector.reader(conn);
+        rdr.setCommandText(sql);
 
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        if(configID != 0)
+        {
+            rdr << configID;
+        }
+
+        rdr.execute();
+
+        while( rdr() )
         {
             long cfgID;
             string name, type;
@@ -289,7 +295,6 @@ void CtiConfigManager::loadConfigs(long configID)
                 configDevSPtr = tempPair.first->second;
             }
         }
-
     }
     stop = stop.now();
     if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
@@ -306,27 +311,37 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
 
     start = start.now();
     {
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
+        static const string sql = "SELECT DCD.deviceid, DCD.deviceconfigurationid "
+                                  "FROM DeviceConfigurationDeviceMap DCD";
 
-        RWDBSelector selector = db.selector();
+        static const string sqlConfig = "SELECT DCD.deviceid, DCD.deviceconfigurationid "
+                                        "FROM DeviceConfigurationDeviceMap DCD "
+                                        "WHERE DCD.deviceconfigurationid = ?";
 
-        RWDBTable typeTbl = db.table(string2RWCString(getConfigToDeviceMapTableName()) );
+        static const string sqlDevice = "SELECT DCD.deviceid, DCD.deviceconfigurationid "
+                                        "FROM DeviceConfigurationDeviceMap DCD "
+                                        "WHERE DCD.deviceid = ?";
 
-        selector << typeTbl["deviceid"]
-            << typeTbl["deviceconfigurationid"];
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        selector.from(typeTbl);
         if( configID != 0 )
         {
-            selector.where(typeTbl["deviceconfigurationid"] == configID && selector.where());
+            rdr.setCommandText(sqlConfig);
+            rdr << configID;
         }
         else if( deviceID != 0 )
         {
-            selector.where(typeTbl["deviceid"] == deviceID && selector.where());
+            rdr.setCommandText(sqlDevice);
+            rdr << deviceID;
+        }
+        else
+        {
+            // There is no where clause to be added.
+            rdr.setCommandText(sql);
         }
 
-        RWDBReader rdr = selector.reader(conn);
+        rdr.execute();
 
         // If we specify a device, this may be the equivalent of a "delete"
         // If we also specified a config, we cant risk the "delete" operation,
@@ -362,7 +377,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
         }
         else
         {
-            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            while( rdr() )
             {
                 long devID, cfgID;
 

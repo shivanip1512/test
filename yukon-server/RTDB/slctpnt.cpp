@@ -14,7 +14,6 @@
 #include "yukon.h"
 
 
-#include <rw/db/db.h>
 
 #include "rtdb.h"
 #include "dbaccess.h"

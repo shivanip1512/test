@@ -20,7 +20,9 @@
 #include "resolvers.h"
 #include "tbl_pao.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 using std::transform;
 
@@ -237,133 +239,85 @@ string CtiTblPAO::getTableName()
     return "YukonPAObject";
 }
 
-void CtiTblPAO::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+bool CtiTblPAO::Insert()
 {
-    keyTable = db.table(getTableName().c_str());
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    selector <<
-    keyTable["paobjectid"] <<
-    keyTable["category"] <<
-    keyTable["paoclass"] <<
-    keyTable["paoname"] <<
-    keyTable["type"] <<
-    keyTable["description"] <<
-    keyTable["disableflag"] <<
-    keyTable["paostatistics"];
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    selector.from(keyTable);
+    inserter 
+        << getID()
+        << getCategory()
+        << getClassStr()
+        << getName()
+        << getTypeStr()
+        << getDescription()
+        << getDisableFlagStr()
+        << getStatisticsStr();
 
-    // No where clause here! selector.where( selector.where() == devTbl["paobjectid"] );
-}
+    bool success = inserter.execute();
 
-RWDBStatus CtiTblPAO::Restore()
-{
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["paobjectid"] <<
-    table["category"] <<
-    table["paoclass"] <<
-    table["paoname"] <<
-    table["type"] <<
-    table["description"] <<
-    table["disableflag"] <<
-    table["paostatistics"];
-
-    selector.where( table["paobjectid"] == getID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTblPAO::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getID() <<
-    getCategory() <<
-    getClassStr() <<
-    getName() <<
-    getTypeStr() <<
-    getDescription() <<
-    getDisableFlagStr() <<
-    getStatisticsStr();
-
-    RWDBStatus result = ExecuteInserter(conn,inserter,__FILE__,__LINE__);
-    if( result.errorCode() == RWDBStatus::ok)
+    if ( success )
     {
         setDirty(false);
     }
 
-    return result;
+    return success;
 }
 
-RWDBStatus CtiTblPAO::Update()
+bool CtiTblPAO::Update()
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "category = ?, "
+                                        "paoclass = ?, "
+                                        "paoname = ?, "
+                                        "type = ?, "
+                                        "description = ?, "
+                                        "disableflag = ?, "
+                                        "paostatistics = ?"
+                                   " where "
+                                        "paobjectid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater
+        << getCategory()
+        << getClassStr()
+        << getName()
+        << getTypeStr()
+        << getDescription()
+        << getDisableFlagStr()
+        << getStatisticsStr()
+        << getID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    bool success = updater.execute();
 
-    updater.where( table["paobjectid"] == getID() );
-
-    updater <<
-    table["category"].assign(getCategory().c_str()) <<
-    table["paoclass"].assign(getClassStr().c_str()) <<
-    table["paoname"].assign(getName().c_str()) <<
-    table["type"].assign(getTypeStr().c_str()) <<
-    table["description"].assign(getDescription().c_str()) <<
-    table["disableflag"].assign(getDisableFlagStr().c_str()) <<
-    table["paostatistics"].assign(getStatisticsStr().c_str());
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    if( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTblPAO::Delete()
+bool CtiTblPAO::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where paobjectid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["paobjectid"] == getID() );
-    deleter.execute( conn );
-    return deleter.status();
+    deleter << getID();
+
+    return deleter.execute();
 }
 
 
-void CtiTblPAO::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTblPAO::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
     string rwsTemp;

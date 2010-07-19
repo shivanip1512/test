@@ -30,9 +30,6 @@ Things to note about telegyr learned the hard way...
 #include "ctidate.h"
 #include <boost/tokenizer.hpp>
 #include <boost/regex.hpp>
-#include <rw/db/db.h>
-#include <rw/db/connect.h>
-#include <rw/db/status.h>
 
 #include "cparms.h"
 #include "msg_multi.h"
@@ -986,7 +983,6 @@ void CtiFDRTelegyr::buildAndRegisterGroups( void )
 
 bool CtiFDRTelegyr::loadGroupLists( void )
 {
-   RWDBStatus     listStatus;
    bool           successful = false;
    bool           foundPoint = false;
 
@@ -1000,15 +996,13 @@ bool CtiFDRTelegyr::loadGroupLists( void )
       // make a list with all received points
       CtiFDRManager *pointList = new CtiFDRManager( getInterfaceName(), string( FDR_INTERFACE_RECEIVE ) );
 
-      listStatus = pointList->loadPointList();
-
       // if status is ok, we were able to read the database at least
-      if( RWDBStatus::ok == listStatus.errorCode() )
+      if( pointList->loadPointList() )
       {
          if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
          {
             CtiLockGuard<CtiLogger> doubt_guard( dout );
-            dout << CtiTime::now() << " ***  RWDBStatus::ok" << endl;
+            dout << CtiTime::now() << " *** DBStatus ok" << endl;
          }
 
          //===================================================================================
@@ -1079,7 +1073,7 @@ bool CtiFDRTelegyr::loadGroupLists( void )
       else
       {
          CtiLockGuard<CtiLogger> doubt_guard( dout );
-         dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+         dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
          successful = false;
       }
    }

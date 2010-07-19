@@ -475,7 +475,6 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
 {
     bool successful = true;
     bool foundPoint = false;
-    RWDBStatus listStatus;
 
     try
     {
@@ -483,11 +482,9 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
         // make a list with all received points
         CtiFDRManager   *pointList = new CtiFDRManager(getInterfaceName(),
                                                        string (FDR_INTERFACE_RECEIVE));
-        // keep the status
-        listStatus = pointList->loadPointList();
 
         // if status is ok, we were able to read the database at least
-        if ( listStatus.errorCode() == (RWDBStatus::ok))
+        if ( pointList->loadPointList() )
         {
             /**************************************
             * seeing occasional problems where we get empty data sets back
@@ -549,7 +546,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
         else
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") db read code " << listStatus.errorCode()  << endl;
+            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")"  << endl;
             successful = false;
         }
 
@@ -672,7 +669,6 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
     FILE* fptr = NULL;
     char workBuffer[1500];  // not real sure how long each line possibly is
     int attemptCounter=0;
-    RWDBStatus          listStatus;
     CtiFDRPoint *       fdrPoint;
     try
     {

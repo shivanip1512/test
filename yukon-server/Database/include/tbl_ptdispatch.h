@@ -20,7 +20,6 @@
 
 #include <limits.h>
 
-#include <rw/db/db.h>
 
 #include "ctibase.h"
 #include "dlldefs.h"
@@ -28,6 +27,8 @@
 #include "pointdefs.h"
 #include "yukon.h"
 #include "ctitime.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 
 class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject
@@ -67,16 +68,14 @@ private:
 
     static string getTableName();
 
-    RWDBStatus Insert(RWDBConnection &conn);
-    RWDBStatus Update(RWDBConnection &conn);
+    bool Insert(Cti::Database::DatabaseConnection &conn);
+    bool Update(Cti::Database::DatabaseConnection &conn);
 
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Delete();
+    virtual bool Restore();
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeDatabaseReader(RWDBReader& rdr);
+    static string getSQLCoreStatement(long id = 0);
+    
+    void DecodeDatabaseReader(Cti::RowReader& rdr);
 
     LONG getPointID() const;
     CtiTablePointDispatch& setPointID(LONG pointID);

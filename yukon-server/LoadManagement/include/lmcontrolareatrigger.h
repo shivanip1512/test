@@ -17,14 +17,14 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include <rw/tvdlist.h> 
 #include "ctitime.h"
-
+#include "row_reader.h"
 #include "observe.h"
-                
+#include "database_connection.h"
+
 class CtiLMProjectionPointEntry
 {//equivalent to an inner class, only used for projections
 
@@ -59,7 +59,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
 
     CtiLMControlAreaTrigger();
-    CtiLMControlAreaTrigger(RWDBReader& rdr);
+    CtiLMControlAreaTrigger(Cti::RowReader &rdr);
     CtiLMControlAreaTrigger(const CtiLMControlAreaTrigger& lmcontrolareatrigger);
 
     virtual ~CtiLMControlAreaTrigger();
@@ -106,7 +106,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlAreaTrigger )
     CtiLMControlAreaTrigger* replicate() const;
 
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void calculateProjectedValue();
     
     bool hasReceivedPointData() const;
@@ -155,7 +155,7 @@ private:
     //don't stream
     BOOL _insertDynamicDataFlag;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

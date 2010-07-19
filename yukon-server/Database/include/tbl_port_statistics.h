@@ -21,6 +21,7 @@
 #include "dbmemobject.h"
 #include "dlldefs.h"
 #include "ctitime.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTablePortStatistics : public CtiMemDBObject
@@ -69,10 +70,8 @@ public:
 
    /* These guys are handled different since they are multi-keyed */
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
    static string& getSQLConditions(string &str);
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_PORT_STATISTICS_H__

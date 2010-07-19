@@ -19,7 +19,6 @@
 #ifndef __TBL_TAGLOG_H__
 #define __TBL_TAGLOG_H__
 
-#include <rw/db/db.h>
 
 
 #include "ctibase.h"
@@ -27,6 +26,8 @@
 #include "dbmemobject.h"
 #include "pointdefs.h"
 #include "yukon.h"
+#include "row_reader.h"
+#include "database_connection.h"
 
 
 #define CTITABLETAGLOG_MAX_USERNAME       60
@@ -74,18 +75,16 @@ public:
 
     static string getTableName();
 
-    RWDBStatus Insert(RWDBConnection &conn);
-    RWDBStatus Update(RWDBConnection &conn);
+    bool Insert(Cti::Database::DatabaseConnection &conn);
+    bool Update(Cti::Database::DatabaseConnection &conn);
 
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Restore();
-    virtual RWDBStatus Delete();
+    virtual bool Insert();
+    virtual bool Update();
+    virtual bool Delete();
 
-    static RWDBStatus Delete(int log);
+    static bool Delete(int log);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-    void DecodeDatabaseReader(RWDBReader& rdr);
+    void DecodeDatabaseReader(Cti::RowReader& rdr);
 
 
     int getLogId() const;           // no two tags share the same one

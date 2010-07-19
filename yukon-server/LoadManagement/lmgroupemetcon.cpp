@@ -31,7 +31,7 @@ _refreshsent(false)
 {   
 }
 
-CtiLMGroupEmetcon::CtiLMGroupEmetcon(RWDBReader& rdr)
+CtiLMGroupEmetcon::CtiLMGroupEmetcon(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -270,9 +270,9 @@ CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMGroupEmetcon::restore(RWDBReader& rdr)
+void CtiLMGroupEmetcon::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
 

@@ -33,7 +33,7 @@ _customerorder(0)
 {
 }
 
-CtiLMCICustomerBase::CtiLMCICustomerBase(RWDBReader& rdr)
+CtiLMCICustomerBase::CtiLMCICustomerBase(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -211,9 +211,9 @@ int CtiLMCICustomerBase::operator!=(const CtiLMCICustomerBase& right) const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMCICustomerBase::restore(RWDBReader& rdr)
+void CtiLMCICustomerBase::restore(Cti::RowReader &rdr)
 {
     string tempBoolString;
 

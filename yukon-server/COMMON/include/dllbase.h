@@ -63,6 +63,10 @@ using std::set;
 #define DEBUGLEVEL_WELCO_PROTOCOL   0x40000000
 #define DEBUGLEVEL_WCTP_PROTOCOL    0x80000000
 
+typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
+typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
+typedef boost::char_separator<char> Separator;
+
 namespace Cti {
 
 class ActiveMQConnectionManager;

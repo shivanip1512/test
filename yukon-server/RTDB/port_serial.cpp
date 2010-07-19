@@ -17,14 +17,7 @@
 
 #include "port_serial.h"
 
-void CtiPortSerial::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTablePortSettings::getSQL(db, keyTable, selector);
-    CtiTablePortTimings::getSQL(db, keyTable, selector);
-}
-
-void CtiPortSerial::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPortSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 

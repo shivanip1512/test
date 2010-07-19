@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <list>
@@ -35,6 +34,12 @@
 #include "ctitime.h"
 #include "ctidate.h"
 #include "CapControlPao.h"
+
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 using boost::shared_ptr;
 
@@ -88,7 +93,7 @@ public:
   RWDECLARE_COLLECTABLE( CtiCCCapBank )
 
     CtiCCCapBank();
-    CtiCCCapBank(RWDBReader& rdr);
+    CtiCCCapBank(Cti::RowReader& rdr);
     CtiCCCapBank(const CtiCCCapBank& cap);
 
     virtual ~CtiCCCapBank();
@@ -264,10 +269,9 @@ public:
 
     BOOL isDirty() const;
     BOOL getInsertDynamicDataFlag() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    void setDynamicData(RWDBReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -398,7 +402,7 @@ private:
                                                     // than one monitor point attached to a capbank!!!
     std::vector <CtiCCPointResponse*> _pointResponses;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
 };
 
 //typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;

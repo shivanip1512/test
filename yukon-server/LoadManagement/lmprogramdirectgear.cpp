@@ -56,7 +56,7 @@ _kw_reduction(0)
 {   
 }
 
-CtiLMProgramDirectGear::CtiLMProgramDirectGear(RWDBReader& rdr)
+CtiLMProgramDirectGear::CtiLMProgramDirectGear(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -734,9 +734,9 @@ CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramDirectGear::restore(RWDBReader& rdr)
+void CtiLMProgramDirectGear::restore(Cti::RowReader &rdr)
 {
     rdr["deviceid"] >> _program_paoid;//will be paobjectid
     rdr["gearname"] >> _gearname;

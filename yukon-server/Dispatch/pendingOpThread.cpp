@@ -7,6 +7,8 @@
 #include "msg_cmd.h"
 #include "pendingopthread.h"
 #include "millisecond_timer.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -1086,15 +1088,13 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
         {
             if(lmentries > 0)
             {
-                string controlHistory("controlHistory");
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
+                Cti::Database::DatabaseConnection   conn;
 
-                conn.beginTransaction(string2RWCString(controlHistory));
+                conn.beginTransaction();
 
                 try
                 {
-                    while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
+                    while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _lmControlHistoryQueue.getQueue(0)) != NULL)
                     {
                         panicCounter++;
                         pTblEntry->Insert(conn);
@@ -1109,7 +1109,7 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                     }
                 }
 
-                conn.commitTransaction(string2RWCString(controlHistory));
+                conn.commitTransaction();
             }
             if( panicCounter > 0 )
             {
@@ -1161,15 +1161,13 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
         {
             if(lmentries > 0)
             {
-                string controlHistory("dynamicControlHistory");
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
+                Cti::Database::DatabaseConnection   conn;
 
-                conn.beginTransaction(string2RWCString(controlHistory));
+                conn.beginTransaction();
 
                 try
                 {
-                    while( conn.isValid() && ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
+                    while( ( justdoit || (panicCounter < PANIC_CONSTANT) ) && (pTblEntry = _dynLMControlHistoryQueue.getQueue(0)) != NULL)
                     {
                         panicCounter++;
                         pTblEntry->UpdateDynamic(conn);
@@ -1184,7 +1182,7 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
                     }
                 }
 
-                conn.commitTransaction(string2RWCString(controlHistory));
+                conn.commitTransaction();
             }
             if( panicCounter > 0 )
             {
@@ -1232,20 +1230,15 @@ bool CtiPendingOpThread::loadICControlMap()
     {
         resetICControlMap();
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        static const string sql = CtiTableLMControlHistory::getSQLCoreStatementDynamic();
+        
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+        rdr.execute();
 
-        RWDBDatabase   db       = conn.database();
-        RWDBSelector   selector = conn.database().selector();
-        RWDBTable      keyTable;
-        RWDBReader     rdr;
-
-        CtiTableLMControlHistory::getDynamicSQL( db, keyTable, selector );
-        rdr = selector.reader( conn );
-
-        if(rdr.status().errorCode() != RWDBStatus::ok)
+        if(!rdr.isValid())
         {
-            string loggedSQLstring = selector.asString();
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;

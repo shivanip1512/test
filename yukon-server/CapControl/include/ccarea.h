@@ -21,7 +21,6 @@ using std::list;
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <list>
@@ -52,7 +51,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     CtiCCArea();
     CtiCCArea(StrategyManager * strategyManager);
-    CtiCCArea(RWDBReader& rdr, StrategyManager * strategyManager);
+    CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager);
     CtiCCArea(const CtiCCArea& area);
 
     virtual ~CtiCCArea();
@@ -87,9 +86,8 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& checkAndUpdateChildVoltReductionFlags();
 
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
-    void setDynamicData(RWDBReader& rdr);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+    void setDynamicData(Cti::RowReader& rdr);
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -122,7 +120,7 @@ private:
     BOOL _dirty;
     BOOL _areaUpdatedFlag;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
 
 
 };

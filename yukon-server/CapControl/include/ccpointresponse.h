@@ -18,14 +18,19 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include <list>
 
 #include "dbaccess.h"
 #include "observe.h"
+#include "row_reader.h"
 
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
                 
 class CtiCCPointResponse : public RWCollectable
 {
@@ -34,7 +39,7 @@ public:
 
   RWDECLARE_COLLECTABLE( CtiCCPointResponse )
 
-    CtiCCPointResponse(RWDBReader& rdr);
+    CtiCCPointResponse(Cti::RowReader& rdr);
     CtiCCPointResponse(const CtiCCPointResponse& point);
 
     virtual ~CtiCCPointResponse();
@@ -52,13 +57,12 @@ public:
     CtiCCPointResponse* replicate() const;
 
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;
-    void setDynamicData(RWDBReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
 
     CtiCCPointResponse& operator=(const CtiCCPointResponse& right);
 
@@ -77,7 +81,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
     CtiCCPointResponse();
 
 };

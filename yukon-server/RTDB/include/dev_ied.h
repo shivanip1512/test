@@ -238,13 +238,21 @@ public:
         return *this;
     }
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+    virtual string getSQLCoreStatement() const
     {
-        Inherited::getSQL(db, keyTable, selector);
-        CtiTableDeviceIED::getSQL(db, keyTable, selector);
+        static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                         "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, "
+                                         "CS.portid, DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, "
+                                         "DUS.linesettings, DUS.baudrate, IED.password, IED.slaveaddress "
+                                       "FROM Device DV, DeviceIED IED, DeviceDirectCommSettings CS, YukonPAObject YP "
+                                         "LEFT OUTER JOIN DeviceDialupSettings DUS ON YP.paobjectid = DUS.deviceid "
+                                       "WHERE YP.paobjectid = IED.deviceid AND YP.paobjectid = DV.deviceid AND "
+                                         "YP.paobjectid = CS.deviceid";
+
+        return sqlCore;
     }
 
-    virtual void DecodeDatabaseReader(RWDBReader &rdr)
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
     {
         Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

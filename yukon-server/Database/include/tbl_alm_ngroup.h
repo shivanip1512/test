@@ -22,12 +22,11 @@
 
 #include <set>
 
-#include <rw/db/db.h>
 #include <rw/thr/recursiv.h>
 
 #include "dlldefs.h"
-#include "tbl_alm_ndest.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 using std::set;
 using std::vector;
@@ -72,14 +71,10 @@ public:
 
    void dump() const;
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    static string getTableName();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Delete();
+   virtual bool Restore();
 
-   virtual void DecodeDatabaseReader(RWDBReader& rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
 };
 #endif // #ifndef __TBL_ALM_NGROUP_H__

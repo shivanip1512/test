@@ -22,7 +22,8 @@
 #include "logger.h"
 #include "numstr.h"
 #include "tbl_taglog.h"
-#include "rwutil.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 
 int CtiTableTagLog::_maxInstanceId = 0;
@@ -96,26 +97,24 @@ string CtiTableTagLog::getTableName()
 }
 
 
-RWDBStatus CtiTableTagLog::Insert()
+bool CtiTableTagLog::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Insert(conn);
 }
 
-RWDBStatus CtiTableTagLog::Update()
+bool CtiTableTagLog::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Update(conn);
 }
 
-RWDBStatus CtiTableTagLog::Insert(RWDBConnection &conn)
+bool CtiTableTagLog::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if(getUserName().empty())
     {
@@ -138,7 +137,10 @@ RWDBStatus CtiTableTagLog::Insert(RWDBConnection &conn)
         setTaggedForStr("(none)");
     }
 
-    inserter << getLogId()
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+    inserter
+        << getLogId()
         << getInstanceId()
         << getPointId()
         << getTagId()
@@ -151,39 +153,42 @@ RWDBStatus CtiTableTagLog::Insert(RWDBConnection &conn)
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl << CtiTime() << " **** INSERT Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
 
-    ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    bool success = inserter.execute();
 
-    if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
+    if( ! success )    // Error occured!
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << "**** SQL FAILED Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << inserter.asString() << endl;
     }
     else
     {
         resetDirty(FALSE);
     }
 
-    return inserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableTagLog::Update(RWDBConnection &conn)
+bool CtiTableTagLog::Update(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["logid"] == getLogId() );
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "instanceid = ?, "
+                                        "pointid = ?, "
+                                        "tagid = ?, "
+                                        "username = ?, "
+                                        "action = ?, "
+                                        "description = ?, "
+                                        "tagtime = ?, "
+                                        "refstr = ?, "
+                                        "forstr = ?"
+                                   " where "
+                                        "logid = ?";
 
     if(getUserName().empty())
     {
@@ -206,139 +211,60 @@ RWDBStatus CtiTableTagLog::Update(RWDBConnection &conn)
         setTaggedForStr("(none)");
     }
 
-    updater <<
-    table["logid"].assign(getLogId()) <<
-    table["instanceid"].assign(getInstanceId()) <<
-    table["pointid"].assign(getPointId()) <<
-    table["tagid"].assign(getTagId()) <<
-    table["username"].assign(getUserName().c_str()) <<
-    table["action"].assign(getActionStr().c_str()) <<
-    table["description"].assign(getDescriptionStr().c_str()) <<
-    table["tagtime"].assign( toRWDBDT(getTagTime()) ) <<
-    table["refstr"].assign(getReferenceStr().c_str()) <<
-    table["forstr"].assign(getTaggedForStr().c_str());
+    Cti::Database::DatabaseWriter   updater(conn, sql);
 
-    long rowsAffected;
-    RWDBStatus rwStat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+    updater
+        << getInstanceId()
+        << getPointId()
+        << getTagId()
+        << getUserName()
+        << getActionStr()
+        << getDescriptionStr()
+        << getTagTime()
+        << getReferenceStr()
+        << getTaggedForStr()
+        << getLogId();
 
-    if( rwStat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
+    bool success      = updater.execute();
+    long rowsAffected = updater.rowsAffected();
+
+    if( success && rowsAffected > 0)
     {
         setDirty(false);
     }
     else
     {
-        rwStat = Insert(conn);        // Try a vanilla insert if the update failed!
+        success = Insert(conn);        // Try a vanilla insert if the update failed!
     }
 
-    return rwStat;
+    return success;
 }
 
-RWDBStatus CtiTableTagLog::Restore()
+bool CtiTableTagLog::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-        table["logid"] <<
-        table["instanceid"] <<
-        table["pointid"] <<
-        table["pointid"] <<
-        table["tagid"] <<
-        table["username"] <<
-        table["action"] <<
-        table["description"] <<
-        table["tagtime"] <<
-        table["refstr"] <<
-        table["forstr"];
-
-    selector.where( table["logid"] == getLogId() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are sirty and need to be
-     *  written into the database
-     */
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( TRUE );
-    }
-
-    return reader.status();
+    return Delete( getLogId() );
 }
-RWDBStatus CtiTableTagLog::Delete()
+
+bool CtiTableTagLog::Delete(int log)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where logid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["logid"] == getLogId() );
+    deleter << log;
 
     if(isDebugLudicrous())
     {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << deleter.asString() << endl;
     }
 
-    return deleter.execute( conn ).status();
+    return deleter.execute();
 }
 
-RWDBStatus CtiTableTagLog::Delete(int log)
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["logid"] == log );
-
-    if(isDebugLudicrous())
-    {
-        string loggedSQLstring = deleter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl << endl;
-        }
-    }
-
-    return deleter.execute( conn ).status();
-}
-
-
-void CtiTableTagLog::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table(CtiTableTagLog::getTableName().c_str());
-
-    selector <<
-    keyTable["logid"] <<
-    keyTable["instanceid"] <<
-    keyTable["pointid"] <<
-    keyTable["tagid"] <<
-    keyTable["username"] <<
-    keyTable["action"] <<
-    keyTable["description"] <<
-    keyTable["tagtime"] <<
-    keyTable["refstr"] <<
-    keyTable["forstr"];
-
-    selector.from(keyTable);
-}
-void CtiTableTagLog::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableTagLog::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     rdr["logid"]        >> _logId;
     rdr["instanceid"]   >> _instanceId;
@@ -481,22 +407,16 @@ int CtiTableTagLog::getMaxInstanceId()
     {
         try
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            static const string sql = "SELECT maxid = MAX (TLG.instanceid) "
+                                      "FROM TagLog TLG";
 
-            RWDBTable table = getDatabase().table( getTableName().c_str() );
-            RWDBSelector selector = getDatabase().selector();
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+            rdr.execute();
 
-            selector << rwdbName("maxid",rwdbMax(table["instanceid"]));
-
-            RWDBReader rdr = selector.reader(conn);
-
-            if(rdr.status().errorCode() == RWDBStatus::ok)
+            if( rdr() )
             {
-                if( rdr() )
-                {
-                    rdr["maxid"] >> _maxInstanceId;
-                }
+                rdr["maxid"] >> _maxInstanceId;
             }
         }
         catch(...)
@@ -521,22 +441,16 @@ int CtiTableTagLog::getNextLogId()
     {
         try
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            static const string sql = "SELECT maxid = MAX (TLG.logid) "
+                                      "FROM TagLog TLG";
 
-            RWDBTable table = getDatabase().table( getTableName().c_str() );
-            RWDBSelector selector = getDatabase().selector();
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+            rdr.execute();
 
-            selector << rwdbName("maxid",rwdbMax(table["logid"]));
-
-            RWDBReader rdr = selector.reader(conn);
-
-            if(rdr.status().errorCode() == RWDBStatus::ok)
+            if( rdr() )
             {
-                if( rdr() )
-                {
-                    rdr["maxid"] >> _nextLogId;
-                }
+                rdr["maxid"] >> _nextLogId;
             }
         }
         catch(...)

@@ -2,7 +2,6 @@
 
 #include "tbl_paoproperty.h"
 #include "dbaccess.h"
-#include "rwutil.h"
 
 namespace Cti {
 namespace Database {
@@ -12,23 +11,54 @@ using namespace std;
 
 const string PaoPropertyTable::_tableName = "PaoProperty";
 
-PaoPropertyTable::PaoPropertyTable(RWDBReader &rdr)
+PaoPropertyTable::PaoPropertyTable(Cti::RowReader &rdr)
 {
     rdr["paobjectid"]    >> _paoId;
     rdr["propertyname"]  >> _propertyName;
     rdr["propertyvalue"] >> _propertyValue;
 }
 
-void PaoPropertyTable::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
+string PaoPropertyTable::getSQLCoreStatement()
 {
-    keyTable = db.table(_tableName.c_str());
+    static const string sql = "SELECT PPR.paobjectid, PPR.propertyname, PPR.propertyvalue "
+                              "FROM PaoProperty PPR";
 
-    selector
-        << keyTable["paobjectid"]
-        << keyTable["propertyname"]
-        << keyTable["propertyvalue"];
+    return sql;
+}
 
-    selector.from(keyTable);
+string PaoPropertyTable::addIDSQLClause(const set<long> &deviceids)
+{
+    string sqlIDs;
+
+    if( !deviceids.empty() )
+    {
+        ostringstream in_list;
+
+        if( deviceids.size() == 1 )
+        {
+            //  special single id case
+    
+            in_list << *(deviceids.begin());
+             
+            sqlIDs += "AND PPR.paobjectid = " + in_list.str();
+    
+            return sqlIDs;
+        }
+        else
+        {
+            in_list << "(";
+        
+            copy(deviceids.begin(), deviceids.end(), csv_output_iterator<long, ostringstream>(in_list));
+        
+            in_list << ")";
+
+            sqlIDs += "AND PPR.paobjectid IN " + in_list.str();
+
+            return sqlIDs;
+        }
+    }
+
+    return string();
 }
 
 

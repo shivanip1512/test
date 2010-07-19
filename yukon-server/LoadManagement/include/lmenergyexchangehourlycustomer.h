@@ -16,11 +16,11 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
+#include "row_reader.h"
                 
 class CtiLMEnergyExchangeHourlyCustomer : public RWCollectable
 {
@@ -30,7 +30,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer )
 
     CtiLMEnergyExchangeHourlyCustomer();
-    CtiLMEnergyExchangeHourlyCustomer(RWDBReader& rdr);
+    CtiLMEnergyExchangeHourlyCustomer(Cti::RowReader &rdr);
     CtiLMEnergyExchangeHourlyCustomer(const CtiLMEnergyExchangeHourlyCustomer& customer);
 
     virtual ~CtiLMEnergyExchangeHourlyCustomer();
@@ -67,7 +67,7 @@ RWDECLARE_COLLECTABLE( CtiLMEnergyExchangeHourlyCustomer )
 
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

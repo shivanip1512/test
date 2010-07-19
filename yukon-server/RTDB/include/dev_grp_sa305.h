@@ -96,10 +96,11 @@ public:
 
     CtiSACommand_t getLastSACommandType() const { return _lastSACommandType; }
 
+    virtual string getSQLCoreStatement() const;
+
     virtual LONG getRouteID();
     virtual string getDescription(const CtiCommandParser & parse) const;
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual string getPutConfigAssignment(UINT modifier = 0);
 

@@ -26,9 +26,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "ctitime.h"
 #include "ctidate.h"
 #include "utility.h"
-#include <rw/db/db.h>
-#include <rw/db/connect.h>
-#include <rw/db/status.h>
 
 #include "piapi.h"
 #include "piapix.h"

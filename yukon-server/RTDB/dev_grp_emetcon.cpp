@@ -329,13 +329,18 @@ CtiDeviceGroupEmetcon&     CtiDeviceGroupEmetcon::setEmetconGroup(const CtiTable
     return *this;
 }
 
-void CtiDeviceGroupEmetcon::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupEmetcon::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableEmetconLoadGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LMG.goldaddress, LMG.silveraddress, "
+                                     "LMG.addressusage, LMG.relayusage, LMG.routeid "
+                                   "FROM YukonPAObject YP, Device DV, LMGroupEmetcon LMG "
+                                   "WHERE YP.paobjectid = LMG.deviceid AND YP.paobjectid = DV.deviceid";
+
+    return sqlCore;
 }
 
-void CtiDeviceGroupEmetcon::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGroupEmetcon::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

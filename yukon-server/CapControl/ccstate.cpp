@@ -31,7 +31,7 @@ CtiCCState::CtiCCState()
     _backgroundcolor = 0;
 }
 
-CtiCCState::CtiCCState(RWDBReader& rdr)
+CtiCCState::CtiCCState(Cti::RowReader& rdr)
 {
     _text = "";
     restore(rdr);   
@@ -179,9 +179,9 @@ CtiCCState* CtiCCState::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCState::restore(RWDBReader& rdr)
+void CtiCCState::restore(Cti::RowReader& rdr)
 {
     rdr["text"] >> _text;
     rdr["foregroundcolor"] >> _foregroundcolor;

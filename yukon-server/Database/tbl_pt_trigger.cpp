@@ -15,9 +15,6 @@
 #include "tbl_pt_trigger.h"
 #include "logger.h"
 
-#include "rwutil.h"
-
-
 CtiTablePointTrigger::CtiTablePointTrigger() :
     _pointID(0),
     _triggerID(0),
@@ -49,30 +46,25 @@ CtiTablePointTrigger& CtiTablePointTrigger::operator=(const CtiTablePointTrigger
     return *this;
 }
 
-void CtiTablePointTrigger::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, long pointID)
+string CtiTablePointTrigger::getSQLCoreStatement(long pointID)
 {
-    RWDBTable tbl = db.table("PointTrigger");
+    static const string sqlNoID =  "SELECT PTR.pointid, PTR.triggerid, PTR.triggerdeadband, PTR.verificationid, "
+                                     "PTR.verificationdeadband, PTR.commandtimeout, PTR.parameters "
+                                   "FROM PointTrigger PTR";
 
-    selector <<
-    tbl["pointid"] <<
-    tbl["triggerid"] <<
-    tbl["triggerdeadband"] <<
-    tbl["verificationid"] <<
-    tbl["verificationdeadband"] <<
-    tbl["commandtimeout"] <<
-    tbl["parameters"];
-
-    selector.from(tbl);
-
-    if( pointID != 0)
+    if( pointID != 0 )
     {
-        selector.where( tbl["pointid"] == RWDBExpr( pointID ) && selector.where() );
+        return string(sqlNoID + " WHERE PTR.pointid = ?");
+    }
+    else
+    {
+        return sqlNoID;
     }
 }
 
-void CtiTablePointTrigger::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointTrigger::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    static const RWCString pointid = "pointid";
+    static const string pointid = "pointid";
     rdr[pointid] >> _pointID;
     rdr >> _triggerID;
     rdr >> _triggerDeadband;

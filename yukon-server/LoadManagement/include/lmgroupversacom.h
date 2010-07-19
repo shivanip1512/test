@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -32,7 +31,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupVersacom )
 
     CtiLMGroupVersacom();
-    CtiLMGroupVersacom(RWDBReader& rdr);
+    CtiLMGroupVersacom(Cti::RowReader &rdr);
     CtiLMGroupVersacom(const CtiLMGroupVersacom& groupversa);
 
     virtual ~CtiLMGroupVersacom();
@@ -56,7 +55,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupVersacom )
 
 private:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

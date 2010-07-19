@@ -16,14 +16,7 @@
 #ifndef __TBL_DV_VERSACOM_H__
 #define __TBL_DV_VERSACOM_H__
 
-#include <rw/db/select.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -33,6 +26,7 @@
 #include "dbmemobject.h"
 #include "dllbase.h"
 #include "dbaccess.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTableVersacomLoadGroup : public CtiMemDBObject
@@ -97,12 +91,10 @@ public:
 
    static string getTableName();
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   virtual bool Insert();
+   virtual bool Update();
+   virtual bool Delete();
 
 };
 #endif // #ifndef __TBL_DV_VERSACOM_H__

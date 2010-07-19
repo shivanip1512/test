@@ -21,15 +21,11 @@
 #include <limits.h>
 #include <set>
 
-#include <rw/db/reader.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/datetime.h>
+#include "row_reader.h"
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
+#include "database_connection.h"
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbmemobject.h"
@@ -92,18 +88,14 @@ public:
 
     LONG calculateClose(LONG aOpen, LONG aDuration) const;
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   static string getSQLCoreStatement();
+   static string addIDSQLClause(const Cti::Database::id_set &paoids);
 
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual void DumpData();
 
    static string getTableName();
-
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Delete();
 
    bool addSignaledRateActive(int rate) const;
    bool addSignaledRateSent(int rate) const;

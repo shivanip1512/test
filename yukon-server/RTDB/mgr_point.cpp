@@ -30,8 +30,8 @@
 #include "resolvers.h"
 #include "utility.h"
 
-#include "rwutil.h"
 #include "cparms.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -68,8 +68,8 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
 }
 
 
-static RWDBReader& operator >> (RWDBReader& rdr, CtiPointBase& p);
-CtiPointBase* PointFactory(RWDBReader &rdr);
+static Cti::RowReader& operator >> (Cti::RowReader& rdr, CtiPointBase& p);
+CtiPointBase* PointFactory(Cti::RowReader &rdr);
 
 
 // Return TRUE if it is NOT SET
@@ -122,10 +122,6 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
     try
     {
         {   // Make sure all objects that that store results
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            // are out of scope when the release is called
-
             start = start.now();
             if(pntID == 0 && paoID == 0)
             {
@@ -141,30 +137,42 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                 dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for ApplyPointResetUpdated" << endl;
             }
 
-            RWDBDatabase   db       = conn.database();
-            RWDBSelector   selector = conn.database().selector();
-            RWDBTable      keyTable;
-            RWDBReader     rdr;
-
             if(pntType == InvalidPointType || pntType == SystemPointType)
             {
-
                 start = start.now();
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Points" << endl;
                 }
-                /* Go after the system defined points! */
-                CtiPointBase().getSQL( db, keyTable, selector );
-                // Make sure I pick up only those devices which are System devices.
-                selector.where( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("SYSTEM") && selector.where());
-                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
-                rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                string sql = CtiPointBase().getSQLCoreStatement() + " WHERE upper (PT.pointtype) = 'SYSTEM'";
+
+                if( pntID != 0 )
                 {
-                    string loggedSQLstring = selector.asString();
+                    sql += " AND PT.pointid = ?";
+                }
+                if( paoID != 0 )
+                {
+                    sql += " AND PT.paobjectid = ?";
+                }
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                if( pntID != 0 )
+                {
+                    rdr << pntID;
+                }
+                if( paoID != 0 )
+                {
+                    rdr << paoID;
+                }
+
+                rdr.execute();
+
+                if(DebugLevel & 0x00010000 || !rdr.isValid())
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -186,25 +194,41 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                pntType == StatusPointType )
             {
                 start = start.now();
-                selector = conn.database().selector();    // Clear the selector.
 
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl;
                 }
-                /* Go after the status points! */
-                CtiPointStatus().getSQL( db, keyTable, selector );
 
-                selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("STATUS") ||
-                                  rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCSTATUS")) && selector.where());
+                string sql = CtiPointStatus::getSQLCoreStatement() +
+                                          " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS')";
 
-                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-                rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if( pntID != 0 )
                 {
-                    string loggedSQLstring = selector.asString();
+                    sql += " AND PT.pointid = ?";
+                }
+                if( paoID != 0 )
+                {
+                    sql += " AND PT.paobjectid = ?";
+                }
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                if( pntID != 0 )
+                {
+                    rdr << pntID;
+                }
+                if( paoID != 0 )
+                {
+                    rdr << paoID;
+                }
+
+                rdr.execute();
+
+                if(DebugLevel & 0x00010000 || !rdr.isValid())
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -226,21 +250,40 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                pntType == AnalogPointType )
             {
                 start = start.now();
-                selector = conn.database().selector();    // Clear the selector.
 
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl;
                 }
-                /* Go after the analog points! */
-                CtiPointAnalog().getSQL( db, keyTable, selector );
-                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
-                rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                string sql = CtiPointAnalog::getSQLCoreStatement();
+
+                if( pntID != 0 )
                 {
-                    string loggedSQLstring = selector.asString();
+                    sql += " AND PT.pointid = ?";
+                }
+                if( paoID != 0 )
+                {
+                    sql += " AND PT.paobjectid = ?";
+                }
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                if( pntID != 0 )
+                {
+                    rdr << pntID;
+                }
+                if( paoID != 0 )
+                {
+                    rdr << paoID;
+                }
+
+                rdr.execute();
+
+                if(DebugLevel & 0x00010000 || !rdr.isValid())
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -262,31 +305,41 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                pntType == PulseAccumulatorPointType )
             {
                 start = start.now();
-                string sql;
-                selector = conn.database().selector();    // Clear the selector.
 
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl;
                 }
                 /* Go after the accumulator points! */
-                CtiPointAccumulator().getSQL(sql, pntID, paoID);
+                string sql = CtiPointAccumulator().getSQLCoreStatement();
 
-                rdr = ExecuteQuery( conn, sql );
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
+                if( pntID != 0 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
+                    sql += " AND PT.pointid = ?";
                 }
-                /*CtiPointAccumulator::getSQL( db, keyTable, selector );
-                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+                if( paoID != 0 )
+                {
+                    sql += " AND PT.paobjectid = ?";
+                }
 
-                rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                if( pntID != 0 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                    rdr << pntID;
                 }
-                */
+                if( paoID != 0 )
+                {
+                    rdr << paoID;
+                }
+
+                rdr.execute();
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(rdr.isValid() ? 0 : 1))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << rdr.asString() << endl;
+                }
+
                 refreshPoints(pointIdsFound, rdr);
                 if(DebugLevel & 0x00010000)
                 {
@@ -303,24 +356,41 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
                pntType == CalculatedStatusPointType )
             {
                 start = start.now();
-                selector = conn.database().selector();    // Clear the selector.
 
                 if(DebugLevel & 0x00010000)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CALC" << endl;
                 }
-                /* Go after the calc points! */
-                CtiPointNumeric().getSQL( db, keyTable, selector );
 
-                selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCULATED") ||
-                                  rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCANALOG")) && selector.where());
-                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+                string sql = CtiPointNumeric::getSQLCoreStatement() +
+                             " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')";
 
-                rdr = selector.reader(conn);
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                if(pntID != 0)
                 {
-                    string loggedSQLstring = selector.asString();
+                    sql += " AND PT.pointid = ?";
+                }
+                if(paoID != 0)
+                {
+                    sql += " AND PT.paobjectid = ?";
+                }
+
+                Cti::Database::DatabaseConnection connection;
+                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                if(pntID != 0)
+                {
+                    rdr << pntID;
+                }
+                if(paoID != 0)
+                {
+                    rdr << paoID;
+                }
+
+                rdr.execute();
+
+                if(DebugLevel & 0x00010000 || !rdr.isValid())
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << loggedSQLstring << endl;
@@ -402,51 +472,10 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 {
     // Make sure all objects that that store results
     // are out of scope when the release is called
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBDatabase  db = conn.database();
-    RWDBSelector  base_selector_accum  = db.selector(), selector_accum  = db.selector(),
-                  base_selector_analog = db.selector(), selector_analog = db.selector(),
-                  base_selector_calc   = db.selector(), selector_calc   = db.selector(),
-                  base_selector_status = db.selector(), selector_status = db.selector(),
-                  base_selector_system = db.selector(), selector_system = db.selector();
-    RWDBTable     key_table_system,
-                  key_table_status,
-                  key_table_analog,
-                  key_table_accum,
-                  key_table_calc;
-    RWDBReader    rdr;
-
-    //  ACCUMULATOR points
-    CtiPointAccumulator().getSQL(db, key_table_accum, selector_accum);
-    base_selector_accum.where(selector_accum.where());
-
-    //  ANALOG points
-    CtiPointAnalog().getSQL(db, key_table_analog, selector_analog);
-    base_selector_analog.where(selector_analog.where());
-
-    //  CALC points
-    CtiPointNumeric().getSQL(db, key_table_calc, selector_calc);
-    base_selector_calc.where(selector_calc.where()     && (rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCULATED") ||
-                                                           rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCANALOG")));
-
-    //  STATUS points
-    CtiPointStatus().getSQL(db, key_table_status, selector_status );
-    base_selector_status.where(selector_status.where() && (rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("STATUS") ||
-                                                           rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("CALCSTATUS")));
-
-    //  SYSTEM points
-    CtiPointBase().getSQL(db, key_table_system, selector_system );
-    base_selector_system.where(selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection);
 
     int ids_per_select = min(static_cast<int>(id_list.size()), gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", 256));
-
-    RWDBCriterion id_list_criterion_accum,
-                  id_list_criterion_analog,
-                  id_list_criterion_calc,
-                  id_list_criterion_status,
-                  id_list_criterion_system;
 
     set<long> ids_to_load;
 
@@ -468,10 +497,30 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
              inserter(ids_to_load, ids_to_load.begin()));
     }
 
-    set<long>::const_iterator id_itr = ids_to_load.begin(),
-                              id_end = ids_to_load.end();
+    const string keyColString = paoids ? "paobjectid IN ":"pointid IN ";
 
-    const RWCString key_column(paoids?"paobjectid":"pointid");
+    //  ACCUMULATOR points
+    const string sql_accum  = string(CtiPointAccumulator().getSQLCoreStatement() + " AND PT.");
+
+    //  ANALOG points
+    const string sql_analog = string(CtiPointAnalog().getSQLCoreStatement() + " AND PT.");
+
+    //  CALC points
+    const string sql_calc   = string(CtiPointNumeric().getSQLCoreStatement() + 
+                              " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')" +
+                              " AND PT.");
+
+    //  STATUS points
+    const string sql_status = string(CtiPointStatus().getSQLCoreStatement() + 
+                              " AND (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS') " +
+                              " AND PT.");
+
+    //  SYSTEM points
+    const string sql_system = string(CtiPointBase().getSQLCoreStatement() +
+                              " WHERE upper (PT.pointtype) = 'SYSTEM' AND PT.");
+
+    set<long>::const_iterator   id_itr = ids_to_load.begin(),
+                                id_end = ids_to_load.end();
 
     while( id_itr != id_end )
     {
@@ -491,19 +540,21 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 
         in_list = "(" + in_list + ")";
 
-        selector_accum .where(base_selector_accum .where() && key_table_accum [key_column].in(RWDBExpr(in_list.c_str(), false)));
-        selector_analog.where(base_selector_analog.where() && key_table_analog[key_column].in(RWDBExpr(in_list.c_str(), false)));
-        selector_calc  .where(base_selector_calc  .where() && key_table_calc  [key_column].in(RWDBExpr(in_list.c_str(), false)));
-        selector_status.where(base_selector_status.where() && key_table_status[key_column].in(RWDBExpr(in_list.c_str(), false)));
-        selector_system.where(base_selector_system.where() && key_table_system[key_column].in(RWDBExpr(in_list.c_str(), false)));
+        std::stringstream ss_accum, ss_analog, ss_calc, ss_status, ss_system;
+        
+        ss_accum    << sql_accum    << keyColString << in_list.c_str();
+        ss_analog   << sql_analog   << keyColString << in_list.c_str();
+        ss_calc     << sql_calc     << keyColString << in_list.c_str();
+        ss_status   << sql_status   << keyColString << in_list.c_str();
+        ss_system   << sql_system   << keyColString << in_list.c_str();
 
         if( DebugLevel & 0x00010000 )
         {
-            string loggedSQLaccum  = selector_accum.asString();
-            string loggedSQLanalog = selector_analog.asString();
-            string loggedSQLcalc   = selector_calc.asString();
-            string loggedSQLstatus = selector_status.asString();
-            string loggedSQLsystem = selector_system.asString();
+            string loggedSQLaccum  = ss_accum .str();
+            string loggedSQLanalog = ss_analog.str();
+            string loggedSQLcalc   = ss_calc  .str();
+            string loggedSQLstatus = ss_status.str();
+            string loggedSQLsystem = ss_system.str();
             {
     
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -517,11 +568,25 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 
         std::set<long> pointIdsFound;  //  placeholder
 
-        refreshPoints(pointIdsFound, selector_accum .reader(conn));
-        refreshPoints(pointIdsFound, selector_analog.reader(conn));
-        refreshPoints(pointIdsFound, selector_calc  .reader(conn));
-        refreshPoints(pointIdsFound, selector_status.reader(conn));
-        refreshPoints(pointIdsFound, selector_system.reader(conn));
+        rdr.setCommandText(ss_accum .str());
+        rdr.execute();
+        refreshPoints(pointIdsFound, rdr);
+
+        rdr.setCommandText(ss_analog.str());
+        rdr.execute();
+        refreshPoints(pointIdsFound, rdr);
+
+        rdr.setCommandText(ss_calc  .str());
+        rdr.execute();
+        refreshPoints(pointIdsFound, rdr);
+
+        rdr.setCommandText(ss_status.str());
+        rdr.execute();
+        refreshPoints(pointIdsFound, rdr);
+
+        rdr.setCommandText(ss_system.str());
+        rdr.execute();
+        refreshPoints(pointIdsFound, rdr);
     }
 
     if( paoids )
@@ -534,10 +599,10 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
 }
 
 
-CtiPointBase* PointFactory(RWDBReader &rdr)
+CtiPointBase* PointFactory(Cti::RowReader &rdr)
 {
-    static const RWCString pointtype = "pointtype";
-    static const RWCString pseudoflag = "pseudoflag";
+    static const string pointtype = "pointtype";
+    static const string pseudoflag = "pseudoflag";
 
     INT    PtType;
     INT    PseudoPt = FALSE;
@@ -614,7 +679,7 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     return Point;
 }
 
-void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, RWDBReader& rdr)
+void CtiPointManager::refreshPoints(std::set<long> &pointIdsFound, Cti::RowReader& rdr)
 {
     vector<CtiPoint *> newPoints;
 

@@ -17,8 +17,6 @@
 #include "resolvers.h"
 #include "tbl_pt_base.h"
 
-#include "rwutil.h"
-
 const int CtiTablePointBase::MASK_POINT_BASE_TAGS = TAG_DISABLE_ALARM_BY_POINT
                                                   | TAG_DISABLE_POINT_BY_POINT
                                                   | TAG_ATTRIB_PSEUDO;
@@ -44,30 +42,19 @@ CtiTablePointBase& CtiTablePointBase::operator=(const CtiTablePointBase& aRef)
    return *this;
 }
 
-void CtiTablePointBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTablePointBase::getSQLCoreStatement()
 {
-   keyTable = db.table("Point");
+    static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
+                                   "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
+                                   "PT.archiveinterval "
+                               "FROM Point PT";
 
-   selector <<
-      keyTable["pointid"] <<
-      keyTable["pointname"] <<
-      keyTable["pointtype"] <<
-      keyTable["paobjectid"] <<
-      //keyTable["logicalgroup"] <<
-      keyTable["stategroupid"] <<
-      keyTable["pointoffset"] <<
-      keyTable["serviceflag"] <<
-      keyTable["alarminhibit"] <<
-      keyTable["pseudoflag"] <<
-      keyTable["archivetype"] <<
-      keyTable["archiveinterval"];
-
-   selector.from(keyTable);
+    return sql;
 }
 
-void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   static const RWCString pointid = "pointid";
+   static const string pointid = "pointid";
    string   rwsTemp;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)

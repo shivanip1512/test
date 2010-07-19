@@ -134,10 +134,9 @@ public:
     CtiTableDeviceCarrier &getCarrierSettings();
     CtiDeviceDLCBase      &setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
 
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
+    virtual string getSQLCoreStatement() const;
 
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    // virtual void DecodeRoutesDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     virtual LONG getAddress() const;
     virtual LONG getRouteID() const;

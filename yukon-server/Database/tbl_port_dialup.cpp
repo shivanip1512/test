@@ -18,8 +18,6 @@
 #include "tbl_port_dialup.h"
 #include "logger.h"
 
-#include "rwutil.h"
-
 CtiTablePortDialup::CtiTablePortDialup() :
 _portID(0),
 _modemType("Unknown"),
@@ -128,25 +126,16 @@ CtiTablePortDialup& CtiTablePortDialup::setSuffixString(const string& str)
    return *this;
 }
 
-void CtiTablePortDialup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTablePortDialup::getSQLCoreStatement()
 {
-   keyTable = db.table( "YukonPAObject" );
-   RWDBTable portDialup = db.table(getTableName().c_str() );
+   static const string sql =  "SELECT YP.paobjectid, PDM.modemtype, PDM.initializationstring, PDM.prefixnumber, PDM.suffixnumber "
+                              "FROM YukonPAObject YP, PortDialupModem PDM "
+                              "WHERE YP.paobjectid = PDM.portid";
 
-   selector <<
-      keyTable["paobjectid"] <<
-      portDialup["modemtype"] <<
-      portDialup["initializationstring"] <<
-      portDialup["prefixnumber"] <<
-      portDialup["suffixnumber"];
-
-   selector.from(keyTable);
-   selector.from(portDialup);
-
-   selector.where( selector.where() && keyTable["paobjectid"] == portDialup["portid"] );
+   return sql;
 }
 
-void CtiTablePortDialup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortDialup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    {
       if(getDebugLevel() & DEBUGLEVEL_DATABASE)

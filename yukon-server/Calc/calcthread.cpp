@@ -2,8 +2,9 @@
 
 #include <rw/thr/runnable.h>
 #include <rw/thr/mutex.h>
-#include <rw/db/datetime.h>
 #include <vector>
+#include <iostream>
+#include <sstream>
 
 #include "dbaccess.h"
 #include "ctibase.h"
@@ -18,6 +19,8 @@
 #include "mgr_holiday.h"
 
 #include "calcthread.h"
+#include "database_writer.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -1830,20 +1833,15 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
 
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
+        static const string sql = "SELECT DCH.POINTID, DCH.LASTUPDATE "
+                                  "FROM DYNAMICCALCHISTORICAL DCH";
 
-        RWDBDatabase db             = conn.database();
-        RWDBTable    table     = db.table("DYNAMICCALCHISTORICAL");
-        RWDBSelector selector  = db.selector();
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        selector << table["POINTID"]
-        << table["LASTUPDATE"];
+        rdr.setCommandText(sql);
 
-        selector.from( table );
-
-        RWDBReader  rdr = selector.reader( conn );
+        rdr.execute();
 
         //  iterate through the components
         while( rdr() )
@@ -1881,34 +1879,49 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
 
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
-
-        RWDBDatabase db             = conn.database();
-        RWDBTable    table     = db.table("RAWPOINTHISTORY");
-        RWDBSelector selector  = db.selector();
-
-        selector << table["POINTID"]
-        << table["TIMESTAMP"]
-        << table["VALUE"];
-
         set<long> compIDList = calcPoint->getComponentIDList();
 
-        selector.from( table );
+        static const string sqlIds = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+                                     "FROM RAWPOINTHISTORY RPH "
+                                     "WHERE RPH.TIMESTAMP > ?";
 
-        for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
-        {
-            selector.where( selector["POINTID"] == *idIter || selector.where() );
-        }
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
         if( compIDList.size() <= 0 )
         {
-            selector.where( selector["TIMESTAMP"] == toRWDBDT(CtiTime()) && selector["POINTID"] == -124 );//Dont allow us to get any, theres no components on our point!
-        }
-        selector.where( selector["TIMESTAMP"] > toRWDBDT(lastTime) && selector.where() );
+            //Dont allow us to get any, theres no components on our point!
+            static const string sqlNoIds = string(sqlIds + " AND RPH.TIMESTAMP = ? AND RPH.POINTID = -124");
 
-        RWDBReader  rdr = selector.reader( conn );
+            rdr.setCommandText(sqlNoIds);
+            rdr << lastTime
+                << CtiTime().now();
+        }
+        else
+        {
+            std::stringstream ss;
+
+            ss << sqlIds << " AND RPH.POINTID IN (";
+    
+            for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
+            {
+                if( idIter != compIDList.begin() )
+                {
+                    ss << ", " << *idIter;
+                }
+                else
+                {
+                    ss << *idIter;
+                }
+            }
+    
+            ss << ")";
+
+            rdr.setCommandText(ss.str());
+            rdr << lastTime;
+        }
+
+        rdr.execute();
 
         //  iterate through the components
         while( rdr() )
@@ -1957,25 +1970,18 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
     {
         try
         {
-            //  connect to the database
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection( );
+            static const string sqlCore =  "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+                                           "FROM RAWPOINTHISTORY RPH "
+                                           "WHERE RPH.TIMESTAMP > ? AND RPH.POINTID = ? "
+                                           "ORDER BY RPH.TIMESTAMP DESC";
 
-            RWDBDatabase db             = conn.database();
-            RWDBTable    table     = db.table("RAWPOINTHISTORY");
-            RWDBSelector selector  = db.selector();
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sqlCore);
 
-            selector << table["POINTID"]
-            << table["TIMESTAMP"]
-            << table["VALUE"];
+            rdr << lastTime
+                << calcPoint;
 
-            selector.from( table );
-
-            selector.where( selector["POINTID"] == calcPoint );
-            selector.where( selector["TIMESTAMP"] > toRWDBDT(lastTime) && selector.where() );
-            selector.orderByDescending( selector["TIMESTAMP"] );
-
-            RWDBReader  rdr = selector.reader( conn );
+            rdr.execute();
 
             //  iterate through the components
             while( rdr() )
@@ -2022,46 +2028,33 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
     long pointid;
     CtiTime updateTime;
     PointTimeMap::iterator iter;
-    RWDBStatus::ErrorCode err;
 
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
-
-        RWDBDatabase db     = conn.database();
-        RWDBTable    table  = db.table("DYNAMICCALCHISTORICAL");
-
-        RWDBInserter inserter  = table.inserter();
+        static const string insertSql = "insert into DYNAMICCALCHISTORICAL values (?, ?)";
+        Cti::Database::DatabaseConnection conn;
+        Cti::Database::DatabaseWriter writer(conn, insertSql);
 
         for( iter = unlistedPoints.begin(); iter != unlistedPoints.end(); iter++ )
         {
-            inserter << iter->first << toRWDBDT(iter->second);
-            if( err = ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+            writer << iter->first << iter->second;
+            if( !writer.execute() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - error \"" << err << "\" while inserting in CalcHistoricalUpdatedTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                break;//for
-                //  dout << "Data: ";
+                dout << CtiTime() << " **** Checkpoint - error while inserting in CalcHistoricalUpdatedTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                break;
             }
         }
 
-        RWDBUpdater updater = table.updater();
+        static const string updateSql = "update DYNAMICCALCHISTORICAL set LASTUPDATE = ? where POINTID = ?";
+        writer.setCommandText(updateSql);
 
         for( iter = updatedPoints.begin(); iter != updatedPoints.end(); iter++ )
         {
-            updater.where(table["POINTID"] == iter->first);
-            updater << table["LASTUPDATE"].assign( toRWDBDT(iter->second) );
-            updater.execute( conn );
+            writer << iter->second << iter->first;
+            writer.execute();
         }
 
-    }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while writing calc last updated time to database: " << msg.why( ) << endl;
-        exit( -1 );
     }
     catch(...)
     {
@@ -2078,20 +2071,15 @@ void CtiCalculateThread::getCalcBaselineMap(PointBaselineMap &pointBaselineMap)
 
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
+        static const string sql = "SELECT CPB.POINTID, CPB.BASELINEID "
+                                  "FROM CALCPOINTBASELINE CPB";
 
-        RWDBDatabase db             = conn.database();
-        RWDBTable    table     = db.table("CALCPOINTBASELINE");
-        RWDBSelector selector  = db.selector();
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        selector << table["POINTID"]
-        << table["BASELINEID"];
+        rdr.setCommandText(sql);
 
-        selector.from( table );
-
-        RWDBReader  rdr = selector.reader( conn );
+        rdr.execute();
 
         //  iterate through the components
         while( rdr() )
@@ -2126,24 +2114,16 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
 
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
+        static const string sql =  "SELECT BL.BASELINEID, BL.DAYSUSED, BL.PERCENTWINDOW, BL.CALCDAYS, BL.EXCLUDEDWEEKDAYS, "
+                                     "BL.HOLIDAYSCHEDULEID "
+                                   "FROM BASELINE BL";
 
-        RWDBDatabase db             = conn.database();
-        RWDBTable    table     = db.table("BASELINE");
-        RWDBSelector selector  = db.selector();
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        selector << table["BASELINEID"]
-        << table["DAYSUSED"]
-        << table["PERCENTWINDOW"]
-        << table["CALCDAYS"]
-        << table["EXCLUDEDWEEKDAYS"]
-        << table["HOLIDAYSCHEDULEID"];
+        rdr.setCommandText(sql);
 
-        selector.from( table );
-
-        RWDBReader  rdr = selector.reader( conn );
+        rdr.execute();
 
         //  iterate through the components
         while( rdr() )
@@ -2182,30 +2162,20 @@ void CtiCalculateThread::getCurtailedDates(DatesSet &curtailedDates, long pointI
     curtailedDates.clear();
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
+        static const string sql =  "SELECT PO.OFFERDATE "
+                                   "FROM LMENERGYEXCHANGEPROGRAMOFFER PO, LMENERGYEXCHANGECUSTOMERREPLY CR, "
+                                     "DEVICECUSTOMERLIST DCL, POINT PT "
+                                   "WHERE DCL.CUSTOMERID = CR.CUSTOMERID AND CR.OFFERID = PO.OFFERID AND "
+                                     "DCL.DEVICEID = PT.PAOBJECTID AND CR.ACCEPTSTATUS= 'Accepted' AND "
+                                     "PT.POINTID = ? AND PO.OFFERDATE > ?";
 
-        RWDBDatabase db             = conn.database();
-        RWDBTable    lmOffer   = db.table("LMENERGYEXCHANGEPROGRAMOFFER");
-        RWDBTable    lmReply   = db.table("LMENERGYEXCHANGECUSTOMERREPLY");
-        RWDBTable    dcl       = db.table("DEVICECUSTOMERLIST");
-        RWDBTable    point     = db.table("POINT");
-        RWDBSelector selector  = db.selector();
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-        selector << lmOffer["OFFERDATE"];
+        rdr << pointID
+            << searchTime;
 
-        selector.from( lmOffer );
-        selector.from( lmReply );
-        selector.from( dcl );
-        selector.from( point );
-
-        selector.where( dcl["CUSTOMERID"] == lmReply["CUSTOMERID"] && lmReply["OFFERID"] == lmOffer["OFFERID"] &&
-                        dcl["DEVICEID"] == point["PAOBJECTID"] && lmReply["ACCEPTSTATUS"] == "Accepted" &&
-                        point["POINTID"] == pointID && lmOffer["OFFERDATE"] > toRWDBDT(searchTime));
-
-        string a = selector.asString();
-        RWDBReader  rdr = selector.reader( conn );
+        rdr.execute();
 
         //  iterate through the components
         while( rdr() )

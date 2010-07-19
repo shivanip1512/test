@@ -45,7 +45,7 @@ class LoadTapChanger : public RWCollectable, public CapControlPao, public Updata
         RWDECLARE_COLLECTABLE( LoadTapChanger )
 
         LoadTapChanger();
-        LoadTapChanger(RWDBReader& rdr);
+        LoadTapChanger(Cti::RowReader& rdr);
         LoadTapChanger(const LoadTapChanger& ltc);
 
         PointValueHolder& getPointValueHolder();

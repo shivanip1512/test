@@ -30,6 +30,7 @@ using std::priority_queue;
 #include "queue.h"
 #include "thread.h"
 #include "verification_objects.h"
+#include "database_connection.h"
 
 class CtiPorterVerification : public CtiThread
 {
@@ -67,7 +68,7 @@ private:
     void verificationThread(void);
     void loadAssociations(void);
     void processWorkQueue(bool purge=false);
-    void writeWorkRecord(const CtiVerificationWork &work, RWDBConnection &conn, RWDBStatus &dbstat);
+    void writeWorkRecord(const CtiVerificationWork &work, Cti::Database::DatabaseConnection &conn, bool &dbstat);
     void writeUnknown(const CtiVerificationReport &report);
     void pruneEntries(const ptime::time_duration_type &earliest);
 

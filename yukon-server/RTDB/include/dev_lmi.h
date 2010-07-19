@@ -45,9 +45,9 @@ public:
     CtiDeviceLMI();
     virtual ~CtiDeviceLMI();
 
-    void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const;
+    virtual string getSQLCoreStatement() const;
 
-    void DecodeDatabaseReader(RWDBReader &rdr);
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
 
     int decode(CtiXfer &xfer, int status);
     void sendDispatchResults(CtiConnection &vg_connection);

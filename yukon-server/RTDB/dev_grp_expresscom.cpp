@@ -95,15 +95,21 @@ string CtiDeviceGroupExpresscom::getDescription(const CtiCommandParser & parse) 
     return tmpStr;
 }
 
-void CtiDeviceGroupExpresscom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupExpresscom::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableExpresscomLoadGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, ECV.routeid, ECV.serialnumber, "
+                                     "ECV.serviceaddress, ECV.geoaddress, ECV.substationaddress, ECV.feederaddress, "
+                                     "ECV.zipcodeaddress, ECV.udaddress, ECV.programaddress, ECV.splinteraddress, "
+                                     "ECV.addressusage, ECV.relayusage, ECV.protocolpriority "
+                                   "FROM YukonPAObject YP, Device DV, ExpressComAddress_View ECV "
+                                   "WHERE upper (YP.type) = 'EXPRESSCOM GROUP' AND YP.paobjectid = ECV.lmgroupid AND "
+                                     "YP.paobjectid = DV.deviceid";
 
-    selector.where( rwdbUpper(keyTable["type"]) == RWDBExpr("EXPRESSCOM GROUP") && selector.where() );
+    return sqlCore;
 }
 
-void CtiDeviceGroupExpresscom::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGroupExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

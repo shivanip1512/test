@@ -15,7 +15,8 @@ INCLPATHS+= \
 -I$(INTERP)\include \
 -I$(TCL)\include \
 -I$(RW) \
--I$(BOOST)
+-I$(BOOST) \
+-I$(SQLAPI)\include \
 
 .PATH.H = \
 .\include \
@@ -108,11 +109,13 @@ deps:
 #UPDATE#
 test_scheduletime.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		dlldefs.h mc_scheduler.h mc.h logger.h thread.h mutex.h \
-		guard.h numstr.h CtiPCPtrQueue.h utility.h queues.h \
-		cticalls.h os2_2w32.h types.h sorted_vector.h mc_sched.h \
-		dbmemobject.h tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h \
-		message.h collectable.h rwutil.h boost_time.h boostutil.h \
-		mgr_mcsched.h rtdb.h hashkey.h hash_functions.h dllbase.h \
-		dsm2.h cticonnect.h netports.h mgr_holiday.h ctidate.h
+		guard.h utility.h queues.h cticalls.h os2_2w32.h types.h \
+		numstr.h sorted_vector.h CtiPCPtrQueue.h mc_sched.h \
+		row_reader.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
+		tbl_mcsimpsched.h message.h collectable.h rwutil.h \
+		database_connection.h dbaccess.h dllbase.h dsm2.h \
+		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		database_reader.h boost_time.h boostutil.h mgr_mcsched.h \
+		rtdb.h hashkey.h hash_functions.h mgr_holiday.h ctidate.h
 #ENDUPDATE#
 

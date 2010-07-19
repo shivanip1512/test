@@ -50,8 +50,12 @@
 
 #include "ctitime.h"
 #include "ctidate.h"
+#include "database_reader.h"
+#include "database_connection.h"
 
 using namespace std;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 BOOL bQuit = FALSE;
 
@@ -1721,10 +1725,9 @@ void historyExecute(int argc, char **argv)
             }
 
             {
-                CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                RWDBConnection conn = getConnection();
-
-                RWDBReader rdr = ExecuteQuery( conn, sql );
+                DatabaseConnection conn;
+                DatabaseReader rdr(conn, sql);
+                rdr.execute();
 
                 //Assume there is only one?
                 while( rdr() && histCol.size() < rows )

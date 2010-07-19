@@ -19,7 +19,7 @@
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_dv_scandata.h"
-#include "rwutil.h"
+#include "database_writer.h"
 
 CtiTableDeviceScanData::CtiTableDeviceScanData(LONG did) :
 lastFreezeNumber(0),
@@ -41,7 +41,7 @@ CtiTableDeviceScanData::~CtiTableDeviceScanData()
 {
     if( isDirty() )
     {
-        if(Update().errorCode() != RWDBStatus::ok)
+        if( ! Update() )
         {
             Insert();
         }
@@ -153,137 +153,110 @@ string CtiTableDeviceScanData::getTableName() const
     return "DynamicDeviceScanData";
 }
 
-RWDBStatus CtiTableDeviceScanData::Restore()
+bool CtiTableDeviceScanData::Restore()
 {
-    char temp[32];
+    static const string sql =  "SELECT DDS.deviceid, DDS.lastfreezetime, DDS.prevfreezetime, DDS.lastlptime, "
+                                   "DDS.lastfreezenumber, DDS.prevfreezenumber, DDS.nextscan0, DDS.nextscan1, DDS.nextscan2, "
+                                   "DDS.nextscan3 "
+                               "FROM DynamicDeviceScanData DDS "
+                               "WHERE DDS.deviceid = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    reader << getDeviceID();
 
-    selector <<
-    table["deviceid"] <<
-    table["lastfreezetime"] <<
-    table["prevfreezetime"] <<
-    table["lastlptime"] <<
-    table["lastfreezenumber"] <<
-    table["prevfreezenumber"];
-
-    for(int i = 0; i <= ScanRateIntegrity; i++)
-    {
-        sprintf(temp, "nextscan%d", i);
-        selector.select( table[ temp ] );
-    }
-
-    selector.where( table["deviceid"] == getDeviceID() );
-
-    if( selector.execute( conn ).status().errorCode() != RWDBStatus::ok )
-    {
-        string loggedSQLstring = selector.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
-    }
-
-    RWDBReader reader = selector.reader();
+    reader.execute();
 
     if( reader() )
     {
         DecodeDatabaseReader( reader );
         setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
+        return true;
     }
 
-    return reader.status();
+    return false;
 }
 
-RWDBStatus CtiTableDeviceScanData::Update(RWDBConnection &conn)
+bool CtiTableDeviceScanData::Update(Cti::Database::DatabaseConnection &conn)
 {
-    char temp[32];
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "lastfreezetime = ?, "
+                                        "prevfreezetime = ?, "
+                                        "lastlptime = ?, "
+                                        "lastfreezenumber = ?, "
+                                        "prevfreezenumber = ?, "
+                                        "nextscan0 = ?, "
+                                        "nextscan1 = ?, "
+                                        "nextscan2 = ?, "
+                                        "nextscan3 = ?"
+                                   " where "
+                                        "deviceid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
 
-    updater.where( table["deviceid"] == getDeviceID() );
+    Cti::Database::DatabaseWriter   updater(conn, sql);
 
-    updater <<
-    table["lastfreezetime"].assign(toRWDBDT(getLastFreezeTime())) <<
-    table["prevfreezetime"].assign(toRWDBDT(getPrevFreezeTime())) <<
-    table["lastlptime"].assign(toRWDBDT(getLastLPTime())) <<
-    table["lastfreezenumber"].assign(getLastFreezeNumber()) <<
-    table["prevfreezenumber"].assign(getPrevFreezeNumber());
+    updater
+        << getLastFreezeTime()
+        << getPrevFreezeTime()
+        << getLastLPTime()
+        << getLastFreezeNumber()
+        << getPrevFreezeNumber()
+        << getNextScan(0)
+        << getNextScan(1)
+        << getNextScan(2)
+        << getNextScan(3)
+        << getDeviceID();
 
-    for(int i = 0; i <= ScanRateIntegrity; i++)
-    {
-        sprintf(temp, "nextscan%d", i);
-        updater.set( table[ temp ].assign( toRWDBDT(getNextScan(i)) ) );
-    }
+    bool success = updater.execute();
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok)
+    if ( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceScanData::Update()
+bool CtiTableDeviceScanData::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+
     return Update(conn);
 }
 
-RWDBStatus CtiTableDeviceScanData::Insert()
+bool CtiTableDeviceScanData::Insert()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
 
-    dbInserter <<
-    getDeviceID() <<
-    (CtiTime)getLastFreezeTime() <<
-    (CtiTime)getPrevFreezeTime() <<
-    (CtiTime)getLastLPTime() <<
-    getLastFreezeNumber() <<
-    getPrevFreezeNumber();
+    inserter
+        << getDeviceID()
+        << getLastFreezeTime()
+        << getPrevFreezeTime()
+        << getLastLPTime()
+        << getLastFreezeNumber()
+        << getPrevFreezeNumber()
+        << getNextScan(0)
+        << getNextScan(1)
+        << getNextScan(2)
+        << getNextScan(3);
 
-    for(int i = 0; i <= ScanRateIntegrity; i++)
-    {
-        dbInserter << (CtiTime)getNextScan(i);
-    }
+    bool success = inserter.execute();
 
-    if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    if ( success )
     {
         setDirty(false);
     }
 
-    return dbInserter.status();
+    return success;
 }
 
-RWDBStatus CtiTableDeviceScanData::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getDeviceID() );
-    deleter.execute( conn );
-    return deleter.status();
-}
-
-void CtiTableDeviceScanData::DecodeDatabaseReader(RWDBReader& rdr )
+void CtiTableDeviceScanData::DecodeDatabaseReader(Cti::RowReader& rdr )
 {
     char temp[32];
     CtiTime adt;

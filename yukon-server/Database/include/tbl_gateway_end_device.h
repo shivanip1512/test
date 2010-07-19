@@ -20,16 +20,14 @@
 #define __TBL_GATEWAY_END_DEVICE_H__
 
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 
 #include "resolvers.h"
 #include "yukon.h"
 #include "logger.h"
 #include "dbmemobject.h"
+#include "database_connection.h"
 
 #define MAX_SERIAL_NUMBER_LENGTH    30
 #define MAX_DATA_VALUE_LENGTH       100
@@ -69,17 +67,14 @@ public:
     UINT  getDataType() const;
     string getDataValue() const;
 
-
     static string getTableName();
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DumpData();
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-
-    virtual RWDBStatus Insert();
-    virtual RWDBStatus Insert(RWDBConnection &conn);
-    virtual RWDBStatus Update();
-    virtual RWDBStatus Delete();
+    virtual bool Insert();
+    virtual bool Insert(Cti::Database::DatabaseConnection &conn);
+    virtual bool Update();
+    virtual bool Delete();
 
 };
 #endif // #ifndef __TBL_GATEWAY_END_DEVICE_H__

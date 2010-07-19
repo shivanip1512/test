@@ -18,33 +18,10 @@
 #include "resolvers.h"
 #include "logger.h"
 
-#include "rwutil.h"
-
 static const string zeroControl = "control open";
 static const string oneControl = "control close";
 
-void CtiTablePointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable tbl = db.table(getTableName().c_str() );
-
-    selector <<
-    tbl["initialstate"] <<
-    tbl["controlinhibit"] <<
-    tbl["controltype"] <<
-    tbl["controloffset"] <<
-    tbl["closetime1"] <<
-    tbl["closetime2"] <<
-    tbl["statezerocontrol"] <<
-    tbl["stateonecontrol"] <<
-    tbl["commandtimeout"];
-
-    selector.from(tbl);
-
-    selector.where( selector.where() && keyTable["pointid"] == tbl["pointid"]);
-
-}
-
-void CtiTablePointStatus::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePointStatus::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
     if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
@@ -365,32 +342,6 @@ string CtiTablePointStatus::getTableName()
 {
     return "PointStatus";
 }
-
-#if 0
-void CtiTablePointStatus::Update()
-{
-
-
-    if(tag & TAG_ATTRIB_CONTROL_AVAILABLE)
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBUpdater updater = table.updater();
-
-        updater.where( table["pointid"] == getPointID() );
-        updater << table["controlinhibit"].assign( (tag & TAG_DISABLE_CONTROL_BY_POINT) ? string("Y") : string("N") );
-
-        if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-        {
-            setDirty(false);
-        }
-    }
-
-    return;
-}
-#endif
 
 INT CtiTablePointStatus::getCommandTimeout() const
 {

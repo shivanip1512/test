@@ -16,6 +16,8 @@
 #include "mgr_device.h"
 
 #include "boostutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -128,40 +130,42 @@ void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> 
 
 void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
 {
-    RWDBConnection conn   = getConnection();
-    RWDBDatabase db       = getDatabase();
-    RWDBSelector selector = db.selector();
-    RWDBTable keyTable;
-    RWDBReader rdr;
-
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for TCP port-related Pao Properties" << endl;
     }
 
-    Database::Tables::PaoPropertyTable::getSQL(db, keyTable, selector);
+    const string sqlCore = Database::Tables::PaoPropertyTable::getSQLCoreStatement() +
+                           " WHERE PPR.propertyname = 'TcpPort' OR PPR.propertyname = 'TcpIpAddress'";
 
-    addIDClause(selector, keyTable["paobjectid"], device_ids);
+    const string idClause = Database::Tables::PaoPropertyTable::addIDSQLClause(device_ids);
 
-    selector.where(selector.where() && (keyTable["propertyname"] == "TcpPort" ||
-                                        keyTable["propertyname"] == "TcpIpAddress"));
+    string sql = sqlCore;
 
-    rdr = selector.reader(conn);
-    if(DebugLevel & 0x00020000 || selector.status().errorCode() != RWDBStatus::ok)
+    if( !idClause.empty() )
     {
-        string loggedSQLstring = selector.asString();
+        sql += " ";
+        sql += idClause;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+    rdr.execute();
+    if(DebugLevel & 0x00020000 || !rdr.isValid())
+    {
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    if(rdr.status().errorCode() == RWDBStatus::ok)
+    if(rdr.isValid())
     {
         map<long, unsigned short> tmp_ports;
         map<long, unsigned long>  tmp_ip_addresses;
 
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        while( rdr() )
         {
             Database::Tables::PaoPropertyTable paoProperty(rdr);
 
@@ -209,7 +213,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Error reading Dynamic PAO Info from database: " << rdr.status().errorCode() << endl;
+        dout << "Error reading Dynamic PAO Info from database" << endl;
     }
 
     if(DebugLevel & 0x00020000)

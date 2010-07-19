@@ -54,13 +54,7 @@ public:
    CtiTablePointStatus  getPointStatus() const     { return _pointStatus; }
    CtiTablePointStatus& getPointStatus()           { return _pointStatus; }
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-   {
-      Inherited::getSQL(db, keyTable, selector);
-      CtiTablePointStatus::getSQL(db, keyTable, selector);
-   }
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr)
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
    {
       string rwsTemp;
       Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!

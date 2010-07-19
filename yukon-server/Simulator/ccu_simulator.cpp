@@ -19,9 +19,10 @@
 #include "DelayBehavior.h"
 #include "cparms.h"
 #include "guard.h"
-#include "rwutil.h"
 #include "sema.h"
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 
 #include "boostutil.h"
 
@@ -38,6 +39,9 @@ bool gQuit = false;
 
 using namespace std;
 using namespace boost;
+
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 DLLIMPORT extern CtiLogger dout;
 
@@ -163,17 +167,16 @@ int SimulatorMainFunction(int argc, char **argv)
 
 bool getPorts(vector<int> &ports)
 {
-    static const string sql = "SELECT Distinct P.SOCKETPORTNUMBER " 
-                              "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C "
-                              "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND "
-                              "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') "
-                              "AND Y.Type like 'CCU%'";
+    static const string sql =  "SELECT Distinct P.SOCKETPORTNUMBER " 
+                               "FROM YukonPAObject Y, PORTTERMINALSERVER P, DeviceDirectCommSettings D, CommPort C "
+                               "WHERE Y.PAObjectID = D.DEVICEID AND D.PORTID = C.PORTID AND C.PORTID = P.PORTID AND "
+                                 "Y.PAOClass = 'TRANSMITTER' AND (P.IPADDRESS = '127.0.0.1' OR P.IPADDRESS = 'localhost') "
+                                 "AND Y.Type like 'CCU%'";
     unsigned port;
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBReader  rdr = ExecuteQuery(conn, sql);
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     while( rdr() )
     {
@@ -336,15 +339,14 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                                     "Y.TYPE = 'CCU-711' AND D.ADDRESS = " + ss_address.str() + " AND "
                                                     "S.PORTID = P.PORTID AND Y.PAObjectID = S.DEVICEID AND "
                                                     "P.SOCKETPORTNUMBER = " + ss_port.str();
-        
-                    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-                    RWDBConnection conn = getConnection();
                 
-                    RWDBReader  rdr = ExecuteQuery(conn, sql_Ccu721);
-                
+                    Cti::Database::DatabaseConnection connection;
+                    Cti::Database::DatabaseReader rdr(connection, sql_Ccu721);
+
+                    rdr.execute();
+            
                     if( rdr() )
-                    {
-                        
+                    {                        
                         // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
                         string str;
                         rdr["TYPE"] >> str;
@@ -355,7 +357,8 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                     }
                     else
                     {
-                        rdr = ExecuteQuery(conn, sql_Ccu711);
+                        rdr.setCommandText(sql_Ccu711);
+                        rdr.execute();
     
                         if( rdr() )
                         {

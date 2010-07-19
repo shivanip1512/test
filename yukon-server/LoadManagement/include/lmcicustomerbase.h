@@ -16,12 +16,12 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
 #include "msg_pcrequest.h"
+#include "row_reader.h"
                 
 class CtiLMCICustomerBase : public RWCollectable
 {
@@ -29,7 +29,7 @@ class CtiLMCICustomerBase : public RWCollectable
 public:
 
     CtiLMCICustomerBase();
-    CtiLMCICustomerBase(RWDBReader& rdr);
+    CtiLMCICustomerBase(Cti::RowReader &rdr);
     CtiLMCICustomerBase(const CtiLMCICustomerBase& customer);
 
     virtual ~CtiLMCICustomerBase();
@@ -66,7 +66,7 @@ public:
 
 protected:
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

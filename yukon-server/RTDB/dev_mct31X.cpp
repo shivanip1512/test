@@ -204,7 +204,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 
                     CtiTablePointDispatch pd(pPoint->getPointID());
 
-                    if(pd.Restore().errorCode() == RWDBStatus::ok)
+                    if(pd.Restore())
                     {
                         _lastLPTime[i] = pd.getTimeStamp().seconds();
                     }
@@ -2499,10 +2499,9 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-void CtiDeviceMCT31X::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceMCT31X::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    RWDBNullIndicator isNull;
 
     Inherited::DecodeDatabaseReader(rdr);
 

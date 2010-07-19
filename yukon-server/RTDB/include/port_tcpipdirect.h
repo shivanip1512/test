@@ -55,9 +55,10 @@ public:
    INT           getIPPort()    const;
    const string &getIPAddress() const;
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   virtual void DecodeDialableDatabaseReader(RWDBReader &rdr);
+   static string getSQLCoreStatement();
+
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+   virtual void DecodeDialableDatabaseReader(Cti::RowReader &rdr);
 
    virtual bool isViable();
    virtual INT openPort(INT rate = 0, INT bits = 8, INT parity = NOPARITY, INT stopbits = ONESTOPBIT);

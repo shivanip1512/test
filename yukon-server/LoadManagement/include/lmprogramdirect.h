@@ -23,7 +23,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -32,6 +31,7 @@
 #include "lmprogramdirectgear.h"
 #include "lmcontrolarea.h"
 #include "tbl_lmprogramhistory.h"
+#include "database_connection.h"
 
 using std::set;
 using std::vector;
@@ -52,7 +52,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
     
     CtiLMProgramDirect();
-    CtiLMProgramDirect(RWDBReader& rdr);
+    CtiLMProgramDirect(Cti::RowReader &rdr);
     CtiLMProgramDirect(const CtiLMProgramDirect& directprog);
 
     virtual ~CtiLMProgramDirect();
@@ -110,7 +110,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 
     
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     CtiLMGroupPtr findGroupToTake(CtiLMProgramDirectGear* currentGearObject);
     CtiLMGroupPtr findGroupToRampOut(CtiLMProgramDirectGear* currentGearObject);
@@ -236,7 +236,7 @@ private:
     string getAndClearChangeReason();
     string getLastUser();
     
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

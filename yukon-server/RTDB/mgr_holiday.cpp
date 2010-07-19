@@ -18,7 +18,11 @@
 #include "ctidbgmem.h"  // CTIDBG_new
 #include "mgr_holiday.h"
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 const string CtiHolidayManager::holidaysql("select holidayschedule.holidayscheduleid,dateofholiday.holidaymonth,dateofholiday.holidayday,dateofholiday.holidayyear \
 from holidayschedule,dateofholiday \
@@ -86,9 +90,9 @@ void CtiHolidayManager::refresh()
         _hsched_map.clear();
 
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
-            RWDBReader rdr = ExecuteQuery(conn, holidaysql);
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, holidaysql);
+            rdr.execute();
 
             while( rdr() )
             {

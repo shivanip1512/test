@@ -19,6 +19,7 @@
 #include "dbaccess.h"
 #include "dbmemobject.h"
 #include "dlldefs.h"
+#include "row_reader.h"
 
 
 class IM_EX_CTIYUKONDB CtiTablePortLocalSerial : public CtiMemDBObject
@@ -42,7 +43,6 @@ public:
    string& getPhysicalPort();
 
    CtiTablePortLocalSerial& setPhysicalPort(const string& str );
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
 #endif // #ifndef __TBL_PORT_SERIAL_H__

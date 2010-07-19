@@ -17,7 +17,8 @@
 
 #include "tbl_rtcomm.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableCommRoute::CtiTableCommRoute(const LONG dID, const bool aDef) :
 _routeID(-1),
@@ -103,21 +104,7 @@ CtiTableCommRoute& CtiTableCommRoute::setDefaultRoute( const bool aDefaultRoute 
     return *this;
 }
 
-void CtiTableCommRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable routetbl = db.table(getTableName().c_str() );
-
-    selector <<
-    routetbl["routeid"] <<
-    routetbl["deviceid"] <<
-    routetbl["defaultroute"];
-
-    selector.from(routetbl);
-
-    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(routetbl["routeid"]));
-}
-
-void CtiTableCommRoute::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableCommRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -138,101 +125,4 @@ void CtiTableCommRoute::DecodeDatabaseReader(RWDBReader &rdr)
 string CtiTableCommRoute::getTableName()
 {
     return "Route";
-}
-
-RWDBStatus CtiTableCommRoute::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["routeid"] <<
-    table["deviceid"] <<
-    table["defaultroute"];
-
-    selector.where( table["routeid"] == getRouteID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableCommRoute::Insert()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-    inserter <<
-    getRouteID() <<
-    getDeviceID() <<
-    getDefaultRoute();
-
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return inserter.status();
-}
-
-RWDBStatus CtiTableCommRoute::Update()
-{
-    char temp[32];
-
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["routeid"] == getRouteID() );
-
-    updater <<
-    table["routeid"].assign( getRouteID() ) <<
-    table["deviceid"].assign( getDeviceID() ) <<
-    table["defaultroute"].assign(getDefaultRoute());
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableCommRoute::Delete()
-{
-
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["routeid"] == getRouteID() );
-    deleter.execute( conn );
-    return deleter.status();
 }

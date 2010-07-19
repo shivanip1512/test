@@ -19,7 +19,8 @@
 #include "logger.h"
 #include "resolvers.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 CtiTableRoute::CtiTableRoute() :
 RouteID(-1),
@@ -75,21 +76,6 @@ string& CtiTableRoute::getSQLConditions(string &str)
     return str;
 }
 
-void CtiTableRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table("Route");
-
-    selector <<
-    keyTable["routeid"] <<
-    keyTable["name"] <<
-    keyTable["type"];
-
-    selector.from(keyTable);
-
-    // No where clause...
-
-}
-
 void CtiTableRoute::getSQL(string &Columns, string &Tables, string &Conditions)
 {
     getSQLColumns(Columns);
@@ -121,83 +107,12 @@ CtiTableRoute& CtiTableRoute::setRouteID( const LONG aRouteID )
     return *this;
 }
 
-void CtiTableRoute::Insert()
-{
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBInserter inserter = table.inserter();
-
-        inserter << getRouteID() << getName() << getType();
-        ExecuteInserter(conn,inserter,__FILE__,__LINE__);
-    }
-}
-
-void CtiTableRoute::Update()
-{
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBUpdater updater = table.updater();
-
-        updater.where( table["routeid"] == RouteID );
-
-        updater << table["name"].assign(getName().c_str()) << table["type"].assign(getType());
-
-        ExecuteUpdater(conn,updater,__FILE__,__LINE__);
-    }
-}
-
-void CtiTableRoute::Delete()
-{
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBDeleter deleter = table.deleter();
-
-        deleter.where( table["routeid"] == RouteID );
-
-        deleter.execute( conn );
-    }
-}
-
-void CtiTableRoute::Restore()
-{
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBTable table = getDatabase().table( getTableName().c_str() );
-        RWDBSelector selector = getDatabase().selector();
-
-        selector << table["routeid"] << table["name"] << table["type"];
-        selector.where( table["routeid"] == RouteID );
-
-        RWDBReader reader = selector.reader( conn );
-
-        if( reader() )
-        {
-            DecodeDatabaseReader( reader );
-        }
-        else
-        {
-            setDirty( true );
-        }
-    }
-}
-
 string CtiTableRoute::getTableName() const
 {
     return "Route";
 }
 
-void CtiTableRoute::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 

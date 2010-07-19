@@ -90,10 +90,10 @@ public:
    CtiDeviceTapPagingTerminal& setSendFiller(bool yesno);
    bool getSendFiller() const;
 
+   virtual string getSQLCoreStatement() const;
 
    virtual ULONG getUniqueIdentifier() const;
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual INT ExecuteRequest(CtiRequestMsg               *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,

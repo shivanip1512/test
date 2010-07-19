@@ -85,7 +85,8 @@
 
 #include "tbl_dv_wnd.h"
 
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using namespace std;
 
@@ -235,28 +236,52 @@ LONG CtiTableDeviceWindow::calculateClose(LONG aOpen, LONG aDuration) const
     return close;
 }
 
-void CtiTableDeviceWindow::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTableDeviceWindow::getSQLCoreStatement()
 {
-    keyTable = db.table("Device");
-    RWDBTable devTbl = db.table(getTableName().c_str());
+    static const string sqlCore =  "SELECT DV.deviceid, DW.type, DW.winopen, DW.winclose, DW.alternateopen, "
+                                     "DW.alternateclose "
+                                   "FROM Device DV, DeviceWindow DW "
+                                   "WHERE DV.deviceid = DW.deviceid";
 
-    selector <<
-    keyTable["deviceid"] <<
-    devTbl["type"] <<
-    devTbl["winopen"] <<
-    devTbl["winclose"] <<
-    devTbl["alternateopen"] <<
-    devTbl["alternateclose"];
-
-    selector.from(keyTable);
-    selector.from(devTbl);
-
-//   selector.where( selector.where() && keyTable["deviceid"] == getDeviceID() );
-
-    selector.where( selector.where() && keyTable["deviceid"] == devTbl["deviceid"] ); //should I change this to getDeviceID() ??
+    return sqlCore;
 }
 
-void CtiTableDeviceWindow::DecodeDatabaseReader(RWDBReader &aRdr)
+string CtiTableDeviceWindow::addIDSQLClause(const Cti::Database::id_set &paoids)
+{
+    string sqlIDs;
+
+    if( !paoids.empty() )
+    {
+        std::ostringstream in_list;
+
+        if( paoids.size() == 1 )
+        {
+            //  special single id case
+    
+            in_list << *(paoids.begin());
+             
+            sqlIDs += "AND DV.deviceid = " + in_list.str();
+    
+            return sqlIDs;
+        }
+        else
+        {
+            in_list << "(";
+        
+            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, std::ostringstream>(in_list));
+        
+            in_list << ")";
+
+            sqlIDs += "AND DV.deviceid IN " + in_list.str();
+
+            return sqlIDs;
+        }
+    }
+
+    return string();
+}
+
+void CtiTableDeviceWindow::DecodeDatabaseReader(Cti::RowReader &aRdr)
 {
     LONG close,alternateClose;
 
@@ -311,106 +336,6 @@ void CtiTableDeviceWindow::DumpData()
     dout << " Duration                                    : " << _duration << endl;
     dout << " Alternate Open                              : " << _alternateOpen  << endl;
     dout << " Alternate Duration                          : " << _alternateDuration << endl;
-}
-
-
-RWDBStatus CtiTableDeviceWindow::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["deviceid"] <<
-    table["type"] <<
-    table["winopen"] <<
-    table["winclose"] <<
-    table["alternateopen"] <<
-    table["alternateclose"];
-
-//   selector.where( (table["deviceid"] == getDeviceID())) ;
-    selector.where( (table["deviceid"] == getID() ) && (rwdbLower(table["type"]) == desolveDeviceWindowType (getType()).c_str()));
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceWindow::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter dbInserter = table.inserter();
-
-    dbInserter <<
-    getID() <<
-    desolveDeviceWindowType(getType() ) <<
-    getOpen () <<
-    calculateClose (getOpen(),getDuration()) <<
-    getAlternateOpen () <<
-    calculateClose (getAlternateOpen(),getAlternateDuration());
-
-    if( ExecuteInserter(conn,dbInserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
-    {
-        setDirty(false);
-    }
-
-    return dbInserter.status();
-}
-
-RWDBStatus CtiTableDeviceWindow::Update()
-{
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
-
-    updater.where( table["deviceid"] == getID() );
-
-    updater <<
-    table["type"].assign(desolveDeviceWindowType(getType() ).c_str() ) <<
-    table["winopen"].assign(getOpen() ) <<
-    table["winclose"].assign(calculateClose (getOpen(),getDuration())) <<
-    table["alternateopen"].assign(getAlternateOpen() ) <<
-    table["alternateclose"].assign(calculateClose (getAlternateOpen(),getAlternateDuration()));
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
-    {
-        setDirty(false);
-    }
-
-    return updater.status();
-}
-
-RWDBStatus CtiTableDeviceWindow::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["deviceid"] == getID() && (rwdbLower(table["type"]) == desolveDeviceWindowType(getType()).c_str()));
-    deleter.execute( conn );
-    return deleter.status();
 }
 
 bool CtiTableDeviceWindow::addSignaledRateActive(int rate) const

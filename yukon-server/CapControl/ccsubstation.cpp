@@ -29,6 +29,7 @@
 #include "capcontroller.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -55,7 +56,7 @@ _dirty(false)
 {
 }
 
-CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr) : CapControlPao(rdr)
+CtiCCSubstation::CtiCCSubstation(Cti::RowReader& rdr) : CapControlPao(rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(getPaoId());
@@ -189,9 +190,9 @@ CtiCCSubstation* CtiCCSubstation::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCSubstation::restore(RWDBReader& rdr)
+void CtiCCSubstation::restore(Cti::RowReader& rdr)
 {
     CapControlPao::restore(rdr);
 
@@ -214,34 +215,16 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
 
 }
 
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCSubstation::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
     Writes out the dynamic information for this substation bus.
 ---------------------------------------------------------------------------*/
-void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCSubstationTable = getDatabase().table( "dynamicccsubstation" );
-
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCCSubstationTable.updater();
-
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_saEnabledFlag?'Y':'N');
@@ -254,16 +237,13 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
                                 char2string(*(addFlags+4)) +  char2string(*(addFlags+5)));
             _additionalFlags.append("NNNNNNNNNNNNNN");
 
-            updater.clear();
+            static const string updaterSql = "update dynamicccsubstation set additionalflags = ?, saenabledid = ?"
+                                             " where substationid = ?";
+            Cti::Database::DatabaseWriter updater(conn, updaterSql);
 
-            updater.where(dynamicCCSubstationTable["substationid"]==getPaoId());
+            updater << _additionalFlags <<  _saEnabledId << getPaoId();
 
-            updater << dynamicCCSubstationTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
-                    << dynamicCCSubstationTable["saenabledid"].assign( _saEnabledId );
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
@@ -275,11 +255,10 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
                 }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = updater.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
+                        dout << "  " << updaterSql << endl;
                     }
                 }
             }
@@ -292,24 +271,20 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             }
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
-            RWDBInserter inserter = dynamicCCSubstationTable.inserter();
+            static const string inserterSql = "insert into dynamicccsubstation values (?, ?, ?)";
+            Cti::Database::DatabaseWriter inserter(conn, inserterSql);
 
-            inserter << getPaoId()
-                    <<  string2RWCString(addFlags)
-                    << _saEnabledId;
+            inserter << getPaoId() << addFlags << _saEnabledId;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    dout << CtiTime() << " - " << inserterSql << endl;
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(inserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
@@ -336,7 +311,7 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
-void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
+void CtiCCSubstation::setDynamicData(Cti::RowReader& rdr)
 {
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);

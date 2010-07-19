@@ -32,7 +32,7 @@ _refreshsent(false)
 {   
 }
 
-CtiLMGroupRipple::CtiLMGroupRipple(RWDBReader& rdr)
+CtiLMGroupRipple::CtiLMGroupRipple(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -264,25 +264,11 @@ CtiLMGroupBase* CtiLMGroupRipple::replicate() const
 /*---------------------------------------------------------------------------
     restore
     
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMGroupRipple::restore(RWDBReader& rdr)
+void CtiLMGroupRipple::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
-#ifdef _OLD_DB_RELOAD_
-    //NOTE: !
-    RWDBNullIndicator isNull;
-    rdr["rippleshedtime"] >> isNull;
-    if( !isNull )
-    {
-        rdr["rippleshedtime"] >> _shedtime;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unexpected database load issue, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-#endif
     _refreshsent = FALSE;
 }
 

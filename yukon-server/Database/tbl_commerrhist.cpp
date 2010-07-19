@@ -17,7 +17,9 @@
 
 #include "tbl_commerrhist.h"
 #include "logger.h"
-#include "rwutil.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 //CtiTableCommErrorHistory::CtiTableCommErrorHistory() {}
 
@@ -180,29 +182,7 @@ string CtiTableCommErrorHistory::getTableName()
     return "CommErrorHistory";
 }
 
-void CtiTableCommErrorHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table("YukonPAObject");
-    RWDBTable devTbl = db.table(getTableName().c_str());
-
-    selector <<
-    keyTable["paobjectid"] <<
-    devTbl["commerrorid"] <<
-    devTbl["datetime"] <<
-    devTbl["soe_tag"] <<
-    devTbl["errortype"] <<
-    devTbl["errornumber"] <<
-    devTbl["command"] <<
-    devTbl["outmessage"] <<
-    devTbl["inmessage"];
-
-    selector.from(keyTable);
-    selector.from(devTbl);
-
-    selector.where( selector.where() && keyTable["paobjectid"] == devTbl["paobjectid"] );
-}
-
-void CtiTableCommErrorHistory::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableCommErrorHistory::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -221,58 +201,15 @@ void CtiTableCommErrorHistory::DecodeDatabaseReader(RWDBReader &rdr)
     rdr["inmessage"]           >> _inMessage;
 }
 
-RWDBStatus CtiTableCommErrorHistory::Restore()
+bool CtiTableCommErrorHistory::Insert()
 {
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector <<
-    table["paobjectid"] <<
-    table["commerrorid"] <<
-    table["datetime"] <<
-    table["soe_tag"] <<
-    table["errortype"] <<
-    table["errornumber"] <<
-    table["command"] <<
-    table["outmessage"] <<
-    table["inmessage"];
-
-    selector.where( table["paobjectid"] == getPAOID() );  //??
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableCommErrorHistory::Insert()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
 
     return Insert(conn);
 }
 
-RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
+bool CtiTableCommErrorHistory::Insert(Cti::Database::DatabaseConnection &conn)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
-
-
     if(getCommand().length() > MAX_COMMAND_LENGTH)
     {
         _command.resize(MAX_COMMAND_LENGTH-1);
@@ -292,126 +229,98 @@ RWDBStatus CtiTableCommErrorHistory::Insert(RWDBConnection &conn)
     if(getOutMessage().empty()) setOutMessage("none");
     if(getInMessage().empty()) setInMessage("none");
 
-    inserter <<
-    getCommErrorID() <<
-    getPAOID() <<
-    CtiTime(getDateTime()) <<
-    getSoeTag() <<
-    getErrorType() <<
-    getErrorNumber() <<
-    getCommand() <<
-    getOutMessage() <<
-    getInMessage();
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() == RWDBStatus::ok)
+    Cti::Database::DatabaseWriter   inserter(conn, sql);
+
+    inserter 
+        << getCommErrorID()
+        << getPAOID()
+        << getDateTime()
+        << getSoeTag()
+        << getErrorType()
+        << getErrorNumber()
+        << getCommand()
+        << getOutMessage()
+        << getInMessage();
+
+    bool success = inserter.execute();
+
+    if ( success )
     {
         setDirty(false);
     }
-#if 1
     else
     {
-        string loggedSQLstring = inserter.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << inserter.asString() << endl;
     }
-#else
-    else
-    {
-        try
-        {
-            LONG newcid = CommErrorHistoryIdGen(true);
 
-            if(newcid > 0 && newcid != getCommErrorID())
-            {
-                CtiTime Now;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << Now << " Insert collision occurred in table " << getTableName() << "." << endl;
-                    dout << Now << "   CommErrorId has been re-initialized.  There may be two copies of dispatch inserting into this DB" << endl;
-                }
-
-                setCommErrorID( newcid );
-
-                if( ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() != RWDBStatus::ok )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unable to insert Comm Error History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   " << inserter.asString() << endl;
-                }
-            }
-        }
-        catch(...)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-    }
-#endif
-    return inserter.status();
+    return success;
 }
 
 
-RWDBStatus CtiTableCommErrorHistory::Update()
+bool CtiTableCommErrorHistory::Update()
 {
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "commerrorid = ?, "
+                                        "datetime = ?, "
+                                        "soe_tag = ?, "
+                                        "errortype = ?, "
+                                        "errornumber = ?, "
+                                        "command = ?, "
+                                        "outmessage = ?, "
+                                        "inmessage = ?"
+                                   " where "
+                                        "paobjectid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    updater 
+        << getCommErrorID()
+        << getDateTime()
+        << getSoeTag()
+        << getErrorType()
+        << getErrorNumber()
+        << getCommand()
+        << getOutMessage()
+        << getInMessage()
+        << getPAOID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    bool success = updater.execute();
 
-    updater.where( table["paobjectid"] == getPAOID() );
-
-    updater <<
-    table["paobjectid"].assign(getPAOID() ) <<
-    table["commerrorid"].assign(getCommErrorID() ) <<
-    table["datetime"].assign(toRWDBDT(getDateTime()) ) <<
-    table["soe_tag"].assign( getSoeTag() ) <<
-    table["errortype"].assign( getErrorType() ) <<
-    table["errornumber"].assign( getErrorNumber() ) <<
-    table["command"].assign( getCommand().c_str() ) <<
-    table["outmessage"].assign( getOutMessage().c_str() ) <<
-    table["inmessage"].assign( getInMessage().c_str() );
-
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
+    if ( success )
     {
         setDirty(false);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTableCommErrorHistory::Delete()
+bool CtiTableCommErrorHistory::Delete()
 {
+    static const std::string sql = "delete from " + getTableName() + " where paobjectid = ?";
 
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    deleter << getPAOID();
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["paobjectid"] == getPAOID() );
-    deleter.execute( conn );
-    return deleter.status();
+    return deleter.execute();
 }
 
-RWDBStatus CtiTableCommErrorHistory::Prune(CtiDate &earliestDate)
+bool CtiTableCommErrorHistory::Prune(CtiDate &earliestDate)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where datetime < ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    deleter.where( table["datetime"] < toRWDBDT(CtiTime( earliestDate )) );
-    deleter.execute( conn );
-    return deleter.status();
+    deleter << CtiTime(earliestDate);
+
+    return deleter.execute();
 }

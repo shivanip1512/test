@@ -16,7 +16,6 @@
 *-----------------------------------------------------------------------------*/
 
 #include "mc_scheduler.h"
-#include "rwutil.h"
 using namespace std;
 
 static const char* AbsoluteTimeStopPolicy;

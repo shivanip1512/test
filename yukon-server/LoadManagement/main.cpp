@@ -15,8 +15,6 @@
 #include "rtdb.h"
 #include "ctibase.h"
 
-#include "rwutil.h"
-
 using namespace std;
 
 int main(int argc, char* argv[] )

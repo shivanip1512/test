@@ -45,13 +45,18 @@ CtiPointNumeric& CtiPointNumeric::operator=(const CtiPointNumeric& aRef)
    return *this;
 }
 
-void CtiPointNumeric::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiPointNumeric::getSQLCoreStatement()
 {
-   Inherited::getSQL(db, keyTable, selector);       // get the base class handled
-   CtiTablePointUnit::getSQL(db, keyTable, selector);
+    static const string sql =  "SELECT PT.pointid, PT.pointname, PT.pointtype, PT.paobjectid, PT.stategroupid, "
+                                   "PT.pointoffset, PT.serviceflag, PT.alarminhibit, PT.pseudoflag, PT.archivetype, "
+                                   "PT.archiveinterval, PNU.uomid, PNU.decimalplaces, PNU.decimaldigits, UTM.calctype "
+                               "FROM Point PT, PointUnit PNU, UnitMeasure UTM "
+                               "WHERE PT.pointid = PNU.pointid AND PNU.uomid = UTM.uomid";
+
+    return sql;
 }
 
-void CtiPointNumeric::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPointNumeric::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     //if(isA(rdr))
     {

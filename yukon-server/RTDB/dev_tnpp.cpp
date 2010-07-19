@@ -905,13 +905,24 @@ string CtiDeviceTnppPagingTerminal::getExtendedFunctionCode()
 }
 
 //Database Functions
-void CtiDeviceTnppPagingTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceTnppPagingTerminal::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    _table.getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
+                                     "DUS.phonenumber, DUS.minconnecttime, DUS.maxconnecttime, DUS.linesettings, "
+                                     "DUS.baudrate, TNP.inertia, TNP.destinationaddress, TNP.originaddress, "
+                                     "TNP.identifierformat, TNP.protocol, TNP.dataformat, TNP.channel, TNP.zone, "
+                                     "TNP.functioncode, TNP.pagerid "
+                                   "FROM Device DV, DeviceTNPPSettings TNP, DeviceDirectCommSettings CS, "
+                                     "YukonPAObject YP LEFT OUTER JOIN DeviceDialupSettings DUS ON "
+                                     "YP.paobjectid = DUS.deviceid "
+                                   "WHERE YP.paobjectid = TNP.deviceid AND YP.paobjectid = DV.deviceid AND "
+                                     "YP.paobjectid = CS.deviceid";
+
+    return sqlCore;
 }
 
-void CtiDeviceTnppPagingTerminal::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceTnppPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

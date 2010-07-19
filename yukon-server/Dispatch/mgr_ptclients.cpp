@@ -13,8 +13,6 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/db/db.h>
-#include <rw/db/status.h>
 #include <rw/toolpro/neterr.h>
 
 #include "dllvg.h"
@@ -22,6 +20,8 @@
 #include "logger.h"
 #include "mgr_ptclients.h"
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 #include "devicetypes.h"
 #include "msg_ptreg.h"
 #include "msg_pcreturn.h"
@@ -40,6 +40,8 @@
 #include <list>
 
 using namespace std;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 #define POINT_REFRESH_SIZE 1000 //This is overriden by cparm.
 
@@ -255,13 +257,6 @@ void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 
 void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBDatabase   db       = conn.database();
-    RWDBSelector   selector = conn.database().selector();
-    RWDBTable      keyTable;
-    RWDBReader     rdr;
     string         sql;
     CtiTime start, stop;
 
@@ -273,9 +268,11 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
     start = start.now();
     CtiTablePointAlarming::getSQL(sql, pntID, paoID, pointIds);
 
-    rdr = ExecuteQuery( conn, sql );
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    if( rdr.status().errorCode() != RWDBStatus::ok || DebugLevel & DEBUGLEVEL_MGR_POINT )
+    if( !rdr.isValid() || DebugLevel & DEBUGLEVEL_MGR_POINT )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << sql << endl;
@@ -326,33 +323,26 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
 void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBDatabase   db       = conn.database();
-    RWDBSelector   selector = conn.database().selector();
-    RWDBTable      keyTable;
-    RWDBReader     rdr;
-    string         sql;
     CtiTime start, stop;
 
     start = start.now();
-    CtiTablePointProperty::getSQL( db, keyTable, selector );
 
-    if(pntID)
-    {
-        selector.where( keyTable["pointid"] == pntID && selector.where() );
-    }
+    string sql = CtiTablePointProperty::getSQLCoreStatement();
 
-    //  pao is assumed to be an add
-    if(paoID)
+    if(pntID || paoID)
     {
-        RWDBSelector paoSelector = conn.database().selector();
-        RWDBTable pointTable = db.table("point");
-        paoSelector << pointTable["pointid"];
-        paoSelector.from(pointTable);
-        paoSelector.where(pointTable["paobjectid"] == paoID);
-        selector.where(keyTable["pointid"].in(paoSelector) && selector.where());
+        sql += " WHERE";
+        if(pntID)
+        {
+            sql += " PPV.pointid = ?";
+        }
+        if(paoID)
+        {
+            sql += (pntID ? " AND" : "");
+            sql += " PPV.pointid IN (SELECT PT.pointid "
+                                    "FROM point PT "
+                                    "WHERE PT.paobjectid = ?)";
+        }
     }
 
     if(!pointIds.empty())
@@ -367,14 +357,28 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 
         in_list << ")";
 
-        selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.str().c_str(), false)));
+        sql += ((!pntID && !paoID) ? " WHERE" : " AND");
+        sql += " PPV.pointid IN ";
+        sql += in_list.str();
     }
 
-    rdr = selector.reader( conn );
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
 
-    if( rdr.status().errorCode() != RWDBStatus::ok)
+    if(pntID)
     {
-        string loggedSQLstring = selector.asString();
+        rdr << pntID;
+    }
+    if(paoID)
+    {
+        rdr << paoID;
+    }
+
+    rdr.execute();
+
+    if( !rdr.isValid() )
+    {
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -411,18 +415,11 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 //This loads the points that have archival on timer and sets the archive on timer point property
 void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBDatabase   db       = conn.database();
-    RWDBSelector   selector = conn.database().selector();
-    RWDBTable      keyTable;
-    RWDBReader     rdr;
     string         sql;
     CtiTime start, stop;
 
     start = start.now();
-    sql = "SELECT pointid from point WHERE ("
+    sql = "SELECT pointid from point WHERE ( "
           "archivetype = 'On Timer' OR "
           "archivetype = 'time&update' OR "
           "archivetype = 'timer|update')";
@@ -456,17 +453,9 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
         sql += in_list.str();
     }
 
-    rdr = ExecuteQuery( conn, sql );
-
-    if( rdr.status().errorCode() != RWDBStatus::ok)
-    {
-        string loggedSQLstring = selector.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
-    }
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     std::list<CtiTablePointProperty*> tempList;
     long pointid;
@@ -820,12 +809,12 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiTablePointDispatch> &upda
 void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &updateList)
 {
     int listCount = 0;
-    string dyndisp("dyndisp");
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+
+    Cti::Database::DatabaseConnection   conn;
+
     list<CtiTablePointDispatch>::iterator updateListIter;
 
-    conn.beginTransaction(dyndisp.c_str());
+    conn.beginTransaction();
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -854,7 +843,7 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiTablePointDispatch> &update
     }
     updateList.clear();
 
-    conn.commitTransaction(dyndisp.c_str());
+    conn.commitTransaction();
 }
 
 void CtiPointClientManager::removeOldDynamicData()
@@ -952,28 +941,19 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
     LONG lTemp = 0;
     CtiPointSPtr pTempPoint;
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-    RWDBTable   keyTable;
-    RWDBSelector selector = db.selector();
     CtiTime start, stop;
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Dynamic Dispatch Data" << endl;
     }
-    CtiTablePointDispatch::getSQL( db, keyTable, selector );
 
-    if(id)
-    {
-        selector.where( keyTable["pointid"] == id && selector.where() );
-    }
+    string sql = CtiTablePointDispatch::getSQLCoreStatement(id);
 
     if(!pointIds.empty())
     {
-        ostringstream in_list;
-        csv_output_iterator<long, ostringstream> csv_itr(in_list);
+        std::ostringstream in_list;
+        csv_output_iterator<long, std::ostringstream> csv_itr(in_list);
 
         in_list << "(";
 
@@ -981,14 +961,23 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 
         in_list << ")";
 
-        selector.where(selector.where() && keyTable["pointid"].in(RWDBExpr(in_list.str().c_str(), false)));
+        sql += (id ? " AND DPD.pointid IN " : " WHERE DPD.pointid IN ");
+        sql += in_list.str();
     }
 
-    RWDBReader rdr = selector.reader(conn);
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
 
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT || selector.status().errorCode() != RWDBStatus::ok)
+    if(id)
     {
-        string loggedSQLstring = selector.asString();
+        rdr << id;
+    }
+
+    rdr.execute();
+
+    if(DebugLevel & DEBUGLEVEL_MGR_POINT || !rdr.isValid())
+    {
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
@@ -996,7 +985,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
     }
 
     start = start.now();
-    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    while( rdr() )
     {
         rdr["pointid"] >> lTemp;                        // get the point id
         pTempPoint = getCachedPoint( lTemp );
@@ -1042,8 +1031,6 @@ void CtiPointClientManager::RefreshDynamicData(LONG id, const set<long> &pointId
 //Grab reasonability limits from TBL_UOM
 void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, const set<long> &pointIds)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
     CtiTime start, stop;
     string sql;
 
@@ -1083,7 +1070,10 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     }
 
     start = start.now();
-    RWDBReader rdr = ExecuteQuery( conn, sql );
+
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
@@ -1093,7 +1083,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     int pointid;
     ReasonabilityLimitStruct limitValues;
     std::list<pair<long, ReasonabilityLimitStruct> > tempList;
-    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    while( rdr() )
     {
         rdr >> pointid >> limitValues.highLimit >> limitValues.lowLimit;
         tempList.push_back(make_pair(pointid, limitValues));
@@ -1140,10 +1130,6 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     LONG   lTemp = 0;
     string sql;
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase   db       = conn.database();
-    RWDBReader     rdr;
     CtiTime         start, stop;
 
     start = start.now();
@@ -1155,7 +1141,9 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     /* Go after the point limits! */
     CtiTablePointLimit::getSQL( sql, pntID, paoID, pointIds );
 
-    rdr = ExecuteQuery( conn, sql );
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {

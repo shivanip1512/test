@@ -28,8 +28,7 @@ public:
    INT           getIPPort()    const;
    const string &getIPAddress() const;
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    const string &getEncodingKey()  const;
    const string &getEncodingType() const;

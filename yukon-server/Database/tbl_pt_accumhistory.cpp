@@ -17,6 +17,9 @@
 
 #include "tbl_pt_accumhistory.h"
 #include "dbaccess.h"
+#include "database_connection.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 CtiTablePointAccumulatorHistory::CtiTablePointAccumulatorHistory(LONG pid,
                                                                  ULONG prevpulsecount,
@@ -60,91 +63,95 @@ string CtiTablePointAccumulatorHistory::getTableName() const
     return "DynamicAccumulator";
 }
 
-RWDBStatus CtiTablePointAccumulatorHistory::Restore()
+bool CtiTablePointAccumulatorHistory::Restore()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql =  "SELECT DAC.pointid, DAC.previouspulses, DAC.presentpulses "
+                               "FROM DynamicAccumulator DAC "
+                               "WHERE DAC.pointid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader reader(connection, sql);
 
-    selector <<
-    table["pointid"] <<
-    table["previouspulses"] <<
-    table["presentpulses"];
+    reader << getPointID();
 
-    selector.where( table["pointid"] == getPointID() );
-
-    RWDBReader reader = selector.reader( conn );
+    reader.execute();
 
     if( reader() )
     {
         DecodeDatabaseReader( reader );
         setDirty(FALSE);
+        return true;
     }
     else
     {
         setDirty( TRUE );
+        return false;
     }
-
-    return reader.status();
 }
 
-RWDBStatus CtiTablePointAccumulatorHistory::Update()
+bool CtiTablePointAccumulatorHistory::Update()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "update " + getTableName() +
+                                   " set "
+                                        "previouspulses = ?, "
+                                        "presentpulses = ?"
+                                   " where "
+                                        "pointid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
 
-    updater.where( table["pointid"] == getPointID() );
+    updater
+        << getPresentPulseCount()       // is this a bug? should it be: getPreviousPulseCount()?
+        << getPresentPulseCount()
+        << getPointID();
 
-    updater <<
-    table["previouspulses"].assign( getPresentPulseCount() ) <<
-    table["presentpulses"].assign( getPresentPulseCount() );
+    bool success = updater.execute();
 
-    if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok  )
+    if ( success )
+    {
+        setDirty(FALSE);
+    }
+   
+    return success;
+}
+
+bool CtiTablePointAccumulatorHistory::Insert()
+{
+    static const std::string sql = "insert into " + getTableName() +
+                                   " values (?, ?, ?)";
+
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       inserter(conn, sql);
+
+    inserter
+        << getPointID()
+        << getPreviousPulseCount()
+        << getPresentPulseCount();
+
+    bool success = inserter.execute();
+
+    if ( success )
     {
         setDirty(FALSE);
     }
 
-    return updater.status();
+    return success;
 }
 
-RWDBStatus CtiTablePointAccumulatorHistory::Insert()
+bool CtiTablePointAccumulatorHistory::Delete()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const std::string sql = "delete from " + getTableName() + " where pointid = ?";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBInserter inserter = table.inserter();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       deleter(conn, sql);
 
-    inserter <<
-    getPointID() <<
-    getPreviousPulseCount() <<
-    getPresentPulseCount();
+    deleter << getPointID();
 
-    setDirty(FALSE);
-
-    return ExecuteInserter(conn,inserter,__FILE__,__LINE__);
+    return deleter.execute();
 }
 
-RWDBStatus CtiTablePointAccumulatorHistory::Delete()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBDeleter deleter = table.deleter();
-
-    deleter.where( table["pointid"] == getPointID() );
-
-
-    return deleter.execute( conn ).status();
-}
-
-void CtiTablePointAccumulatorHistory::DecodeDatabaseReader(RWDBReader& rdr )
+void CtiTablePointAccumulatorHistory::DecodeDatabaseReader(Cti::RowReader& rdr )
 {
     rdr >> _pointID >> _previousPulseCount >> _presentPulseCount;
 }

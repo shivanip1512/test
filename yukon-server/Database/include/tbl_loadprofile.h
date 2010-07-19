@@ -16,14 +16,7 @@
 #ifndef __TBL_LOADPROFILE_H__
 #define __TBL_LOADPROFILE_H__
 
-#include <rw/db/select.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/db.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -38,6 +31,7 @@
 #include "dbaccess.h"
 #include "resolvers.h"
 #include "da_load_profile.h"
+#include "row_reader.h"
 
 class IM_EX_CTIYUKONDB CtiTableDeviceLoadProfile : public CtiMemDBObject, public Cti::DataAccessLoadProfile
 {
@@ -76,18 +70,11 @@ public:
    virtual int  getVoltageProfileRate()     const;
    virtual bool isChannelValid(int channel) const;
 
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
-
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    static string getTableName();
 
    LONG getDeviceID() const;
-
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Delete();
 };
 
 #endif // #ifndef __TBL_LOADPROFILE_H__

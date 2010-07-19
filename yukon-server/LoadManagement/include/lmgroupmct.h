@@ -17,7 +17,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -33,7 +32,7 @@ RWDECLARE_COLLECTABLE( CtiLMGroupMCT )
     typedef CtiLMGroupEmetcon Inherited;
     
     CtiLMGroupMCT();
-    CtiLMGroupMCT(RWDBReader& rdr);
+    CtiLMGroupMCT(Cti::RowReader &rdr);
     CtiLMGroupMCT(const CtiLMGroupMCT& groupmct);
 
     virtual ~CtiLMGroupMCT();

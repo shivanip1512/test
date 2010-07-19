@@ -16,6 +16,8 @@ copy:
 
         -@if not exist $(YUKONOUTPUT)\$(XERCES_DLL).dll copy $(XERCES)\bin\$(XERCES_DLL).dll $(YUKONOUTPUT)
 
+        -@if not exist $(YUKONOUTPUT)\$(SQLAPI_DLL).dll copy $(SQLAPI)\bin\$(SQLAPI_DLL).dll $(YUKONOUTPUT)
+
         -@if not exist $(YUKONOUTPUT)\activemq-cpp.dll  copy $(ACTIVEMQ)\bin\activemq-cpp.dll  $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\libapr-1.dll      copy $(ACTIVEMQ)\bin\libapr-1.dll      $(YUKONOUTPUT)
         -@if not exist $(YUKONOUTPUT)\libaprutil-1.dll  copy $(ACTIVEMQ)\bin\libaprutil-1.dll  $(YUKONOUTPUT)

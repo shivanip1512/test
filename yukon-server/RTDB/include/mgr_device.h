@@ -22,7 +22,6 @@
 #ifndef __MGR_DEVICE_H__
 #define __MGR_DEVICE_H__
 
-#include <rw/db/connect.h>
 
 #include "dlldefs.h"
 #include "rtdb.h"
@@ -31,7 +30,14 @@
 #include "smartmap.h"
 #include <map>
 
+namespace Cti {
+namespace Database {
+    class DatabaseReaderInterface;
+}
+}
+
 class CtiCommandMsg;
+
 /*
  *  The following functions may be used to create sublists for the points in our database.
  */
@@ -47,10 +53,6 @@ public:
     typedef coll_type::insert_pair      insert_pair;
 
     typedef map<long, int> device_priorities_t;
-
-protected:
-
-    class id_range_t;
 
 private:
 
@@ -74,18 +76,21 @@ private:
 
     mutable Cti::readers_writer_lock_t _portDevicePrioritiesLock;
 
-    bool refreshDevices(RWDBReader& rdr);
+    string createIdSqlClause  (const Cti::Database::id_set &paoids, const string table = "YP", const string attrib = "paobjectid");
+    string createTypeSqlClause(string type=string(), const bool include_type=true);
 
-    bool loadDeviceType(id_range_t &paoids, const string &device_name, const CtiDeviceBase &device, string type=string(), const bool include_type=true);
+    bool refreshDevices(Cti::RowReader& rdr);
 
-    void refreshDeviceParameters    (id_range_t &paoids, int type);
-    void refreshExclusions          (id_range_t &paoids);
-    void refreshIONMeterGroups      (id_range_t &paoids);
-    void refreshMacroSubdevices     (id_range_t &paoids);
-    void refreshMCTConfigs          (id_range_t &paoids);
-    void refreshMCT400Configs       (id_range_t &paoids);
-    void refreshDynamicPaoInfo      (id_range_t &paoids);
-    bool refreshPointGroups         (id_range_t &paoids);
+    bool loadDeviceType(Cti::Database::id_set &paoids, const string &device_name, const CtiDeviceBase &device, string type=string(), const bool include_type=true);
+
+    void refreshDeviceParameters    (Cti::Database::id_set &paoids, int type);
+    void refreshExclusions          (Cti::Database::id_set &paoids);
+    void refreshIONMeterGroups      (Cti::Database::id_set &paoids);
+    void refreshMacroSubdevices     (Cti::Database::id_set &paoids);
+    void refreshMCTConfigs          (Cti::Database::id_set &paoids);
+    void refreshMCT400Configs       (Cti::Database::id_set &paoids);
+    void refreshDynamicPaoInfo      (Cti::Database::id_set &paoids);
+    bool refreshPointGroups         (Cti::Database::id_set &paoids);
 
 protected:
 
@@ -97,7 +102,7 @@ protected:
 
     //  This class is used as a lightweight replacement for set<long> - it allows us to pass around single parameters with much less overhead than a set.
     //    When we move beyond VC6, we can use template member functions to allow for the long and set<long> specializations
-    class id_range_t
+    /*class id_range_t
     {
     public:
 
@@ -112,7 +117,7 @@ protected:
             : _val(val),
               _itr_begin(&_val),
               _itr_end  (&_val + 1)
-            {};*/
+            {};
         id_range_t(id_range_t::const_iterator begin, id_range_t::const_iterator end)
             : _itr_begin(begin),
               _itr_end  (end)
@@ -127,13 +132,13 @@ protected:
 
         const_iterator _itr_begin, _itr_end;
         value_type _val;
-    };
+    };*/
 
-    typedef id_range_t::const_iterator id_itr_t;
+    //typedef id_range_t::const_iterator id_itr_t;
 
-    void refreshList(id_range_t &paoids, const long deviceType = 0);
+    void refreshList(const Cti::Database::id_set &paoids, const long deviceType = 0);
 
-    virtual void refreshDeviceProperties(id_range_t &paoids, int type);
+    virtual void refreshDeviceProperties(Cti::Database::id_set &paoids, int type);
 
     int getPortDevicePriority(long portid, long deviceid) const;
 

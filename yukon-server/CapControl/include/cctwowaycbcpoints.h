@@ -18,7 +18,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <list>
@@ -30,7 +29,11 @@
 #include "observe.h"
 #include "types.h"
 
-
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 class CtiCCTwoWayPoints
 {
@@ -41,7 +44,7 @@ public:
 
 
     CtiCCTwoWayPoints(long paoid);
-    CtiCCTwoWayPoints(RWDBReader& rdr);
+    CtiCCTwoWayPoints(Cti::RowReader& rdr);
     CtiCCTwoWayPoints(const CtiCCTwoWayPoints& cap);
 
     virtual ~CtiCCTwoWayPoints();
@@ -252,11 +255,10 @@ public:
 
     CtiCCTwoWayPoints& addAllCBCPointsToRegMsg(std::set<long>& pointList);
     BOOL isDirty();
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
-    void restore(RWDBReader& rdr);
-    void setDynamicData(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
     CtiCCTwoWayPoints* replicate() const;
 
     //Members inherited from RWCollectable

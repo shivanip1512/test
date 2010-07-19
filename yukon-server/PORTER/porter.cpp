@@ -81,7 +81,8 @@
 
 #include "pilserver.h"
 #include "msg_pcrequest.h"
-
+#include "database_reader.h"
+#include "database_connection.h"
 #include "dev_ccu721.h"
 
 #define DO_GATEWAYTHREAD               1
@@ -98,6 +99,8 @@
 #define DOUT_OUT TRUE
 
 using namespace std;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 ULONG TimeSyncRate = 3600L;
 
@@ -2205,7 +2208,7 @@ static int MyAllocHook(int nAllocType, void *pvData,
             {
                 alloc_cnt++;
             }
-            else if( (nSize == 164) )  // RWDBDatabase::RWDBDatabase() constructor.
+            else if( (nSize == 164) )
             {
                 alloc_cnt++;
             }
@@ -2299,10 +2302,9 @@ void LoadCommFailPoints(LONG ptid)
     string sql = string("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET) + string(" and pointtype = 'Status'");
     if(ptid) sql += string(" and pointid = " + CtiNumStr(ptid));
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBReader  rdr = ExecuteQuery(conn, sql);
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
     while(rdr() && rdr.isValid())
     {

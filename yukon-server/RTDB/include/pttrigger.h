@@ -46,7 +46,7 @@ private:
     trig_coll_type _triggerIDMap;
     mutable CtiMutex _mapMux;
 
-    void refreshTriggerData(long pointID, RWDBReader& rdr, CtiPointManager &pointMgr);
+    void refreshTriggerData(long pointID, Cti::RowReader& rdr, CtiPointManager &pointMgr);
 
 public:
 

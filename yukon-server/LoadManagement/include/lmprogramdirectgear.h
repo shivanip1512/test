@@ -17,11 +17,11 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "observe.h"
+#include "row_reader.h"
                 
 class CtiLMProgramDirectGear : public RWCollectable
 {
@@ -31,7 +31,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
 
     CtiLMProgramDirectGear();
-    CtiLMProgramDirectGear(RWDBReader& rdr);
+    CtiLMProgramDirectGear(Cti::RowReader &rdr);
     CtiLMProgramDirectGear(const CtiLMProgramDirectGear& proggear);
 
     virtual ~CtiLMProgramDirectGear();
@@ -142,7 +142,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const string RandomizeRandomOptionType;
     
 protected:
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 
 private:
 

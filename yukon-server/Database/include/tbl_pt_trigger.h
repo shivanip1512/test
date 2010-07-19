@@ -19,10 +19,7 @@
 #define __TBL_PT_TRIGGER_H__
 #include "yukon.h"
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 #include <limits.h>
 
 #include "dlldefs.h"
@@ -52,8 +49,9 @@ private:
 
     CtiTablePointTrigger& operator=(const CtiTablePointTrigger& aRef);
 
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector, long pointID = 0);
-    void DecodeDatabaseReader(RWDBReader &rdr);
+    static string getSQLCoreStatement(long pointID = 0);
+
+    void DecodeDatabaseReader(Cti::RowReader &rdr);
     void dump() const;
 
     long             getPointID()                const;

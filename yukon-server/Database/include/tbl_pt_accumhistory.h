@@ -20,9 +20,9 @@
 *-----------------------------------------------------------------------------*/
 
 #include "yukon.h"
-#include <rw/db/datetime.h>
 #include <string>
 #include "dbmemobject.h"
+#include "row_reader.h"
 
 #include "dlldefs.h"
 
@@ -50,12 +50,12 @@ public:
 
    virtual std::string getTableName() const;
 
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Delete();
+   virtual bool Insert();
+   virtual bool Update();
+   virtual bool Restore();
+   virtual bool Delete();
 
-   virtual void DecodeDatabaseReader(RWDBReader& rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader& rdr);
 
    LONG getPointID() const;
    CtiTablePointAccumulatorHistory& setPointID(LONG pointID);

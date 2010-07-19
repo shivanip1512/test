@@ -16,7 +16,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
@@ -31,7 +30,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMGroupRipple )
 
     CtiLMGroupRipple();
-    CtiLMGroupRipple(RWDBReader& rdr);
+    CtiLMGroupRipple(Cti::RowReader &rdr);
     CtiLMGroupRipple(const CtiLMGroupRipple& groupripple);
 
     virtual ~CtiLMGroupRipple();
@@ -65,7 +64,7 @@ private:
 
     BOOL _refreshsent;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 #endif
 

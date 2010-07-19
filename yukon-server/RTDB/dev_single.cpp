@@ -1211,9 +1211,9 @@ CtiDeviceSingle::~CtiDeviceSingle()
 
     if(_scanData.isDirty())
     {
-        if( _scanData.Update().errorCode() != RWDBStatus::ok )
+        if( ! _scanData.Update() )
         {
-            if( _scanData.Insert().errorCode() != RWDBStatus::ok )
+            if( ! _scanData.Insert() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
@@ -1539,12 +1539,7 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
     }
 }
 
-void CtiDeviceSingle::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-}
-
-void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceSingle::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
@@ -1558,7 +1553,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
-void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
+void CtiDeviceSingle::DecodeScanRateDatabaseReader(Cti::RowReader &rdr)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
@@ -1570,11 +1565,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    RWDBNullIndicator isNull;
-
-    rdr["scantype"] >> isNull;
-
-    if(!isNull)
+    if(!rdr["scantype"].isNull())
     {
         rdr["scantype"] >> rwsTemp;
         INT i = resolveScanType(rwsTemp);
@@ -1591,7 +1582,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(RWDBReader &rdr)
         }
     }
 }
-void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
+void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
@@ -1601,10 +1592,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(RWDBReader &rdr)
         dout << CtiTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    RWDBNullIndicator isNull;
-    rdr["type"] >> isNull;        // 'windowtype' is the alias used for devicewindow.type to avoid a collision with yukonpaobject.type.
-
-    if(!isNull)
+    if(!rdr["type"].isNull())
     {
         CtiTableDeviceWindow newWindow;
         newWindow.DecodeDatabaseReader(rdr);
@@ -1695,9 +1683,9 @@ INT CtiDeviceSingle::validateScanData()
     {
         _scanData.setDeviceID(getID());
         setScanFlag(ScanDataValid, true);
-        if( !(_scanData.Restore().errorCode() == RWDBStatus::ok ))
+        if( !_scanData.Restore() )
         {
-            if( !(_scanData.Insert().errorCode() == RWDBStatus::ok ))
+            if( ! _scanData.Insert() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1733,9 +1721,8 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
         if( pPoint )
         {
             pd.setPointID( pPoint->getPointID() );
-            RWDBStatus dbstat = pd.Restore();
 
-            if(dbstat.errorCode() == RWDBStatus::ok)
+            if(pd.Restore())
             {
                 if(pd.getTimeStamp() > ptdefault.getTimeStamp() && pd.getTimeStamp() < dispatchTime)
                 {

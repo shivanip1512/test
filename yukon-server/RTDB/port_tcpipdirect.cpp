@@ -788,7 +788,7 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
     return status;
 }
 
-void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiPortTCPIPDirect::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     try
     {
@@ -802,7 +802,7 @@ void CtiPortTCPIPDirect::DecodeDatabaseReader(RWDBReader &rdr)
     }
 }
 
-void CtiPortTCPIPDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)
+void CtiPortTCPIPDirect::DecodeDialableDatabaseReader(Cti::RowReader &rdr)
 {
     if(_dialable)
     {
@@ -810,10 +810,18 @@ void CtiPortTCPIPDirect::DecodeDialableDatabaseReader(RWDBReader &rdr)
     }
 }
 
-void CtiPortTCPIPDirect::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiPortTCPIPDirect::getSQLCoreStatement()
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTablePortTCPIP::getSQL(db, keyTable, selector);
+    static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                   "CP.alarminhibit, CP.commonprotocol, CP.performancealarm, CP.performthreshold, "
+                                   "CP.sharedporttype, CP.sharedsocketnumber, PST.baudrate, PST.cdwait, PST.linesettings, "
+                                   "TMG.pretxwait, TMG.rtstotxwait, TMG.posttxwait, TMG.receivedatawait, TMG.extratimeout, "
+                                   "TSV.ipaddress, TSV.socketportnumber, TSV.encodingkey, TSV.encodingtype "
+                               "FROM YukonPAObject YP, CommPort CP, PortSettings PST, PortTiming TMG, PortTerminalServer TSV "
+                               "WHERE YP.paobjectid = CP.portid AND YP.paobjectid = PST.portid AND "
+                                   "YP.paobjectid = TMG.portid AND YP.paobjectid = TSV.portid";
+
+    return sql;
 }
 
 INT CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)

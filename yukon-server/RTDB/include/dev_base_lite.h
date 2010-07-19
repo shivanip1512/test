@@ -26,14 +26,10 @@
 
 #include <windows.h>
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
 
 #include "dbaccess.h"
 #include "dbmemobject.h"
-#include "dlldefs.h"
+#include "rwutil.h"
 
 class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject
 {
@@ -82,10 +78,10 @@ protected:
     bool operator==( const CtiDeviceBaseLite &rhs ) const;
     bool operator()(const CtiDeviceBaseLite& aRef) const;
 
+    virtual string getSQLCoreStatement(long paoid);
 
     static string getTableName();
-    virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-    virtual RWDBStatus Restore();
+    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
+    virtual bool Restore();
 };
 #endif // #ifndef __DEV_BASE_LITE_H__

@@ -2,7 +2,6 @@
 
 #include "tbl_rtrepeater.h"
 #include "logger.h"
-#include "rwutil.h"
 
 void CtiTableRepeaterRoute::DumpData()
 {
@@ -13,27 +12,16 @@ void CtiTableRepeaterRoute::DumpData()
     dout << " Repeater Order                             " << RepeaterOrder << endl;
 }
 
-void CtiTableRepeaterRoute::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+string CtiTableRepeaterRoute::getSQLCoreStatement()
 {
-    keyTable = db.table("Route");
-    RWDBTable routetbl = db.table(getTableName().c_str() );
+    static const string sql =  "SELECT RT.routeid, RP.deviceid, RP.variablebits, RP.repeaterorder "
+                               "FROM Route RT, RepeaterRoute RP "
+                               "WHERE RT.routeid = RP.routeid ORDER BY RT.routeid ASC, RP.repeaterorder ASC";
 
-    selector <<
-    keyTable["routeid"] <<
-    routetbl["deviceid"] <<
-    routetbl["variablebits"] <<
-    routetbl["repeaterorder"];
-
-    selector.from(keyTable);
-    selector.from(routetbl);
-
-    selector.where( selector.where() && keyTable["routeid"] == routetbl["routeid"]);
-
-    selector.orderBy(keyTable["routeid"]);
-    selector.orderBy(routetbl["repeaterorder"]);
+    return sql;
 }
 
-CtiTableRepeaterRoute::CtiTableRepeaterRoute(RWDBReader &rdr)
+CtiTableRepeaterRoute::CtiTableRepeaterRoute(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -52,15 +40,15 @@ CtiTableRepeaterRoute::CtiTableRepeaterRoute(RWDBReader &rdr)
     rdr["repeaterorder"] >> RepeaterOrder;
 }
 
-RWBoolean CtiTableRepeaterRoute::operator<( const CtiTableRepeaterRoute& t2 )
+RWBoolean CtiTableRepeaterRoute::operator<( const CtiTableRepeaterRoute& RP )
 {
-    return(RepeaterOrder < t2.getRepeaterOrder() );
+    return(RepeaterOrder < RP.getRepeaterOrder() );
 }
 
-RWBoolean CtiTableRepeaterRoute::operator==( const CtiTableRepeaterRoute& t2 )
+RWBoolean CtiTableRepeaterRoute::operator==( const CtiTableRepeaterRoute& RP )
 {
     // This better not ever happen!
-    return( RepeaterOrder == t2.getRepeaterOrder() );
+    return( RepeaterOrder == RP.getRepeaterOrder() );
 }
 
 string CtiTableRepeaterRoute::getTableName()

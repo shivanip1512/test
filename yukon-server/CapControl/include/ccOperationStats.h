@@ -19,7 +19,6 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 #include <list>
@@ -29,6 +28,11 @@
 #include "dbaccess.h"
 #include "observe.h"
 #include "types.h"
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
 
 namespace capcontrol
 {
@@ -111,12 +115,11 @@ public:
 
     void printOpStats();
     BOOL isDirty();
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
 
-    void restore(RWDBReader& rdr);
-    void setDynamicData(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
+    void setDynamicData(Cti::RowReader& rdr);
     CtiCCOperationStats* replicate() const;
 
 

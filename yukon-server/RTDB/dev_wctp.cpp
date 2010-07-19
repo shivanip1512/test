@@ -1367,13 +1367,7 @@ CtiDeviceWctpTerminal& CtiDeviceWctpTerminal::setWctp(const CtiTableDeviceTapPag
     return *this;
 }
 
-void CtiDeviceWctpTerminal::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableDeviceTapPaging::getSQL(db, keyTable, selector);
-}
-
-void CtiDeviceWctpTerminal::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceWctpTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

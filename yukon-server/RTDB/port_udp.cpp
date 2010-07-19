@@ -11,7 +11,7 @@ const string &UdpPort::getIPAddress() const  {  return _tcpIpInfo.getIPAddress()
 INT           UdpPort::getIPPort()    const  {  return _tcpIpInfo.getIPPort();     }
 
 
-void UdpPort::DecodeDatabaseReader(RWDBReader &rdr)
+void UdpPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     try
     {
@@ -23,12 +23,6 @@ void UdpPort::DecodeDatabaseReader(RWDBReader &rdr)
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-}
-
-void UdpPort::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector) const
-{
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTablePortTCPIP::getSQL(db, keyTable, selector);
 }
 
 const string &UdpPort::getEncodingKey()  const

@@ -253,13 +253,19 @@ CtiDeviceGroupVersacom&     CtiDeviceGroupVersacom::setVersacomGroup(const CtiTa
     return *this;
 }
 
-void CtiDeviceGroupVersacom::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const
+string CtiDeviceGroupVersacom::getSQLCoreStatement() const
 {
-    Inherited::getSQL(db, keyTable, selector);
-    CtiTableVersacomLoadGroup::getSQL(db, keyTable, selector);
+    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
+                                     "DV.deviceid, DV.alarminhibit, DV.controlinhibit, LGV.serialaddress, LGV.utilityaddress, "
+                                     "LGV.sectionaddress, LGV.classaddress, LGV.divisionaddress, LGV.addressusage, "
+                                     "LGV.relayusage, LGV.routeid "
+                                   "FROM YukonPAObject YP, Device DV, LMGroupVersacom LGV "
+                                   "WHERE YP.paobjectid = LGV.deviceid AND YP.paobjectid = DV.deviceid";
+
+    return sqlCore;
 }
 
-void CtiDeviceGroupVersacom::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiDeviceGroupVersacom::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 

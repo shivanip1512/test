@@ -52,9 +52,9 @@ public:
    virtual LONG getRouteID();
    virtual string getDescription(const CtiCommandParser & parse) const;
 
+   virtual string getSQLCoreStatement() const;
 
-   virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector) const;
-   virtual void DecodeDatabaseReader(RWDBReader &rdr);
+   virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
    virtual INT ExecuteRequest(CtiRequestMsg                  *pReq,
                               CtiCommandParser               &parse,

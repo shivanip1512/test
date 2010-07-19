@@ -18,8 +18,6 @@
 #include "tbl_port_tcpip.h"
 #include "logger.h"
 
-#include "rwutil.h"
-
 CtiTablePortTCPIP::CtiTablePortTCPIP() :
     _ipPort(1000),
     _portID(0)
@@ -88,22 +86,7 @@ void CtiTablePortTCPIP::setEncodingType(const string& encodingType)
     _encodingType = encodingType;
 }
 
-void CtiTablePortTCPIP::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable portTbl = db.table(getTableName().c_str());
-
-    selector <<
-    portTbl["ipaddress"] <<
-    portTbl["socketportnumber"] <<
-    portTbl["encodingkey"] <<
-    portTbl["encodingtype"];
-
-    selector.from(portTbl);
-
-    selector.where( selector.where() && keyTable["paobjectid"] == portTbl["portid"] );
-}
-
-void CtiTablePortTCPIP::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTablePortTCPIP::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     try
     {

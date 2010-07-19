@@ -21,7 +21,6 @@ using std::list;
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h>
 #include <list>
@@ -38,6 +37,12 @@ using std::list;
 #include "ccConfirmationStats.h"
 #include "Controllable.h"
 
+namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+}
+
 class CtiCCSpecial : public RWCollectable, public Controllable
 {
 
@@ -47,7 +52,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     CtiCCSpecial();
     CtiCCSpecial(StrategyManager * strategyManager);
-    CtiCCSpecial(RWDBReader& rdr, StrategyManager * strategyManager);
+    CtiCCSpecial(Cti::RowReader& rdr, StrategyManager * strategyManager);
     CtiCCSpecial(const CtiCCSpecial& area);
 
     virtual ~CtiCCSpecial();
@@ -72,9 +77,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCConfirmationStats& getConfirmationStats();
 
     BOOL isDirty() const;
-    void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
-    void setDynamicData(RWDBReader& rdr);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+    void setDynamicData(Cti::RowReader& rdr);
 
     //Members inherited from RWCollectable
     void saveGuts(RWvostream& ) const;
@@ -106,7 +110,7 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader& rdr);
 
 };
 

@@ -19,7 +19,6 @@
 #include "logger.h"
 
 #include "utility.h"
-#include "rwutil.h"
 
 CtiTableDeviceMCTIEDPort::CtiTableDeviceMCTIEDPort() :
 _deviceID(-1),
@@ -181,25 +180,7 @@ CtiTableDeviceMCTIEDPort CtiTableDeviceMCTIEDPort::setRealTimeScanFlag(int flag)
     return *this;
 }
 
-void CtiTableDeviceMCTIEDPort::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str());
-
-    selector << devTbl["deviceid"]
-    << devTbl["connectedied"]
-    << devTbl["password"]
-    << devTbl["iedscanrate"]
-    << devTbl["defaultdataclass"]
-    << devTbl["defaultdataoffset"]
-    << devTbl["realtimescan"];
-
-    selector.from(devTbl);
-
-    //  this select will be tacked on to the Carrier device
-    selector.where( selector.where() && keyTable["paobjectid"].leftOuterJoin(devTbl["deviceid"]) );  //later: == getDeviceID());
-}
-
-void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string temp;
 
@@ -251,42 +232,7 @@ string CtiTableDeviceMCTIEDPort::getTableName()
     return "DeviceMCTIEDPort";
 }
 
-RWDBStatus CtiTableDeviceMCTIEDPort::Restore()
-{
-
-    char temp[32];
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    RWDBTable devTbl = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector << devTbl["deviceid"]
-    << devTbl["connectedied"]
-    << devTbl["password"]
-    << devTbl["iedscanrate"]
-    << devTbl["defaultdataclass"]
-    << devTbl["defaultdataoffset"]
-    << devTbl["realtimescan"];
-
-    selector.where( devTbl["deviceid"] == getDeviceID() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader  );
-        setDirty( false );
-    }
-    else
-    {
-        setDirty( true );
-    }
-    return reader.status();
-}
-
-RWDBStatus CtiTableDeviceMCTIEDPort::Insert()
+bool CtiTableDeviceMCTIEDPort::Insert()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -294,10 +240,10 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Insert()
         dout << "CtiTableDeviceMCTIEDPort::Insert() not implemented" << endl;
     }
 
-    return RWDBStatus::noInserter;
+    return false;
 }
 
-RWDBStatus CtiTableDeviceMCTIEDPort::Update()
+bool CtiTableDeviceMCTIEDPort::Update()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -305,10 +251,10 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Update()
         dout << "CtiTableDeviceMCTIEDPort::Update() not implemented" << endl;
     }
 
-    return RWDBStatus::noUpdater;
+    return false;
 }
 
-RWDBStatus CtiTableDeviceMCTIEDPort::Delete()
+bool CtiTableDeviceMCTIEDPort::Delete()
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -316,6 +262,6 @@ RWDBStatus CtiTableDeviceMCTIEDPort::Delete()
         dout << "CtiTableDeviceMCTIEDPort::Delete() not implemented" << endl;
     }
 
-    return RWDBStatus::noDeleter;
+    return false;
 }
 

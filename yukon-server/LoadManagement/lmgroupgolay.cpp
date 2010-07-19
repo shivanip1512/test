@@ -30,7 +30,7 @@ _nominal_timeout(0)
 {   
 }
 
-CtiLMGroupGolay::CtiLMGroupGolay(RWDBReader& rdr)
+CtiLMGroupGolay::CtiLMGroupGolay(Cti::RowReader &rdr)
 {
     restore(rdr);   
 }
@@ -210,24 +210,10 @@ CtiLMGroupBase* CtiLMGroupGolay::replicate() const
 /*---------------------------------------------------------------------------
   restore
     
-  Restores given a RWDBReader
+  Restores given a Reader
   ---------------------------------------------------------------------------*/
-void CtiLMGroupGolay::restore(RWDBReader& rdr)
+void CtiLMGroupGolay::restore(Cti::RowReader &rdr)
 {
     CtiLMGroupBase::restore(rdr);
-#ifdef _THISNEEDSTOBEADDEDBACK_
-    //NOTE: !
-    RWDBNullIndicator isNull;
-    rdr["sasimplenominaltimeout"] >> isNull;
-    if(!isNull)
-    {
-	rdr["sasimplenominaltimeout"] >> _nominal_timeout;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << " Golay LMGroup could not find a nominal timeout when restoring from the database" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
-#endif    
 }
 

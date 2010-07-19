@@ -26,6 +26,8 @@
 #include "msg_notif_email.h"
 #include "ctidate.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 extern ULONG _LM_DEBUG;
 
@@ -39,7 +41,7 @@ _minnotifytime(0)
 {
 }
 
-CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(RWDBReader& rdr)
+CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(Cti::RowReader &rdr)
 {
     restore(rdr);
 }
@@ -710,9 +712,9 @@ CtiLMProgramBaseSPtr CtiLMProgramEnergyExchange::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
+void CtiLMProgramEnergyExchange::restore(Cti::RowReader &rdr)
 {
 
 
@@ -738,7 +740,7 @@ void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
     Restores the database entries for a energy exchange program that are not
     contained in the base table.
 ---------------------------------------------------------------------------*/
-/*void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(RWDBReader& rdr)
+/*void CtiLMProgramEnergyExchange::restoreEnergyExchangeSpecificDatabaseEntries(Cti::RowReader &rdr)
 {
     rdr["minnotifytime"] >> _minnotifytime;
     rdr["heading"] >> _heading;
@@ -755,10 +757,7 @@ void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::dumpDynamicData()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
+    dumpDynamicData(CtiTime());
 }
 
 /*---------------------------------------------------------------------------
@@ -766,28 +765,14 @@ void CtiLMProgramEnergyExchange::dumpDynamicData()
 
     Writes out the dynamic information for this energy exchange program.
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiLMProgramEnergyExchange::dumpDynamicData(CtiTime& currentDateTime)
 {
     if( getManualControlReceivedFlag() )
     {
         for(LONG i=0;i<_lmenergyexchangeoffers.size();i++)
         {
-            ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->dumpDynamicData(conn, currentDateTime);
+            ((CtiLMEnergyExchangeOffer*)_lmenergyexchangeoffers[i])->dumpDynamicData(currentDateTime);
         }
-    }
-}
-
-/*---------------------------------------------------------------------------
-    restoreDynamicData
-
-    Restores self's dynamic data given a RWDBReader
----------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::restoreDynamicData(RWDBReader& rdr)
-{
-
-
-    if( getManualControlReceivedFlag() )
-    {
     }
 }
 

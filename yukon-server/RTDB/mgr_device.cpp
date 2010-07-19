@@ -13,12 +13,13 @@
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <rw/db/db.h>
 
 #include "mgr_device.h"
 #include "debug_timer.h"
 #include "cparms.h"
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 #include "dev_macro.h"
 #include "dev_cbc.h"
 #include "dev_dnp.h"
@@ -59,12 +60,12 @@
 
 #include "devicetypes.h"
 #include "resolvers.h"
-#include "slctdev.h"
-
+#include "utility.h"
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
-
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 // prevent any devB (proximity excluded device) which may be seleced to execute from interfereing with devA's next evaluation time.
 static void applyExecutionGrantExpiresIsEvaluateNext(const long key, CtiDeviceSPtr devB, void* devSelect)
@@ -257,13 +258,13 @@ void CtiDeviceManager::test_dumpList(void)
 }
 
 
-bool CtiDeviceManager::refreshDevices(RWDBReader& rdr)
+bool CtiDeviceManager::refreshDevices(Cti::RowReader &rdr)
 {
     bool rowSelected = false;
 
     coll_type::writer_lock_guard_t guard(getLock());
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( rdr() )
     {
         rowSelected = true;
 
@@ -339,8 +340,6 @@ bool CtiDeviceManager::refreshDevices(RWDBReader& rdr)
 
     return rowSelected;
 }
-
-
 
 CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port, LONG Remote)
 {
@@ -478,10 +477,10 @@ void CtiDeviceManager::getDevicesByPortID(long portid, vector<ptr_type> &devices
 
     if( pd_itr != _portDevices.end() )
     {
-        set<long> &port_deviceids = pd_itr->second;
+        Cti::Database::id_set &port_deviceids = pd_itr->second;
 
-        set<long>::iterator id_itr = port_deviceids.begin(),
-                            id_end = port_deviceids.end();
+        Cti::Database::id_set_itr id_itr = port_deviceids.begin(),
+                                  id_end = port_deviceids.end();
 
         ptr_type dev;
 
@@ -515,9 +514,9 @@ void CtiDeviceManager::getDevicesByType(int type, vector<ptr_type> &devices)
 
     if( pd_itr != _typeDevices.end() )
     {
-        set<long> &type_deviceids = pd_itr->second;
+        Cti::Database::id_set &type_deviceids = pd_itr->second;
 
-        set<long>::iterator id_itr = type_deviceids.begin(),
+        Cti::Database::id_set_itr id_itr = type_deviceids.begin(),
                             id_end = type_deviceids.end();
 
         ptr_type dev;
@@ -603,8 +602,6 @@ _dberrorcode(0)
 {
 }
 
-extern void cleanupDB();
-
 CtiDeviceManager::~CtiDeviceManager()
 {
     // cleanupDB();  // Deallocate all the DB stuff.
@@ -644,34 +641,27 @@ void CtiDeviceManager::refresh(LONG paoID, string category, string devicetype)
         }
 
         // We were given an id.  We can use that to reduce our workload.
-        vector<long> paoid_vector;
+        //vector<long> paoid_vector;
+        Cti::Database::id_set paoids;
 
-        paoid_vector.push_back(paoID);
+        //paoid_vector.push_back(paoID);
+        paoids.insert(paoID);
 
-        refreshList(id_range_t(paoid_vector.begin(), paoid_vector.end()), type);
+        refreshList(paoids, type);
     }
     else
     {
-        vector<long> stub;
+        //vector<long> stub;
+        Cti::Database::id_set stub;
 
         // we were given no id.  There must be no dbchange info.
-        refreshList(id_range_t(stub.begin(), stub.end()));
+        refreshList(stub);
     }
 }
 
-
-bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_name, const CtiDeviceBase &device, string type, const bool include_type)
+string CtiDeviceManager::createTypeSqlClause(string type, const bool include_type)
 {
-    bool print_bounds = DebugLevel & 0x00020000;
-
-    Timing::DebugTimer timer("looking for " + device_name, print_bounds);
-
-    RWDBConnection conn     = getConnection();
-    RWDBDatabase   db       = getDatabase();
-    RWDBSelector   selector = db.selector();
-    RWDBTable      keyTable;
-
-    device.getSQL(db, keyTable, selector);
+    string sqlType;
 
     if( !type.empty() )
     {
@@ -679,32 +669,95 @@ bool CtiDeviceManager::loadDeviceType(id_range_t &paoids, const string &device_n
 
         if( include_type )
         {
-            selector.where(rwdbUpper(keyTable["type"]) == type.c_str() && selector.where());
+            sqlType = "AND upper (YP.type) = '" + type + "'";
         }
         else
         {
-            selector.where(rwdbUpper(keyTable["type"]) != type.c_str() && selector.where());
+            sqlType = "AND upper (YP.type) != '" + type + "'";
         }
     }
 
-    addIDClause(selector, keyTable["paobjectid"], set<long>(paoids.begin(), paoids.end()));
+    return sqlType;
+}
 
-    RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
+string CtiDeviceManager::createIdSqlClause(const Cti::Database::id_set &paoids, const string table, const string attrib)
+{
+    string sqlIDs;
 
-    if( DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok )
+    if( !paoids.empty() )
     {
-        string loggedSQLstring = selector.asString();
+        ostringstream in_list;
+
+        if( paoids.size() == 1 )
+        {
+            //  special single id case
+    
+            in_list << *(paoids.begin());
+
+            sqlIDs += table + "." + attrib + " = " + in_list.str();
+    
+            return sqlIDs;
+        }
+        else
+        {
+            in_list << "(";
+        
+            copy(paoids.begin(), paoids.end(), csv_output_iterator<long, ostringstream>(in_list));
+        
+            in_list << ")";
+
+            sqlIDs += table + "." + attrib + " IN " + in_list.str();
+
+            return sqlIDs;
+        }
+    }
+
+    return string();
+}
+
+bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const string &device_name, const CtiDeviceBase &device, string type, const bool include_type)
+{
+    bool print_bounds = DebugLevel & 0x00020000;
+    bool retVal = false;
+
+    Timing::DebugTimer timer("looking for " + device_name, print_bounds);
+
+    string       sql        = device.getSQLCoreStatement();
+    const string typeClause = createTypeSqlClause(type, include_type);
+    const string idClause   = createIdSqlClause(paoids);
+
+    if( !typeClause.empty() )
+    {
+        sql += " ";
+        sql += typeClause;
+    }
+    if( !idClause.empty() )
+    {
+        sql += " AND ";
+        sql += idClause;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
+
+    retVal = refreshDevices(rdr);
+
+    if( DebugLevel & 0x00020000 || !rdr.isValid() )
+    {
+        string loggedSQLstring = rdr.asString(); //selector.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    return refreshDevices(rdr);
+    return retVal;
 }
 
 
-void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
+void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LONG deviceType)
 {
     bool rowFound = false;
 
@@ -719,7 +772,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
         {
             coll_type::writer_lock_guard_t guard(getLock());
 
-            id_itr_t paoid_itr = paoids.begin();
+            Cti::Database::id_set_itr paoid_itr = paoids.begin();
 
             while( paoid_itr != paoids.end() )
             {
@@ -741,9 +794,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
         int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
 
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-
-            id_itr_t paoid_itr = paoids.begin();
+            Cti::Database::id_set_itr paoid_itr = paoids.begin();
 
             //  I don't really like the do-while construct, but this loop must happen at least once even if no paoids were passed in
             do
@@ -752,7 +803,9 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
 
                 //  note the iterator difference/addition - requires a random-access iterator...
                 //    trait tags could be useful here except that VC6 doesn't support template member functions
-                id_range_t paoid_subset(paoid_itr, paoid_itr + subset_size);
+                Cti::Database::id_set_itr subset_end = paoid_itr;
+                advance(subset_end, subset_size);
+                Cti::Database::id_set paoid_subset(paoid_itr, subset_end);
 
                 if( deviceTemplate )
                 {
@@ -773,7 +826,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         //  prevent the LMI from being loaded twice
                         rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DNP(),          "RTU-LMI", false);
                         rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
-                        rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceRTM(),         "RTM");
+                        rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
 
                         rowFound |= loadDeviceType(paoid_subset, "TAP devices",            CtiDeviceTapPagingTerminal());
                         rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
@@ -792,11 +845,11 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                         rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   CtiDeviceDLCBase(),     "REPEATER 921");
 
                         rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
-                        rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceFMU(),         "FMU");
+                        rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceIED(),         "FMU");
                         rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
 
                         //  XML Transmitters
-                        rowFound |= loadDeviceType(paoid_subset, "Integration devices",    Devices::XmlDevice(),   "Integration");
+                        rowFound |= loadDeviceType(paoid_subset, "Integration devices",    CtiDeviceRemote(),   "Integration");
                         rowFound |= loadDeviceType(paoid_subset, "Integration groups",     Devices::XmlGroupDevice());
 
                         rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
@@ -825,7 +878,7 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                 // Now load the device properties onto the devices
                 refreshDeviceProperties(paoid_subset, deviceType);
 
-                paoid_itr += subset_size;
+                advance(paoid_itr, subset_size);
 
             } while( paoid_itr != paoids.end() );
         }
@@ -855,13 +908,6 @@ void CtiDeviceManager::refreshList(id_range_t &paoids, const LONG deviceType)
                 _portDevices[evictedDevice->getPortID()].erase(evictedDevice->getID());
                 _typeDevices[evictedDevice->getType()  ].erase(evictedDevice->getID());
             }
-        }
-
-        if( getErrorCode() != RWDBStatus::ok && getErrorCode() != RWDBStatus::endOfFetch )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " database had a return code of " << getErrorCode() << endl;
         }
     }
     catch(RWExternalErr e )
@@ -1148,15 +1194,9 @@ bool CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 }
 
 
-void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
+void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
 {
     coll_type::writer_lock_guard_t guard(getLock());
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn     = getConnection();
-    RWDBDatabase   db       = getDatabase();
-    RWDBSelector   selector = db.selector();
-    RWDBTable      keyTable;
 
     if(DebugLevel & 0x00020000)
     {
@@ -1164,25 +1204,32 @@ void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
         dout << CtiTime() << " Looking for Device Exclusions" << endl;
     }
 
-    CtiTablePaoExclusion::getSQL( db, keyTable, selector );
+    static const string sqlCore = CtiTablePaoExclusion::getSQLCoreStatement();
+    const string idClause = createIdSqlClause(paoids, "PEX", "paoid");
 
-    // The servers do not care about the LM subordination.
-    selector.where(keyTable["functionid"] != CtiTablePaoExclusion::ExFunctionLMSubordination && selector.where());
+    string sql = sqlCore;
 
-    addIDClause(selector, keyTable["paoid"], set<long>(paoids.begin(), paoids.end()));
+    if(!idClause.empty())
+    {
+        sql += " AND ";
+        sql += idClause;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
 
     if(DebugLevel & 0x00020000)
     {
-        string loggedSQLstring = selector.asString();
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    RWDBReader rdr = selector.reader(conn);
-
-    if(rdr.status().errorCode() == RWDBStatus::ok)
+    if(rdr.isValid())
     {
         // prep the exclusion lists
         if( paoids.empty() )
@@ -1192,7 +1239,7 @@ void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
         }
         else
         {
-            for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+            for( Cti::Database::id_set_itr paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
             {
                 CtiDeviceSPtr dev = getDeviceByID(*paoid_itr);
 
@@ -1206,7 +1253,7 @@ void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
         }
     }
 
-    while( (setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok) && rdr() )
+    while( rdr() )
     {
         LONG lTemp;
         CtiDeviceSPtr pTempCtiDevice;
@@ -1244,15 +1291,8 @@ void CtiDeviceManager::refreshExclusions(id_range_t &paoids)
     }
 }
 
-void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
+void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
 {
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-    RWDBSelector selector = db.selector();
-    RWDBSelector tmpSelector;
-    RWDBTable tblMeterGroup = db.table("devicemetergroup");
-    RWDBTable tblPAObject = db.table("yukonpaobject");
-    RWDBReader rdr;
     long tmpDeviceID;
     string tmpCollectionGroup,
     tmpTestCollectionGroup,
@@ -1264,26 +1304,36 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for ION Meter Groups" << endl;
     }
 
-    selector << tblMeterGroup["DeviceID"]
-    << tblMeterGroup["MeterNumber"];
-    selector.where((tblMeterGroup["DeviceID"] == tblPAObject["PAObjectID"]) && (tblPAObject["Type"].like("ION%")));
+    static const string sqlCore = "SELECT DMG.DeviceID, DMG.MeterNumber "
+                                  "FROM devicemetergroup DMG, yukonpaobject YP "
+                                  "WHERE DMG.DeviceID = YP.PAObjectID AND YP.Type LIKE 'ION%'";
+    const string idClause = createIdSqlClause(paoids);
 
-    addIDClause(selector, tblPAObject["PAObjectID"], set<long>(paoids.begin(), paoids.end()));
+    string sql = sqlCore;
 
-    rdr = selector.reader(conn);
-
-    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    if(!idClause.empty())
     {
-        string loggedSQLstring = selector.asString();
+        sql += " AND ";
+        sql += idClause;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
+
+    if(DebugLevel & 0x00020000 || !rdr.isValid())
+    {
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    if(rdr.status().errorCode() == RWDBStatus::ok)
+    if(rdr.isValid())
     {
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        while( rdr() )
         {
             rdr["DeviceID"]            >> tmpDeviceID;
             rdr["MeterNumber"]         >> tmpMeterNumber;
@@ -1300,7 +1350,7 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Error reading ION Meter Groups from database: " << rdr.status().errorCode() << endl;
+        dout << "Error reading ION Meter Groups from database" << endl;
     }
 
     if(DebugLevel & 0x00020000)
@@ -1309,14 +1359,14 @@ void CtiDeviceManager::refreshIONMeterGroups(id_range_t &paoids)
     }
 }
 
-void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
+void CtiDeviceManager::refreshDeviceParameters(Cti::Database::id_set &paoids, int type)
 {
     if(!type || type == TYPE_LMGROUP_XML)
     {
         //Clear devices listed in paoids. if none, clear ALL
         if (!paoids.empty())
         {
-            id_range_t::const_iterator itr = paoids.begin();
+            Cti::Database::id_set::const_iterator itr = paoids.begin();
             for ( itr = paoids.begin(); itr != paoids.end(); itr++)
             {
                 CtiDeviceSPtr device = getDeviceByID(*itr);
@@ -1332,32 +1382,42 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
             apply(applyDeviceClearParameters, NULL);
         }
 
-        //When there are more devices, move these outside of the if.
-        RWDBConnection conn = getConnection();
-        RWDBDatabase db = getDatabase();
+        static const string sqlCore =  "SELECT XML.LMGroupXMLParameterId, XML.lmgroupid, XML.parametername, "
+                                         "XML.parametervalue "
+                                       "FROM LMGroupXMLParameter XML";
+        static const string orderBy =  "ORDER BY XML.lmgroupid ASC";
+        const string idClause = createIdSqlClause(paoids, "XML", "lmgroupid");
 
-        Devices::XmlGroupDevice xmlDevice;
+        string sql = sqlCore;
 
-        RWDBSelector selector = db.selector();
-        RWDBTable keyTable;
-
-        xmlDevice.getParametersSelector(db,keyTable,selector);
-
-        //Add in PAO id specifics if there are any
-        addIDClause(selector, keyTable["lmgroupid"], set<long>(paoids.begin(), paoids.end()));
-
-        RWDBReader rdr = selector.reader(conn);
-
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        if(!idClause.empty())
         {
-            string loggedSQLstring = selector.asString();
+            sql += " WHERE ";
+            sql += idClause;
+            sql += " ";
+            sql += orderBy;
+        }
+        else
+        {
+            sql += " ";
+            sql += orderBy;
+        }     
+        
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);                        
+
+        rdr.execute();
+
+        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        {
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << loggedSQLstring << endl;
             }
         }
 
-        if(rdr.status().errorCode() == RWDBStatus::ok)
+        if(rdr.isValid())
         {
             int prevDev = -1;
             CtiDeviceSPtr device;
@@ -1382,71 +1442,84 @@ void CtiDeviceManager::refreshDeviceParameters(id_range_t &paoids, int type)
         if(DebugLevel & 0x00020000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " Done looking for XML Properties" << endl;
+            dout << "Done looking for XML Properties" << endl;
         }
     }
 }
 
-void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
+void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
 {
     int childcount = 0;
     CtiDeviceSPtr pTempCtiDevice;
 
-    RWDBConnection conn = getConnection();
-    RWDBDatabase db = getDatabase();
-    RWDBSelector selector = db.selector();
-    RWDBTable tblGenericMacro = db.table("GenericMacro");
-    RWDBReader rdr;
     long tmpOwnerID, tmpChildID;
 
     if(DebugLevel & 0x00020000)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Subdevices" << endl;
     }
-
     {
-        selector << rwdbName("childcount",rwdbCount("ChildID"));
-        selector.from(tblGenericMacro);
-        selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
+        const string childCountQuery = "SELECT COUNT ('ChildID') as childcount "
+                                       "FROM GenericMacro GM "
+                                       "WHERE GM.MacroType = 'GROUP'";
+        const string idClause = createIdSqlClause(paoids, "GM", "OwnerID");
 
-        addIDClause(selector, tblGenericMacro["OwnerID"], set<long>(paoids.begin(), paoids.end()));
+        string sql = childCountQuery;
 
-        rdr = selector.reader(conn);
-
-        if(setErrorCode(rdr.status().errorCode()) == RWDBStatus::ok)
+        if(!idClause.empty())
         {
-            if( rdr() )
-            {
-                rdr["childcount"] >> childcount;
-            }
+            sql += " AND ";
+            sql += idClause;
         }
 
-        selector.clear();
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        rdr.execute();
+
+        if( rdr() )
+        {
+            rdr["childcount"] >> childcount;
+        }
     }
 
-    selector << tblGenericMacro["ChildID"] << tblGenericMacro["OwnerID"];
-    selector.from(tblGenericMacro);
-    selector.where(tblGenericMacro["MacroType"] == RWDBExpr("GROUP"));
+    const string sqlCore =  "SELECT GM.ChildID, GM.OwnerID "
+                            "FROM GenericMacro GM "
+                            "WHERE GM.MacroType = 'GROUP'";
+    const string idClause = createIdSqlClause(paoids, "GM", "OwnerID");
+    const string orderBy  = "ORDER BY GM.ChildOrder ASC";
 
-    addIDClause(selector, tblGenericMacro["OwnerID"], set<long>(paoids.begin(), paoids.end()));
+    string sql = sqlCore;
 
-    selector.orderBy(tblGenericMacro["ChildOrder"]);
-
-    RWDBResult macroResult = selector.execute(conn);
-    RWDBTable myMacroTable = macroResult.table();
-
-    if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+    if(!idClause.empty())
     {
-        string loggedSQLstring = selector.asString();
+        sql += " AND ";
+        sql += idClause;
+        sql += " ";
+        sql += orderBy;
+    }
+    else
+    {
+        sql += " ";
+        sql += orderBy;
+    }
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sql);
+
+    rdr.execute();
+
+    if(DebugLevel & 0x00020000 || !rdr.isValid())
+    {
+        string loggedSQLstring = rdr.asString();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << loggedSQLstring << endl;
         }
     }
 
-    if(childcount != 0 && macroResult.status().errorCode() == RWDBStatus::ok)
+    if(childcount != 0 && rdr.isValid())
     {
-        rdr = myMacroTable.reader();
 
         // prep the exclusion lists
         if( paoids.empty() )
@@ -1455,7 +1528,7 @@ void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
         }
         else
         {
-            for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+            for( Cti::Database::id_set_itr paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
             {
                 CtiDeviceSPtr dev = getDeviceByID(*paoid_itr);
 
@@ -1464,7 +1537,7 @@ void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
         }
 
 
-        while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+        while( rdr() )
         {
             rdr["OwnerID"] >> tmpOwnerID;
             rdr["ChildID"] >> tmpChildID;
@@ -1488,7 +1561,7 @@ void CtiDeviceManager::refreshMacroSubdevices(id_range_t &paoids)
 }
 
 
-void CtiDeviceManager::refreshMCTConfigs(id_range_t &paoids)
+void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
 {
     CtiDeviceSPtr pTempCtiDevice;
 
@@ -1500,48 +1573,42 @@ void CtiDeviceManager::refreshMCTConfigs(id_range_t &paoids)
               tmpconfigmode;
 
     {
-        RWDBConnection conn   = getConnection();
-        RWDBDatabase db       = getDatabase();
-        RWDBSelector selector = db.selector();
-        RWDBTable tblPAObject = db.table("yukonpaobject");
-        RWDBTable mappingTbl  = db.table("mctconfigmapping");
-        RWDBTable configTbl   = db.table("mctconfig");
-        RWDBReader rdr;
-
         if(DebugLevel & 0x00020000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Configs" << endl;
         }
 
-        selector << mappingTbl["mctid"]
-                 << configTbl["configname"]
-                 << configTbl["configtype"]
-                 << configTbl["configmode"]
-                 << configTbl["mctwire1"]
-                 << configTbl["mctwire2"]
-                 << configTbl["mctwire3"]
-                 << configTbl["ke1"]
-                 << configTbl["ke2"]
-                 << configTbl["ke3"];
+        const string sqlCore = "SELECT MCM.mctid, CFG.configname, CFG.configtype, CFG.configmode, CFG.mctwire1, "
+                                 "CFG.mctwire2, CFG.mctwire3, CFG.ke1, CFG.ke2, CFG.ke3 "
+                               "FROM mctconfigmapping MCM, mctconfig CFG, yukonpaobject YP "
+                               "WHERE MCM.mctid = YP.paobjectid AND MCM.configid = CFG.configid";
+        const string idClause = createIdSqlClause(paoids);
 
-        selector.where( mappingTbl["mctid"]    == tblPAObject["paobjectid"] &&
-                        mappingTbl["configid"] == configTbl["configid"] );
+        string sql = sqlCore;
 
-        addIDClause(selector, tblPAObject["PAObjectID"], set<long>(paoids.begin(), paoids.end()));
-
-        rdr = selector.reader(conn);
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        if(!idClause.empty())
         {
-            string loggedSQLstring = selector.asString();
+            sql += " AND ";
+            sql += idClause;
+        }
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        rdr.execute();
+
+        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        {
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << loggedSQLstring << endl;
             }
         }
 
-        if(rdr.status().errorCode() == RWDBStatus::ok)
+        if(rdr.isValid())
         {
-            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            while( rdr() )
             {
                 rdr["mctid"]      >> tmpmctid;
                 rdr["configname"] >> tmpconfigname;
@@ -1568,7 +1635,7 @@ void CtiDeviceManager::refreshMCTConfigs(id_range_t &paoids)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading MCT Configs from database: " << rdr.status().errorCode() << endl;
+            dout << "Error reading MCT Configs from database" << endl;
         }
 
         if(DebugLevel & 0x00020000)
@@ -1579,45 +1646,49 @@ void CtiDeviceManager::refreshMCTConfigs(id_range_t &paoids)
 }
 
 
-void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
+void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 {
     LONG tmpmctid, tmpdisconnectaddress;
     bool row_found = false;
 
     {
-        RWDBConnection conn   = getConnection();
-        RWDBDatabase db       = getDatabase();
-        RWDBSelector selector = db.selector();
-        RWDBTable configTbl   = db.table("devicemct400series");
-        RWDBReader rdr;
-
         if(DebugLevel & 0x00020000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Configs" << endl;
         }
 
-        selector << configTbl["deviceid"];
-        selector << configTbl["disconnectaddress"];
+        static const string sqlCore = "SELECT DMS.deviceid, DMS.disconnectaddress "
+                                      "FROM devicemct400series DMS";
+        const string idClause = createIdSqlClause(paoids, "DMS", "deviceid");
 
-        //  no need to bring yukonpaobject into this yet, we'll just link straight to the config table
-        addIDClause(selector, configTbl["deviceid"], set<long>(paoids.begin(), paoids.end()));
+        string sql = sqlCore;
 
-        rdr = selector.reader(conn);
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        if(!idClause.empty())
         {
-            string loggedSQLstring = selector.asString();
+            sql += " WHERE ";
+            sql += idClause;
+        }
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
+
+        rdr.execute();
+
+        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        {
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << loggedSQLstring << endl;
             }
         }
 
-        if(rdr.status().errorCode() == RWDBStatus::ok)
+        if(rdr.isValid())
         {
             CtiDeviceSPtr       tmpDevice;
             CtiDeviceMCT410SPtr tmpMCT410;
 
-            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            while( rdr() )
             {
                 row_found = true;
 
@@ -1648,7 +1719,7 @@ void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
             //  if this was targeted at a certain MCT and we didn't find a row, clear out the MCT's address
             if( !paoids.empty() && !row_found )
             {
-                for( id_itr_t paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
+                for( Cti::Database::id_set_itr paoid_itr = paoids.begin(); paoid_itr != paoids.end(); ++paoid_itr )
                 {
                     tmpDevice = getDeviceByID(*paoid_itr);
 
@@ -1663,7 +1734,7 @@ void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading MCT 400 Configs from database: " << rdr.status().errorCode() << endl;
+            dout << "Error reading MCT 400 Configs from database" << endl;
         }
 
         if(DebugLevel & 0x00020000)
@@ -1674,7 +1745,7 @@ void CtiDeviceManager::refreshMCT400Configs(id_range_t &paoids)
 }
 
 
-void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
+void CtiDeviceManager::refreshDynamicPaoInfo(Cti::Database::id_set &paoids)
 {
     CtiDeviceSPtr device;
     long tmp_paobjectid, tmp_entryid;
@@ -1682,34 +1753,39 @@ void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
     CtiTableDynamicPaoInfo dynamic_paoinfo;
 
     {
-        RWDBConnection conn   = getConnection();
-        RWDBDatabase db       = getDatabase();
-        RWDBSelector selector = db.selector();
-        RWDBTable keyTable;
-        RWDBReader rdr;
-
         if(DebugLevel & 0x00020000)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Dynamic PAO Info" << endl;
         }
 
-        CtiTableDynamicPaoInfo::getSQL(db, keyTable, selector, _app_id);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        addIDClause(selector, keyTable["paobjectid"], set<long>(paoids.begin(), paoids.end()));
-
-        rdr = selector.reader(conn);
-        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+        string sql = CtiTableDynamicPaoInfo::getSQLCoreStatement(_app_id);
+        
+        if( !sql.empty() )
         {
-            string loggedSQLstring = selector.asString();
+            sql += createIdSqlClause(paoids, "DPI", "paobjectid");
+            rdr.setCommandText(sql);
+            rdr.execute(); 
+        }
+        else
+        {
+            return;
+        }
+                       
+        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        {
+            string loggedSQLstring = rdr.asString();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << loggedSQLstring << endl;
             }
         }
 
-        if(rdr.status().errorCode() == RWDBStatus::ok)
+        if(rdr.isValid())
         {
-            while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+            while( rdr() )
             {
                 dynamic_paoinfo.DecodeDatabaseReader(rdr);
 
@@ -1733,7 +1809,7 @@ void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading Dynamic PAO Info from database: " << rdr.status().errorCode() << endl;
+            dout << "Error reading Dynamic PAO Info from database. " <<  endl;
         }
 
         if(DebugLevel & 0x00020000)
@@ -1746,7 +1822,7 @@ void CtiDeviceManager::refreshDynamicPaoInfo(id_range_t &paoids)
 
 //  This method loads all the device properties/characteristics which must be appended to an already
 //  loaded device.
-void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
+void CtiDeviceManager::refreshDeviceProperties(Cti::Database::id_set &paoids, int type)
 {
     if( !type || type == TYPE_MACRO )
     {
@@ -1786,8 +1862,7 @@ void CtiDeviceManager::refreshDeviceProperties(id_range_t &paoids, int type)
 
 void CtiDeviceManager::writeDynamicPaoInfo( void )
 {
-    static const char *sql          = "select max(entryid) from dynamicpaoinfo";
-    static const char *dynamic_info = "dynamicinfo";
+    static const char *sql = "select max(entryid) from dynamicpaoinfo";
     static long max_entryid;
 
     vector<CtiTableDynamicPaoInfo *> dirty_info;
@@ -1805,11 +1880,11 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
     {
         try
         {
-            RWDBConnection conn = getConnection();
-            RWDBReader rdr;
-            RWDBStatus status;
+            bool status;
 
-            rdr = ExecuteQuery(conn, sql);
+            Cti::Database::DatabaseConnection   conn;
+            Cti::Database::DatabaseReader       rdr(conn, sql);
+            rdr.execute();
 
             if(rdr() && rdr.isValid())
             {
@@ -1823,10 +1898,10 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
 
             //  just in case two applications are writing at once - if we make this an atomic
             //    operation, the select-maxid-before-write will be safe
-            conn.beginTransaction(dynamic_info);
+            conn.beginTransaction();
 
             vector<CtiTableDynamicPaoInfo *>::iterator itr;
-            for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
+            for( itr = dirty_info.begin(); itr != dirty_info.end(); itr++ )
             {
                 long rowsAffected = 0;
 
@@ -1836,23 +1911,23 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
 
                 //  update didn't work, so we have to assign a new entry ID
                 //    this is clunky - entry ID is useless, since we key on Owner, PAO, and Key anyway
-                if( status.errorCode() != RWDBStatus::ok || !rowsAffected )
+                if( ! status || !rowsAffected )
                 {
                     (*itr)->setEntryID(max_entryid + 1);
 
-                    status = (*itr)->Insert(conn).errorCode();
+                    status = (*itr)->Insert(conn);
 
-                    if( status.errorCode() == RWDBStatus::ok )
+                    if( status )
                     {
                         max_entryid++;  //  increments the reference
                     }
                 }
 
-                if( status.errorCode() != RWDBStatus::ok )
+                if( ! status )
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - error (" << status.errorCode() << ") inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - error inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     (*itr)->dump();
@@ -1862,10 +1937,10 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
                 delete *itr;
             }
 
-            conn.commitTransaction(dynamic_info);
+            bool commitSuccess = conn.commitTransaction();
 
             /*
-            if( conn.commitTransaction(dynamic_info).errorCode() == RWDBStatus::ok )
+            if( commitSuccess )
             {
                 //  clear it out if it was successfully inserted
                 for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
@@ -2162,11 +2237,11 @@ CtiDeviceManager &CtiDeviceManager::addPortExclusion( LONG paoID )
 
 bool CtiDeviceManager::refreshPointGroups()
 {
-    vector<long> stub;
-    return refreshPointGroups(id_range_t(stub.begin(), stub.end()));
+    Cti::Database::id_set stub;
+    return refreshPointGroups(stub);
 }
 
-bool CtiDeviceManager::refreshPointGroups(id_range_t &paoids)
+bool CtiDeviceManager::refreshPointGroups(Cti::Database::id_set &paoids)
 {
     return loadDeviceType(paoids, "point groups", CtiDeviceGroupPoint());
 }

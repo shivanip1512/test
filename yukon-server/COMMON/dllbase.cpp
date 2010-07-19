@@ -21,7 +21,6 @@
 #include <process.h>
 
 #include <rw/toolpro/winsock.h>
-#include <rw/db/db.h>
 #include <rw\thr\mutex.h>
 #include <rw\ctoken.h>
 
@@ -41,7 +40,6 @@ using namespace std;
 
 extern VOID PortPipeCleanup (ULONG Reason);
 extern void freeUCTMemory(void);
-extern void cleanupDB();
 
 // Global Exports....
 IM_EX_CTIBASE CTINEXUS           PorterNexus;
@@ -53,8 +51,6 @@ namespace Cti {
 IM_EX_CTIBASE ActiveMQConnectionManager gActiveMQConnection(gConfigParms.getValueAsString("ACTIVEMQ_BROKER_URI"));
 
 }
-
-RWDBDatabase *sqlDatabase = NULL;
 
 /*
  *  These are the Configuration Parameters for the Real Time Database
@@ -106,7 +102,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
             InitYukonBaseGlobals();                            // Load up the config file.
 
             // Set default database connection params
-            setDatabaseParams(0, dbDll, dbName, dbUser, dbPassword);
+            setDatabaseParams(dbDll, dbName, dbUser, dbPassword);
 
             break;
         }
@@ -122,7 +118,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         {
             PortPipeCleanup(0);                                // Get that connection closed (if open)!
             freeUCTMemory();
-            cleanupDB();
 
             break;
         }
@@ -296,19 +291,6 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         }
     }
 
-    // NOTE this does not currently work! The semaphore used to enforce this rule is a global variable
-    // and is initialized before this function can set it's value.
-    if( !(str = gConfigParms.getValueAsString("MAX_DBCONNECTION_COUNT")).empty() )
-    {
-        gMaxDBConnectionCount = atoi(str.c_str());
-        if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
-    }
-    else
-    {
-        gMaxDBConnectionCount = 10;
-        if(DebugLevel & 0x0001) cout << "Max of " << gMaxDBConnectionCount << " RWDB connections allowed" << endl;
-    }
-
     if( !(str = gConfigParms.getValueAsString("MODEM_CONNECTION_TIMEOUT")).empty() )
     {
         ModemConnectionTimeout = atoi(str.c_str());
@@ -455,7 +437,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             }
         }
     }
-
+    /*
     if( !(str = gConfigParms.getValueAsString("DB_ERROR_IGNORE")).empty() )
     {
         //  Examples:
@@ -477,7 +459,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
                 addDBIgnore(err);
             }
         }
-    }
+    }*/
 }
 
 DLLEXPORT INT getDebugLevel(void)

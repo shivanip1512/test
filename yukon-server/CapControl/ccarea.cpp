@@ -28,6 +28,8 @@
 #include "capcontroller.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "database_reader.h"
+#include "database_writer.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -66,7 +68,7 @@ CtiCCArea::CtiCCArea(StrategyManager * strategyManager)
 {
 }
 
-CtiCCArea::CtiCCArea(RWDBReader& rdr, StrategyManager * strategyManager)
+CtiCCArea::CtiCCArea(Cti::RowReader& rdr, StrategyManager * strategyManager)
     : Controllable(rdr, strategyManager)
 {
     restore(rdr);
@@ -183,9 +185,9 @@ CtiCCArea* CtiCCArea::replicate() const
 /*---------------------------------------------------------------------------
     restore
 
-    Restores given a RWDBReader
+    Restores given a Reader
 ---------------------------------------------------------------------------*/
-void CtiCCArea::restore(RWDBReader& rdr)
+void CtiCCArea::restore(Cti::RowReader& rdr)
 {
     rdr["voltreductionpointid"] >> _voltReductionControlPointId;
     if (_voltReductionControlPointId <= 0)
@@ -206,35 +208,16 @@ void CtiCCArea::restore(RWDBReader& rdr)
     //_dirty = FALSE;
 }
 
-
-/*---------------------------------------------------------------------------
-    dumpDynamicData
-
-    Writes out the dynamic information for this cc feeder.
----------------------------------------------------------------------------*/
-void CtiCCArea::dumpDynamicData()
-{
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-
-    dumpDynamicData(conn,CtiTime());
-}
-
 /*---------------------------------------------------------------------------
     dumpDynamicData
 
     Writes out the dynamic information for this substation bus.
 ---------------------------------------------------------------------------*/
-void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCAreaTable = getDatabase().table( "dynamicccarea" );
-
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCCAreaTable.updater();
-
-
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_reEnableAreaFlag?'Y':'N');
@@ -244,33 +227,23 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
                                 char2string(*(addFlags+3)));
             _additionalFlags.append("NNNNNNNNNNNNNNNN");
 
-            updater.clear();
+            static const string updateSql = "update dynamicccarea set additionalflags = ?, controlvalue = ?"
+                                            " where areaid = ?";
+            Cti::Database::DatabaseWriter updater(conn, updateSql);
 
-            updater.where(dynamicCCAreaTable["areaid"]==getPaoId());
-            updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
-                    <<  dynamicCCAreaTable["controlvalue"].assign( _voltReductionControlValue );
+            updater << _additionalFlags << _voltReductionControlValue << getPaoId();
 
-
-            updater.execute( conn );
-
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(updater.execute())    // No error occured!
             {
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = updater.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << updateSql << endl;
                 }
             }
         }
@@ -282,41 +255,32 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             }
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
-            RWDBInserter inserter = dynamicCCAreaTable.inserter();
+            static const string insertSql = "insert into dynamicccarea values (?, ?, ?)";
+            Cti::Database::DatabaseWriter dbInserter(conn, insertSql);
 
-            inserter << getPaoId()
-                <<  string2RWCString(addFlags)
-                <<  _voltReductionControlValue;
+            dbInserter << getPaoId() << addFlags <<  _voltReductionControlValue;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = inserter.asString();
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    dout << CtiTime() << " - " << insertSql << endl;
                 }
             }
 
-            inserter.execute( conn );
-
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            if(dbInserter.execute())    // No error occured!
             {
                 _insertDynamicDataFlag = FALSE;
                 _dirty = FALSE;
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
-                    string loggedSQLstring = inserter.asString();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  " << loggedSQLstring << endl;
+                        dout << "  " << insertSql << endl;
                     }
                 }
             }
@@ -326,7 +290,7 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
-void CtiCCArea::setDynamicData(RWDBReader& rdr)
+void CtiCCArea::setDynamicData(Cti::RowReader& rdr)
 {
     string tempBoolString;
 

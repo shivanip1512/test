@@ -11,6 +11,7 @@ INCLPATHS+= \
 -I$(MESSAGE)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(SQLAPI)\include \
 
 INTERPOBJS=\
 logic.obj

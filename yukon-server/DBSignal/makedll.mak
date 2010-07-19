@@ -6,6 +6,7 @@ INCLPATHS+= \
 -I$(COMMON)\include \
 -I$(RW) \
 -I$(BOOST) \
+-I$(SQLAPI)\include \
 
 
 
@@ -95,20 +96,26 @@ $(BIN)\*.exe
 
 #UPDATE#
 dbsigsend.obj:	yukon.h precompiled.h ctidbgmem.h dllbase.h os2_2w32.h \
-		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
-		cticonnect.h netports.h tbl_signal.h ctitime.h \
-		dbmemobject.h pointdefs.h utility.h queues.h sorted_vector.h
+		dlldefs.h types.h cticalls.h dsm2.h mutex.h guard.h utility.h \
+		ctitime.h queues.h numstr.h sorted_vector.h cticonnect.h \
+		netports.h dsm2err.h words.h tbl_signal.h row_reader.h \
+		database_connection.h dbaccess.h sema.h dbmemobject.h \
+		pointdefs.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 tbl_rawpthistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		tbl_rawpthistory.h ctitime.h dlldefs.h pointdefs.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
-		cticonnect.h netports.h sema.h logger.h thread.h \
-		CtiPCPtrQueue.h rwutil.h boost_time.h boostutil.h
+		sorted_vector.h row_reader.h database_connection.h dbaccess.h \
+		dllbase.h dsm2.h mutex.h guard.h cticonnect.h netports.h \
+		dsm2err.h words.h sema.h logger.h thread.h CtiPCPtrQueue.h \
+		rwutil.h database_reader.h boost_time.h boostutil.h \
+		database_writer.h row_writer.h
 tbl_signal.obj:	yukon.h precompiled.h ctidbgmem.h tbl_signal.h \
-		ctitime.h dlldefs.h dbmemobject.h pointdefs.h utility.h \
-		queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h dbaccess.h dllbase.h dsm2.h mutex.h guard.h \
-		cticonnect.h netports.h sema.h logger.h thread.h \
-		CtiPCPtrQueue.h rwutil.h boost_time.h boostutil.h
+		ctitime.h dlldefs.h row_reader.h database_connection.h \
+		dbaccess.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
+		mutex.h guard.h utility.h queues.h numstr.h sorted_vector.h \
+		cticonnect.h netports.h dsm2err.h words.h sema.h \
+		dbmemobject.h pointdefs.h logger.h thread.h CtiPCPtrQueue.h \
+		rwutil.h database_reader.h boost_time.h boostutil.h \
+		database_writer.h row_writer.h
 #ENDUPDATE#

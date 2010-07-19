@@ -16,13 +16,13 @@
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
-#include <rw/db/db.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/recursiv.h> 
 
 #include "lmcurtailcustomer.h"
 #include "lmprogrambase.h"
 #include "observe.h"
+#include "database_connection.h"
 
 using std::vector;
 
@@ -34,7 +34,7 @@ public:
 RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
 
     CtiLMProgramCurtailment();
-    CtiLMProgramCurtailment(RWDBReader& rdr);
+    CtiLMProgramCurtailment(Cti::RowReader &rdr);
     CtiLMProgramCurtailment(const CtiLMProgramCurtailment& curtailprog);
 
     virtual ~CtiLMProgramCurtailment();
@@ -70,16 +70,16 @@ RWDECLARE_COLLECTABLE( CtiLMProgramCurtailment )
     CtiLMProgramCurtailment& setRunStatus(const string& runstat);
     CtiLMProgramCurtailment& setAdditionalInfo(const string& additional);
 
-    //void restoreCurtailmentSpecificDatabaseEntries(RWDBReader& rdr);
+    //void restoreCurtailmentSpecificDatabaseEntries(Cti::RowReader &rdr);
     void notifyCustomers(CtiMultiMsg* multiDispatchMsg);
     void notifyCustomersOfStop(CtiMultiMsg* multiDispatchMsg);
     void addLMCurtailProgramActivityTable();
-    void updateLMCurtailProgramActivityTable(RWDBConnection& conn, CtiTime& currentDateTime);
+    void updateLMCurtailProgramActivityTable(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
     void deleteLMCurtailProgramActivityTable();
     void restoreDynamicData();
 
     void dumpDynamicData();
-    void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     virtual CtiLMProgramBaseSPtr replicate() const;
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded);
@@ -126,7 +126,7 @@ private:
 
     vector<CtiLMCurtailCustomer*> _lmprogramcurtailmentcustomers;
 
-    void restore(RWDBReader& rdr);
+    void restore(Cti::RowReader &rdr);
 };
 
 #if VSLICK_TAG_WORKAROUND

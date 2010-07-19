@@ -21,13 +21,7 @@
 *-----------------------------------------------------------------------------*/
 #include <float.h>
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
 #include <limits.h>
-#include <rw/db/nullind.h>
-#include <rw/db/datetime.h>
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 
@@ -38,6 +32,7 @@
 #include "resolvers.h"
 #include "desolvers.h"
 #include "yukon.h"
+#include "row_reader.h"
 
 #include "pointtypes.h"
 
@@ -62,7 +57,7 @@ private:
 public:
 
    CtiTablePointLimit(long pointid, int limitnumber);
-   CtiTablePointLimit(RWDBReader &rdr);
+   CtiTablePointLimit(Cti::RowReader &rdr);
    CtiTablePointLimit(const CtiTablePointLimit& aRef);
    virtual ~CtiTablePointLimit();
 

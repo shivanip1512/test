@@ -16,10 +16,7 @@
 *-----------------------------------------------------------------------------*/
 
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
+#include "row_reader.h"
 
 #include "dbaccess.h"
 #include "tbl_alm_ndest.h"
@@ -72,56 +69,7 @@ string CtiTableNotificationDestination::getTableName()
    return string("NotificationDestination");
 }
 
-RWDBStatus CtiTableNotificationDestination::Insert()
-{
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-   return RWDBStatus();
-}
-
-RWDBStatus CtiTableNotificationDestination::Update()
-{
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
-
-   return RWDBStatus();
-}
-
-RWDBStatus CtiTableNotificationDestination::Restore()
-{
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
-
-   return RWDBStatus();
-}
-RWDBStatus CtiTableNotificationDestination::Delete()
-{
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
-
-   return RWDBStatus();
-}
-
-void CtiTableNotificationDestination::getSQL(RWDBDatabase &db,  RWDBTable &table, RWDBSelector &selector)
-{
-   table = db.table( getTableName().c_str() );
-
-   selector <<
-      table["notificationgroupid"] <<
-      table["destinationorder"] <<
-      table["recipientid"];
-
-   selector.from(table);
-}
-
-void CtiTableNotificationDestination::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableNotificationDestination::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
 
 

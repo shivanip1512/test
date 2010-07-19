@@ -124,32 +124,7 @@ string CtiTableGolayGroup::getTableName()
     return string("LMGroupSA205Or105");
 }
 
-void CtiTableGolayGroup::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector)
+void CtiTableGolayGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
 }
-
-void CtiTableGolayGroup::DecodeDatabaseReader(RWDBReader &rdr)
-{
-}
-
-RWDBStatus CtiTableGolayGroup::Restore()
-{
-    return ;
-}
-
-RWDBStatus CtiTableGolayGroup::Insert()
-{
-    return ;
-}
-
-RWDBStatus CtiTableGolayGroup::Update()
-{
-    return ;
-}
-
-RWDBStatus CtiTableGolayGroup::Delete()
-{
-    return ;
-}
-
 

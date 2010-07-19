@@ -22,7 +22,6 @@
 #include "numstr.h"
 #include "tbl_tag.h"
 #include "utility.h"
-#include "rwutil.h"
 
 CtiTableTag::CtiTableTag() :
 _tagId(0),
@@ -60,59 +59,15 @@ string CtiTableTag::getTableName()
     return string("Tags");
 }
 
-
-RWDBStatus CtiTableTag::Restore()
+string CtiTableTag::getSQLCoreStatement()
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    static const string sql = "SELECT TGS.tagid, TGS.tagname, TGS.taglevel, TGS.inhibit, TGS.colorid, TGS.imageid "
+                              "FROM Tags TGS";
 
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBSelector selector = getDatabase().selector();
-
-    selector<<
-    table["tagid"] <<
-    table["tagname"] <<
-    table["taglevel"] <<
-    table["inhibit"] <<
-    table["colorid"] <<
-    table["imageid"];
-
-    selector.where( table["tagid"] == getTagId() );
-
-    RWDBReader reader = selector.reader( conn );
-
-    /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are sirty and need to be
-     *  written into the database
-     */
-    if( reader() )
-    {
-        DecodeDatabaseReader( reader );
-    }
-    else
-    {
-        setDirty( TRUE );
-    }
-
-    return reader.status();
+    return sql;
 }
 
-void CtiTableTag::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    keyTable = db.table(CtiTableTag::getTableName().c_str());
-
-    selector <<
-    keyTable["tagid"] <<
-    keyTable["tagname"] <<
-    keyTable["taglevel"] <<
-    keyTable["inhibit"] <<
-    keyTable["colorid"] <<
-    keyTable["imageid"];
-
-    selector.from(keyTable);
-}
-
-void CtiTableTag::DecodeDatabaseReader(RWDBReader& rdr)
+void CtiTableTag::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
     string rwsTemp;
 

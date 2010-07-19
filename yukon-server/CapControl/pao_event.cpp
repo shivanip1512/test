@@ -41,7 +41,7 @@ _dirty(false)
 }
 
 
-CtiPAOEvent::CtiPAOEvent(RWDBReader& rdr)
+CtiPAOEvent::CtiPAOEvent(Cti::RowReader& rdr)
 {
     string tempBoolString;
 

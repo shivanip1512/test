@@ -18,12 +18,7 @@
 
 using namespace std;
 
-#include <rw/db/datetime.h>
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
-#include <rw/db/reader.h>
-#include <rw/db/bkins.h>
+#include "row_reader.h"
 
 #include "dbaccess.h"
 #include "dsm2.h"
@@ -31,10 +26,12 @@ using namespace std;
 #include "logger.h"
 #include "statistics.h"
 
-#include "rwutil.h"
 #include "utility.h"
 #include "ctidate.h"
 #include "cparms.h"
+#include "database_writer.h"
+
+using namespace Cti::Database;
 
 CtiStatistics::CtiStatistics(long id) :
     _dirty(false),
@@ -69,20 +66,6 @@ _dirty(false)
 CtiStatistics::~CtiStatistics()
 {
     //  this should all be handled by Porter's shutdown code - individual objects shouldn't be accessing the DB
-    /*
-    if(_dirty)
-    {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        Record(conn);
-
-        if(_doHistInsert)
-        {
-            InsertDaily(conn);
-        }
-    }
-    */
 }
 
 void CtiStatistics::updateTime(const CtiTime &now_time)
@@ -333,22 +316,13 @@ string CtiStatistics::getTableNameDynamicHistory()
     return string("DynamicPAOStatisticsHistory");
 }
 
-void CtiStatistics::getSQL(RWDBDatabase &db, RWDBTable &table, RWDBSelector &selector, vector<long>::iterator id_begin, vector<long>::iterator id_end)
+string CtiStatistics::getSQLCoreStatement(std::vector<long>::iterator id_begin, std::vector<long>::iterator id_end)
 {
-    table = db.table(getTableName().c_str());
+    string sql =  "SELECT DPS.paobjectid, DPS.statistictype, DPS.requests, DPS.completions, DPS.attempts, "
+                  "DPS.commerrors, DPS.protocolerrors, DPS.systemerrors, DPS.startdatetime "
+                  "FROM DynamicPaoStatistics DPS WHERE DPS.paobjectid IN ";
 
-    selector
-        << table["paobjectid"]
-        << table["statistictype"]
-        << table["requests"]
-        << table["completions"]
-        << table["attempts"]
-        << table["commerrors"]
-        << table["protocolerrors"]
-        << table["systemerrors"]
-        << table["startdatetime"];
-
-    CtiTime now;
+    const string orderBy = " ORDER BY DPS.paobjectid ASC";
 
     ostringstream in_list;
 
@@ -358,23 +332,24 @@ void CtiStatistics::getSQL(RWDBDatabase &db, RWDBTable &table, RWDBSelector &sel
 
     in_list << ")";
 
-    selector.where(table["paobjectid"].in(RWDBExpr(in_list.str().c_str(), false)));
-    selector.orderBy(table["paobjectid"]);
+    sql += in_list.str();
+    sql += orderBy;
+
+    return sql;
 }
 
-void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
+void CtiStatistics::Factory(Cti::RowReader &rdr, vector<CtiStatistics *> &restored)
 {
     string      typeStr;
     int         val;
     CtiTime     startdt;
-    RWDBStatus  dbstat(RWDBStatus::ok);
     long        current_id = -1;
     bool        first_row = true;
     CtiStatistics *pStat = 0;
 
     string hourname = getHourName(CtiTime::now());
 
-    while( rdr() && (dbstat.errorCode() == RWDBStatus::ok) )
+    while( rdr() )
     {
         long new_id;
 
@@ -445,8 +420,6 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
                 pStat->_rowExists[counter] = true;
             }
         }
-
-        dbstat = rdr.status();
     }
 
     if( pStat )
@@ -456,47 +429,46 @@ void CtiStatistics::Factory(RWDBReader &rdr, vector<CtiStatistics *> &restored)
 }
 
 
-RWDBStatus::ErrorCode  CtiStatistics::Record(RWDBConnection &conn)
+bool  CtiStatistics::Record(Cti::Database::DatabaseConnection &conn)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    bool retVal = false;
 
-    RWDBStatus::ErrorCode ec = RWDBStatus::ok;
-
-    for(int i = 0; i < FinalCounterBin && ec == RWDBStatus::ok; i++)
+    for(int i = 0; i < FinalCounterBin; i++)
     {
         if( _dirtyCounter.test(i) )
         {
             if( _rowExists.test(i) )
             {
-                if( Update(conn, i) == RWDBStatus::ok )
+                retVal = Update(conn, i);
+                if( retVal )
                 {
                     continue;
                 }
             }
 
-            ec = Insert(conn, i);
+            retVal = Insert(conn, i);
         }
     }
 
-    if( ec == RWDBStatus::ok )
+    if( retVal )
     {
         _dirty = false;
     }
 
-    return ec;
+    return retVal;
 }
 
 
-RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
+bool  CtiStatistics::Insert(Cti::Database::DatabaseConnection &conn, int counter)
 {
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-
-    RWDBStatus dbstat;
-    RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBInserter ins = table.inserter();
+    bool retVal = false;
+    static const string sql = "insert into " + getTableName() +
+        " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if( counter < FinalCounterBin )
     {
+        Cti::Database::DatabaseWriter ins(conn, sql);
+
         ins <<
             getID() <<
             getCounterName( counter, _intervalBounds[counter].first ) <<
@@ -509,84 +481,86 @@ RWDBStatus::ErrorCode  CtiStatistics::Insert(RWDBConnection &conn, int counter)
             _intervalBounds[counter].first <<
             _intervalBounds[counter].second;
 
-        dbstat = ExecuteInserter(conn,ins,__FILE__,__LINE__);
+        
 
-        if( dbstat.errorCode() != RWDBStatus::ok )
+        retVal = ins.execute();
+        if( !retVal )
         {
-            string loggedSQLstring = ins.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "Statistics Insert Error Code = " << dbstat.errorCode() << endl;
-                dout << loggedSQLstring << endl;
+                dout << "Statistics Insert Error " << endl << sql << endl;
             }
         }
     }
 
-    return dbstat.errorCode();
+    return retVal;
 }
 
-RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn, int counter)
+bool  CtiStatistics::Update(Cti::Database::DatabaseConnection &conn, int counter)
 {
-    RWDBStatus::ErrorCode ec = RWDBStatus::ok;
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    bool retVal = false;
+    static const string sql =  "update " + getTableName() + 
+                        " set "
+                            "requests = ?, "
+                            "completions = ?, "
+                            "attempts = ?, "
+                            "commerrors = ?, "
+                            "protocolerrors = ?, "
+                            "systemerrors = ?, "
+                            "startdatetime = ?, "
+                            "stopdatetime = ? "
+                        " where "
+                            "paobjectid = ? AND "
+                            "statistictype = ?";
 
-    RWDBTable table = getDatabase().table(getTableName().c_str());
-    RWDBUpdater updater = table.updater();
-
-    RWDBColumn col_paobjectid     = table["paobjectid"],
-               col_statistictype  = table["statistictype"],
-               col_requests       = table["requests"],
-               col_completions    = table["completions"],
-               col_attempts       = table["attempts"],
-               col_commerrors     = table["commerrors"],
-               col_protocolerrors = table["protocolerrors"],
-               col_systemerrors   = table["systemerrors"],
-               col_startdatetime  = table["startdatetime"],
-               col_stopdatetime   = table["stopdatetime"];
 
     _intervalBounds[Lifetime].second.resetToNow();
 
     if( counter < FinalCounterBin )
     {
+        Cti::Database::DatabaseWriter updater(conn, sql);
+
+        // set
         updater <<
-            col_requests   .assign(getCounter(Requests,    counter)) <<
-            col_completions.assign(getCounter(Completions, counter)) <<
-            col_attempts   .assign(getCounter(Attempts,    counter)) <<
-            col_commerrors    .assign(getCounter(CommErrors,     counter)) <<
-            col_protocolerrors.assign(getCounter(ProtocolErrors, counter)) <<
-            col_systemerrors  .assign(getCounter(SystemErrors,   counter)) <<
-            col_startdatetime .assign(toRWDBDT(_intervalBounds[counter].first)) <<
-            col_stopdatetime  .assign(toRWDBDT(_intervalBounds[counter].second));
+            getCounter(Requests,       counter) <<
+            getCounter(Completions,    counter) <<
+            getCounter(Attempts,       counter) <<
+            getCounter(CommErrors,     counter) <<
+            getCounter(ProtocolErrors, counter) <<
+            getCounter(SystemErrors,   counter) <<
+            _intervalBounds[counter].first      <<
+            _intervalBounds[counter].second;
 
-        updater.where(col_paobjectid == getID() && col_statistictype == getCounterName(counter, _intervalBounds[counter].first).c_str());
+        // where
+        updater << getID() << getCounterName(counter, _intervalBounds[counter].first);
 
-        ec = ExecuteUpdater(conn,updater,__FILE__,__LINE__);
+        retVal = updater.execute();
 
-        if( ec == RWDBStatus::ok )
+        if( retVal )
         {
             _dirtyCounter[counter] = false;
         }
     }
 
-    return ec;
+    return retVal;
 }
 
-RWDBStatus::ErrorCode  CtiStatistics::InsertDaily(RWDBConnection &conn)
+bool  CtiStatistics::InsertDaily(Cti::Database::DatabaseConnection &conn)
 {
     if( !_doHistInsert )
     {
-        return RWDBStatus::ok;
+        return true;
     }
 
+    bool retVal = false;
     _doHistInsert = false;
 
-    RWDBStatus dbstat;
-
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        static const string sql = "insert into " + getTableNameDynamicHistory() +
+            " values (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        RWDBTable insertTable = getDatabase().table(getTableNameDynamicHistory().c_str());
-        RWDBInserter dbinserter = insertTable.inserter();
+        Cti::Database::DatabaseWriter dbinserter(conn, sql);
+
         dbinserter <<
             getID() <<
             _intervalBounds[Yesterday].first.date().daysFrom1970() <<
@@ -597,41 +571,39 @@ RWDBStatus::ErrorCode  CtiStatistics::InsertDaily(RWDBConnection &conn)
             getCounter( ProtocolErrors, Yesterday ) <<
             getCounter( SystemErrors, Yesterday );
 
-        dbstat = ExecuteInserter(conn, dbinserter, __FILE__, __LINE__);
 
-        if( dbstat.errorCode() != RWDBStatus::ok )
+        retVal = dbinserter.execute();
+        if( !retVal )
         {
-            string loggedSQLstring = dbinserter.asString();
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "Statistics Insert Error Code = " << dbstat.errorCode() << endl;
-                dout << loggedSQLstring << endl;
+                dout << "Statistics Insert Error" << endl;
             }
         }
     }
 
-    return dbstat.errorCode();
+    return retVal;
 }
 
-RWDBStatus::ErrorCode  CtiStatistics::PruneDaily(RWDBConnection &conn)
+bool  CtiStatistics::PruneDaily(Cti::Database::DatabaseConnection &conn)
 {
     int numDays = gConfigParms.getValueAsULong("STATISTICS_NUM_DAYS", 120, 10) + 1; //No magic here, I just like +1
 
     if( numDays <= 0 )
     {
-        return RWDBStatus::ok;
+        return true;
     }
 
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        static const string sql = "delete from " + getTableNameDynamicHistory() + " where "
+                                  "dateoffset < ?";
 
+        Cti::Database::DatabaseWriter deleter(conn, sql);
         CtiDate today;
-        RWDBTable deleteTable = getDatabase().table(getTableNameDynamicHistory().c_str());
-        RWDBDeleter deleter = deleteTable.deleter();
 
-        deleter.where( deleteTable["dateoffset"] < (today.daysFrom1970() - numDays) );
+        deleter << today.daysFrom1970() - numDays;
 
-        return deleter.execute().status().errorCode();
+        return deleter.execute();
     }
 }
 

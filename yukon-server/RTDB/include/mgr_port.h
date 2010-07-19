@@ -22,12 +22,15 @@
 #ifndef __PORT_MGR_H__
 #define __PORT_MGR_H__
 
-#include <rw/db/connect.h>
 
 #include "dlldefs.h"
 #include "smartmap.h"
 #include "port_base.h"
 #include "slctprt.h"
+
+namespace Cti {
+    class RowReader;
+}
 
 IM_EX_PRTDB BOOL isAPort(CtiPort*,void*);
 
@@ -38,12 +41,12 @@ private:
     CTI_PORTTHREAD_FUNC_FACTORY_PTR     _portThreadFuncFactory;
     CtiSmartMap< CtiPort >      _smartMap;
 
-    void RefreshDialableEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
-    void RefreshEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
+    void RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
+    void RefreshEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*),void *arg);
 
 protected:
 
-    void RefreshPooledPortEntries(bool &rowFound, RWDBReader& rdr, CtiPort* (*Factory)(RWDBReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
+    void RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rdr, CtiPort* (*Factory)(Cti::RowReader &), BOOL (*testFunc)(CtiPort*,void*), void *arg);
 
 public:
 
@@ -59,7 +62,7 @@ public:
 
     virtual ~CtiPortManager();
 
-    void RefreshList(CtiPort* (*Factory)(RWDBReader &) = PortFactory, BOOL (*fn)(CtiPort*,void*) = isAPort, void *d = NULL);
+    void RefreshList(CtiPort* (*Factory)(Cti::RowReader &) = PortFactory, BOOL (*fn)(CtiPort*,void*) = isAPort, void *d = NULL);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
     ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);
@@ -80,7 +83,7 @@ public:
 
     bool mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTablePaoExclusion &portexclusion);
     bool removePortExclusionBlocks(ptr_type anxiousPort);
-    void refreshExclusions(LONG id = 0);
+    bool refreshExclusions(LONG id = 0);
 };
 
 #endif                  // #ifndef __PORT_MGR_H__

@@ -2,6 +2,7 @@
 
 #include <crtdbg.h>
 #include <iostream>
+#include <sstream>
 
 #include <conio.h>
 
@@ -9,8 +10,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
-#include <rw/db/reader.h>
-#include <rw/db/connect.h>
 
 #include "id_calc.h"
 #include "dbaccess.h"
@@ -29,6 +28,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "cparms.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 #include "calclogicsvc.h"
 #include "calcthread.h"
@@ -1090,23 +1091,17 @@ BOOL CtiCalcLogicService::isANewCalcPointID(const long aPointID)
 {
     int retVal = false;
 
-    //  connect to the database
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection( );
-
     //  figure out what points are calc points
+    static const string sqlCore = "SELECT CB.POINTID "
+                                  "FROM CALCBASE CB "
+                                  "WHERE CB.POINTID = ?";
 
-    RWDBDatabase db             = conn.database();
-    RWDBTable    calcBaseTable  = db.table("CALCBASE");
-    RWDBSelector selector       = db.selector();
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader rdr(connection, sqlCore);
 
-    selector << calcBaseTable["POINTID"];
+    rdr << aPointID;
 
-    selector.from( calcBaseTable );
-
-    selector.where( selector["POINTID"] == aPointID );
-
-    RWDBReader  rdr = selector.reader( conn );
+    rdr.execute();
 
     // If this exists, return true, else return false
     if( rdr() )
@@ -1126,30 +1121,16 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
 
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
-
         //  figure out what points are calc points
-        //string sql;
+        static const string sqlBase =   "SELECT CB.POINTID, CB.UPDATETYPE, CB.PERIODICRATE, CB.QUALITYFLAG "
+                                        "FROM CALCBASE CB";
 
-        RWDBDatabase db             = conn.database();
-        RWDBTable    calcBaseTable  = db.table("CALCBASE");
-        RWDBSelector selector       = db.selector();
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection);
 
-        selector << calcBaseTable["POINTID"]
-        << calcBaseTable["UPDATETYPE"]
-        << calcBaseTable["PERIODICRATE"]
-        << calcBaseTable["QUALITYFLAG"];
+        rdr.setCommandText(sqlBase);
 
-        selector.from( calcBaseTable );
-
-        //{
-        //    CtiLockGuard<CtiLogger> doubt_guard(dout);
-        //    dout << selector.asString() << endl;
-        //}
-
-        RWDBReader  rdr = selector.reader( conn );
+        rdr.execute();
 
         // Load all Base Calcs first
         while( rdr() )
@@ -1183,24 +1164,16 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
         long pointid, componentpointid;
         double constantvalue;
 
-        RWDBTable    componentTable     = db.table("CALCCOMPONENT");
-        RWDBSelector componentselector  = db.selector();
+        static const string sqlCalc = "SELECT CC.POINTID, CC.COMPONENTTYPE, CC.COMPONENTPOINTID, CC.OPERATION, CC.CONSTANT, "
+                                        "CC.FUNCTIONNAME "
+                                      "FROM CALCCOMPONENT CC "
+                                      "ORDER BY COMPONENTORDER ASC";
 
-        componentselector << componentTable["POINTID"]
-        << componentTable["COMPONENTTYPE"]
-        << componentTable["COMPONENTPOINTID"]
-        << componentTable["OPERATION"]
-        << componentTable["CONSTANT"]
-        << componentTable["FUNCTIONNAME"];
+        Cti::Database::DatabaseReader componentRdr(connection);
+        
+        componentRdr.setCommandText(sqlCalc);
 
-        componentselector.from( componentTable );
-
-        // put in order
-        componentselector.orderBy(componentselector["COMPONENTORDER"]);
-
-        //cout << componentselector.asString() << endl;
-
-        RWDBReader  componentRdr = componentselector.reader( conn );
+        componentRdr.execute();
 
         //  iterate through the components
         while( componentRdr() )
@@ -1232,23 +1205,16 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
 
         long uomid;
         //Read from PointUnit Table, insert into pointStore
-        RWDBTable    unitTable     = db.table("POINTUNIT");
-        RWDBSelector unitselector  = db.selector();
 
-        unitselector << unitTable["POINTID"]
-        << unitTable["UOMID"];
+        static const string sqlPoint =  "SELECT DISTINCT PU.POINTID, PU.UOMID "
+                                        "FROM POINTUNIT PU, CALCBASE CB, CALCCOMPONENT CC "
+                                        "WHERE PU.POINTID = CC.COMPONENTPOINTID OR PU.POINTID = CB.POINTID";
 
-        unitselector.from( unitTable );
-        unitselector.from( calcBaseTable );
-        unitselector.from( componentTable );
+        Cti::Database::DatabaseReader unitRdr(connection);
 
-        unitselector.where( unitTable["POINTID"] == componentTable["COMPONENTPOINTID"] || unitTable["POINTID"] == calcBaseTable["POINTID"] );
+        unitRdr.setCommandText(sqlPoint);
 
-        unitselector.distinct();
-
-        //cout << componentselector.asString() << endl;
-
-        RWDBReader  unitRdr = unitselector.reader( conn );
+        unitRdr.execute();
 
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         //  iterate through the components
@@ -1273,23 +1239,16 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
             }
         }
 
-        RWDBTable    limitTable     = db.table("POINTLIMITS");
-        RWDBSelector limitSelector  = db.selector();
+        static const string sqlLimit = "SELECT DISTINCT PL.pointid, PL.limitnumber, PL.highlimit, PL.lowlimit, "
+                                          "PL.limitduration "
+                                       "FROM POINTLIMITS PL, CALCCOMPONENT CC, CALCBASE CB "
+                                       "WHERE PL.pointid = CC.COMPONENTPOINTID OR PL.pointid = CB.POINTID";
 
-        limitSelector << limitTable["pointid"]
-        << limitTable["limitnumber"]
-        << limitTable["highlimit"]
-        << limitTable["lowlimit"]
-        << limitTable["limitduration"];
+        Cti::Database::DatabaseReader limitReader(connection);
 
-        limitSelector.from( limitTable );
-        limitSelector.from( componentTable );
-        limitSelector.from( calcBaseTable );
+        limitReader.setCommandText(sqlLimit);
 
-        limitSelector.where( limitTable["pointid"] == componentTable["COMPONENTPOINTID"] || limitTable["pointid"] == calcBaseTable["POINTID"] );
-        limitSelector.distinct();
-
-        RWDBReader  limitReader = limitSelector.reader( conn );
+        limitReader.execute();
 
         while( limitReader() )
         {
@@ -1690,24 +1649,19 @@ void CtiCalcLogicService::reloadPointAttributes(long pointID)
 {
     try
     {
-        //  connect to the database
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection( );
-        RWDBDatabase db     = conn.database();
-
         long uomid, pointid;
         //Read from PointUnit Table, insert into pointStore
-        RWDBTable    unitTable     = db.table("POINTUNIT");
-        RWDBSelector unitselector  = db.selector();
 
-        unitselector << unitTable["POINTID"]
-        << unitTable["UOMID"];
+        static const string sqlCore =  "SELECT PTU.POINTID, PTU.UOMID "
+                                       "FROM POINTUNIT PTU "
+                                       "WHERE PTU.POINTID = ?";
 
-        unitselector.from( unitTable );
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader unitRdr(connection, sqlCore);
 
-        unitselector.where( unitTable["POINTID"] == pointID );
+        unitRdr << pointID;
 
-        RWDBReader  unitRdr = unitselector.reader( conn );
+        unitRdr.execute();
 
         CtiPointStore* pointStore = CtiPointStore::getInstance();
         //  iterate through the components
@@ -1730,20 +1684,15 @@ void CtiCalcLogicService::reloadPointAttributes(long pointID)
             }
         }
 
-        RWDBTable    limitTable     = db.table("POINTLIMITS");
-        RWDBSelector limitSelector  = db.selector();
+        const string limitSQL = "SELECT PTL.POINTID, PTL.limitnumber, PTL.highlimit, PTL.lowlimit, PTL.limitduration "
+                                "FROM POINTLIMITS PTL "
+                                "WHERE PTL.POINTID = ?";
 
-        limitSelector << limitTable["POINTID"]
-        << limitTable["limitnumber"]
-        << limitTable["highlimit"]
-        << limitTable["lowlimit"]
-        << limitTable["limitduration"];
+        Cti::Database::DatabaseReader limitReader(connection, limitSQL);
 
-        limitSelector.from( limitTable );
+        limitReader << pointID;
 
-        limitSelector.where( limitTable["POINTID"] == pointID );
-
-        RWDBReader  limitReader = limitSelector.reader( conn );
+        limitReader.execute();
 
         while( limitReader() )
         {

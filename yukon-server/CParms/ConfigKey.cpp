@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <algorithm>
-#include "rwutil.h"
 
 #include "configkey.h"
 

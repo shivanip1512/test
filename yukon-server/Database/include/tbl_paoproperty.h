@@ -2,9 +2,7 @@
 
 #include "dlldefs.h"
 
-#include <rw/db/db.h>
-#include <rw/db/dbase.h>
-#include <rw/db/table.h>
+#include "row_reader.h"
 
 #include <string>
 
@@ -24,7 +22,7 @@ private:
 
 public:
 
-    PaoPropertyTable(RWDBReader &rdr);
+    PaoPropertyTable(Cti::RowReader &rdr);
     virtual ~PaoPropertyTable() {};
 
     long getPaoId() const;
@@ -32,7 +30,9 @@ public:
     const std::string &getPropertyValue() const;
 
     static std::string getTableName();
-    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+    static std::string getSQLCoreStatement();
+
+    static std::string addIDSQLClause(const std::set<long> &deviceids);
 
     void dump() const;
 

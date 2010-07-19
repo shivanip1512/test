@@ -26,7 +26,6 @@
 #include "pt_numeric.h"
 #include "tbl_gateway_end_device.h"
 #include "utility.h"
-#include "rwutil.h"
 #include "ctidate.h"
 #include "ctitime.h"
 

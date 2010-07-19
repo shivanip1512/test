@@ -47,8 +47,6 @@
 #include "logger.h"
 #include "tbl_lmg_sa305.h"
 
-#include "rwutil.h"
-
 CtiTableSA305LoadGroup::CtiTableSA305LoadGroup() :
     _lmGroupId(0),
     _routeId(0),
@@ -209,29 +207,7 @@ string CtiTableSA305LoadGroup::getTableName()
     return string("lmgroupsa305");
 }
 
-void CtiTableSA305LoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-    RWDBTable devTbl = db.table(getTableName().c_str() );
-
-    selector <<
-    devTbl["groupid"           ] <<
-    devTbl["routeid"           ] <<
-    devTbl["addressusage"      ] <<
-    devTbl["utilityaddress"    ] <<
-    devTbl["groupaddress"      ] <<
-    devTbl["divisionaddress"   ] <<
-    devTbl["substationaddress" ] <<
-    devTbl["individualaddress" ] <<
-    devTbl["ratefamily"        ] <<
-    devTbl["ratemember"        ] <<
-    devTbl["ratehierarchy"     ] <<
-    devTbl["loadnumber"        ] ;
-
-    selector.from(devTbl);
-
-    selector.where( keyTable["paobjectid"] == devTbl["groupid"] && selector.where() );
-}
-void CtiTableSA305LoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
+void CtiTableSA305LoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string rwsTemp;
 
@@ -265,43 +241,4 @@ void CtiTableSA305LoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     else                            _function &= ~0x00000008;
 
 }
-
-RWDBStatus CtiTableSA305LoadGroup::Restore()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableSA305LoadGroup::Insert()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableSA305LoadGroup::Update()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return RWDBStatus::notSupported;
-}
-
-RWDBStatus CtiTableSA305LoadGroup::Delete()
-{
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    return RWDBStatus::notSupported;
-}
-
 

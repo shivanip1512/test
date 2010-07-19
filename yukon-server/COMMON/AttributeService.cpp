@@ -4,10 +4,12 @@
 #include "resolvers.h"
 #include "numstr.h"
 #include "dbaccess.h"
-#include "rwutil.h"
+#include "database_reader.h"
+#include "database_connection.h"
 
-#include <rw/db/db.h>
 
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 AttributeService::AttributeService()
 {
@@ -29,11 +31,10 @@ std::list<LitePoint> AttributeService::getExtraPaoPoints(int paoId)
         string sql("SELECT pointId FROM ExtraPaoPointAssignment WHERE paoId = ");
         sql += CtiNumStr(paoId);
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBReader rdr = ExecuteQuery( conn, sql );
-
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
         int pointId;
         while(rdr.isValid() && rdr() )
         {
@@ -66,11 +67,10 @@ LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttr
         sql += CtiNumStr(paoId);
         sql += " AND Attribute = '" + attributeName + "'";
 
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBReader rdr = ExecuteQuery( conn, sql );
-
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
         if(rdr.isValid() && rdr() )
         {
             rdr["pointId"] >> pointId;
@@ -110,11 +110,10 @@ std::list<LitePoint> AttributeService::getLitePointsById(const std::list<int>& p
     sql.replace(sql.find_last_of(","),1,")");
 
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
-
-        RWDBReader rdr = ExecuteQuery( conn, sql );
-
+        DatabaseConnection conn;
+        DatabaseReader rdr(conn, sql);
+        rdr.execute();
+    
         while(rdr.isValid() && rdr() )
         {
             LitePoint point;

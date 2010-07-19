@@ -16,7 +16,6 @@
 #include <iostream>
 using namespace std;
 
-#include <rw/db/db.h>
 #include <rw\thr\mutex.h>
 
 #include "dll_prot.h"

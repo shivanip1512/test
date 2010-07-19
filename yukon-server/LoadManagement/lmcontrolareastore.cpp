@@ -53,6 +53,8 @@
 #include "desolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
+#include "database_reader.h"
+#include "database_connection.h"
 #include "ctibase.h"
 #include "logger.h"
 #include "configparms.h"
@@ -60,11 +62,14 @@
 #include "loadmanager.h"
 #include "lmfactory.h"
 #include "utility.h"
-#include "rwutil.h"
 #include "tbl_paoexclusion.h"
 #include "tbl_lmprogramhistory.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 using namespace std;
+using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseReader;
 
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_GROUP_LIST;
@@ -220,11 +225,10 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
     if( _controlAreas->size() > 0 )
     {
         CtiTime currentDateTime = CtiTime();
-        string dynamicLoadManagement("dynamicLoadManagement");
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
 
-        conn.beginTransaction(dynamicLoadManagement.c_str());
+        Cti::Database::DatabaseConnection   conn;
+
+        conn.beginTransaction();
 
         for( LONG i=0;i<_controlAreas->size();i++ )
         {
@@ -285,7 +289,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                 }
             }
         }
-        conn.commitTransaction(string2RWCString(dynamicLoadManagement));
+        conn.commitTransaction();
     }
     else
     {
@@ -331,1732 +335,1449 @@ void CtiLMControlAreaStore::reset()
         }
 
         {
-            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-            RWDBConnection conn = getConnection();
+            Cti::Database::DatabaseConnection connection;
             {
-                if( conn.isValid() )
+                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+                if( _controlAreas->size() > 0 )   //Save off current data to database so that if can be loaded by new objects on reload
                 {
+                    dumpAllDynamicData();
+                    saveAnyProjectionData();
+                    saveAnyControlStringData();
+                }
+            }
+            CtiTime currentDateTime;
+
+            RWTValHashMap<LONG,LONG,id_hash,equal_to<LONG> > controlPointHashMap;
+            {//loading controllable statuses
+
+                static const string sql =  "SELECT DISTINCT PS.pointid "
+                                           "FROM pointstatus PS "
+                                           "WHERE PS.controloffset = 1";
+
+                Cti::Database::DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
-                        //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-                        if( _controlAreas->size() > 0 )   //Save off current data to database so that if can be loaded by new objects on reload
-                        {
-                            dumpAllDynamicData();
-                            saveAnyProjectionData();
-                            saveAnyControlStringData();
-                        }
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
                     }
-                    CtiTime currentDateTime;
-                    RWDBDatabase db = getDatabase();
+                }
 
-                    RWTValHashMap<LONG,LONG,id_hash,equal_to<LONG> > controlPointHashMap;
-                    {//loading controllable statuses
-                        RWDBTable pointStatusTable = db.table("pointstatus");
+                while( rdr() )
+                {
+                    LONG tempPointId = 0;
+                    rdr["pointid"] >> tempPointId;
 
-                        RWDBSelector selector = db.selector();
-                        selector.distinct();
-                        selector << pointStatusTable["pointid"];
+                    controlPointHashMap.insert( tempPointId, tempPointId );
+                }
+            }
 
-                        selector.from(pointStatusTable);
+            RWTimer allGroupTimer;
+            allGroupTimer.start();
 
-                        selector.where( pointStatusTable["controloffset"]==1 );
+            /* First load all the groups, and put them into a map by group id */
+            std::map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
+            std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
 
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
+            {
+                static const string sql =  "SELECT groupid = YP.paobjectid, YP.category, YP.paoclass, YP.paoname, "
+                                             "YP.type, YP.description, YP.disableflag, DV.alarminhibit, "
+                                             "DV.controlinhibit, LG.kwcapacity "
+                                           "FROM yukonpaobject YP, device DV, lmgroup LG "
+                                           "WHERE YP.paobjectid = LG.deviceid AND YP.paobjectid = DV.deviceid AND "
+                                             "YP.paobjectid > 0";
+               
+                CtiLMGroupFactory lm_group_factory;
+                Cti::Database::DatabaseReader rdr(connection);
 
-                        RWDBReader rdr = selector.reader(conn);
+                rdr.setCommandText(sql);
 
-                        RWDBNullIndicator isNull;
-                        while( rdr() )
-                        {
-                            LONG tempPointId = 0;
-                            rdr["pointid"] >> tempPointId;
+                rdr.execute();
 
-                            controlPointHashMap.insert( tempPointId, tempPointId );
-                        }
-                    }
-
-                    RWTimer allGroupTimer;
-                    allGroupTimer.start();
-
-                    /* First load all the groups, and put them into a map by group id */
-                    std::map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
-                    std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
-
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
-                        RWDBTable paObjectTable = db.table("yukonpaobject");
-                        RWDBTable deviceTable = db.table("device");
-                        RWDBTable lmGroupTable = db.table("lmgroup");
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
 
+                while( rdr() )
+                {
+                    string category;
+                    string type;
+                    rdr["category"] >> category;
+                    rdr["type"] >> type;
+                    CtiLMGroupPtr lm_group = lm_group_factory.createLMGroup(rdr);
+                    temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                    attachControlStringData(lm_group);
+                }
 
-                        RWDBSelector selector = db.selector();
-                        selector << rwdbName("groupid", paObjectTable["paobjectid"])
-                        << paObjectTable["category"]
-                        << paObjectTable["paoclass"]
-                        << paObjectTable["paoname"]
-                        << paObjectTable["type"]
-                        << paObjectTable["description"]
-                        << paObjectTable["disableflag"]
-                        << deviceTable["alarminhibit"]
-                        << deviceTable["controlinhibit"]
-                        << lmGroupTable["kwcapacity"];
-                        selector.from(paObjectTable);
-                        selector.from(deviceTable);
-                        selector.from(lmGroupTable);
+            } //end main group loading
 
-                        selector.where( paObjectTable["paobjectid"] == lmGroupTable["deviceid"] &&
-                                        paObjectTable["paobjectid"] == deviceTable["deviceid"] &&
-                                        paObjectTable["paobjectid"] > 0 ); // Stars gives meaning to an lmgroup with an id of 0, we don't care about it though
+            { /* Load up any group point specific information */
+                static const string sql =  "SELECT groupid = LGP.deviceid, deviceid = LGP.deviceidusage, "
+                                             "pointid = LGP.pointidusage, LGP.startcontrolrawstate "
+                                           "FROM lmgrouppoint LGP";
 
+                Cti::Database::DatabaseReader rdr(connection);
 
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                while( rdr() )
+                {
+                    int group_id;
+                    int device_id;
+                    int point_id;
+                    int start_control_raw_state;
+
+                    rdr >> group_id;
+                    rdr >> device_id;
+                    rdr >> point_id;
+                    rdr >> start_control_raw_state;
+
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    if( iter != temp_all_group_map.end() )
+                    {
+                        CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second.get();
+                        lm_group->setDeviceIdUsage(device_id);
+                        lm_group->setPointIdUsage(point_id);
+                        lm_group->setStartControlRawState(start_control_raw_state);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    }
+                }
+            }// end loading group point specific info
+
+            { /* Start loading ripple group specific info */
+                static const string sql = "SELECT groupid = LGR.deviceid, LGR.shedtime "
+                                          "FROM lmgroupripple LGR";
+
+                Cti::Database::DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                while( rdr() )
+                {
+                    int group_id;
+                    int shed_time;
+
+                    rdr >> group_id;
+                    rdr >> shed_time;
+
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    if( iter != temp_all_group_map.end() )
+                    {
+                        CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second.get();
+                        lm_group->setShedTime(shed_time);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    }
+                }
+            } // end loading ripple group specific info */
+
+            { /* Start loading sa dumb group specific info */
+                /* We would load the nominal timeout here, I don't think it is used yet,
+                   so add it if necessary */
+            } // end loading sa dumb group specific info */
+
+            /* Attach any points necessary to groups */
+            {
+                temp_point_group_map.clear();
+
+                static const string sql =  "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype "
+                                           "FROM point PT, lmgroup LMG "
+                                           "WHERE PT.paobjectid = LMG.deviceid";
+
+                Cti::Database::DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                while( rdr() )
+                {
+                    long group_id;
+                    int point_id;
+                    string point_type;
+                    int point_offset;
+
+                    rdr["paobjectid"] >> group_id;
+                    rdr["pointid"] >> point_id;
+                    rdr["pointtype"] >> point_type;
+                    rdr["pointoffset"] >> point_offset;
+
+                    if( group_id <= 0 ) //we don't deal with groups with 0 or negative ids
+                    {
+                        continue;
+                    }
+
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    if( iter != temp_all_group_map.end() )
+                    {
+                        CtiLMGroupPtr lm_group = iter->second;
+
+                        switch( resolvePointType(point_type.c_str()) )
                         {
-                            string loggedSQLstring = selector.asString();
+                        case AnalogPointType:
+                            switch( point_offset )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            case DAILYCONTROLHISTOFFSET:
+                                lm_group->setHoursDailyPointId(point_id);
+                                temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                break;
+                            case MONTHLYCONTROLHISTOFFSET:
+                                lm_group->setHoursMonthlyPointId(point_id);
+                                temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                break;
+                            case SEASONALCONTROLHISTOFFSET:
+                                lm_group->setHoursSeasonalPointId(point_id);
+                                temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                break;
+                            case ANNUALCONTROLHISTOFFSET:
+                                lm_group->setHoursAnnuallyPointId(point_id);
+                                temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                break;
+                            default:
+                                /*{
+                                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                                    dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
+                                         << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                                }*/
+                                break;
                             }
-                        }
-
-                        CtiLMGroupFactory lm_group_factory;
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
-                        {
-                            string category;
-                            string type;
-                            rdr["category"] >> category;
-                            rdr["type"] >> type;
-                            CtiLMGroupPtr lm_group = lm_group_factory.createLMGroup(rdr);
-                            temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                            attachControlStringData(lm_group);
-                        }
-
-                    } //end main group loading
-
-                    { /* Load up any group point specific information */
-                        RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
-                        RWDBSelector selector = db.selector();
-                        selector << rwdbName("groupid", lmGroupPointTable["deviceid"])
-                        << rwdbName("deviceid", lmGroupPointTable["deviceidusage"])
-                        << rwdbName("pointid", lmGroupPointTable["pointidusage"])
-                        << lmGroupPointTable["startcontrolrawstate"];
-                        selector.from(lmGroupPointTable);
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
-                        {
-                            int group_id;
-                            int device_id;
-                            int point_id;
-                            int start_control_raw_state;
-
-                            rdr >> group_id;
-                            rdr >> device_id;
-                            rdr >> point_id;
-                            rdr >> start_control_raw_state;
-
-                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                            if( iter != temp_all_group_map.end() )
+                            break;
+                        case StatusPointType:
+                            if( point_offset == 0 )
                             {
-                                CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second.get();
-                                lm_group->setDeviceIdUsage(device_id);
-                                lm_group->setPointIdUsage(point_id);
-                                lm_group->setStartControlRawState(start_control_raw_state);
+                                long control_status_point_id;
+                                if( controlPointHashMap.findValue(point_id, control_status_point_id) )
+                                {
+                                    lm_group->setControlStatusPointId(control_status_point_id);
+                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                }
                             }
-                            else
+                            break;
+                        default:
                             {
                                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
                             }
                         }
-                    }// end loading group point specific info
+                    }
+                }
+            }
 
-                    { /* Start loading ripple group specific info */
-                        RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
-                        RWDBSelector selector = db.selector();
+            /* Load dynamic group information */
+            {
+                static const string sql =  "SELECT groupid = DLG.deviceid, DLG.groupcontrolstate, DLG.currenthoursdaily, "
+                                               "DLG.currenthoursmonthly, DLG.currenthoursseasonal, DLG.currenthoursannually, "
+                                               "DLG.lastcontrolsent, DLG.timestamp, DLG.controlstarttime, "
+                                               "DLG.controlcompletetime, DLG.nextcontroltime, DLG.internalstate, "
+                                               "DLG.dailyops "
+                                           "FROM dynamiclmgroup DLG";
 
-                        selector << rwdbName("groupid", lmGroupRippleTable["deviceid"])
-                        << lmGroupRippleTable["shedtime"];
+                Cti::Database::DatabaseReader rdr(connection);
 
-                        selector.from(lmGroupRippleTable);
+                rdr.setCommandText(sql);
 
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
-                        {
-                            int group_id;
-                            int shed_time;
+                rdr.execute();
 
-                            rdr >> group_id;
-                            rdr >> shed_time;
+                while( rdr() )
+                {
+                    long group_id;
+                    long group_control_state;
+                    long cur_hours_daily;
+                    long cur_hours_monthly;
+                    long cur_hours_seasonal;
+                    long cur_hours_annually;
+                    CtiTime last_control_sent;
+                    CtiTime timestamp;
+                    CtiTime control_start_time;
+                    CtiTime control_complete_time;
+                    CtiTime next_control_time;
+                    long internal_state;
+                    long daily_ops;
+                    bool constraint_override;
 
-                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                            if( iter != temp_all_group_map.end() )
-                            {
-                                CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second.get();
-                                lm_group->setShedTime(shed_time);
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    } // end loading ripple group specific info */
+                    string tempBoolString;
+                    rdr["groupid"] >> group_id;
+                    rdr["groupcontrolstate"] >> group_control_state;
+                    rdr["currenthoursdaily"] >> cur_hours_daily;
+                    rdr["currenthoursmonthly"] >> cur_hours_monthly;
+                    rdr["currenthoursseasonal"] >> cur_hours_seasonal;
+                    rdr["currenthoursannually"] >> cur_hours_annually;
+                    rdr["lastcontrolsent"] >> last_control_sent;
+                    rdr["timestamp"] >> timestamp;
+                    rdr["controlstarttime"] >> control_start_time;
+                    rdr["controlcompletetime"] >> control_complete_time;
+                    rdr["nextcontroltime"] >> next_control_time;
+                    rdr["internalstate"] >> internal_state;
+                    rdr["dailyops"] >> daily_ops;
 
-                    { /* Start loading sa dumb group specific info */
-                        /* We would load the nominal timeout here, I don't think it is used yet,
-                           so add it if necessary */
-                    } // end loading sa dumb group specific info */
-
-                    /* Attach any points necessary to groups */
+                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                    if( iter != temp_all_group_map.end() )
                     {
-                        temp_point_group_map.clear();
+                        CtiLMGroupPtr& lm_group = iter->second;
 
-                        RWDBTable pointTable = db.table("point");
-                        RWDBTable lmGroupTable = db.table("lmgroup");
+                        lm_group->setGroupControlState(group_control_state);
+                        lm_group->setCurrentHoursDaily(cur_hours_daily);
+                        lm_group->setCurrentHoursMonthly(cur_hours_monthly);
+                        lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
+                        lm_group->setCurrentHoursAnnually(cur_hours_annually);
+                        lm_group->setLastControlSent(last_control_sent);
+                        lm_group->setDynamicTimestamp(timestamp);
+                        lm_group->setControlStartTime(control_start_time);
+                        lm_group->setControlCompleteTime(control_complete_time);
+                        lm_group->setNextControlTime(next_control_time);
+                        lm_group->setInternalState(internal_state);
+                        lm_group->resetDailyOps(daily_ops);
 
-                        RWDBSelector selector = db.selector();
-                        selector << pointTable["paobjectid"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
+                        lm_group->setDirty(false);
+                        lm_group->_insertDynamicDataFlag = FALSE;
+                    }
+                }
+            }
+            /* Now lets load up info about macro groups */
+            std::map< long, vector<long> > group_macro_map;  //ownerid, <childid>
+            {
+                static const string sql =  "SELECT GM.ownerid, GM.childid "
+                                           "FROM genericmacro GM, lmgroup LMG "
+                                           "WHERE GM.ownerid= LMG.deviceid "
+                                           "ORDER BY GM.ownerid ASC, GM.childorder ASC";
 
-                        selector.from(pointTable);
-                        selector.from(lmGroupTable);
+                Cti::Database::DatabaseReader rdr(connection);
 
-                        selector.where( pointTable["paobjectid"] == lmGroupTable["deviceid"] );
+                rdr.setCommandText(sql);
 
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                std::map<long, vector<long> >::iterator iter;
+                while( rdr() )
+                {
+                    long owner_id;
+                    long child_id;
+
+                    rdr["ownerid"] >> owner_id;
+                    rdr["childid"] >> child_id;
+
+                    iter = group_macro_map.find(owner_id);
+                    if( iter == group_macro_map.end() )
+                    {
+                        vector<long> child_vec;
+                        child_vec.push_back(child_id);
+                        group_macro_map.insert(make_pair(owner_id, child_vec));
+                    }
+                    else
+                    {
+                        iter->second.push_back(child_id);
+                    }
+                }
+            }
+
+            /* now lets load info about how groups attach to programs */
+            {
+                static const string sql =  "SELECT programid = PDG.deviceid, groupid = PDG.lmgroupdeviceid "
+                                           "FROM lmprogramdirectgroup PDG "
+                                           "ORDER BY PDG.grouporder ASC";
+
+                Cti::Database::DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                std::map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
+                long cur_program = -1;
+                while( rdr() )
+                {
+                    long program_id;
+                    long group_id;
+                    rdr["programid"] >> program_id;
+                    rdr["groupid"] >> group_id;
+
+                    cur_iter = all_program_group_map.find(program_id);
+                    if( cur_iter == all_program_group_map.end() )
+                    {
+                        vector<CtiLMGroupPtr> group_vec;
+
+                        std::map<long, CtiLMGroupPtr >::iterator temp_all_group_map_iter = temp_all_group_map.find(group_id);
+                        if( temp_all_group_map_iter != temp_all_group_map.end() )
                         {
-                            string loggedSQLstring = selector.asString();
+                            CtiLMGroupPtr lm_group = temp_all_group_map_iter->second;
+
+                            std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                            if( macro_iter != group_macro_map.end() ) //must be a macro group
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
+                                vector<long> macro_vec = macro_iter->second;
 
-                        RWDBReader rdr = selector.reader(conn);
-
-                        while( rdr() )
-                        {
-                            long group_id;
-                            int point_id;
-                            string point_type;
-                            int point_offset;
-
-                            rdr["paobjectid"] >> group_id;
-                            rdr["pointid"] >> point_id;
-                            rdr["pointtype"] >> point_type;
-                            rdr["pointoffset"] >> point_offset;
-
-                            if( group_id <= 0 ) //we don't deal with groups with 0 or negative ids
-                            {
-                                continue;
-                            }
-
-                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                            if( iter != temp_all_group_map.end() )
-                            {
-                                CtiLMGroupPtr lm_group = iter->second;
-    
-                                switch( resolvePointType(point_type.c_str()) )
+                                for( vector<long>::iterator iter = macro_vec.begin();
+                                   iter != macro_vec.end();
+                                   iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
                                 {
-                                case AnalogPointType:
-                                    switch( point_offset )
+                                    std::map<long, CtiLMGroupPtr >::iterator all_group_map_iter = temp_all_group_map.find(*iter);
+                                    if( all_group_map_iter != temp_all_group_map.end() )
                                     {
-                                    case DAILYCONTROLHISTOFFSET:
-                                        lm_group->setHoursDailyPointId(point_id);
-                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                        break;
-                                    case MONTHLYCONTROLHISTOFFSET:
-                                        lm_group->setHoursMonthlyPointId(point_id);
-                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                        break;
-                                    case SEASONALCONTROLHISTOFFSET:
-                                        lm_group->setHoursSeasonalPointId(point_id);
-                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                        break;
-                                    case ANNUALCONTROLHISTOFFSET:
-                                        lm_group->setHoursAnnuallyPointId(point_id);
-                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                        break;
-                                    default:
-                                        /*{
-                                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                                            dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
-                                                 << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                                        }*/
-                                        break;
-                                    }
-                                    break;
-                                case StatusPointType:
-                                    if( point_offset == 0 )
-                                    {
-                                        long control_status_point_id;
-                                        if( controlPointHashMap.findValue(point_id, control_status_point_id) )
-                                        {
-                                            lm_group->setControlStatusPointId(control_status_point_id);
-                                            temp_point_group_map.insert(make_pair(point_id,lm_group));
-                                        }
-                                    }
-                                    break;
-                                default:
-                                    {
-                                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                                        dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
+                                        CtiLMGroupPtr child_group = all_group_map_iter->second;
+
+                                        group_vec.push_back(child_group);
+                                        child_group->setGroupOrder(group_vec.size());
+                                        all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
                                     }
                                 }
                             }
+                            else //not a macro group, assign it to the program
+                            {
+                                group_vec.push_back(lm_group);
+                                lm_group->setGroupOrder(group_vec.size());
+                                all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                            }
                         }
+
+                        all_program_group_map.insert(make_pair(program_id, group_vec));
                     }
-
-                    /* Load dynamic group information */
+                    else
                     {
-                        RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
-                        RWDBSelector selector = db.selector();
-                        selector << rwdbName("groupid", dynamicLMGroupTable["deviceid"])
-                        << dynamicLMGroupTable["groupcontrolstate"]
-                        << dynamicLMGroupTable["currenthoursdaily"]
-                        << dynamicLMGroupTable["currenthoursmonthly"]
-                        << dynamicLMGroupTable["currenthoursseasonal"]
-                        << dynamicLMGroupTable["currenthoursannually"]
-                        << dynamicLMGroupTable["lastcontrolsent"]
-                        << dynamicLMGroupTable["timestamp"]
-                        << dynamicLMGroupTable["controlstarttime"]
-                        << dynamicLMGroupTable["controlcompletetime"]
-                        << dynamicLMGroupTable["nextcontroltime"]
-                        << dynamicLMGroupTable["internalstate"]
-                        << dynamicLMGroupTable["dailyops"];
-
-                        selector.from(dynamicLMGroupTable);
-
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
+                        std::map<long, CtiLMGroupPtr >::iterator temp_all_group_map_iter = temp_all_group_map.find(group_id);
+                        if( temp_all_group_map_iter != temp_all_group_map.end() )
                         {
-                            long group_id;
-                            long group_control_state;
-                            long cur_hours_daily;
-                            long cur_hours_monthly;
-                            long cur_hours_seasonal;
-                            long cur_hours_annually;
-                            CtiTime last_control_sent;
-                            CtiTime timestamp;
-                            CtiTime control_start_time;
-                            CtiTime control_complete_time;
-                            CtiTime next_control_time;
-                            long internal_state;
-                            long daily_ops;
-                            bool constraint_override;
+                            CtiLMGroupPtr& lm_group = temp_all_group_map_iter->second;
 
-                            string tempBoolString;
-                            rdr["groupid"] >> group_id;
-                            rdr["groupcontrolstate"] >> group_control_state;
-                            rdr["currenthoursdaily"] >> cur_hours_daily;
-                            rdr["currenthoursmonthly"] >> cur_hours_monthly;
-                            rdr["currenthoursseasonal"] >> cur_hours_seasonal;
-                            rdr["currenthoursannually"] >> cur_hours_annually;
-                            rdr["lastcontrolsent"] >> last_control_sent;
-                            rdr["timestamp"] >> timestamp;
-                            rdr["controlstarttime"] >> control_start_time;
-                            rdr["controlcompletetime"] >> control_complete_time;
-                            rdr["nextcontroltime"] >> next_control_time;
-                            rdr["internalstate"] >> internal_state;
-                            rdr["dailyops"] >> daily_ops;
-
-                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                            if( iter != temp_all_group_map.end() )
+                            std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                            if( macro_iter != group_macro_map.end() ) //must be a macro group
                             {
-                                CtiLMGroupPtr& lm_group = iter->second;
+                                vector<long> macro_vec = macro_iter->second;
 
-                                lm_group->setGroupControlState(group_control_state);
-                                lm_group->setCurrentHoursDaily(cur_hours_daily);
-                                lm_group->setCurrentHoursMonthly(cur_hours_monthly);
-                                lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
-                                lm_group->setCurrentHoursAnnually(cur_hours_annually);
-                                lm_group->setLastControlSent(last_control_sent);
-                                lm_group->setDynamicTimestamp(timestamp);
-                                lm_group->setControlStartTime(control_start_time);
-                                lm_group->setControlCompleteTime(control_complete_time);
-                                lm_group->setNextControlTime(next_control_time);
-                                lm_group->setInternalState(internal_state);
-                                lm_group->resetDailyOps(daily_ops);
-
-                                lm_group->setDirty(false);
-                                lm_group->_insertDynamicDataFlag = FALSE;
-                            }
-                        }
-                    }
-                    /* Now lets load up info about macro groups */
-                    std::map< long, vector<long> > group_macro_map;  //ownerid, <childid>
-                    {
-                        RWDBTable genericMacroTable = db.table("genericmacro");
-                        RWDBTable lmGroupTable = db.table("lmgroup");
-
-                        RWDBSelector selector = db.selector();
-                        selector << genericMacroTable["ownerid"]
-                        << genericMacroTable["childid"];
-
-                        selector.from(genericMacroTable);
-                        selector.from(lmGroupTable);
-
-                        selector.where(genericMacroTable["ownerid"] == lmGroupTable["deviceid"]);
-                        selector.orderBy(genericMacroTable["ownerid"]);
-                        selector.orderBy(genericMacroTable["childorder"]);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-                        std::map<long, vector<long> >::iterator iter;
-                        while( rdr() )
-                        {
-                            long owner_id;
-                            long child_id;
-
-                            rdr["ownerid"] >> owner_id;
-                            rdr["childid"] >> child_id;
-
-                            iter = group_macro_map.find(owner_id);
-                            if( iter == group_macro_map.end() )
-                            {
-                                vector<long> child_vec;
-                                child_vec.push_back(child_id);
-                                group_macro_map.insert(make_pair(owner_id, child_vec));
-                            }
-                            else
-                            {
-                                iter->second.push_back(child_id);
-                            }
-                        }
-                    }
-
-                    /* now lets load info about how groups attach to programs */
-                    {
-                        RWDBTable lmProgramDirectGroupTable = db.table("lmprogramdirectgroup");
-
-                        RWDBSelector selector = db.selector();
-                        selector << rwdbName("programid", lmProgramDirectGroupTable["deviceid"])
-                        << rwdbName("groupid", lmProgramDirectGroupTable["lmgroupdeviceid"]);
-
-                        selector.from(lmProgramDirectGroupTable);
-                        selector.orderBy(lmProgramDirectGroupTable["grouporder"]);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-                        std::map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
-                        long cur_program = -1;
-                        while( rdr() )
-                        {
-                            long program_id;
-                            long group_id;
-                            rdr["programid"] >> program_id;
-                            rdr["groupid"] >> group_id;
-
-                            cur_iter = all_program_group_map.find(program_id);
-                            if( cur_iter == all_program_group_map.end() )
-                            {
-                                vector<CtiLMGroupPtr> group_vec;
-
-                                std::map<long, CtiLMGroupPtr >::iterator temp_all_group_map_iter = temp_all_group_map.find(group_id);
-                                if( temp_all_group_map_iter != temp_all_group_map.end() )
+                                for( vector<long>::iterator iter = macro_vec.begin();
+                                   iter != macro_vec.end();
+                                   iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
                                 {
-                                    CtiLMGroupPtr lm_group = temp_all_group_map_iter->second;
-    
-                                    std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
-                                    if( macro_iter != group_macro_map.end() ) //must be a macro group
+                                    std::map<long, CtiLMGroupPtr >::iterator all_group_map_iter = temp_all_group_map.find(*iter);
+                                    if( all_group_map_iter != temp_all_group_map.end() )
                                     {
-                                        vector<long> macro_vec = macro_iter->second;
+                                        CtiLMGroupPtr& child_group = all_group_map_iter->second;
 
-                                        for( vector<long>::iterator iter = macro_vec.begin();
-                                           iter != macro_vec.end();
-                                           iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-                                        {
-                                            std::map<long, CtiLMGroupPtr >::iterator all_group_map_iter = temp_all_group_map.find(*iter);
-                                            if( all_group_map_iter != temp_all_group_map.end() )
-                                            {
-                                                CtiLMGroupPtr child_group = all_group_map_iter->second;
-
-                                                group_vec.push_back(child_group);
-                                                child_group->setGroupOrder(group_vec.size());
-                                                all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
-                                            }
-                                        }
-                                    }
-                                    else //not a macro group, assign it to the program
-                                    {
-                                        group_vec.push_back(lm_group);
-                                        lm_group->setGroupOrder(group_vec.size());
-                                        all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                                    }
-                                }
-
-                                all_program_group_map.insert(make_pair(program_id, group_vec));
-                            }
-                            else
-                            {
-                                std::map<long, CtiLMGroupPtr >::iterator temp_all_group_map_iter = temp_all_group_map.find(group_id);
-                                if( temp_all_group_map_iter != temp_all_group_map.end() )
-                                {
-                                    CtiLMGroupPtr& lm_group = temp_all_group_map_iter->second;
-    
-                                    std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
-                                    if( macro_iter != group_macro_map.end() ) //must be a macro group
-                                    {
-                                        vector<long> macro_vec = macro_iter->second;
-
-                                        for( vector<long>::iterator iter = macro_vec.begin();
-                                           iter != macro_vec.end();
-                                           iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-                                        {
-                                            std::map<long, CtiLMGroupPtr >::iterator all_group_map_iter = temp_all_group_map.find(*iter);
-                                            if( all_group_map_iter != temp_all_group_map.end() )
-                                            {
-                                                CtiLMGroupPtr& child_group = all_group_map_iter->second;
-
-                                                cur_iter->second.push_back(child_group);
-                                                child_group->setGroupOrder(cur_iter->second.size());
-                                                all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        cur_iter->second.push_back(lm_group);
-                                        lm_group->setGroupOrder(cur_iter->second.size());
-                                        all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                                        cur_iter->second.push_back(child_group);
+                                        child_group->setGroupOrder(cur_iter->second.size());
+                                        all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
                                     }
                                 }
                             }
+                            else
+                            {
+                                cur_iter->second.push_back(lm_group);
+                                lm_group->setGroupOrder(cur_iter->second.size());
+                                all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                            }
                         }
                     }
+                }
+            }
+
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
+                dout << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
+                dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
+                allGroupTimer.reset();
+            }
+
+            RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > directProgramHashMap;
+
+            RWTimer dirProgsTimer;
+            dirProgsTimer.start();
+            {//loading direct programs start
+
+                static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                               "YP.description, YP.disableflag, PV.controltype, PV.constraintid, "
+                                               "PV.constraintname, PV.availableweekdays, PV.maxhoursdaily, "
+                                               "PV.maxhoursmonthly, PV.maxhoursseasonal, PV.maxhoursannually, "
+                                               "PV.minactivatetime, PV.minrestarttime, PV.maxdailyops, "
+                                               "PV.maxactivatetime, PV.holidayscheduleid, PV.seasonscheduleid, "
+                                               "PD.heading, PD.messageheader, PD.messagefooter, PD.notifyactiveoffset, "
+                                               "PD.notifyinactiveoffset, PD.triggeroffset, PD.restoreoffset, "
+                                               "DP.programstate, DP.reductiontotal, DP.startedcontrolling, "
+                                               "DP.lastcontrolsent, DP.manualcontrolreceivedflag, DPD.currentgearnumber, "
+                                               "DPD.lastgroupcontrolled, DPD.starttime, DPD.stoptime, DPD.timestamp, "
+                                               "DPD.notifyactivetime, DPD.notifyinactivetime, DPD.startedrampingout, "
+                                               "DPD.constraintoverride, DPD.additionalinfo, DPD.currentlogid, PT.pointid, "
+                                               "PT.pointoffset, PT.pointtype "
+                                           "FROM lmprogramdirect PD, yukonpaobject YP, "
+                                               "lmprogram_view PV LEFT OUTER JOIN dynamiclmprogram DP ON "
+                                               "PV.deviceid = DP.deviceid LEFT OUTER JOIN dynamiclmprogramdirect DPD ON "
+                                               "PV.deviceid = DPD.deviceid LEFT OUTER JOIN point PT ON "
+                                               "PV.deviceid = PT.paobjectid "
+                                           "WHERE YP.paobjectid = PD.deviceid AND PD.deviceid = PV.deviceid "
+                                           "ORDER BY YP.paobjectid ASC";
+
+                CtiLMProgramDirectSPtr currentLMProgramDirect;
+                DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                int total_groups_assigned = 0; //keep track of how many groups we attach to programs for sanity
+                while( rdr() )
+                {
+                    LONG tempProgramId = 0;
+                    rdr["paobjectid"] >> tempProgramId;
+
+                    if( !currentLMProgramDirect ||
+                        tempProgramId != currentLMProgramDirect->getPAOId() )
+                    {
+                        currentLMProgramDirect.reset(CTIDBG_new CtiLMProgramDirect(rdr));
+                        CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
+
+                        //Inserting this program's groups
+                        std::map< long, vector<CtiLMGroupPtr> >::iterator   group_vec_map_iter;
+                        if( (group_vec_map_iter = all_program_group_map.find(tempProgramId)) != all_program_group_map.end() )
+                        {
+                            CtiLMGroupVec group_vec = group_vec_map_iter->second;
+
+                            for( CtiLMGroupIter iter = group_vec.begin();
+                               iter != group_vec.end();
+                               iter++ )
+                            {
+                                directGroups.push_back(*iter);
+                                total_groups_assigned++;
+                            }
+                        }
+
+                        //Inserting this direct program into hash map
+                        directProgramHashMap.insert( currentLMProgramDirect->getPAOId(), currentLMProgramDirect );
+                        temp_all_program_map.insert(make_pair(currentLMProgramDirect->getPAOId(), currentLMProgramDirect));
+                    }
+
+                    if( !rdr["pointid"].isNull() )
+                    {
+                        LONG tempPointId = 0;
+                        LONG tempPointOffset = 0;
+                        string tempPointType = "(none)";
+                        rdr["pointid"] >> tempPointId;
+                        rdr["pointoffset"] >> tempPointOffset;
+                        rdr["pointtype"] >> tempPointType;
+                        if( currentLMProgramDirect->getProgramStatusPointId() <= 0 &&
+                            resolvePointType(tempPointType) == StatusPointType &&
+                            tempPointOffset == 1 )
+                        {
+                            currentLMProgramDirect->setProgramStatusPointId(tempPointId);
+                        }
+                    }
+                }
+            }//loading direct programs end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Direct Programs is: " << dirProgsTimer.elapsedTime() << endl;
+                dirProgsTimer.reset();
+            }
+
+            RWTimer masterSubordinateTimer;
+            masterSubordinateTimer.start();
+
+            { // loading master - subordinate direct program relationships
+                static const string sql =  "SELECT PEX.paoid, PEX.excludedpaoid "
+                                           "FROM paoexclusion PEX "
+                                           "WHERE PEX.functionid = ?";
+
+                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                rdr << CtiTablePaoExclusion::ExFunctionLMSubordination;
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                while( rdr() )
+                {
+                    long master_program_id;
+                    long subordinate_program_id;
+                    rdr["paoid"] >> master_program_id;
+                    rdr["excludedpaoid"] >> subordinate_program_id;
+
+                    CtiLMProgramBaseSPtr master_program;
+                    CtiLMProgramBaseSPtr subordinate_program;
+
+                    if( directProgramHashMap.findValue(master_program_id, master_program) &&
+                        directProgramHashMap.findValue(subordinate_program_id, subordinate_program) )
+                    {
+                        (boost::static_pointer_cast< CtiLMProgramDirect >(master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program));
+                        (boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(master_program));
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
+                        master_program_id << " or subordinate program with id: " << subordinate_program_id <<
+                        " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
+                        __FILE__ << "(" << __LINE__ << ")" << endl;
+                    }
+
+                }
+            }
+
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
+                dirProgsTimer.reset();
+            }
+
+            RWTimer gearsTimer;
+            gearsTimer.start();
+            {//loading direct gears start
+                
+                static const string sql =  "SELECT PDG.deviceid, PDG.gearname, PDG.gearnumber, PDG.controlmethod, "
+                                               "PDG.methodrate, PDG.methodperiod, PDG.methodratecount, "
+                                               "PDG.cyclerefreshrate, PDG.methodstoptype, PDG.changecondition, "
+                                               "PDG.changeduration, PDG.changepriority, PDG.changetriggernumber, "
+                                               "PDG.changetriggeroffset, PDG.percentreduction, PDG.groupselectionmethod, "
+                                               "PDG.methodoptiontype, PDG.methodoptionmax, PDG.gearid, PDG.rampininterval, "
+                                               "PDG.rampinpercent, PDG.rampoutinterval, PDG.rampoutpercent, "
+                                               "PDG.kwreduction, PDG.frontrampoption, PDG.frontramptime, "
+                                               "PDG.backrampoption, PDG.backramptime, TSG.settings, TSG.minvalue, "
+                                               "TSG.maxvalue, TSG.valueb, TSG.valued, TSG.valuef, TSG.random, TSG.valueta, "
+                                               "TSG.valuetb, TSG.valuetc, TSG.valuetd, TSG.valuete, TSG.valuetf, "
+                                               "TSG.ramprate "
+                                           "FROM lmprogramdirectgear PDG LEFT OUTER JOIN lmthermostatgear TSG ON "
+                                             "PDG.gearid = TSG.gearid "
+                                           "ORDER BY PDG.deviceid ASC, PDG.gearnumber ASC";
+
+                DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                while( rdr() )
+                {
+                    CtiLMProgramDirectGear* newDirectGear = NULL;
+                    if( rdr["settings"].isNull() )
+                    {
+                        newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
+                    }
+                    else
+                    {
+                        newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
+                    }
+                    if( newDirectGear != NULL )
+                    {
+                        CtiLMProgramBaseSPtr programToPutGearIn;
+                        if( directProgramHashMap.findValue(newDirectGear->getProgramPAOId(),programToPutGearIn) )
+                        {
+                            vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(programToPutGearIn)->getLMProgramDirectGears();
+                            lmProgramDirectGearList.push_back(newDirectGear);
+                        }
+                    }
+                }
+            }//loading direct gears end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Direct Gears is: " << gearsTimer.elapsedTime() << endl;
+                gearsTimer.reset();
+            }
+
+            RWTimer notificationGroupTimer;
+            notificationGroupTimer.start();
+
+            { //loading notification groups start
+
+                static const string sql = "SELECT DNG.programid, DNG.notificationgrpid "
+                                          "FROM lmdirectnotifgrplist DNG";
+
+                Cti::Database::DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                while( rdr() )
+                {
+                    int program_id;
+                    int notif_grp_id;
+                    rdr["programid"] >> program_id;
+                    rdr["notificationgrpid"] >> notif_grp_id;
+
+                    CtiLMProgramBaseSPtr program;
+                    if( directProgramHashMap.findValue(program_id, program ) )
+                    {
+                        boost::static_pointer_cast< CtiLMProgramDirect >(program)->getNotificationGroupIDs().push_back(notif_grp_id);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    }
+                }
+            } //loading notification groups end
+
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
+                notificationGroupTimer.reset();
+            }
+
+            RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
+
+            RWTimer curtailProgsTimer;
+            curtailProgsTimer.start();
+            {//loading curtailment programs start
+
+                static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                               "YP.description, YP.disableflag, LPV.controltype, LPV.constraintid, "
+                                               "LPV.constraintname, LPV.availableweekdays, LPV.maxhoursdaily, "
+                                               "LPV.maxhoursmonthly, LPV.maxhoursseasonal, LPV.maxhoursannually, "
+                                               "LPV.minactivatetime, LPV.minrestarttime, LPV.maxdailyops, "
+                                               "LPV.maxactivatetime, LPV.holidayscheduleid, LPV.seasonscheduleid, "
+                                               "LPC.minnotifytime, LPC.heading, LPC.messageheader, LPC.messagefooter, "
+                                               "LPC.acktimelimit, LPC.canceledmsg, LPC.stoppedearlymsg, DLP.programstate, "
+                                               "DLP.reductiontotal, DLP.startedcontrolling, DLP.lastcontrolsent, "
+                                               "DLP.manualcontrolreceivedflag, DLP.timestamp, PT.pointid, PT.pointoffset, "
+                                               "PT.pointtype "
+                                           "FROM lmprogramcurtailment LPC, yukonpaobject YP, lmprogram_view LPV "
+                                               "LEFT OUTER JOIN dynamiclmprogram DLP ON LPV.deviceid = DLP.deviceid "
+                                               "LEFT OUTER JOIN point PT ON LPV.deviceid = PT.paobjectid "
+                                           "WHERE YP.paobjectid = LPC.deviceid AND LPC.deviceid = LPV.deviceid "
+                                           "ORDER BY YP.paobjectid ASC";
+
+
+                CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment;
+                DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                while( rdr() )
+                {
+                    LONG tempProgramId = 0;
+                    rdr["paobjectid"] >> tempProgramId;
+
+                    if( !currentLMProgramCurtailment ||
+                        tempProgramId != currentLMProgramCurtailment->getPAOId() )
+                    {
+                        currentLMProgramCurtailment.reset(CTIDBG_new CtiLMProgramCurtailment(rdr));
+                        if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
+                        {
+                            currentLMProgramCurtailment->restoreDynamicData();
+                        }
+                        //Inserting this curtailment program into hash map
+                        curtailmentProgramHashMap.insert( currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment );
+                        temp_all_program_map.insert(make_pair(currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment));
+                    }
+
+                    if( !rdr["pointid"].isNull() )
+                    {
+                        LONG tempPointId = 0;
+                        LONG tempPointOffset = 0;
+                        string tempPointType = "(none)";
+                        rdr["pointid"] >> tempPointId;
+                        rdr["pointoffset"] >> tempPointOffset;
+                        rdr["pointtype"] >> tempPointType;
+                        if( currentLMProgramCurtailment->getProgramStatusPointId() <= 0 &&
+                            resolvePointType(tempPointType) == StatusPointType &&
+                            tempPointOffset == 1 )
+                        {
+                            currentLMProgramCurtailment->setProgramStatusPointId(tempPointId);
+                        }
+                    }
+                }
+
+                RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
+
+                for( ;itr(); )
+                {
+                    CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(itr.value());
+
+                    static const string sql =  "SELECT CIC.customerid, CIC.companyname, CIC.customerdemandlevel, "
+                                                   "CIC.curtailamount, CIC.curtailmentagreement, CUS.timezone, "
+                                                   "CCL.customerorder, CCL.requireack "
+                                               "FROM cicustomerbase CIC, customer CUS, lmprogramcurtailcustomerlist CCL "
+                                               "WHERE CIC.customerid = CCL.customerid AND "
+                                                 "CUS.customerid = CIC.customerid AND CCL.programid = ? "
+                                               "ORDER BY CCL.customerorder ASC";
+
+                    vector<CtiLMCurtailCustomer*>& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
+                    Cti::Database::DatabaseReader rdr(connection, sql);
+
+                    rdr << currentLMProgramCurtailment->getPAOId();
+
+                    rdr.execute();
 
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
-                        dout << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
-                        dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
-                        allGroupTimer.reset();
+                        string loggedSQLstring = rdr.asString();
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << loggedSQLstring << endl;
+                        }
                     }
 
-                    RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > directProgramHashMap;
+                    while( rdr() )
+                    {
+                        lmProgramCurtailmentCustomers.push_back(CTIDBG_new CtiLMCurtailCustomer(rdr));
+                    }
 
-                    RWDBTable lmProgramTable = db.table("lmprogram_view");
-                    RWDBTable dynamicLMProgramTable = db.table("dynamiclmprogram");
-
-                    RWTimer dirProgsTimer;
-                    dirProgsTimer.start();
-                    {//loading direct programs start
-                        RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                        RWDBTable lmProgramDirectTable = db.table("lmprogramdirect");
-                        RWDBTable dynamicLMProgramDirectTable = db.table("dynamiclmprogramdirect");
-                        RWDBTable pointTable = db.table("point");
-
-                        RWDBSelector selector = db.selector();
-                        selector << yukonPAObjectTable["paobjectid"]
-                        << yukonPAObjectTable["category"]
-                        << yukonPAObjectTable["paoclass"]
-                        << yukonPAObjectTable["paoname"]
-                        << yukonPAObjectTable["type"]
-                        << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"]
-                        << lmProgramTable["controltype"]
-                        << lmProgramTable["constraintid"]
-                        << lmProgramTable["constraintname"]
-                        << lmProgramTable["availableweekdays"]
-                        << lmProgramTable["maxhoursdaily"]
-                        << lmProgramTable["maxhoursmonthly"]
-                        << lmProgramTable["maxhoursseasonal"]
-                        << lmProgramTable["maxhoursannually"]
-                        << lmProgramTable["minactivatetime"]
-                        << lmProgramTable["minrestarttime"]
-                        << lmProgramTable["maxdailyops"]
-                        << lmProgramTable["maxactivatetime"]
-                        << lmProgramTable["holidayscheduleid"]
-                        << lmProgramTable["seasonscheduleid"]
-                        << lmProgramDirectTable["heading"]
-                        << lmProgramDirectTable["messageheader"]
-                        << lmProgramDirectTable["messagefooter"]
-                        << lmProgramDirectTable["notifyactiveoffset"]
-                        << lmProgramDirectTable["notifyinactiveoffset"]
-                        << lmProgramDirectTable["triggeroffset"]
-                        << lmProgramDirectTable["restoreoffset"]
-                        << dynamicLMProgramTable["programstate"]
-                        << dynamicLMProgramTable["reductiontotal"]
-                        << dynamicLMProgramTable["startedcontrolling"]
-                        << dynamicLMProgramTable["lastcontrolsent"]
-                        << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                        << dynamicLMProgramDirectTable["currentgearnumber"]
-                        << dynamicLMProgramDirectTable["lastgroupcontrolled"]
-                        << dynamicLMProgramDirectTable["starttime"]
-                        << dynamicLMProgramDirectTable["stoptime"]
-                        << dynamicLMProgramDirectTable["timestamp"]
-                        << dynamicLMProgramDirectTable["notifyactivetime"]
-                        << dynamicLMProgramDirectTable["notifyinactivetime"]
-                        << dynamicLMProgramDirectTable["startedrampingout"]
-                        << dynamicLMProgramDirectTable["constraintoverride"]
-                        << dynamicLMProgramDirectTable["additionalinfo"]
-                        << dynamicLMProgramDirectTable["currentlogid"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
-
-                        selector.from(yukonPAObjectTable);
-                        selector.from(lmProgramTable);
-                        selector.from(lmProgramDirectTable);
-                        selector.from(dynamicLMProgramTable);
-                        selector.from(dynamicLMProgramDirectTable);
-                        selector.from(pointTable);
-
-                        selector.where( yukonPAObjectTable["paobjectid"]==lmProgramDirectTable["deviceid"] &&
-                                        lmProgramDirectTable["deviceid"]==lmProgramTable["deviceid"] &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramDirectTable["deviceid"]) &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
-
-                        selector.orderBy(yukonPAObjectTable["paobjectid"]);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.size() > 0 )
+                    {
+                        for( LONG temp=0;temp<lmProgramCurtailmentCustomers.size();temp++ )
                         {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
+                            ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData();
                         }
+                    }
+                }
+            }//loading curtailment programs end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Curtailment Programs is: " << curtailProgsTimer.elapsedTime() << endl;
+                curtailProgsTimer.reset();
+            }
 
-                        CtiLMProgramDirectSPtr currentLMProgramDirect;
-                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-                        RWDBNullIndicator isNull;
-                        int total_groups_assigned = 0; //keep track of how many groups we attach to programs for sanity
-                        while( rdr() )
-                        {
-                            LONG tempProgramId = 0;
-                            rdr["paobjectid"] >> tempProgramId;
 
-                            if( !currentLMProgramDirect ||
-                                tempProgramId != currentLMProgramDirect->getPAOId() )
-                            {
-                                currentLMProgramDirect.reset(CTIDBG_new CtiLMProgramDirect(rdr));
-                                CtiLMGroupVec& directGroups = currentLMProgramDirect->getLMProgramDirectGroups();
+            RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > energyExchangeProgramHashMap;
 
-                                //Inserting this program's groups
-                                std::map< long, vector<CtiLMGroupPtr> >::iterator   group_vec_map_iter;
-                                if( (group_vec_map_iter = all_program_group_map.find(tempProgramId)) != all_program_group_map.end() )
-                                {
-                                    CtiLMGroupVec group_vec = group_vec_map_iter->second;
+            RWTimer eeProgsTimer;
+            eeProgsTimer.start();
+            {//loading energy exchange programs start
 
-                                    for( CtiLMGroupIter iter = group_vec.begin();
-                                       iter != group_vec.end();
-                                       iter++ )
-                                    {
-                                        directGroups.push_back(*iter);
-                                        total_groups_assigned++;
-                                    }
-                                }
+                static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                               "YP.description, YP.disableflag, PV.controltype, PV.constraintid, "
+                                               "PV.constraintname, PV.availableweekdays, PV.maxhoursdaily, "
+                                               "PV.maxhoursmonthly, PV.maxhoursseasonal, PV.maxhoursannually, "
+                                               "PV.minactivatetime, PV.minrestarttime, PV.maxdailyops, "
+                                               "PV.maxactivatetime, PV.holidayscheduleid, PV.seasonscheduleid, "
+                                               "PEX.minnotifytime, PEX.heading, PEX.messageheader, PEX.messagefooter, "
+                                               "PEX.canceledmsg, PEX.stoppedearlymsg, DLP.programstate, "
+                                               "DLP.reductiontotal, DLP.startedcontrolling, DLP.lastcontrolsent, "
+                                               "DLP.manualcontrolreceivedflag, DLP.timestamp, PT.pointid, "
+                                               "PT.pointoffset, PT.pointtype "
+                                           "FROM lmprogramenergyexchange PEX, yukonpaobject YP, lmprogram_view PV "
+                                               "LEFT OUTER JOIN dynamiclmprogram DLP ON PV.deviceid = DLP.deviceid "
+                                               "LEFT OUTER JOIN point PT ON PV.deviceid = PT.paobjectid "
+                                           "WHERE YP.paobjectid = PEX.deviceid AND PEX.deviceid = PV.deviceid "
+                                           "ORDER BY YP.paobjectid ASC";
 
-                                //Inserting this direct program into hash map
-                                directProgramHashMap.insert( currentLMProgramDirect->getPAOId(), currentLMProgramDirect );
-                                temp_all_program_map.insert(make_pair(currentLMProgramDirect->getPAOId(), currentLMProgramDirect));
-                            }
+                CtiLMProgramBaseSPtr currentLMProgramEnergyExchange;
+                DatabaseReader rdr(connection);
 
-                            rdr["pointid"] >> isNull;
-                            if( !isNull )
-                            {
-                                LONG tempPointId = 0;
-                                LONG tempPointOffset = 0;
-                                string tempPointType = "(none)";
-                                rdr["pointid"] >> tempPointId;
-                                rdr["pointoffset"] >> tempPointOffset;
-                                rdr["pointtype"] >> tempPointType;
-                                if( currentLMProgramDirect->getProgramStatusPointId() <= 0 &&
-                                    resolvePointType(tempPointType) == StatusPointType &&
-                                    tempPointOffset == 1 )
-                                {
-                                    currentLMProgramDirect->setProgramStatusPointId(tempPointId);
-                                }
-                            }
-                        }
-                    }//loading direct programs end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                rdr.setCommandText(sql);
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Direct Programs is: " << dirProgsTimer.elapsedTime() << endl;
-                        dirProgsTimer.reset();
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
                     }
+                }
 
-                    RWTimer masterSubordinateTimer;
-                    masterSubordinateTimer.start();
+                while( rdr() )
+                {
+                    LONG tempProgramId = 0;
+                    rdr["paobjectid"] >> tempProgramId;
 
-                    { // loading master - subordinate direct program relationships
-                        RWDBTable paoExclusionTable = db.table("paoexclusion");
-                        RWDBSelector selector = db.selector();
-                        selector << paoExclusionTable["paoid"]
-                        << paoExclusionTable["excludedpaoid"];
-                        selector.from(paoExclusionTable);
-                        selector.where(paoExclusionTable["functionid"] == CtiTablePaoExclusion::ExFunctionLMSubordination);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
-                        {
-                            long master_program_id;
-                            long subordinate_program_id;
-                            rdr["paoid"] >> master_program_id;
-                            rdr["excludedpaoid"] >> subordinate_program_id;
-
-                            CtiLMProgramBaseSPtr master_program;
-                            CtiLMProgramBaseSPtr subordinate_program;
-
-                            if( directProgramHashMap.findValue(master_program_id, master_program) &&
-                                directProgramHashMap.findValue(subordinate_program_id, subordinate_program) )
-                            {
-                                (boost::static_pointer_cast< CtiLMProgramDirect >(master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program));
-                                (boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(master_program));
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << CtiTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
-                                master_program_id << " or subordinate program with id: " << subordinate_program_id <<
-                                " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
-                                __FILE__ << "(" << __LINE__ << ")" << endl;
-                            }
-
-                        }
-                    }
-
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    if( !currentLMProgramEnergyExchange ||
+                        tempProgramId != currentLMProgramEnergyExchange->getPAOId() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
-                        dirProgsTimer.reset();
+                        currentLMProgramEnergyExchange.reset(CTIDBG_new CtiLMProgramEnergyExchange(rdr));
+                        //Inserting this curtailment program into hash map
+                        energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
+                        temp_all_program_map.insert(make_pair(currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange));
                     }
 
-                    RWTimer gearsTimer;
-                    gearsTimer.start();
-                    {//loading direct gears start
-                        RWDBTable lmProgramDirectGearTable = db.table("lmprogramdirectgear");
-                        RWDBTable lmThermoStatGearTable = db.table("lmthermostatgear");
-
-                        RWDBSelector selector = db.selector();
-                        selector << lmProgramDirectGearTable["deviceid"]//will be paobjectid
-                        << lmProgramDirectGearTable["gearname"]
-                        << lmProgramDirectGearTable["gearnumber"]
-                        << lmProgramDirectGearTable["controlmethod"]
-                        << lmProgramDirectGearTable["methodrate"]
-                        << lmProgramDirectGearTable["methodperiod"]
-                        << lmProgramDirectGearTable["methodratecount"]
-                        << lmProgramDirectGearTable["cyclerefreshrate"]
-                        << lmProgramDirectGearTable["methodstoptype"]
-                        << lmProgramDirectGearTable["changecondition"]
-                        << lmProgramDirectGearTable["changeduration"]
-                        << lmProgramDirectGearTable["changepriority"]
-                        << lmProgramDirectGearTable["changetriggernumber"]
-                        << lmProgramDirectGearTable["changetriggeroffset"]
-                        << lmProgramDirectGearTable["percentreduction"]
-                        << lmProgramDirectGearTable["groupselectionmethod"]
-                        << lmProgramDirectGearTable["methodoptiontype"]
-                        << lmProgramDirectGearTable["methodoptionmax"]
-                        << lmProgramDirectGearTable["gearid"]
-                        << lmProgramDirectGearTable["rampininterval"]
-                        << lmProgramDirectGearTable["rampinpercent"]
-                        << lmProgramDirectGearTable["rampoutinterval"]
-                        << lmProgramDirectGearTable["rampoutpercent"]
-                        << lmProgramDirectGearTable["kwreduction"]
-                        << lmProgramDirectGearTable["frontrampoption"]
-                        << lmProgramDirectGearTable["frontramptime"]
-                        << lmProgramDirectGearTable["backrampoption"]
-                        << lmProgramDirectGearTable["backramptime"]
-                        << lmThermoStatGearTable["settings"]
-                        << lmThermoStatGearTable["minvalue"]
-                        << lmThermoStatGearTable["maxvalue"]
-                        << lmThermoStatGearTable["valueb"]
-                        << lmThermoStatGearTable["valued"]
-                        << lmThermoStatGearTable["valuef"]
-                        << lmThermoStatGearTable["random"]
-                        << lmThermoStatGearTable["valueta"]
-                        << lmThermoStatGearTable["valuetb"]
-                        << lmThermoStatGearTable["valuetc"]
-                        << lmThermoStatGearTable["valuetd"]
-                        << lmThermoStatGearTable["valuete"]
-                        << lmThermoStatGearTable["valuetf"]
-                        << lmThermoStatGearTable["ramprate"];
-
-                        selector.from(lmProgramDirectGearTable);
-                        selector.from(lmThermoStatGearTable);
-
-                        selector.where( lmProgramDirectGearTable["gearid"].leftOuterJoin(lmThermoStatGearTable["gearid"]) );
-
-                        selector.orderBy( lmProgramDirectGearTable["deviceid"] );
-                        selector.orderBy( lmProgramDirectGearTable["gearnumber"] );
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-                        RWDBNullIndicator isNull;
-                        while( rdr() )
-                        {
-                            rdr["settings"] >> isNull;
-                            CtiLMProgramDirectGear* newDirectGear = NULL;
-                            if( isNull )
-                            {
-                                newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
-                            }
-                            else
-                            {
-                                newDirectGear = CTIDBG_new CtiLMProgramThermoStatGear(rdr);
-                            }
-                            if( newDirectGear != NULL )
-                            {
-                                CtiLMProgramBaseSPtr programToPutGearIn;
-                                if( directProgramHashMap.findValue(newDirectGear->getProgramPAOId(),programToPutGearIn) )
-                                {
-                                    vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(programToPutGearIn)->getLMProgramDirectGears();
-                                    lmProgramDirectGearList.push_back(newDirectGear);
-                                }
-                            }
-                        }
-                    }//loading direct gears end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    if( !rdr["pointid"].isNull() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Direct Gears is: " << gearsTimer.elapsedTime() << endl;
-                        gearsTimer.reset();
+                        LONG tempPointId = 0;
+                        LONG tempPointOffset = 0;
+                        string tempPointType = "(none)";
+                        rdr["pointid"] >> tempPointId;
+                        rdr["pointoffset"] >> tempPointOffset;
+                        rdr["pointtype"] >> tempPointType;
+                        if( currentLMProgramEnergyExchange->getProgramStatusPointId() <= 0 &&
+                            resolvePointType(tempPointType) == StatusPointType &&
+                            tempPointOffset == 1 )
+                        {
+                            currentLMProgramEnergyExchange->setProgramStatusPointId(tempPointId);
+                        }
                     }
+                }
 
-                    RWTimer notificationGroupTimer;
-                    notificationGroupTimer.start();
+                RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
 
-                    { //loading notification groups start
-                        RWDBTable lmProgramDirectNotifGrpListTable = db.table("lmdirectnotifgrplist");
-                        RWDBSelector selector = db.selector();
+                for( ;itr(); )
+                {
+                    CtiLMProgramEnergyExchangeSPtr currentLMProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(itr.value());
 
-                        selector << lmProgramDirectNotifGrpListTable["programid"]
-                        << lmProgramDirectNotifGrpListTable["notificationgrpid"];
-
-                        selector.from(lmProgramDirectNotifGrpListTable);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
-                        {
-                            int program_id;
-                            int notif_grp_id;
-                            rdr["programid"] >> program_id;
-                            rdr["notificationgrpid"] >> notif_grp_id;
-
-                            CtiLMProgramBaseSPtr program;
-                            if( directProgramHashMap.findValue(program_id, program ) )
-                            {
-                                boost::static_pointer_cast< CtiLMProgramDirect >(program)->getNotificationGroupIDs().push_back(notif_grp_id);
-                            }
-                            else
-                            {
-                                CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << CtiTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    } //loading notification groups end
-
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
-                        notificationGroupTimer.reset();
-                    }
+                        CtiTime currentDateTime;
+                        CtiDate currentDate(currentDateTime);
+                        CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
 
-                    RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
+                        static const string sql =  "SELECT EPO.deviceid, EPO.offerid, EPO.runstatus, EPO.offerdate "
+                                                   "FROM lmenergyexchangeprogramoffer EPO "
+                                                   "WHERE EPO.deviceid = ? AND EPO.offerdate >= ? "
+                                                   "ORDER BY EPO.offerdate ASC, EPO.offerid ASC";
 
-                    RWTimer curtailProgsTimer;
-                    curtailProgsTimer.start();
-                    {//loading curtailment programs start
-                        RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                        RWDBTable lmProgramCurtailmentTable = db.table("lmprogramcurtailment");
-                        RWDBTable pointTable = db.table("point");
+                        Cti::Database::DatabaseReader rdr(connection, sql);
 
-                        RWDBSelector selector = db.selector();
-                        selector << yukonPAObjectTable["paobjectid"]
-                        << yukonPAObjectTable["category"]
-                        << yukonPAObjectTable["paoclass"]
-                        << yukonPAObjectTable["paoname"]
-                        << yukonPAObjectTable["type"]
-                        << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"]
-                        << lmProgramTable["controltype"]
-                        << lmProgramTable["constraintid"]
-                        << lmProgramTable["constraintname"]
-                        << lmProgramTable["availableweekdays"]
-                        << lmProgramTable["maxhoursdaily"]
-                        << lmProgramTable["maxhoursmonthly"]
-                        << lmProgramTable["maxhoursseasonal"]
-                        << lmProgramTable["maxhoursannually"]
-                        << lmProgramTable["minactivatetime"]
-                        << lmProgramTable["minrestarttime"]
-                        << lmProgramTable["maxdailyops"]
-                        << lmProgramTable["maxactivatetime"]
-                        << lmProgramTable["holidayscheduleid"]
-                        << lmProgramTable["seasonscheduleid"]
-                        << lmProgramCurtailmentTable["minnotifytime"]
-                        << lmProgramCurtailmentTable["heading"]
-                        << lmProgramCurtailmentTable["messageheader"]
-                        << lmProgramCurtailmentTable["messagefooter"]
-                        << lmProgramCurtailmentTable["acktimelimit"]
-                        << lmProgramCurtailmentTable["canceledmsg"]
-                        << lmProgramCurtailmentTable["stoppedearlymsg"]
-                        << dynamicLMProgramTable["programstate"]
-                        << dynamicLMProgramTable["reductiontotal"]
-                        << dynamicLMProgramTable["startedcontrolling"]
-                        << dynamicLMProgramTable["lastcontrolsent"]
-                        << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                        << dynamicLMProgramTable["timestamp"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
+                        rdr << currentLMProgramEnergyExchange->getPAOId()
+                            << compareDateTime;
 
-                        selector.from(yukonPAObjectTable);
-                        selector.from(lmProgramTable);
-                        selector.from(lmProgramCurtailmentTable);
-                        selector.from(dynamicLMProgramTable);
-                        selector.from(pointTable);
-
-                        selector.where( yukonPAObjectTable["paobjectid"]==lmProgramCurtailmentTable["deviceid"] &&
-                                        lmProgramCurtailmentTable["deviceid"]==lmProgramTable["deviceid"] &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
-
-                        selector.orderBy(yukonPAObjectTable["paobjectid"]);
+                        rdr.execute();
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            string loggedSQLstring = selector.asString();
+                            string loggedSQLstring = rdr.asString();
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
                             }
                         }
 
-                        CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment;
-                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-                        RWDBNullIndicator isNull;
+                        std::vector<CtiLMEnergyExchangeOffer*>& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
                         while( rdr() )
                         {
-                            LONG tempProgramId = 0;
-                            rdr["paobjectid"] >> tempProgramId;
-
-                            if( !currentLMProgramCurtailment ||
-                                tempProgramId != currentLMProgramCurtailment->getPAOId() )
-                            {
-                                currentLMProgramCurtailment.reset(CTIDBG_new CtiLMProgramCurtailment(rdr));
-                                if( currentLMProgramCurtailment->getManualControlReceivedFlag() )
-                                {
-                                    currentLMProgramCurtailment->restoreDynamicData();
-                                }
-                                //Inserting this curtailment program into hash map
-                                curtailmentProgramHashMap.insert( currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment );
-                                temp_all_program_map.insert(make_pair(currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment));
-                            }
-
-                            rdr["pointid"] >> isNull;
-                            if( !isNull )
-                            {
-                                LONG tempPointId = 0;
-                                LONG tempPointOffset = 0;
-                                string tempPointType = "(none)";
-                                rdr["pointid"] >> tempPointId;
-                                rdr["pointoffset"] >> tempPointOffset;
-                                rdr["pointtype"] >> tempPointType;
-                                if( currentLMProgramCurtailment->getProgramStatusPointId() <= 0 &&
-                                    resolvePointType(tempPointType) == StatusPointType &&
-                                    tempPointOffset == 1 )
-                                {
-                                    currentLMProgramCurtailment->setProgramStatusPointId(tempPointId);
-                                }
-                            }
+                            offers.push_back(CTIDBG_new CtiLMEnergyExchangeOffer(rdr));
                         }
 
-                        RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
-
-                        for( ;itr(); )
+                        for( LONG r=0;r<offers.size();r++ )
                         {
-                            CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(itr.value());
+                            CtiLMEnergyExchangeOffer* currentLMEnergyExchangeOffer = (CtiLMEnergyExchangeOffer*)offers[r];
 
-                            RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
-                            RWDBTable customerTable = db.table("customer");
-                            RWDBTable lmProgramCurtailCustomerListTable = db.table("lmprogramcurtailcustomerlist");
+                            static const string sql =  "SELECT EEO.offerid, EEO.revisionnumber, EEO.actiondatetime, "
+                                                           "EEO.notificationdatetime, EEO.offerexpirationdatetime, "
+                                                           "EEO.additionalinfo "
+                                                       "FROM lmenergyexchangeofferrevision EEO "
+                                                       "WHERE EEO.offerid = ? "
+                                                       "ORDER BY EEO.revisionnumber ASC";
 
-                            RWDBSelector selector = db.selector();
-                            selector << ciCustomerBaseTable["customerid"]
-                            << ciCustomerBaseTable["companyname"]
-                            << ciCustomerBaseTable["customerdemandlevel"]
-                            << ciCustomerBaseTable["curtailamount"]
-                            << ciCustomerBaseTable["curtailmentagreement"]
-                            << customerTable["timezone"]
-                            << lmProgramCurtailCustomerListTable["customerorder"]
-                            << lmProgramCurtailCustomerListTable["requireack"];
+                            Cti::Database::DatabaseReader rdr(connection, sql);
 
-                            selector.from(ciCustomerBaseTable);
-                            selector.from(customerTable);
-                            selector.from(lmProgramCurtailCustomerListTable);
+                            rdr << currentLMEnergyExchangeOffer->getOfferId();
 
-                            selector.where( lmProgramCurtailCustomerListTable["programid"]==currentLMProgramCurtailment->getPAOId() &&
-                                            ciCustomerBaseTable["customerid"]==lmProgramCurtailCustomerListTable["customerid"] &&
-                                            customerTable["customerid"]==ciCustomerBaseTable["customerid"] );
-
-                            selector.orderBy( lmProgramCurtailCustomerListTable["customerorder"] );
+                            rdr.execute();
 
                             if( _LM_DEBUG & LM_DEBUG_DATABASE )
                             {
-                                string loggedSQLstring = selector.asString();
+                                string loggedSQLstring = rdr.asString();
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - " << loggedSQLstring << endl;
                                 }
                             }
 
-                            vector<CtiLMCurtailCustomer*>& lmProgramCurtailmentCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
-                            RWDBReader rdr = selector.reader(conn);
+                            vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
                             while( rdr() )
                             {
-                                lmProgramCurtailmentCustomers.push_back(CTIDBG_new CtiLMCurtailCustomer(rdr));
+                                offerRevisions.push_back(CTIDBG_new CtiLMEnergyExchangeOfferRevision(rdr));
                             }
 
-                            if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.size() > 0 )
+                            for( LONG s=0;s<offerRevisions.size();s++ )
                             {
-                                for( LONG temp=0;temp<lmProgramCurtailmentCustomers.size();temp++ )
-                                {
-                                    ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData();
-                                }
-                            }
-                        }
-                    }//loading curtailment programs end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Curtailment Programs is: " << curtailProgsTimer.elapsedTime() << endl;
-                        curtailProgsTimer.reset();
-                    }
+                                CtiLMEnergyExchangeOfferRevision* currentLMEnergyExchangeOfferRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[s];
 
+                                static const string sql =  "SELECT XHH.offerid, XHH.revisionnumber, XHH.hour, "
+                                                             "XHH.price, XHH.amountrequested "
+                                                           "FROM lmenergyexchangehourlyoffer XHH "
+                                                           "WHERE XHH.offerid = ? AND XHH.revisionnumber = ? "
+                                                           "ORDER BY XHH.hour ASC";
 
-                    RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > energyExchangeProgramHashMap;
+                                Cti::Database::DatabaseReader rdr(connection, sql);
 
-                    RWTimer eeProgsTimer;
-                    eeProgsTimer.start();
-                    {//loading energy exchange programs start
-                        RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                        RWDBTable lmProgramEnergyExchangeTable = db.table("lmprogramenergyexchange");
-                        RWDBTable pointTable = db.table("point");
+                                rdr << currentLMEnergyExchangeOfferRevision->getOfferId()
+                                    << currentLMEnergyExchangeOfferRevision->getRevisionNumber();
 
-                        RWDBSelector selector = db.selector();
-                        selector << yukonPAObjectTable["paobjectid"]
-                        << yukonPAObjectTable["category"]
-                        << yukonPAObjectTable["paoclass"]
-                        << yukonPAObjectTable["paoname"]
-                        << yukonPAObjectTable["type"]
-                        << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"]
-                        << lmProgramTable["controltype"]
-                        << lmProgramTable["constraintid"]
-                        << lmProgramTable["constraintname"]
-                        << lmProgramTable["availableweekdays"]
-                        << lmProgramTable["maxhoursdaily"]
-                        << lmProgramTable["maxhoursmonthly"]
-                        << lmProgramTable["maxhoursseasonal"]
-                        << lmProgramTable["maxhoursannually"]
-                        << lmProgramTable["minactivatetime"]
-                        << lmProgramTable["minrestarttime"]
-                        << lmProgramTable["maxdailyops"]
-                        << lmProgramTable["maxactivatetime"]
-                        << lmProgramTable["holidayscheduleid"]
-                        << lmProgramTable["seasonscheduleid"]
-                        << lmProgramEnergyExchangeTable["minnotifytime"]
-                        << lmProgramEnergyExchangeTable["heading"]
-                        << lmProgramEnergyExchangeTable["messageheader"]
-                        << lmProgramEnergyExchangeTable["messagefooter"]
-                        << lmProgramEnergyExchangeTable["canceledmsg"]
-                        << lmProgramEnergyExchangeTable["stoppedearlymsg"]
-                        << dynamicLMProgramTable["programstate"]
-                        << dynamicLMProgramTable["reductiontotal"]
-                        << dynamicLMProgramTable["startedcontrolling"]
-                        << dynamicLMProgramTable["lastcontrolsent"]
-                        << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                        << dynamicLMProgramTable["timestamp"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
-
-                        selector.from(yukonPAObjectTable);
-                        selector.from(lmProgramTable);
-                        selector.from(lmProgramEnergyExchangeTable);
-                        selector.from(dynamicLMProgramTable);
-                        selector.from(pointTable);
-
-                        selector.where( yukonPAObjectTable["paobjectid"]==lmProgramEnergyExchangeTable["deviceid"] &&
-                                        lmProgramEnergyExchangeTable["deviceid"]==lmProgramTable["deviceid"] &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(dynamicLMProgramTable["deviceid"]) &&
-                                        lmProgramTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
-
-                        selector.orderBy(yukonPAObjectTable["paobjectid"]);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        CtiLMProgramBaseSPtr currentLMProgramEnergyExchange;
-                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-                        RWDBNullIndicator isNull;
-                        while( rdr() )
-                        {
-                            LONG tempProgramId = 0;
-                            rdr["paobjectid"] >> tempProgramId;
-
-                            if( !currentLMProgramEnergyExchange ||
-                                tempProgramId != currentLMProgramEnergyExchange->getPAOId() )
-                            {
-                                currentLMProgramEnergyExchange.reset(CTIDBG_new CtiLMProgramEnergyExchange(rdr));
-                                //Inserting this curtailment program into hash map
-                                energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
-                                temp_all_program_map.insert(make_pair(currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange));
-                            }
-
-                            rdr["pointid"] >> isNull;
-                            if( !isNull )
-                            {
-                                LONG tempPointId = 0;
-                                LONG tempPointOffset = 0;
-                                string tempPointType = "(none)";
-                                rdr["pointid"] >> tempPointId;
-                                rdr["pointoffset"] >> tempPointOffset;
-                                rdr["pointtype"] >> tempPointType;
-                                if( currentLMProgramEnergyExchange->getProgramStatusPointId() <= 0 &&
-                                    resolvePointType(tempPointType) == StatusPointType &&
-                                    tempPointOffset == 1 )
-                                {
-                                    currentLMProgramEnergyExchange->setProgramStatusPointId(tempPointId);
-                                }
-                            }
-                        }
-
-                        RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
-
-                        for( ;itr(); )
-                        {
-                            CtiLMProgramEnergyExchangeSPtr currentLMProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(itr.value());
-
-                            if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() )
-                            {
-                                CtiTime currentDateTime;
-                                CtiDate currentDate(currentDateTime);
-                                CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
-                                RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
-
-                                RWDBSelector selector = db.selector();
-                                selector << lmEnergyExchangeProgramOfferTable["deviceid"]
-                                << lmEnergyExchangeProgramOfferTable["offerid"]
-                                << lmEnergyExchangeProgramOfferTable["runstatus"]
-                                << lmEnergyExchangeProgramOfferTable["offerdate"];
-
-                                selector.from(lmEnergyExchangeProgramOfferTable);
-
-                                selector.where(lmEnergyExchangeProgramOfferTable["deviceid"]==currentLMProgramEnergyExchange->getPAOId() &&//will be paobjectid
-                                               lmEnergyExchangeProgramOfferTable["offerdate"]>=toRWDBDT(compareDateTime));
-
-                                selector.orderBy(lmEnergyExchangeProgramOfferTable["offerdate"]);
-                                selector.orderBy(lmEnergyExchangeProgramOfferTable["offerid"]);
+                                rdr.execute();
 
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
-                                    string loggedSQLstring = selector.asString();
+                                    string loggedSQLstring = rdr.asString();
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - " << loggedSQLstring << endl;
                                     }
                                 }
 
-                                RWDBReader rdr = selector.reader(conn);
-                                std::vector<CtiLMEnergyExchangeOffer*>& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
+                                vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
                                 while( rdr() )
                                 {
-                                    offers.push_back(CTIDBG_new CtiLMEnergyExchangeOffer(rdr));
+                                    hourlyOffers.push_back(CTIDBG_new CtiLMEnergyExchangeHourlyOffer(rdr));
+                                }
+                            }
+                        }
+                    }
+                    {
+                        static const string sql =  "SELECT CCB.customerid, CCB.companyname, CCB.customerdemandlevel, "
+                                                       "CCB.curtailamount,CCB.curtailmentagreement, CUS.timezone, "
+                                                       "XCL.customerorder "
+                                                   "FROM cicustomerbase CCB, customer CUS, "
+                                                       "lmenergyexchangecustomerlist XCL "
+                                                   "WHERE CCB.customerid = XCL.customerid AND "
+                                                       "CUS.customerid = CCB.customerid AND XCL.programid = ? "
+                                                   "ORDER BY XCL.customerorder ASC";
+                        
+                        Cti::Database::DatabaseReader rdr(connection, sql);
+
+                        rdr << currentLMProgramEnergyExchange->getPAOId();
+
+                        rdr.execute();
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            string loggedSQLstring = rdr.asString();
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                            }
+                        }
+
+                        std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
+                        while( rdr() )
+                        {
+                            lmEnergyExchangeCustomers.push_back(CTIDBG_new CtiLMEnergyExchangeCustomer(rdr));
+                        }
+
+                        if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.size() > 0 )
+                        {
+                            for( LONG a=0;a<lmEnergyExchangeCustomers.size();a++ )
+                            {
+                                CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[a];
+                                CtiTime currentDateTime;
+                                CtiDate currentDate(currentDateTime);
+                                CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
+
+                                static const string sql =  "SELECT CCB.customerid, CCB.offerid, CCB.acceptstatus, "
+                                                               "CCB.acceptdatetime, CCB.revisionnumber, "
+                                                               "CCB.ipaddressofacceptuser, CCB.useridname, "
+                                                               "CCB.nameofacceptperson, CCB.energyexchangenotes "
+                                                           "FROM lmenergyexchangecustomerreply CCB, "
+                                                               "lmenergyexchangeprogramoffer CUS "
+                                                           "WHERE CCB.offerid = CUS.offerid AND CUS.offerdate >= ? "
+                                                               "AND CCB.customerid = ? "
+                                                           "ORDER BY CCB.offerid ASC, CCB.revisionnumber ASC";
+
+                                Cti::Database::DatabaseReader rdr(connection, sql);
+
+                                rdr << compareDateTime
+                                    << currentLMEnergyExchangeCustomer->getCustomerId();
+
+                                rdr.execute();
+
+                                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                                {
+                                    string loggedSQLstring = rdr.asString();
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                    }
                                 }
 
-                                for( LONG r=0;r<offers.size();r++ )
+                                vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
+                                while( rdr() )
                                 {
-                                    CtiLMEnergyExchangeOffer* currentLMEnergyExchangeOffer = (CtiLMEnergyExchangeOffer*)offers[r];
-                                    RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
+                                    lmEnergyExchangeCustomerReplies.push_back(CTIDBG_new CtiLMEnergyExchangeCustomerReply(rdr));
+                                }
 
-                                    RWDBSelector selector = db.selector();
-                                    selector << lmEnergyExchangeOfferRevisionTable["offerid"]
-                                    << lmEnergyExchangeOfferRevisionTable["revisionnumber"]
-                                    << lmEnergyExchangeOfferRevisionTable["actiondatetime"]
-                                    << lmEnergyExchangeOfferRevisionTable["notificationdatetime"]
-                                    << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"]
-                                    << lmEnergyExchangeOfferRevisionTable["additionalinfo"];
+                                for( LONG b=0;b<lmEnergyExchangeCustomerReplies.size();b++ )
+                                {
+                                    CtiLMEnergyExchangeCustomerReply* currentCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[b];
+                                    CtiTime currentDateTime;
+                                    CtiDate currentDate(currentDateTime);
+                                    CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
 
-                                    selector.from(lmEnergyExchangeOfferRevisionTable);
+                                    static const string sql =  "SELECT XHC.customerid, XHC.offerid, XHC.revisionnumber, "
+                                                                 "XHC.hour, XHC.amountcommitted "
+                                                               "FROM lmenergyexchangehourlycustomer XHC, "
+                                                                 "lmenergyexchangeprogramoffer XPO "
+                                                               "WHERE XHC.customerid = ? AND XHC.offerid = ? AND "
+                                                                 "XHC.offerid = XPO.offerid AND XPO.offerdate >= ? "
+                                                               "ORDER BY XHC.customerid ASC, XHC.offerid ASC, "
+                                                                 "XHC.revisionnumber ASC, XHC.hour ASC";
 
-                                    selector.where(lmEnergyExchangeOfferRevisionTable["offerid"]==currentLMEnergyExchangeOffer->getOfferId());
+                                    Cti::Database::DatabaseReader rdr(connection, sql);
 
-                                    selector.orderBy(lmEnergyExchangeOfferRevisionTable["revisionnumber"]);
+                                    rdr << currentCustomerReply->getCustomerId()
+                                        << currentCustomerReply->getOfferId()
+                                        << compareDateTime;
+
+                                    rdr.execute();
 
                                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                     {
-                                        string loggedSQLstring = selector.asString();
+                                        string loggedSQLstring = rdr.asString();
                                         {
                                             CtiLockGuard<CtiLogger> logger_guard(dout);
                                             dout << CtiTime() << " - " << loggedSQLstring << endl;
                                         }
                                     }
 
-                                    RWDBReader rdr = selector.reader(conn);
-                                    vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
+                                    vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
                                     while( rdr() )
                                     {
-                                        offerRevisions.push_back(CTIDBG_new CtiLMEnergyExchangeOfferRevision(rdr));
-                                    }
-
-                                    for( LONG s=0;s<offerRevisions.size();s++ )
-                                    {
-                                        CtiLMEnergyExchangeOfferRevision* currentLMEnergyExchangeOfferRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[s];
-                                        RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
-
-                                        RWDBSelector selector = db.selector();
-                                        selector << lmEnergyExchangeHourlyOfferTable["offerid"]
-                                        << lmEnergyExchangeHourlyOfferTable["revisionnumber"]
-                                        << lmEnergyExchangeHourlyOfferTable["hour"]
-                                        << lmEnergyExchangeHourlyOfferTable["price"]
-                                        << lmEnergyExchangeHourlyOfferTable["amountrequested"];
-
-                                        selector.from(lmEnergyExchangeHourlyOfferTable);
-
-                                        selector.where(lmEnergyExchangeHourlyOfferTable["offerid"]==currentLMEnergyExchangeOfferRevision->getOfferId() &&
-                                                       lmEnergyExchangeHourlyOfferTable["revisionnumber"]==currentLMEnergyExchangeOfferRevision->getRevisionNumber());
-
-                                        selector.orderBy(lmEnergyExchangeHourlyOfferTable["hour"]);
-
-                                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                                        {
-                                            string loggedSQLstring = selector.asString();
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                            }
-                                        }
-
-                                        RWDBReader rdr = selector.reader(conn);
-                                        vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
-                                        while( rdr() )
-                                        {
-                                            hourlyOffers.push_back(CTIDBG_new CtiLMEnergyExchangeHourlyOffer(rdr));
-                                        }
-                                    }
-                                }
-                            }
-
-                            {
-                                RWDBTable ciCustomerBaseTable = db.table("cicustomerbase");
-                                RWDBTable customerTable = db.table("customer");
-                                RWDBTable lmEnergyExchangeCustomerListTable = db.table("lmenergyexchangecustomerlist");
-
-                                RWDBSelector selector = db.selector();
-                                selector << ciCustomerBaseTable["customerid"]
-                                << ciCustomerBaseTable["companyname"]
-                                << ciCustomerBaseTable["customerdemandlevel"]
-                                << ciCustomerBaseTable["curtailamount"]
-                                << ciCustomerBaseTable["curtailmentagreement"]
-                                << customerTable["timezone"]
-                                << lmEnergyExchangeCustomerListTable["customerorder"];
-
-                                selector.from(ciCustomerBaseTable);
-                                selector.from(customerTable);
-                                selector.from(lmEnergyExchangeCustomerListTable);
-
-                                selector.where( lmEnergyExchangeCustomerListTable["programid"]==currentLMProgramEnergyExchange->getPAOId() &&
-                                                ciCustomerBaseTable["customerid"]==lmEnergyExchangeCustomerListTable["customerid"] &&
-                                                customerTable["customerid"]==ciCustomerBaseTable["customerid"] );
-
-                                selector.orderBy( lmEnergyExchangeCustomerListTable["customerorder"] );
-
-                                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                                {
-                                    string loggedSQLstring = selector.asString();
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                    }
-                                }
-
-                                std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
-                                RWDBReader rdr = selector.reader(conn);
-                                while( rdr() )
-                                {
-                                    lmEnergyExchangeCustomers.push_back(CTIDBG_new CtiLMEnergyExchangeCustomer(rdr));
-                                }
-
-                                if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.size() > 0 )
-                                {
-                                    for( LONG a=0;a<lmEnergyExchangeCustomers.size();a++ )
-                                    {
-                                        CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[a];
-                                        CtiTime currentDateTime;
-                                        CtiDate currentDate(currentDateTime);
-                                        CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
-                                        RWDBTable lmEnergyExchangeCustomerReplyTable = db.table("lmenergyexchangecustomerreply");
-                                        RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
-
-                                        RWDBSelector selector = db.selector();
-                                        selector << lmEnergyExchangeCustomerReplyTable["customerid"]
-                                        << lmEnergyExchangeCustomerReplyTable["offerid"]
-                                        << lmEnergyExchangeCustomerReplyTable["acceptstatus"]
-                                        << lmEnergyExchangeCustomerReplyTable["acceptdatetime"]
-                                        << lmEnergyExchangeCustomerReplyTable["revisionnumber"]
-                                        << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"]
-                                        << lmEnergyExchangeCustomerReplyTable["useridname"]
-                                        << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"]
-                                        << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"];
-
-                                        selector.from(lmEnergyExchangeCustomerReplyTable);
-                                        selector.from(lmEnergyExchangeProgramOfferTable);
-
-                                        selector.where(lmEnergyExchangeCustomerReplyTable["customerid"]==currentLMEnergyExchangeCustomer->getCustomerId() &&
-                                                       lmEnergyExchangeCustomerReplyTable["offerid"]==lmEnergyExchangeProgramOfferTable["offerid"] &&
-                                                       lmEnergyExchangeProgramOfferTable["offerdate"]>=toRWDBDT(compareDateTime));
-
-                                        selector.orderBy(lmEnergyExchangeCustomerReplyTable["offerid"]);
-                                        selector.orderBy(lmEnergyExchangeCustomerReplyTable["revisionnumber"]);
-
-                                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                                        {
-                                            string loggedSQLstring = selector.asString();
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                            }
-                                        }
-
-                                        RWDBReader rdr = selector.reader(conn);
-                                        vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
-                                        while( rdr() )
-                                        {
-                                            lmEnergyExchangeCustomerReplies.push_back(CTIDBG_new CtiLMEnergyExchangeCustomerReply(rdr));
-                                        }
-
-                                        for( LONG b=0;b<lmEnergyExchangeCustomerReplies.size();b++ )
-                                        {
-                                            CtiLMEnergyExchangeCustomerReply* currentCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[b];
-                                            CtiTime currentDateTime;
-                                            CtiDate currentDate(currentDateTime);
-                                            CtiTime compareDateTime = CtiTime(currentDate,0,0,0);
-                                            RWDBTable lmEnergyExchangeHourlyCustomerTable = db.table("lmenergyexchangehourlycustomer");
-                                            RWDBTable lmEnergyExchangeProgramOfferTable = db.table("lmenergyexchangeprogramoffer");
-
-                                            RWDBSelector selector = db.selector();
-                                            selector << lmEnergyExchangeHourlyCustomerTable["customerid"]
-                                            << lmEnergyExchangeHourlyCustomerTable["offerid"]
-                                            << lmEnergyExchangeHourlyCustomerTable["revisionnumber"]
-                                            << lmEnergyExchangeHourlyCustomerTable["hour"]
-                                            << lmEnergyExchangeHourlyCustomerTable["amountcommitted"];
-
-                                            selector.from(lmEnergyExchangeHourlyCustomerTable);
-                                            selector.from(lmEnergyExchangeProgramOfferTable);
-
-                                            selector.where(lmEnergyExchangeHourlyCustomerTable["customerid"]==currentCustomerReply->getCustomerId() &&
-                                                           lmEnergyExchangeHourlyCustomerTable["offerid"]==currentCustomerReply->getOfferId() &&
-                                                           lmEnergyExchangeHourlyCustomerTable["offerid"]==lmEnergyExchangeProgramOfferTable["offerid"] &&
-                                                           lmEnergyExchangeProgramOfferTable["offerdate"]>=toRWDBDT(compareDateTime));
-
-                                            selector.orderBy(lmEnergyExchangeHourlyCustomerTable["customerid"]);
-                                            selector.orderBy(lmEnergyExchangeHourlyCustomerTable["offerid"]);
-                                            selector.orderBy(lmEnergyExchangeHourlyCustomerTable["revisionnumber"]);
-                                            selector.orderBy(lmEnergyExchangeHourlyCustomerTable["hour"]);
-
-                                            if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                                            {
-                                                string loggedSQLstring = selector.asString();
-                                                {
-                                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                                }
-                                            }
-
-                                            RWDBReader rdr = selector.reader(conn);
-                                            vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
-                                            while( rdr() )
-                                            {
-                                                hourlyCustomers.push_back(CTIDBG_new CtiLMEnergyExchangeHourlyCustomer(rdr));
-                                            }
-                                        }
+                                        hourlyCustomers.push_back(CTIDBG_new CtiLMEnergyExchangeHourlyCustomer(rdr));
                                     }
                                 }
                             }
                         }
-                    }//loading energy exchange programs end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    }
+                }
+            }//loading energy exchange programs end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Energy Exchange Programs is: " << eeProgsTimer.elapsedTime() << endl;
+                eeProgsTimer.reset();
+            }
+
+
+            RWTimer progWinTimer;
+            progWinTimer.start();
+            {//loading program control windows start
+
+                static const string sql =  "SELECT PCW.deviceid, PCW.windownumber, PCW.availablestarttime, "
+                                             "PCW.availablestoptime "
+                                           "FROM lmprogramcontrolwindow PCW ORDER BY PCW.deviceid ASC, "
+                                             "PCW.windownumber ASC";
+
+                Cti::Database::DatabaseReader rdr(connection);
+                
+                rdr.setCommandText(sql);
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Energy Exchange Programs is: " << eeProgsTimer.elapsedTime() << endl;
-                        eeProgsTimer.reset();
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                } 
+
+                while( rdr() )
+                {
+                    CtiLMProgramControlWindow* newWindow = CTIDBG_new CtiLMProgramControlWindow(rdr);
+                    CtiLMProgramBaseSPtr programToPutWindowIn;
+                    if( directProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
+                        curtailmentProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
+                        energyExchangeProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) )
+                    {
+                        std::vector<CtiLMProgramControlWindow*>& lmProgramControlWindowList = programToPutWindowIn->getLMProgramControlWindows();
+                        lmProgramControlWindowList.push_back(newWindow);
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << "Control Window with Id: " << newWindow->getPAOId() << " cannot find a program to associate with, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        delete newWindow;
+                    }
+                }
+            }//loading program control windows end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Program Control Windows is: " << progWinTimer.elapsedTime() << endl;
+                progWinTimer.reset();
+            }
+
+
+            RWTimer caTimer;
+            caTimer.start();
+            {//loading control areas start
+
+                static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
+                                               "YP.description, YP.disableflag, LCA.defoperationalstate, "
+                                               "LCA.controlinterval, LCA.minresponsetime, LCA.defdailystarttime, "
+                                               "LCA.defdailystoptime, LCA.requirealltriggersactiveflag, "
+                                               "CAP.lmprogramdeviceid, CAP.startpriority, CAP.stoppriority, "
+                                               "DCA.nextchecktime, DCA.newpointdatareceivedflag, DCA.updatedflag, "
+                                               "DCA.controlareastate, DCA.currentpriority, DCA.currentdailystarttime, "
+                                               "DCA.currentdailystoptime, DCA.timestamp, PT.pointid, PT.pointoffset, "
+                                               "PT.pointtype "
+                                           "FROM yukonpaobject YP, lmcontrolarea LCA LEFT OUTER JOIN "
+                                               "lmcontrolareaprogram CAP ON LCA.deviceid = CAP.deviceid LEFT OUTER JOIN "
+                                               "dynamiclmcontrolarea DCA ON LCA.deviceid = DCA.deviceid LEFT OUTER JOIN "
+                                               "point PT ON LCA.deviceid = PT.paobjectid "
+                                           "WHERE YP.paobjectid = LCA.deviceid "
+                                           "ORDER BY YP.paobjectid ASC, CAP.startpriority ASC";
+
+                DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                CtiLMControlArea* currentLMControlArea = NULL;
+                CtiLMProgramBaseSPtr currentLMProgramBase;
+                while( rdr() )
+                {
+                    LONG tempControlAreaId = 0;
+                    rdr["paobjectid"] >> tempControlAreaId;
+                    if( currentLMControlArea == NULL ||
+                        tempControlAreaId != currentLMControlArea->getPAOId() )
+                    {
+                        currentLMControlArea = CTIDBG_new CtiLMControlArea(rdr);
+                        temp_control_areas.push_back(currentLMControlArea);
+                        temp_all_control_area_map.insert(make_pair(currentLMControlArea->getPAOId(), currentLMControlArea));
                     }
 
+                    if( !rdr["lmprogramdeviceid"].isNull() )
+                    {
+                        LONG tempProgramId = 0;
+                        int start_priority;
+                        int stop_priority;
 
-                    RWTimer progWinTimer;
-                    progWinTimer.start();
-                    {//loading program control windows start
-                        RWDBTable lmProgramControlWindow = db.table("lmprogramcontrolwindow");
+                        rdr["lmprogramdeviceid"] >> tempProgramId;
+                        rdr["startpriority"] >> start_priority;
+                        rdr["stoppriority"] >> stop_priority;
 
-                        RWDBSelector selector = db.selector();
-                        selector << lmProgramControlWindow["deviceid"]
-                        << lmProgramControlWindow["windownumber"]
-                        << lmProgramControlWindow["availablestarttime"]
-                        << lmProgramControlWindow["availablestoptime"];
-
-                        selector.from(lmProgramControlWindow);
-
-                        selector.orderBy( lmProgramControlWindow["deviceid"] );
-                        selector.orderBy( lmProgramControlWindow["windownumber"] );
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        if( !currentLMProgramBase ||
+                            ( currentLMProgramBase &&
+                              currentLMProgramBase->getPAOId() != tempProgramId ) )
                         {
-                            string loggedSQLstring = selector.asString();
+                            vector<CtiLMProgramBaseSPtr>& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
+
+                            if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
+                                currentLMProgramBase->setStartPriority(start_priority);
+                                currentLMProgramBase->setStopPriority(stop_priority);
+                                currentLMProgramBase->setControlArea(currentLMControlArea);
+                                lmControlAreaProgramList.push_back(currentLMProgramBase);
+                                directProgramHashMap.remove(tempProgramId);
                             }
-                        }
-
-                        RWDBReader rdr = selector.reader(conn);
-                        while( rdr() )
-                        {
-                            CtiLMProgramControlWindow* newWindow = CTIDBG_new CtiLMProgramControlWindow(rdr);
-                            CtiLMProgramBaseSPtr programToPutWindowIn;
-                            if( directProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
-                                curtailmentProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
-                                energyExchangeProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) )
+                            else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
                             {
-                                std::vector<CtiLMProgramControlWindow*>& lmProgramControlWindowList = programToPutWindowIn->getLMProgramControlWindows();
-                                lmProgramControlWindowList.push_back(newWindow);
+                                currentLMProgramBase->setStartPriority(start_priority);
+                                currentLMProgramBase->setStopPriority(stop_priority);
+                                currentLMProgramBase->setControlArea(currentLMControlArea);
+                                lmControlAreaProgramList.push_back(currentLMProgramBase);
+                                curtailmentProgramHashMap.remove(tempProgramId);
+                            }
+                            else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                            {
+                                currentLMProgramBase->setStartPriority(start_priority);
+                                currentLMProgramBase->setStopPriority(stop_priority);
+                                currentLMProgramBase->setControlArea(currentLMControlArea);
+                                lmControlAreaProgramList.push_back(currentLMProgramBase);
+                                energyExchangeProgramHashMap.remove(tempProgramId);
                             }
                             else
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << "Control Window with Id: " << newWindow->getPAOId() << " cannot find a program to associate with, in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                delete newWindow;
+                                dout << "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                dout << "The LM Program may be in more than one Control Area which is not allowed, in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
-                    }//loading program control windows end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Program Control Windows is: " << progWinTimer.elapsedTime() << endl;
-                        progWinTimer.reset();
                     }
 
-
-                    RWTimer caTimer;
-                    caTimer.start();
-                    {//loading control areas start
-                        RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                        RWDBTable lmControlAreaTable = db.table("lmcontrolarea");
-                        RWDBTable lmControlAreaProgramTable = db.table("lmcontrolareaprogram");
-                        RWDBTable dynamicLMControlAreaTable = db.table("dynamiclmcontrolarea");
-                        RWDBTable pointTable = db.table("point");
-
-                        RWDBSelector selector = db.selector();
-                        selector << yukonPAObjectTable["paobjectid"]
-                        << yukonPAObjectTable["category"]
-                        << yukonPAObjectTable["paoclass"]
-                        << yukonPAObjectTable["paoname"]
-                        << yukonPAObjectTable["type"]
-                        << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"]
-                        << lmControlAreaTable["defoperationalstate"]
-                        << lmControlAreaTable["controlinterval"]
-                        << lmControlAreaTable["minresponsetime"]
-                        << lmControlAreaTable["defdailystarttime"]
-                        << lmControlAreaTable["defdailystoptime"]
-                        << lmControlAreaTable["requirealltriggersactiveflag"]
-                        << lmControlAreaProgramTable["lmprogramdeviceid"]
-                        << lmControlAreaProgramTable["startpriority"]
-                        << lmControlAreaProgramTable["stoppriority"]
-                        << dynamicLMControlAreaTable["nextchecktime"]
-                        << dynamicLMControlAreaTable["newpointdatareceivedflag"]
-                        << dynamicLMControlAreaTable["updatedflag"]
-                        << dynamicLMControlAreaTable["controlareastate"]
-                        << dynamicLMControlAreaTable["currentpriority"]
-                        << dynamicLMControlAreaTable["currentdailystarttime"]
-                        << dynamicLMControlAreaTable["currentdailystoptime"]
-                        << dynamicLMControlAreaTable["timestamp"]
-                        << pointTable["pointid"]
-                        << pointTable["pointoffset"]
-                        << pointTable["pointtype"];
-
-                        selector.from(yukonPAObjectTable);
-                        selector.from(lmControlAreaTable);
-                        selector.from(lmControlAreaProgramTable);
-                        selector.from(dynamicLMControlAreaTable);
-                        selector.from(pointTable);
-
-                        //fixThis;
-                        selector.where( yukonPAObjectTable["paobjectid"]==lmControlAreaTable["deviceid"] &&
-                                        lmControlAreaTable["deviceid"].leftOuterJoin(lmControlAreaProgramTable["deviceid"]) &&
-                                        lmControlAreaTable["deviceid"].leftOuterJoin(dynamicLMControlAreaTable["deviceid"]) &&
-                                        lmControlAreaTable["deviceid"].leftOuterJoin(pointTable["paobjectid"]) );
-
-                        selector.orderBy(yukonPAObjectTable["paobjectid"]);
-                        selector.orderBy(lmControlAreaProgramTable["startpriority"]);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                        {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
-                        }
-
-                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-
-                        CtiLMControlArea* currentLMControlArea = NULL;
-                        CtiLMProgramBaseSPtr currentLMProgramBase;
-                        RWDBNullIndicator isNull;
-                        while( rdr() )
-                        {
-                            LONG tempControlAreaId = 0;
-                            rdr["paobjectid"] >> tempControlAreaId;
-                            if( currentLMControlArea == NULL ||
-                                tempControlAreaId != currentLMControlArea->getPAOId() )
-                            {
-                                currentLMControlArea = CTIDBG_new CtiLMControlArea(rdr);
-                                temp_control_areas.push_back(currentLMControlArea);
-                                temp_all_control_area_map.insert(make_pair(currentLMControlArea->getPAOId(), currentLMControlArea));
-                            }
-
-                            rdr["lmprogramdeviceid"] >> isNull;
-                            if( !isNull )
-                            {
-                                LONG tempProgramId = 0;
-                                int start_priority;
-                                int stop_priority;
-
-                                rdr["lmprogramdeviceid"] >> tempProgramId;
-                                rdr["startpriority"] >> start_priority;
-                                rdr["stoppriority"] >> stop_priority;
-
-                                if( !currentLMProgramBase ||
-                                    ( currentLMProgramBase &&
-                                      currentLMProgramBase->getPAOId() != tempProgramId ) )
-                                {
-                                    vector<CtiLMProgramBaseSPtr>& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
-
-                                    if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
-                                    {
-                                        currentLMProgramBase->setStartPriority(start_priority);
-                                        currentLMProgramBase->setStopPriority(stop_priority);
-                                        currentLMProgramBase->setControlArea(currentLMControlArea);
-                                        lmControlAreaProgramList.push_back(currentLMProgramBase);
-                                        directProgramHashMap.remove(tempProgramId);
-                                    }
-                                    else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
-                                    {
-                                        currentLMProgramBase->setStartPriority(start_priority);
-                                        currentLMProgramBase->setStopPriority(stop_priority);
-                                        currentLMProgramBase->setControlArea(currentLMControlArea);
-                                        lmControlAreaProgramList.push_back(currentLMProgramBase);
-                                        curtailmentProgramHashMap.remove(tempProgramId);
-                                    }
-                                    else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
-                                    {
-                                        currentLMProgramBase->setStartPriority(start_priority);
-                                        currentLMProgramBase->setStopPriority(stop_priority);
-                                        currentLMProgramBase->setControlArea(currentLMControlArea);
-                                        lmControlAreaProgramList.push_back(currentLMProgramBase);
-                                        energyExchangeProgramHashMap.remove(tempProgramId);
-                                    }
-                                    else
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                        dout << "The LM Program may be in more than one Control Area which is not allowed, in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                    }
-                                }
-                            }
-
-                            rdr["pointid"] >> isNull;
-                            if( !isNull )
-                            {
-                                LONG tempPointId = 0;
-                                LONG tempPointOffset = 0;
-                                string tempPointType = "(none)";
-                                rdr["pointid"] >> tempPointId;
-                                rdr["pointoffset"] >> tempPointOffset;
-                                rdr["pointtype"] >> tempPointType;
-                                if( currentLMControlArea->getControlAreaStatusPointId() <= 0 &&
-                                    resolvePointType(tempPointType) == StatusPointType &&
-                                    tempPointOffset == 1 )
-                                {
-                                    currentLMControlArea->setControlAreaStatusPointId(tempPointId);
-                                }
-                            }
-                        }
-
-                        //clean up all the remaining, unassigned programs
-                        //(most of the should have been attached to control areas and removed from these maps alreadY)
-
-                        //This doesnt need to happen with smart pointers
-                        //directProgramHashMap.apply(lmprogram_delete, 0);
-                        //curtailmentProgramHashMap.apply(lmprogram_delete, 0);
-                        //energyExchangeProgramHashMap.apply(lmprogram_delete, 0);
-
-
-                    }//loading control areas end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                    if( !rdr["pointid"].isNull() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Control Areas is: " << caTimer.elapsedTime() << endl;
-                        dout << "directprghashmap size: " << directProgramHashMap.entries() << endl;
-                        caTimer.reset();
-                    }
-
-
-                    RWTimer trigTimer;
-                    trigTimer.start();
-                    {//loading control area triggers start
-                        RWDBTable lmControlAreaTriggerTable = db.table("lmcontrolareatrigger");
-                        RWDBTable dynamicLMControlAreaTriggerTable = db.table("dynamiclmcontrolareatrigger");
-
-                        RWDBSelector selector = db.selector();
-                        selector << lmControlAreaTriggerTable["triggerid"]
-                        << lmControlAreaTriggerTable["deviceid"]
-                        << lmControlAreaTriggerTable["triggernumber"]
-                        << lmControlAreaTriggerTable["triggertype"]
-                        << lmControlAreaTriggerTable["pointid"]
-                        << lmControlAreaTriggerTable["normalstate"]
-                        << lmControlAreaTriggerTable["threshold"]
-                        << lmControlAreaTriggerTable["projectiontype"]
-                        << lmControlAreaTriggerTable["projectionpoints"]
-                        << lmControlAreaTriggerTable["projectaheadduration"]
-                        << lmControlAreaTriggerTable["thresholdkickpercent"]
-                        << lmControlAreaTriggerTable["minrestoreoffset"]
-                        << lmControlAreaTriggerTable["peakpointid"]
-                        << dynamicLMControlAreaTriggerTable["pointvalue"]
-                        << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"]
-                        << dynamicLMControlAreaTriggerTable["peakpointvalue"]
-                        << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"];
-
-                        selector.from(lmControlAreaTriggerTable);
-                        selector.from(dynamicLMControlAreaTriggerTable);
-
-                        selector.where( lmControlAreaTriggerTable["deviceid"].leftOuterJoin(dynamicLMControlAreaTriggerTable["deviceid"]) &&
-                                        lmControlAreaTriggerTable["triggernumber"].leftOuterJoin(dynamicLMControlAreaTriggerTable["triggernumber"]) );
-
-                        selector.orderBy(lmControlAreaTriggerTable["deviceid"]);
-                        selector.orderBy(lmControlAreaTriggerTable["triggernumber"]);
-
-                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        LONG tempPointId = 0;
+                        LONG tempPointOffset = 0;
+                        string tempPointType = "(none)";
+                        rdr["pointid"] >> tempPointId;
+                        rdr["pointoffset"] >> tempPointOffset;
+                        rdr["pointtype"] >> tempPointType;
+                        if( currentLMControlArea->getControlAreaStatusPointId() <= 0 &&
+                            resolvePointType(tempPointType) == StatusPointType &&
+                            tempPointOffset == 1 )
                         {
-                            string loggedSQLstring = selector.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
+                            currentLMControlArea->setControlAreaStatusPointId(tempPointId);
                         }
-
-                        RWDBReader rdr = ExecuteQuery( conn, makeLeftOuterJoinSQL92Compliant( string( selector.asString() ) ) );
-                        while( rdr() )
-                        {
-                            CtiLMControlAreaTrigger* newTrigger = CTIDBG_new CtiLMControlAreaTrigger(rdr);
-                            attachProjectionData(newTrigger);
-                            newTrigger->calculateProjectedValue();
-
-                            /****************************************************************
-                            *******  Inserting Trigger into the correct Control Area  *******
-                            ****************************************************************/
-                            LONG tempControlAreaId = 0;
-                            rdr["deviceid"] >> tempControlAreaId;
-                            for( LONG i=0;i<temp_control_areas.size();i++ )
-                            {
-                                CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(temp_control_areas[i]);
-                                if( currentLMControlArea->getPAOId() == tempControlAreaId )
-                                {
-                                    currentLMControlArea->getLMControlAreaTriggers().push_back(newTrigger);
-                                    break;
-                                }
-                                
-                            }
-
-                            temp_point_control_area_map.insert(make_pair(newTrigger->getPointId(), tempControlAreaId));
-                            if( newTrigger->getPeakPointId() != 0 )
-                            {
-                                temp_point_control_area_map.insert(make_pair(newTrigger->getPeakPointId(), tempControlAreaId));
-                            }
-                        }
-                    }//loading control area triggers end
-                    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
-                        trigTimer.reset();
                     }
-
-                    //Make sure holidays and season schedules are refreshed
-                    CtiHolidayManager::getInstance().refresh();
-                    CtiSeasonManager::getInstance().refresh();
-
                 }
-                else
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Unable to get valid database connection." << endl;
-                    _isvalid = FALSE;
-                    return;
-                }
+
+                //clean up all the remaining, unassigned programs
+                //(most of the should have been attached to control areas and removed from these maps alreadY)
+
+                //This doesnt need to happen with smart pointers
+                //directProgramHashMap.apply(lmprogram_delete, 0);
+                //curtailmentProgramHashMap.apply(lmprogram_delete, 0);
+                //energyExchangeProgramHashMap.apply(lmprogram_delete, 0);
+
+
+            }//loading control areas end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Control Areas is: " << caTimer.elapsedTime() << endl;
+                dout << "directprghashmap size: " << directProgramHashMap.entries() << endl;
+                caTimer.reset();
             }
+
+
+            RWTimer trigTimer;
+            trigTimer.start();
+            {//loading control area triggers start
+
+                static const string sql =  "SELECT CAT.triggerid, CAT.deviceid, CAT.triggernumber, CAT.triggertype, "
+                                               "CAT.pointid,CAT.normalstate, CAT.threshold, CAT.projectiontype, "
+                                               "CAT.projectionpoints, CAT.projectaheadduration, CAT.thresholdkickpercent, "
+                                               "CAT.minrestoreoffset, CAT.peakpointid, DTR.pointvalue, "
+                                               "DTR.lastpointvaluetimestamp, DTR.peakpointvalue, "
+                                               "DTR.lastpeakpointvaluetimestamp "
+                                           "FROM lmcontrolareatrigger CAT LEFT OUTER JOIN "
+                                               "dynamiclmcontrolareatrigger DTR ON CAT.deviceid = DTR.deviceid AND "
+                                               "CAT.triggernumber = DTR.triggernumber "
+                                           "ORDER BY CAT.deviceid ASC, CAT.triggernumber ASC";
+
+
+                DatabaseReader rdr(connection);
+
+                rdr.setCommandText(sql);
+
+                rdr.execute();
+
+                if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                {
+                    string loggedSQLstring = rdr.asString();
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << loggedSQLstring << endl;
+                    }
+                }
+
+                while( rdr() )
+                {
+                    CtiLMControlAreaTrigger* newTrigger = CTIDBG_new CtiLMControlAreaTrigger(rdr);
+                    attachProjectionData(newTrigger);
+                    newTrigger->calculateProjectedValue();
+
+                    /****************************************************************
+                    *******  Inserting Trigger into the correct Control Area  *******
+                    ****************************************************************/
+                    LONG tempControlAreaId = 0;
+                    rdr["deviceid"] >> tempControlAreaId;
+                    for( LONG i=0;i<temp_control_areas.size();i++ )
+                    {
+                        CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(temp_control_areas[i]);
+                        if( currentLMControlArea->getPAOId() == tempControlAreaId )
+                        {
+                            currentLMControlArea->getLMControlAreaTriggers().push_back(newTrigger);
+                            break;
+                        }
+                        
+                    }
+
+                    temp_point_control_area_map.insert(make_pair(newTrigger->getPointId(), tempControlAreaId));
+                    if( newTrigger->getPeakPointId() != 0 )
+                    {
+                        temp_point_control_area_map.insert(make_pair(newTrigger->getPeakPointId(), tempControlAreaId));
+                    }
+                }
+            }//loading control area triggers end
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
+                trigTimer.reset();
+            }
+
+            //Make sure holidays and season schedules are refreshed
+            CtiHolidayManager::getInstance().refresh();
+            CtiSeasonManager::getInstance().refresh();
         }
 
         {
@@ -2338,38 +2059,34 @@ void CtiLMControlAreaStore::setWasControlAreaDeletedFlag(bool wasDeleted)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    static const std::string sql = "update yukonpaobject"
+                                   " set "
+                                        "disableflag = ?"
+                                   " where "
+                                        "paobjectid = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
+
+    updater
+        << ( controlArea->getDisableFlag() ? std::string("Y") : std::string("N") )
+        << controlArea->getPAOId();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
-        RWDBUpdater updater = yukonPAObjectTable.updater();
-
-        updater.where( yukonPAObjectTable["paobjectid"] == controlArea->getPAOId() );
-
-        updater << yukonPAObjectTable["disableflag"].assign( (controlArea->getDisableFlag()?"Y":"N") );
-
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        updater.execute( conn );
-
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
-
-        return updater.status().isValid();
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    bool success = updater.execute();
+
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+                                                         controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return success;
 }
 
 /*---------------------------------------------------------------------------
@@ -2380,38 +2097,34 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr program)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    static const std::string sql = "update yukonpaobject"
+                                   " set "
+                                        "disableflag = ?"
+                                   " where "
+                                        "paobjectid = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
+
+    updater
+        << ( program->getDisableFlag() ? std::string("Y") : std::string("N") )
+        << program->getPAOId();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
-        RWDBUpdater updater = yukonPAObjectTable.updater();
-
-        updater.where( yukonPAObjectTable["paobjectid"] == program->getPAOId() );
-
-        updater << yukonPAObjectTable["disableflag"].assign( (program->getDisableFlag()?"Y":"N") );
-
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        updater.execute( conn );
-
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
-                                                             program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
-
-        return updater.status().isValid();
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    bool success = updater.execute();
+
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
+                                                         program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return success;
 }
 
 /*---------------------------------------------------------------------------
@@ -2422,38 +2135,34 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    static const std::string sql = "update yukonpaobject"
+                                   " set "
+                                        "disableflag = ?"
+                                   " where "
+                                        "paobjectid = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
+
+    updater
+        << ( group->getDisableFlag() ? std::string("Y") : std::string("N") )
+        << group->getPAOId();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
-        RWDBUpdater updater = yukonPAObjectTable.updater();
-
-        updater.where( yukonPAObjectTable["paobjectid"] == group->getPAOId() );
-
-        updater << yukonPAObjectTable["disableflag"].assign( (group->getDisableFlag()?"Y":"N") );
-
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        updater.execute( conn );
-
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
-                                                             group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
-
-        return updater.status().isValid();
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    bool success = updater.execute();
+
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
+                                                         group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return success;
 }
 
 /*---------------------------------------------------------------------------
@@ -2464,40 +2173,38 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    static const std::string sql = "update lmcontrolareatrigger"
+                                   " set "
+                                        "threshold = ?, "
+                                        "minrestoreoffset = ?"
+                                   " where "
+                                        "deviceid = ? and "
+                                        "triggernumber = ?";
 
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
+    Cti::Database::DatabaseConnection   conn;
+    Cti::Database::DatabaseWriter       updater(conn, sql);
+
+    updater
+        << trigger->getThreshold()
+        << trigger->getMinRestoreOffset()
+        << trigger->getPAOId()
+        << trigger->getTriggerNumber();
+
+    if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-
-        RWDBTable lmControlAreaTriggerTable = getDatabase().table( "lmcontrolareatrigger" );
-        RWDBUpdater updater = lmControlAreaTriggerTable.updater();
-
-        updater << lmControlAreaTriggerTable["threshold"].assign( trigger->getThreshold() )
-        << lmControlAreaTriggerTable["minrestoreoffset"].assign( trigger->getMinRestoreOffset() );
-
-        updater.where( lmControlAreaTriggerTable["deviceid"] == trigger->getPAOId() &&
-                       lmControlAreaTriggerTable["triggernumber"] == trigger->getTriggerNumber() );
-
-        if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
-        {
-            string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
-        }
-
-        updater.execute( conn );
-
-        CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
-                                                             ChangeTypeUpdate);
-        dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
-        CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
-
-        return updater.status().isValid();
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - " << updater.asString() << endl;
     }
+
+    bool success = updater.execute();
+
+    CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
+                                                         controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                         ChangeTypeUpdate);
+    dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
+    CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
+
+    return success;
 }
 
 /*---------------------------------------------------------------------------
