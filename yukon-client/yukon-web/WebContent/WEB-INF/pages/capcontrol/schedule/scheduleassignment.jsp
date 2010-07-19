@@ -114,7 +114,7 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="tierImg" title="Run multiple commands" 
+												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="tierImg pointer" title="Run multiple commands" 
 												onclick="$('startMultipleSchedulesPopup').toggle();">
 										</c:when>
 										<c:otherwise>
@@ -127,7 +127,7 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="tierImg" title="Stop multiple commands" 
+												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="tierImg pointer" title="Stop multiple commands" 
 												onclick="$('stopMultipleSchedulesPopup').toggle();">
 										</c:when>
 										<c:otherwise>
@@ -140,7 +140,7 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasEditingRole == true}">
-												<img src="/WebConfig/yukon/Icons/add.gif" class="tierImg" title="Create a new schedule assignment" 
+												<img src="/WebConfig/yukon/Icons/add.gif" class="tierImg pointer" title="Create a new schedule assignment" 
 												onclick="$('newScheduleAssignmentPopup').toggle();">
 										</c:when>
 										<c:otherwise>

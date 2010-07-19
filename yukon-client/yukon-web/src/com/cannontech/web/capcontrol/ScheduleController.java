@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +59,17 @@ public class ScheduleController {
 	private RolePropertyDao rolePropertyDao = null;
 	private FilterService filterService = null;
 	private CapControlCache capControlCache = null;
+	private PeriodFormatter periodFormatter;
 	private final String NO_FILTER = "All";
+	
+	public ScheduleController(){
+	    PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
+	    .appendMinutes().appendLiteral(" min ")
+	    .appendHours().appendLiteral(" hr ")
+	    .appendDays().appendLiteral(" day ")
+	    .appendWeeks().appendLiteral(" wk");
+	    periodFormatter = builder.toFormatter();
+	}
 	
 	@RequestMapping
 	public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap mav) {        
@@ -417,15 +425,16 @@ public class ScheduleController {
 				
 				assignments.add(newAssignment);
 			}
-			
-			try {
-				paoScheduleDao.assignCommand(assignments);
-				int numOfAssigns = assignments.size();
-				String s = numOfAssigns > 1 ? "s" : "";
-				resultText = numOfAssigns + " assignment" + s + " added successfully.";
-			} catch (DataIntegrityViolationException e) {
-				success = false;
-				resultText = "Cannot add duplicate commands on the schedules.";
+			if(success == true){
+    			try {
+    				paoScheduleDao.assignCommand(assignments);
+    				int numOfAssigns = assignments.size();
+    				String s = numOfAssigns > 1 ? "s" : "";
+    				resultText = numOfAssigns + " assignment" + s + " added successfully.";
+    			} catch (DataIntegrityViolationException e) {
+    				success = false;
+    				resultText = "Cannot add duplicate commands on the schedules.";
+    			}
 			}
 		} else {
 			success = false;
@@ -446,18 +455,11 @@ public class ScheduleController {
 	 * "verify not operated in..." command
 	 */
 	private long parseSecondsNotOperatedIn(PaoScheduleAssignment assignment){
-            //parse min/hr/day/wk value from command string
-            PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
-            .appendLiteral("Verify CapBanks that have not operated in ")
-            .appendMinutes().appendLiteral(" min ")
-            .appendHours().appendLiteral(" hr ")
-            .appendDays().appendLiteral(" day ")
-            .appendWeeks().appendLiteral(" wk");
-            
-            PeriodFormatter formatter = builder.toFormatter();
-            Period period = formatter.parsePeriod(assignment.getCommandName());
-            int seconds = period.toStandardSeconds().getSeconds();
-            return seconds;
+        String timeString = assignment.getCommandName().replaceAll("Verify CapBanks that have not operated in ", "");
+    
+        //parse min/hr/day/wk value from command string
+        Period period = periodFormatter.parsePeriod(timeString);
+        return period.toStandardSeconds().getSeconds();
 	}
 	
     /* 

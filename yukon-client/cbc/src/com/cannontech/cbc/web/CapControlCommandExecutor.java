@@ -46,11 +46,11 @@ public class CapControlCommandExecutor
 	    execute(controlType, cmdId, paoId, CCVerifySubBus.DEFAULT_CB_INACT_TIME, optParams, operationalState, user);
 	}
 	
-	public void execute(CapControlType controlType, int cmdId, int paoId, long secondsNotOperatedIn, LiteYukonUser user) throws UnsupportedOperationException {
-	    execute(controlType, cmdId, paoId, secondsNotOperatedIn, null, null, user);
+	public void execute(CapControlType controlType, int cmdId, int paoId, long inactiveTime, LiteYukonUser user) throws UnsupportedOperationException {
+	    execute(controlType, cmdId, paoId, inactiveTime, null, null, user);
 	}
 	
-    public void execute(CapControlType controlType, int cmdId, int paoId, long secondsNotOperatedIn, 
+    public void execute(CapControlType controlType, int cmdId, int paoId, long inactiveTime, 
     		float[] optParams, String operationalState, LiteYukonUser user) throws UnsupportedOperationException {
         
         RolePropertyDao rolePropertyDao = YukonSpringHook.getBean("rolePropertyDao", RolePropertyDao.class);
@@ -69,7 +69,7 @@ public class CapControlCommandExecutor
             }
             case SUBBUS : {
                 rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-                executeSubBusCommand(cmdId, paoId, secondsNotOperatedIn);
+                executeSubBusCommand(cmdId, paoId, inactiveTime);
                 break;
             }
             case FEEDER : {
@@ -134,7 +134,7 @@ public class CapControlCommandExecutor
         }
     }
 
-    private void executeSubBusCommand(int cmdId, int paoId, long secondsNotOperatedIn) {
+    private void executeSubBusCommand(int cmdId, int paoId, long inactiveTime) {
 		if (cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
 			executeConfirmSub( paoId );
 		}
@@ -147,7 +147,7 @@ public class CapControlCommandExecutor
 			(cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY)	||
             (cmdId == CapControlCommand.CMD_STANDALONE_VERIFY))
 		{
-			executeVerifySub (paoId, cmdId, secondsNotOperatedIn);
+			executeVerifySub (paoId, cmdId, inactiveTime);
 		}
 		else 
 		{
@@ -184,14 +184,14 @@ public class CapControlCommandExecutor
 		}
 	}
 	
-	private void executeVerifySub(int paoId, int cmdId, long secondsNotOperatedIn) {
+	private void executeVerifySub(int paoId, int cmdId, long inactiveTime) {
 		int action = 0;
 		if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
 			action = 1;
 		if (cmdId == CapControlCommand.CMD_EMERGENCY_DISABLE_VERIFY)
 			action = 2;
 		int strat = cmdId - CapControlCommand.VERIFY_OFFSET;
-		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, secondsNotOperatedIn, false);
+		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, inactiveTime, false);
 		capControlCache.getConnection().write(msg);
 	}
 

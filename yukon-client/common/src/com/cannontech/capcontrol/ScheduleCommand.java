@@ -18,6 +18,15 @@ public enum ScheduleCommand {
 	
 	private static List<ScheduleCommand> verifyList = null;
 	
+	static {
+	    verifyList = new ArrayList<ScheduleCommand>();
+        for(ScheduleCommand command : ScheduleCommand.values()){
+            if(command.commandName.startsWith("Verify")){
+                verifyList.add(command);
+            }
+        }
+	}
+	
 	private String commandName;
 	private int capControlCommand;
 	
@@ -47,14 +56,6 @@ public enum ScheduleCommand {
 	
 	//returns a list of all verification schedule commands
 	static public List<ScheduleCommand> getVerifyCommandsList(){
-	    if(verifyList == null){
-	        verifyList = new ArrayList<ScheduleCommand>();
-    	    for(ScheduleCommand command : ScheduleCommand.values()){
-    	        if(command.commandName.startsWith("Verify")){
-    	            verifyList.add(command);
-    	        }
-    	    }
-	    }
 	    return verifyList;
 	}
 }
