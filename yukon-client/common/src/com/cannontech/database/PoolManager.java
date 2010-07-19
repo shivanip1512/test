@@ -81,7 +81,7 @@ public class PoolManager {
         }
         
         if (dbType == null) {
-            throw new BadConfigurationException("Unrecognized database type in master.cfg: " + dbTypeName);
+            throw new BadConfigurationException("Unrecognized database type (DB_TYPE) in master.cfg: " + dbTypeName);
         }
         
         jdbcUrl = configSource.getString("DB_JAVA_URL");
