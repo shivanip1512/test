@@ -138,8 +138,7 @@ public:
         GetConfig_PhaseDetect,
         GetConfig_PhaseDetectArchive,
         GetConfig_Softspec,
-        GetConfig_Substation,
-        GetConfig_AddressInfo,
+        GetConfig_Addressing,
 
         // PutConfig commands
         PutConfig_Install,

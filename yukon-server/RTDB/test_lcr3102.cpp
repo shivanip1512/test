@@ -21,6 +21,13 @@ public:
 
     typedef CtiDeviceSingle::point_info point_info;
 
+    using LCR3102::decodeMessageAddress;
+    using LCR3102::decodeMessageSubstation;
+    using LCR3102::decodeMessageTime;
+    using LCR3102::decodeMessageTransmitPower;
+    using LCR3102::decodeMessageSoftspec;
+    using LCR3102::decodeMessageTemperature;
+
     point_info test_getSixBitValue(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
     {
         return getSixBitValueFromBuffer(buffer, valuePosition, bufferSize);
@@ -45,37 +52,6 @@ public:
     INT test_decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
     {
         return decodeGetValueControlTime(InMessage, TimeNow, vgList, retList, outList);
-    }
-
-
-    std::vector<int> test_decodeMessageAddress( BYTE Message[] )
-    {
-        return decodeMessageAddress(Message);
-    }
-
-    std::vector<int> test_decodeMessageSoftspec( BYTE Message[] )
-    {
-        return decodeMessageSoftspec(Message);
-    }
-
-    std::vector<int> test_decodeMessageSubstation( BYTE Message[] )
-    {
-        return decodeMessageSubstation(Message);
-    }
-
-    int test_decodeMessageTime( BYTE Message[] )
-    {
-        return decodeMessageTime(Message);
-    }
-
-    std::vector<int> test_decodeMessageTemperature( BYTE Message[] )
-    {
-        return decodeMessageTemperature(Message);
-    }
-
-    int test_decodeMessageTransmitPower( BYTE Message[] )
-    {
-        return decodeMessageTransmitPower(Message);
     }
 
     std::vector<int> test_decodeXfmrHistoricalRuntimeMessage( BYTE message[] )
@@ -387,6 +363,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_address)
 {
     INMESS InMessage;
     test_LCR3102 test_device;
+    int prgAddr1, prgAddr2, prgAddr3, prgAddr4, splAddr1, splAddr2, splAddr3, splAddr4;
 
     InMessage.Buffer.DSt.Message[0] = 0x04;
     InMessage.Buffer.DSt.Message[1] = 0x08;
@@ -397,22 +374,25 @@ BOOST_AUTO_TEST_CASE(test_data_read_address)
     InMessage.Buffer.DSt.Message[6] = 0x39;
     InMessage.Buffer.DSt.Message[7] = 0x44;
 
-    std::vector<int> test_vec = test_device.test_decodeMessageAddress(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageAddress(InMessage.Buffer.DSt.Message,
+                                     prgAddr1, prgAddr2, prgAddr3, prgAddr4, 
+                                     splAddr1, splAddr2, splAddr3, splAddr4);
 
-    BOOST_CHECK_EQUAL(test_vec.at(7),  4);
-    BOOST_CHECK_EQUAL(test_vec.at(6),  8);
-    BOOST_CHECK_EQUAL(test_vec.at(5), 15);
-    BOOST_CHECK_EQUAL(test_vec.at(4), 16);
-    BOOST_CHECK_EQUAL(test_vec.at(3), 23);
-    BOOST_CHECK_EQUAL(test_vec.at(2), 42);
-    BOOST_CHECK_EQUAL(test_vec.at(1), 57);
-    BOOST_CHECK_EQUAL(test_vec.at(0), 68);
+    BOOST_CHECK_EQUAL(prgAddr1,  4);
+    BOOST_CHECK_EQUAL(prgAddr2,  8);
+    BOOST_CHECK_EQUAL(prgAddr3, 15);
+    BOOST_CHECK_EQUAL(prgAddr4, 16);
+    BOOST_CHECK_EQUAL(splAddr1, 23);
+    BOOST_CHECK_EQUAL(splAddr2, 42);
+    BOOST_CHECK_EQUAL(splAddr3, 57);
+    BOOST_CHECK_EQUAL(splAddr4, 68);
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_sspec)
 {
     INMESS InMessage;
     test_LCR3102 test_device;
+    int sspec, rev, serial, spid, geo;
 
     InMessage.Buffer.DSt.Message[0]  = 0xb0;
     InMessage.Buffer.DSt.Message[1]  = 0x10;
@@ -428,21 +408,20 @@ BOOST_AUTO_TEST_CASE(test_data_read_sspec)
     InMessage.Buffer.DSt.Message[11] = 0xdc;
     InMessage.Buffer.DSt.Message[12] = 0x19;
 
-    std::vector<int> test_vec = test_device.test_decodeMessageSoftspec(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageSoftspec(InMessage.Buffer.DSt.Message, sspec, rev, serial, spid, geo);
 
-    BOOST_CHECK_EQUAL(test_vec.at(4),     2480);
-    BOOST_CHECK_EQUAL(test_vec.at(3),       16);
-    BOOST_CHECK_EQUAL(test_vec.at(2), 10061988);
-    BOOST_CHECK_EQUAL(test_vec.at(1),      610);
-    BOOST_CHECK_EQUAL(test_vec.at(0),    56345);
-    BOOST_CHECK_EQUAL(InMessage.Buffer.DSt.Message[2], 0);
-    BOOST_CHECK_EQUAL(InMessage.Buffer.DSt.Message[3], 0);
+    BOOST_CHECK_EQUAL(sspec, 2480);
+    BOOST_CHECK_EQUAL(rev, 16);
+    BOOST_CHECK_EQUAL(serial, 10061988);
+    BOOST_CHECK_EQUAL(spid, 610);
+    BOOST_CHECK_EQUAL(geo, 56345);
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_substation)
 {
     INMESS InMessage;
     test_LCR3102 test_device;
+    int substation, feeder, zip, uda;
 
     InMessage.Buffer.DSt.Message[0]  = 0x03;
     InMessage.Buffer.DSt.Message[1]  = 0x09;
@@ -454,37 +433,39 @@ BOOST_AUTO_TEST_CASE(test_data_read_substation)
     InMessage.Buffer.DSt.Message[7]  = 0x03;
     InMessage.Buffer.DSt.Message[8]  = 0x40;
 
-    std::vector<int> test_vec = test_device.test_decodeMessageSubstation(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageSubstation(InMessage.Buffer.DSt.Message, substation, feeder, zip, uda);
 
-    BOOST_CHECK_EQUAL(test_vec.at(3),      777);
-    BOOST_CHECK_EQUAL(test_vec.at(2),    10000);
-    BOOST_CHECK_EQUAL(test_vec.at(1), 14413824);
-    BOOST_CHECK_EQUAL(test_vec.at(0),      832);
+    BOOST_CHECK_EQUAL(substation, 777);
+    BOOST_CHECK_EQUAL(feeder, 10000);
+    BOOST_CHECK_EQUAL(zip, 14413824);
+    BOOST_CHECK_EQUAL(uda, 832);
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_time)
 {
     INMESS InMessage;
     test_LCR3102 test_device;
+    CtiTime time;
 
     InMessage.Buffer.DSt.Message[0]  = 0x49;
     InMessage.Buffer.DSt.Message[1]  = 0x96;
     InMessage.Buffer.DSt.Message[2]  = 0x02;
     InMessage.Buffer.DSt.Message[3]  = 0xd2;
 
-    int utcSeconds = test_device.test_decodeMessageTime(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageTime(InMessage.Buffer.DSt.Message, time);
 
-    BOOST_CHECK_EQUAL(utcSeconds, 1234567890);
+    BOOST_CHECK_EQUAL(time, CtiTime::fromLocalSeconds(1234567890));
 }
 
 BOOST_AUTO_TEST_CASE(test_data_read_power)
 {
     INMESS InMessage;
     test_LCR3102 test_device;
+    int transmitPower;
 
     InMessage.Buffer.DSt.Message[0]  = 0x0a;
 
-    int transmitPower = test_device.test_decodeMessageTransmitPower(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageTransmitPower(InMessage.Buffer.DSt.Message, transmitPower);
 
     BOOST_CHECK_EQUAL(transmitPower, 10);
 }
@@ -493,16 +474,17 @@ BOOST_AUTO_TEST_CASE(test_data_read_temperature)
 {
     INMESS InMessage;
     test_LCR3102 test_device;
+    int txTemp, boxTemp;
 
     InMessage.Buffer.DSt.Message[0]  = 0x0f;
     InMessage.Buffer.DSt.Message[1]  = 0xa0;
     InMessage.Buffer.DSt.Message[2]  = 0x07;
     InMessage.Buffer.DSt.Message[3]  = 0xd0;
 
-    std::vector<int> test_vec = test_device.test_decodeMessageTemperature(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageTemperature(InMessage.Buffer.DSt.Message, txTemp, boxTemp);
 
-    BOOST_CHECK_EQUAL(test_vec.at(1), 4000);
-    BOOST_CHECK_EQUAL(test_vec.at(0), 2000);
+    BOOST_CHECK_EQUAL(txTemp, 4000);
+    BOOST_CHECK_EQUAL(boxTemp, 2000);
 }
 
 BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)

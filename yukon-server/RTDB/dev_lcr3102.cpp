@@ -186,11 +186,6 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodePutConfig( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetConfig_Substation:
-        {
-            status = decodeGetConfigSubstation( InMessage, TimeNow, vgList, retList, outList );
-            break;
-        }
         case Emetcon::GetConfig_Softspec:
         {
             status = decodeGetConfigSoftspec( InMessage, TimeNow, vgList, retList, outList );
@@ -201,9 +196,9 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodeGetConfigTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetConfig_AddressInfo:
+        case Emetcon::GetConfig_Addressing:
         {
-            status = decodeGetConfigAddress( InMessage, TimeNow, vgList, retList, outList );
+            status = decodeGetConfigAddressing( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
         case Emetcon::GetConfig_Raw:
@@ -214,7 +209,6 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
         default:
         {
             // some error reporting goes here...
-
         }
     }
 
@@ -242,9 +236,9 @@ INT LCR3102::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, lis
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        std::vector<int> temperatureInfo = decodeMessageTemperature(DSt->Message);
-        int txTemp = temperatureInfo.at(1);
-        int boxTemp = temperatureInfo.at(0);
+        int txTemp, boxTemp;
+
+        decodeMessageTemperature(DSt->Message, txTemp, boxTemp);
 
         string results = getName() + " / TX Temperature: " + CtiNumStr(((double)txTemp)/100.0, 1) + " degrees Centigrade\n"
                        + getName() + " / Ambient Box Temperature: " + CtiNumStr(((double)boxTemp)/100.0, 1) + " degrees Centigrade";
@@ -278,7 +272,9 @@ INT LCR3102::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, l
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        int transmitPower= decodeMessageTransmitPower(DSt->Message);
+        int transmitPower;
+
+        decodeMessageTransmitPower(DSt->Message, transmitPower);
 
         string results = getName() + " / Current Transmit Power: " + CtiNumStr(transmitPower) + " percent";
 
@@ -872,14 +868,9 @@ INT LCR3102::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list<
 
         string results;
 
-        // Softspec LSB, Revision, 0, 0, Softspec MSB, 4 byte Serial Number, 2 Byte Spid, 2 Byte Geo Address
+        int sspec, rev, serial, spid, geo;
 
-        std::vector<int> softspecInfo = decodeMessageSoftspec(DSt->Message);
-        int sspec  = softspecInfo.at(4), 
-            rev    = softspecInfo.at(3),
-            serial = softspecInfo.at(2),
-            spid   = softspecInfo.at(1),
-            geo    = softspecInfo.at(0);
+        decodeMessageSoftspec(DSt->Message, sspec, rev, serial, spid, geo);
 
         results = getName() + " / Software Specification " + CtiNumStr(sspec) 
                 + " rev " + CtiNumStr(((double)rev) / 10.0, 1) + "\n"
@@ -902,7 +893,7 @@ INT LCR3102::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list<
     return status;
 }
 
-INT LCR3102::decodeGetConfigAddress( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT LCR3102::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -924,36 +915,56 @@ INT LCR3102::decodeGetConfigAddress( INMESS *InMessage, CtiTime &TimeNow, list< 
         }
 
         string results;
+        int function = InMessage->Return.ProtocolInfo.Emetcon.Function;
 
-        // 4 loads of Program Address, 4 loads of Splinter Address - 8 bytes
+        if(function == DataRead_AddressInfoPos)
+        {
+            int programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4, 
+                splinterAddressRelay1, splinterAddressRelay2, splinterAddressRelay3, splinterAddressRelay4;
 
-        std::vector<int> addressInfo = decodeMessageAddress(DSt->Message);
-        int programAddressRelay1  = addressInfo.at(7),
-            programAddressRelay2  = addressInfo.at(6),
-            programAddressRelay3  = addressInfo.at(5),
-            programAddressRelay4  = addressInfo.at(4),
-            splinterAddressRelay1 = addressInfo.at(3),
-            splinterAddressRelay2 = addressInfo.at(2),
-            splinterAddressRelay3 = addressInfo.at(1),
-            splinterAddressRelay4 = addressInfo.at(0);
+            decodeMessageAddress(DSt->Message,
+                                 programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4,   
+                                 splinterAddressRelay1, splinterAddressRelay2, splinterAddressRelay3, splinterAddressRelay4);
+            
+            results = getName() + " / Program Address Relay 1:  " + CtiNumStr(programAddressRelay1 )  + "\n"
+                    + getName() + " / Program Address Relay 2:  " + CtiNumStr(programAddressRelay2 )  + "\n"
+                    + getName() + " / Program Address Relay 3:  " + CtiNumStr(programAddressRelay3 )  + "\n"
+                    + getName() + " / Program Address Relay 4:  " + CtiNumStr(programAddressRelay4 )  + "\n"
+                    + getName() + " / Splinter Address Relay 1: " + CtiNumStr(splinterAddressRelay1) + "\n"
+                    + getName() + " / Splinter Address Relay 2: " + CtiNumStr(splinterAddressRelay2) + "\n"
+                    + getName() + " / Splinter Address Relay 3: " + CtiNumStr(splinterAddressRelay3) + "\n"
+                    + getName() + " / Splinter Address Relay 4: " + CtiNumStr(splinterAddressRelay4);
 
-        results = getName() + " / Program Address Relay 1:  " + CtiNumStr(programAddressRelay1 )  + "\n"
-                + getName() + " / Program Address Relay 2:  " + CtiNumStr(programAddressRelay2 )  + "\n"
-                + getName() + " / Program Address Relay 3:  " + CtiNumStr(programAddressRelay3 )  + "\n"
-                + getName() + " / Program Address Relay 4:  " + CtiNumStr(programAddressRelay4 )  + "\n"
-                + getName() + " / Splinter Address Relay 1: " + CtiNumStr(splinterAddressRelay1) + "\n"
-                + getName() + " / Splinter Address Relay 2: " + CtiNumStr(splinterAddressRelay2) + "\n"
-                + getName() + " / Splinter Address Relay 3: " + CtiNumStr(splinterAddressRelay3) + "\n"
-                + getName() + " / Splinter Address Relay 4: " + CtiNumStr(splinterAddressRelay4);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay1,    (long)programAddressRelay1);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay2,    (long)programAddressRelay2);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay3,    (long)programAddressRelay3);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay4,    (long)programAddressRelay4);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay1,   (long)splinterAddressRelay1);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay2,   (long)splinterAddressRelay2);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay3,   (long)splinterAddressRelay3);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay4,   (long)splinterAddressRelay4);
+        }
+        else if(function == DataRead_SubstationDataPos)
+        {
+            int substation, feeder, zipcode, uda;
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay1,    (long)programAddressRelay1);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay2,    (long)programAddressRelay2);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay3,    (long)programAddressRelay3);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ProgramAddressRelay4,    (long)programAddressRelay4);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay1,   (long)splinterAddressRelay1);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay2,   (long)splinterAddressRelay2);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay3,   (long)splinterAddressRelay3);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SplinterAddressRelay4,   (long)splinterAddressRelay4);
+            decodeMessageSubstation(DSt->Message, substation, feeder, zipcode, uda);
+       
+            results = getName() + " / Substation Address: "     + CtiNumStr(substation) + "\n"
+                    + getName() + " / Feeder Address: "         + CtiNumStr(feeder)     + "\n"
+                    + getName() + " / Zip Code: "               + CtiNumStr(zipcode)    + "\n"
+                    + getName() + " / User Defined Address: "   + CtiNumStr(uda);
+
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Substation,  (long)substation);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Feeder,      (long)feeder);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ZipCode,     (long)zipcode);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Uda,         (long)uda);
+        }
+        else
+        {
+            // Somehow we didn't get back either of the two designated functions. Bad!
+            return NOTNORMAL;
+        }
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
         ReturnMsg->setResultString( results );
@@ -986,11 +997,9 @@ INT LCR3102::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< Cti
         }
 
         string results;
+        CtiTime time;
 
-        // Current Time of device + Time Zone
-        int utcSeconds = decodeMessageTime(DSt->Message);
-
-        CtiTime time = CtiTime::fromLocalSeconds(utcSeconds);
+        decodeMessageTime(DSt->Message, time);
 
         results = getName() + " / Current Time: " + time.asString();
 
@@ -1003,127 +1012,51 @@ INT LCR3102::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< Cti
     return status;
 }
 
-INT LCR3102::decodeGetConfigSubstation( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+void LCR3102::decodeMessageSoftspec( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo )
 {
-    INT status = NOTNORMAL;
-
-    DSTRUCT      *DSt       = &InMessage->Buffer.DSt;
-    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
-
-    CtiCommandParser parse(InMessage->Return.CommandStr);
-
-    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
-    {
-        // No error occured, we must do a real decode!
-
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return MEMORY;
-        }
-
-        string results;
-
-        // 2 byte Substation, 2 Byte Feeder, 3 byte Zipcode, 2 byte UDA
-        std::vector<int> substationInfo = decodeMessageSubstation(DSt->Message);
-        int substation = substationInfo.at(3), 
-            feeder     = substationInfo.at(2), 
-            zipcode    = substationInfo.at(1), 
-            uda        = substationInfo.at(0);
-
-        results = getName() + " / Substation Address: "     + CtiNumStr(substation) + "\n"
-                + getName() + " / Feeder Address: "         + CtiNumStr(feeder)     + "\n"
-                + getName() + " / Zip Code: "               + CtiNumStr(zipcode)    + "\n"
-                + getName() + " / User Defined Address: "   + CtiNumStr(uda);
-
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Substation,  (long)substation);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Feeder,      (long)feeder);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_ZipCode,     (long)zipcode);
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_Uda,         (long)uda);
-
-        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
-        ReturnMsg->setResultString( results );
-
-        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-
-    return status;
+    sspec = Message[0] | (Message[4] << 8);
+    rev = Message[1];
+    serial = (Message[5] << 24) | (Message[6] << 16) | (Message[7] << 8) | Message[8];
+    spid = (Message[9] << 8) | Message[10];
+    geo = (Message[11] << 8) | Message[12]; 
 }
 
-std::vector<int> LCR3102::decodeMessageSoftspec( BYTE Message[] )
+void LCR3102::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 )
 {
-    std::vector<int> softspecInfo;
-
-    // Geo Address
-    softspecInfo.push_back( (Message[11] << 8) | Message[12] );
-
-    // SPID Address
-    softspecInfo.push_back( (Message[9] << 8) | Message[10] );  
-
-    // Serial Number
-    softspecInfo.push_back( (Message[5] << 24) | (Message[6] << 16) | (Message[7] << 8) | Message[8] );
-    
-    // Revision
-    softspecInfo.push_back( Message[1] );
-    
-    // Software Spec
-    softspecInfo.push_back( Message[0] | (Message[4] << 8) ); 
-    
-    return softspecInfo;         
+    prgAddr1 = Message[0];
+    prgAddr2 = Message[1];
+    prgAddr3 = Message[2];
+    prgAddr4 = Message[3];
+    splAddr1 = Message[4];
+    splAddr2 = Message[5];
+    splAddr3 = Message[6];
+    splAddr4 = Message[7];
 }
 
-std::vector<int> LCR3102::decodeMessageAddress( BYTE Message[] )
+void LCR3102::decodeMessageSubstation( BYTE Message[], int &substation, int &feeder, int &zip, int &uda )
 {
-    std::vector<int> addressInfo;
-
-    addressInfo.push_back( Message[7] ); // Relay 4 Splinter Address
-    addressInfo.push_back( Message[6] ); // Relay 3 Splinter Address
-    addressInfo.push_back( Message[5] ); // Relay 2 Splinter Address
-    addressInfo.push_back( Message[4] ); // Relay 1 Splinter Address
-    addressInfo.push_back( Message[3] ); // Relay 4 Program Address
-    addressInfo.push_back( Message[2] ); // Relay 3 Program Address
-    addressInfo.push_back( Message[1] ); // Relay 2 Program Address
-    addressInfo.push_back( Message[0] ); // Relay 1 Program Address
-
-    return addressInfo;
+    substation = (Message[0] << 8) | Message[1]; // Substation Address
+    feeder = (Message[2] << 8) | Message[3]; // Feeder Address   
+    zip = (Message[4] << 16) | (Message[5] << 8) | Message[6]; // Zip Code
+    uda = (Message[7] << 8) | Message[8]; // User Defined Address 
 }
 
-std::vector<int> LCR3102::decodeMessageSubstation( BYTE Message[] )
-{
-    std::vector<int> substationInfo;
-
-    substationInfo.push_back( (Message[7] << 8) | Message[8]); // User Defined Address 
-    substationInfo.push_back( (Message[4] << 16) | (Message[5] << 8) | Message[6]); // Zip Code
-    substationInfo.push_back( (Message[2] << 8) | Message[3]); // Feeder Address   
-    substationInfo.push_back( (Message[0] << 8) | Message[1]); // Substation Address
-
-    return substationInfo;
-}
-
-int LCR3102::decodeMessageTime( BYTE Message[] )
+void LCR3102::decodeMessageTime( BYTE Message[], CtiTime &time )
 {
     int utcSeconds = (Message[0] << 24) | (Message[1] << 16) | (Message[2] << 8) | Message[3];
-
-    return utcSeconds;
+    
+    time = CtiTime::fromLocalSeconds(utcSeconds);
 }
 
-int LCR3102::decodeMessageTransmitPower( BYTE Message[])
+void LCR3102::decodeMessageTransmitPower( BYTE Message[], int &transmitPower )
 {
-    int transmitPower = Message[0];
-
-    return transmitPower;
+    transmitPower = Message[0];
 }
 
-std::vector<int> LCR3102::decodeMessageTemperature( BYTE Message[] )
+void LCR3102::decodeMessageTemperature( BYTE Message[], int &txTemp, int &boxTemp )
 {
-    std::vector<int> temperatureInfo;
-
-    temperatureInfo.push_back( (Message[2] << 8) | Message[3] ); // Box Temp
-    temperatureInfo.push_back( (Message[0] << 8) | Message[1] ); // TX Temp
-  
-    return temperatureInfo;
+    txTemp = (Message[0] << 8) | Message[1]; // TX Temp
+    boxTemp = (Message[2] << 8) | Message[3]; // Box Temp
 }
 
 std::vector<int> LCR3102::decodeMessageDutyCycle( BYTE Message[] )
@@ -1156,8 +1089,7 @@ LCR3102::CommandSet LCR3102::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetValue_TransmitPower,   Emetcon::IO_Read, DataRead_TransmitPowerPos,  DataRead_TransmitPowerLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,           Emetcon::IO_Read, DataRead_DeviceTimePos,     DataRead_DeviceTimeLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Softspec,       Emetcon::IO_Read, DataRead_SoftspecPos,       DataRead_SoftspecLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Substation,     Emetcon::IO_Read, DataRead_SubstationDataPos, DataRead_SubstationDataLen)); 
-    cs.insert(CommandStore(Emetcon::GetConfig_AddressInfo,    Emetcon::IO_Read, DataRead_AddressInfoPos,    DataRead_AddressInfoLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Addressing,     Emetcon::IO_Read, DataRead_SubstationDataPos, DataRead_SubstationDataLen));
     cs.insert(CommandStore(Emetcon::GetValue_Temperature,     Emetcon::IO_Read, DataRead_TemperaturePos,    DataRead_TemperatureLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_Raw, Emetcon::IO_Write, 0, 0));    // filled in later
@@ -1356,7 +1288,6 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         }
     }
 
-
     if(!found)
     {
         if( nRet == NORMAL )
@@ -1441,6 +1372,7 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     int  function = -1;
     bool found    = false;
+    bool multiple_messages = false;
 
     if(parse.isKeyValid("rawloc"))
     {
@@ -1459,19 +1391,36 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         function = Emetcon::GetConfig_Softspec;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
-    if(parse.isKeyValid("address_info"))
+    if(parse.isKeyValid("addressing"))
     {
-        function = Emetcon::GetConfig_AddressInfo;
+        // This one is special. Two requests will be sent here, data reads 0x01 and 0x02.
+        function = Emetcon::GetConfig_Addressing;
         found = getOperation(function, OutMessage->Buffer.BSt);
+
+        if(found)
+        {
+            multiple_messages = true;
+
+            OutMessage->DeviceID  = getID();
+            OutMessage->TargetID  = getID();
+            OutMessage->Port      = getPortID();
+            OutMessage->Remote    = getAddress();
+            OutMessage->TimeOut   = 2;
+            OutMessage->Sequence  = function;         // Helps us figure it out later!
+            OutMessage->Retry     = 2;
+            OutMessage->Request.RouteID   = getRouteID();
+
+            strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+            outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+
+            // go to next function to get next set of data bytes
+            OutMessage->Buffer.BSt.Function += 1;
+        }
     }
     if(parse.isKeyValid("time"))
     {
         function = Emetcon::GetConfig_Time;
-        found = getOperation(function, OutMessage->Buffer.BSt);
-    }
-    if(parse.isKeyValid("substation"))
-    {
-        function = Emetcon::GetConfig_Substation;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
 
@@ -1492,6 +1441,10 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
         OutMessage->Request.RouteID   = getRouteID();
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+        if(multiple_messages)
+        {
+            incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+        }
 
         nRet = NoError;
     }

@@ -1648,7 +1648,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         }
         if(CmdStr.contains(" address"))
         {
-            _cmd["address_info"] = CtiParseValue("TRUE");
+            _cmd["addressing"] = CtiParseValue("TRUE");
 
             if(!(token = CmdStr.match(re_address)).empty())
             {
@@ -1661,7 +1661,6 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                     _cmd["address_unique"] = CtiParseValue(TRUE);
                 }
             }
-
         }
         if(CmdStr.contains(" channels"))
         {
@@ -1829,10 +1828,6 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
                     _cmd["display_parameters"] = CtiParseValue(true);
                 }
             }
-        }
-        if(CmdStr.contains(" substation"))
-        {
-            _cmd["substation"] = CtiParseValue("TRUE");
         }
         if(CmdStr.contains(" update"))
         {
