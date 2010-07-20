@@ -18,21 +18,25 @@
    
    				<tags:formElementContainer nameKey="confirmUiContainerHeader">
    				
-   					<cti:msg2 key=".introText" />
+   					<cti:msg2 key=".introText.${saveAction}" />
    					<br><br>
    					
    					<form id="cancelForm" method="post" action="/spring/stars/operator/thermostatSchedule/view">
 				    	<input name="accountId" type="hidden" value="${accountId}" />
 				        <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
+				        <input type="hidden" name="canceledAction" value="${saveAction}"/>
 				    </form>
 				    
-				    ${scheduleConfirm}<br><br>
+				    <%-- the meat --%>
+				    ${scheduleConfirm}
+				    <br><br>
+				    
 				    <form id="scheduleForm" name="scheduleForm" method="post" action="/spring/stars/operator/thermostatSchedule/save">
 				        
 				        <input name="accountId" type="hidden" value="${accountId}" />
 				        <input type="hidden" name="schedules" value="<spring:escapeBody htmlEscape="true">${schedules}</spring:escapeBody>"/>
 				        <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
-				        <input type="hidden" name="timeOfWeek" value="${timeOfWeek}"/>
+				        <input type="hidden" name="type" value="${type}"/>
 				        <input type="hidden" name="scheduleMode" value="${scheduleMode}"/>
 				        <input type="hidden" name="temperatureUnit" value="${temperatureUnit}"/>
 				        <input type="hidden" name="scheduleId" value="${scheduleId}"/>
@@ -41,7 +45,7 @@
 				        
 				        <div>
 						    
-						    <cti:msg2 key=".confirmText" /><br><br>
+						    <cti:msg2 key=".confirmText.${saveAction}" /><br><br>
 						    
 						    <tags:slowInput2 formId="scheduleForm" key="ok" />
 						    <tags:slowInput2 formId="cancelForm" key="cancel" />

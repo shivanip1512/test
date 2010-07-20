@@ -74,7 +74,7 @@ import com.cannontech.stars.dr.general.service.ContactService;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 
@@ -101,7 +101,6 @@ public class AccountServiceImpl implements AccountService {
     private ApplianceDao applianceDao;
     private StarsWorkOrderBaseDao workOrderDao;
     private CallReportDao callReportDao;
-    private ThermostatScheduleDao thermostatScheduleDao;
     private EventAccountDao eventAccountDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private DBPersistentDao dbPersistantDao;
@@ -113,6 +112,7 @@ public class AccountServiceImpl implements AccountService {
     private ContactService contactService;
     private PhoneNumberFormattingService phoneNumberFormattingService;
     private YukonUserContextService yukonUserContextService;
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
     
     // ADD ACCOUNT
     @Override
@@ -452,7 +452,7 @@ public class AccountServiceImpl implements AccountService {
         /*
          * Delete thermostat schedules for account
          */
-        thermostatScheduleDao.deleteSchedulesForAccount(account.getAccountId());
+        accountThermostatScheduleDao.deleteAllByAccountId(account.getAccountId());
         
         /*
          * Delete account mappings
@@ -1197,11 +1197,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Autowired
-    public void setThermostatScheduleDao(ThermostatScheduleDao thermostatScheduleDao) {
-        this.thermostatScheduleDao = thermostatScheduleDao;
-    }
-
-    @Autowired
     public void setEventAccountDao(EventAccountDao eventAccountDao) {
         this.eventAccountDao = eventAccountDao;
     }
@@ -1260,4 +1255,9 @@ public class AccountServiceImpl implements AccountService {
     public void setYukonUserContextService(YukonUserContextService yukonUserContextService) {
         this.yukonUserContextService = yukonUserContextService;
     }
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+	}
 }

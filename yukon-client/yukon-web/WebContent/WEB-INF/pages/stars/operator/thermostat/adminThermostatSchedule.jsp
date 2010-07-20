@@ -14,28 +14,22 @@
     <script language="JavaScript" type="text/javascript"  src="/JavaScript/thermostatSchedule.js"></script>
     <script language="JavaScript" type="text/javascript"  src="/JavaScript/temp_conversion.js"></script>
 
-    <cti:msg var="noScheduleName" key="yukon.dr.operator.thermostatSchedule.noScheduleName" />
-    <cti:msg var="saveScheduleText" key="yukon.dr.operator.thermostatSchedule.saveScheduleText" />
-    <cti:msg var="modeChangeText" key="yukon.dr.operator.thermostatSchedule.modeChangeText" />
-    
-    
-    <c:set var="scheduleMode" value="${schedule.season.mode}" />
-    <%-- YUK-7069 TODO:  Move this logic into controller. --%>
-    <c:set var="schedule52Enabled" value="false"/>
-    <cti:isPropertyTrue property="ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2">
-        <c:set var="schedule52Enabled" value="true"/>
-    </cti:isPropertyTrue>
-    <c:if test="${(thermostatType != 'UTILITY_PRO' || !schedule52Enabled) && scheduleMode == 'WEEKDAY_WEEKEND'}">
-        <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
-    </c:if>
+    <cti:msg var="noScheduleName" key="yukon.web.modules.operator.thermostatSchedule.noScheduleName" />
+    <cti:msg var="saveScheduleText" key="yukon.web.modules.operator.thermostatSchedule.saveScheduleText" />
+    <cti:msg var="modeChangeText" key="yukon.web.modules.operator.thermostatSchedule.modeChangeText" />
     
 <script type="text/javascript">
 
     Event.observe(window, 'load', function(){init();});
 
+ 	// things that thermostat.js is expecting to get set dynamically
     currentScheduleMode = '${scheduleMode}';
-    
-    // Set global variable in thermostat2.js
+
+    lowerLimitCool = ${schedule.thermostatType.lowerLimitCool};
+    upperLimitCool = ${schedule.thermostatType.upperLimitCool};
+    lowerLimitHeat = ${schedule.thermostatType.lowerLimitHeat};
+    upperLimitHeat = ${schedule.thermostatType.upperLimitHeat};
+
     tempUnit = '${temperatureUnit}';
     
     var schedules = null;
@@ -86,33 +80,33 @@
 </script>
 
     <h3>
-        <cti:msg key="yukon.dr.operator.thermostatSchedule.header" /><br>
+        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.pageName" /><br>
     </h3>
     
     <br>
     
     <!-- Images for schedule 'slidey bar' -->
-    <cti:theme var="thermostatScheduleBackground" key="yukon.dr.operator.thermostatSchedule.thermostatScheduleBackground" default="/WebConfig/yukon/ThermImages/TempBG2.gif" url="true"/>
+    <cti:theme var="thermostatScheduleBackground" key="yukon.web.modules.operator.thermostatSchedule.thermostatScheduleBackground" default="/WebConfig/yukon/ThermImages/TempBG2.gif" url="true"/>
     
-    <cti:theme var="grayLeftArrow" key="yukon.dr.operator.thermostatSchedule.grayLeftArrow" default="/WebConfig/yukon/ThermImages/GrayArrowL.gif" url="true"/>
-    <cti:theme var="grayRightArrow" key="yukon.dr.operator.thermostatSchedule.grayRightArrow" default="/WebConfig/yukon/ThermImages/GrayArrowR.gif" url="true"/>
-    <cti:theme var="blueArrow" key="yukon.dr.operator.thermostatSchedule.blueArrow" default="/WebConfig/yukon/ThermImages/BlueArrow.gif" url="true"/>
-    <cti:theme var="redArrow" key="yukon.dr.operator.thermostatSchedule.redArrow" default="/WebConfig/yukon/ThermImages/RedArrow.gif" url="true"/>
+    <cti:theme var="grayLeftArrow" key="yukon.web.modules.operator.thermostatSchedule.grayLeftArrow" default="/WebConfig/yukon/ThermImages/GrayArrowL.gif" url="true"/>
+    <cti:theme var="grayRightArrow" key="yukon.web.modules.operator.thermostatSchedule.grayRightArrow" default="/WebConfig/yukon/ThermImages/GrayArrowR.gif" url="true"/>
+    <cti:theme var="blueArrow" key="yukon.web.modules.operator.thermostatSchedule.blueArrow" default="/WebConfig/yukon/ThermImages/BlueArrow.gif" url="true"/>
+    <cti:theme var="redArrow" key="yukon.web.modules.operator.thermostatSchedule.redArrow" default="/WebConfig/yukon/ThermImages/RedArrow.gif" url="true"/>
     
-    <cti:theme var="thermW" key="yukon.dr.operator.thermostatSchedule.thermW" default="/WebConfig/yukon/ThermImages/ThermW.gif" url="true"/>
-    <cti:theme var="thermL" key="yukon.dr.operator.thermostatSchedule.thermL" default="/WebConfig/yukon/ThermImages/ThermL.gif" url="true"/>
-    <cti:theme var="thermR" key="yukon.dr.operator.thermostatSchedule.thermR" default="/WebConfig/yukon/ThermImages/ThermR.gif" url="true"/>
-    <cti:theme var="thermS" key="yukon.dr.operator.thermostatSchedule.thermS" default="/WebConfig/yukon/ThermImages/ThermS.gif" url="true"/>
-    <cti:theme var="thermO" key="yukon.dr.operator.thermostatSchedule.thermO" default="/WebConfig/yukon/ThermImages/OcTherm.gif" url="true"/>
-    <cti:theme var="thermU" key="yukon.dr.operator.thermostatSchedule.thermU" default="/WebConfig/yukon/ThermImages/UnOcTherm.gif" url="true"/>
+    <cti:theme var="thermW" key="yukon.web.modules.operator.thermostatSchedule.thermW" default="/WebConfig/yukon/ThermImages/ThermW.gif" url="true"/>
+    <cti:theme var="thermL" key="yukon.web.modules.operator.thermostatSchedule.thermL" default="/WebConfig/yukon/ThermImages/ThermL.gif" url="true"/>
+    <cti:theme var="thermR" key="yukon.web.modules.operator.thermostatSchedule.thermR" default="/WebConfig/yukon/ThermImages/ThermR.gif" url="true"/>
+    <cti:theme var="thermS" key="yukon.web.modules.operator.thermostatSchedule.thermS" default="/WebConfig/yukon/ThermImages/ThermS.gif" url="true"/>
+    <cti:theme var="thermO" key="yukon.web.modules.operator.thermostatSchedule.thermO" default="/WebConfig/yukon/ThermImages/OcTherm.gif" url="true"/>
+    <cti:theme var="thermU" key="yukon.web.modules.operator.thermostatSchedule.thermU" default="/WebConfig/yukon/ThermImages/UnOcTherm.gif" url="true"/>
     
     
     <c:set var="twoBars" value="${schedule.thermostatType == 'COMMERCIAL_EXPRESSSTAT'}" />
     
     <c:set var="timeOfWeek" value="WEEKDAY" />
     
-    <cti:msg var="degreesCelsius" key="yukon.dr.operator.thermostatSchedule.degreesCelsius" /> 
-    <cti:msg var="degreesFahrenheit" key="yukon.dr.operator.thermostatSchedule.degreesFahrenheit" /> 
+    <cti:msg var="degreesCelsius" key="yukon.web.modules.operator.thermostatSchedule.degreesCelsius" /> 
+    <cti:msg var="degreesFahrenheit" key="yukon.web.modules.operator.thermostatSchedule.degreesFahrenheit" /> 
     
     
     
@@ -122,9 +116,10 @@
 
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
             <input id="schedules" type="hidden" name="schedules">
-            <input id="type" type="hidden" name="type" value="${thermostatType}">
-            <input id="scheduleId" type="hidden" name="scheduleId" value="${schedule.id}">
+            <input id="type" type="hidden" name="type" value="${schedule.thermostatType}">
+            <input id="scheduleId" type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}">
             <input id="timeOfWeek" type="hidden" name="timeOfWeek" value="WEEKDAY">
+            <input id="scheduleName" type="hidden" name="scheduleName" value="${schedule.scheduleName}">
             
 
             <input type="hidden" name="ConfirmOnMessagePage">
@@ -147,33 +142,33 @@
                                 <td align="left"> 
                                     <input id="radioALL" type="radio" name="scheduleMode" value="ALL" onclick="changeScheduleMode()" ${scheduleMode == 'ALL' ? 'checked' : '' } />
                                     <label class="timePeriodText" for="radioALL">
-                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleModeAll" />
+                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
-                                    <c:if test="${thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
+                                    <c:if test="${schedule.thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
                                         <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
                                         <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode52" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.scheduleMode52" />
                                         </label><br>
                                     </c:if>
                                     <input id="radioWEEKDAY_SAT_SUN" type="radio" name="scheduleMode" value="WEEKDAY_SAT_SUN" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_SAT_SUN' ? 'checked' : '' } />
                                     <label class="timePeriodText" for="radioWEEKDAY_SAT_SUN">
-                                        <cti:msg key="yukon.dr.operator.thermostatSchedule.scheduleMode511" />
+                                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.scheduleMode511" />
                                     </label><br>
                                 </td>
                                 <td align="right"> 
-                                    <span id="everyDayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode != 'ALL')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.EVERYDAY" /></span> 
+                                    <span id="everyDayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode != 'ALL')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.EVERYDAY" /></span> 
 
-                                    <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode == 'ALL')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></span> 
-                                    <a id="weekdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKDAY')? 'none' : ''}" href="javascript:changeTimePeriod('WEEKDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></a> 
+                                    <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode == 'ALL')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY" /></span> 
+                                    <a id="weekdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKDAY')? 'none' : ''}" href="javascript:changeTimePeriod('WEEKDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY" /></a> 
 
-                                    <span id="saturdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SATURDAY')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.SATURDAY" /></span>
-                                    <a id="saturdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SATURDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SATURDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.SATURDAY" /></a> 
+                                    <span id="saturdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SATURDAY')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SATURDAY" /></span>
+                                    <a id="saturdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SATURDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SATURDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SATURDAY" /></a> 
 
-                                    <span id="sundayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SUNDAY')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.SUNDAY" /></span> 
-                                    <a id="sundayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SUNDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SUNDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.SUNDAY" /></a> 
+                                    <span id="sundayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SUNDAY')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SUNDAY" /></span> 
+                                    <a id="sundayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SUNDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SUNDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SUNDAY" /></a> 
 
-                                    <span id="weekendText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKEND')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKEND" /></span>
-                                    <a id="weekendLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKEND' || scheduleMode == 'WEEKDAY_WEEKEND')? '' : 'none'}" href="javascript:changeTimePeriod('WEEKEND')"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKEND" /></a> 
+                                    <span id="weekendText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKEND')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKEND" /></span>
+                                    <a id="weekendLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKEND' || scheduleMode == 'WEEKDAY_WEEKEND')? '' : 'none'}" href="javascript:changeTimePeriod('WEEKEND')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKEND" /></a> 
                                 </td>
                             </tr>
                         </table>
@@ -184,7 +179,7 @@
                         <table width="80%" border="0">
                             <tr>
                                 <td class="TableCell" style="width: 50%; text-align: left; vertical-align: top;"> 
-                                    <cti:msg key="yukon.dr.operator.thermostatSchedule.instructions" />
+                                    <cti:msg key="yukon.web.modules.operator.thermostatSchedule.instructions" />
                                 </td>
                                 <td class="TableCell"  style="width: 50%; text-align: left; vertical-align: top; padding-top: 11px;"> 
                                     &nbsp;
@@ -295,16 +290,16 @@
                                     <tr>
                                         <td width="10%">&nbsp;</td> 
                                         <td class="timeOfDayLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.occupied" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.occupied" />
                                         </td>
                                         <td width="10%">&nbsp;</td>
                                         <td class="timeOfDayLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.unoccupied" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.unoccupied" />
                                         </td>
                                     </tr>
                                     <tr> 
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField">  
                                             <input id="time1" type="hidden" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
@@ -315,7 +310,7 @@
                                             <input id="time3min" type="hidden" size="8" name="time3min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
@@ -324,7 +319,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField">  
                                             <span style="display: none;">
@@ -349,7 +344,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempCin4" type="text" size="3" value="" name="tempCin4" onchange="tempChange(4, coolMode);viewChanged();">
@@ -365,7 +360,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField">  
                                             <span style="display: none;">
@@ -390,7 +385,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempHin4" type="text" size="3" value="" name="tempHin4" onchange="tempChange(4, heatMode);viewChanged();">
@@ -411,45 +406,45 @@
                                     <tr>
                                         <td width="10%">&nbsp;</td> 
                                         <td class="timeOfDayLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.wake" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.wake" />
                                         </td>
                                         <td width="10%">&nbsp;</td>
                                         <td class="timeOfDayLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.leave" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.leave" />
                                         </td>
                                         <td width="10%">&nbsp;</td>
                                         <td class="timeOfDayLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.return" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.return" />
                                         </td>
                                         <td width="10%">&nbsp;</td>
                                         <td class="timeOfDayLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.sleep" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.sleep" />
                                         </td>
                                     </tr>
                                     <tr> 
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField">  
                                             <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);viewChanged();">
                                             <input id="time1min" type="hidden" size="8" name="time1min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="time2" type="text" size="8" name="time2" onchange="timeChange(this,2);viewChanged();">
                                             <input id="time2min" type="hidden" size="8" name="time2min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);viewChanged();">
                                             <input id="time3min" type="hidden" size="8" name="time3min">
                                         </td>
                                         <td class="fieldLabel" width="10%">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.start" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.start" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);viewChanged();">
@@ -458,7 +453,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField">  
                                             <input id="tempCin1" type="text" size="3" value="" name="tempCin1" onchange="tempChange(1, coolMode);viewChanged();">
@@ -472,7 +467,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempCin2" type="text" size="3" value="" name="tempCin2" onchange="tempChange(2, coolMode);viewChanged();">
@@ -486,7 +481,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempCin3" type="text" size="3" value="" name="tempCin3" onchange="tempChange(3, coolMode);viewChanged();">
@@ -500,7 +495,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.coolTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.coolTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempCin4" type="text" size="3" value="" name="tempCin4" onchange="tempChange(4, coolMode);viewChanged();">
@@ -516,7 +511,7 @@
                                     </tr>
                                     <tr>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField">  
                                             <input id="tempHin1" type="text" size="3" value="" name="tempHin1" onchange="tempChange(1, heatMode);viewChanged();">
@@ -530,7 +525,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempHin2" type="text" size="3" value="" name="tempHin2" onchange="tempChange(2, heatMode);viewChanged();">
@@ -544,7 +539,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempHin3" type="text" size="3" value="" name="tempHin3" onchange="tempChange(3, heatMode);viewChanged();">
@@ -558,7 +553,7 @@
                                             </c:choose>
                                         </td>
                                         <td class="fieldLabel">
-                                            <cti:msg key="yukon.dr.operator.thermostatSchedule.heatTemp" />
+                                            <cti:msg key="yukon.web.modules.operator.thermostatSchedule.heatTemp" />
                                         </td>
                                         <td class="timeTempField"> 
                                             <input id="tempHin4" type="text" size="3" value="" name="tempHin4" onchange="tempChange(4, heatMode);viewChanged();">
@@ -579,7 +574,7 @@
                 </tr>
                 <tr>
                     <td class="modeText">
-                        <cti:msg key="yukon.dr.operator.thermostatSchedule.mode" />
+                        <cti:msg key="yukon.web.modules.operator.thermostatSchedule.mode" />
                         <c:choose>
                             <c:when test="${temperatureUnit == 'F'}">
                                 <a id="celsiusLink" href="javascript:setTempUnits('C');">${degreesCelsius}</a>
@@ -603,7 +598,7 @@
             <table width="80%" border="0" cellpadding="5">
                 <tr>
                     <td style="text-align: center;"> 
-                        <cti:msg var="save" key="yukon.dr.operator.thermostatSchedule.save"></cti:msg>
+                        <cti:msg var="save" key="yukon.web.modules.operator.thermostatSchedule.save"/>
                         <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
                     </td>
                 </tr>

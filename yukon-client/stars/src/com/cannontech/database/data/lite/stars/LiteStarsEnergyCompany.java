@@ -70,8 +70,6 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -181,8 +179,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     	new ConcurrentHashMap<Integer, LiteApplianceCategory>();
     private final Map<String, YukonSelectionList> selectionListMap = 
     	new ConcurrentHashMap<String, YukonSelectionList>(30, .75f, 2);
-    private final Map<HardwareType, ThermostatSchedule> defaultThermostatScheduleMap = 
-    	new ConcurrentHashMap<HardwareType, ThermostatSchedule>(8, .75f, 1);
     
     private List<Integer> routeIDs = null;
     
@@ -199,7 +195,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private YukonListDao yukonListDao;
-    private ThermostatScheduleDao thermostatScheduleDao;
     private RolePropertyDao rolePropertyDao;
     private SystemDateFormattingService systemDateFormattingService;
     
@@ -1805,30 +1800,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         energyCompanyHierarchy = null;
     }
     
-    public ThermostatSchedule getDefaultThermostatSchedule(HardwareType type) {
-    	Validate.notNull(type, "Hardware type cannot be null");
-    	
-    	ThermostatSchedule defaultSchedule = this.defaultThermostatScheduleMap.get(type);
-    	if(defaultSchedule == null) {
-    		// This schedule is not cached - load it and cache it
-    		defaultSchedule = 
-    			thermostatScheduleDao.getEnergyCompanyDefaultSchedule(this, type);
-    		this.defaultThermostatScheduleMap.put(type, defaultSchedule);
-    	}
-    	
-    	// Return a copy of the cached schedule
-    	return defaultSchedule.getCopy();
-    }
-
-	public void updateDefaultSchedule(ThermostatSchedule schedule) {
-		Validate.notNull(schedule, "Default thermostat schedule cannot be null");
-		
-		HardwareType thermostatType = schedule.getThermostatType();
-		Validate.notNull(thermostatType, "Default thermostat schedule type cannot be null");
-		
-		this.defaultThermostatScheduleMap.put(thermostatType, schedule);
-	}
-
     private List<Object> searchByPrimaryContactLastName(String lastName_, boolean partialMatch, List<Integer> energyCompanyIDList, boolean searchMembers) {
         if (lastName_ == null || lastName_.length() == 0) return null;
         if (energyCompanyIDList == null || energyCompanyIDList.size() == 0) return null;
@@ -2104,11 +2075,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     void setYukonListDao(YukonListDao yukonListDao) {
 		this.yukonListDao = yukonListDao;
-	}
-    
-    void setThermsotatScheduleDao(
-			ThermostatScheduleDao thermostatScheduleDao) {
-		this.thermostatScheduleDao = thermostatScheduleDao;
 	}
     
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {

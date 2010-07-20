@@ -24,24 +24,18 @@
     <cti:msg var="saveScheduleText" key="yukon.dr.consumer.thermostatSchedule.saveScheduleText" />
     <cti:msg var="modeChangeText" key="yukon.dr.consumer.thermostatSchedule.modeChangeText" />
 
-
-    <c:set var="scheduleMode" value="${schedule.season.mode}" />
-    <%-- YUK-7069 TODO:  Move this logic into controller. --%>
-    <c:set var="schedule52Enabled" value="false"/>
-    <cti:isPropertyTrue property="ResidentialCustomerRole.THERMOSTAT_SCHEDULE_5_2">
-	    <c:set var="schedule52Enabled" value="true"/>
-    </cti:isPropertyTrue>
-    <c:if test="${(thermostatType != 'UTILITY_PRO' || !schedule52Enabled) && scheduleMode == 'WEEKDAY_WEEKEND'}">
-	    <c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
-    </c:if>
-
 <script type="text/javascript">
 
     Event.observe(window, 'load', function(){init();});
 
+ 	// things that thermostat.js is expecting to get set dynamically
     currentScheduleMode = '${scheduleMode}';
 
-    // Set global variable in thermostat2.js
+    lowerLimitCool = ${schedule.thermostatType.lowerLimitCool};
+    upperLimitCool = ${schedule.thermostatType.upperLimitCool};
+    lowerLimitHeat = ${schedule.thermostatType.lowerLimitHeat};
+    upperLimitHeat = ${schedule.thermostatType.upperLimitHeat};
+
     tempUnit = '${temperatureUnit}';
     
     function setToDefault() {
@@ -149,7 +143,7 @@
 
             <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
             <input id="schedules" type="hidden" name="schedules">
-            <input id="timeOfWeek" type="hidden" name="timeOfWeek" value="WEEKDAY">
+            <input id="type" type="hidden" name="type" value="${schedule.thermostatType}">
             <input id="saveAction" type="hidden" name="saveAction">
             
 
@@ -184,7 +178,7 @@
                                     <label class="timePeriodText" for="radioALL">
                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleModeAll" />
                                     </label><br>
-                                    <c:if test="${thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
+                                    <c:if test="${schedule.thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
 	                                    <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
 	                                    <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
 	                                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.scheduleMode52" />
@@ -643,26 +637,24 @@
             <table width="80%" border="0" cellpadding="5">
                 <tr>
                     <td style="text-align: center; font-size: .9em;"> 
-                        <c:if test="${!multipleThermostatsSelected}">
-                            <cti:msg key="yukon.dr.consumer.thermostatSchedule.name"></cti:msg>
-                            <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody>" ></input>
-                        </c:if>
-                        <input type="hidden" name="scheduleId" value="${schedule.id}" ></input>
+                        
+                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.name"></cti:msg>
+                        <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.scheduleName}</spring:escapeBody>" ></input>
+                        <input type="hidden" name="scheduleId" value="${schedule.accountThermostatScheduleId}" ></input>
+                    
                     </td>
                 </tr>
                 <tr>
                     <td style="text-align: center;"> 
                         <cti:msg var="saveApply" key="yukon.dr.consumer.thermostatSchedule.saveApply"></cti:msg>
                         <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"></input>
-                        <c:if test="${!multipleThermostatsSelected}">
-                            <cti:msg var="save" key="yukon.dr.consumer.thermostatSchedule.save"></cti:msg>
-                            <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
-                        </c:if>
+                           <cti:msg var="save" key="yukon.dr.consumer.thermostatSchedule.save"></cti:msg>
+                           <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
                         <cti:msg var="recommend" key="yukon.dr.consumer.thermostatSchedule.recommend"></cti:msg>
                         <input type="button" id="Default" value="${recommend}" onclick="setToDefault();"></input>
                     </td>
                 </tr>
-                <c:if test="${thermostatType == 'UTILITY_PRO'}">
+                <c:if test="${schedule.thermostatType == 'UTILITY_PRO'}">
 	                <tr>
 	                    <td>
 	                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.periodMessage"></cti:msg>

@@ -40,7 +40,10 @@
     <entry key="yukon.web.modules.operator.thermostatManual.runProgram">Run Program</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.manualSettings">Manual Settings</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.noLastEvent">(None)</entry>
-    <entry key="yukon.web.modules.operator.thermostatManual.instructionText">Please use the thermostat below to temporarily change your current settings. To adjust your thermostat's programming, please click the Schedule link in the pop-up menu of the thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostatManual.instructionText"><![CDATA[
+    	Please use the thermostat below to temporarily change your current settings.
+    	To adjust your thermostat's programming, please click the <a href='{0}' title="Adjust Thermostat Programming">Schedule</a> link in the pop-up menu of the thermostat.
+    ]]></entry>
     <entry key="yukon.web.modules.operator.thermostatManual.thermostatImage">/WebConfig/yukon/ThermImages/Bkgd.gif</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.runImage">/WebConfig/yukon/ThermImages/Run.gif</entry>
     <entry key="yukon.web.modules.operator.thermostatManual.incrementTemp">&amp;#9650;</entry>
@@ -125,6 +128,8 @@
     <entry key="yukon.web.modules.operator.thermostatSchedule.periodMessage"><![CDATA[**Sending this schedule will set your thermostat to use 4 daily periods:  Wake, Leave, Return, Sleep.  This will overwrite any local period adjustments you have made to your thermostat.]]></entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
+    <entry key="yukon.web.modules.operator.thermostatSchedule.duplicateScheduleName">When saving as a new schedule, you must provide a different schedule name from the original.</entry>
+    <entry key="yukon.web.modules.operator.thermostatSchedule.otherThermostatsUsingScheduleConfirm">Other thermostats are also associated with this schedule, are you sure you want to change it?</entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.saveScheduleText">Changes have been made to this schedule. To disregard these changes, click OK. To return to the page to save your changes, click Cancel.</entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.modeChangeText"><![CDATA[You have chosen to change your thermostat scheduling mode.  If you have changed this setting locally on your thermostat, it will be replaced by this setting when you submit your schedule.  Do you wish to proceed?]]></entry>
     <entry key="yukon.web.modules.operator.thermostatSchedule.scheduleNameTooLong">Schedule name exceeds maximum length of 60.</entry>
@@ -133,20 +138,91 @@
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.pageName">Thermostat Schedule Confirm</entry>
 	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.pageDescription">{0}</entry>
 	<entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmUiContainerHeader.title">Thermostat Schedule Confirm</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText">The following schedule options will be sent to your thermostat:</entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.scheduleText"><![CDATA[
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText.saveApply">The following schedule options will be sent to your thermostat:</entry>
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.introText.save">The following schedule options saved:</entry>
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.saveApply">Operation canceled. The schedule options were not sent to your thermostat.</entry>
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancelText.save">Operation canceled. The schedule options were not saved.</entry>
+    
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.ALL"><![CDATA[
+        <b>{0}:</b>
+        <br><br>
+        {1} - Cool: {2} Heat: {3}<br>
+        {4} - Cool: {5} Heat: {6}<br>
+        {7} - Cool: {8} Heat: {9}<br>
+        {10} - Cool: {11} Heat: {12}<br>
+    ]]></entry>
+    
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.WEEKDAY_SAT_SUN"><![CDATA[
+        <b>{0}:</b>
+        <br><br>
+        {1} - Cool: {2} Heat: {3}<br>
+        {4} - Cool: {5} Heat: {6}<br>
+        {7} - Cool: {8} Heat: {9}<br>
+        {10} - Cool: {11} Heat: {12}<br>
+        
+        <br>
+        <b>{13}:</b>
+        <br><br>
+        {14} - Cool: {15} Heat: {16}<br>
+        {17} - Cool: {18} Heat: {19}<br>
+        {20} - Cool: {21} Heat: {22}<br>
+        {23} - Cool: {24} Heat: {25}<br>
+        
+        <br>
+        <b>{26}:</b>
+        <br><br>
+        {27} - Cool: {28} Heat: {29}<br>
+        {30} - Cool: {31} Heat: {32}<br>
+        {33} - Cool: {34} Heat: {35}<br>
+        {36} - Cool: {37} Heat: {38}<br>
+        
+    ]]></entry>
+
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.WEEKDAY_WEEKEND"><![CDATA[
+        <b>{0}:</b>
+        <br><br>
+        {1} - Cool: {2} Heat: {3}<br>
+        {4} - Cool: {5} Heat: {6}<br>
+        {7} - Cool: {8} Heat: {9}<br>
+        {10} - Cool: {11} Heat: {12}<br>
+        
+        <br>
+        <b>{13}:</b>
+        <br><br>
+        {14} - Cool: {15} Heat: {16}<br>
+        {17} - Cool: {18} Heat: {19}<br>
+        {20} - Cool: {21} Heat: {22}<br>
+        {23} - Cool: {24} Heat: {25}<br>
+        
+    ]]></entry>
+    
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.ALL.COMMERCIAL_EXPRESSSTAT"><![CDATA[
         <b>{0}:</b> <br><br>
              {1} - Cool: {2} Heat: {3}<br>
              {4} - Cool: {5} Heat: {6}<br>
-             {7} - Cool: {8} Heat: {9}<br>
-             {10} - Cool: {11} Heat: {12}<br>
     ]]></entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.scheduleTextTwoTimeTemp"><![CDATA[
+    
+    <entry key="yukon.dr.operator.thermostatScheduleConfirm.scheduleText.WEEKDAY_SAT_SUN.COMMERCIAL_EXPRESSSTAT"><![CDATA[
         <b>{0}:</b> <br><br>
-             {1} - Cool: {2} Heat: {3}<br>
-             {4} - Cool: {5} Heat: {6}<br>
+        {1} - Cool: {2} Heat: {3}<br>
+        {4} - Cool: {5} Heat: {6}<br>
+             
+        <br>
+        <b>{7}:</b>
+        <br><br>
+        {8} - Cool: {9} Heat: {10}<br>
+        {11} - Cool: {12} Heat: {13}<br>
+        
+        <br>
+        <b>{14}:</b>
+        <br><br>
+        {15} - Cool: {16} Heat: {17}<br>
+        {18} - Cool: {19} Heat: {20}<br>
+        
     ]]></entry>
-    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText">Do you wish to send this schedule to your thermostat?</entry>
+    
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.saveApply">Do you wish to send this schedule to your thermostat?</entry>
+    <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.confirmText.save">Do you wish to save this schedule?</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.ok.label">Continue</entry>
     <entry key="yukon.web.modules.operator.thermostatScheduleConfirm.cancel.label">Cancel</entry>
     
@@ -196,7 +272,16 @@
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.chooseSchedule">Select a schedule to view:</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.viewSchedule">View Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.deleteSchedule">Delete Schedule</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.createNewSchedule">Create New Schedule</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.noSchedules">There are no saved schedules.</entry>
     <entry key="yukon.web.modules.operator.thermostatSavedSchedules.scheduleDeleted">Schedule "{0}" Deleted.</entry>
+    <entry key="yukon.web.modules.operator.thermostatSavedSchedules.cantDeleteEcDefaultSchedule">The default schedule cannot be deleted.</entry>
+    
+    <!-- Time of week -->
+    <entry key="yukon.web.modules.operator.thermostat.schedule.EVERYDAY">Everyday</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY">Weekday</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedule.WEEKEND">Weekend</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedule.SATURDAY">Saturday</entry>
+    <entry key="yukon.web.modules.operator.thermostat.schedule.SUNDAY">Sunday</entry>
     
 </properties>

@@ -20,28 +20,23 @@
 	<cti:includeCss link="/WebConfig/yukon/styles/operator/thermostat.css"/>
 	
 	<cti:msg2 var="noScheduleName" key=".noScheduleName" />
+	<cti:msg2 var="duplicateScheduleName" key=".duplicateScheduleName" />
 	<cti:msg2 var="saveScheduleText" key=".saveScheduleText" />
 	<cti:msg2 var="modeChangeText" key=".modeChangeText" />
-	
-	<c:set var="scheduleMode" value="${schedule.season.mode}" />
-	<%-- YUK-7069 TODO:  Move this logic into controller. --%>
-	<c:set var="schedule52Enabled" value="false"/>
-	
-	<cti:isPropertyTrue property="ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2">
-		<c:set var="schedule52Enabled" value="true"/>
-	</cti:isPropertyTrue>
-	
-	<c:if test="${(thermostatType != 'UTILITY_PRO' || !schedule52Enabled) && scheduleMode == 'WEEKDAY_WEEKEND'}">
-		<c:set var="scheduleMode" value="WEEKDAY_SAT_SUN" />
-	</c:if>
+	<cti:msg2 var="otherThermostatsUsingScheduleConfirm" key=".otherThermostatsUsingScheduleConfirm" />
 	
 	<script type="text/javascript">
 
 	    Event.observe(window, 'load', function(){init();});
-	
+
+		// things that thermostat.js is expecting to get set dynamically
 	    currentScheduleMode = '${scheduleMode}';
+
+	    lowerLimitCool = ${schedule.thermostatType.lowerLimitCool};
+	    upperLimitCool = ${schedule.thermostatType.upperLimitCool};
+	    lowerLimitHeat = ${schedule.thermostatType.lowerLimitHeat};
+	    upperLimitHeat = ${schedule.thermostatType.upperLimitHeat};
 	
-	    // Set global variable in thermostat2.js
 	    tempUnit = '${temperatureUnit}';
 	    
 	    function setToDefault() {
@@ -64,13 +59,39 @@
 	        setCurrentSchedule(currentTimePeriod);
 	    }
 	    
-	    
+	    function toggleSaveAsNewSchedule() {
+
+			var checked = $('saveAsNewSchedule').checked;
+
+			if (checked) {
+				$('scheduleId').value = -1;
+			} else {
+				$('scheduleId').value = $('initialScheduleId').value;
+			}
+		}
+		
 	    function saveSchedule(action) {
-	    
-	        var scheduleName = $('scheduleName');
-	        if(scheduleName != null && $F(scheduleName) == ''){
+
+		    // edit when other are tied to it?
+		    if (!$('saveAsNewSchedule').checked && 
+				$F($('totalNumberOfThermostatsUsingSchedule')) > $F($('selectedNumberOfThermostatsUsingSchedule')) && 
+				!confirm('${otherThermostatsUsingScheduleConfirm}')) {
+			    
+				return; // noop
+		    	
+			// save as new without name change?
+		    } else if ($('saveAsNewSchedule').checked && $F($('initialScheduleName')) == $F($('scheduleName'))) {
+
+				alert('${duplicateScheduleName}');
+	            $('scheduleName').focus();
+
+		    // no name?
+	    	} else if($F($('initialScheduleName')).empty()){
+
 	            alert('${noScheduleName}');
 	            $('scheduleName').focus();
+
+	        // OK to submit
 	        } else {
 	            
 	            // Save the current settings before submitting form
@@ -106,11 +127,11 @@
 		    
 		    return continueNoSave;
 		}
+
+		
 	    
 	</script>
 	
-	
-    
     <table class="thermostatPageContent">
     	<tr>
     	
@@ -144,11 +165,13 @@
 				            
 				            <input name="accountId" type="hidden" value="${accountId}" />
 				            <input name="thermostatIds" type="hidden" value="${thermostatIds}" />
-				
 				            <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
 				            <input id="schedules" type="hidden" name="schedules">
-				            <input id="timeOfWeek" type="hidden" name="timeOfWeek" value="WEEKDAY">
+				            <input id="type" type="hidden" name="type" value="${schedule.thermostatType}">
 				            <input id="saveAction" type="hidden" name="saveAction">
+
+				            <input id="selectedNumberOfThermostatsUsingSchedule" type="hidden" value="${selectedNumberOfThermostatsUsingSchedule}">
+				            <input id="totalNumberOfThermostatsUsingSchedule" type="hidden" value="${totalNumberOfThermostatsUsingSchedule}">
 				
 				            <input type="hidden" name="ConfirmOnMessagePage">
 				            <input type="hidden" name="tempC1" id="tempC1">
@@ -171,7 +194,7 @@
 				                                    <label class="timePeriodText" for="radioALL">
 				                                        <cti:msg2 key=".scheduleModeAll" />
 				                                    </label><br>
-				                                    <c:if test="${thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
+				                                    <c:if test="${schedule.thermostatType == 'UTILITY_PRO' && schedule52Enabled}">
 					                                    <input id="radioWEEKDAY_WEEKEND" type="radio" name="scheduleMode" value="WEEKDAY_WEEKEND" onclick="changeScheduleMode()" ${scheduleMode == 'WEEKDAY_WEEKEND' ? 'checked' : '' } />
 					                                    <label class="timePeriodText" for="radioWEEKDAY_WEEKEND">
 					                                        <cti:msg2 key=".scheduleMode52" />
@@ -183,19 +206,19 @@
 				                                    </label><br>
 				                                </td>
 				                                <td align="right"> 
-				                                    <span id="everyDayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode != 'ALL')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.EVERYDAY" /></span> 
+				                                    <span id="everyDayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode != 'ALL')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.EVERYDAY" /></span> 
 				
-				                                    <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode == 'ALL')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></span> 
-				                                    <a id="weekdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKDAY')? 'none' : ''}" href="javascript:changeTimePeriod('WEEKDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKDAY" /></a> 
+				                                    <span id="weekdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKDAY' || scheduleMode == 'ALL')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY" /></span> 
+				                                    <a id="weekdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKDAY')? 'none' : ''}" href="javascript:changeTimePeriod('WEEKDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKDAY" /></a> 
 				
-				                                    <span id="saturdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SATURDAY')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.SATURDAY" /></span>
-				                                    <a id="saturdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SATURDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SATURDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.SATURDAY" /></a> 
+				                                    <span id="saturdayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SATURDAY')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SATURDAY" /></span>
+				                                    <a id="saturdayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SATURDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SATURDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SATURDAY" /></a> 
 				
-				                                    <span id="sundayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SUNDAY')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.SUNDAY" /></span> 
-				                                    <a id="sundayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SUNDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SUNDAY')"><cti:msg key="yukon.dr.operator.thermostat.schedule.SUNDAY" /></a> 
+				                                    <span id="sundayText" class="timePeriodText" style="display: ${(timeOfWeek != 'SUNDAY')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SUNDAY" /></span> 
+				                                    <a id="sundayLink" class="timePeriodText" style="display: ${(timeOfWeek == 'SUNDAY' || scheduleMode == 'WEEKDAY_SAT_SUN')? '' : 'none'}" href="javascript:changeTimePeriod('SUNDAY')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.SUNDAY" /></a> 
 				
-				                                    <span id="weekendText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKEND')? 'none' : ''}"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKEND" /></span>
-				                                    <a id="weekendLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKEND' || scheduleMode == 'WEEKDAY_WEEKEND')? '' : 'none'}" href="javascript:changeTimePeriod('WEEKEND')"><cti:msg key="yukon.dr.operator.thermostat.schedule.WEEKEND" /></a> 
+				                                    <span id="weekendText" class="timePeriodText" style="display: ${(timeOfWeek != 'WEEKEND')? 'none' : ''}"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKEND" /></span>
+				                                    <a id="weekendLink" class="timePeriodText" style="display: ${(timeOfWeek == 'WEEKEND' || scheduleMode == 'WEEKDAY_WEEKEND')? '' : 'none'}" href="javascript:changeTimePeriod('WEEKEND')"><cti:msg key="yukon.web.modules.operator.thermostat.schedule.WEEKEND" /></a> 
 				                                </td>
 				                            </tr>
 				                        </table>
@@ -643,28 +666,49 @@
 				            <br>
 				            
 				            <table width="80%" border="0" cellpadding="5">
+				            
+				            	<%-- schedule name --%>
 				                <tr>
-				                    <td style="text-align: center; font-size: .9em;"> 
-				                        <c:if test="${!multipleThermostatsSelected}">
-				                            <cti:msg2 key=".name"/>
-				                            <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody>" maxlength="60"></input>
-				                        </c:if>
-				                        <input type="hidden" name="scheduleId" value="${schedule.id}" ></input>
+				                    <td> 
+			                            <cti:msg2 key=".name"/>
+				                        <input type="hidden" id="initialScheduleId" name="initialScheduleId" value="${schedule.accountThermostatScheduleId}"/>
+				                        <input type="hidden" id="scheduleId" name="scheduleId" value="${schedule.accountThermostatScheduleId}"/>
+			                            <input type="hidden" id="initialScheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.scheduleName}</spring:escapeBody>">
+			                            <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.scheduleName}</spring:escapeBody>" maxlength="60"/>
+				                    	<br><br>
 				                    </td>
 				                </tr>
+				                
+				                <%-- checkbox --%>
 				                <tr>
-				                    <td style="text-align: center;"> 
-				                        <cti:msg var="saveApply" key="yukon.web.modules.operator.thermostatSchedule.saveApply"></cti:msg>
-				                        <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"></input>
-				                        <c:if test="${fn:length(thermostatNames) == 1}">
-				                            <cti:msg var="save" key="yukon.web.modules.operator.thermostatSchedule.save"></cti:msg>
-				                            <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
-				                        </c:if>
-				                        <cti:msg var="recommend" key="yukon.web.modules.operator.thermostatSchedule.recommend"></cti:msg>
-				                        <input type="button" id="Default" value="${recommend}" onclick="setToDefault();"></input>
+				                    <td>
+				                    	<label>
+					                    	<input type="checkbox" id="saveAsNewSchedule" name="saveAsNewSchedule" onclick="toggleSaveAsNewSchedule();">
+					                    	Save as a new Schedule?
+				                    	</label>
+			                            <br><br>
 				                    </td>
 				                </tr>
-				                <c:if test="${thermostatType == 'UTILITY_PRO'}">
+				                
+				                <%-- buttons --%>
+				                <tr>
+				                    <td>
+				                    
+				                    	<%-- save and send --%>
+				                        <cti:msg var="saveApply" key="yukon.web.modules.operator.thermostatSchedule.saveApply"/>
+				                        <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"/>
+				                    
+			                    		<%-- save only --%>
+			                            <cti:msg var="save" key="yukon.web.modules.operator.thermostatSchedule.save"/>
+			                            <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"/>
+			                            
+			                            <%-- revert to ec default settings --%>
+				                        <cti:msg var="recommend" key="yukon.web.modules.operator.thermostatSchedule.recommend"/>
+				                        <input type="button" id="Default" value="${recommend}" onclick="setToDefault();"/>
+				                        
+				                    </td>
+				                </tr>
+				                <c:if test="${schedule.thermostatType == 'UTILITY_PRO'}">
 					                <tr>
 					                    <td>
 					                        <cti:msg2 key=".periodMessage"/>

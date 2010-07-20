@@ -212,5 +212,11 @@
       <sequence name="GraphCustomerList">
         <table name="GraphCustomerList" identitycolumn="GraphDefinitionId"/>
       </sequence>
+      <sequence name="AcctThermostatSchedule">
+        <table name="AcctThermostatSchedule" identitycolumn="AcctThermostatScheduleId" initsequence="true"/>
+      </sequence>
+      <sequence name="AcctThermostatScheduleEntry">
+        <table name="AcctThermostatScheduleEntry" identitycolumn="AcctThermostatScheduleEntryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

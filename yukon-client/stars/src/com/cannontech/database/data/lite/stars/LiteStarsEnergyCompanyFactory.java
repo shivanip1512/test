@@ -12,7 +12,6 @@ import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsWorkOrderBaseDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
 public class LiteStarsEnergyCompanyFactory {
     private AddressDao addressDao;
@@ -21,7 +20,6 @@ public class LiteStarsEnergyCompanyFactory {
     private StarsWorkOrderBaseDao starsWorkOrderBaseDao;
     private SimpleJdbcTemplate simpleJdbcTemplate;
 	private YukonListDao yukonListDao;
-	private ThermostatScheduleDao thermostatScheduleDao;
 	private RolePropertyDao rolePropertyDao;
 	private SystemDateFormattingService systemDateFormattingService;
 	private WarehouseDao warehouseDao;
@@ -45,7 +43,6 @@ public class LiteStarsEnergyCompanyFactory {
         energyCompany.setStarsWorkOrderBaseDao(starsWorkOrderBaseDao);
         energyCompany.setSimpleJdbcTemplate(simpleJdbcTemplate);
         energyCompany.setYukonListDao(yukonListDao);
-        energyCompany.setThermsotatScheduleDao(thermostatScheduleDao);
         energyCompany.setRolePropertyDao(rolePropertyDao);
         energyCompany.setSystemDateFormattingService(systemDateFormattingService);
         energyCompany.setWarehouseDao(warehouseDao);
@@ -86,12 +83,6 @@ public class LiteStarsEnergyCompanyFactory {
 		this.yukonListDao = yukonListDao;
 	}
     
-    @Autowired
-    public void setThermostatScheduleDao(
-			ThermostatScheduleDao thermostatScheduleDao) {
-		this.thermostatScheduleDao = thermostatScheduleDao;
-	}
-
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
 		this.rolePropertyDao = rolePropertyDao;

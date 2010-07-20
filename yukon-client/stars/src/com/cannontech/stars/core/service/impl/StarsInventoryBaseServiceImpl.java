@@ -1,5 +1,6 @@
 package com.cannontech.stars.core.service.impl;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,8 +41,10 @@ import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreat
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -52,7 +55,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private StarsSearchDao starsSearchDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
-    private ThermostatScheduleDao thermostatScheduleDao;
     private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     private LMHardwareEventDao hardwareEventDao;
     private ApplianceDao applianceDao;
@@ -61,6 +63,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private EnrollmentHelperService enrollmentService;
     private CustomerAccountDao customerAccountDao;
     private LMHardwareBaseDao hardwareBaseDao;
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    private ThermostatService thermostatService;
     
     @Autowired
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
@@ -77,12 +81,6 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     public void setStarsInventoryBaseDao(
             StarsInventoryBaseDao starsInventoryBaseDao) {
         this.starsInventoryBaseDao = starsInventoryBaseDao;
-    }
-
-    @Autowired
-    public void setThermostatScheduleDao(
-            ThermostatScheduleDao thermostatScheduleDao) {
-        this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
     @Autowired
@@ -125,6 +123,16 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     public void setHardwareBaseDao(LMHardwareBaseDao hardwareBaseDao) {
         this.hardwareBaseDao = hardwareBaseDao;
     }
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+	}
+    
+    @Autowired
+    public void setThermostatService(ThermostatService thermostatService) {
+		this.thermostatService = thermostatService;
+	}
 
     // ADD DEVICE TO ACCOUNT
     @Override
@@ -211,19 +219,11 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                                                                         YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE,
                                                                         lmHw.getLmHardwareTypeID());
         HardwareType hwType = HardwareType.valueOf(thermostatDefId);
-        ThermostatSchedule schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(lmHw.getAccountID(),
-                                                                                            hwType);
-
-        // save the schedule, if a default schedule is defined for the
-        // energyCompany
-        if (schedule != null) {
-            // schedule - set accountId, inventoryId; name defaults to none
-            schedule.setAccountId(lmHw.getAccountID());
-            schedule.setInventoryId(lmHw.getInventoryID());
-
-            // save the default thermostat schedule on the account
-            thermostatScheduleDao.save(schedule, energyCompany);
-        }
+        AccountThermostatSchedule schedule = thermostatService.getAccountThermostatScheduleTemplate(lmHw.getAccountID(), SchedulableThermostatType.getByHardwareType(hwType));
+        schedule.setAccountId(lmHw.getAccountID());
+        schedule.setScheduleName(lmHw.getDeviceLabel());
+        accountThermostatScheduleDao.save(schedule);
+        accountThermostatScheduleDao.mapThermostatsToSchedule(Collections.singletonList(lmHw.getInventoryID()), schedule.getAccountThermostatScheduleId());
     }
 
     @Override

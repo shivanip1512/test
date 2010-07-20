@@ -31,7 +31,7 @@
         
         <input type="hidden" name="schedules" value="<spring:escapeBody htmlEscape="true">${schedules}</spring:escapeBody>"/>
         <input type="hidden" name="thermostatIds" value="${thermostatIds}"/>
-        <input type="hidden" name="timeOfWeek" value="${timeOfWeek}"/>
+        <input type="hidden" name="type" value="${type}">
         <input type="hidden" name="scheduleMode" value="${scheduleMode}"/>
         <input type="hidden" name="temperatureUnit" value="${temperatureUnit}"/>
         <input type="hidden" name="scheduleId" value="${scheduleId}"/>

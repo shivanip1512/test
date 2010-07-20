@@ -7,23 +7,35 @@
 <cti:standardPage module="operator" page="thermostatSavedSchedules">
 
 	<tags:formElementContainer nameKey="savedSchedulesUiContainerHeader">
-
-		<c:choose>
+	
+		<form method="post" action="/spring/stars/operator/thermostatSchedule/viewSavedSchedule">
 		
-			<c:when test="${fn:length(schedules) == 0}">
-				<cti:msg2 key=".noSchedules" />
-			</c:when>
-	          
-			<c:otherwise>
-				<form method="post" action="/spring/stars/operator/thermostatSchedule/viewSavedSchedule">
+			<input name="accountId" type="hidden" value="${accountId}" />
+	    	<input type="hidden" name="thermostatId" value="${thermostatId}">
 			    
-			    	<input name="accountId" type="hidden" value="${accountId}" />
-			    	<input type="hidden" name="thermostatId" value="${thermostatId}">
-			    
-			    	<cti:msg2 key=".chooseSchedule" />
+		    <c:choose>
+		    
+		    	<%-- no saved schedules --%>
+			    <c:when test="${fn:length(schedules) == 0}">
+			    	
+			    	<cti:msg2 key=".noSchedules" />
+			    	
+			    	<br><br>
+			    	
+			    	<cti:msg2 var="createNewText" key=".createNewSchedule" />
+				    <input type="submit" name="createNew" value="${createNewText}">
+				    
+		      	</c:when>
+		      	
+		      	<%-- have saved schedules --%>
+		      	<c:otherwise>
+		      	
+		      		<cti:msg2 key=".chooseSchedule" />
 				    <select name="scheduleId">
 				        <c:forEach var="schedule" items="${schedules}">
-				            <option value="${schedule.id}"><spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody></option>
+				            <option value="${schedule.accountThermostatScheduleId}" <c:if test="${schedule.accountThermostatScheduleId == currentScheduleId}">selected</c:if>>
+				            	<spring:escapeBody htmlEscape="true">${schedule.scheduleName}</spring:escapeBody>
+				            </option>
 				        </c:forEach>
 				    </select>
 				    
@@ -32,13 +44,17 @@
 				    <cti:msg2 var="viewText" key=".viewSchedule" />
 				    <input type="submit" name="view" value="${viewText}">
 				    
+				    <cti:msg2 var="createNewText" key=".createNewSchedule" />
+				    <input type="submit" name="createNew" value="${createNewText}">
+				    
 				    <cti:msg2 var="deleteText" key=".deleteSchedule" />
 				    <input type="submit" name="delete" value="${deleteText}">
-				    
-				</form>
-			</c:otherwise>
-			
-		</c:choose>
+		      	
+		      	</c:otherwise>
+	      	
+	      	</c:choose>
+		      	
+		</form>
 	
 	</tags:formElementContainer>
     

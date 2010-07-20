@@ -25,7 +25,11 @@
    				
    					<%-- INSTRUCTIONS --%>
 				    <div class="plainText">
-				        <cti:msg key="yukon.web.modules.operator.thermostatManual.instructionText" />
+				    	<cti:url var="scheduleUrl" value="/spring/stars/operator/thermostatSchedule/view">
+				    		<cti:param name="accountId" value="${accountId}"/>
+				    		<cti:param name="thermostatIds" value="${thermostatIds}"/>
+				    	</cti:url>
+				        <cti:msg key="yukon.web.modules.operator.thermostatManual.instructionText" arguments="${scheduleUrl}" htmlEscape="false"/>
 				    </div>
 				    <br>
     

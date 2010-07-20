@@ -43,6 +43,7 @@ import com.cannontech.stars.dr.hardware.dao.LMConfigurationBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 import com.cannontech.stars.util.ServerUtils;
 
@@ -67,6 +68,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     private LMConfigurationBaseDao lmConfigurationBaseDao;
     private EventInventoryDao eventInventoryDao;
     private ECMappingDao ecMappingDao;
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
 
     static {
         selectInventorySql = "SELECT ib.*, lhb.*, mhb.*, etim.energyCompanyId, yle.YukonDefinitionId AS CategoryDefId " 
@@ -534,7 +536,7 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
         int inventoryId = liteInv.getInventoryID();
 
         lmHardwareConfigurationDao.delete(inventoryId);
-        thermostatScheduleDao.deleteScheduleForInventory(inventoryId);
+        accountThermostatScheduleDao.deleteByInventoryId(inventoryId);
         thermostatScheduleDao.deleteManualEvents(inventoryId);
         if (liteInv instanceof LiteStarsLMHardware) {
             LiteStarsLMHardware lmHw = (LiteStarsLMHardware) liteInv;
@@ -612,6 +614,11 @@ public class StarsInventoryBaseDaoImpl implements StarsInventoryBaseDao, Initial
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
     }
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+	}
     
     @Override
     public void afterPropertiesSet() throws Exception {

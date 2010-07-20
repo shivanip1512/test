@@ -14,20 +14,34 @@
 	</h3>
 	
 	<div class="message">
-	    
-        <c:choose>
-            <c:when test="${fn:length(schedules) == 0}">
-				    <cti:msg key="yukon.dr.consumer.savedSchedules.noSchedules" />
-	        </c:when>
-            <c:otherwise>
-				<form method="post" action="/spring/stars/consumer/thermostat/schedule/saved">
+	
+		<form method="post" action="/spring/stars/consumer/thermostat/schedule/saved">
+		    
+		    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
+		    
+		    <c:choose>
+		    
+		    	<%-- no saved schedules --%>
+			    <c:when test="${fn:length(schedules) == 0}">
+			    	
+			    	<cti:msg key="yukon.dr.consumer.savedSchedules.noSchedules" />
+			    	
+			    	<br><br>
+			    	
+			    	<cti:msg2 var="createNewText" key="yukon.dr.consumer.savedSchedules.createNewSchedule" />
+				    <input type="submit" name="createNew" value="${createNewText}">
 				    
-				    <input type="hidden" name="thermostatIds" value="${thermostatIds}">
-				    
-				    <cti:msg key="yukon.dr.consumer.savedSchedules.chooseSchedule" />
+		      	</c:when>
+		      	
+		      	<%-- have saved schedules --%>
+		      	<c:otherwise>
+		      	
+		      		<cti:msg key="yukon.dr.consumer.savedSchedules.chooseSchedule" />
 				    <select name="scheduleId">
 				        <c:forEach var="schedule" items="${schedules}">
-				            <option value="${schedule.id}"><spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody></option>
+				        	<option value="${schedule.accountThermostatScheduleId}" <c:if test="${schedule.accountThermostatScheduleId == currentScheduleId}">selected</c:if>>
+				            	<spring:escapeBody htmlEscape="true">${schedule.scheduleName}</spring:escapeBody>
+				            </option>
 				        </c:forEach>
 				    </select>
 				    
@@ -35,11 +49,19 @@
 				    
 				    <cti:msg var="viewText" key="yukon.dr.consumer.savedSchedules.viewSchedule" />
 				    <input type="submit" name="view" value="${viewText}">
+				    
+				    <cti:msg2 var="createNewText" key="yukon.dr.consumer.savedSchedules.createNewSchedule" />
+				    <input type="submit" name="createNew" value="${createNewText}">
+				    
 				    <cti:msg var="deleteText" key="yukon.dr.consumer.savedSchedules.deleteSchedule" />
 				    <input type="submit" name="delete" value="${deleteText}">
-				</form>
-            </c:otherwise>
-        </c:choose>
+		      	
+		      	</c:otherwise>
+	      	
+	      	</c:choose>
+		    
+		</form>
+		
 	</div>
 
 </cti:standardPage>

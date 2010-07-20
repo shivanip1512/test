@@ -17,6 +17,7 @@ import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
 
 public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
@@ -33,6 +34,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     private ThermostatScheduleDao thermostatScheduleDao;
     private LMHardwareEventDao lmHardwareEventDao;
     private InventoryBaseDao inventoryBaseDao;
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
     
     static {
         updateSql = "UPDATE LMHardwareBase SET ManufacturerSerialNumber = ?, LMHardwareTypeID = ?, RouteID = ?, ConfigurationID = ? WHERE InventoryID = ?";
@@ -108,7 +110,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     @Transactional
     public void clearLMHardwareInfo(Integer inventoryId) {
         lmHardwareConfigurationDao.delete(inventoryId);
-        thermostatScheduleDao.deleteScheduleForInventory(inventoryId);
+        accountThermostatScheduleDao.deleteByInventoryId(inventoryId);
         thermostatScheduleDao.deleteManualEvents(inventoryId);
         lmHardwareEventDao.deleteHardwareToMeterMapping(inventoryId);
         inventoryBaseDao.uninstallInventory(inventoryId);
@@ -153,5 +155,9 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
         this.inventoryBaseDao = inventoryBaseDao;
     }
-    
+ 
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+	}
 }

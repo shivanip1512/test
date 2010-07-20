@@ -14,9 +14,10 @@ var currentTimePeriod = 'WEEKDAY';
 var currentScheduleMode = 'WEEKDAY_SAT_SUN';
 
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
-var lowerLimit = 50;  //always specified in fahrenheit
-var upperLimit = 90;  //always specified in fahrenheit
-var defaultTemp = 72;
+var lowerLimitCool;  //always specified in fahrenheit, to be set by view init based on selected thermostat type
+var upperLimitCool;
+var lowerLimitHeat;
+var upperLimitHeat;
 
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];
 var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
@@ -90,14 +91,14 @@ function showTime(s, txt, idx) {
 function handleUpdateCoolTemp(idx) {
   var a = document.getElementById(tempCArrows[idx]);
   var curPos = parseInt(a.style.top, 10);
-  var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimit - lowerLimit)) + lowerLimit;
+  var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimitCool - lowerLimitCool)) + lowerLimitCool;
   showTemp(idx, temp, coolMode);
 }
 
 function handleUpdateHeatTemp(idx, mode) {
 	var a = document.getElementById(tempHArrows[idx]);
 	var curPos = parseInt(a.style.top, 10);
-	var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimit - lowerLimit)) + lowerLimit;
+	var temp = Math.floor((arrowBottomBnd - curPos) / thermometerLen * (upperLimitHeat - lowerLimitHeat)) + lowerLimitHeat;
 	showTemp(idx, temp, heatMode);
 }
 
@@ -111,7 +112,8 @@ function showTemp(idx, tempF, mode) {
   
 }
 
-function moveTempArrow(divIdArrow, newTemp) {
+function moveTempArrow(divIdArrow, newTemp, lowerLimit, upperLimit) {
+	
   var arrow = $(divIdArrow);
   if (newTemp > upperLimit) {
     newTemp = upperLimit;
@@ -124,12 +126,14 @@ function moveTempArrow(divIdArrow, newTemp) {
 }
 
 function moveTempArrows(idx, tempC, tempH) {
+	
   if (tempC) {
-    moveTempArrow(tempCArrows[idx], tempC);
+    moveTempArrow(tempCArrows[idx], tempC, lowerLimitCool, upperLimitCool);
     showTemp(idx, tempC, coolMode);
   }
+  
   if (tempH) {
-    moveTempArrow(tempHArrows[idx], tempH);
+    moveTempArrow(tempHArrows[idx], tempH, lowerLimitHeat, upperLimitHeat);
     showTemp(idx, tempH, heatMode);
   }
 }
@@ -249,13 +253,49 @@ function timeChange(t, idx) {
 }
 
 function tempChange(idx, mode) {
+	
   var fields = (mode == coolMode) ? tempCArrows : tempHArrows;
   var inputFields = (mode == coolMode) ? tempCInputFields : tempHInputFields;
-  validateTemp(inputFields[idx]);
+  
+  var lowerLimit = (mode == coolMode) ? lowerLimitCool : lowerLimitHeat;
+  var upperLimit = (mode == coolMode) ? upperLimitCool : upperLimitHeat;
+  
+  validateTemp(inputFields[idx], idx, mode);
+  
   var temp = getFahrenheitTemp($(inputFields[idx]).value, tempUnit);
-  moveTempArrow(fields[idx], temp);
+  moveTempArrow(fields[idx], temp, lowerLimit, upperLimit);
   showTemp(idx, temp, mode);
-} 
+}
+
+function validateTemp(input, idx, mode) {
+    
+    var currentTemp = $F(input);
+    var currentTempUnit = tempUnit;
+    
+    var lowerLimit = (mode == coolMode) ? lowerLimitCool : lowerLimitHeat;
+	var upperLimit = (mode == coolMode) ? upperLimitCool : upperLimitHeat;
+    
+    if(isNaN(currentTemp)){
+    	
+    	var existingTempInputFields = (mode == coolMode) ? tempCFields : tempHFields;
+        currentTemp = $F(existingTempInputFields[idx]);
+    }
+        
+    // Convert current temp to fahrenheit if needed for validation
+    var fTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
+    
+    if(fTemp < lowerLimit) {
+        fTemp = lowerLimit; 
+    } else if(fTemp > upperLimit) {
+        fTemp = upperLimit; 
+    }
+    
+    // Convert current temp to celsius if needed
+    fTemp = getConvertedTemp(fTemp, currentTempUnit);
+    
+    $(input).value = fTemp;
+    
+}
 
 
 function setTempUnits(newUnit){
@@ -356,7 +396,7 @@ function getCurrentSchedule(timePeriod) {
 }
 
 function setCurrentSchedule(timePeriod) {
-
+	
     // Get the array of time/temp for the current coolHeat setting and timePeriod
     var timeTempArray = schedules['season'][timePeriod];
 
@@ -403,12 +443,6 @@ function $RF(radioId) {
 
 function changeTimePeriod(timePeriod) {
 
-    if(!alertSaveSchedule()) {
-        return;
-    }
-
-    $('timeOfWeek').value = timePeriod;
-    
     // Store the current settings and update the UI to the settings for the selected timePeriod
     getCurrentSchedule(currentTimePeriod);
     setCurrentSchedule(timePeriod);
@@ -489,31 +523,6 @@ function updateTimePeriodUI() {
     	}
     }
 	
-}
-
-function validateTemp(input) {
-    
-    var currentTemp = $F(input);
-    var currentTempUnit = tempUnit;
-    
-    if(isNaN(currentTemp)){
-        currentTemp = defaultTemp;
-    }
-        
-    // Convert current temp to fahrenheit if needed for validation
-    var fTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
-    
-    if(fTemp < lowerLimit) {
-        fTemp = lowerLimit; 
-    } else if(fTemp > upperLimit) {
-        fTemp = upperLimit; 
-    }
-    
-    // Convert current temp to celsius if needed
-    fTemp = getConvertedTemp(fTemp, currentTempUnit);
-    
-    $(input).value = fTemp;
-    
 }
 
 var viewHasChanged = false;

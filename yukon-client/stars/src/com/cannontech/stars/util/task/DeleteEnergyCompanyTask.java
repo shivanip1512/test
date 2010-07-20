@@ -30,7 +30,7 @@ import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.web.action.AccountAction;
 import com.cannontech.stars.web.util.StarsAdminUtil;
@@ -220,11 +220,11 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 			ECToGenericMapping[] schedules = ECToGenericMapping.getAllMappingItems(
 					energyCompany.getEnergyCompanyID(), "LMThermostatSchedule");
 			if (schedules != null) {
-				ThermostatScheduleDao thermostatScheduleDao = 
-		    		YukonSpringHook.getBean("thermostatScheduleDao", ThermostatScheduleDao.class);
+				AccountThermostatScheduleDao accountThermostatScheduleDao = 
+		    		YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
 				for (int i = 0; i < schedules.length; i++) {
 					int scheduleId = schedules[i].getItemID();
-					thermostatScheduleDao.delete(scheduleId);
+					accountThermostatScheduleDao.deleteById(scheduleId);
 				}
 			}
 			

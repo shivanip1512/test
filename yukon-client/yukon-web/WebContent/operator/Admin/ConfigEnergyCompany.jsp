@@ -58,7 +58,8 @@
 %>
 
 <%@page import="com.google.common.collect.Sets"%>
-<%@page import="com.cannontech.database.data.lite.LiteYukonGroup"%><html>
+<%@page import="com.cannontech.database.data.lite.LiteYukonGroup"%>
+<%@page import="com.cannontech.stars.dr.hardware.model.SchedulableThermostatType"%><html>
 <head>
 <title>Energy Services Operations Center</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -700,14 +701,16 @@ function deleteWarehouse(form, warehouseId) {
         List<HardwareType> hardwareTypeList = liteEC.getAvailableThermostatTypes();
 		for (HardwareType hardwareType : hardwareTypeList) {
 
+			SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.getByHardwareType(hardwareType);
+			
 %>
                                 <tr> 
                                   <td width="5%">&nbsp;</td>
                                   <td width="70%">
-                                    <cti:msg key="<%= hardwareType.getDisplayKey() %>"></cti:msg>
+                                    <cti:msg key="<%= schedulableThermostatType.getHardwareType().getDisplayKey() %>"></cti:msg>
                                   </td>
                                   <td width="25%"> 
-                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = 'ThermSchedule.jsp?type=<%= hardwareType.toString() %>'">
+                                    <input type="button" name="Edit2" value="Edit" onclick="location.href = 'ThermSchedule.jsp?type=<%= schedulableThermostatType.toString() %>'">
                                   </td>
                                 </tr>
                                 <%

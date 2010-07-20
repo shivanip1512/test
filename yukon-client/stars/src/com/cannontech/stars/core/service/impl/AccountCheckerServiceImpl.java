@@ -23,20 +23,21 @@ import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.util.StarsUtils;
+import com.google.common.collect.Lists;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
     private final Logger logger = YukonLogManager.getLogger(AccountCheckerServiceImpl.class);
     private CustomerAccountDao customerAccountDao;
-    private ThermostatScheduleDao thermostatScheduleDao;
     private InventoryBaseDao inventoryBaseDao;
     private ContactDao contactDao;
     private ApplianceCategoryDao applianceCategoryDao;
     private ApplianceDao applianceDao;
     private ProgramDao programDao;
     private GraphDao graphDao;
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
     
     @Override
     public void checkInventory(final LiteYukonUser user, final Integer... inventoryIds)
@@ -66,9 +67,11 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         
         if (badScheduleIds.size() == 0) return;
         
-        final List<Integer> inventoryIds = 
-            thermostatScheduleDao.getInventoryIdsForSchedules(badScheduleIds.toArray(
-                new Integer[badScheduleIds.size()]));
+        List<Integer> inventoryIds = Lists.newArrayList();
+        for (int badScheduleId : badScheduleIds) {
+        	
+        	inventoryIds.addAll(accountThermostatScheduleDao.getThermostatIdsUsingSchedule(badScheduleId));
+        }
 
         checkInventory(user, inventoryIds.toArray(new Integer[inventoryIds.size()]));
     }
@@ -313,15 +316,15 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     private List<Integer> getScheduleIdsByUser(LiteYukonUser user) {
-        final int accountId = getCustomerAccountId(user);
-        final List<ScheduleDropDownItem> schedules = 
-            thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId);
-
-        final List<Integer> scheduleIdList = new ArrayList<Integer>(schedules.size());
         
-        for (final ScheduleDropDownItem item : schedules) {
-            Integer id = item.getId();
-            scheduleIdList.add(id);
+    	int accountId = getCustomerAccountId(user);
+        
+        List<AccountThermostatSchedule> allSchedulesForAccount = accountThermostatScheduleDao.getAllSchedulesForAccountByType(accountId, null);
+        
+        List<Integer> scheduleIdList = Lists.newArrayListWithCapacity(allSchedulesForAccount.size());
+        for (AccountThermostatSchedule schedule : allSchedulesForAccount) {
+        	int scheduleId = schedule.getAccountThermostatScheduleId();
+        	scheduleIdList.add(scheduleId);
         }
         
         return scheduleIdList;
@@ -357,12 +360,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
     
     @Autowired
-    public void setThermostatScheduleDao(
-            ThermostatScheduleDao thermostatScheduleDao) {
-        this.thermostatScheduleDao = thermostatScheduleDao;
-    }
-    
-    @Autowired
     public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
         this.inventoryBaseDao = inventoryBaseDao;
     }
@@ -393,4 +390,8 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
 		this.graphDao = graphDao;
 	}
 
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
+	}
 }

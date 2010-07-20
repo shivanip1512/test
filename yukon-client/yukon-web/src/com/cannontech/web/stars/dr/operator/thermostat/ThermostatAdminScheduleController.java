@@ -1,6 +1,6 @@
 package com.cannontech.web.stars.dr.operator.thermostat;
 
-import java.util.Locale;
+import java.util.List;
 
 import net.sf.json.JSONObject;
 
@@ -18,9 +18,11 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.stars.dr.hardware.model.HardwareType;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatScheduleEntry;
+import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -34,75 +36,90 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @Controller
 public class ThermostatAdminScheduleController {
 
-    private ThermostatScheduleDao thermostatScheduleDao;
     private StarsDatabaseCache starsDatabaseCache;
     private RolePropertyDao rolePropertyDao;   
     private OperatorThermostatHelper operatorThermostatHelper;
-
+    private AccountThermostatScheduleDao accountThermostatScheduleDao;
+    
     @RequestMapping(value = "/admin/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(String type, YukonUserContext yukonUserContext, ModelMap map) {
 
-    	LiteStarsEnergyCompany energyCompany = 
-    		starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
         
-    	HardwareType thermostatType = HardwareType.valueOf(type);
-        ThermostatSchedule schedule = 
-        	thermostatScheduleDao.getEnergyCompanyDefaultSchedule(energyCompany, thermostatType);
-
-        // Add the temperature unit to model
-        String temperatureUnit = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser());
-        map.addAttribute("temperatureUnit", temperatureUnit);
-
-        // Get json string for schedule and add schedule and string to model
-        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
+    	// AccountThermostatSchedule
+    	SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
+    	AccountThermostatSchedule schedule = accountThermostatScheduleDao.getEnergyCompanyDefaultScheduleByType(energyCompany.getEnergyCompanyID(), schedulableThermostatType);
+    	map.addAttribute("schedule", schedule);
+    	
+    	// schedule52Enabled
+    	boolean schedule52Enabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_THERMOSTAT_SCHEDULE_5_2, yukonUserContext.getYukonUser());
+    	map.addAttribute("schedule52Enabled", schedule52Enabled);
+    	
+    	// adjusted scheduleMode
+    	ThermostatScheduleMode scheduleMode = schedule.getThermostatScheduleMode();
+    	if (scheduleMode == ThermostatScheduleMode.WEEKDAY_WEEKEND && (schedule.getThermostatType() != SchedulableThermostatType.UTILITY_PRO || !schedule52Enabled)) {
+    		scheduleMode = ThermostatScheduleMode.WEEKDAY_SAT_SUN;
+    	}
+    	map.addAttribute("scheduleMode", scheduleMode);
+    	
+    	// temperatureUnit
+    	String temperatureUnit = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.DEFAULT_TEMPERATURE_UNIT, energyCompany.getUser());
+    	map.addAttribute("temperatureUnit", temperatureUnit);
+    	
+    	// scheduleJSON
+    	boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
         JSONObject scheduleJSON = operatorThermostatHelper.getJSONForSchedule(schedule, isFahrenheit);
         map.addAttribute("scheduleJSONString", scheduleJSON.toString());
         map.addAttribute("schedule", schedule);
-
-        Locale locale = yukonUserContext.getLocale();
-        map.addAttribute("localeString", locale.toString());
-
-        map.addAttribute("thermostatType", thermostatType.toString());
-        
+    	
         return "operator/thermostat/adminThermostatSchedule.jsp";
     }
 
     @RequestMapping(value = "/admin/thermostat/schedule/save", method = RequestMethod.POST)
-    public String save(String type, String timeOfWeek, String scheduleMode, String temperatureUnit, 
-    		Integer scheduleId, 
-    		@RequestParam(value="schedules", required=true) String scheduleString,
-    		YukonUserContext yukonUserContext, ModelMap map) 
-    	throws ServletRequestBindingException {
+    public String save(String type,
+    				   String timeOfWeek,
+    				   String scheduleMode,
+    				   String temperatureUnit,
+    				   Integer scheduleId, 
+    				   String scheduleName,
+			    	   @RequestParam(value="schedules", required=true) String scheduleString,
+			    	   YukonUserContext yukonUserContext,
+			    	   ModelMap map) throws ServletRequestBindingException {
 
-    	LiteStarsEnergyCompany energyCompany = 
-    		starsDatabaseCache.getEnergyCompanyByUser(yukonUserContext.getYukonUser());
-        
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
+        ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
 
+        // id
+        AccountThermostatSchedule ats = new AccountThermostatSchedule();
+        ats.setAccountThermostatScheduleId(scheduleId);
+        
         // Create schedule from submitted JSON string
-        ThermostatSchedule newSchedule = operatorThermostatHelper.getScheduleForJSON(scheduleString,
-                                                         isFahrenheit);
-        newSchedule.setId(scheduleId);
+        List<AccountThermostatScheduleEntry> atsEntries = operatorThermostatHelper.getScheduleEntriesForJSON(scheduleString, scheduleId, thermostatScheduleMode, isFahrenheit);
+        ats.setScheduleEntries(atsEntries);
         
-        HardwareType hardwareType = HardwareType.valueOf(type);
-        newSchedule.setThermostatType(hardwareType);
+        // schedulableThermostatType
+        SchedulableThermostatType schedulableThermostatType = SchedulableThermostatType.valueOf(type);
+        ats.setThermostatType(schedulableThermostatType);
         
-        if (hardwareType.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
-        	operatorThermostatHelper.setToTwoTimeTemps(newSchedule);
+        // thermostatScheduleMode
+        ats.setThermostatScheduleMode(thermostatScheduleMode);
+        
+        // COMMERCIAL_EXPRESSSTAT setToTwoTimeTemps
+        if (schedulableThermostatType == SchedulableThermostatType.COMMERCIAL_EXPRESSSTAT) {
+        	operatorThermostatHelper.setToTwoTimeTemps(ats);
         }
+    	
+    	// determine if legacy schedule name should be changed 
+        String useScheduleName = operatorThermostatHelper.generateDefaultNameForUnnamedSchdule(ats, null, yukonUserContext);
+        ats.setScheduleName(useScheduleName);
 
         // Save changes to schedule
-        thermostatScheduleDao.saveDefaultSchedule(newSchedule, energyCompany);
+        accountThermostatScheduleDao.save(ats);
 
         map.addAttribute("type", type);
         return "redirect:/operator/Admin/ThermSchedule.jsp";
     }
     
-    @Autowired
-    public void setThermostatScheduleDao(
-            ThermostatScheduleDao thermostatScheduleDao) {
-        this.thermostatScheduleDao = thermostatScheduleDao;
-    }
 
     @Autowired
     public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
@@ -117,5 +134,10 @@ public class ThermostatAdminScheduleController {
     @Autowired
     public void setOperatorThermostatHelper(OperatorThermostatHelper operatorThermostatHelper) {
 		this.operatorThermostatHelper = operatorThermostatHelper;
+	}
+    
+    @Autowired
+    public void setAccountThermostatScheduleDao(AccountThermostatScheduleDao accountThermostatScheduleDao) {
+		this.accountThermostatScheduleDao = accountThermostatScheduleDao;
 	}
 }

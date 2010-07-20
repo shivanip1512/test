@@ -1,10 +1,10 @@
 package com.cannontech.stars.dr.thermostat.service;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
+import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
@@ -27,39 +27,16 @@ public interface ThermostatService {
             YukonUserContext userContext);
 
     /**
-     * Method used to save updates to a thermostat schedule
-     * @param account - Account schedule is on
-     * @param schedule - Schedule to be updated
-     * @param timeOfWeek - Time of week in the schedule to be updated
-     * @param applyToAll - True if schedule should be applied to all time of
-     *            weeks
-     * @param userContext - User context for user updating schedule
-     */
-    public void updateSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
-            ThermostatScheduleMode scheduleMode, YukonUserContext userContext);
-
-    /**
-     * Method used to send a schedule to a thermostat
-     * @param account - Account thermostat is on
-     * @param schedule - Schedule to be sent
-     * @param timeOfWeek - Time of week in the schedule to be sent
-     * @param thermostatScheduleMode - Current schedule mode 
-     * @param applyToAll - True if schedule should be applied to all time of
-     *            weeks
-     * @param userContext - User context for user sending schedule
+     * Sends commands to thermostat for given thermostat schedule information.
      */
     public ThermostatScheduleUpdateResult sendSchedule(CustomerAccount account,
-            ThermostatSchedule schedule, TimeOfWeek timeOfWeek,
+            AccountThermostatSchedule schedule, int thermostatId, TimeOfWeek timeOfWeek,
             ThermostatScheduleMode scheduleMode, YukonUserContext userContext);
 
     /**
-     * Method to get the current schedule for a given thermostat
-     * @param thermostat - Thermostat in question
-     * @param accountId - Account id for thermostat
-     * @return The current schedule or the energy company default schedule for
-     *         the thermostat type if the thermostat doesn't have a schedule
+     * Gets an AccountThermostatSchedule based off the energy comany default schdule for the given type.
+     * The AccountThermostatSchedule is set to -1 (so it is ready to be inserted when it is saved). Do not set this.
+     * The AccountThermostatSchedule accountId and name are also blank and should be set before saving.
      */
-    public ThermostatSchedule getThermostatSchedule(Thermostat thermostat,
-            CustomerAccount account);
+    public AccountThermostatSchedule getAccountThermostatScheduleTemplate(int accountId, SchedulableThermostatType type);
 }

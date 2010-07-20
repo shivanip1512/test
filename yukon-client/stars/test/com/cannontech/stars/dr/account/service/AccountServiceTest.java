@@ -61,7 +61,7 @@ import com.cannontech.stars.dr.event.dao.EventAccountDao;
 import com.cannontech.stars.dr.event.dao.LMProgramEventDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 
 public class AccountServiceTest {
     
@@ -87,7 +87,7 @@ public class AccountServiceTest {
     private ApplianceDao applianceDaoMock;
     private StarsWorkOrderBaseDao workOrderDaoMock;
     private CallReportDao callReportDaoMock;
-    private ThermostatScheduleDao thermostatScheduleDaoMock;
+    private AccountThermostatScheduleDao accountThermostatScheduleDaoMock;
     private EventAccountDao eventAccountDaoMock;
     private StarsCustAccountInformationDao starsCustAccountInformationDaoMock;
     private DBPersistentDao dbPersistantDaoMock;
@@ -113,7 +113,7 @@ public class AccountServiceTest {
         applianceDaoMock = createMock(ApplianceDao.class);
         workOrderDaoMock = createMock(StarsWorkOrderBaseDao.class);
         callReportDaoMock = createMock(CallReportDao.class);
-        thermostatScheduleDaoMock = createMock(ThermostatScheduleDao.class);
+        accountThermostatScheduleDaoMock = createMock(AccountThermostatScheduleDao.class);
         eventAccountDaoMock = createMock(EventAccountDao.class);
         starsCustAccountInformationDaoMock = createMock(StarsCustAccountInformationDao.class);
         dbPersistantDaoMock = createNiceMock(DBPersistentDao.class);
@@ -138,7 +138,7 @@ public class AccountServiceTest {
         accountService.setApplianceDao(applianceDaoMock);
         accountService.setWorkOrderDao(workOrderDaoMock);
         accountService.setCallReportDao(callReportDaoMock);
-        accountService.setThermostatScheduleDao(thermostatScheduleDaoMock);
+        accountService.setAccountThermostatScheduleDao(accountThermostatScheduleDaoMock);
         accountService.setEventAccountDao(eventAccountDaoMock);
         accountService.setStarsCustAccountInformationDao(starsCustAccountInformationDaoMock);
         accountService.setDBPersistentDao(dbPersistantDaoMock);
@@ -175,7 +175,7 @@ public class AccountServiceTest {
         replay(applianceDaoMock);
         replay(workOrderDaoMock);
         replay(callReportDaoMock);
-        replay(thermostatScheduleDaoMock);
+        replay(accountThermostatScheduleDaoMock);
         replay(eventAccountDaoMock);
         replay(starsCustAccountInformationDaoMock);
         replay(dbPersistantDaoMock);
@@ -307,7 +307,7 @@ public class AccountServiceTest {
         replay(applianceDaoMock);
         replay(workOrderDaoMock);
         replay(callReportDaoMock);
-        replay(thermostatScheduleDaoMock);
+        replay(accountThermostatScheduleDaoMock);
         replay(eventAccountDaoMock);
         replay(starsCustAccountInformationDaoMock);
         replay(dbPersistantDaoMock);

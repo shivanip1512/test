@@ -4,7 +4,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 
 /**
  * <p>Title: </p>
@@ -40,9 +40,9 @@ public class LMHardwareBase extends InventoryBase {
 		com.cannontech.database.db.stars.hardware.LMHardwareConfiguration.deleteAllLMHardwareConfiguration( inventoryID );
 		
 		// delete from LMThermostatSchedule
-		ThermostatScheduleDao thermostatScheduleDao = 
-    		YukonSpringHook.getBean("thermostatScheduleDao", ThermostatScheduleDao.class);
-		thermostatScheduleDao.deleteScheduleForInventory(inventoryID);
+		AccountThermostatScheduleDao accountThermostatScheduleDao = 
+    		YukonSpringHook.getBean("accountThermostatScheduleDao", AccountThermostatScheduleDao.class);
+		accountThermostatScheduleDao.deleteByInventoryId(inventoryID);
 		
 		// delete from LMThermostatManualEvent
 		com.cannontech.database.data.stars.event.LMThermostatManualEvent.deleteAllLMThermostatManualEvents( inventoryID );
