@@ -72,7 +72,7 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append("SELECT COUNT(*)");
         sql.append("FROM LMHardwareControlGroup");
         sql.append("WHERE AccountId").eq(accountId);
-        sql.append("  AND Type").eq(1);
+        sql.append("  AND Type = 1");
         sql.append("  AND GroupEnrollStop IS NULL");
         
         int activeEnrollments = yukonJdbcTemplate.queryForInt(sql);
