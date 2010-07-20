@@ -305,9 +305,9 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_LCR_ProgramAddressRelay3,   &_key_lcr_relay3_program_address));
     retval.insert(make_pair(Key_LCR_ProgramAddressRelay4,   &_key_lcr_relay4_program_address));
     retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay1_splinter_address));
-    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay2_splinter_address));
-    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay3_splinter_address));
-    retval.insert(make_pair(Key_LCR_SplinterAddressRelay1,  &_key_lcr_relay4_splinter_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay2,  &_key_lcr_relay2_splinter_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay3,  &_key_lcr_relay3_splinter_address));
+    retval.insert(make_pair(Key_LCR_SplinterAddressRelay4,  &_key_lcr_relay4_splinter_address));
 
     return retval;
 }
@@ -514,8 +514,8 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
             << tmp_value.c_str()
             << CtiTime::now()
             << getPaoID()
-            << tmp_owner->data()
-            << tmp_key->data();
+            << *tmp_owner
+            << *tmp_key;
 
         success      = updater.execute();
         rowsAffected = updater.rowsAffected();
