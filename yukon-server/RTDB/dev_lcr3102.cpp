@@ -808,6 +808,28 @@ INT LCR3102::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         string results;
 
+        if(DSt->Message[0] == 0xff)
+        {
+            // The device responded with an error device...possibly. Alert the user that this may be the case.
+            int sspec = DSt->Message[1];
+            int rev   = DSt->Message[2];
+
+            string errorMessage; 
+
+            errorMessage += getName()
+                         + " received a possible error report message from the device: "
+                         + "\n"
+                         + "\tSoftware Spec: " + CtiNumStr(sspec)
+                         + "\n"
+                         + "\tRevision: " + CtiNumStr(((double)rev) / 10.0, 1) 
+                         + "\n";
+
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " " << errorMessage << endl;
+
+            results += errorMessage + "\n";
+        }
+
         int rawloc = parse.getiValue("rawloc");
 
         int rawlen = parse.isKeyValid("rawlen")
