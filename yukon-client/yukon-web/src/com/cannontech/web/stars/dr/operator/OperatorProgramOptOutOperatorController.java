@@ -166,9 +166,6 @@ public class OperatorProgramOptOutOperatorController {
                        FlashScope flashScope,
                        AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
 
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-        
         // Check to see if the user can only opt out today.  If so set the start date to today.
         boolean isOptOutTodayOnly = 
             rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, 
@@ -222,9 +219,6 @@ public class OperatorProgramOptOutOperatorController {
                                    AccountInfoFragment accountInfoFragment)
             throws ServletRequestBindingException, CommandCompletionException {
 
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-        
         String[] inventoryIdsArr = ServletRequestUtils.getStringParameters(request, "inventoryIds");
         
         if (inventoryIdsArr.length < 1) {
@@ -276,9 +270,6 @@ public class OperatorProgramOptOutOperatorController {
                            YukonUserContext yukonUserContext,
                            AccountInfoFragment accountInfoFragment) {
 
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       yukonUserContext.getYukonUser());
-                
         List<String> questions = 
             OptOutControllerHelper.getConfirmQuestions(messageSourceResolver, 
                                                        yukonUserContext,
@@ -316,9 +307,6 @@ public class OperatorProgramOptOutOperatorController {
                           YukonUserContext userContext,
                           FlashScope flashScope,
                           AccountInfoFragment accountInfoFragment) throws Exception {
-
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
 
         // get the list of inventory ids
         String inventoryIdsStr = 
@@ -462,10 +450,7 @@ public class OperatorProgramOptOutOperatorController {
                                 ModelMap modelMap,
                                 YukonUserContext yukonUserContext,
                                 AccountInfoFragment accountInfoFragment) throws Exception {
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       yukonUserContext.getYukonUser());
-        
+
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkEventAgainstAccount(eventId, customerAccount);
@@ -544,9 +529,6 @@ public class OperatorProgramOptOutOperatorController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -585,10 +567,7 @@ public class OperatorProgramOptOutOperatorController {
                           ModelMap modelMap,
                           YukonUserContext yukonUserContext,
                           AccountInfoFragment accountInfoFragment) throws Exception {
-        
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       yukonUserContext.getYukonUser());
-        
+
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -629,9 +608,6 @@ public class OperatorProgramOptOutOperatorController {
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) {
 
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);

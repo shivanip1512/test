@@ -9,87 +9,82 @@
 
 <cti:standardPage module="operator" page="optOut.main">
 
-<cti:msg2 var="confirmDialogTitle" key=".confirmDialogTitle"/>
-<tags:simpleDialog id="confirmDialog" title="${confirmDialogTitle}"/>
+<!-- Helper Popup -->
+<c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
+<c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
+<cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
+<i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
+    <table >
+        <tr><td>
+            <cti:img key="allowOne"/>
+        </td><td>
+            <i:inline key=".allowOneIconText" />
+        </td></tr>
+        <tr height="6px"></tr>
+        <tr><td>
+            <cti:img key="resetToLimit"/>
+        </td><td>
+            <i:inline key=".resetToLimitIconText" />
+        </td></tr>
+    </table>
+</i:simplePopup>
 
-<cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-    <!-- Helper Popup -->
-    <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
-    <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
-    <cti:uniqueIdentifier var="uniqueId" prefix="helpInfoPopup_"/>
-    <i:simplePopup id="${uniqueId}" titleKey=".helpInfoTitle">
-        <table >
-            <tr><td>
-                <cti:img key="allowOne"/>
-            </td><td>
-                <i:inline key=".allowOneIconText" />
-            </td></tr>
-            <tr height="6px"></tr>
-            <tr><td>
-                <cti:img key="resetToLimit"/>
-            </td><td>
-                <i:inline key=".resetToLimitIconText" />
-            </td></tr>
-        </table>
-    </i:simplePopup>
+<!-- Create an opt out -->
+<tags:boxContainer2 nameKey="optOuts">
+    <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
+        <i:inline key=".noOptOutsAvailable"/>
+        <br/>
+    </c:if>
     
-    <!-- Create an opt out -->
-    <tags:boxContainer2 nameKey="optOuts">
-        <c:if test="${!empty currentOptOutList && !optOutsAvailable}">
-            <i:inline key=".noOptOutsAvailable"/>
-            <br/>
-        </c:if>
-        
-        <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
-            <i:inline key=".description"/><br><br>
-        </cti:checkRolesAndProperties>
-        
-        <form:form id="optOutForm" action="/spring/stars/operator/program/optOut/deviceSelection" 
-                   commandName="optOutBackingBean">
-        
-        	<input type="hidden" name="accountId" value="${accountId}" />
-        
-        	<tags:nameValueContainer2>
-        	
-                <tags:nameValue2 nameKey=".startDate">
-                    <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_TODAY_ONLY">
-                        <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" 
-                                         var="formattedDate"/>
-                        <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
-                    </cti:checkRolesAndProperties>
-                    <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
-                        <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" 
-                                                springInput="true" />
-                    </cti:checkRolesAndProperties>
-                </tags:nameValue2>
-        	
-        		<tags:nameValue2 nameKey=".duration">
-                    <c:choose>
-                        <c:when test="${fn:length(optOutPeriodList) > 1}">
-            				<select name="durationInDays">
-                                <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
-                                   <option value="${optOutPeriod}">
-                                       <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
-                                   </option>
-                                </c:forEach>
-                            </select>
-                        </c:when>
-                        <c:otherwise>
+    <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
+        <i:inline key=".description"/><br><br>
+    </cti:checkRolesAndProperties>
+    
+    <form:form id="optOutForm" action="/spring/stars/operator/program/optOut/deviceSelection" 
+               commandName="optOutBackingBean">
+    
+    	<input type="hidden" name="accountId" value="${accountId}" />
+    
+    	<tags:nameValueContainer2>
+    	
+            <tags:nameValue2 nameKey=".startDate">
+                <cti:checkRolesAndProperties value="OPERATOR_OPT_OUT_TODAY_ONLY">
+                    <cti:formatDate  value="${optOutBackingBean.startDate}" type="DATE" 
+                                     var="formattedDate"/>
+                    <spring:escapeBody htmlEscape="true">${formattedDate}</spring:escapeBody>
+                </cti:checkRolesAndProperties>
+                <cti:checkRolesAndProperties value="!OPERATOR_OPT_OUT_TODAY_ONLY">
+                    <tags:dateInputCalendar fieldName="startDate" fieldValue="${formattedDate}" 
+                                            springInput="true" />
+                </cti:checkRolesAndProperties>
+            </tags:nameValue2>
+    	
+    		<tags:nameValue2 nameKey=".duration">
+                <c:choose>
+                    <c:when test="${fn:length(optOutPeriodList) > 1}">
+        				<select name="durationInDays">
                             <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
-                                <input type="hidden" name="durationInDays" value="${optOutPeriod}" />
-                                <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
+                               <option value="${optOutPeriod}">
+                                   <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
+                               </option>
                             </c:forEach>
-                        </c:otherwise>
-                    </c:choose>
-                
-                </tags:nameValue2>
-        	</tags:nameValueContainer2>
-            <br>
-            <input type="submit" value="<cti:msg2 key=".optOut"/>" class="formSubmit">
-        </form:form>
-    </tags:boxContainer2>
-    <br><br>
-</cti:checkRolesAndProperties>
+                        </select>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="optOutPeriod" items="${optOutPeriodList}">
+                            <input type="hidden" name="durationInDays" value="${optOutPeriod}" />
+                            <i:inline key=".optOutDays" arguments="${optOutPeriod}" />
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            
+            </tags:nameValue2>
+    	</tags:nameValueContainer2>
+        <br>
+        <input type="submit" value="<cti:msg2 key=".optOut"/>" class="formSubmit">
+    </form:form>
+</tags:boxContainer2>
+<br><br>
 
 <!-- Current Opt Outs -->
 <tags:boxContainer2 nameKey="currentOptOuts">
@@ -101,9 +96,7 @@
                 <th><i:inline key=".program"/></th>
                 <th><i:inline key=".status"/></th>
                 <th><i:inline key=".dateActive"/></th>
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                    <th class="nonwrapping"><i:inline key=".actions"/></th>
-                </cti:checkRolesAndProperties>
+                <th class="nonwrapping"><i:inline key=".actions"/></th>
             </tr>
             
             <c:forEach var="optOut" items="${currentOptOutList}">
@@ -129,32 +122,31 @@
                     <td valign="top" class="nonwrapping">
                         <cti:formatDate value="${optOut.startDate}" type="DATEHM"/>
                     </td>
-                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                        <td valign="top">
-    
-                            <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/confirmCancelOptOut">
-                                <cti:param name="accountId" value="${accountId}"/>
-                                <cti:param name="eventId" value="${optOut.eventId}"/>
-                                <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}"/>
-                            </cti:url>
-                            <cti:img key="cancelOptOut"
-                                href="javascript:openSimpleDialog('confirmDialog', '${cancelOptOutUrl}')"/>                        
+                    <td valign="top">
 
-                            <c:choose>
-                                <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                    <cti:url var="resendUrl" value="/spring/stars/operator/program/optOut/confirmResend">
-                                        <cti:param name="accountId" value="${accountId}"/>
-                                        <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
-                                    </cti:url>
-                                    <cti:img key="resendOptOut"
-                                        href="javascript:openSimpleDialog('confirmDialog', '${resendUrl}')"/>                        
-                                </c:when>
-                                <c:otherwise>
-                                    <cti:img key="resendOptOutDisabled"/>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                    </cti:checkRolesAndProperties>
+                        <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/cancelOptOut">
+                            <cti:param name="accountId" value="${accountId}"/>
+                            <cti:param name="eventId" value="${optOut.eventId}" />
+                        </cti:url>
+                        <i:simpleLink actionUrl="${cancelOptOutUrl}" 
+                                      logoKey="cancelOptOut"/>
+
+                        <c:choose>
+                            <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
+                                <cti:url var="resendOptOutUrl" value="/spring/stars/operator/program/optOut/repeat">
+                                    <cti:param name="accountId" value="${accountId}"/>
+                                    <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
+                                    <cti:param name="eventId" value="${optOut.eventId}" />
+                                </cti:url>
+
+                                <i:simpleLink actionUrl="${resendOptOutUrl}" 
+                                              logoKey="resendOptOut"/>
+                            </c:when>
+                            <c:otherwise>
+                                <cti:img key="resendOptOutDisabled"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
                 </tr>
             </c:forEach>
         </table>
@@ -176,16 +168,14 @@
                 <th><i:inline key=".device"/></th>
                 <th><i:inline key=".used"/></th>
                 <th><i:inline key=".remaining"/></th>
-                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                    <c:if test="${!noOptOutLimits}">
-                        <th><i:inline key=".actions"/>
-                            <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
-                                <img src="${help}" onmouseover="javascript:this.src='${helpOver}'" 
-                                                   onmouseout="javascript:this.src='${help}'">
-                            </a>
-                        </th>
-                    </c:if>
-                </cti:checkRolesAndProperties>
+                <c:if test="${!noOptOutLimits}">
+                    <th><i:inline key=".actions"/>
+                        <a href="javascript:void(0);" onclick="$('${uniqueId}').toggle();">
+                            <img src="${help}" onmouseover="javascript:this.src='${helpOver}'" 
+                                               onmouseout="javascript:this.src='${help}'">
+                        </a>
+                    </th>
+                </c:if>
             </tr>
             
             <c:forEach var="inventory" items="${displayableInventories}">
@@ -202,45 +192,32 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-                    <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING" >
-                        <td>
-                            <c:if test="${!noOptOutLimits}">
-                                <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/confirmAllowAnother">
-                                    <cti:param name="accountId" value="${accountId}"/>
-                                    <cti:param name="inventoryId" value="${inventory.inventoryId}" />
-                                </cti:url>
-                                <cti:img key="allowOne"
-                                    href="javascript:openSimpleDialog('confirmDialog', '${allowAnotherUrl}')"/>                        
-
-                                <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts > 0}">
-                                    <cti:url var="decrementAllowancesUrl" value="/spring/stars/operator/program/optOut/confirmDecrementAllowances">
+                    <td>
+                        <c:if test="${!noOptOutLimits}">
+                    
+                            <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
+                                <cti:param name="accountId" value="${accountId}"/>
+                                <cti:param name="inventoryId" value="${inventory.inventoryId}" />
+                            </cti:url>
+        
+                            <i:simpleLink actionUrl="${allowAnotherUrl}" logoKey="allowOne"/>
+                            <c:choose>
+        	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
+                                    <cti:img key="resetToLimitDisabled"/>
+        	                    </c:when>
+        	                    <c:otherwise> 
+        
+                                    <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
                                         <cti:param name="accountId" value="${accountId}"/>
                                         <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                                     </cti:url>
-                                    <cti:img key="decrementAllowance"
-                                        href="javascript:openSimpleDialog('confirmDialog', '${decrementAllowancesUrl}')"/>                        
-                                </c:if>
-                                <c:if test="${optOutCounts[inventory.inventoryId].remainingOptOuts <= 0}">
-                                    <cti:img key="decrementAllowanceDisabled"/>
-                                </c:if>
-
-                                <c:choose>
-            	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
-                                        <cti:img key="resetToLimitDisabled"/>
-            	                    </c:when>
-            	                    <c:otherwise> 
-                                        <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/confirmResetToLimit">
-                                            <cti:param name="accountId" value="${accountId}"/>
-                                            <cti:param name="inventoryId" value="${inventory.inventoryId}" />
-                                        </cti:url>
-                                        <cti:img key="resetToLimit"
-                                            href="javascript:openSimpleDialog('confirmDialog', '${resetToLimitUrl}')"/>                        
-              	                   </c:otherwise>
-            	                </c:choose>
-                                                 
-                            </c:if>
-                        </td>
-                    </cti:checkRolesAndProperties>
+        
+                                    <i:simpleLink actionUrl="${resetToLimitUrl}" logoKey="resetToLimit"/>
+          	                   </c:otherwise>
+        	                </c:choose>
+                                             
+                        </c:if>
+                    </td>
                 </tr>
             </c:forEach>
         </table>
