@@ -168,16 +168,16 @@ public class EnrollmentHelperServiceImpl implements EnrollmentHelperService {
         }
         
         if (enrollmentEnum == EnrollmentEnum.ENROLL) {
-            accountEventLogService.enrollmentAdded(user, enrollmentHelper.getAccountNumber(),
-                                                   enrollmentHelper.getSerialNumber(),
-                                                   enrollmentHelper.getProgramName(),
-                                                   enrollmentHelper.getLoadGroupName());
+            accountEventLogService.deviceEnrolled(user, enrollmentHelper.getAccountNumber(),
+                                                  enrollmentHelper.getSerialNumber(),
+                                                  enrollmentHelper.getProgramName(),
+                                                  enrollmentHelper.getLoadGroupName());
         }
         if (enrollmentEnum == EnrollmentEnum.UNENROLL) {
-            accountEventLogService.enrollmentRemoved(user, enrollmentHelper.getAccountNumber(),
-                                                     enrollmentHelper.getSerialNumber(),
-                                                     enrollmentHelper.getProgramName(),
-                                                     enrollmentHelper.getLoadGroupName());
+            accountEventLogService.deviceUnenrolled(user, enrollmentHelper.getAccountNumber(),
+                                                    enrollmentHelper.getSerialNumber(),
+                                                    enrollmentHelper.getProgramName(),
+                                                    enrollmentHelper.getLoadGroupName());
         }
     }
 

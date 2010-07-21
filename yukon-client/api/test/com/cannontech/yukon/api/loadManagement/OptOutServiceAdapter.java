@@ -115,7 +115,7 @@ public class OptOutServiceAdapter implements OptOutService {
 	}
 
 	@Override
-	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId) {
+	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId, LiteYukonUser user) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 	
@@ -139,5 +139,11 @@ public class OptOutServiceAdapter implements OptOutService {
 	public OptOutLimit getCurrentOptOutLimit(int customerAccountId) {
 		throw new UnsupportedOperationException("not implemented");
 	}
+
+    @Override
+    public void allowAdditionalOptOuts(int accountId, int serialNumber,
+                                       int additionalOptOuts, LiteYukonUser user) {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
 }

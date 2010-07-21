@@ -3,32 +3,67 @@
 <properties>
     <!-- Generic Event Messages -->
     <entry key="yukon.common.events.title">Events</entry>
-    <entry key="yukon.common.events.category">Category</entry>
     <entry key="yukon.common.events.columnHeader.event">Event</entry>
     <entry key="yukon.common.events.columnHeader.dateAndTime"><![CDATA[Date & Time]]></entry>
     <entry key="yukon.common.events.columnHeader.message">Message</entry>
-    <entry key="yukon.common.events.eventCategories">Event Categories</entry>
     <entry key="yukon.common.events.noResults">No Results Found</entry>
-    <entry key="yukon.common.events.generateReports">Generate Reports</entry>
-    <entry key="yukon.common.events.eventTypes">Event Types</entry>
-    
+
+
+    <entry key="yukon.web.modules.support.category">Category</entry>
+    <entry key="yukon.web.modules.support.generateReports">Generate Reports</entry>
+
     <entry key="yukon.web.modules.support.byCategory.categories">Categories</entry>
     <entry key="yukon.web.modules.support.byCategory.filterValue">Filter Value</entry>
     <entry key="yukon.web.modules.support.byCategory.dateRange">Date Range</entry>
+
+    <!-- Validation -->    
+    <entry key="yukon.web.modules.support.startDateMustBeBeforeStopDate">The start date must be before the end date.</entry>
     
-    <!-- Manage Event Logs -->
-    <entry key="yukon.web.modules.support.manageEventLogs.title">Manage Event Logs</entry>
-    <entry key="yukon.common.events.manageEventLogs.turnOnEventLog">Turn on event logging for this category.</entry>
-    <entry key="yukon.common.events.manageEventLogs.turnOffEventLog">Turn off event logging for this category.</entry>
-    <entry key="yukon.common.events.manageEventLogs.viewEventLog">View event log</entry>
-<!-- <entry key="yukon.common.events.manageEventLogs.modifyCategory">Modify Category</entry> -->
-    <entry key="yukon.common.events.manageEventLogs.categoryOptions">Cateogry Options</entry>
-    <entry key="yukon.common.events.manageEventLogs.enableCategory">Enable Category</entry>
-    <entry key="yukon.common.events.manageEventLogs.disableCategory">Disable Category</entry>
-    <entry key="yukon.common.events.manageEventLogs.viewCategory">View Category</entry>
+    <!-- By Type -->
+    <entry key="yukon.web.modules.support.byType.cancel">Cancel</entry>
+    <entry key="yukon.web.modules.support.byType.eventCategories">Event Categories</entry>
+    <entry key="yukon.web.modules.support.byType.eventType">Event Type</entry>
+    <entry key="yukon.web.modules.support.byType.eventLogDateRange">Event Log Date Range</entry>
+
+    <entry key="yukon.web.modules.support.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
+    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSectorIcon">No Event Log Type Selected</entry>
+    <entry key="yukon.web.modules.support.byType.noEventLogTypeSelected">No Event Log Type Selected</entry>
+    
+    <!--  Filter popup -->
+    <entry key="yukon.web.modules.support.byType.eventLogFilters">Event Log Filters</entry>
+    <entry key="yukon.web.modules.support.byType.filter">Filter</entry>
+    <entry key="yukon.web.modules.support.byType.showAll">Show All</entry>
+    
+    
+    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.confirm">Are you sure you want add an extra opt out for {0}?</entry>
+    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.imageUrl">/WebConfig/yukon/Icons/folder.gif</entry>
+    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.hoverUrl">/WebConfig/yukon/Icons/folder_over.gif</entry>
+    <entry key="yukon.web.modules.support.byType.eventLogTypeTreeSector.hoverText">Allows you to select an event category type to review.</entry>
+
+<!--
+    <entry key="yukon.web.modules.operator.optOut.main.allowOneIconText">Adds an extra opt out to the device. This is not restricted by the system opt out limit.</entry>
+    <entry key="yukon.web.modules.operator.optOut.main.allowOne.successText">Opt Out Added</entry>
+ -->
+    
+    
+    
+    <entry key="yukon.web.modules.support.byType.title">Title</entry>
+    <entry key="yukon.web.modules.support.byType.turnOnEventLog">Turn on event logging for this category.</entry>
+    <entry key="yukon.web.modules.support.byType.turnOffEventLog">Turn off event logging for this category.</entry>
+    <entry key="yukon.web.modules.support.byType.viewEventLog">View event log</entry>
+<!-- <entry key="yukon.common.events.byType.modifyCategory">Modify Category</entry> -->
+    <entry key="yukon.web.modules.support.byType.categoryOptions">Category Options</entry>
+    <entry key="yukon.web.modules.support.byType.enableCategory">Enable Category</entry>
+    <entry key="yukon.web.modules.support.byType.disableCategory">Disable Category</entry>
+    <entry key="yukon.web.modules.support.byType.viewCategory">View Category</entry>
+    <entry key="yukon.web.modules.support.byType.selectEventLog">Select Event Log</entry>
+    <entry key="yukon.web.modules.support.byType.noEventLogSelected">No event log was selected</entry>
     
 
-
+    <!-- Arg Annotation i18n keys -->
+    <entry key="yukon.common.events.username">Username</entry>
+    <entry key="yukon.common.events.remoteAddress">Remote IP</entry>
+    
 
 <!-- Event log message text and column names -->
     <!-- Account -->
@@ -58,6 +93,35 @@
     <entry key="yukon.common.events.account.enrollment.enrollmentAdded.3">Serial Number</entry>
     <entry key="yukon.common.events.account.enrollment.enrollmentAdded.4">Program</entry>
     <entry key="yukon.common.events.account.enrollment.enrollmentAdded.5">Load Group</entry>
+
+    <!-- Opt Outs -->
+    <entry key="yukon.common.events.account.optOut.optOutLimitIncreased">{7} opt outs were added to the {2} account for the device {3} by {1}</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitIncreased.1">User</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitIncreased.2">Account Number</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitIncreased.3">Serial Number</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitIncreased.7">Number of Added Opt Outs</entry>
+
+    <entry key="yukon.common.events.account.optOut.optOutLimitReset">The opt out limit for the device {3} on the account {2} has been reset by {1}</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitReset.1">User</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitReset.2">Account Number</entry>
+    <entry key="yukon.common.events.account.optOut.optOutLimitReset.3">Serial Number</entry>
+
+    <entry key="yukon.common.events.account.optOut.optOutResent">The opt out command was resent for the device {3} on the account {2} has been reset by {1}</entry>
+    <entry key="yukon.common.events.account.optOut.optOutResent.1">User</entry>
+    <entry key="yukon.common.events.account.optOut.optOutResent.2">Account Number</entry>
+    <entry key="yukon.common.events.account.optOut.optOutResent.3">Serial Number</entry>
+
+    <entry key="yukon.common.events.account.optOut.deviceOptedOut">The device {3} on the account {2} was scheduled to be opted out from {11} to {12} by {1}</entry>
+    <entry key="yukon.common.events.account.optOut.deviceOptedOut.1">User</entry>
+    <entry key="yukon.common.events.account.optOut.deviceOptedOut.2">Account Number</entry>
+    <entry key="yukon.common.events.account.optOut.deviceOptedOut.3">Serial Number</entry>
+    <entry key="yukon.common.events.account.optOut.deviceOptedOut.11">Opt Out Start Date</entry>
+    <entry key="yukon.common.events.account.optOut.deviceOptedOut.12">Opt Out Stop Date</entry>
+
+    <entry key="yukon.common.events.account.optOut.optOutCanceled">An opt out was canceled for the device {3} on the account {2} by {1}</entry>
+    <entry key="yukon.common.events.account.optOut.optOutCanceled.1">User</entry>
+    <entry key="yukon.common.events.account.optOut.optOutCanceled.2">Account Number</entry>
+    <entry key="yukon.common.events.account.optOut.optOutCanceled.3">Serial Number</entry>
     
     <!-- Account Appliances -->
     <entry key="yukon.common.events.account.appliance.applianceAdded">The appliance {3} with the program {5} was added to the account {2} on device {4} by {1}</entry>
@@ -83,26 +147,62 @@
     
     <!-- AMR -->
     <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}</entry>
-
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget.1">User</entry>
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget.7">Device Id</entry>
+    
 	<!-- Database Migration Tool -->
     <entry key="yukon.common.events.system.databaseMigration.startingExport">Database migration export file, {2}, was generated by {1}</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingExport.1">User</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingExport.2">Export File Name</entry>
+    
     <entry key="yukon.common.events.system.databaseMigration.startingValidation">Database migration validation was done on {2}, by user {1}</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingValidation.1">User</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingValidation.2">Import File Name</entry>
+    
     <entry key="yukon.common.events.system.databaseMigration.startingImport">Database migration import was done on {2}, by user {1}</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingImport.1">User</entry>
+    <entry key="yukon.common.events.system.databaseMigration.startingImport.2">Import File Name</entry>
 
-    <!-- Demand Response -->
-
+<!-- Demand Response -->
     <!-- Scenario -->
     <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted">Scenario {2} was started by {1}</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted.1">User</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStarted.2">Scenario</entry>
+
     <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped">Scenario {2} was stopped by {1}</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped.1">User</entry>
+    <entry key="yukon.common.events.dr.scenario.threeTierScenarioStopped.2">Scenario</entry>
 
     <!-- Control Area -->
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted">Control area {2} was started by {1}</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStarted.2">Control Area</entry>
+
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped">Control area {2} was stopped by {1}</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaStopped.2">Control Area</entry>
+
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged">Control area {2} had its triggers changed by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTriggersChanged.2">Control Area</entry>
+
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged">Control area {2} had its time window changed to {7} - {8} (in seconds from midnight) by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.2">Control Area</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.7">Control Window Start </entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaTimeWindowChanged.8">Control Window End</entry>
+
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled">Control area {2} was enabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaEnabled.2">Control Area</entry>
+
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled">Control area {2} was disabled by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaDisabled.2">Control Area</entry>
+
     <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset">Control area {2} had its triggers peak(s) reset by user {1} via 3-Tier</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset.1">User</entry>
+    <entry key="yukon.common.events.dr.controlArea.threeTierControlAreaPeakReset.2">Control Area</entry>
 
     <entry key="yukon.common.events.dr.controlArea.controlAreaStarted">Control area {1} was started at {4}</entry>
     <entry key="yukon.common.events.dr.controlArea.controlAreaStopped">Control area {1} was stopped at {4}</entry>
@@ -157,6 +257,7 @@
     
     <!-- System -->
     <entry key="yukon.common.events.system.login.loginWeb">User {1} logged in via Web from remote address {2}</entry>
+
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}</entry>
     <entry key="yukon.common.events.system.login.loginInboundVoice">User {1} logged in via Inbound voice from remote address {2}</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}</entry>    

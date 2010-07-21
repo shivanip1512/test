@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoType;
@@ -70,6 +71,7 @@ import com.google.common.collect.Lists;
 
 public class HardwareServiceImpl implements HardwareService {
 
+    private HardwareEventLogService hardwareEventLogService;
     private InventoryBaseDao inventoryBaseDao;
     private YukonListDao yukonListDao;
     private LMHardwareBaseDao lmHardwareBaseDao;
@@ -248,7 +250,8 @@ public class HardwareServiceImpl implements HardwareService {
     }
     
     @Override
-    public SimpleDevice createTwoWayDevice(int inventoryId, String deviceName) throws StarsTwoWayLcrYukonDeviceCreationException {
+    public SimpleDevice createTwoWayDevice(YukonUserContext userContext, int inventoryId, String deviceName) 
+    throws StarsTwoWayLcrYukonDeviceCreationException {
         String errorMsgKey = "";
         LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
         YukonListEntry deviceTypeEntry = yukonListDao.getYukonListEntry(lmHardwareBase.getLMHarewareTypeId());
@@ -281,12 +284,17 @@ public class HardwareServiceImpl implements HardwareService {
             throw new StarsTwoWayLcrYukonDeviceCreationException("nonNumericSerialNumber", nfe);
         }
         
+        // Logging Hardware Creation
+        hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), 
+                                                lmHardwareBase.getManufacturerSerialNumber());
+        
         return yukonDevice;
     }
     
     @Override
     @Transactional
-    public boolean updateHardware(HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException {
+    public boolean updateHardware(YukonUserContext userContext, HardwareDto hardwareDto) 
+    throws ObjectInOtherEnergyCompanyException {
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(hardwareDto.getInventoryId());
         setInventoryFieldsFromDto(liteInventoryBase, hardwareDto);
         
@@ -321,6 +329,13 @@ public class HardwareServiceImpl implements HardwareService {
             lmHardware.setManufacturerSerialNumber(hardwareDto.getSerialNumber());
             
             starsInventoryBaseDao.saveLmHardware(lmHardware, hardwareDto.getEnergyCompanyId());
+            
+            // Log Serial Number Change
+            if (!hardwareDto.getSerialNumber().equals(lmHardware.getManufacturerSerialNumber())) {
+                hardwareEventLogService.serialNumberChanged(userContext.getYukonUser(), 
+                                                            lmHardware.getManufacturerSerialNumber(), 
+                                                            hardwareDto.getSerialNumber());
+            }
         }
         
         /* Update warehouse mapping */
@@ -341,6 +356,10 @@ public class HardwareServiceImpl implements HardwareService {
                 }
             }
         }
+        
+        // Log hardware update
+        hardwareEventLogService.hardwareUpdated(userContext.getYukonUser(), 
+                                                hardwareDto.getSerialNumber());
         
         /* Tell controller to spawn event for device status change if necessary */
         if(hardwareDto.getOriginalDeviceStatusEntryId() != null) {
@@ -401,15 +420,16 @@ public class HardwareServiceImpl implements HardwareService {
     
     @Override
     @Transactional
-    public void deleteHardware(boolean delete, int inventoryId, int accountId, LiteStarsEnergyCompany energyCompany) throws Exception {
+    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, 
+                               int accountId, LiteStarsEnergyCompany energyCompany) throws Exception {
         LiteInventoryBase liteInventoryBase = starsInventoryBaseDao.getByInventoryId(inventoryId);
         CustomerAccount customerAccount = customerAccountDao.getById(accountId);
         boolean deleteMCT = false;
         
         /* Unenroll the hardware */
+        LMHardwareBase lmHardwareBase = null;
         try {
-            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
-            
+            lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
             EnrollmentHelper enrollmentHelper = new EnrollmentHelper();
             enrollmentHelper.setAccountNumber(customerAccount.getAccountNumber());
             enrollmentHelper.setSerialNumber(lmHardwareBase.getManufacturerSerialNumber());
@@ -425,6 +445,11 @@ public class HardwareServiceImpl implements HardwareService {
             /* Delete this hardware from the database */
             /*TODO handle this with new code, not with this util. */
             InventoryManagerUtil.deleteInventory( liteInventoryBase, energyCompany, deleteMCT);
+
+            // Log hardware deletion
+            hardwareEventLogService.hardwareDeleted(userContext.getYukonUser(), 
+                                                    liteInventoryBase.getDeviceLabel());
+
         } else {
             /* Just remove it from the account and put it back in general inventory */
             Date removeDate = new Date();
@@ -452,6 +477,11 @@ public class HardwareServiceImpl implements HardwareService {
             inventoryBase.setRemoveDate(new Timestamp(removeDate.getTime()));
             inventoryBase.setDeviceLabel("");
             inventoryBaseDao.update(inventoryBase);
+            
+            // Log hardware deletion
+            hardwareEventLogService.hardwareRemoved(userContext.getYukonUser(), 
+                                                    liteInventoryBase.getDeviceLabel(), 
+                                                    customerAccount.getAccountNumber());
         }
     }
     
@@ -477,6 +507,10 @@ public class HardwareServiceImpl implements HardwareService {
                 inventoryId = starsInventoryBaseDao.saveInventoryBase(inventoryBase, energyCompany.getEnergyCompanyID()).getInventoryID();
                 
                 starsInventoryBaseService.addInstallHardwareEvent(inventoryBase, energyCompany, userContext.getYukonUser());
+                
+                // Log hardware creation
+                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(), 
+                                                        inventoryBase.getDeviceLabel());
             } else {
                 /* MeterHardwareBase */
                 LiteMeterHardwareBase meterHardwareBase = getMeterHardware(hardwareDto, accountId, energyCompany); 
@@ -491,6 +525,9 @@ public class HardwareServiceImpl implements HardwareService {
                     }
                 }
                 starsInventoryBaseDao.saveSwitchAssignments(inventoryId, assignedSwitches);
+                
+                hardwareEventLogService.hardwareCreated(userContext.getYukonUser(),
+                                                        meterHardwareBase.getDeviceLabel());
             }
         } else {
             /* LMHardwareBase and InventoryBase*/
@@ -503,6 +540,10 @@ public class HardwareServiceImpl implements HardwareService {
             }
             
             starsInventoryBaseService.addInstallHardwareEvent(lmHardware, energyCompany, userContext.getYukonUser());
+            
+            // Log hardware creation
+            hardwareEventLogService.hardwareCreated(userContext.getYukonUser(),
+                                                    lmHardware.getDeviceLabel());
         }
         
         return inventoryId;
@@ -754,6 +795,11 @@ public class HardwareServiceImpl implements HardwareService {
     @Autowired
     public void setYukonListDao(YukonListDao yukonListDao){
         this.yukonListDao = yukonListDao;
+    }
+    
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
     }
     
     @Autowired

@@ -27,18 +27,18 @@ public interface HardwareService {
      * Updates hardware and returns true if the state of the hardware changed
      * to spawn an event.
      */
-    public boolean updateHardware(HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException;
+    public boolean updateHardware(YukonUserContext userContext, HardwareDto hardwareDto) throws ObjectInOtherEnergyCompanyException;
 
     /**
      * If delete is true: deletes the hardware, otherwise just removes it from the 
      * account and places it back in general inventory.
      */
-    public void deleteHardware(boolean delete, int inventoryId, int accountId, LiteStarsEnergyCompany energyCompany) throws Exception;
+    public void deleteHardware(YukonUserContext userContext, boolean delete, int inventoryId, int accountId, LiteStarsEnergyCompany energyCompany) throws Exception;
 
     /**
      * Creates and returns a SimpleDevice for an LCR-3102 with the given device name
      */
-    public SimpleDevice createTwoWayDevice(int inventoryId, String deviceName) throws StarsTwoWayLcrYukonDeviceCreationException;
+    public SimpleDevice createTwoWayDevice(YukonUserContext userContext, int inventoryId, String deviceName) throws StarsTwoWayLcrYukonDeviceCreationException;
 
     /**
      * Returns a list of HardwareHistory for the given inventory id.

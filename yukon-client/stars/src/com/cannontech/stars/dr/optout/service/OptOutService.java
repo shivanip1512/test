@@ -128,7 +128,7 @@ public interface OptOutService {
 	 * @param inventoryId - Inventory to reset
 	 * @param accountId - Account for inventory
 	 */
-	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId);
+	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId, LiteYukonUser user);
 	
 	/**
 	 * Method to reset the number of opt outs a user has remaining to the limit. (basically
@@ -170,6 +170,12 @@ public interface OptOutService {
 	public int getOptOutDeviceCountForProgram(String programName, Date startTime, 
 			Date stopTime, LiteYukonUser user) throws ProgramNotFoundException;
 
+    /**
+     * Method to allow additional opt outs for a given inventory
+     */
+	public void allowAdditionalOptOuts(int accountId, int serialNumber,
+	                                   int additionalOptOuts, LiteYukonUser user);
+	
 	/**
 	 * Method to allow additional opt outs for a given inventory
 	 * @param accountNumber - Account to add opt outs to
@@ -179,8 +185,8 @@ public interface OptOutService {
 	 * @throws InventoryNotFoundException - if serial number is not found
 	 * @throws AccountNotFoundException - if account number is not found
 	 */
-	public void allowAdditionalOptOuts(
-			String accountNumber, String serialNumber, int additionalOptOuts, LiteYukonUser user) 
+	public void allowAdditionalOptOuts(String accountNumber, String serialNumber, 
+	                                   int additionalOptOuts, LiteYukonUser user) 
 		throws InventoryNotFoundException, AccountNotFoundException;
 
 	/**

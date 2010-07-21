@@ -28,6 +28,10 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.DemandResponseEventLogService"/>
     </bean>
     
+    <bean id="hardwareEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.HardwareEventLogService"/>
+    </bean>
+ 
     <bean id="validationEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.ValidationEventLogService"/>
     </bean>

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -52,6 +53,7 @@ import com.cannontech.stars.util.StarsInvalidArgumentException;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
 
+    private HardwareEventLogService hardwareEventLogService;
     private StarsSearchDao starsSearchDao;
     private StarsCustAccountInformationDao starsCustAccountInformationDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
@@ -65,6 +67,11 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     private LMHardwareBaseDao hardwareBaseDao;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
     private ThermostatService thermostatService;
+    
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
+    }
     
     @Autowired
     public void setStarsSearchDao(StarsSearchDao starsSearchDao) {
@@ -207,6 +214,10 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 	        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, allowCreateLcrIfAlreadyHasAssignedDevice);
 	        }
         }
+        
+        CustomerAccount customerAccount = customerAccountDao.getById(liteInv.getAccountID());
+        hardwareEventLogService.hardwareAdded(user, liteInv.getDeviceLabel(), 
+                                              customerAccount.getAccountNumber());
         
         return liteInv;
     }
@@ -392,6 +403,8 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         
         if (deleteFromInventory) {
             starsInventoryBaseDao.deleteInventoryBase(liteInv.getInventoryID());
+
+            hardwareEventLogService.hardwareDeleted(user, liteInv.getDeviceLabel());
         } else {
             long removeDate = liteInv.getRemoveDate();
             if (removeDate <= 0) {
@@ -413,6 +426,10 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
             LiteInventoryBase liteInvDB = starsInventoryBaseDao.getByInventoryId(liteInv.getInventoryID());                
             liteInvDB.setRemoveDate(removeDate);
             starsInventoryBaseDao.removeInventoryFromAccount(liteInvDB);
+
+            CustomerAccount customerAccount = customerAccountDao.getById(liteInv.getAccountID());
+            hardwareEventLogService.hardwareRemoved(user, liteInv.getDeviceLabel(), 
+                                                    customerAccount.getAccountNumber());
         }
     }
 

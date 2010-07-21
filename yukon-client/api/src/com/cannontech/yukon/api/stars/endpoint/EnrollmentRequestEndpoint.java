@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -26,6 +27,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class EnrollmentRequestEndpoint {
 
+    private AccountEventLogService accountEventLogService;
     private EnrollmentHelperService enrollmentHelperService;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="enrollmentRequest")
@@ -50,6 +52,12 @@ public class EnrollmentRequestEndpoint {
                                                                                              enrollmentResultList, 
                                                                                              enrollmentHelper);
 
+            accountEventLogService.enrollmentAttemptedThroughWebServices(user, 
+                                                                         enrollmentHelper.getAccountNumber(), 
+                                                                         enrollmentHelper.getSerialNumber(), 
+                                                                         enrollmentHelper.getProgramName(), 
+                                                                         enrollmentHelper.getProgramName());
+            
             Element resultElement;
             try {
                 enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.ENROLL, user);

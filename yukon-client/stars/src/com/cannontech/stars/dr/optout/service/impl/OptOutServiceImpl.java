@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.AccountNotFoundException;
@@ -60,6 +61,8 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.CommandRequestHardwareExecutor;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
@@ -94,6 +97,9 @@ import com.google.common.collect.Ordering;
 public class OptOutServiceImpl implements OptOutService {
 
 	private static final DateTimeFormatter logFormatter = DateTimeFormat.forPattern("MM/dd/yy HH:mm");
+	
+	private LMHardwareBaseDao lmHardwareBaseDao;
+	private AccountEventLogService accountEventLogService;
     private StarsInventoryBaseDao starsInventoryBaseDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutAdditionalDao optOutAdditionalDao;
@@ -237,7 +243,11 @@ public class OptOutServiceImpl implements OptOutService {
 			}
     		
 	    	// Log the event
-	    	StringBuffer logMsg = new StringBuffer();
+			accountEventLogService.deviceOptedOut(user, customerAccount.getAccountNumber(), 
+			                                      inventory.getManufacturerSerialNumber(),
+			                                      request.getStartDate(), request.getStopDate());
+			
+			StringBuffer logMsg = new StringBuffer();
 
 	    	DateTimeFormatter dateTimeFormatter = 
 	    	    logFormatter.withZone(energyCompany.getDefaultDateTimeZone());
@@ -286,6 +296,7 @@ public class OptOutServiceImpl implements OptOutService {
 			
 		    LiteStarsLMHardware inventory = 
 				(LiteStarsLMHardware) starsInventoryBaseDao.getByInventoryId(inventoryId);
+		    CustomerAccount customerAccount = customerAccountDao.getById(customerAccountId);
 			LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
 			
 			OptOutEvent lastEvent = optOutEventDao.findLastEvent(inventoryId, customerAccountId);
@@ -303,6 +314,9 @@ public class OptOutServiceImpl implements OptOutService {
 			this.sendOptOutRequest(inventory, energyCompany, newDuration, user);
 			
 			// Log this repeat event request
+			accountEventLogService.optOutResent(user, customerAccount.getAccountNumber(), 
+			                                    inventory.getDeviceLabel());
+			
 			OptOutLog log = new OptOutLog();
 			log.setAction(OptOutAction.REPEAT_START_OPT_OUT);
 			log.setCustomerAccountId(customerAccountId);
@@ -392,6 +406,9 @@ public class OptOutServiceImpl implements OptOutService {
 			} else {
 				throw new NotOptedOutException(inventoryId, customerAccount.getAccountId());
 			}
+            
+            accountEventLogService.optOutCanceled(user, customerAccount.getAccountNumber(),
+                                                  inventory.getDeviceLabel());
 		}
 	}
 
@@ -566,7 +583,7 @@ public class OptOutServiceImpl implements OptOutService {
 	}
 	
 	@Override
-	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId) {
+	public void resetOptOutLimitForInventory(Integer inventoryId, int accountId, LiteYukonUser user) {
 		
 		OptOutCountHolder currentOptOutCount = 
 			this.getCurrentOptOutCount(inventoryId, accountId);
@@ -576,7 +593,7 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		int optOutsToAdd = usedOptOuts - additionalOptOuts;
 		if(optOutsToAdd > 0) {
-			optOutAdditionalDao.addAdditonalOptOuts(inventoryId, accountId, optOutsToAdd);
+		    allowAdditionalOptOuts(accountId, inventoryId, optOutsToAdd, user);
 		}
 	}
 	
@@ -608,7 +625,7 @@ public class OptOutServiceImpl implements OptOutService {
 		}
 		
 		// resetOptOutLimitForInventory
-		this.resetOptOutLimitForInventory(inventory.getInventoryID(), account.getAccountId());
+		this.resetOptOutLimitForInventory(inventory.getInventoryID(), account.getAccountId(), user);
 	}
 	
 	@Override
@@ -750,6 +767,19 @@ public class OptOutServiceImpl implements OptOutService {
 		
 		return optedOutInventory.size();
 	}
+
+	@Override
+	public void allowAdditionalOptOuts(int accountId, int inventoryId, 
+	                                   int additionalOptOuts, LiteYukonUser user) {
+	    
+        optOutAdditionalDao.addAdditonalOptOuts(inventoryId, accountId, additionalOptOuts);
+
+        CustomerAccount account = customerAccountDao.getById(accountId);
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        accountEventLogService.optOutLimitIncreased(user, account.getAccountNumber(), 
+                                                    lmHardwareBase.getManufacturerSerialNumber(),
+                                                    additionalOptOuts);
+	}
 	
 	@Override
 	public void allowAdditionalOptOuts(String accountNumber,
@@ -782,8 +812,8 @@ public class OptOutServiceImpl implements OptOutService {
 					" is not associated with the account with account number: " + accountNumber);
 		}
 		
-		optOutAdditionalDao.addAdditonalOptOuts(
-				inventory.getInventoryID(), account.getAccountId(), additionalOptOuts);
+		allowAdditionalOptOuts(inventory.getInventoryID(), account.getAccountId(), 
+		                       additionalOptOuts, user);
 		
 	}
 	
@@ -1089,6 +1119,16 @@ public class OptOutServiceImpl implements OptOutService {
 		String commandString = cmd.toString();
 		commandRequestHardwareExecutor.execute(inventory, commandString, user);
 	}
+	
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+	
+	@Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
+	}	
 	
 	@Autowired
 	public void setStarsInventoryBaseDao(

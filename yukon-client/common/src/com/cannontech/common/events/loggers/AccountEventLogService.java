@@ -1,5 +1,6 @@
 package com.cannontech.common.events.loggers;
 
+import org.joda.time.Instant;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.events.YukonEventLog;
@@ -21,10 +22,52 @@ public interface AccountEventLogService {
 
     // Enrollment
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
-    public void enrollmentAdded(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+    public void enrollmentAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
 
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
-    public void enrollmentRemoved(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+    public void enrollmentAttemptedByConsumer(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void enrollmentAttemptedThroughWebServices(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void enrollmentEditAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void unenrollmentAttemptedByOperator(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void unenrollmentAttemptedByConsumer(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void unenrollmentAttemptedThroughWebServices(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+    
+    // Enrollment Service Level
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void deviceEnrolled(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.enrollment")
+    public void deviceUnenrolled(LiteYukonUser yukonUser, String accountNumber, String deviceName, String programName, String loadGroupName);
+    
+    
+    // Opt Outs
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.optOut")
+    public void optOutLimitIncreased(LiteYukonUser yukonUser, String accountNumber, String deviceName, int optOutsAdded);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.optOut")
+    public void optOutLimitReset(LiteYukonUser yukonUser, String accountNumber, String deviceName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.optOut")
+    public void optOutResent(LiteYukonUser yukonUser, String accountNumber, String deviceName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.optOut")
+    public void deviceOptedOut(LiteYukonUser yukonUser, String accountNumber, String deviceName, 
+                               Instant startDate, Instant stopDate);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.optOut")
+    public void optOutCanceled(LiteYukonUser yukonUser, String accountNumber, String deviceName);
+
+    
     
     // Appliance
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.appliance")
@@ -39,7 +82,4 @@ public interface AccountEventLogService {
     public void applianceDeleted(LiteYukonUser yukonUser, String accountNumber, 
                                  String applianceType, String deviceName, String programName);
 
-    
-    
-    
 }

@@ -14,6 +14,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -27,11 +28,14 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.Displayab
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.enrollment.ProgramEnrollment.InventoryEnrollment;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Lists;
@@ -42,6 +46,8 @@ import com.google.common.collect.Sets;
 @RequestMapping("/operator/enrollment/*")
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_ENROLLMENT)
 public class OperatorEnrollmentController {
+    
+    private AccountEventLogService accountEventLogService;
     private DisplayableEnrollmentDao displayableEnrollmentDao;
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private PaoDao paoDao;
@@ -50,6 +56,7 @@ public class OperatorEnrollmentController {
     private EnrollmentDao enrollmentDao;
     private EnrollmentHelperService enrollmentHelperService;
     private RolePropertyDao rolePropertyDao;
+    private LMHardwareBaseDao lmHardwareBaseDao;
 
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
@@ -153,6 +160,7 @@ public class OperatorEnrollmentController {
             boolean isAdd, @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
+
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, model);
         validateAccountEditing(userContext);
         AssignedProgram assignedProgram =
@@ -180,6 +188,28 @@ public class OperatorEnrollmentController {
             @ModelAttribute ProgramEnrollment programEnrollment,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment, FlashScope flashScope) {
+        
+        // Log Attempt
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
+        DisplayablePao loadGroup = loadGroupDao.getLoadGroup(programEnrollment.getLoadGroupId());
+        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
+        for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
+            LMHardwareBase hardwareBase = 
+                lmHardwareBaseDao.getById(inventoryEnrollment.getInventoryId());
+            
+            if (isAdd) {
+                accountEventLogService.enrollmentAttemptedByOperator(
+                    userContext.getYukonUser(), accountInfoFragment.getAccountNumber(), 
+                    hardwareBase.getManufacturerSerialNumber(), assignedProgram.getProgramName(), 
+                    loadGroup.getName());
+            } else {
+                accountEventLogService.enrollmentEditAttemptedByOperator(
+                    userContext.getYukonUser(), accountInfoFragment.getAccountNumber(), 
+                    hardwareBase.getManufacturerSerialNumber(), assignedProgram.getProgramName(),
+                    loadGroup.getName());
+            }
+        }
+        
         return save(model, assignedProgramId, programEnrollment,
                     isAdd ? "enrollCompleted" : "enrollmentUpdated",
                             userContext, accountInfoFragment, flashScope);
@@ -236,6 +266,21 @@ public class OperatorEnrollmentController {
             enrollment.setEnrolled(false);
         }
 
+        // Log Attempt
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
+        DisplayablePao loadGroup = loadGroupDao.getLoadGroup(programEnrollment.getLoadGroupId());
+        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
+        for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
+            LMHardwareBase hardwareBase = 
+                lmHardwareBaseDao.getById(inventoryEnrollment.getInventoryId());
+            
+            accountEventLogService.unenrollmentAttemptedByOperator(
+                userContext.getYukonUser(), accountInfoFragment.getAccountNumber(), 
+                hardwareBase.getManufacturerSerialNumber(), assignedProgram.getProgramName(), 
+                loadGroup.getName());
+        }
+
+        
         return save(model, assignedProgramId, programEnrollment,
                     "unenrollCompleted", userContext, accountInfoFragment,
                     flashScope);
@@ -271,6 +316,11 @@ public class OperatorEnrollmentController {
                                                       "Account editing not allowed by this user.");
     }
 
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
     @Autowired
     public void setDisplayableEnrollmentDao(
             DisplayableEnrollmentDao displayableEnrollmentDao) {
@@ -312,5 +362,10 @@ public class OperatorEnrollmentController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
+    }
+    
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
 }

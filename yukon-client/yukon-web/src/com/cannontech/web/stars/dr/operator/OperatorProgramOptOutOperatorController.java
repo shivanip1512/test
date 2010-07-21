@@ -48,7 +48,6 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
-import com.cannontech.stars.dr.optout.dao.OptOutAdditionalDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
@@ -81,7 +80,6 @@ public class OperatorProgramOptOutOperatorController {
     private CustomerAccountDao customerAccountDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private DisplayableInventoryDao displayableInventoryDao;
-    private OptOutAdditionalDao optOutAdditionalDao;
     private OptOutEventDao optOutEventDao;
     private OptOutService optOutService; 
     private OptOutValidatorFactory optOutValidatorFactory;
@@ -282,12 +280,11 @@ public class OperatorProgramOptOutOperatorController {
                                        yukonUserContext.getYukonUser());
                 
         List<String> questions = 
-            OptOutControllerHelper.getConfirmQuestions(
-                    messageSourceResolver, 
-                    yukonUserContext,
-                    "yukon.dr.operator.optoutconfirm.question.");
+            OptOutControllerHelper.getConfirmQuestions(messageSourceResolver, 
+                                                       yukonUserContext,
+                                                       "yukon.dr.operator.optoutconfirm.question.");
+
         modelMap.addAttribute("questions", questions);
-        
         modelMap.addAttribute("inventoryIds", inventoryIds);
 
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
@@ -513,7 +510,8 @@ public class OperatorProgramOptOutOperatorController {
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
 
-        optOutAdditionalDao.addAdditonalOptOuts(inventoryId, customerAccount.getAccountId(), -1);
+        optOutService.allowAdditionalOptOuts(customerAccount.getAccountId(), inventoryId, 
+                                             -1, userContext.getYukonUser());
 
         flashScope.setConfirm(
                        new YukonMessageSourceResolvable(
@@ -553,7 +551,9 @@ public class OperatorProgramOptOutOperatorController {
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
         
-        optOutAdditionalDao.addAdditonalOptOuts(inventoryId, customerAccount.getAccountId(), 1);
+        
+        optOutService.allowAdditionalOptOuts(customerAccount.getAccountId(), inventoryId, 1, 
+                                             userContext.getYukonUser());
         
         flashScope.setConfirm(
                               new YukonMessageSourceResolvable(
@@ -636,7 +636,8 @@ public class OperatorProgramOptOutOperatorController {
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
         
-        optOutService.resetOptOutLimitForInventory(inventoryId, customerAccount.getAccountId());
+        optOutService.resetOptOutLimitForInventory(inventoryId, customerAccount.getAccountId(),
+                                                   userContext.getYukonUser());
         
         flashScope.setConfirm(
                        new YukonMessageSourceResolvable(
@@ -729,11 +730,6 @@ public class OperatorProgramOptOutOperatorController {
     @Autowired
     public void setOptOutService(OptOutService optOutService) {
         this.optOutService = optOutService;
-    }
-    
-    @Autowired
-    public void setOptOutAdditionalDao(OptOutAdditionalDao optOutAdditionalDao) {
-        this.optOutAdditionalDao = optOutAdditionalDao;
     }
     
     @Autowired

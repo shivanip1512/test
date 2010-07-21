@@ -204,12 +204,14 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         SqlStatementBuilder optOutSQL = new SqlStatementBuilder();
         optOutSQL.append("UPDATE LMHardwareControlGroup");
-        optOutSQL.append("SET OptOutStop = ?, UserIdSecondAction = ?");
-        optOutSQL.append("WHERE InventoryId = ? AND AccountId = ?");
+        optOutSQL.append("SET OptOutStop").eq(stopDate);
+        optOutSQL.append(",UserIdSecondAction").eq(currentUser.getUserID());
+        optOutSQL.append("WHERE InventoryId").eq(inventoryId);
+        optOutSQL.append("AND AccountId").eq(accountId);
         optOutSQL.append("AND NOT OptOutStart IS NULL");
         optOutSQL.append("AND OptOutStop IS NULL");
-        yukonJdbcTemplate.update(optOutSQL.toString(), stopDate, currentUser.getUserID(), 
-                                 inventoryId, accountId);
+
+        yukonJdbcTemplate.update(optOutSQL);
     }    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

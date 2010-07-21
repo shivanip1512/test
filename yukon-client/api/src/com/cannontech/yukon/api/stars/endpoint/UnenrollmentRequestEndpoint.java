@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -26,6 +27,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class UnenrollmentRequestEndpoint {
 
+    private AccountEventLogService accountEventLogService;
     private EnrollmentHelperService enrollmentHelperService;
     
     @PayloadRoot(namespace="http://yukon.cannontech.com/api", localPart="unenrollmentRequest")
@@ -49,6 +51,13 @@ public class UnenrollmentRequestEndpoint {
             Element programEnrollmentResult = EnrollmentEndpointUtil.buildEnrollmentResponse(ns,
                                                                                              enrollmentResultList, 
                                                                                              enrollmentHelper);
+            
+            accountEventLogService.unenrollmentAttemptedThroughWebServices(user, 
+                                                                           enrollmentHelper.getAccountNumber(), 
+                                                                           enrollmentHelper.getSerialNumber(), 
+                                                                           enrollmentHelper.getProgramName(), 
+                                                                           enrollmentHelper.getProgramName());
+
             Element resultElement;
             try {
                 enrollmentHelperService.doEnrollment(enrollmentHelper, EnrollmentEnum.UNENROLL, user);
@@ -67,8 +76,12 @@ public class UnenrollmentRequestEndpoint {
     }
     
     @Autowired
-    public void setEnrollmentHelperService(
-            EnrollmentHelperService enrollmentHelperService) {
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    } 
+    
+    @Autowired
+    public void setEnrollmentHelperService(EnrollmentHelperService enrollmentHelperService) {
         this.enrollmentHelperService = enrollmentHelperService;
     }
     

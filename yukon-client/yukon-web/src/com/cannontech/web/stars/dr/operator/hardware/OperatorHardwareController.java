@@ -288,7 +288,7 @@ public class OperatorHardwareController {
             if(!bindingResult.hasErrors()) {
                 
                 hardwareDto.setInventoryId(inventoryId);
-                statusChange = hardwareService.updateHardware(hardwareDto);
+                statusChange = hardwareService.updateHardware(userContext, hardwareDto);
             }
         } catch (StarsDeviceSerialNumberAlreadyExistsException e) {
             bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.unavailable");
@@ -390,7 +390,8 @@ public class OperatorHardwareController {
         /* Delete this hardware or just take it off the account and put in back in the warehouse */
         boolean delete = deleteOption.equalsIgnoreCase("delete");
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
-        hardwareService.deleteHardware(delete, inventoryId, accountInfoFragment.getAccountId(), energyCompany);
+        hardwareService.deleteHardware(userContext, delete, inventoryId, 
+                                       accountInfoFragment.getAccountId(), energyCompany);
         
         AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
         if(delete) {
@@ -408,7 +409,7 @@ public class OperatorHardwareController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         int deviceId = -1;
         try {
-            SimpleDevice yukonDevice = hardwareService.createTwoWayDevice(inventoryId, deviceName);
+            SimpleDevice yukonDevice = hardwareService.createTwoWayDevice(userContext, inventoryId, deviceName);
             deviceId = yukonDevice.getDeviceId();
         } catch (StarsTwoWayLcrYukonDeviceCreationException e) {
             modelMap.addAttribute("errorOccurred", Boolean.TRUE);
