@@ -136,7 +136,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
     }
 
     const string sqlCore = Database::Tables::PaoPropertyTable::getSQLCoreStatement() +
-                           " WHERE PPR.propertyname = 'TcpPort' OR PPR.propertyname = 'TcpIpAddress'";
+                           " WHERE (PPR.propertyname = 'TcpPort' OR PPR.propertyname = 'TcpIpAddress')";
 
     const string idClause = Database::Tables::PaoPropertyTable::addIDSQLClause(device_ids);
 

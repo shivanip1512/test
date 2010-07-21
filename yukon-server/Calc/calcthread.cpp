@@ -1877,84 +1877,77 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
     double value;
     DynamicTableDataIter iter;
 
-    try
-    {
-        set<long> compIDList = calcPoint->getComponentIDList();
+    if( calcPoint->getComponentIDList().empty() )
+	{
+		return;
+	}
 
-        static const string sqlIds = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
-                                     "FROM RAWPOINTHISTORY RPH "
-                                     "WHERE RPH.TIMESTAMP > ?";
+	try
+	{
+		set<long> compIDList = calcPoint->getComponentIDList();
 
-        Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection);
+		static const string sqlIds = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+									 "FROM RAWPOINTHISTORY RPH "
+									 "WHERE RPH.TIMESTAMP > ?";
 
-        if( compIDList.size() <= 0 )
-        {
-            //Dont allow us to get any, theres no components on our point!
-            static const string sqlNoIds = string(sqlIds + " AND RPH.TIMESTAMP = ? AND RPH.POINTID = -124");
+		Cti::Database::DatabaseConnection connection;
+		Cti::Database::DatabaseReader rdr(connection);
 
-            rdr.setCommandText(sqlNoIds);
-            rdr << lastTime
-                << CtiTime().now();
-        }
-        else
-        {
-            std::stringstream ss;
+		std::stringstream ss;
 
-            ss << sqlIds << " AND RPH.POINTID IN (";
-    
-            for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
-            {
-                if( idIter != compIDList.begin() )
-                {
-                    ss << ", " << *idIter;
-                }
-                else
-                {
-                    ss << *idIter;
-                }
-            }
-    
-            ss << ")";
+		ss << sqlIds << " AND RPH.POINTID IN (";
 
-            rdr.setCommandText(ss.str());
-            rdr << lastTime;
-        }
+		for( set<long>::iterator idIter = compIDList.begin(); idIter != compIDList.end(); idIter++ )
+		{
+			if( idIter != compIDList.begin() )
+			{
+				ss << ", " << *idIter;
+			}
+			else
+			{
+				ss << *idIter;
+			}
+		}
 
-        rdr.execute();
+		ss << ")";
 
-        //  iterate through the components
-        while( rdr() )
-        {
-            //  read 'em in, and append to the data structure
-            rdr["POINTID"] >> pointid;
-            rdr["TIMESTAMP"] >> timeStamp;
-            rdr["VALUE"] >> value;
+		rdr.setCommandText(ss.str());
+		rdr << lastTime;
 
-            if( (iter = data.find(timeStamp)) != data.end() )
-            {
-                iter->second.insert(HistoricalPointValueMap::value_type(pointid, value));
-            }
-            else
-            {
-                HistoricalPointValueMap insertMap;
-                insertMap.insert(HistoricalPointValueMap::value_type(pointid, value));
-                data.insert(DynamicTableData::value_type(timeStamp, insertMap));
-            }
-        }
+		rdr.execute();
 
-    }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+		//  iterate through the components
+		while( rdr() )
+		{
+			//  read 'em in, and append to the data structure
+			rdr["POINTID"] >> pointid;
+			rdr["TIMESTAMP"] >> timeStamp;
+			rdr["VALUE"] >> value;
+
+			if( (iter = data.find(timeStamp)) != data.end() )
+			{
+				iter->second.insert(HistoricalPointValueMap::value_type(pointid, value));
+			}
+			else
+			{
+				HistoricalPointValueMap insertMap;
+				insertMap.insert(HistoricalPointValueMap::value_type(pointid, value));
+				data.insert(DynamicTableData::value_type(timeStamp, insertMap));
+			}
+		}
+
+	}
+	catch( RWxmsg &msg )
+	{
+		CtiLockGuard<CtiLogger> doubt_guard(dout);
+		dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
+		exit( -1 );
+	}
+	catch(...)
+	{
+		CtiLockGuard<CtiLogger> logger_guard(dout);
+		dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+	}
 }
 
 void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTime &lastTime, DynamicTableSinglePointData &data)
