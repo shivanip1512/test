@@ -17,7 +17,7 @@ import com.cannontech.web.util.ExtTreeNode;
 
 public class DeviceGroupTreeUtils {
 
-    public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback nodeCallback) {
+    public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback) {
     
         DeviceGroupExtTreeBuilder builder = new DeviceGroupExtTreeBuilder();
         
@@ -52,7 +52,7 @@ public class DeviceGroupTreeUtils {
     }
     
     /**
-     * To be called on node after tree heirarchy has been constructed
+     * To be called on node after tree hierarchy has been constructed
      * @param node
      */
     public static void setLeaf(ExtTreeNode node) {

@@ -14,7 +14,7 @@ public class DeviceGroupExtTreeBuilder {
     
     private Map<String, Integer> nodeIdHistory = new HashMap<String, Integer>();
     
-    public ExtTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback nodeCallback, String parentNodeId) {
+    public ExtTreeNode doMakeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, NodeAttributeSettingCallback<DeviceGroup> nodeCallback, String parentNodeId) {
         
         DeviceGroup deviceGroup = dgh.getGroup();
         

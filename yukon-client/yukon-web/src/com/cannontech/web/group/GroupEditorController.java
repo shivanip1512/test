@@ -333,7 +333,7 @@ public class GroupEditorController extends MultiActionController {
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
-        class DisableCurrentGroup implements NodeAttributeSettingCallback {
+        class DisableCurrentGroup implements NodeAttributeSettingCallback<DeviceGroup> {
             public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
                 
                 if (group.equals(deviceGroup)) {

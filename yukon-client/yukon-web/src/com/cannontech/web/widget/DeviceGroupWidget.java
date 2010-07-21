@@ -84,7 +84,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new ModifiableDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
-        class AddGroupIdInfoAndDisableCurrentGroups implements NodeAttributeSettingCallback {
+        class AddGroupIdInfoAndDisableCurrentGroups implements NodeAttributeSettingCallback<DeviceGroup> {
             public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
                 
                 String groupId = ((Integer)((StoredDeviceGroup)deviceGroup).getId()).toString();

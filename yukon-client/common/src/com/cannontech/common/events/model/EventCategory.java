@@ -24,6 +24,10 @@ public class EventCategory implements Comparable<EventCategory> {
         }
     }
     
+    public String getName() {
+        return name;
+    }
+    
     public EventCategory getParent() {
         return parent;
     }

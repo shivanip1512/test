@@ -3,7 +3,7 @@ package com.cannontech.web.group;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.web.util.ExtTreeNode;
 
-public class HighlightSelectedGroupNodeAttributeSettingCallback implements NodeAttributeSettingCallback {
+public class HighlightSelectedGroupNodeAttributeSettingCallback implements NodeAttributeSettingCallback<DeviceGroup> {
 
 	private DeviceGroup selectedDeviceGroup;
 	private String extSelectedNodePath;
