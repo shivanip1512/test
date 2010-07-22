@@ -165,8 +165,7 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
             status = decodeGetValueControlTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_XfmrHistoricalCT1:
-        case Emetcon::GetValue_XfmrHistoricalCT2:
+        case Emetcon::GetValue_XfmrHistoricalCT:
         {
             status = decodeGetValueXfmrHistoricalRuntime( InMessage, TimeNow, vgList, retList, outList );
             break;
@@ -593,8 +592,7 @@ INT LCR3102::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &Ti
 
         const int NumHours = 8;
         std::vector<int> runtimeHours = decodeXfmrHistoricalRuntimeMessage(DSt->Message);
-        getOperation(InMessage->Sequence, BSt);
-        int currentTransformer = BSt.Function - FuncRead_XfmrHistoricalCT1Pos + 1;
+        int currentTransformer = InMessage->Return.ProtocolInfo.Emetcon.Function - FuncRead_XfmrHistoricalCT1Pos + 1;
 
         if(currentTransformer == 1 || currentTransformer == 2)
         {
@@ -1101,9 +1099,8 @@ LCR3102::CommandSet LCR3102::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetValue_Shedtime,          Emetcon::IO_Function_Read, FuncRead_ShedtimePos,          FuncRead_ShedtimeLen));
     cs.insert(CommandStore(Emetcon::GetValue_PropCount,         Emetcon::IO_Function_Read, FuncRead_PropCountPos,         FuncRead_PropCountLen));
     cs.insert(CommandStore(Emetcon::GetValue_ControlTime,       Emetcon::IO_Function_Read, FuncRead_ControlTimePos,       FuncRead_ControlTimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT1, Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT1Pos, FuncRead_XfmrHistoricalLen));
+    cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT,  Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT1Pos, FuncRead_XfmrHistoricalLen));
     cs.insert(CommandStore(Emetcon::GetValue_DutyCycle,         Emetcon::IO_Function_Read, FuncRead_DutyCyclePos,         FuncRead_DutyCycleLen));
-    cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT2, Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT2Pos, FuncRead_XfmrHistoricalLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,         0,                             0));    // filled in later
     cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,          0,                             0));    // ...ditto
                                                                                                                         
@@ -1217,6 +1214,8 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     }
     else if(parse.getFlags() & CMD_FLAG_GV_XFMR_HISTORICAL_RUNTIME)
     {
+        function = Emetcon::GetValue_XfmrHistoricalCT;
+        found = getOperation(function, OutMessage->Buffer.BSt);
         int load = parseLoadValue(parse);
 
         if( load == -1 )
@@ -1225,8 +1224,7 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
         }
         else
         {
-            function = Emetcon::GetValue_XfmrHistoricalCT1 + load - 1;
-            found = getOperation(function, OutMessage->Buffer.BSt);
+            OutMessage->Buffer.BSt.Function += load - 1;
         }
     }
     else if(parse.getFlags() & CMD_FLAG_GV_DUTYCYCLE)

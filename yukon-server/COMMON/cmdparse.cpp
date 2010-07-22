@@ -466,7 +466,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     static const boost::regex   re_propcount        (CtiString("propcount"));
     static const boost::regex   re_control_time     (CtiString("controltime remaining(( load| relay) ") + str_num + CtiString(")?"));
     static const boost::regex   re_xfmr_historical  (CtiString("historical(( transformer| table) ") + str_num + CtiString(")?"));
-    static const boost::regex   re_duty_cycle     (CtiString("duty cycle( ct ") + str_num + CtiString(")?"));
+    static const boost::regex   re_duty_cycle       (CtiString("duty cycle( ct ") + str_num + CtiString(")?"));
 
     CtiTokenizer   tok(CmdStr);
 

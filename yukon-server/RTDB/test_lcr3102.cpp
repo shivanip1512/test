@@ -27,42 +27,13 @@ public:
     using LCR3102::decodeMessageTransmitPower;
     using LCR3102::decodeMessageSoftspec;
     using LCR3102::decodeMessageTemperature;
-
-    point_info test_getSixBitValue(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
-    {
-        return getSixBitValueFromBuffer(buffer, valuePosition, bufferSize);
-    }
-
-    INT test_decodeGetValueIntervalLast ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-    {
-        return decodeGetValueIntervalLast ( InMessage, TimeNow, vgList, retList, outList );
-    }
-
-    INT test_decodeGetValuePropCount ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-    {
-        return decodeGetValuePropCount(InMessage, TimeNow, vgList, retList, outList);
-    }
-
-    // Currently untested. Some testing is done through getSixBitValueFromBuffer
-    INT test_decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-    {
-        return decodeGetValueHistoricalTime(InMessage, TimeNow, vgList, retList, outList);
-    }
-
-    INT test_decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
-    {
-        return decodeGetValueControlTime(InMessage, TimeNow, vgList, retList, outList);
-    }
-
-    std::vector<int> test_decodeXfmrHistoricalRuntimeMessage( BYTE message[] )
-    {
-        return decodeXfmrHistoricalRuntimeMessage( message );
-    }
-
-    std::vector<int> test_decodeMessageDutyCycle( BYTE message[] )
-    {
-        return decodeMessageDutyCycle(message);
-    }
+    using LCR3102::getSixBitValueFromBuffer;
+    using LCR3102::decodeGetValueIntervalLast;
+    using LCR3102::decodeGetValuePropCount;
+    using LCR3102::decodeGetValueHistoricalTime;
+    using LCR3102::decodeGetValueControlTime;
+    using LCR3102::decodeXfmrHistoricalRuntimeMessage;
+    using LCR3102::decodeMessageDutyCycle;
 
 private:
     typedef std::map< int, point_info > point_results_map;
@@ -102,37 +73,37 @@ BOOST_AUTO_TEST_CASE(test_dev_lcr3102_get6BitData)
     static const int BUFFER_SIZE = 7;
     unsigned char buffer[BUFFER_SIZE] = {0x10, 0x03, 0xCF, 0x3C, 0xF3, 0xCF, 0x01};
 
-    result = device.test_getSixBitValue(buffer, 0, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 0, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(4, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 1, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 1, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(0, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 2, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 2, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(15, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 3, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 3, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(15, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 4, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 4, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(15, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 5, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 5, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(15, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 6, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 6, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(15, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 7, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 7, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(15, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 8, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 8, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(0, result.value);
     BOOST_CHECK_EQUAL(NormalQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 9, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 9, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(0x3F, result.value);
     BOOST_CHECK_EQUAL(InvalidQuality, result.quality);
-    result = device.test_getSixBitValue(buffer, 10, BUFFER_SIZE);
+    result = device.getSixBitValueFromBuffer(buffer, 10, BUFFER_SIZE);
     BOOST_CHECK_EQUAL(0x3F, result.value);
     BOOST_CHECK_EQUAL(InvalidQuality, result.quality);
 }
@@ -195,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     InMessage.Buffer.DSt.Message[3] = relay_2_watts >> 8;
     InMessage.Buffer.DSt.Message[4] = relay_2_watts;
 
-    test_device.test_decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
 
     test_LCR3102::point_info pi;
 
@@ -223,7 +194,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     pi = test_device.test_getPointResults(PointOffest_intervals_relay_3);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
 
-    test_device.test_decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
 
     pi = test_device.test_getPointResults(PointOffest_intervals_relay_3);
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
@@ -256,7 +227,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_4);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
 
-    test_device_2.test_decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
+    test_device_2.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
 
     pi = test_device_2.test_getPointResults(PointOffest_intervals_relay_2);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
@@ -298,7 +269,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 
     InMessage.Buffer.DSt.Message[0] = propcount;
 
-    test_device.test_decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
 
     test_LCR3102::point_info pi;
 
@@ -313,7 +284,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 
     InMessage.Buffer.DSt.Message[0] = propcount;
 
-    test_device.test_decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
 
     pi = test_device.test_getPointResults(PointOffest_Propcount);
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
@@ -351,7 +322,7 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
     InMessage.Buffer.DSt.Message[3] = relay1_controlTime >> 8;
     InMessage.Buffer.DSt.Message[4] = relay1_controlTime;
 
-    test_device.test_decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
+    test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
 
     test_LCR3102::point_info pi = test_device.test_getPointResults(PointOffest_controltime_relay_1);
 
@@ -499,7 +470,7 @@ BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)
     InMessage.Buffer.DSt.Message[4] = 0x17;
     InMessage.Buffer.DSt.Message[5] = 0x2a;
 
-    std::vector<int> runtimeHours = test_device.test_decodeXfmrHistoricalRuntimeMessage(InMessage.Buffer.DSt.Message);
+    std::vector<int> runtimeHours = test_device.decodeXfmrHistoricalRuntimeMessage(InMessage.Buffer.DSt.Message);
 
     BOOST_CHECK_EQUAL(runtimeHours.at(0),  1);
     BOOST_CHECK_EQUAL(runtimeHours.at(1),  0);
@@ -519,7 +490,7 @@ BOOST_AUTO_TEST_CASE(test_duty_cycle)
     InMessage.Buffer.DSt.Message[0]  = 0x02;
     InMessage.Buffer.DSt.Message[1]  = 0x2a;
 
-    std::vector<int> test_vec = test_device.test_decodeMessageDutyCycle(InMessage.Buffer.DSt.Message);
+    std::vector<int> test_vec = test_device.decodeMessageDutyCycle(InMessage.Buffer.DSt.Message);
 
     BOOST_CHECK_EQUAL(test_vec.at(1),  2);
     BOOST_CHECK_EQUAL(test_vec.at(0), 42);

@@ -71,8 +71,7 @@ public:
         GetValue_ControlTime,
         GetValue_TransmitPower,
         GetValue_Temperature,
-        GetValue_XfmrHistoricalCT1,
-        GetValue_XfmrHistoricalCT2,
+        GetValue_XfmrHistoricalCT,
         GetValue_DutyCycle,
 
         // PutValue Commands
