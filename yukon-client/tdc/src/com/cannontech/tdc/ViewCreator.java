@@ -2,9 +2,12 @@ package com.cannontech.tdc;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
+
+import org.apache.commons.lang.time.DateUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -151,17 +154,17 @@ public class ViewCreator
 
 		GregorianCalendar lowerCal = new GregorianCalendar();
 		lowerCal.setTime( date );
-		lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
-		lowerCal.set( lowerCal.MINUTE, 0 );
-		lowerCal.set( lowerCal.SECOND, 0 );
-		lowerCal.set( lowerCal.MILLISECOND, 000 );
+		lowerCal.set( Calendar.HOUR_OF_DAY, 0 );
+		lowerCal.set( Calendar.MINUTE, 0 );
+		lowerCal.set( Calendar.SECOND, 0 );
+		lowerCal.set( Calendar.MILLISECOND, 0 );
    
 		GregorianCalendar upperCal = new GregorianCalendar();
 		upperCal.setTime( date );
-		upperCal.set( upperCal.HOUR_OF_DAY, 23 );
-		upperCal.set( upperCal.MINUTE, 59 );
-		upperCal.set( upperCal.SECOND, 59 );
-		upperCal.set( upperCal.MILLISECOND, 999 );
+		upperCal.set( Calendar.HOUR_OF_DAY, 23 );
+		upperCal.set( Calendar.MINUTE, 59 );
+		upperCal.set( Calendar.SECOND, 59 );
+		upperCal.set( Calendar.MILLISECOND, 999 );
 
 
 
@@ -287,17 +290,17 @@ public class ViewCreator
    
 		GregorianCalendar lowerCal = new GregorianCalendar();
 		lowerCal.setTime( date );
-		lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
-		lowerCal.set( lowerCal.MINUTE, 0 );
-		lowerCal.set( lowerCal.SECOND, 0 );
-		lowerCal.set( lowerCal.MILLISECOND, 000 );
+		lowerCal.set( Calendar.HOUR_OF_DAY, 0 );
+		lowerCal.set( Calendar.MINUTE, 0 );
+		lowerCal.set( Calendar.SECOND, 0 );
+		lowerCal.set( Calendar.MILLISECOND, 0 );
    
 		GregorianCalendar upperCal = new GregorianCalendar();
 		upperCal.setTime( date );
-		upperCal.set( upperCal.HOUR_OF_DAY, 23 );
-		upperCal.set( upperCal.MINUTE, 59 );
-		upperCal.set( upperCal.SECOND, 59 );
-		upperCal.set( upperCal.MILLISECOND, 999 );
+		upperCal.set( Calendar.HOUR_OF_DAY, 23 );
+		upperCal.set( Calendar.MINUTE, 59 );
+		upperCal.set( Calendar.SECOND, 59 );
+		upperCal.set( Calendar.MILLISECOND, 999 );
 
 
 
@@ -449,17 +452,17 @@ public class ViewCreator
 
 		GregorianCalendar lowerCal = new GregorianCalendar();
 		lowerCal.setTime( date );
-		lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
-		lowerCal.set( lowerCal.MINUTE, 0 );
-		lowerCal.set( lowerCal.SECOND, 0 );
-		lowerCal.set( lowerCal.MILLISECOND, 000 );
+		lowerCal.set( Calendar.HOUR_OF_DAY, 0 );
+		lowerCal.set( Calendar.MINUTE, 0 );
+		lowerCal.set( Calendar.SECOND, 0 );
+		lowerCal.set( Calendar.MILLISECOND, 0 );
    
 		GregorianCalendar upperCal = new GregorianCalendar();
 		upperCal.setTime( date );
-		upperCal.set( upperCal.HOUR_OF_DAY, 23 );
-		upperCal.set( upperCal.MINUTE, 59 );
-		upperCal.set( upperCal.SECOND, 59 );
-		upperCal.set( upperCal.MILLISECOND, 999 );
+		upperCal.set( Calendar.HOUR_OF_DAY, 23 );
+		upperCal.set( Calendar.MINUTE, 59 );
+		upperCal.set( Calendar.SECOND, 59 );
+		upperCal.set( Calendar.MILLISECOND, 999 );
 
 
 		Object[] objs = new Object[2];
@@ -531,10 +534,22 @@ public class ViewCreator
 	{
 		tableModel.setCurrentDate( date );
 
-		String rowCountQuery = "select min(s.logid), max(s.logid)" +
+        SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");
+
+	    GregorianCalendar lowerCal = new GregorianCalendar();
+	    lowerCal.setTime(DateUtils.truncate(date, Calendar.DATE));
+	   
+	    GregorianCalendar upperCal = new GregorianCalendar();
+	    upperCal.setTimeInMillis(lowerCal.getTimeInMillis());
+	    upperCal.add(Calendar.DATE, 1);
+	        
+		String rowCountQuery = "select min(s.logid) " +
 						  " from " + SystemLog.TABLE_NAME + " s" +
-						  " where s.datetime >= ?" +
-						  " and s.datetime < ?";
+                          " where s.datetime >= ? " +
+                          " and s.datetime < ?";
+
+//						  " where s.datetime >= '" + format.format(lowerCal.getTime()) + "' " +
+//						  " and s.datetime < '" + format.format(upperCal.getTime()) + "'";
 
 		String rowQuery = "select s.datetime, y.PAOName, p.pointname, s.description, s.action, " +
 						  " s.username, s.pointid, s.soe_tag " +
@@ -546,31 +561,17 @@ public class ViewCreator
 						  " and s.logid <= ? " +
 						  " order by s.datetime, s.soe_tag";
    
-		GregorianCalendar lowerCal = new GregorianCalendar();
-		lowerCal.setTime( date );
-		lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
-		lowerCal.set( lowerCal.MINUTE, 0 );
-		lowerCal.set( lowerCal.SECOND, 0 );
-		lowerCal.set( lowerCal.MILLISECOND, 000 );
-   
-		GregorianCalendar upperCal = new GregorianCalendar();
-		upperCal.setTime( date );
-		upperCal.set( upperCal.HOUR_OF_DAY, 23 );
-		upperCal.set( upperCal.MINUTE, 59 );
-		upperCal.set( upperCal.SECOND, 59 );
-		upperCal.set( upperCal.MILLISECOND, 999 );
-
-		Object[] objs = new Object[2];
-		objs[0] = lowerCal.getTime();
-		objs[1] = upperCal.getTime();
-
+	      Object[] objs = new Object[2];
+	        objs[0] = lowerCal.getTime();
+	        objs[1] = upperCal.getTime();
+	        
 		//get the row count, min, max   
-		Object[][] rowCount = DataBaseInteraction.queryResults( rowCountQuery, objs );
+		Object[][] rowCount = DataBaseInteraction.queryResults( rowCountQuery, objs);
 
 		//set the correct page number values
 		processPagingValues(
 				rowCount[0][0].toString(),
-				rowCount[0][1].toString(),
+				"0",
 				page );
 
 	
@@ -676,17 +677,17 @@ public class ViewCreator
 						  
 		GregorianCalendar lowerCal = new GregorianCalendar();
 		lowerCal.setTime( date );
-		lowerCal.set( lowerCal.HOUR_OF_DAY, 0 );
-		lowerCal.set( lowerCal.MINUTE, 0 );
-		lowerCal.set( lowerCal.SECOND, 0 );
-		lowerCal.set( lowerCal.MILLISECOND, 000 );
+		lowerCal.set( Calendar.HOUR_OF_DAY, 0 );
+		lowerCal.set( Calendar.MINUTE, 0 );
+		lowerCal.set( Calendar.SECOND, 0 );
+		lowerCal.set( Calendar.MILLISECOND, 0 );
    
 		GregorianCalendar upperCal = new GregorianCalendar();
 		upperCal.setTime( date );
-		upperCal.set( upperCal.HOUR_OF_DAY, 23 );
-		upperCal.set( upperCal.MINUTE, 59 );
-		upperCal.set( upperCal.SECOND, 59 );
-		upperCal.set( upperCal.MILLISECOND, 999 );
+		upperCal.set( Calendar.HOUR_OF_DAY, 23 );
+		upperCal.set( Calendar.MINUTE, 59 );
+		upperCal.set( Calendar.SECOND, 59 );
+		upperCal.set( Calendar.MILLISECOND, 999 );
 
 
 

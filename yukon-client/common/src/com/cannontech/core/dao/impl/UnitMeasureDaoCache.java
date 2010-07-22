@@ -1,9 +1,9 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.map.LRUMap;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -19,7 +19,6 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
  * --tmack
  */
 public class UnitMeasureDaoCache implements UnitMeasureDao, InitializingBean {
-    private int cacheSize = 15;
     private UnitMeasureDao delegate;
     private Map<String, LiteUnitMeasure> byNameCache;
     private Map<Integer, LiteUnitMeasure> byIdCache;
@@ -46,11 +45,8 @@ public class UnitMeasureDaoCache implements UnitMeasureDao, InitializingBean {
     }
 
     public LiteUnitMeasure getLiteUnitMeasure(String uomName) {
-        LiteUnitMeasure measure = byNameCache.get(uomName);
-        if (measure == null) {
-            measure = delegate.getLiteUnitMeasure(uomName);
-            byNameCache.put(uomName, measure);
-        }
+        String uomNameToLower = uomName.toLowerCase();
+        LiteUnitMeasure measure = byNameCache.get(uomNameToLower);
         return measure;
     }
 
@@ -65,16 +61,15 @@ public class UnitMeasureDaoCache implements UnitMeasureDao, InitializingBean {
     @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
         // suppress warning here for the sake of clean code elsewhere
-        byNameCache = new LRUMap(cacheSize);
-        byIdCache = new LRUMap(cacheSize);
-    }
+        byNameCache = new HashMap<String, LiteUnitMeasure>();
+        byIdCache = new HashMap<Integer, LiteUnitMeasure>();
 
-    public int getCacheSize() {
-        return cacheSize;
+        // Do an initial load of all the unitMeasure values
+        List<LiteUnitMeasure> liteUnitMeasures = delegate.getLiteUnitMeasures();
+        for (LiteUnitMeasure liteUnitMeasure : liteUnitMeasures) {
+            String toLowerLongName = liteUnitMeasure.getLongName().toLowerCase();
+            byNameCache.put(toLowerLongName, liteUnitMeasure);
+            byIdCache.put(liteUnitMeasure.getUomID(), liteUnitMeasure);
+        }
     }
-
-    public void setCacheSize(int cacheSize) {
-        this.cacheSize = cacheSize;
-    }
-
 }

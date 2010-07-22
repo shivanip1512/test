@@ -137,7 +137,6 @@
         <property name="jdbcOps" ref="simpleJdbcTemplate"/>
       </bean>
     </property>
-    <property name="cacheSize" value="10"/>
   </bean>
   <bean id="yukonImageDao" class="com.cannontech.core.dao.impl.YukonImageDaoImpl" >
      <property name="databaseCache" ref="databaseCache"/>      
