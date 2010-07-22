@@ -40,6 +40,7 @@ public interface ConsumerInfoRole {
     public static final int ROTATION_DIGIT_LENGTH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 62;
     public static final int ALLOW_ACCOUNT_EDITING = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 63;
     public static final int ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 64;
+    public static final int ACCOUNT_SEARCH = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE - 65;
     
 	public static final int WEB_LINK_FAQ = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2;
 	public static final int WEB_LINK_THERM_INSTRUCTIONS = OperatorRoleDefs.CONSUMER_INFO_PROPERTYID_BASE2 - 1;

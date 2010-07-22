@@ -82,22 +82,24 @@
 		<c:if test="${showStarsList}">
 			<div class="sectionForm">
 			
-				<form id="accountSearchForm" action="/spring/stars/operator/account/search" method="get">
-				
-					<div class="sectionFormLabel"><cti:msg key="yukon.web.modules.operator.search.searchPrompt"/></div>
-					<div>
-					<select name="searchBy" onchange="$('accountSearchValue').value = ''">
-						<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
-							<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
-								<cti:msg key="${operatorAccountSearchBy.formatKey}"/>
-							</option>
-						</c:forEach>
-					</select>
-					<input type="text" name="searchValue" id="accountSearchValue" value="" size="15">
-					<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="$('accountSearchForm').submit();"> 
-					</div>
-					
-				</form>
+                <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
+    				<form id="accountSearchForm" action="/spring/stars/operator/account/search" method="get">
+    				
+    					<div class="sectionFormLabel"><cti:msg key="yukon.web.modules.operator.search.searchPrompt"/></div>
+    					<div>
+    					<select name="searchBy" onchange="$('accountSearchValue').value = ''">
+    						<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
+    							<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == searchBy}">selected</c:if>>
+    								<cti:msg key="${operatorAccountSearchBy.formatKey}"/>
+    							</option>
+    						</c:forEach>
+    					</select>
+    					<input type="text" name="searchValue" id="accountSearchValue" value="" size="15">
+    					<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="$('accountSearchForm').submit();"> 
+    					</div>
+    					
+    				</form>
+                </cti:checkRolesAndProperties>
 
 				<!-- HIDE SEARCH BOX INTO OLD STARS OPERATOR PAGES 	-->	
 				<cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
@@ -239,25 +241,27 @@
         --%>
         
         <!-- Hardware search form -->
-        <c:if test="${showStarsList}">
-			<div class="sectionForm">
-				<form name="invSearchForm" method="POST" action="<cti:url value="/servlet/InventoryManager"/>">
-					<input type="hidden" name="action" value="SearchInventory">
-					<input type="hidden" name="REDIRECT" value="<cti:url value="/operator/Hardware/ResultSet.jsp"/>">
-					<div class="sectionFormLabel">Search for existing hardware:</div>
-					<div>
-						<select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
-							<c:forEach items="${inventorySearchList}" var="entry">
-								<option value="${entry.yukonDefID}" >${entry.content}</option>
-							</c:forEach>
-						</select>
-			
-						<input type="text" name="SearchValue" size="15" value="">
-						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
-					</div>
-				</form>
-			</div>
-		</c:if>
+		<cti:checkRolesAndProperties value="INVENTORY_SEARCH">
+            <c:if test="${showStarsList}">
+    			<div class="sectionForm">
+    				<form name="invSearchForm" method="POST" action="<cti:url value="/servlet/InventoryManager"/>">
+    					<input type="hidden" name="action" value="SearchInventory">
+    					<input type="hidden" name="REDIRECT" value="<cti:url value="/operator/Hardware/ResultSet.jsp"/>">
+    					<div class="sectionFormLabel">Search for existing hardware:</div>
+    					<div>
+    						<select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
+    							<c:forEach items="${inventorySearchList}" var="entry">
+    								<option value="${entry.yukonDefID}" >${entry.content}</option>
+    							</c:forEach>
+    						</select>
+    			
+    						<input type="text" name="SearchValue" size="15" value="">
+    						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
+    					</div>
+    				</form>
+    			</div>
+    		</c:if>
+		</cti:checkRolesAndProperties>
 	</tags:operationSection>
 
 </cti:checkRole>

@@ -281,6 +281,7 @@ public enum YukonRoleProperty {
     OPERATOR_OPT_OUT_ADMIN_CHANGE_COUNTS(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.OPT_OUT_ADMIN_CHANGE_COUNTS, booleanType()),
     OPERATOR_THERMOSTAT_SCHEDULE_5_2(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.THERMOSTAT_SCHEDULE_5_2, booleanType()),
     OPERATOR_ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, booleanType()),
+    OPERATOR_ACCOUNT_SEARCH(CONSUMER_INFO, com.cannontech.roles.operator.ConsumerInfoRole.ACCOUNT_SEARCH, booleanType()),
     
     BULK_IMPORT_OPERATION(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.BULK_IMPORT_OPERATION, booleanType()),
     BULK_UPDATE_OPERATION(DEVICE_ACTIONS, com.cannontech.roles.operator.DeviceActionsRole.BULK_UPDATE_OPERATION, booleanType()),
@@ -310,6 +311,7 @@ public enum YukonRoleProperty {
     ALLOW_MULTIPLE_WAREHOUSES(INVENTORY, com.cannontech.roles.operator.InventoryRole.ALLOW_MULTIPLE_WAREHOUSES, stringType()),
     PURCHASING_ACCESS(INVENTORY, com.cannontech.roles.operator.InventoryRole.PURCHASING_ACCESS, booleanType()),
     DEVICE_RECONFIG(INVENTORY, com.cannontech.roles.operator.InventoryRole.DEVICE_RECONFIG, booleanType()),
+    INVENTORY_SEARCH(INVENTORY, com.cannontech.roles.operator.InventoryRole.INVENTORY_SEARCH, booleanType()),
     
     IMPORTER_ENABLED(METERING, com.cannontech.roles.operator.MeteringRole.IMPORTER_ENABLED, booleanType()),
     PROFILE_COLLECTION(METERING, com.cannontech.roles.operator.MeteringRole.PROFILE_COLLECTION, booleanType()),
