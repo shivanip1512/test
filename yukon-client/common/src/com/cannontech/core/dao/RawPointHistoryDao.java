@@ -3,11 +3,16 @@ package com.cannontech.core.dao;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.google.common.collect.ListMultimap;
 
 /**
  * Data access object for raw point history values.
@@ -60,6 +65,45 @@ public interface RawPointHistoryDao {
      * @return List of values for the point
      */
     public List<PointValueHolder> getLimitedPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive, boolean reverseOrder, int maxRows);
+    
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
+     * such that the RPH values for each PAO will be accessible (and ordered) on their own.
+     * 
+     * @param paos The Iterable of PAOs
+     * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
+     * @param startDate The lower limit for the timestamp of the values to return, may be null
+     * @param stopDate The upper limit for the timestamp of the values to return, may be null
+     * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @return
+     */
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos);
+    
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
+     * such that the RPH values for each PAO will be accessible (and ordered) on their own. For any pao in "paos", the following will
+     * be true:
+     * 
+     * result.get(pao).size() <= maxRows
+     * 
+     * @param paos The Iterable of PAOs
+     * @param attribute The Attribute to return, this can either be a regular or a mapped attribute
+     * @param startDate The lower limit for the timestamp of the values to return, may be null
+     * @param stopDate The upper limit for the timestamp of the values to return, may be null
+     * @param maxRows The maximum number of rows to return for each PAO
+     * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @return
+     */
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos);
+    
+    /**
+     * Equivalent to calling
+     *   getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices);
+     *   
+     * and converting the Multimap into a Map (because there will only be one value per key).
+     */
+    public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, boolean excludeDisabledPaos);
+
 
     /**
      * This method gets values from raw point history similarly to getPointData. But, it

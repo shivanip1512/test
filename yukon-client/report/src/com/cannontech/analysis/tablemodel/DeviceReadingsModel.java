@@ -1,7 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,8 +8,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
@@ -19,35 +15,24 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.SqlFragmentGenerator;
-import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dynamic.PointValueBuilder;
+import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.CachingPointFormattingService;
+import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadingsModel.ModelRow> 
                                    implements UserContextModelAttributes {
 
     private Logger log = YukonLogManager.getLogger(DeviceReadingsModel.class);
-
-    // dependencies
-    private SimpleJdbcOperations simpleJdbcTemplate;
-    private AttributeService attributeService;
 
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
@@ -66,6 +51,8 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     private DeviceDao deviceDao;
 
     private PointFormattingService pointFormattingService;
+    private PaoLoadingService paoLoadingService;
+    private RawPointHistoryDao rawPointHistoryDao;
 
     private YukonUserContext userContext;
 
@@ -96,99 +83,35 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
 
     public void doLoadData() {
         List<SimpleDevice> devices = getDeviceList();
-        List<PaoPointIdentifier> identifiers = Lists.newArrayList();
-        for(SimpleDevice device : devices) {
-            try {
-                PaoPointIdentifier identifier = attributeService.getPaoPointIdentifierForAttribute(device, attribute);
-                identifiers.add(identifier);
-            } catch (IllegalArgumentException e) {
-                continue;  /* This device does not support the choosen attribute. */
-            }
+        List<DisplayablePao> displayableDevices = paoLoadingService.getDisplayableDevices(devices);
+        
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
+        
+        if (getAll) {
+            intermediateResults = rawPointHistoryDao.getAttributeData(displayableDevices, attribute, getStartDate(), getStopDate(), excludeDisabledDevices);
+        } else {
+            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices);
         }
-        ImmutableMultimap<PointIdentifier, PaoIdentifier> paoPointIdentifiersMap = PaoUtils.mapPaoPointIdentifiers(identifiers);
-
-        for(final PointIdentifier pointIdentifier : paoPointIdentifiersMap.keySet()){
-            List<Integer> deviceIds = Lists.newArrayList();
-            for(PaoIdentifier paoIdentifier :  paoPointIdentifiersMap.get(pointIdentifier)){
-                deviceIds.add(paoIdentifier.getPaoId());
+        CachingPointFormattingService cachingPointFormattingService = pointFormattingService.getCachedInstance();            
+        for (DisplayablePao displayablePao : displayableDevices) {
+            List<PointValueQualityHolder> values = intermediateResults.get(displayablePao.getPaoIdentifier());
+            for (PointValueQualityHolder pointValueHolder : values) {
+        
+                DeviceReadingsModel.ModelRow row = new DeviceReadingsModel.ModelRow();
+                row.deviceName = displayablePao.getName();
+                row.type = displayablePao.getPaoIdentifier().getPaoType().getPaoTypeName();
+                row.date = cachingPointFormattingService.getValueString(pointValueHolder,
+                                                                        Format.DATE,
+                                                                        userContext);
+                row.value = cachingPointFormattingService.getValueString(pointValueHolder,
+                                                                         Format.SHORT,
+                                                                         userContext);
+                data.add(row);
             }
-
-            ChunkingSqlTemplate template = new ChunkingSqlTemplate(simpleJdbcTemplate);
-
-            SqlFragmentGenerator<Integer> gen = new SqlFragmentGenerator<Integer>() {
-                @Override
-                public SqlFragmentSource generate(List<Integer> subList) {
-                    SqlStatementBuilder sql = new SqlStatementBuilder();
-                    if(getAll){
-                        sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
-                        sql.append("  rph.Timestamp dateTime, p.PointType pointType, p.PointId pointId ");
-                        sql.append("from YukonPAObject yp");
-                        sql.append("  join Point p on p.PAObjectID = yp.PAObjectID");
-                        sql.append("  join RawPointHistory rph on p.PointId = rph.PointId");
-                        sql.append("where p.PointOffset = ").appendArgument(pointIdentifier.getOffset());
-                        sql.append("  and p.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
-                        sql.append("  and rph.Timestamp > ").appendArgument(getStartDate());
-                        sql.append("  and rph.Timestamp <= ").appendArgument(getStopDate());
-                        sql.append("  and yp.PAObjectID in (").appendArgumentList(subList).append(") ");
-                        if (excludeDisabledDevices) {
-                            sql.append("   and yp.DisableFlag").eq("N");
-                        }
-                        sql.append("order by deviceName, dateTime desc");
-                    }else {
-                        sql.append("select distinct yp.PAOName deviceName, yp.Type type, rph.Value value,");
-                        sql.append("    p.PointType pointType, p.PointId pointId, rph.Timestamp dateTime ");
-                        sql.append("from (");
-                        sql.append("  select p.PointId pointId, max(rph.Timestamp) dateTime"); 
-                        sql.append("  from YukonPAObject yp");
-                        sql.append("    join Point p on p.PAObjectID = yp.PAObjectID"); 
-                        sql.append("    join RawPointHistory rph on p.PointId = rph.PointId");
-                        sql.append("  where p.PointOffset = ").appendArgument(pointIdentifier.getOffset());
-                        sql.append("    and p.PointType = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
-                        sql.append("    and yp.PAObjectID in (").appendArgumentList(subList).append(")");
-                        if (excludeDisabledDevices) {
-                            sql.append("    and yp.DisableFlag").eq("N");
-                        }
-                        sql.append("  group by p.PointId");
-                        sql.append(") lastReading");
-                        sql.append("  join RawPointHistory rph on lastReading.pointId = rph.pointId and lastReading.dateTime = rph.TIMESTAMP");
-                        sql.append("  join Point p on rph.POINTID = p.POINTID");
-                        sql.append("  join YukonPAObject yp on yp.PAObjectID = p.PAObjectID");
-                    }
-                    return sql;
-                }
-            };
-            
-            final CachingPointFormattingService cachingPointFormattingService = pointFormattingService.getCachedInstance();
-
-            List<ModelRow> rows = template.query(gen, deviceIds, new ParameterizedRowMapper<ModelRow>() {
-                @Override
-                public ModelRow mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    DeviceReadingsModel.ModelRow row = new DeviceReadingsModel.ModelRow();
-                    row.deviceName = rs.getString("deviceName");
-                    row.type = rs.getString("type");
-                    String value = rs.getString("value"); 
-                    String pointtype = rs.getString("pointType");
-                    Double doubleValue = Double.parseDouble(value);
-                    row.date = rs.getString("dateTime");
-
-                    PointValueBuilder builder = PointValueBuilder.create();
-                    builder.withPointId(rs.getInt("pointId"));
-                    builder.withTimeStamp(rs.getDate("dateTime"));
-                    builder.withType(PointTypes.getType(pointtype));
-                    builder.withValue(doubleValue.doubleValue());
-                    PointValueQualityHolder pointValueQualityHolder = builder.build();
-                    row.value = 
-                        cachingPointFormattingService.getValueString(pointValueQualityHolder, 
-                                                                     Format.SHORT, userContext);
-                    return row;
-                }
-            });
-            data.addAll(rows);
         }
 
         log.info("Report Records Collected from Database: " + data.size());
     }
-
 
     private List<SimpleDevice> getDeviceList() {
         if (groupsFilter != null && !groupsFilter.isEmpty()) {
@@ -246,16 +169,6 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     }
     
     @Required
-    public void setSimpleJdbcTemplate(SimpleJdbcOperations simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
-    }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
@@ -273,5 +186,15 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
     @Required
     public void setPointFormattingService(PointFormattingService pointFormattingService){
         this.pointFormattingService = pointFormattingService;
+    }
+    
+    @Required
+    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
+        this.paoLoadingService = paoLoadingService;
+    }
+    
+    @Required
+    public void setRawPointHistoryDao(RawPointHistoryDao rawPointHistoryDao) {
+        this.rawPointHistoryDao = rawPointHistoryDao;
     }
 }

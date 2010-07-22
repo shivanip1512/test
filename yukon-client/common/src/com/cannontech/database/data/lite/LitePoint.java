@@ -2,6 +2,7 @@ package com.cannontech.database.data.lite;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 
@@ -116,6 +117,10 @@ public int getPointOffset() {
  */
 public int getPointType() {
 	return pointType;
+}
+
+public PointType getPointTypeEnum() {
+    return PointType.getForId(pointType);
 }
 /**
  * Insert the method's description here.

@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -68,12 +69,12 @@ public class ChunkingMappedSqlTemplate {
         return resultMap;
     }
 
-    public <I, R, C> Multimap<C, R> multimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
+    public <I, R, C> ListMultimap<C, R> multimappedQuery(final SqlFragmentGenerator<I> sqlGenerator, 
                                            final Iterable<C> input,
                                            final ParameterizedRowMapper<Map.Entry<I, R>> rowMapper,
                                            Function<C, I> inputTypeToSqlGeneratorTypeMapper) {
         
-        final Multimap<C, R> resultMap = ArrayListMultimap.create();
+        final ArrayListMultimap<C, R> resultMap = ArrayListMultimap.create();
         processQuery(sqlGenerator, input, rowMapper, inputTypeToSqlGeneratorTypeMapper, new PairProcessor<C, R>() {
             public void handle(C a, R b) {
                 resultMap.put(a, b);

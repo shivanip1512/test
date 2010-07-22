@@ -80,12 +80,12 @@
     
     <!-- Device Readings Model -->
    <bean id="deviceReadingsModel" class="com.cannontech.analysis.tablemodel.DeviceReadingsModel" scope="prototype">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="attributeService" ref="attributeService" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupService" ref="deviceGroupService" />
         <property name="pointFormattingService" ref="pointFormattingService" />
         <property name="deviceDao" ref="deviceDao" />
+        <property name="paoLoadingService" ref="paoLoadingService" />
+        <property name="rawPointHistoryDao" ref="rphDao" />
     </bean>
     
      <!-- Device Request Detail Model -->
