@@ -19,19 +19,19 @@ struct test_Lcr3102Device : Lcr3102Device
 {
     typedef CtiDeviceSingle::point_info point_info;
 
+    using Lcr3102Device::getSixBitValueFromBuffer;
     using Lcr3102Device::decodeMessageAddress;
     using Lcr3102Device::decodeMessageSubstation;
     using Lcr3102Device::decodeMessageTime;
     using Lcr3102Device::decodeMessageTransmitPower;
     using Lcr3102Device::decodeMessageSoftspec;
     using Lcr3102Device::decodeMessageTemperature;
-    using Lcr3102Device::getSixBitValueFromBuffer;
+    using Lcr3102Device::decodeMessageXfmrHistoricalRuntime;
+    using Lcr3102Device::decodeMessageDutyCycle;
     using Lcr3102Device::decodeGetValueIntervalLast;
     using Lcr3102Device::decodeGetValuePropCount;
     using Lcr3102Device::decodeGetValueHistoricalTime;
     using Lcr3102Device::decodeGetValueControlTime;
-    using Lcr3102Device::decodeXfmrHistoricalRuntimeMessage;
-    using Lcr3102Device::decodeMessageDutyCycle;
 
     typedef std::map< int, point_info > point_results_map;
     typedef std::map< int, point_info >::iterator point_results_map_iter;
@@ -465,30 +465,33 @@ BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)
     InMessage.Buffer.DSt.Message[4] = 0x17;
     InMessage.Buffer.DSt.Message[5] = 0x2a;
 
-    std::vector<int> runtimeHours = test_device.decodeXfmrHistoricalRuntimeMessage(InMessage.Buffer.DSt.Message);
+    std::vector<test_Lcr3102Device::point_info> runtimeHours;
 
-    BOOST_CHECK_EQUAL(runtimeHours.at(0),  1);
-    BOOST_CHECK_EQUAL(runtimeHours.at(1),  0);
-    BOOST_CHECK_EQUAL(runtimeHours.at(2), 32);
-    BOOST_CHECK_EQUAL(runtimeHours.at(3), 15);
-    BOOST_CHECK_EQUAL(runtimeHours.at(4),  4);
-    BOOST_CHECK_EQUAL(runtimeHours.at(5),  1);
-    BOOST_CHECK_EQUAL(runtimeHours.at(6), 28);
-    BOOST_CHECK_EQUAL(runtimeHours.at(7), 42);
+    test_device.decodeMessageXfmrHistoricalRuntime(InMessage.Buffer.DSt, runtimeHours);
+
+    BOOST_CHECK_EQUAL((runtimeHours.at(0)).value,  1);
+    BOOST_CHECK_EQUAL((runtimeHours.at(1)).value,  0);
+    BOOST_CHECK_EQUAL((runtimeHours.at(2)).value, 32);
+    BOOST_CHECK_EQUAL((runtimeHours.at(3)).value, 15);
+    BOOST_CHECK_EQUAL((runtimeHours.at(4)).value,  4);
+    BOOST_CHECK_EQUAL((runtimeHours.at(5)).value,  1);
+    BOOST_CHECK_EQUAL((runtimeHours.at(6)).value, 28);
+    BOOST_CHECK_EQUAL((runtimeHours.at(7)).value, 42);
 }
 
 BOOST_AUTO_TEST_CASE(test_duty_cycle)
 {
     INMESS InMessage;
     test_Lcr3102Device test_device;
+    int dutyCycle, currentTransformer;
 
     InMessage.Buffer.DSt.Message[0]  = 0x02;
     InMessage.Buffer.DSt.Message[1]  = 0x2a;
 
-    std::vector<int> test_vec = test_device.decodeMessageDutyCycle(InMessage.Buffer.DSt.Message);
+    test_device.decodeMessageDutyCycle(InMessage.Buffer.DSt.Message, dutyCycle, currentTransformer);
 
-    BOOST_CHECK_EQUAL(test_vec.at(1),  2);
-    BOOST_CHECK_EQUAL(test_vec.at(0), 42);
+    BOOST_CHECK_EQUAL(currentTransformer, 2);
+    BOOST_CHECK_EQUAL(dutyCycle, 42);
 }
 
 };

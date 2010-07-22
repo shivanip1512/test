@@ -787,10 +787,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
             if(!(temp = cmdtok()).empty())
             {
-                if(temp.contains("transformer") || temp.contains("table"))
-                {
-                    _cmd["load"] = atoi(cmdtok().c_str());
-                }
+                _cmd["load"] = atoi(cmdtok().c_str());
             }
         }
         else if(!(token = CmdStr.match(re_duty_cycle)).empty())
@@ -804,10 +801,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
 
             if(!(temp = cmdtok()).empty())
             {
-                if(temp.contains("ct"))
-                {
-                    _cmd["load"] = atoi(cmdtok().c_str());
-                }
+                _cmd["load"] = atoi(cmdtok().c_str());
             }
         }
         else if(CmdStr.contains(" phase current"))

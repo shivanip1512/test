@@ -106,15 +106,14 @@ protected:
     INT decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetConfigTime      ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
-    std::vector<int> decodeXfmrHistoricalRuntimeMessage( BYTE message[] );
-    std::vector<int> decodeMessageDutyCycle            ( BYTE Message[] );
-
-    void             decodeMessageSoftspec             ( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo );
-    void             decodeMessageAddress              ( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 );
-    void             decodeMessageSubstation           ( BYTE Message[], int &substation, int &feeder, int &zip, int &uda );
-    void             decodeMessageTemperature          ( BYTE Message[], int &txTemp, int &boxTemp );
-    void             decodeMessageTime                 ( BYTE Message[], CtiTime &time);
-    void             decodeMessageTransmitPower        ( BYTE Message[], int &transmitPower );
+    void decodeMessageXfmrHistoricalRuntime( DSTRUCT DSt, std::vector<point_info> &runtimeHours);
+    void decodeMessageDutyCycle            ( BYTE Message[], int &dutyCycle, int &transformer );
+    void decodeMessageSoftspec             ( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo );
+    void decodeMessageAddress              ( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 );
+    void decodeMessageSubstation           ( BYTE Message[], int &substation, int &feeder, int &zip, int &uda );
+    void decodeMessageTemperature          ( BYTE Message[], int &txTemp, int &boxTemp );
+    void decodeMessageTime                 ( BYTE Message[], CtiTime &time);
+    void decodeMessageTransmitPower        ( BYTE Message[], int &transmitPower );
 
 public:
 

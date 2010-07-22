@@ -280,22 +280,6 @@ INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &Time
     return status;
 }
 
-std::vector<int> Lcr3102Device::decodeXfmrHistoricalRuntimeMessage( BYTE Message[] )
-{
-    std::vector<int> runtimeHours;
-
-    runtimeHours.push_back((Message[0] & 0xfc) >> 2);
-    runtimeHours.push_back(((Message[0] & 0x03) << 4) | ((Message[1] & 0xf0) >> 4));
-    runtimeHours.push_back(((Message[1] & 0x0f) << 2) | ((Message[2] & 0xc0) >> 6));
-    runtimeHours.push_back(Message[2] & 0x3f);
-    runtimeHours.push_back((Message[3] & 0xfc) >> 2);
-    runtimeHours.push_back(((Message[3] & 0x03) << 4) | ((Message[4] & 0xf0) >> 4));
-    runtimeHours.push_back(((Message[4] & 0x0f) << 2) | ((Message[5] & 0xc0) >> 6));
-    runtimeHours.push_back(Message[5] & 0x3f);
-
-    return runtimeHours;
-}
-
 INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
@@ -318,19 +302,24 @@ INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
         point_info pi;
-        std::vector<int> dutyCycleInfo = decodeMessageDutyCycle(DSt->Message);
+        int dutyCycle, currentTransformer;
+        decodeMessageDutyCycle(DSt->Message, dutyCycle, currentTransformer);
 
-        int currentTransformer = dutyCycleInfo.at(1);
+        /* A nice little workaround. Firmware isn't working as intended right now and isn't correctly
+           giving back the Current Transformer number from the message in the function above. This
+           statement allows us to get the correct CT from the function we sent originally.
+           In the future we will probably still want to rely on the message decoding to get the CT 
+           back since the message from the LCR SHOULD return the correct CT... but for now this is a 
+           reasonable fix.                                                                              */
+        currentTransformer = InMessage->Return.ProtocolInfo.Emetcon.Function - FuncRead_DutyCyclePos + 1;
+
         int point_base = PointOffset_DutyCycleBase;
 
         if(currentTransformer == 1 || currentTransformer == 2)
         {
-            pi.value = dutyCycleInfo.at(0);
+            pi.value = double(dutyCycle) / 60.0;
             pi.quality = NormalQuality;
             pi.description = "Duty Cycle CT " + CtiNumStr(currentTransformer);
-
-            string results = getName() + " / Duty Cycle CT " + CtiNumStr(currentTransformer) + ": " + CtiNumStr(pi.value);
-            ReturnMsg->setResultString(results);
 
             int point_offset = point_base + currentTransformer - 1;
 
@@ -586,42 +575,35 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
         // Assuming this is not a point, let's just dump the data to the screen for now.
 
         const int NumHours = 8;
-        std::vector<int> runtimeHours = decodeXfmrHistoricalRuntimeMessage(DSt->Message);
+        std::vector<point_info> runtimeHours;
+
+        decodeMessageXfmrHistoricalRuntime(InMessage->Buffer.DSt, runtimeHours);
+
         int currentTransformer = InMessage->Return.ProtocolInfo.Emetcon.Function - FuncRead_XfmrHistoricalCT1Pos + 1;
 
         if(currentTransformer == 1 || currentTransformer == 2)
         {
-            if( runtimeHours.size() != NumHours )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Decode did not return 8 hours of data!" << endl;
+            string results;
 
-                return NOTNORMAL;
-            }
-            else
+            for(int i = 1; i <= NumHours; i++)
             {
-                string results;
+                int runtimeMins = runtimeHours.front().value;
 
-                for(int i = 1; i <= NumHours; i++)
+                if( runtimeMins <= 60 )
                 {
-                    int runtimeMins = runtimeHours.front();
-
-                    if( runtimeMins <= 60 )
+                    results += getName() + " / Historical Runtime CT " + CtiNumStr(currentTransformer) + ": Hour -"
+                             + CtiNumStr(i) + ": " + CtiNumStr((double)runtimeMins / 60.0, 1) + " percent";
+                    if(i != NumHours)
                     {
-                        results += getName() + " / Historical Runtime CT " + CtiNumStr(currentTransformer) + ": Hour -"
-                                 + CtiNumStr(i) + ": " + CtiNumStr((double)runtimeMins / 60.0, 1) + " percent";
-                        if(i != NumHours)
-                        {
-                            results += "\n";
-                        }
+                        results += "\n";
                     }
-
-                    runtimeHours.erase(runtimeHours.begin());
                 }
 
-                ReturnMsg->setResultString(results);
-                retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+                runtimeHours.erase(runtimeHours.begin());
             }
+
+            ReturnMsg->setResultString(results);
+            retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
         }
         else
         {
@@ -1027,13 +1009,29 @@ INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, lis
     return status;
 }
 
+void Lcr3102Device::decodeMessageXfmrHistoricalRuntime( DSTRUCT DSt, std::vector<point_info> &runtimeHours)
+{
+    // The runtimeHours vector will contain the CT historical runtime data in order from the most
+    // distant hour to the most recent.
+
+    point_info pi;
+    const int NumHours = 8;
+
+    for(int i = 0; i < NumHours; i++)
+    {
+        pi = getSixBitValueFromBuffer(DSt.Message, i, std::min(DSt.Length - 1, 36 - 1));
+
+        runtimeHours.push_back(pi);
+    }
+}
+
 void Lcr3102Device::decodeMessageSoftspec( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo )
 {
-    sspec = Message[0] | (Message[4] << 8);
-    rev = Message[1];
+    sspec  = Message[0] | (Message[4] << 8);
+    rev    = Message[1];
     serial = (Message[5] << 24) | (Message[6] << 16) | (Message[7] << 8) | Message[8];
-    spid = (Message[9] << 8) | Message[10];
-    geo = (Message[11] << 8) | Message[12];
+    spid   = (Message[9] << 8) | Message[10];
+    geo    = (Message[11] << 8) | Message[12];
 }
 
 void Lcr3102Device::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 )
@@ -1074,14 +1072,10 @@ void Lcr3102Device::decodeMessageTemperature( BYTE Message[], int &txTemp, int &
     boxTemp = (Message[2] << 8) | Message[3]; // Box Temp
 }
 
-std::vector<int> Lcr3102Device::decodeMessageDutyCycle( BYTE Message[] )
+void Lcr3102Device::decodeMessageDutyCycle( BYTE Message[], int &dutyCycle, int &transformer )
 {
-    std::vector<int> dutyCycleInfo;
-
-    dutyCycleInfo.push_back( Message[1] ); // Duty Cycle (average minutes per hour over past 24 hours)
-    dutyCycleInfo.push_back( Message[0] ); // Current Transformer
-
-    return dutyCycleInfo;
+    transformer = Message[0];
+    dutyCycle   = Message[1];
 }
 
 Lcr3102Device::CommandSet Lcr3102Device::initCommandStore()
