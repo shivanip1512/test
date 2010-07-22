@@ -10,13 +10,9 @@
 using boost::unit_test_framework::test_suite;
 using namespace Cti::Simulator;
 
-class testMct410Sim : public Mct410Sim
+struct testMct410Sim : Mct410Sim
 {
-public:
-    static double getConsumptionMultiplier(unsigned address)
-    {
-        return Mct410Sim::getConsumptionMultiplier(address);
-    }
+    using Mct410Sim::getConsumptionMultiplier;
 };
 
 BOOST_AUTO_TEST_CASE( mct_consumption_multiplier )

@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct31X
-*
-* Date:   4/24/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct31X.cpp-arc  $
-* REVISION     :  $Revision: 1.64.10.2 $
-* DATE         :  $Date: 2008/11/20 17:17:12 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include "devicetypes.h"
 #include "tbl_ptdispatch.h"
@@ -27,14 +10,16 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
+namespace Cti {
+namespace Devices {
 
-const double CtiDeviceMCT31X::MCT360_GEKV_KWHMultiplier = 2000000.0;
+const double Mct31xDevice::MCT360_GEKV_KWHMultiplier = 2000000.0;
 
-const CtiDeviceMCT31X::CommandSet CtiDeviceMCT31X::_commandStore = CtiDeviceMCT31X::initCommandStore();
+const Mct31xDevice::CommandSet Mct31xDevice::_commandStore = Mct31xDevice::initCommandStore();
 
-CtiDeviceMCT31X::CtiDeviceMCT31X( )
+Mct31xDevice::Mct31xDevice( )
 {
     for( int i = 0; i < ChannelCount; i++ )
     {
@@ -42,21 +27,21 @@ CtiDeviceMCT31X::CtiDeviceMCT31X( )
     }
 }
 
-CtiDeviceMCT31X::CtiDeviceMCT31X( const CtiDeviceMCT31X &aRef )
+Mct31xDevice::Mct31xDevice( const Mct31xDevice &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceMCT31X::~CtiDeviceMCT31X( ) { }
+Mct31xDevice::~Mct31xDevice( ) { }
 
-CtiDeviceMCT31X& CtiDeviceMCT31X::operator=( const CtiDeviceMCT31X &aRef )
+Mct31xDevice& Mct31xDevice::operator=( const Mct31xDevice &aRef )
 {
     if( this != &aRef )
     {
         //  ACH
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT31X::operator= **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - in Mct31xDevice::operator= **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         Inherited::operator=( aRef );
@@ -66,63 +51,63 @@ CtiDeviceMCT31X& CtiDeviceMCT31X::operator=( const CtiDeviceMCT31X &aRef )
 }
 
 
-CtiTableDeviceMCTIEDPort &CtiDeviceMCT31X::getIEDPort( void )
+CtiTableDeviceMCTIEDPort &Mct31xDevice::getIEDPort( void )
 {
     return _iedPort;
 }
 
 
-CtiDeviceMCT31X::CommandSet CtiDeviceMCT31X::initCommandStore( )
+Mct31xDevice::CommandSet Mct31xDevice::initCommandStore( )
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_General,               Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_StatusLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_General,               EmetconProtocol::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_StatusLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,             EmetconProtocol::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Demand,            EmetconProtocol::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_DemandLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                          0));
+    cs.insert(CommandStore(EmetconProtocol::Scan_LoadProfile,           EmetconProtocol::IO_Function_Read,  0,                          0));
 
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,        Emetcon::IO_Function_Read,  FuncRead_MinMaxDemandPos,   FuncRead_MinMaxDemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,  Emetcon::IO_Function_Read,  FuncRead_FrozenDemandPos,   FuncRead_FrozenDemandLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_PeakDemand,        EmetconProtocol::IO_Function_Read,  FuncRead_MinMaxDemandPos,   FuncRead_MinMaxDemandLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_FrozenPeakDemand,  EmetconProtocol::IO_Function_Read,  FuncRead_FrozenDemandPos,   FuncRead_FrozenDemandLen));
 
     //  add the 2 other channels for 318s
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ2,              Emetcon::IO_Write,          MCT3XX_PutMRead2Pos,        MCT3XX_PutMReadLen));
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ3,              Emetcon::IO_Write,          MCT3XX_PutMRead3Pos,        MCT3XX_PutMReadLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_KYZ2,              EmetconProtocol::IO_Write,          MCT3XX_PutMRead2Pos,        MCT3XX_PutMReadLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_KYZ3,              EmetconProtocol::IO_Write,          MCT3XX_PutMRead3Pos,        MCT3XX_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_External,         Emetcon::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_StatusLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_External,         EmetconProtocol::IO_Function_Read,  FuncRead_DemandPos,         FuncRead_StatusLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier2,      Emetcon::IO_Read,           MCT3XX_Mult2Pos,            MCT3XX_MultLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier3,      Emetcon::IO_Read,           MCT3XX_Mult3Pos,            MCT3XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier2,      EmetconProtocol::IO_Read,           MCT3XX_Mult2Pos,            MCT3XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier3,      EmetconProtocol::IO_Read,           MCT3XX_Mult3Pos,            MCT3XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier2,      Emetcon::IO_Write,          MCT3XX_Mult2Pos,            MCT3XX_MultLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier3,      Emetcon::IO_Write,          MCT3XX_Mult3Pos,            MCT3XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Multiplier2,      EmetconProtocol::IO_Write,          MCT3XX_Mult2Pos,            MCT3XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Multiplier3,      EmetconProtocol::IO_Write,          MCT3XX_Mult3Pos,            MCT3XX_MultLen));
 
     //  these are commands for the 360 and 370 only
 
     //  scan address and length are identical for the p+ and s4
-    cs.insert(CommandStore(Emetcon::GetConfig_IEDScan,          Emetcon::IO_Read,           MCT360_IEDScanPos,          MCT360_IEDScanLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_IEDScan,          Emetcon::IO_Write,          MCT360_IEDScanPos, 2));  //  just 2 bytes - seconds and delay
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_IEDScan,          EmetconProtocol::IO_Read,           MCT360_IEDScanPos,          MCT360_IEDScanLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_IEDScan,          EmetconProtocol::IO_Write,          MCT360_IEDScanPos, 2));  //  just 2 bytes - seconds and delay
 
-    cs.insert(CommandStore(Emetcon::PutConfig_IEDClass,         Emetcon::IO_Write,          MCT360_IEDClassPos,         MCT360_IEDClassLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_IEDClass,         EmetconProtocol::IO_Write,          MCT360_IEDClassPos,         MCT360_IEDClassLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_IEDTime,          Emetcon::IO_Function_Read,  MCT360_IEDTimePos,          MCT360_IEDTimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_IEDTime,          EmetconProtocol::IO_Function_Read,  MCT360_IEDTimePos,          MCT360_IEDTimeLen));
 
-    cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  MCT360_IEDDemandPos,        MCT360_IEDReqLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_IEDDemand,         EmetconProtocol::IO_Function_Read,  MCT360_IEDDemandPos,        MCT360_IEDReqLen));
 
-    cs.insert(CommandStore(Emetcon::GetValue_IEDKwh,            Emetcon::IO_Function_Read,  MCT360_IEDKwhPos,           MCT360_IEDReqLen));
-    cs.insert(CommandStore(Emetcon::GetValue_IEDKvarh,          Emetcon::IO_Function_Read,  MCT360_IEDKvarhPos,         MCT360_IEDReqLen));
-    cs.insert(CommandStore(Emetcon::GetValue_IEDKvah,           Emetcon::IO_Function_Read,  MCT360_IEDKvahPos,          MCT360_IEDReqLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_IEDKwh,            EmetconProtocol::IO_Function_Read,  MCT360_IEDKwhPos,           MCT360_IEDReqLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_IEDKvarh,          EmetconProtocol::IO_Function_Read,  MCT360_IEDKvarhPos,         MCT360_IEDReqLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_IEDKvah,           EmetconProtocol::IO_Function_Read,  MCT360_IEDKvahPos,          MCT360_IEDReqLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, 0,                          0));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_IEDReset,          EmetconProtocol::IO_Function_Write, 0,                          0));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_IEDLink,          Emetcon::IO_Function_Read,  MCT360_IEDLinkPos,          MCT360_IEDLinkLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_IEDLink,          EmetconProtocol::IO_Function_Read,  MCT360_IEDLinkPos,          MCT360_IEDLinkLen));
 
     return cs;
 }
 
 
-bool CtiDeviceMCT31X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct31xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -131,7 +116,7 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
     //  the 318L is the only 31x that supports load profile that we're concerned about here, and it'd be silly to make another class for one function
     //    we want it to stop here, no matter what, no Inherited::anything...
     if( getType( ) != TYPEMCT318L &&
-        cmd == Emetcon::Scan_LoadProfile )
+        cmd == EmetconProtocol::Scan_LoadProfile )
     {
         //  just for emphasis
         found = false;
@@ -153,7 +138,7 @@ bool CtiDeviceMCT31X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
+ULONG Mct31xDevice::calcNextLPScanTime( void )
 {
     CtiTime        Now, channelTime, blockStart;
     unsigned long midnightOffset;
@@ -258,7 +243,7 @@ ULONG CtiDeviceMCT31X::calcNextLPScanTime( void )
 }
 
 
-INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -363,7 +348,7 @@ INT CtiDeviceMCT31X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 }
 
 
-bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+bool Mct31xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
     bool retVal = false;
     int lpBlockAddress, lpChannel;
@@ -397,7 +382,7 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and a status byte to boot
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
 
         retVal = true;
     }
@@ -416,39 +401,39 @@ bool CtiDeviceMCT31X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
 
 
-INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     switch(InMessage->Sequence)
     {
-        case Emetcon::Scan_General:
-        case Emetcon::GetStatus_External:
+        case EmetconProtocol::Scan_General:
+        case EmetconProtocol::GetStatus_External:
         {
             //  A general scan for any MCT does status decode only.
             status = decodeStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::GetStatus_IEDLink:
+        case EmetconProtocol::GetStatus_IEDLink:
         {
             status = decodeGetStatusIED(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_KWH:
+        case EmetconProtocol::Scan_Accum:
+        case EmetconProtocol::GetValue_KWH:
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::Scan_Integrity:
+        case EmetconProtocol::Scan_Integrity:
         {
             //  to catch the IED case
             setScanFlag(ScanRateIntegrity, false);  //  resetScanFlag(ScanPending);
         }
-        case Emetcon::GetValue_Demand:
+        case EmetconProtocol::GetValue_Demand:
         {
             //  we only have status info if we're not getting the demand from the IED
             if( (getType() == TYPEMCT360 || getType() == TYPEMCT370) && getIEDPort().getRealTimeScanFlag() )
@@ -470,31 +455,31 @@ INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             break;
         }
 
-        case (Emetcon::Scan_LoadProfile):
+        case (EmetconProtocol::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetValue_PeakDemand):
-        case (Emetcon::GetValue_FrozenPeakDemand):
+        case (EmetconProtocol::GetValue_PeakDemand):
+        case (EmetconProtocol::GetValue_FrozenPeakDemand):
         {
             status = decodeGetValuePeak(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_IEDTime):
-        case (Emetcon::GetConfig_IEDScan):
+        case (EmetconProtocol::GetConfig_IEDTime):
+        case (EmetconProtocol::GetConfig_IEDScan):
         {
             status = decodeGetConfigIED(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetValue_IED):
-        case (Emetcon::GetValue_IEDDemand):
-        case (Emetcon::GetValue_IEDKvah):
-        case (Emetcon::GetValue_IEDKvarh):
-        case (Emetcon::GetValue_IEDKwh):
+        case (EmetconProtocol::GetValue_IED):
+        case (EmetconProtocol::GetValue_IEDDemand):
+        case (EmetconProtocol::GetValue_IEDKvah):
+        case (EmetconProtocol::GetValue_IEDKvarh):
+        case (EmetconProtocol::GetValue_IEDKwh):
         {
             status = decodeGetValueIED(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -517,7 +502,7 @@ INT CtiDeviceMCT31X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool expectMore)
+INT Mct31xDevice::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool expectMore)
 {
     INT status = NORMAL;
     USHORT SaveCount;
@@ -602,7 +587,7 @@ INT CtiDeviceMCT31X::decodeStatus(INMESS *InMessage, CtiTime &TimeNow, list< Cti
 }
 
 
-INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -662,7 +647,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, lis
         {
             switch( InMessage->Sequence )
             {
-                case Emetcon::GetStatus_IEDLink:
+                case EmetconProtocol::GetStatus_IEDLink:
                 {
                     //  i don't know if this is valid for the status bytes
 #if 0
@@ -882,7 +867,7 @@ INT CtiDeviceMCT31X::decodeGetStatusIED(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -925,7 +910,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 
         switch( InMessage->Sequence )
         {
-            case Emetcon::GetConfig_IEDTime:
+            case EmetconProtocol::GetConfig_IEDTime:
             {
                 int i;
                 for( i = 0; i < 12; i++ )
@@ -1064,7 +1049,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
                 break;
             }
 
-            case Emetcon::GetConfig_IEDScan:
+            case EmetconProtocol::GetConfig_IEDScan:
             {
                 switch( getIEDPort().getIEDType() )
                 {
@@ -1154,7 +1139,7 @@ INT CtiDeviceMCT31X::decodeGetConfigIED(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid, rateOffset;
@@ -1997,7 +1982,7 @@ INT CtiDeviceMCT31X::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pid;
@@ -2013,7 +1998,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
@@ -2088,7 +2073,7 @@ INT CtiDeviceMCT31X::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -2217,7 +2202,7 @@ INT CtiDeviceMCT31X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int       status = NORMAL;
     double    Value;
@@ -2273,7 +2258,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, lis
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                          boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
-                if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
+                if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenPeakDemand )
                 {
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                     if(pData != NULL)
@@ -2304,7 +2289,7 @@ INT CtiDeviceMCT31X::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct31xDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -2499,7 +2484,7 @@ INT CtiDeviceMCT31X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-void CtiDeviceMCT31X::DecodeDatabaseReader(Cti::RowReader &rdr)
+void Mct31xDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
 
@@ -2513,7 +2498,7 @@ void CtiDeviceMCT31X::DecodeDatabaseReader(Cti::RowReader &rdr)
         if( isDebugLudicrous() )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - in CtiDeviceMCT31X::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - in Mct31xDevice::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "Default data class: " << _iedPort.getDefaultDataClass() << endl;
             dout << "Default data offset: " << _iedPort.getDefaultDataOffset() << endl;
             dout << "Device ID: " << _iedPort.getDeviceID() << endl;
@@ -2523,5 +2508,8 @@ void CtiDeviceMCT31X::DecodeDatabaseReader(Cti::RowReader &rdr)
             dout << "Real Time Scan Flag: " << _iedPort.getRealTimeScanFlag() << endl;
         }
     }
+}
+
+}
 }
 

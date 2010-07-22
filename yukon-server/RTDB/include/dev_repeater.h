@@ -1,32 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_repeater
-*
-* Class:  CtiDeviceRepeater900
-* Date:   8/27/2001
-*
-* Author: Matthew Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_repeater.h-arc  $
-* REVISION     :  $Revision: 1.14.22.1 $
-* DATE         :  $Date: 2008/11/20 16:49:27 $
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_REPEATER_H__
-#define __DEV_REPEATER_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_dlcbase.h"
-#include "dev_grp.h"
 
-class IM_EX_DEVDB CtiDeviceRepeater900 : public CtiDeviceDLCBase
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Repeater900Device : public DlcBaseDevice
 {
 private:
 
-   typedef CtiDeviceDLCBase Inherited;
+   typedef DlcBaseDevice Inherited;
 
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();
@@ -58,15 +41,15 @@ protected:
 
 public:
 
-    CtiDeviceRepeater900();
+    Repeater900Device();
 
-    CtiDeviceRepeater900(const CtiDeviceRepeater900& aRef);
+    Repeater900Device(const Repeater900Device& aRef);
 
-    virtual ~CtiDeviceRepeater900();
+    virtual ~Repeater900Device();
 
-    CtiDeviceRepeater900& operator=(const CtiDeviceRepeater900& aRef);
+    Repeater900Device& operator=(const Repeater900Device& aRef);
 
-    INT CtiDeviceRepeater900::getSSpec() const;
+    INT Repeater900Device::getSSpec() const;
 
     INT GeneralScan   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority);
 
@@ -76,4 +59,6 @@ public:
 
 };
 
-#endif // #ifndef __DEV_REPEATER_H__
+}
+}
+

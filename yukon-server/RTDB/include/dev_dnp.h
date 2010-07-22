@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dnp
-*
-* Class:  CtiDeviceDNP
-* Date:   8/05/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_DNP_H__
-#define __DEV_DNP_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_remote.h"
 #include "prot_dnp.h"
@@ -26,10 +7,10 @@
 #include <map>
 #include <string>
 
-namespace Cti       {
-namespace Devices    {
+namespace Cti {
+namespace Devices {
 
-class IM_EX_DEVDB DNP : public CtiDeviceRemote
+class IM_EX_DEVDB DnpDevice : public CtiDeviceRemote
 {
 private:
 
@@ -90,11 +71,11 @@ protected:
 
 public:
 
-    DNP();
-    DNP(const DNP& aRef);
-    virtual ~DNP();
+    DnpDevice();
+    DnpDevice(const DnpDevice& aRef);
+    virtual ~DnpDevice();
 
-    DNP& operator=(const DNP& aRef);
+    DnpDevice& operator=(const DnpDevice& aRef);
 
     virtual string getSQLCoreStatement() const;
 
@@ -130,4 +111,3 @@ public:
 }
 }
 
-#endif // #ifndef __DEV_CBC_H__

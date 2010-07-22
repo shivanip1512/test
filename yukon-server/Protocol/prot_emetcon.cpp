@@ -7,11 +7,11 @@
 #include "porter.h"
 
 
-namespace Cti      {
-namespace Protocol {
+namespace Cti {
+namespace Protocols {
 
 
-void Emetcon::buildAWordMessage(OUTMESS *&out_result)
+void EmetconProtocol::buildAWordMessage(OUTMESS *&out_result)
 {
    const OUTMESS out_template = *out_result;
 
@@ -27,12 +27,12 @@ void Emetcon::buildAWordMessage(OUTMESS *&out_result)
    out_result->InLength = 2;
 }
 
-void Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
+void EmetconProtocol::buildBWordMessage(OUTMESS *&out_result, bool double_message)
 {
    const OUTMESS out_template = *out_result;
 
    //  this is both the IO_Read and IO_Function_Read case
-   if( out_template.Buffer.BSt.IO & Emetcon::IO_Read )
+   if( out_template.Buffer.BSt.IO & IO_Read )
    {
        //  build preamble message.  Note that wordCount is zero for a read!
        BPreamble(out_result->Buffer.OutMessage + PREIDLEN, out_template.Buffer.BSt, 0);
@@ -82,7 +82,7 @@ void Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
 }
 
 
-unsigned Emetcon::determineDWordCount(unsigned length)
+unsigned EmetconProtocol::determineDWordCount(unsigned length)
 {
     unsigned count = 0;
 
@@ -96,13 +96,13 @@ unsigned Emetcon::determineDWordCount(unsigned length)
     else
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - invalid length (" << length << ") in Cti::Protocol::Emetcon::determineDWordCount() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint - invalid length (" << length << ") in Protocols::EmetconProtocol::determineDWordCount() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return count;
 }
 
-int Emetcon::calculateControlInterval(int interval)
+int EmetconProtocol::calculateControlInterval(int interval)
 {
     int nRet = 0;
 

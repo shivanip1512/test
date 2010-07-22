@@ -1,19 +1,3 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_modbus.cpp
-*
-* Date:   7/14/2005
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6.6.1 $
-* DATE         :  $Date: 2008/11/17 23:06:32 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 #include <string.h>
 
@@ -22,23 +6,23 @@
 #include "numstr.h"
 #include "prot_modbus.h"
 
-namespace Cti             {
-namespace Protocol        {
+namespace Cti {
+namespace Protocols {
 
-Modbus::Modbus() :
+ModbusProtocol::ModbusProtocol() :
     _io_state(IOState_Uninitialized)
 {
     setAddresses(DefaultSlaveAddress);
 }
 
-Modbus::Modbus(const Modbus &aRef)
+ModbusProtocol::ModbusProtocol(const ModbusProtocol &aRef)
 {
     *this = aRef;
 }
 
-Modbus::~Modbus()   {}
+ModbusProtocol::~ModbusProtocol()   {}
 
-Modbus &Modbus::operator=(const Modbus &aRef)
+ModbusProtocol &ModbusProtocol::operator=(const ModbusProtocol &aRef)
 {
     if( this != &aRef )
     {
@@ -48,17 +32,17 @@ Modbus &Modbus::operator=(const Modbus &aRef)
     return *this;
 }
 
-void Modbus::setCommand(Command newCommand)
+void ModbusProtocol::setCommand(Command newCommand)
 {
     _command = newCommand;
 }
 
-void Modbus::setAddresses( unsigned short slaveAddress )
+void ModbusProtocol::setAddresses( unsigned short slaveAddress )
 {
     _slaveAddress  = slaveAddress;
 }
 
-/*int Modbus::commandRetries( void )
+/*int ModbusProtocol::commandRetries( void )
 {
     int retVal;
 
@@ -77,7 +61,7 @@ void Modbus::setAddresses( unsigned short slaveAddress )
 
 
 //Should we use non-blocking reads? It could cause problems with serial over IP and other applications...
-int Modbus::generate( CtiXfer &xfer )
+int ModbusProtocol::generate( CtiXfer &xfer )
 {
     _asciiOutput = false;
     int i = 0;
@@ -119,7 +103,7 @@ int Modbus::generate( CtiXfer &xfer )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unused command " << _command << " in Modbus::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unused command " << _command << " in ModbusProtocol::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _command = Command_Error;
@@ -167,7 +151,7 @@ int Modbus::generate( CtiXfer &xfer )
 }
 
 
-int Modbus::decode( CtiXfer &xfer, int status )
+int ModbusProtocol::decode( CtiXfer &xfer, int status )
 {
     int  retVal = NoError;
     bool final = true;
@@ -289,7 +273,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
 }
 
 
-bool Modbus::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
+bool ModbusProtocol::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
 {
     //be careful here!!! This assumes always that the iterator and command are pointing to the same function!!!!!!!
     int base, current;
@@ -403,7 +387,7 @@ the normal statuses are packed. This means, 8 bits at a time. For example,
 Decompose Holding read byte 0 for 1 byte returns these bits:
 7 6 5 4 3 2 1 0    15 14 13 12 11 10 9 8   Bit#'s in 16 bit word.
 ******************************************************************************/
-void Modbus::assemblePointData(CtiXfer &xfer)
+void ModbusProtocol::assemblePointData(CtiXfer &xfer)
 {
     point_data dataPoint;
     CtiPointDataMsg  pointMessage;
@@ -509,7 +493,7 @@ void Modbus::assemblePointData(CtiXfer &xfer)
     }
 }
 
-void Modbus::addStatusPoint(int point)
+void ModbusProtocol::addStatusPoint(int point)
 {
     point_data tempData;
     _status = Continue;
@@ -541,7 +525,7 @@ void Modbus::addStatusPoint(int point)
     _points_start = _points.begin();
 }
 
-void Modbus::addAnalogPoint(int point)
+void ModbusProtocol::addAnalogPoint(int point)
 {
     point_data tempData;
     _status = Continue;
@@ -563,7 +547,7 @@ void Modbus::addAnalogPoint(int point)
     _points_start = _points.begin();
 }
 
-void Modbus::clearPoints()//ok, this does more than clear points. Sue me.
+void ModbusProtocol::clearPoints()//ok, this does more than clear points. Sue me.
 {
     _retries = 0;//reset retry count
     _points.clear();
@@ -571,7 +555,7 @@ void Modbus::clearPoints()//ok, this does more than clear points. Sue me.
     _command = Command_Error;
 }
 
-void Modbus::getInboundPoints( pointlist_t &points )
+void ModbusProtocol::getInboundPoints( pointlist_t &points )
 {
     points.insert(points.end(), _point_results.begin(), _point_results.end());
 
@@ -579,7 +563,7 @@ void Modbus::getInboundPoints( pointlist_t &points )
 }
 
 
-void Modbus::getInboundStrings( stringlist_t &strings )
+void ModbusProtocol::getInboundStrings( stringlist_t &strings )
 {
     strings.insert(strings.end(), _string_results.begin(), _string_results.end());
 
@@ -587,12 +571,12 @@ void Modbus::getInboundStrings( stringlist_t &strings )
 }
 
 
-bool Modbus::isTransactionComplete( void ) const
+bool ModbusProtocol::isTransactionComplete( void ) const
 {
     return _status == End;
 }
 
-unsigned char Modbus::calcModbusLRC(char *dataString)
+unsigned char ModbusProtocol::calcModbusLRC(char *dataString)
 {
     char *stringPtr = dataString+1;//start after colon
     unsigned char lrcResult = 0;
@@ -607,7 +591,7 @@ unsigned char Modbus::calcModbusLRC(char *dataString)
     return ((unsigned char)(-1*((char)lrcResult))); // return twos complement
 }
 
-unsigned short Modbus::CRC16(unsigned char *puchMsg, unsigned short usDataLen)
+unsigned short ModbusProtocol::CRC16(unsigned char *puchMsg, unsigned short usDataLen)
 {
     unsigned char uchCRCHi = 0xFF ; /* high byte of CRC initialized */
     unsigned char uchCRCLo = 0xFF ; /* low byte of CRC initialized */
@@ -622,7 +606,7 @@ unsigned short Modbus::CRC16(unsigned char *puchMsg, unsigned short usDataLen)
 }
 
 /* Table of CRC values for high–order byte */
-unsigned const char Modbus::auchCRCHi[] = {
+unsigned const char ModbusProtocol::auchCRCHi[] = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81,
     0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0,
     0x80, 0x41, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40, 0x00, 0xC1, 0x81, 0x40, 0x01,
@@ -644,7 +628,7 @@ unsigned const char Modbus::auchCRCHi[] = {
 } ;
 
 /* Table of CRC values for low–order byte */
-unsigned const char Modbus::auchCRCLo[] = {
+unsigned const char ModbusProtocol::auchCRCLo[] = {
     0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06, 0x07, 0xC7, 0x05, 0xC5, 0xC4,
     0x04, 0xCC, 0x0C, 0x0D, 0xCD, 0x0F, 0xCF, 0xCE, 0x0E, 0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09,
     0x08, 0xC8, 0xD8, 0x18, 0x19, 0xD9, 0x1B, 0xDB, 0xDA, 0x1A, 0x1E, 0xDE, 0xDF, 0x1F, 0xDD,
@@ -665,8 +649,8 @@ unsigned const char Modbus::auchCRCLo[] = {
     0x40
 } ;
 
-const char *Modbus::char_CRLF = "\r\n";
-const char *Modbus::char_start = ":";
+const char *ModbusProtocol::char_CRLF = "\r\n";
+const char *ModbusProtocol::char_start = ":";
 
 }
 }

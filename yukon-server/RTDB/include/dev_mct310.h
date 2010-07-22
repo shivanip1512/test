@@ -1,31 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct310
-*
-* Class:  CtiDeviceMCT310
-* Date:   4/24/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct310.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/05/31 21:17:19 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT310_H__
-#define __DEV_MCT310_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct.h"
 
-class IM_EX_DEVDB CtiDeviceMCT310 : public CtiDeviceMCT
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct310Device : public MctDevice
 {
 private:
 
-    typedef CtiDeviceMCT Inherited;
+    typedef MctDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -140,13 +124,16 @@ public:
         MCT310_StatusDisconnected      = 0xc0
     };
 
-    CtiDeviceMCT310( );
-    CtiDeviceMCT310( const CtiDeviceMCT310 &aRef );
-    virtual ~CtiDeviceMCT310( );
+    Mct310Device( );
+    Mct310Device( const Mct310Device &aRef );
+    virtual ~Mct310Device( );
 
-    CtiDeviceMCT310 &operator=( const CtiDeviceMCT310 &aRef );
+    Mct310Device &operator=( const Mct310Device &aRef );
 
     //  virtual so that the MCT318 can override it
     virtual ULONG calcNextLPScanTime( void );
 };
-#endif // #ifndef __DEV_MCT310_H__
+
+}
+}
+

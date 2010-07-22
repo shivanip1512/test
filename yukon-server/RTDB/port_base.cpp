@@ -261,7 +261,7 @@ INT CtiPort::writeQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority
        OutMessage->HeadFrame[0] == 0x02 && OutMessage->HeadFrame[1] == 0xe0 &&
        OutMessage->TailFrame[0] == 0xea && OutMessage->TailFrame[1] == 0x03)
     {
-        if(OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_LoadProfile)
+        if(OutMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_LoadProfile)
         {
             if( isDebugLudicrous() )
             {

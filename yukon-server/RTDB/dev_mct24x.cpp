@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct2XX
-*
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.47.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:25 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "devicetypes.h"
@@ -23,26 +8,28 @@
 #include "numstr.h"
 #include "dllyukon.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
+
+namespace Cti {
+namespace Devices {
+
+const Mct24xDevice::CommandSet Mct24xDevice::_commandStore = Mct24xDevice::initCommandStore();
 
 
-const CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::_commandStore = CtiDeviceMCT24X::initCommandStore();
-
-
-CtiDeviceMCT24X::CtiDeviceMCT24X( )
+Mct24xDevice::Mct24xDevice( )
 {
 }
 
-CtiDeviceMCT24X::CtiDeviceMCT24X( const CtiDeviceMCT24X &aRef )
+Mct24xDevice::Mct24xDevice( const Mct24xDevice &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceMCT24X::~CtiDeviceMCT24X( )
+Mct24xDevice::~Mct24xDevice( )
 {
 }
 
-CtiDeviceMCT24X& CtiDeviceMCT24X::operator=(const CtiDeviceMCT24X& aRef)
+Mct24xDevice& Mct24xDevice::operator=(const Mct24xDevice& aRef)
 {
     if( this != &aRef )
     {
@@ -53,41 +40,41 @@ CtiDeviceMCT24X& CtiDeviceMCT24X::operator=(const CtiDeviceMCT24X& aRef)
 }
 
 
-CtiDeviceMCT24X::CommandSet CtiDeviceMCT24X::initCommandStore()
+Mct24xDevice::CommandSet Mct24xDevice::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,            Emetcon::IO_Read,          MCT2XX_GroupAddressPos,           MCT2XX_GroupAddressLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_GoldSilver, Emetcon::IO_Write,         MCT2XX_GroupAddressGoldSilverPos, MCT2XX_GroupAddressGoldSilverLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Bronze,     Emetcon::IO_Write,         MCT2XX_GroupAddressBronzePos,     MCT2XX_GroupAddressBronzeLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Lead,       Emetcon::IO_Write,         MCT2XX_GroupAddressLeadPos,       MCT2XX_GroupAddressLeadLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_GroupAddress,            EmetconProtocol::IO_Read,          MCT2XX_GroupAddressPos,           MCT2XX_GroupAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_GoldSilver, EmetconProtocol::IO_Write,         MCT2XX_GroupAddressGoldSilverPos, MCT2XX_GroupAddressGoldSilverLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_Bronze,     EmetconProtocol::IO_Write,         MCT2XX_GroupAddressBronzePos,     MCT2XX_GroupAddressBronzeLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_Lead,       EmetconProtocol::IO_Write,         MCT2XX_GroupAddressLeadPos,       MCT2XX_GroupAddressLeadLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_General,                      Emetcon::IO_Read,          MCT24X_StatusPos,                 MCT24X_StatusLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_General,                      EmetconProtocol::IO_Read,          MCT24X_StatusPos,                 MCT24X_StatusLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                        Emetcon::IO_Function_Read, MCT24X_MReadPos,                  MCT24X_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_KWH,                      Emetcon::IO_Function_Read, MCT24X_MReadPos,                  MCT24X_MReadLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Accum,                        EmetconProtocol::IO_Function_Read, MCT24X_MReadPos,                  MCT24X_MReadLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_KWH,                      EmetconProtocol::IO_Function_Read, MCT24X_MReadPos,                  MCT24X_MReadLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                      Emetcon::IO_Write,         MCT24X_PutMReadPos,               MCT24X_PutMReadLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_KYZ,                      EmetconProtocol::IO_Write,         MCT24X_PutMReadPos,               MCT24X_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                    Emetcon::IO_Read,          MCT24X_DemandPos,                 MCT24X_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,                   Emetcon::IO_Read,          MCT24X_DemandPos,                 MCT24X_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,                    EmetconProtocol::IO_Read,          MCT24X_DemandPos,                 MCT24X_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Demand,                   EmetconProtocol::IO_Read,          MCT24X_DemandPos,                 MCT24X_DemandLen));
 
-    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,                  Emetcon::IO_Read,          0,                                0));
+    cs.insert(CommandStore(EmetconProtocol::Scan_LoadProfile,                  EmetconProtocol::IO_Read,          0,                                0));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_External,                Emetcon::IO_Read,          MCT24X_StatusPos,                 MCT24X_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,             Emetcon::IO_Read,          MCT24X_LPStatusPos,               MCT24X_LPStatusLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_External,                EmetconProtocol::IO_Read,          MCT24X_StatusPos,                 MCT24X_StatusLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_LoadProfile,             EmetconProtocol::IO_Read,          MCT24X_LPStatusPos,               MCT24X_LPStatusLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,          Emetcon::IO_Read,          MCT24X_DemandIntervalPos,         MCT24X_DemandIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,          Emetcon::IO_Write,         MCT24X_DemandIntervalPos,         MCT24X_DemandIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_DemandInterval,          EmetconProtocol::IO_Read,          MCT24X_DemandIntervalPos,         MCT24X_DemandIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_DemandInterval,          EmetconProtocol::IO_Write,         MCT24X_DemandIntervalPos,         MCT24X_DemandIntervalLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,     Emetcon::IO_Read,          MCT24X_LPIntervalPos,             MCT24X_LPIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,     Emetcon::IO_Write,         Command_LPInt,                    0));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_LoadProfileInterval,     EmetconProtocol::IO_Read,          MCT24X_LPIntervalPos,             MCT24X_LPIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_LoadProfileInterval,     EmetconProtocol::IO_Write,         Command_LPInt,                    0));
 
     return cs;
 }
 
 
-bool CtiDeviceMCT24X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct24xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -102,13 +89,13 @@ bool CtiDeviceMCT24X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         found = true;
 
         //  LP Interval write doesn't need Q_ARMC
-        if( bst.IO == Emetcon::IO_Write && bst.Length )
+        if( bst.IO == EmetconProtocol::IO_Write && bst.Length )
         {
             bst.IO |= Q_ARMC;
         }
 
         //  special case for the 250's status scan
-        if( getType() == TYPEMCT250 && (cmd == Emetcon::Scan_General || cmd == Emetcon::GetStatus_External) )
+        if( getType() == TYPEMCT250 && (cmd == EmetconProtocol::Scan_General || cmd == EmetconProtocol::GetStatus_External) )
         {
             bst.Function = MCT250_StatusPos;
             bst.Length   = MCT250_StatusLen;
@@ -123,7 +110,7 @@ bool CtiDeviceMCT24X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
+ULONG Mct24xDevice::calcNextLPScanTime( void )
 {
     CtiTime Now, blockStart, nextTime;
     unsigned long midnightOffset;
@@ -192,7 +179,7 @@ ULONG CtiDeviceMCT24X::calcNextLPScanTime( void )
 }
 
 
-INT CtiDeviceMCT24X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -293,7 +280,7 @@ INT CtiDeviceMCT24X::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 }
 
 
-bool CtiDeviceMCT24X::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
     bool retVal = false;
     int lpBlockAddress;
@@ -314,7 +301,7 @@ bool CtiDeviceMCT24X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 12;  //  2 bytes per interval
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
 
         retVal = true;
     }
@@ -338,45 +325,45 @@ bool CtiDeviceMCT24X::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT24X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::Scan_LoadProfile):
+        case (EmetconProtocol::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::Scan_General):
-        case (Emetcon::GetStatus_External):
+        case (EmetconProtocol::Scan_General):
+        case (EmetconProtocol::GetStatus_External):
         {
             status = decodeScanStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_Disconnect):
+        case (EmetconProtocol::GetStatus_Disconnect):
         {
             status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_LoadProfile):
+        case (EmetconProtocol::GetStatus_LoadProfile):
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_Model):
+        case (EmetconProtocol::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_DemandInterval):  //  handled in dev_mct
+        case (EmetconProtocol::GetConfig_DemandInterval):  //  handled in dev_mct
         default:
         {
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -395,7 +382,7 @@ INT CtiDeviceMCT24X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -588,7 +575,7 @@ INT CtiDeviceMCT24X::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -748,7 +735,7 @@ INT CtiDeviceMCT24X::decodeScanStatus(INMESS *InMessage, CtiTime &TimeNow, list<
 }
 
 
-INT CtiDeviceMCT24X::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct24xDevice::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -788,7 +775,7 @@ INT CtiDeviceMCT24X::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
 /*
  *  This code handles the decode for all 24X series model configs..
  */
-INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct24xDevice::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -875,4 +862,5 @@ INT CtiDeviceMCT24X::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
     return status;
 }
 
-
+}
+}

@@ -1,31 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct2XX
-*
-* Class:  CtiDeviceMCT2XX
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2XX.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/12/27 05:44:38 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT2XX_H__
-#define __DEV_MCT2XX_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct.h"
 
-class IM_EX_DEVDB CtiDeviceMCT2XX : public CtiDeviceMCT
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct2xxDevice : public MctDevice
 {
 private:
 
-    typedef CtiDeviceMCT Inherited;
+    typedef MctDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -84,11 +68,14 @@ protected:
 
 public:
 
-   CtiDeviceMCT2XX( );
-   CtiDeviceMCT2XX( const CtiDeviceMCT2XX &aRef );
-   virtual ~CtiDeviceMCT2XX( );
+   Mct2xxDevice( );
+   Mct2xxDevice( const Mct2xxDevice &aRef );
+   virtual ~Mct2xxDevice( );
 
-   CtiDeviceMCT2XX &operator=( const CtiDeviceMCT2XX &aRef );
+   Mct2xxDevice &operator=( const Mct2xxDevice &aRef );
 
 };
-#endif // #ifndef __DEV_MCT2XX_H__
+
+}
+}
+

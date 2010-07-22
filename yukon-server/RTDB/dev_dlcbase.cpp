@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dlcbase
-*
-* Date:   1/29/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2008/11/17 17:34:40 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include "dev_dlcbase.h"
 #include "dev_mct.h"  //  for ARM commands
@@ -28,23 +11,25 @@
 #include "porter.h"
 #include "numstr.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
+namespace Cti {
+namespace Devices {
 
-unsigned int CtiDeviceDLCBase::_lpRetryMultiplier = 0;
-unsigned int CtiDeviceDLCBase::_lpRetryMinimum    = 0;
-unsigned int CtiDeviceDLCBase::_lpRetryMaximum    = 0;
+unsigned int DlcBaseDevice::_lpRetryMultiplier = 0;
+unsigned int DlcBaseDevice::_lpRetryMinimum    = 0;
+unsigned int DlcBaseDevice::_lpRetryMaximum    = 0;
 
-CtiDeviceDLCBase::CtiDeviceDLCBase()   {}
+DlcBaseDevice::DlcBaseDevice()   {}
 
-CtiDeviceDLCBase::CtiDeviceDLCBase(const CtiDeviceDLCBase& aRef)
+DlcBaseDevice::DlcBaseDevice(const DlcBaseDevice& aRef)
 {
     *this = aRef;
 }
 
-CtiDeviceDLCBase::~CtiDeviceDLCBase() {}
+DlcBaseDevice::~DlcBaseDevice() {}
 
-CtiDeviceDLCBase& CtiDeviceDLCBase::operator=(const CtiDeviceDLCBase& aRef)
+DlcBaseDevice& DlcBaseDevice::operator=(const DlcBaseDevice& aRef)
 {
     int i;
 
@@ -59,42 +44,42 @@ CtiDeviceDLCBase& CtiDeviceDLCBase::operator=(const CtiDeviceDLCBase& aRef)
     return *this;
 }
 
-CtiTableDeviceRoute  CtiDeviceDLCBase::getDeviceRoute() const
+CtiTableDeviceRoute  DlcBaseDevice::getDeviceRoute() const
 {
     return DeviceRoutes;
 }
-CtiTableDeviceRoute& CtiDeviceDLCBase::getDeviceRoute()
+CtiTableDeviceRoute& DlcBaseDevice::getDeviceRoute()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     return DeviceRoutes;
 }
 
-CtiDeviceDLCBase& CtiDeviceDLCBase::setDeviceRoute(const CtiTableDeviceRoute& aRoute)
+DlcBaseDevice& DlcBaseDevice::setDeviceRoute(const CtiTableDeviceRoute& aRoute)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     DeviceRoutes = aRoute;
     return *this;
 }
 
-CtiTableDeviceCarrier  CtiDeviceDLCBase::getCarrierSettings() const
+CtiTableDeviceCarrier  DlcBaseDevice::getCarrierSettings() const
 {
     return CarrierSettings;
 }
 
-CtiTableDeviceCarrier& CtiDeviceDLCBase::getCarrierSettings()
+CtiTableDeviceCarrier& DlcBaseDevice::getCarrierSettings()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     return CarrierSettings;
 }
 
-CtiDeviceDLCBase& CtiDeviceDLCBase::setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings )
+DlcBaseDevice& DlcBaseDevice::setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings )
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     CarrierSettings = aCarrierSettings;
     return *this;
 }
 
-string CtiDeviceDLCBase::getSQLCoreStatement() const
+string DlcBaseDevice::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, DCS.address, "
@@ -106,7 +91,7 @@ string CtiDeviceDLCBase::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void CtiDeviceDLCBase::DecodeDatabaseReader(Cti::RowReader &rdr)
+void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
 
@@ -123,11 +108,11 @@ void CtiDeviceDLCBase::DecodeDatabaseReader(Cti::RowReader &rdr)
     DeviceRoutes.DecodeDatabaseReader(rdr);
 }
 
-LONG CtiDeviceDLCBase::getAddress() const   {   return CarrierSettings.getAddress();    }
-LONG CtiDeviceDLCBase::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
+LONG DlcBaseDevice::getAddress() const   {   return CarrierSettings.getAddress();    }
+LONG DlcBaseDevice::getRouteID() const   {   return DeviceRoutes.getRouteID();       }   //  From CtiTableDeviceRoute
 
 
-INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore ) const
+INT DlcBaseDevice::retMsgHandler( string commandStr, int status, CtiReturnMsg *retMsg, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, bool expectMore ) const
 {
     CtiReturnMsg    *tmpVGRetMsg = NULL;
     CtiPointDataMsg *tmpMsg;
@@ -220,7 +205,7 @@ INT CtiDeviceDLCBase::retMsgHandler( string commandStr, int status, CtiReturnMsg
 
 
 
-INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT DlcBaseDevice::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -240,8 +225,8 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
         //           either case.
 
         if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-            getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-            getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
+            getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+            getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
             (getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
         {
             //  Address did not match, so it's a comm error
@@ -280,7 +265,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
             {
                 switch( InMessage->Sequence )
                 {
-                    case Emetcon::Scan_General:
+                    case EmetconProtocol::Scan_General:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
                         pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
@@ -291,7 +276,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
                         break;
                     }
 
-                    case Emetcon::Scan_Accum:
+                    case EmetconProtocol::Scan_Accum:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
                         pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
@@ -302,7 +287,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
                         break;
                     }
 
-                    case Emetcon::Scan_Integrity:
+                    case EmetconProtocol::Scan_Integrity:
                     {
                         pMsg->insert( -1 );             //  This is the dispatch token and is unimplemented at this time
                         pMsg->insert(OP_DEVICEID);      //  This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
@@ -372,7 +357,7 @@ INT CtiDeviceDLCBase::decodeCheckErrorReturn(INMESS *InMessage, list< CtiMessage
 }
 
 
-int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
+int DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg              *pReq,
                                          CtiCommandParser           &parse,
                                          list< OUTMESS* >     &tmpOutList,
                                          list< CtiMessage* >  &vgList,
@@ -406,8 +391,8 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
         //  if they said to broadcast it and it's a write, tag it for macro route broadcast
         if( broadcastWritesOnMacroSubroutes
-            && (pOut->Buffer.BSt.IO == Emetcon::IO_Function_Write ||
-                pOut->Buffer.BSt.IO == Emetcon::IO_Write) )
+            && (pOut->Buffer.BSt.IO == EmetconProtocol::IO_Function_Write ||
+                pOut->Buffer.BSt.IO == EmetconProtocol::IO_Write) )
         {
             pOut->MessageFlags |= MessageFlag_BroadcastOnMacroSubroutes;
         }
@@ -419,7 +404,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
             //  all B word DLC commands return a "result" - even if it's just notification that a one-way command was submitted (such as a control, write, etc)
             pOut->EventCode = BWORD | WAIT | RESULT;
 
-            if( pOut->Sequence == Emetcon::PutConfig_TSync )
+            if( pOut->Sequence == EmetconProtocol::PutConfig_TSync )
             {
                 pOut->EventCode |= TSYNC;
             }
@@ -572,7 +557,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
 
 
 
-bool CtiDeviceDLCBase::processAdditionalRoutes( INMESS *InMessage ) const
+bool DlcBaseDevice::processAdditionalRoutes( INMESS *InMessage ) const
 {
     bool bret = false;
 
@@ -593,7 +578,7 @@ bool CtiDeviceDLCBase::processAdditionalRoutes( INMESS *InMessage ) const
 }
 
 
-inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
+inline ULONG DlcBaseDevice::selectInitialMacroRouteOffset(LONG routeid) const
 {
     ULONG offset = 0;
 
@@ -615,7 +600,7 @@ inline ULONG CtiDeviceDLCBase::selectInitialMacroRouteOffset(LONG routeid) const
 }
 
 
-unsigned int CtiDeviceDLCBase::getLPRetryRate( unsigned int interval )
+unsigned int DlcBaseDevice::getLPRetryRate( unsigned int interval )
 {
     unsigned int retVal;
 
@@ -672,5 +657,8 @@ unsigned int CtiDeviceDLCBase::getLPRetryRate( unsigned int interval )
     }
 
     return retVal;
+}
+
+}
 }
 

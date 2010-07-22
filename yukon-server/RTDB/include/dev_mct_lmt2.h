@@ -1,31 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct_lmt2
-*
-* Class:  CtiDeviceMCT_LMT2
-* Date:   6/19/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct_lmt2.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/12/26 15:52:10 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT_LMT2_H__
-#define __DEV_MCT_LMT2_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct22x.h"
 
-class CtiDeviceMCT_LMT2 : public CtiDeviceMCT22X
+namespace Cti {
+namespace Devices {
+
+class Lmt2Device : public Mct22xDevice
 {
 private:
 
-    typedef CtiDeviceMCT22X Inherited;
+    typedef Mct22xDevice Inherited;
 
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();
@@ -64,13 +48,14 @@ protected:
 
 public:
 
-    CtiDeviceMCT_LMT2();
-    CtiDeviceMCT_LMT2( const CtiDeviceMCT_LMT2 &aRef );
-    virtual ~CtiDeviceMCT_LMT2();
+    Lmt2Device();
+    Lmt2Device( const Lmt2Device &aRef );
+    virtual ~Lmt2Device();
 
-    CtiDeviceMCT_LMT2& operator=(const CtiDeviceMCT_LMT2& aRef);
+    Lmt2Device& operator=(const Lmt2Device& aRef);
 
     ULONG calcNextLPScanTime( void );
 };
 
-#endif // #ifndef __DEV_MCT_LMT2_H__
+}
+}

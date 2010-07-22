@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct2XX
-*
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct2XX.cpp-arc  $
-* REVISION     :  $Revision: 1.44.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:25 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "devicetypes.h"
@@ -22,22 +7,24 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
+
+namespace Cti {
+namespace Devices {
+
+const Mct2xxDevice::CommandSet Mct2xxDevice::_commandStore = Mct2xxDevice::initCommandStore();
 
 
-const CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::_commandStore = CtiDeviceMCT2XX::initCommandStore();
+Mct2xxDevice::Mct2xxDevice( ) { }
 
-
-CtiDeviceMCT2XX::CtiDeviceMCT2XX( ) { }
-
-CtiDeviceMCT2XX::CtiDeviceMCT2XX( const CtiDeviceMCT2XX &aRef )
+Mct2xxDevice::Mct2xxDevice( const Mct2xxDevice &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceMCT2XX::~CtiDeviceMCT2XX( ) { }
+Mct2xxDevice::~Mct2xxDevice( ) { }
 
-CtiDeviceMCT2XX& CtiDeviceMCT2XX::operator=(const CtiDeviceMCT2XX& aRef)
+Mct2xxDevice& Mct2xxDevice::operator=(const Mct2xxDevice& aRef)
 {
    if( this != &aRef )
    {
@@ -48,44 +35,44 @@ CtiDeviceMCT2XX& CtiDeviceMCT2XX::operator=(const CtiDeviceMCT2XX& aRef)
 }
 
 
-CtiDeviceMCT2XX::CommandSet CtiDeviceMCT2XX::initCommandStore()
+Mct2xxDevice::CommandSet Mct2xxDevice::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw,           Emetcon::IO_Write, 0, -1));  //  this will be filled in by executePutConfig
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Raw,           EmetconProtocol::IO_Write, 0, -1));  //  this will be filled in by executePutConfig
 
     //  MCT 2xx common commands
-    cs.insert(CommandStore(Emetcon::GetValue_PFCount,        Emetcon::IO_Read,  MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_PFCount,        EmetconProtocol::IO_Read,  MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,   Emetcon::IO_Write, MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_ResetPFCount,   EmetconProtocol::IO_Write, MCT2XX_PFCountPos,  MCT2XX_PFCountLen));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,      Emetcon::IO_Read,  MCT2XX_GenStatPos,  MCT2XX_GenStatLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_Internal,      EmetconProtocol::IO_Read,  MCT2XX_GenStatPos,  MCT2XX_GenStatLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,         Emetcon::IO_Write, MCT2XX_ResetPos,    MCT2XX_ResetLen));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_Reset,         EmetconProtocol::IO_Write, MCT2XX_ResetPos,    MCT2XX_ResetLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,    Emetcon::IO_Read,  MCT2XX_MultPos,     MCT2XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,    EmetconProtocol::IO_Read,  MCT2XX_MultPos,     MCT2XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,    Emetcon::IO_Write, MCT2XX_MultPos,     MCT2XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Multiplier,    EmetconProtocol::IO_Write, MCT2XX_MultPos,     MCT2XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Options,       Emetcon::IO_Read,  MCT2XX_OptionPos,   MCT2XX_OptionLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Options,       EmetconProtocol::IO_Read,  MCT2XX_OptionPos,   MCT2XX_OptionLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,          Emetcon::IO_Read,  Memory_TimePos,     Memory_TimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Time,          EmetconProtocol::IO_Read,  Memory_TimePos,     Memory_TimeLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,         Emetcon::IO_Write, Memory_TSyncPos,    Memory_TSyncLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_TSync,         EmetconProtocol::IO_Write, Memory_TSyncPos,    Memory_TSyncLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddress, Emetcon::IO_Write, MCT2XX_UniqueAddressPos, MCT2XX_UniqueAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_UniqueAddress, EmetconProtocol::IO_Write, MCT2XX_UniqueAddressPos, MCT2XX_UniqueAddressLen));
 
     return cs;
 }
 
 
-bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct2xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
     if(_commandStore.empty())  // Must initialize!
     {
-        CtiDeviceMCT2XX::initCommandStore();
+        Mct2xxDevice::initCommandStore();
     }
 
     CommandSet::const_iterator itr = _commandStore.find(CommandStore(cmd));
@@ -96,7 +83,7 @@ bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         bst.Length   = itr->length;              // Copy over the found length!
         bst.IO       = itr->io;                              // Copy over the found io indicator!
 
-        if( bst.IO == Emetcon::IO_Write && bst.Length )
+        if( bst.IO == EmetconProtocol::IO_Write && bst.Length )
         {
             bst.IO |= Q_ARMC;
         }
@@ -117,25 +104,25 @@ bool CtiDeviceMCT2XX::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT2XX::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
 
     switch(InMessage->Sequence)
     {
-        case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_KWH:         status = decodeGetValueKWH      (InMessage, TimeNow, vgList, retList, outList);     break;
+        case EmetconProtocol::Scan_Accum:
+        case EmetconProtocol::GetValue_KWH:         status = decodeGetValueKWH      (InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case Emetcon::Scan_Integrity:
-        case Emetcon::GetValue_Demand:      status = decodeGetValueDemand   (InMessage, TimeNow, vgList, retList, outList);     break;
+        case EmetconProtocol::Scan_Integrity:
+        case EmetconProtocol::GetValue_Demand:      status = decodeGetValueDemand   (InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case Emetcon::GetStatus_Internal:   status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
+        case EmetconProtocol::GetStatus_Internal:   status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);     break;
 
         //  Parent method.
-        case Emetcon::GetConfig_Model:      status = decodeGetConfigModel   (InMessage, TimeNow, vgList, retList, outList);     break;
+        case EmetconProtocol::GetConfig_Model:      status = decodeGetConfigModel   (InMessage, TimeNow, vgList, retList, outList);     break;
 
-        case Emetcon::GetConfig_Options:    status = decodeGetConfigOptions (InMessage, TimeNow, vgList, retList, outList);     break;
+        case EmetconProtocol::GetConfig_Options:    status = decodeGetConfigOptions (InMessage, TimeNow, vgList, retList, outList);     break;
 
         default:
         {
@@ -155,14 +142,14 @@ INT CtiDeviceMCT2XX::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     INT ErrReturn =  InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt  = &InMessage->Buffer.DSt;
 
-    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
@@ -233,7 +220,7 @@ INT CtiDeviceMCT2XX::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -328,7 +315,7 @@ INT CtiDeviceMCT2XX::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct2xxDevice::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -415,7 +402,7 @@ INT CtiDeviceMCT2XX::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 //  This code handles the decode for all 2XX series model configs..
 //
 
-INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -503,7 +490,7 @@ INT CtiDeviceMCT2XX::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct2xxDevice::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -545,5 +532,8 @@ INT CtiDeviceMCT2XX::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow,
 
 
     return status;
+}
+
+}
 }
 

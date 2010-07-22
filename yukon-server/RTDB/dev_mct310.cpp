@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct310
-*
-* Date:   4/24/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.66.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:24 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "devicetypes.h"
@@ -24,10 +9,12 @@
 #include "utility.h"
 #include "dllyukon.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
+namespace Cti {
+namespace Devices {
 
-const CtiDeviceMCT310::CommandSet CtiDeviceMCT310::_commandStore = CtiDeviceMCT310::initCommandStore();
+const Mct310Device::CommandSet Mct310Device::_commandStore = Mct310Device::initCommandStore();
 
 
 #define STATUS1_BIT_MCT3XX    0x80
@@ -54,20 +41,20 @@ const CtiDeviceMCT310::CommandSet CtiDeviceMCT310::_commandStore = CtiDeviceMCT3
 
 
 
-CtiDeviceMCT310::CtiDeviceMCT310( )
+Mct310Device::Mct310Device( )
 {
 }
 
-CtiDeviceMCT310::CtiDeviceMCT310( const CtiDeviceMCT310 &aRef )
+Mct310Device::Mct310Device( const Mct310Device &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceMCT310::~CtiDeviceMCT310( )
+Mct310Device::~Mct310Device( )
 {
 }
 
-CtiDeviceMCT310& CtiDeviceMCT310::operator=( const CtiDeviceMCT310 &aRef )
+Mct310Device& Mct310Device::operator=( const Mct310Device &aRef )
 {
     if( this != &aRef )
     {
@@ -78,85 +65,85 @@ CtiDeviceMCT310& CtiDeviceMCT310::operator=( const CtiDeviceMCT310 &aRef )
 }
 
 
-CtiDeviceMCT310::CommandSet CtiDeviceMCT310::initCommandStore( )
+Mct310Device::CommandSet Mct310Device::initCommandStore( )
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw, Emetcon::IO_Write, 0, 0));  //  this will be filled in by executePutConfig
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Raw, EmetconProtocol::IO_Write, 0, 0));  //  this will be filled in by executePutConfig
 
     //  300 series common commands
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,                 Emetcon::IO_Read,           MCT3XX_TimePos,                 MCT3XX_TimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Time,                 EmetconProtocol::IO_Read,           MCT3XX_TimePos,                 MCT3XX_TimeLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_DemandInterval,       Emetcon::IO_Read,           MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,  Emetcon::IO_Read,           MCT3XX_LPIntervalPos,           MCT3XX_LPIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,           Emetcon::IO_Read,           MCT3XX_Mult1Pos,                MCT3XX_MultLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Options,              Emetcon::IO_Read,           MCT3XX_OptionPos,               MCT3XX_OptionLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,         Emetcon::IO_Read,           MCT3XX_GroupAddressPos,         MCT3XX_GroupAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_DemandInterval,       EmetconProtocol::IO_Read,           MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_LoadProfileInterval,  EmetconProtocol::IO_Read,           MCT3XX_LPIntervalPos,           MCT3XX_LPIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,           EmetconProtocol::IO_Read,           MCT3XX_Mult1Pos,                MCT3XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Options,              EmetconProtocol::IO_Read,           MCT3XX_OptionPos,               MCT3XX_OptionLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_GroupAddress,         EmetconProtocol::IO_Read,           MCT3XX_GroupAddressPos,         MCT3XX_GroupAddressLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_UniqueAddress,        Emetcon::IO_Write,          MCT3XX_UniqueAddressPos,          MCT3XX_UniqueAddressLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_GoldSilver, Emetcon::IO_Write,       MCT3XX_GroupAddressGoldSilverPos, MCT3XX_GroupAddressGoldSilverLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Bronze,  Emetcon::IO_Write,          MCT3XX_GroupAddressBronzePos,     MCT3XX_GroupAddressBronzeLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Lead,    Emetcon::IO_Write,          MCT3XX_GroupAddressLeadPos,       MCT3XX_GroupAddressLeadLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_UniqueAddress,        EmetconProtocol::IO_Write,          MCT3XX_UniqueAddressPos,          MCT3XX_UniqueAddressLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_GoldSilver, EmetconProtocol::IO_Write,       MCT3XX_GroupAddressGoldSilverPos, MCT3XX_GroupAddressGoldSilverLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_Bronze,  EmetconProtocol::IO_Write,          MCT3XX_GroupAddressBronzePos,     MCT3XX_GroupAddressBronzeLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_Lead,    EmetconProtocol::IO_Write,          MCT3XX_GroupAddressLeadPos,       MCT3XX_GroupAddressLeadLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_DemandInterval,       Emetcon::IO_Write,          MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,  Emetcon::IO_Write,          Command_LPInt,                  0));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_DemandInterval,       EmetconProtocol::IO_Write,          MCT3XX_DemandIntervalPos,       MCT3XX_DemandIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_LoadProfileInterval,  EmetconProtocol::IO_Write,          Command_LPInt,                  0));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,           Emetcon::IO_Write,          MCT3XX_Mult1Pos,                MCT3XX_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Multiplier,           EmetconProtocol::IO_Write,          MCT3XX_Mult1Pos,                MCT3XX_MultLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,                Emetcon::IO_Write,          Memory_TSyncPos,                Memory_TSyncLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_TSync,                EmetconProtocol::IO_Write,          Memory_TSyncPos,                Memory_TSyncLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_OnOffPeak,            Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
-    cs.insert(CommandStore(Emetcon::PutConfig_MinMax,               Emetcon::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_OnOffPeak,            EmetconProtocol::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_MinMax,               EmetconProtocol::IO_Write,          MCT3XX_MinMaxPeakConfigPos,     1));
 
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_KWH,                   Emetcon::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Accum,                     EmetconProtocol::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_KWH,                   EmetconProtocol::IO_Function_Read,  FuncRead_MReadPos,        FuncRead_MReadLen));
 
 //  ACH add frozen support for 310
 //  cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read,  MCT3XX_FuncReadFrozenPos, MCT3XX_FuncReadFrozenLen);
 
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,             Emetcon::IO_Read,           MCT3XX_GenStatPos,        MCT3XX_GenStatLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_Internal,             EmetconProtocol::IO_Read,           MCT3XX_GenStatPos,        MCT3XX_GenStatLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,                Emetcon::IO_Write,          MCT3XX_ResetPos,          MCT3XX_ResetLen));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_Reset,                EmetconProtocol::IO_Write,          MCT3XX_ResetPos,          MCT3XX_ResetLen));
 
-    cs.insert(CommandStore(Emetcon::GetValue_PFCount,               Emetcon::IO_Read,           MCT3XX_PFCountPos,        MCT3XX_PFCountLen));
-    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,          Emetcon::IO_Write,          MCT3XX_PFCountPos,        MCT3XX_PFCountLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_PFCount,               EmetconProtocol::IO_Read,           MCT3XX_PFCountPos,        MCT3XX_PFCountLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_ResetPFCount,          EmetconProtocol::IO_Write,          MCT3XX_PFCountPos,        MCT3XX_PFCountLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_PeakOn,               Emetcon::IO_Write,          Command_PeakOn,           0));
-    cs.insert(CommandStore(Emetcon::PutStatus_PeakOff,              Emetcon::IO_Write,          Command_PeakOff,          0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_PeakOn,               EmetconProtocol::IO_Write,          Command_PeakOn,           0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_PeakOff,              EmetconProtocol::IO_Write,          Command_PeakOff,          0));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,            Emetcon::IO_Write | Q_ARMS, Command_FreezeOne,        0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,            Emetcon::IO_Write | Q_ARMS, Command_FreezeTwo,        0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeOne,            EmetconProtocol::IO_Write | Q_ARMS, Command_FreezeOne,        0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeTwo,            EmetconProtocol::IO_Write | Q_ARMS, Command_FreezeTwo,        0));
 
     //  only valid for sspec 1007 (and above?)
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           Memory_DemandPos,         Memory_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,                 EmetconProtocol::IO_Read,           Memory_DemandPos,         Memory_DemandLen));
 
     //  310 specific commands
     //  310 cannot do a FR0x92 (MCT31X_FuncReadDemand) and can only collect 1 demand reading!
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Read,           Memory_DemandPos,         Memory_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Read,           Memory_DemandPos,         Memory_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,                 EmetconProtocol::IO_Read,           Memory_DemandPos,         Memory_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Demand,                EmetconProtocol::IO_Read,           Memory_DemandPos,         Memory_DemandLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,                   Emetcon::IO_Write,          MCT3XX_PutMRead1Pos,      MCT3XX_PutMReadLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_KYZ,                   EmetconProtocol::IO_Write,          MCT3XX_PutMRead1Pos,      MCT3XX_PutMReadLen));
 
     //  only valid for 310IL, this case handled in getOperation
-    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read,  0,  0));
+    cs.insert(CommandStore(EmetconProtocol::Scan_LoadProfile,               EmetconProtocol::IO_Function_Read,  0,  0));
 
-    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,           Emetcon::IO_Read,           Memory_StatusPos,         Memory_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Read,           MCT3XX_LPStatusPos,       MCT3XX_LPStatusLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_Disconnect,           EmetconProtocol::IO_Read,           Memory_StatusPos,         Memory_StatusLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_LoadProfile,          EmetconProtocol::IO_Read,           MCT3XX_LPStatusPos,       MCT3XX_LPStatusLen));
 
-    cs.insert(CommandStore(Emetcon::Control_Latch,                  Emetcon::IO_Write | Q_ARML, Command_Latch,            0));
+    cs.insert(CommandStore(EmetconProtocol::Control_Latch,                  EmetconProtocol::IO_Write | Q_ARML, Command_Latch,            0));
 
     return cs;
 }
 
 
-bool CtiDeviceMCT310::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct310Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
     CommandSet::const_iterator itr = _commandStore.find( CommandStore( cmd ) );
 
     //  the 310IL/IDL is the only 310 that supports load profile, and i didn't want to add a seperate class for the one action
-    if( cmd == Emetcon::Scan_LoadProfile &&
+    if( cmd == EmetconProtocol::Scan_LoadProfile &&
         getType( ) != TYPEMCT310IL  &&
         getType( ) != TYPEMCT310IDL )
     {
@@ -180,7 +167,7 @@ bool CtiDeviceMCT310::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
+ULONG Mct310Device::calcNextLPScanTime( void )
 {
     CtiTime Now, blockStart, nextTime;
     unsigned long midnightOffset;
@@ -249,7 +236,7 @@ ULONG CtiDeviceMCT310::calcNextLPScanTime( void )
 }
 
 
-INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -350,7 +337,7 @@ INT CtiDeviceMCT310::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 }
 
 
-bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+bool Mct310Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
     bool retVal = false;
     int lpBlockAddress;
@@ -370,7 +357,7 @@ bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 13;  //  2 bytes per interval, and a status byte to boot
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
 
         retVal = true;
     }
@@ -389,7 +376,7 @@ bool CtiDeviceMCT310::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 }
 
 
-DOUBLE CtiDeviceMCT310::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PBYTE DataValueArray)
+DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT DeviceType, PBYTE DataValueArray)
 {
     /* key off the point offset */
     switch(PointOffset)
@@ -576,78 +563,78 @@ DOUBLE CtiDeviceMCT310::translateStatusValue (INT PointOffset, INT PointType, IN
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT310::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::Scan_Accum):
-        case (Emetcon::GetValue_KWH):
+        case (EmetconProtocol::Scan_Accum):
+        case (EmetconProtocol::GetValue_KWH):
         {
             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::Scan_Integrity):
-        case (Emetcon::GetValue_Demand):
+        case (EmetconProtocol::Scan_Integrity):
+        case (EmetconProtocol::GetValue_Demand):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::Scan_LoadProfile):
+        case (EmetconProtocol::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetValue_PeakDemand):
-        case (Emetcon::GetValue_FrozenPeakDemand):
+        case (EmetconProtocol::GetValue_PeakDemand):
+        case (EmetconProtocol::GetValue_FrozenPeakDemand):
         {
             status = decodeGetValuePeak(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::PutConfig_OnOffPeak):
-        case (Emetcon::PutConfig_MinMax):
+        case (EmetconProtocol::PutConfig_OnOffPeak):
+        case (EmetconProtocol::PutConfig_MinMax):
         {
             status = decodePutConfigPeakMode(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::PutStatus_FreezeOne):
-        case (Emetcon::PutStatus_FreezeTwo):
+        case (EmetconProtocol::PutStatus_FreezeOne):
+        case (EmetconProtocol::PutStatus_FreezeTwo):
         {
             status = decodePutStatus(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_Disconnect):
+        case (EmetconProtocol::GetStatus_Disconnect):
         {
             status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_Internal):
+        case (EmetconProtocol::GetStatus_Internal):
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_LoadProfile):
+        case (EmetconProtocol::GetStatus_LoadProfile):
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_Model):
+        case (EmetconProtocol::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_Options):
+        case (EmetconProtocol::GetConfig_Options):
         {
             status = decodeGetConfigOptions(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -672,7 +659,7 @@ INT CtiDeviceMCT310::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT310::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
@@ -699,7 +686,7 @@ INT CtiDeviceMCT310::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        if( InMessage->Sequence == Emetcon::PutConfig_MinMax )
+        if( InMessage->Sequence == EmetconProtocol::PutConfig_MinMax )
         {
             resultString = getName() + " / peak mode set to \"minmax\"";
         }
@@ -719,7 +706,7 @@ INT CtiDeviceMCT310::decodePutConfigPeakMode(INMESS *InMessage, CtiTime &TimeNow
 }
 
 
-INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     ULONG i,x;
@@ -743,7 +730,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
     ULONG RecentValue = 0;
     USHORT TempDevType;
 
-    if( InMessage->Sequence == Emetcon::Scan_Accum )
+    if( InMessage->Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
@@ -819,7 +806,7 @@ INT CtiDeviceMCT310::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int       status = NORMAL, demand_interval;
     double    Value;
@@ -913,7 +900,7 @@ INT CtiDeviceMCT310::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int       status = NORMAL;
     double    Value;
@@ -969,7 +956,7 @@ INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, lis
                 resultString = getName() + " / " + pPoint->getName() + " = " + CtiNumStr(Value,
                                                                                          boost::static_pointer_cast<CtiPointNumeric>(pPoint)->getPointUnits().getDecimalPlaces());
 
-                if( InMessage->Sequence == Emetcon::GetValue_FrozenPeakDemand )
+                if( InMessage->Sequence == EmetconProtocol::GetValue_FrozenPeakDemand )
                 {
                     pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, DemandAccumulatorPointType, resultString);
                     if(pData != NULL)
@@ -1000,7 +987,7 @@ INT CtiDeviceMCT310::decodeGetValuePeak(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -1193,7 +1180,7 @@ INT CtiDeviceMCT310::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-void CtiDeviceMCT310::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Data)
+void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Data)
 {
     int i, j, maxj;
 
@@ -1218,7 +1205,7 @@ void CtiDeviceMCT310::decodeAccumulators(ULONG result[], INT accum_cnt, BYTE *Da
 }
 
 
-INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct310Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -1297,7 +1284,7 @@ INT CtiDeviceMCT310::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Mct310Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -1343,7 +1330,7 @@ INT CtiDeviceMCT310::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
 }
 
 
-INT CtiDeviceMCT310::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1458,7 +1445,7 @@ INT CtiDeviceMCT310::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceMCT310::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct310Device::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -1553,5 +1540,8 @@ INT CtiDeviceMCT310::decodeGetConfigOptions(INMESS *InMessage, CtiTime &TimeNow,
 
 
     return status;
+}
+
+}
 }
 

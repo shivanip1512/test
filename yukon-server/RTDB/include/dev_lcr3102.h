@@ -1,21 +1,15 @@
-/*
-*   Copyright (c) 2009 Cooper Power Systems EAS. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_LCR3102_H__
-#define __DEV_LCR3102_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "dev_carrier.h"
 
+namespace Cti {
+namespace Devices {
 
-namespace Cti       {
-namespace Devices    {
-
-class IM_EX_DEVDB LCR3102 : public CtiDeviceCarrier
+class IM_EX_DEVDB Lcr3102Device : public CarrierDevice
 {
 private:
 
-    typedef CtiDeviceCarrier Inherited;
+    typedef CarrierDevice Inherited;
 
     static const    CommandSet  _commandStore;
     static          CommandSet  initCommandStore();
@@ -51,10 +45,10 @@ protected:
     {
         DataRead_TransmitPowerPos  = 0xf9,
         DataRead_TransmitPowerLen  = 1,
-                                  
+
         DataRead_DeviceTimePos     = 0x40,
         DataRead_DeviceTimeLen     = 4,
-                                  
+
         DataRead_TemperaturePos    = 0x03,
         DataRead_TemperatureLen    = 4,
 
@@ -103,7 +97,7 @@ protected:
     INT decodeGetValueHistoricalTime       ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueControlTime          ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     INT decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
-    INT decodeGetValueDutyCycle     	   ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
+    INT decodeGetValueDutyCycle            ( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
     INT decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
@@ -124,12 +118,12 @@ protected:
 
 public:
 
-    LCR3102( );
-    LCR3102( const LCR3102 &aRef );
+    Lcr3102Device( );
+    Lcr3102Device( const Lcr3102Device &aRef );
 
-    virtual ~LCR3102( );
+    virtual ~Lcr3102Device( );
 
-    LCR3102& operator=( const LCR3102 &aRef );
+    Lcr3102Device& operator=( const Lcr3102Device &aRef );
 
     virtual INT ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
 
@@ -144,4 +138,3 @@ public:
 }       // namespace Devices
 }       // namespace Cti
 
-#endif // #ifndef __DEV_LCR3102_H__

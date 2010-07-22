@@ -1,39 +1,34 @@
-/*
-*   Copyright (c) 2009 Cooper Power Systems EAS. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dev_lcr3102.h"
 
+using Cti::Protocols::EmetconProtocol;
 
-namespace Cti       {
-namespace Devices    {
+namespace Cti {
+namespace Devices {
 
-
-using Protocol::Emetcon;
-
-const LCR3102::CommandSet  LCR3102::_commandStore = LCR3102::initCommandStore();
+const Lcr3102Device::CommandSet  Lcr3102Device::_commandStore = Lcr3102Device::initCommandStore();
 
 
-LCR3102::LCR3102( )
+Lcr3102Device::Lcr3102Device( )
 {
 
 }
 
 
-LCR3102::LCR3102( const LCR3102 &aRef )
+Lcr3102Device::Lcr3102Device( const Lcr3102Device &aRef )
 {
     *this = aRef;
 }
 
 
-LCR3102::~LCR3102( )
+Lcr3102Device::~Lcr3102Device( )
 {
 
 }
 
 
-LCR3102& LCR3102::operator=( const LCR3102 &aRef )
+Lcr3102Device& Lcr3102Device::operator=( const Lcr3102Device &aRef )
 {
     if(this != &aRef)
     {
@@ -45,7 +40,7 @@ LCR3102& LCR3102::operator=( const LCR3102 &aRef )
 }
 
 
-INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     int nRet = NoMethod;
 
@@ -119,11 +114,11 @@ INT LCR3102::ExecuteRequest ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTM
 }
 
 
-INT LCR3102::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore )
+INT Lcr3102Device::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore )
 {
     INT retCode = NOTNORMAL;
 
-    if( InMessage->Sequence == Emetcon::Scan_Integrity )
+    if( InMessage->Sequence == EmetconProtocol::Scan_Integrity )
     {
         resetScanFlag(ScanRateIntegrity);
     }
@@ -132,75 +127,75 @@ INT LCR3102::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage*
 }
 
 
-INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
     switch(InMessage->Sequence)
     {
-        case Emetcon::Scan_Integrity:
-        case Emetcon::GetValue_IntervalLast:
+        case EmetconProtocol::Scan_Integrity:
+        case EmetconProtocol::GetValue_IntervalLast:
         {
             status = decodeGetValueIntervalLast( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_Runtime:
-        case Emetcon::GetValue_Shedtime:
+        case EmetconProtocol::GetValue_Runtime:
+        case EmetconProtocol::GetValue_Shedtime:
         {
             status = decodeGetValueHistoricalTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_Temperature:
+        case EmetconProtocol::GetValue_Temperature:
         {
             status = decodeGetValueTemperature( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_TransmitPower:
+        case EmetconProtocol::GetValue_TransmitPower:
         {
             status = decodeGetValueTransmitPower( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_ControlTime:
+        case EmetconProtocol::GetValue_ControlTime:
         {
             status = decodeGetValueControlTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_XfmrHistoricalCT:
+        case EmetconProtocol::GetValue_XfmrHistoricalCT:
         {
             status = decodeGetValueXfmrHistoricalRuntime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_PropCount:
+        case EmetconProtocol::GetValue_PropCount:
         {
             status = decodeGetValuePropCount( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetValue_DutyCycle:
+        case EmetconProtocol::GetValue_DutyCycle:
         {
             status = decodeGetValueDutyCycle( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::PutConfig_Raw:
+        case EmetconProtocol::PutConfig_Raw:
         {
             status = decodePutConfig( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetConfig_Softspec:
+        case EmetconProtocol::GetConfig_Softspec:
         {
             status = decodeGetConfigSoftspec( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetConfig_Time:
+        case EmetconProtocol::GetConfig_Time:
         {
             status = decodeGetConfigTime( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetConfig_Addressing:
+        case EmetconProtocol::GetConfig_Addressing:
         {
             status = decodeGetConfigAddressing( InMessage, TimeNow, vgList, retList, outList );
             break;
         }
-        case Emetcon::GetConfig_Raw:
+        case EmetconProtocol::GetConfig_Raw:
         {
             status = decodeGetConfigRaw( InMessage, TimeNow, vgList, retList, outList );
             break;
@@ -214,7 +209,7 @@ INT LCR3102::ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage
     return status;
 }
 
-INT LCR3102::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -250,7 +245,7 @@ INT LCR3102::decodeGetValueTemperature( INMESS *InMessage, CtiTime &TimeNow, lis
     return status;
 }
 
-INT LCR3102::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -285,7 +280,7 @@ INT LCR3102::decodeGetValueTransmitPower( INMESS *InMessage, CtiTime &TimeNow, l
     return status;
 }
 
-std::vector<int> LCR3102::decodeXfmrHistoricalRuntimeMessage( BYTE Message[] )
+std::vector<int> Lcr3102Device::decodeXfmrHistoricalRuntimeMessage( BYTE Message[] )
 {
     std::vector<int> runtimeHours;
 
@@ -301,7 +296,7 @@ std::vector<int> LCR3102::decodeXfmrHistoricalRuntimeMessage( BYTE Message[] )
     return runtimeHours;
 }
 
-INT LCR3102::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -336,11 +331,11 @@ INT LCR3102::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< 
 
             string results = getName() + " / Duty Cycle CT " + CtiNumStr(currentTransformer) + ": " + CtiNumStr(pi.value);
             ReturnMsg->setResultString(results);
-    
+
             int point_offset = point_base + currentTransformer - 1;
-    
+
             insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, pi.description);
-    
+
             decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
         }
@@ -356,7 +351,7 @@ INT LCR3102::decodeGetValueDutyCycle(INMESS *InMessage, CtiTime &TimeNow, list< 
     return status;
 }
 
-INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -445,7 +440,7 @@ INT LCR3102::decodeGetValueIntervalLast( INMESS *InMessage, CtiTime &TimeNow, li
 }
 
 //Decodes the getvalue shedtime/runtime read. All points are generated with a end of interval timestamp.
-INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -473,13 +468,13 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
         string identifier;
         const int relay_count = 4;
 
-        if( InMessage->Sequence == Emetcon::GetValue_Shedtime )
+        if( InMessage->Sequence == EmetconProtocol::GetValue_Shedtime )
         {
             point_base = PointOffset_ShedtimeBase;
             function  -= FuncRead_ShedtimePos; // function is now 0-11
             identifier = "Shedtime";
         }
-        else if( InMessage->Sequence == Emetcon::GetValue_Runtime )
+        else if( InMessage->Sequence == EmetconProtocol::GetValue_Runtime )
         {
             point_base = PointOffset_RuntimeBase;
             function  -= FuncRead_RuntimePos; // function is now 0-11
@@ -566,7 +561,7 @@ INT LCR3102::decodeGetValueHistoricalTime( INMESS *InMessage, CtiTime &TimeNow, 
     return status;
 }
 
-INT LCR3102::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -600,7 +595,7 @@ INT LCR3102::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &Ti
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Decode did not return 8 hours of data!" << endl;
-        
+
                 return NOTNORMAL;
             }
             else
@@ -632,7 +627,7 @@ INT LCR3102::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &Ti
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << "Value" << currentTransformer << " is not a valid CT identifier" << endl;
-    
+
             return BADPARAM;
         }
     }
@@ -640,7 +635,7 @@ INT LCR3102::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTime &Ti
     return status;
 }
 
-INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -667,26 +662,26 @@ INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, lis
         {
             int point_base    = PointOffset_ControlTimeBase;
             string identifier = "Control Time Remaining";
-    
+
             const double halfSecondsPerSecond = 2.0;
-    
+
             point_info pi;
-    
+
             // The LCR 3102 returns the control time remaining in half seconds: we want to return seconds.
             int half_seconds = (DSt->Message[1] << 24) | (DSt->Message[2] << 16) | (DSt->Message[3] << 8) | (DSt->Message[4]);
-    
+
             pi.value       = half_seconds / halfSecondsPerSecond; // Convert to seconds. Is this the unit we want for this?
             pi.quality     = NormalQuality;
             pi.freeze_bit  = false;
             pi.description = "Control Time Remaining Relay " + CtiNumStr(relay);
-    
+
             string results = getName() + " / " + identifier;
             ReturnMsg->setResultString(results);
 
             int point_offset = point_base + relay - 1;
-    
+
             insertPointDataReport(AnalogPointType, point_offset, ReturnMsg, pi, identifier + " Relay " + CtiNumStr(relay));
-    
+
             decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
             retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
         }
@@ -702,7 +697,7 @@ INT LCR3102::decodeGetValueControlTime( INMESS *InMessage, CtiTime &TimeNow, lis
     return status;
 }
 
-INT LCR3102::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -740,7 +735,7 @@ INT LCR3102::decodeGetValuePropCount( INMESS *InMessage, CtiTime &TimeNow, list<
     return status;
 }
 
-INT LCR3102::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -763,7 +758,7 @@ INT LCR3102::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
         switch( InMessage->Sequence )
         {
-            case Emetcon::PutConfig_Raw:
+            case EmetconProtocol::PutConfig_Raw:
             {
                 results = getName() + " / Raw bytes sent";
                 break;
@@ -783,7 +778,7 @@ INT LCR3102::decodePutConfig( INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
     return status;
 }
 
-INT LCR3102::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -812,14 +807,14 @@ INT LCR3102::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             int sspec = DSt->Message[1];
             int rev   = DSt->Message[2];
 
-            string errorMessage; 
+            string errorMessage;
 
             errorMessage += getName()
                          + " received a possible error report message from the device: "
                          + "\n"
                          + "\tSoftware Spec: " + CtiNumStr(sspec)
                          + "\n"
-                         + "\tRevision: " + CtiNumStr(((double)rev) / 10.0, 1) 
+                         + "\tRevision: " + CtiNumStr(((double)rev) / 10.0, 1)
                          + "\n";
 
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -865,7 +860,7 @@ INT LCR3102::decodeGetConfigRaw( INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     return status;
 }
 
-INT LCR3102::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -892,7 +887,7 @@ INT LCR3102::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list<
 
         decodeMessageSoftspec(DSt->Message, sspec, rev, serial, spid, geo);
 
-        results = getName() + " / Software Specification " + CtiNumStr(sspec) 
+        results = getName() + " / Software Specification " + CtiNumStr(sspec)
                 + " rev " + CtiNumStr(((double)rev) / 10.0, 1) + "\n"
                 + getName() + " / Serial Number: " + CtiNumStr(serial) + "\n"
                 + getName() + " / SPID Address: " + CtiNumStr(spid) + "\n"
@@ -913,7 +908,7 @@ INT LCR3102::decodeGetConfigSoftspec( INMESS *InMessage, CtiTime &TimeNow, list<
     return status;
 }
 
-INT LCR3102::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -939,13 +934,13 @@ INT LCR3102::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, lis
 
         if(function == DataRead_AddressInfoPos)
         {
-            int programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4, 
+            int programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4,
                 splinterAddressRelay1, splinterAddressRelay2, splinterAddressRelay3, splinterAddressRelay4;
 
             decodeMessageAddress(DSt->Message,
-                                 programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4,   
+                                 programAddressRelay1, programAddressRelay2, programAddressRelay3, programAddressRelay4,
                                  splinterAddressRelay1, splinterAddressRelay2, splinterAddressRelay3, splinterAddressRelay4);
-            
+
             results = getName() + " / Program Address Relay 1:  " + CtiNumStr(programAddressRelay1 )  + "\n"
                     + getName() + " / Program Address Relay 2:  " + CtiNumStr(programAddressRelay2 )  + "\n"
                     + getName() + " / Program Address Relay 3:  " + CtiNumStr(programAddressRelay3 )  + "\n"
@@ -969,7 +964,7 @@ INT LCR3102::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, lis
             int substation, feeder, zipcode, uda;
 
             decodeMessageSubstation(DSt->Message, substation, feeder, zipcode, uda);
-       
+
             results = getName() + " / Substation Address: "     + CtiNumStr(substation) + "\n"
                     + getName() + " / Feeder Address: "         + CtiNumStr(feeder)     + "\n"
                     + getName() + " / Zip Code: "               + CtiNumStr(zipcode)    + "\n"
@@ -995,7 +990,7 @@ INT LCR3102::decodeGetConfigAddressing( INMESS *InMessage, CtiTime &TimeNow, lis
     return status;
 }
 
-INT LCR3102::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NOTNORMAL;
 
@@ -1032,16 +1027,16 @@ INT LCR3102::decodeGetConfigTime( INMESS *InMessage, CtiTime &TimeNow, list< Cti
     return status;
 }
 
-void LCR3102::decodeMessageSoftspec( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo )
+void Lcr3102Device::decodeMessageSoftspec( BYTE Message[], int &sspec, int &rev, int &serial, int &spid, int &geo )
 {
     sspec = Message[0] | (Message[4] << 8);
     rev = Message[1];
     serial = (Message[5] << 24) | (Message[6] << 16) | (Message[7] << 8) | Message[8];
     spid = (Message[9] << 8) | Message[10];
-    geo = (Message[11] << 8) | Message[12]; 
+    geo = (Message[11] << 8) | Message[12];
 }
 
-void LCR3102::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 )
+void Lcr3102Device::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &prgAddr2, int &prgAddr3, int &prgAddr4, int &splAddr1, int &splAddr2, int &splAddr3, int &splAddr4 )
 {
     prgAddr1 = Message[0];
     prgAddr2 = Message[1];
@@ -1053,71 +1048,71 @@ void LCR3102::decodeMessageAddress( BYTE Message[], int &prgAddr1, int &prgAddr2
     splAddr4 = Message[7];
 }
 
-void LCR3102::decodeMessageSubstation( BYTE Message[], int &substation, int &feeder, int &zip, int &uda )
+void Lcr3102Device::decodeMessageSubstation( BYTE Message[], int &substation, int &feeder, int &zip, int &uda )
 {
     substation = (Message[0] << 8) | Message[1]; // Substation Address
-    feeder = (Message[2] << 8) | Message[3]; // Feeder Address   
+    feeder = (Message[2] << 8) | Message[3]; // Feeder Address
     zip = (Message[4] << 16) | (Message[5] << 8) | Message[6]; // Zip Code
-    uda = (Message[7] << 8) | Message[8]; // User Defined Address 
+    uda = (Message[7] << 8) | Message[8]; // User Defined Address
 }
 
-void LCR3102::decodeMessageTime( BYTE Message[], CtiTime &time )
+void Lcr3102Device::decodeMessageTime( BYTE Message[], CtiTime &time )
 {
     int utcSeconds = (Message[0] << 24) | (Message[1] << 16) | (Message[2] << 8) | Message[3];
-    
+
     time = CtiTime::fromLocalSeconds(utcSeconds);
 }
 
-void LCR3102::decodeMessageTransmitPower( BYTE Message[], int &transmitPower )
+void Lcr3102Device::decodeMessageTransmitPower( BYTE Message[], int &transmitPower )
 {
     transmitPower = Message[0];
 }
 
-void LCR3102::decodeMessageTemperature( BYTE Message[], int &txTemp, int &boxTemp )
+void Lcr3102Device::decodeMessageTemperature( BYTE Message[], int &txTemp, int &boxTemp )
 {
     txTemp = (Message[0] << 8) | Message[1]; // TX Temp
     boxTemp = (Message[2] << 8) | Message[3]; // Box Temp
 }
 
-std::vector<int> LCR3102::decodeMessageDutyCycle( BYTE Message[] )
+std::vector<int> Lcr3102Device::decodeMessageDutyCycle( BYTE Message[] )
 {
     std::vector<int> dutyCycleInfo;
 
     dutyCycleInfo.push_back( Message[1] ); // Duty Cycle (average minutes per hour over past 24 hours)
     dutyCycleInfo.push_back( Message[0] ); // Current Transformer
-  
+
     return dutyCycleInfo;
 }
 
-LCR3102::CommandSet LCR3102::initCommandStore()
+Lcr3102Device::CommandSet Lcr3102Device::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,      FuncRead_LastIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_IntervalLast,      Emetcon::IO_Function_Read, FuncRead_LastIntervalPos,      FuncRead_LastIntervalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Runtime,           Emetcon::IO_Function_Read, FuncRead_RuntimePos,           FuncRead_RuntimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Shedtime,          Emetcon::IO_Function_Read, FuncRead_ShedtimePos,          FuncRead_ShedtimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_PropCount,         Emetcon::IO_Function_Read, FuncRead_PropCountPos,         FuncRead_PropCountLen));
-    cs.insert(CommandStore(Emetcon::GetValue_ControlTime,       Emetcon::IO_Function_Read, FuncRead_ControlTimePos,       FuncRead_ControlTimeLen));
-    cs.insert(CommandStore(Emetcon::GetValue_XfmrHistoricalCT,  Emetcon::IO_Function_Read, FuncRead_XfmrHistoricalCT1Pos, FuncRead_XfmrHistoricalLen));
-    cs.insert(CommandStore(Emetcon::GetValue_DutyCycle,         Emetcon::IO_Function_Read, FuncRead_DutyCyclePos,         FuncRead_DutyCycleLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw,              Emetcon::IO_Write,         0,                             0));    // filled in later
-    cs.insert(CommandStore(Emetcon::GetConfig_Raw,              Emetcon::IO_Read,          0,                             0));    // ...ditto
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,             EmetconProtocol::IO_Function_Read, FuncRead_LastIntervalPos,      FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_IntervalLast,      EmetconProtocol::IO_Function_Read, FuncRead_LastIntervalPos,      FuncRead_LastIntervalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Runtime,           EmetconProtocol::IO_Function_Read, FuncRead_RuntimePos,           FuncRead_RuntimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Shedtime,          EmetconProtocol::IO_Function_Read, FuncRead_ShedtimePos,          FuncRead_ShedtimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_PropCount,         EmetconProtocol::IO_Function_Read, FuncRead_PropCountPos,         FuncRead_PropCountLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_ControlTime,       EmetconProtocol::IO_Function_Read, FuncRead_ControlTimePos,       FuncRead_ControlTimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_XfmrHistoricalCT,  EmetconProtocol::IO_Function_Read, FuncRead_XfmrHistoricalCT1Pos, FuncRead_XfmrHistoricalLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_DutyCycle,         EmetconProtocol::IO_Function_Read, FuncRead_DutyCyclePos,         FuncRead_DutyCycleLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Raw,              EmetconProtocol::IO_Write,         0,                             0));    // filled in later
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Raw,              EmetconProtocol::IO_Read,          0,                             0));    // ...ditto
                                                                                                                         
     /****************************** Data Reads *****************************/
-    cs.insert(CommandStore(Emetcon::GetValue_TransmitPower,   Emetcon::IO_Read, DataRead_TransmitPowerPos,  DataRead_TransmitPowerLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Time,           Emetcon::IO_Read, DataRead_DeviceTimePos,     DataRead_DeviceTimeLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Softspec,       Emetcon::IO_Read, DataRead_SoftspecPos,       DataRead_SoftspecLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Addressing,     Emetcon::IO_Read, DataRead_SubstationDataPos, DataRead_SubstationDataLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Temperature,     Emetcon::IO_Read, DataRead_TemperaturePos,    DataRead_TemperatureLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_TransmitPower,   EmetconProtocol::IO_Read, DataRead_TransmitPowerPos,  DataRead_TransmitPowerLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Time,           EmetconProtocol::IO_Read, DataRead_DeviceTimePos,     DataRead_DeviceTimeLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Softspec,       EmetconProtocol::IO_Read, DataRead_SoftspecPos,       DataRead_SoftspecLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Addressing,     EmetconProtocol::IO_Read, DataRead_SubstationDataPos, DataRead_SubstationDataLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Temperature,     EmetconProtocol::IO_Read, DataRead_TemperaturePos,    DataRead_TemperatureLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_Raw, Emetcon::IO_Write, 0, 0));    // filled in later
-    cs.insert(CommandStore(Emetcon::GetConfig_Raw, Emetcon::IO_Read,  0, 0));    // ...ditto
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Raw, EmetconProtocol::IO_Write, 0, 0));    // filled in later
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Raw, EmetconProtocol::IO_Read,  0, 0));    // ...ditto
 
     return cs;
 }
 
-INT LCR3102::IntegrityScan(CtiRequestMsg *pReq,
+INT Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq,
                                 CtiCommandParser &parse,
                                 OUTMESS *&OutMessage,
                                 list< CtiMessage* > &vgList,
@@ -1129,7 +1124,7 @@ INT LCR3102::IntegrityScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if(getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt))
+        if(getOperation(EmetconProtocol::Scan_Integrity, OutMessage->Buffer.BSt))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -1138,7 +1133,7 @@ INT LCR3102::IntegrityScan(CtiRequestMsg *pReq,
             OutMessage->Remote    = getAddress();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
-            OutMessage->Sequence  = Emetcon::Scan_Integrity;
+            OutMessage->Sequence  = EmetconProtocol::Scan_Integrity;
             OutMessage->Retry     = 2;
             OutMessage->Request.RouteID   = getRouteID();
             OutMessage->Request.MacroOffset = 0;
@@ -1168,7 +1163,7 @@ INT LCR3102::IntegrityScan(CtiRequestMsg *pReq,
 }
 
 
-INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT nRet = NoMethod;
 
@@ -1178,17 +1173,17 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     if(parse.getFlags() & CMD_FLAG_GV_DEMAND)
     {
-        function = Emetcon::GetValue_IntervalLast;
+        function = EmetconProtocol::GetValue_IntervalLast;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GV_PROPCOUNT)
     {
-        function = Emetcon::GetValue_PropCount;
+        function = EmetconProtocol::GetValue_PropCount;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GV_CONTROLTIME)
     {
-        function = Emetcon::GetValue_ControlTime;
+        function = EmetconProtocol::GetValue_ControlTime;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         int load = parseLoadValue(parse);
@@ -1204,17 +1199,17 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     }
     else if(parse.getFlags() & CMD_FLAG_GV_TEMPERATURE)
     {
-        function = Emetcon::GetValue_Temperature;
+        function = EmetconProtocol::GetValue_Temperature;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GV_PFCOUNT)
     {
-        function = Emetcon::GetValue_TransmitPower;
+        function = EmetconProtocol::GetValue_TransmitPower;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
     else if(parse.getFlags() & CMD_FLAG_GV_XFMR_HISTORICAL_RUNTIME)
     {
-        function = Emetcon::GetValue_XfmrHistoricalCT;
+        function = EmetconProtocol::GetValue_XfmrHistoricalCT;
         found = getOperation(function, OutMessage->Buffer.BSt);
         int load = parseLoadValue(parse);
 
@@ -1229,7 +1224,7 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     }
     else if(parse.getFlags() & CMD_FLAG_GV_DUTYCYCLE)
     {
-        function = Emetcon::GetValue_DutyCycle;
+        function = EmetconProtocol::GetValue_DutyCycle;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         int load = parseLoadValue(parse);
@@ -1247,11 +1242,11 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     {
         if(parse.getFlags() & CMD_FLAG_GV_RUNTIME)
         {
-            function = Emetcon::GetValue_Runtime;
+            function = EmetconProtocol::GetValue_Runtime;
         }
         else
         {
-            function = Emetcon::GetValue_Shedtime;
+            function = EmetconProtocol::GetValue_Shedtime;
         }
 
         found = getOperation(function, OutMessage->Buffer.BSt);
@@ -1339,7 +1334,7 @@ INT LCR3102::executeGetValue ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     return nRet;
 }
 
-INT LCR3102::executeScan(CtiRequestMsg                  *pReq,
+INT Lcr3102Device::executeScan(CtiRequestMsg                  *pReq,
                               CtiCommandParser               &parse,
                               OUTMESS                        *&OutMessage,
                               list< CtiMessage* >      &vgList,
@@ -1358,8 +1353,8 @@ INT LCR3102::executeScan(CtiRequestMsg                  *pReq,
     {
         case ScanRateIntegrity:
         {
-            function = Emetcon::Scan_Integrity;
-            found = getOperation(Emetcon::Scan_Integrity, OutMessage->Buffer.BSt);
+            function = EmetconProtocol::Scan_Integrity;
+            found = getOperation(EmetconProtocol::Scan_Integrity, OutMessage->Buffer.BSt);
             break;
         }
     }
@@ -1386,7 +1381,7 @@ INT LCR3102::executeScan(CtiRequestMsg                  *pReq,
     return nRet;
 }
 
-INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT nRet = NoMethod;
 
@@ -1396,25 +1391,25 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     if(parse.isKeyValid("rawloc"))
     {
-        function = Emetcon::GetConfig_Raw;
+        function = EmetconProtocol::GetConfig_Raw;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
         if( parse.isKeyValid("rawfunc") )
         {
-            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
+            OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Read;
         }
         OutMessage->Buffer.BSt.Length = std::min(parse.getiValue("rawlen", 13), 13);    //  default (and maximum) is 13 bytes
     }
     if(parse.isKeyValid("install"))
     {
-        function = Emetcon::GetConfig_Softspec;
+        function = EmetconProtocol::GetConfig_Softspec;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
     if(parse.isKeyValid("addressing"))
     {
         // This one is special. Two requests will be sent here, data reads 0x01 and 0x02.
-        function = Emetcon::GetConfig_Addressing;
+        function = EmetconProtocol::GetConfig_Addressing;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         if(found)
@@ -1440,7 +1435,7 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     }
     if(parse.isKeyValid("time"))
     {
-        function = Emetcon::GetConfig_Time;
+        function = EmetconProtocol::GetConfig_Time;
         found = getOperation(function, OutMessage->Buffer.BSt);
     }
 
@@ -1472,7 +1467,7 @@ INT LCR3102::executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     return nRet;
 }
 
-INT LCR3102::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lcr3102Device::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT nRet = NoMethod;
 
@@ -1481,13 +1476,13 @@ INT LCR3102::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
 
     if(parse.isKeyValid("rawloc"))
     {
-        function = Emetcon::PutConfig_Raw;
+        function = EmetconProtocol::PutConfig_Raw;
         found = getOperation(function, OutMessage->Buffer.BSt);
 
         OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
         if( parse.isKeyValid("rawfunc") )
         {
-            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
+            OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Write;
         }
 
         string rawData = parse.getsValue("rawdata");
@@ -1521,7 +1516,7 @@ INT LCR3102::executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUT
     return nRet;
 }
 
-bool LCR3102::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Lcr3102Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
    bool found = false;
 
@@ -1545,7 +1540,7 @@ bool LCR3102::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-int LCR3102::parseLoadValue(CtiCommandParser &parse)
+int Lcr3102Device::parseLoadValue(CtiCommandParser &parse)
 {
     int load = parse.getiValue("load", 1);
 
@@ -1555,7 +1550,7 @@ int LCR3102::parseLoadValue(CtiCommandParser &parse)
 // Finds the "previous hours" requested. Handles special values.
 // 12, 24, and 36 are the default values in commander and are translated as:
 // "Do 1 full read, do 2 full reads, and do 3 full reads"
-int LCR3102::parsePreviousValue(CtiCommandParser &parse)
+int Lcr3102Device::parsePreviousValue(CtiCommandParser &parse)
 {
     int previous = -1;  // signifies BADPARAM
 
@@ -1583,7 +1578,7 @@ int LCR3102::parsePreviousValue(CtiCommandParser &parse)
 // Parses the buffer as having 6 bit values. 0x3F is considered an error
 // Returns the valuePosition'th 6-bit value from the buffer
 // All position values are 0 based!
-CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
+CtiDeviceSingle::point_info Lcr3102Device::getSixBitValueFromBuffer(unsigned char buffer[], unsigned int valuePosition, unsigned int bufferSize)
 {
     point_info retVal;
     retVal.freeze_bit = false;
@@ -1630,7 +1625,7 @@ CtiDeviceSingle::point_info LCR3102::getSixBitValueFromBuffer(unsigned char buff
 
 // Returns only the 22 bits of emetcon address.
 // This is called by executeOnDLCRoute so cannot be renamed
-LONG LCR3102::getAddress() const
+LONG Lcr3102Device::getAddress() const
 {
     return Inherited::getAddress() & 0x003FFFFF;
 }

@@ -245,7 +245,7 @@ clean:
 id:
             @build -nologo -f $(_InputFile) id_vg.obj
 
-id_vg.obj:    id_vg.cpp include\id_vg.h id_vinfo.h
+id_vg.obj:    id_vg.cpp include\id_vg.h
 
 
 
@@ -411,10 +411,10 @@ exe_signal.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		exe_signal.h
 id_vg.obj:	yukon.h precompiled.h ctidbgmem.h id_vg.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h sorted_vector.h id_vinfo.h
+		numstr.h sorted_vector.h
 id_vgdll.obj:	yukon.h precompiled.h ctidbgmem.h id_vgdll.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h sorted_vector.h id_vinfo.h
+		numstr.h sorted_vector.h
 mgr_ptclients.obj:	yukon.h precompiled.h ctidbgmem.h dllvg.h dlldefs.h \
 		pt_base.h row_reader.h ctitime.h boostutil.h utility.h \
 		queues.h cticalls.h os2_2w32.h types.h numstr.h \

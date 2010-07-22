@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct_lmt2
-*
-* Date:   6/19/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.37.10.1 $
-* DATE         :  $Date: 2008/11/20 16:49:21 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
 
 #include "devicetypes.h"
 #include "dev_mct_lmt2.h"
@@ -23,22 +6,24 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
+
+namespace Cti {
+namespace Devices {
+
+const Lmt2Device::CommandSet Lmt2Device::_commandStore = Lmt2Device::initCommandStore();
 
 
-const CtiDeviceMCT_LMT2::CommandSet CtiDeviceMCT_LMT2::_commandStore = CtiDeviceMCT_LMT2::initCommandStore();
+Lmt2Device::Lmt2Device() {}
 
-
-CtiDeviceMCT_LMT2::CtiDeviceMCT_LMT2() {}
-
-CtiDeviceMCT_LMT2::CtiDeviceMCT_LMT2(const CtiDeviceMCT_LMT2& aRef)
+Lmt2Device::Lmt2Device(const Lmt2Device& aRef)
 {
   *this = aRef;
 }
 
-CtiDeviceMCT_LMT2::~CtiDeviceMCT_LMT2() {}
+Lmt2Device::~Lmt2Device() {}
 
-CtiDeviceMCT_LMT2& CtiDeviceMCT_LMT2::operator=(const CtiDeviceMCT_LMT2& aRef)
+Lmt2Device& Lmt2Device::operator=(const Lmt2Device& aRef)
 {
   if(this != &aRef)
   {
@@ -48,21 +33,21 @@ CtiDeviceMCT_LMT2& CtiDeviceMCT_LMT2::operator=(const CtiDeviceMCT_LMT2& aRef)
 }
 
 
-CtiDeviceMCT_LMT2::CommandSet CtiDeviceMCT_LMT2::initCommandStore()
+Lmt2Device::CommandSet Lmt2Device::initCommandStore()
 {
    CommandSet cs;
 
-   cs.insert(CommandStore(Emetcon::Scan_LoadProfile,                Emetcon::IO_Read,   0,                          0));
-   cs.insert(CommandStore(Emetcon::PutStatus_ResetOverride,         Emetcon::IO_Write,  MCT_LMT2_ResetOverrideFunc, 0));
-   cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,           Emetcon::IO_Read,   MCT_LMT2_LPStatusPos,       MCT_LMT2_LPStatusLen));
-   cs.insert(CommandStore(Emetcon::GetConfig_LoadProfileInterval,   Emetcon::IO_Read,   MCT_LMT2_LPIntervalPos,     MCT_LMT2_LPIntervalLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_LoadProfileInterval,   Emetcon::IO_Write,  Command_LPInt,              0));
+   cs.insert(CommandStore(EmetconProtocol::Scan_LoadProfile,                EmetconProtocol::IO_Read,   0,                          0));
+   cs.insert(CommandStore(EmetconProtocol::PutStatus_ResetOverride,         EmetconProtocol::IO_Write,  MCT_LMT2_ResetOverrideFunc, 0));
+   cs.insert(CommandStore(EmetconProtocol::GetStatus_LoadProfile,           EmetconProtocol::IO_Read,   MCT_LMT2_LPStatusPos,       MCT_LMT2_LPStatusLen));
+   cs.insert(CommandStore(EmetconProtocol::GetConfig_LoadProfileInterval,   EmetconProtocol::IO_Read,   MCT_LMT2_LPIntervalPos,     MCT_LMT2_LPIntervalLen));
+   cs.insert(CommandStore(EmetconProtocol::PutConfig_LoadProfileInterval,   EmetconProtocol::IO_Write,  Command_LPInt,              0));
 
    return cs;
 }
 
 
-bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, BSTRUCT &bst) const
+bool Lmt2Device::getOperation( const UINT &cmd, BSTRUCT &bst) const
 {
    bool found = false;
 
@@ -85,7 +70,7 @@ bool CtiDeviceMCT_LMT2::getOperation( const UINT &cmd, BSTRUCT &bst) const
 }
 
 
-ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
+ULONG Lmt2Device::calcNextLPScanTime( void )
 {
     CtiTime Now, blockStart, nextTime;
     unsigned long midnightOffset;
@@ -154,7 +139,7 @@ ULONG CtiDeviceMCT_LMT2::calcNextLPScanTime( void )
 }
 
 
-INT CtiDeviceMCT_LMT2::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Lmt2Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -255,7 +240,7 @@ INT CtiDeviceMCT_LMT2::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTME
 }
 
 
-bool CtiDeviceMCT_LMT2::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+bool Lmt2Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
     bool retVal = false;
     int lpBlockAddress;
@@ -277,7 +262,7 @@ bool CtiDeviceMCT_LMT2::calcLPRequestLocation( const CtiCommandParser &parse, OU
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 12;  //  2 bytes per interval
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
 
         retVal = true;
     }
@@ -296,31 +281,31 @@ bool CtiDeviceMCT_LMT2::calcLPRequestLocation( const CtiCommandParser &parse, OU
 }
 
 
-INT CtiDeviceMCT_LMT2::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::Scan_LoadProfile):
+        case (EmetconProtocol::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_Internal):
+        case (EmetconProtocol::GetStatus_Internal):
         {
             status = decodeGetStatusInternal(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetStatus_LoadProfile):
+        case (EmetconProtocol::GetStatus_LoadProfile):
         {
             status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_Model):
+        case (EmetconProtocol::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -344,7 +329,7 @@ INT CtiDeviceMCT_LMT2::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< Ct
 }
 
 
-INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -537,7 +522,7 @@ INT CtiDeviceMCT_LMT2::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow
 }
 
 
-INT CtiDeviceMCT_LMT2::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusInternal( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -601,7 +586,7 @@ INT CtiDeviceMCT_LMT2::decodeGetStatusInternal( INMESS *InMessage, CtiTime &Time
 }
 
 
-INT CtiDeviceMCT_LMT2::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+INT Lmt2Device::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
 {
     INT status = NORMAL;
 
@@ -638,7 +623,7 @@ INT CtiDeviceMCT_LMT2::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &T
 }
 
 
-INT CtiDeviceMCT_LMT2::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Lmt2Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -699,5 +684,6 @@ INT CtiDeviceMCT_LMT2::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow,
    return status;
 }
 
-
+}
+}
 

@@ -171,7 +171,7 @@ deps:
 id:
             @build -nologo -f $(_InputFile) id_porter.obj
 
-id_porter.obj:    id_porter.cpp include\id_porter.h id_vinfo.h
+id_porter.obj:    id_porter.cpp include\id_porter.h
 
 
 #UPDATE#
@@ -235,10 +235,10 @@ encryption_noop.obj:	yukon.h precompiled.h ctidbgmem.h \
 		encryption_noOp.h EncodingFilter.h
 id_pgdll.obj:	yukon.h precompiled.h ctidbgmem.h id_pgdll.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h sorted_vector.h id_vinfo.h
+		numstr.h sorted_vector.h
 id_porter.obj:	yukon.h precompiled.h ctidbgmem.h id_porter.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h sorted_vector.h id_vinfo.h
+		numstr.h sorted_vector.h
 phlidlc.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h utility.h \
 		ctitime.h numstr.h sorted_vector.h cticonnect.h netports.h \

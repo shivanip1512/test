@@ -1,17 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct_broadcast
-*
-* Date:   2/7/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:21 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dev_mct_broadcast.h"
@@ -25,24 +11,25 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+using Cti::Protocols::EmetconProtocol;
 
-using Cti::Protocol::Emetcon;
+namespace Cti {
+namespace Devices {
+
+const MctBroadcastDevice::CommandSet MctBroadcastDevice::_commandStore = MctBroadcastDevice::initCommandStore();
 
 
-const CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::_commandStore = CtiDeviceMCTBroadcast::initCommandStore();
-
-
-CtiDeviceMCTBroadcast::CtiDeviceMCTBroadcast() :
+MctBroadcastDevice::MctBroadcastDevice() :
 _last_freeze(0)
 {
 }
 
 
-CtiDeviceMCTBroadcast::~CtiDeviceMCTBroadcast()
+MctBroadcastDevice::~MctBroadcastDevice()
 {
 }
 
-string CtiDeviceMCTBroadcast::getSQLCoreStatement() const
+string MctBroadcastDevice::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.address, "
@@ -55,14 +42,14 @@ string CtiDeviceMCTBroadcast::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void CtiDeviceMCTBroadcast::DecodeDatabaseReader(Cti::RowReader &rdr)
+void MctBroadcastDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 }
 
 
 
-INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
+INT MctBroadcastDevice::ExecuteRequest( CtiRequestMsg              *pReq,
                                            CtiCommandParser           &parse,
                                            OUTMESS                   *&OutMessage,
                                            list< CtiMessage* >  &vgList,
@@ -138,7 +125,7 @@ INT CtiDeviceMCTBroadcast::ExecuteRequest( CtiRequestMsg              *pReq,
 }
 
 
-INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq,
+INT MctBroadcastDevice::executePutConfig(CtiRequestMsg                  *pReq,
                                             CtiCommandParser               &parse,
                                             OUTMESS                        *&OutMessage,
                                             list< CtiMessage* >      &vgList,
@@ -157,7 +144,7 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
 
     if(parse.isKeyValid("rawloc"))
     {
-        function = Emetcon::PutConfig_Raw;
+        function = EmetconProtocol::PutConfig_Raw;
 
         OutMessage->Buffer.BSt.Function = parse.getiValue("rawloc");
 
@@ -176,11 +163,11 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
 
         if( parse.isKeyValid("rawfunc") )
         {
-            OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Write;
+            OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Function_Write;
         }
         else
         {
-            OutMessage->Buffer.BSt.IO = Emetcon::IO_Write;
+            OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Write;
         }
 
         found = true;
@@ -208,7 +195,7 @@ INT CtiDeviceMCTBroadcast::executePutConfig(CtiRequestMsg                  *pReq
     return nRet;
 }
 
-INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq,
+INT MctBroadcastDevice::executePutStatus(CtiRequestMsg                  *pReq,
                                             CtiCommandParser               &parse,
                                             OUTMESS                        *&OutMessage,
                                             list< CtiMessage* >      &vgList,
@@ -242,7 +229,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
 
     if( parse.getFlags() & CMD_FLAG_PS_RESET )
     {
-        function = Emetcon::PutStatus_Reset;
+        function = EmetconProtocol::PutStatus_Reset;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
     else if( parse.isKeyValid("freeze") )
@@ -253,12 +240,12 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
         {
             if( next_freeze == 1 )
             {
-                function = Emetcon::PutStatus_FreezeVoltageOne;
+                function = EmetconProtocol::PutStatus_FreezeVoltageOne;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
             if( next_freeze == 2 )
             {
-                function = Emetcon::PutStatus_FreezeVoltageTwo;
+                function = EmetconProtocol::PutStatus_FreezeVoltageTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
         }
@@ -266,12 +253,12 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
         {
             if( next_freeze == 1 )
             {
-                function = Emetcon::PutStatus_FreezeOne;
+                function = EmetconProtocol::PutStatus_FreezeOne;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
             if( next_freeze == 2 )
             {
-                function = Emetcon::PutStatus_FreezeTwo;
+                function = EmetconProtocol::PutStatus_FreezeTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
             }
         }
@@ -289,7 +276,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
             //  this is a little tricky - watch as we carefully swap it out...
             MCT400OutMessage->Buffer.BSt.Message[1] = MCT400OutMessage->Buffer.BSt.Function;
             //  ...  right before we stomp over the original location
-            MCT400OutMessage->Buffer.BSt.Function   = CtiDeviceMCT4xx::FuncWrite_Command;
+            MCT400OutMessage->Buffer.BSt.Function   = Mct4xxDevice::FuncWrite_Command;
 
             if( stringContainsIgnoreCase(parse.getCommandStr()," all") )
             {
@@ -320,7 +307,7 @@ INT CtiDeviceMCTBroadcast::executePutStatus(CtiRequestMsg                  *pReq
 }
 
 
-INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
+INT MctBroadcastDevice::executePutValue(CtiRequestMsg                  *pReq,
                                            CtiCommandParser               &parse,
                                            OUTMESS                        *&OutMessage,
                                            list< CtiMessage* >      &vgList,
@@ -345,9 +332,9 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
         {
             if( command_string.find(" 400") != string::npos )
             {
-                OutMessage->Buffer.BSt.Function = CtiDeviceMCT4xx::Command_PowerfailReset;
+                OutMessage->Buffer.BSt.Function = Mct4xxDevice::Command_PowerfailReset;
                 OutMessage->Buffer.BSt.Length = 0;
-                OutMessage->Buffer.BSt.IO = Emetcon::IO_Write;
+                OutMessage->Buffer.BSt.IO = EmetconProtocol::IO_Write;
 
                 found = true;
             }
@@ -357,9 +344,9 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
     {
         if( parse.isKeyValid("reset") )
         {
-            int iedtype = ((CtiDeviceMCT31X *)this)->getIEDPort().getIEDType();
+            int iedtype = ((Mct31xDevice *)this)->getIEDPort().getIEDType();
 
-            function = Emetcon::PutValue_IEDReset;
+            function = EmetconProtocol::PutValue_IEDReset;
 
             if( getType() == TYPEMCT360 || getType() == TYPEMCT370 )
             {
@@ -369,8 +356,8 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
                 {
                     case CtiTableDeviceMCTIEDPort::AlphaPowerPlus:
                     {
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_AlphaResetPos;
-                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_AlphaResetLen;
+                        OutMessage->Buffer.BSt.Function   = Mct31xDevice::MCT360_AlphaResetPos;
+                        OutMessage->Buffer.BSt.Length     = Mct31xDevice::MCT360_AlphaResetLen;
                         OutMessage->Buffer.BSt.Message[0] = 60;  //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[1] = 1;   //  Demand Reset  function code for the Alpha
                         break;
@@ -378,9 +365,9 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
 
                     case CtiTableDeviceMCTIEDPort::LandisGyrS4:
                     {
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_LGS4ResetPos;
-                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_LGS4ResetLen;
-                        OutMessage->Buffer.BSt.Message[0] = CtiDeviceMCT31X::MCT360_LGS4ResetID;
+                        OutMessage->Buffer.BSt.Function   = Mct31xDevice::MCT360_LGS4ResetPos;
+                        OutMessage->Buffer.BSt.Length     = Mct31xDevice::MCT360_LGS4ResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = Mct31xDevice::MCT360_LGS4ResetID;
                         OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[2] = 0x2B;  //  Demand Reset function code for the LG S4
                         break;
@@ -388,9 +375,9 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
 
                     case CtiTableDeviceMCTIEDPort::GeneralElectricKV:
                     {
-                        OutMessage->Buffer.BSt.Function   = CtiDeviceMCT31X::MCT360_GEKVResetPos;
-                        OutMessage->Buffer.BSt.Length     = CtiDeviceMCT31X::MCT360_GEKVResetLen;
-                        OutMessage->Buffer.BSt.Message[0] = CtiDeviceMCT31X::MCT360_GEKVResetID;
+                        OutMessage->Buffer.BSt.Function   = Mct31xDevice::MCT360_GEKVResetPos;
+                        OutMessage->Buffer.BSt.Length     = Mct31xDevice::MCT360_GEKVResetLen;
+                        OutMessage->Buffer.BSt.Message[0] = Mct31xDevice::MCT360_GEKVResetID;
                         OutMessage->Buffer.BSt.Message[1] = 60;    //  delay timer won't allow a reset for 15 minutes (in 15 sec ticks)
                         OutMessage->Buffer.BSt.Message[2] = 0x00;  //  sequence, standard proc, and uppoer bits of proc are 0
                         OutMessage->Buffer.BSt.Message[3] = 0x09;  //  procedure 9
@@ -438,25 +425,25 @@ INT CtiDeviceMCTBroadcast::executePutValue(CtiRequestMsg                  *pReq,
 //
 //  My apologies to those who follow.
 //
-CtiDeviceMCTBroadcast::CommandSet CtiDeviceMCTBroadcast::initCommandStore()
+MctBroadcastDevice::CommandSet MctBroadcastDevice::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_Reset,            EmetconProtocol::IO_Write, MCTBCAST_ResetPF, MCTBCAST_ResetPFLen));
 
     //  Do these need an ARMS for the 200- and 300-series meters?
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write, CtiDeviceMCT::Command_FreezeOne, 0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write, CtiDeviceMCT::Command_FreezeTwo, 0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeOne,        EmetconProtocol::IO_Write, MctDevice::Command_FreezeOne, 0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeTwo,        EmetconProtocol::IO_Write, MctDevice::Command_FreezeTwo, 0));
 
-    cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, 0, 0));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_IEDReset,          EmetconProtocol::IO_Function_Write, 0, 0));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageOne, Emetcon::IO_Write, CtiDeviceMCT4xx::Command_FreezeVoltageOne, 0));
-    cs.insert(CommandStore(Emetcon::PutStatus_FreezeVoltageTwo, Emetcon::IO_Write, CtiDeviceMCT4xx::Command_FreezeVoltageTwo, 0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeVoltageOne, EmetconProtocol::IO_Write, Mct4xxDevice::Command_FreezeVoltageOne, 0));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_FreezeVoltageTwo, EmetconProtocol::IO_Write, Mct4xxDevice::Command_FreezeVoltageTwo, 0));
 
     return cs;
 }
 
-bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool MctBroadcastDevice::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
     bool found = false;
 
@@ -474,7 +461,7 @@ bool CtiDeviceMCTBroadcast::getOperation( const UINT &cmd, USHORT &function, USH
     return found;
 }
 
-INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT MctBroadcastDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -487,8 +474,11 @@ INT CtiDeviceMCTBroadcast::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, lis
     return status;
 }
 
-LONG CtiDeviceMCTBroadcast::getAddress() const
+LONG MctBroadcastDevice::getAddress() const
 {
     return CarrierSettings.getAddress() + MCTBCAST_LeadMeterOffset;
+}
+
+}
 }
 

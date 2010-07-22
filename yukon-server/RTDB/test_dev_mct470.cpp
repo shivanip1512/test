@@ -7,26 +7,15 @@
 
 using boost::unit_test_framework::test_suite;
 
-class test_CtiDeviceMCT470 : public CtiDeviceMCT470
+using Cti::Devices::Mct470Device;
+
+struct test_Mct470Device : Mct470Device
 {
-public:
+    typedef Mct470Device::point_info point_info;
 
-    typedef CtiDeviceMCT470::point_info point_info;
-
-    void test_extractDynamicPaoInfo(const INMESS &InMessage)
-    {
-        extractDynamicPaoInfo(InMessage);
-    };
-
-    unsigned long test_convertTimestamp(const unsigned long timestamp, const CtiDate &current_date) const
-    {
-        return convertTimestamp(timestamp, current_date);
-    }
-
-    unsigned char test_computeResolutionByte(double lpResolution, double peakKwResolution, double lastIntervalDemandResolution)
-    {
-        return computeResolutionByte(lpResolution,peakKwResolution,lastIntervalDemandResolution);
-    }
+    using Mct470Device::extractDynamicPaoInfo;
+    using Mct470Device::convertTimestamp;
+    using Mct470Device::computeResolutionByte;
 };
 
 
@@ -75,7 +64,7 @@ unsigned long build_gmt_seconds(const utc34_checker_expected_time &e)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2009)
 {
-    test_CtiDeviceMCT470 dev;
+    test_Mct470Device dev;
 
     utc34_checker tc[] = {{0x000000, {2009,  1}, {2009,  1,  1,  0,  0}},
                           {0x000001, {2009,  1}, {2008, 12, 31, 23, 59}},
@@ -115,14 +104,14 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2009)
     {
         c = tc[i];
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.test_convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
     }
 }
 
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2010)
 {
-    test_CtiDeviceMCT470 dev;
+    test_Mct470Device dev;
 
     utc34_checker tc[] = {{0x000000, {2010,  1}, {2011,  1,  1,  0,  0}},
                           {0x000001, {2010,  1}, {2010, 12, 31, 23, 59}},
@@ -162,14 +151,14 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2010)
     {
         c = tc[i];
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.test_convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
     }
 }
 
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2011)
 {
-    test_CtiDeviceMCT470 dev;
+    test_Mct470Device dev;
 
     utc34_checker tc[] = {{0x000000, {2011,  1}, {2011,  1,  1,  0,  0}},
                           {0x000001, {2011,  1}, {2010, 12, 31, 23, 59}},
@@ -209,14 +198,14 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2011)
     {
         c = tc[i];
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.test_convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
     }
 }
 
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2012)
 {
-    test_CtiDeviceMCT470 dev;
+    test_Mct470Device dev;
 
     utc34_checker tc[] = {{0x000000, {2012,  1}, {2013,  1,  1,  0,  0}},
                           {0x000001, {2012,  1}, {2012, 12, 31, 23, 59}},
@@ -256,16 +245,16 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_convertTimestamp_in_2012)
     {
         c = tc[i];
 
-        BOOST_CHECK_INDEXED_EQUAL(i, dev.test_convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
+        BOOST_CHECK_INDEXED_EQUAL(i, dev.convertTimestamp(c.raw_value, build_base_date(c.base_date)), build_gmt_seconds(c.expected_time));
     }
 }
 
 
 BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
 {
-    using Cti::Protocol::Emetcon;
+    using Cti::Protocols::EmetconProtocol;
 
-    test_CtiDeviceMCT470 dev;
+    test_Mct470Device dev;
 
     INMESS im;
 
@@ -276,8 +265,8 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
     //  set up the ied demand inmessage
     {
         strcpy(im.Return.CommandStr, "getvalue ied demand");
-        im.Return.ProtocolInfo.Emetcon.IO = Emetcon::IO_Function_Read;
-        im.Sequence = Emetcon::GetValue_IEDDemand;
+        im.Return.ProtocolInfo.Emetcon.IO = EmetconProtocol::IO_Function_Read;
+        im.Sequence = EmetconProtocol::GetValue_IEDDemand;
 
         im.Buffer.DSt.Message[0] = 0x00;
         im.Buffer.DSt.Message[1] = 0x00;
@@ -318,9 +307,9 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
         meter_config.Buffer.DSt.Message[0] = 0x30;
         meter_config.Buffer.DSt.Length = 1;
         meter_config.Return.ProtocolInfo.Emetcon.Function = 0;
-        meter_config.Return.ProtocolInfo.Emetcon.IO = Cti::Protocol::Emetcon::IO_Read;
+        meter_config.Return.ProtocolInfo.Emetcon.IO = Cti::Protocols::EmetconProtocol::IO_Read;
 
-        dev.test_extractDynamicPaoInfo(meter_config);
+        dev.extractDynamicPaoInfo(meter_config);
     }
 
     //  to finish out this unit test, we will need to override getDevicePointOffsetTypeEqual()
@@ -333,27 +322,27 @@ BOOST_AUTO_TEST_CASE(test_dev_mct470_decodeGetValueIED)
  */
 BOOST_AUTO_TEST_CASE(test_dev_mct470_computeResolutionByte)
 {
-    using Cti::Protocol::Emetcon;
-    test_CtiDeviceMCT470 dev;
+    using Cti::Protocols::EmetconProtocol;
+    test_Mct470Device dev;
 
     double lpResolution = 0.1;
     double peakKwResolution = 1.0;
     double lastIntervalDemandResolution = 1.0;
-    unsigned char resultByte = dev.test_computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
+    unsigned char resultByte = dev.computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
     BOOST_CHECK_EQUAL(0x1b, resultByte);
     std::cout << (int)resultByte << std::endl;
 
     lpResolution = 1.0;
     peakKwResolution = 10.0;
     lastIntervalDemandResolution = 1.0;
-    resultByte = dev.test_computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
+    resultByte = dev.computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
     BOOST_CHECK_EQUAL(0x12, resultByte);
     std::cout << (int)resultByte << std::endl;
 
     lpResolution = 1.0;
     peakKwResolution = 10.0;
     lastIntervalDemandResolution = 0.1;
-    resultByte = dev.test_computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
+    resultByte = dev.computeResolutionByte(lpResolution, peakKwResolution, lastIntervalDemandResolution);
     BOOST_CHECK_EQUAL(0x22, resultByte);
     std::cout << (int)resultByte << std::endl;
 }

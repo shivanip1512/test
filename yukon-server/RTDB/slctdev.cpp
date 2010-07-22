@@ -100,9 +100,7 @@
 #include "yukon.h"
 #include "row_reader.h"
 
-
-using namespace Cti;  //  in preparation for moving devices to their own namespace
-
+using namespace Cti::Devices;
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
 {
@@ -145,7 +143,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_DARTRTU:
         case TYPECBCDNP:
-        case TYPE_DNPRTU:       NewDevice = CTIDBG_new Devices::DNP;         break;
+        case TYPE_DNPRTU:       NewDevice = CTIDBG_new DnpDevice;         break;
 
         case TYPE_SERIESVRTU:   NewDevice = CTIDBG_new CtiDeviceSeriesV;    break;
 
@@ -160,7 +158,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_CCU711:       NewDevice = CTIDBG_new CtiDeviceCCU;        break;
 
-        case TYPE_CCU721:       NewDevice = CTIDBG_new Devices::CCU721;      break;
+        case TYPE_CCU721:       NewDevice = CTIDBG_new Ccu721Device;      break;
 
         case TYPE_CCU710:
         case TYPE_CCU700:       NewDevice = CTIDBG_new CtiDeviceCCU710;     break;
@@ -169,45 +167,45 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_SES92RTU:     NewDevice = CTIDBG_new CtiDeviceRemote;     break;
 
-        case TYPEDCT501:        NewDevice = CTIDBG_new CtiDeviceDCT501;     break;
+        case TYPEDCT501:        NewDevice = CTIDBG_new Dct501Device;     break;
 
-        case TYPELMT2:          NewDevice = CTIDBG_new CtiDeviceMCT_LMT2;   break;
+        case TYPELMT2:          NewDevice = CTIDBG_new Lmt2Device;   break;
 
         // S00095C
         case TYPEMCT210:
-        case TYPEMCT213:        NewDevice = CTIDBG_new CtiDeviceMCT210;     break;
+        case TYPEMCT213:        NewDevice = CTIDBG_new Mct210Device;     break;
 
         // S0074E (sspec indicates a 213 too, but I know nothing)
         case TYPEMCT212:
         case TYPEMCT224:
-        case TYPEMCT226:        NewDevice = CTIDBG_new CtiDeviceMCT22X;     break;
+        case TYPEMCT226:        NewDevice = CTIDBG_new Mct22xDevice;     break;
 
         // S00121B (240, 242, 248), S00111B (250)
         case TYPEMCT240:
         case TYPEMCT242:
         case TYPEMCT248:
-        case TYPEMCT250:        NewDevice = CTIDBG_new CtiDeviceMCT24X;     break;
+        case TYPEMCT250:        NewDevice = CTIDBG_new Mct24xDevice;     break;
 
         case TYPEMCT310:
         case TYPEMCT310ID:
         case TYPEMCT310IDL:
-        case TYPEMCT310IL:      NewDevice = CTIDBG_new CtiDeviceMCT310;     break;
+        case TYPEMCT310IL:      NewDevice = CTIDBG_new Mct310Device;     break;
 
         case TYPEMCT318:
         case TYPEMCT318L:
         case TYPEMCT360:
-        case TYPEMCT370:        NewDevice = CTIDBG_new CtiDeviceMCT31X;     break;
+        case TYPEMCT370:        NewDevice = CTIDBG_new Mct31xDevice;     break;
 
-        case TYPEMCT410:        NewDevice = CTIDBG_new CtiDeviceMCT410;     break;
+        case TYPEMCT410:        NewDevice = CTIDBG_new Mct410Device;     break;
 
         case TYPEMCT430:
-        case TYPEMCT470:        NewDevice = CTIDBG_new CtiDeviceMCT470;     break;
+        case TYPEMCT470:        NewDevice = CTIDBG_new Mct470Device;     break;
 
-        case TYPE_MODBUS:       NewDevice = CTIDBG_new Devices::Modbus;      break;
+        case TYPE_MODBUS:       NewDevice = CTIDBG_new ModbusDevice;      break;
 
-        case TYPE_REPEATER800:  NewDevice = CTIDBG_new CtiDeviceRepeater800; break;
+        case TYPE_REPEATER800:  NewDevice = CTIDBG_new Repeater800Device; break;
 
-        case TYPE_REPEATER900:  NewDevice = CTIDBG_new CtiDeviceRepeater900; break;
+        case TYPE_REPEATER900:  NewDevice = CTIDBG_new Repeater900Device; break;
 
         case TYPE_FULCRUM:      NewDevice = CTIDBG_new CtiDeviceFulcrum;    break;
 
@@ -253,7 +251,7 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_LMGROUP_EXPRESSCOM:   NewDevice = CTIDBG_new CtiDeviceGroupExpresscom;    break;
 
-        case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new Devices::XmlGroupDevice;     break;
+        case TYPE_LMGROUP_XML:          NewDevice = CTIDBG_new XmlGroupDevice;     break;
 
         case TYPE_LMGROUP_ENERGYPRO:    NewDevice = CTIDBG_new CtiDeviceGroupEnergyPro;     break;
 
@@ -273,9 +271,9 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
         case TYPE_SYSTEM:               NewDevice = CTIDBG_new CtiDeviceSystem;     break;
 
-        case TYPECBC6510:               NewDevice = CTIDBG_new CtiDeviceCBC6510;    break;
+        case TYPECBC6510:               NewDevice = CTIDBG_new Cbc6510Device;    break;
 
-        case TYPECBC7020:               NewDevice = CTIDBG_new Devices::CBC7020;     break;
+        case TYPECBC7020:               NewDevice = CTIDBG_new Cbc7020Device;     break;
 
         case TYPECBC7010:
         case TYPEFISHERPCBC:
@@ -287,12 +285,12 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
         case TYPE_LCU415ER:
         case TYPE_LCUT3026:             NewDevice = CTIDBG_new CtiDeviceLCU(type);      break;
 
-        case TYPELCR3102:               NewDevice = CTIDBG_new Cti::Devices::LCR3102;    break;
+        case TYPELCR3102:               NewDevice = CTIDBG_new Lcr3102Device;    break;
 
-        case TYPEMCTBCAST:              NewDevice = CTIDBG_new CtiDeviceMCTBroadcast;   break;
+        case TYPEMCTBCAST:              NewDevice = CTIDBG_new MctBroadcastDevice;   break;
 
         case TYPE_RTC:                  NewDevice = CTIDBG_new CtiDeviceRTC;            break;
-        case TYPE_XML_XMIT:             NewDevice = CTIDBG_new Cti::Devices::XmlDevice; break;
+        case TYPE_XML_XMIT:             NewDevice = CTIDBG_new XmlDevice; break;
         case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
         case TYPE_FMU:                  NewDevice = CTIDBG_new CtiDeviceFMU;            break;
 
@@ -409,7 +407,7 @@ DLLEXPORT bool isAScannableDevice(CtiDeviceSPtr& pDevice, void* d)
         {
             for(int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++)
             {
-                if(((CtiDeviceCarrier *)pUnique)->getLoadProfile()->isChannelValid(i))
+                if(((CarrierDevice *)pUnique)->getLoadProfile()->isChannelValid(i))
                 {
                     bRet = true;
                     break;

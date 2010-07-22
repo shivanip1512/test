@@ -2,11 +2,14 @@
 
 #include "dev_mct4xx.h"
 
-class IM_EX_DEVDB CtiDeviceMCT410 : public CtiDeviceMCT4xx
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct410Device : public Mct4xxDevice
 {
 private:
 
-    typedef CtiDeviceMCT4xx Inherited;
+    typedef Mct4xxDevice Inherited;
 
     static const CommandSet       _commandStore;
     static       CommandSet       initCommandStore();
@@ -71,7 +74,7 @@ private:
         SspecRev_BetaHi =  200,  //  rev 20.0
     };
 
-    virtual bool isSupported(const CtiDeviceMCT4xx::Features f) const;
+    virtual bool isSupported(const Mct4xxDevice::Features f) const;
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const;
 
 protected:
@@ -343,7 +346,7 @@ protected:
     virtual INT executeGetConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly );
 
-    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
+    Mct4xxDevice::ConfigPartsList getPartsList();
 
     virtual const read_key_store_t &getReadKeyStore(void) const;
 
@@ -398,11 +401,11 @@ public:
         StateGroup_ConnectArmed            = 3
     };
 
-    CtiDeviceMCT410( );
-    CtiDeviceMCT410( const CtiDeviceMCT410 &aRef );
-    virtual ~CtiDeviceMCT410( );
+    Mct410Device( );
+    Mct410Device( const Mct410Device &aRef );
+    virtual ~Mct410Device( );
 
-    CtiDeviceMCT410 &operator=( const CtiDeviceMCT410 &aRef );
+    Mct410Device &operator=( const Mct410Device &aRef );
 
     void setDisconnectAddress( unsigned long address );
 
@@ -412,5 +415,8 @@ public:
 
 };
 
-typedef boost::shared_ptr<CtiDeviceMCT410> CtiDeviceMCT410SPtr;
+typedef boost::shared_ptr<Mct410Device> Mct410DeviceSPtr;
+
+}
+}
 

@@ -1,5 +1,5 @@
 /*
- * test CtiDeviceMCT410
+ * test Mct410Device
  *
  */
 
@@ -15,36 +15,25 @@
 
 using boost::unit_test_framework::test_suite;
 
-class test_CtiDeviceMCT410 : public CtiDeviceMCT410
-{
-public:
+using Cti::Devices::Mct410Device;
 
-    test_CtiDeviceMCT410()
+struct test_Mct410Device : Mct410Device
+{
+    test_Mct410Device()
     {
         setType(TYPEMCT410);
     }
 
-    typedef CtiDeviceMCT410::point_info point_info;
+    typedef Mct410Device::point_info point_info;
 
-    point_info test_getDemandData(unsigned char *buf, int len, bool is_frozen_data)
-    {
-        return getDemandData(buf, len, is_frozen_data);
-    }
-
-    void test_extractDynamicPaoInfo(const INMESS &InMessage)
-    {
-        extractDynamicPaoInfo(InMessage);
-    };
-
-    INT test_executePutConfig( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage*> &vgList, list<CtiMessage*> &retList, list<OUTMESS*> &outList, bool readsOnly)
-    {
-        return executePutConfig(pReq, parse, OutMessage, vgList, retList, outList, readsOnly);
-    }
+    using Mct410Device::getDemandData;
+    using Mct410Device::extractDynamicPaoInfo;
+    using Mct410Device::executePutConfig;
 };
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 {
-    test_CtiDeviceMCT410 dev;
+    test_Mct410Device dev;
 
     struct demand_checks
     {
@@ -65,45 +54,45 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
                             {{0x01, 0x11}, false, 273,   true},
                             {{0x01, 0x11}, true,  272,   true}};
 
-    test_CtiDeviceMCT410::point_info pi;
+    test_Mct410Device::point_info pi;
 
-    pi = dev.test_getDemandData(dc[0].raw_value, 2, dc[0].frozen);
+    pi = dev.getDemandData(dc[0].raw_value, 2, dc[0].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[0].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[0].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[1].raw_value, 2, dc[1].frozen);
+    pi = dev.getDemandData(dc[1].raw_value, 2, dc[1].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[1].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[1].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[2].raw_value, 2, dc[2].frozen);
+    pi = dev.getDemandData(dc[2].raw_value, 2, dc[2].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[2].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[2].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[3].raw_value, 2, dc[3].frozen);
+    pi = dev.getDemandData(dc[3].raw_value, 2, dc[3].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[3].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[3].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[4].raw_value, 2, dc[4].frozen);
+    pi = dev.getDemandData(dc[4].raw_value, 2, dc[4].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[4].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[4].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[5].raw_value, 2, dc[5].frozen);
+    pi = dev.getDemandData(dc[5].raw_value, 2, dc[5].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[5].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[5].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[6].raw_value, 2, dc[6].frozen);
+    pi = dev.getDemandData(dc[6].raw_value, 2, dc[6].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[6].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[6].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[7].raw_value, 2, dc[7].frozen);
+    pi = dev.getDemandData(dc[7].raw_value, 2, dc[7].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[7].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[7].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[8].raw_value, 2, dc[8].frozen);
+    pi = dev.getDemandData(dc[8].raw_value, 2, dc[8].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[8].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[8].freeze_bit);
 
-    pi = dev.test_getDemandData(dc[9].raw_value, 2, dc[9].frozen);
+    pi = dev.getDemandData(dc[9].raw_value, 2, dc[9].frozen);
     BOOST_CHECK_SMALL(pi.value - dc[9].value, std::numeric_limits<double>::epsilon());
     BOOST_CHECK_EQUAL(pi.freeze_bit, dc[9].freeze_bit);
 }
@@ -111,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_getDemandData)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 {
-    test_CtiDeviceMCT410 dev;
+    test_Mct410Device dev;
 
     INMESS im;
 
@@ -141,9 +130,9 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 
     im.Buffer.DSt.Length = 13;
     im.Return.ProtocolInfo.Emetcon.Function = 0;
-    im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocol::Emetcon::IO_Read;
+    im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocols::EmetconProtocol::IO_Read;
 
-    dev.test_extractDynamicPaoInfo(im);
+    dev.extractDynamicPaoInfo(im);
 
     BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Options));
     BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration));
@@ -165,9 +154,9 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 
     im.Buffer.DSt.Length = 3;
     im.Return.ProtocolInfo.Emetcon.Function = 0xad; //  FuncRead_TOUDaySchedulePos;  it's protected, so instead of inheriting it, it's a magic number
-    im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocol::Emetcon::IO_Function_Read;
+    im.Return.ProtocolInfo.Emetcon.IO = Cti::Protocols::EmetconProtocol::IO_Function_Read;
 
-    dev.test_extractDynamicPaoInfo(im);
+    dev.extractDynamicPaoInfo(im);
 
     BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DayTable));
     BOOST_CHECK(dev.hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DefaultTOURate));
@@ -184,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_extractDynamicPaoInfo)
 */
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -193,7 +182,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio)
 
     CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 0s errors disable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -203,7 +192,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -212,7 +201,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio)
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 40 display 5x1 test 0s errors disable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -223,7 +212,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x1_1s_enable)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -232,7 +221,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x1_1s_ena
 
     CtiCommandParser        parse( "putconfig emetcon centron display 4x1 test 1s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -242,7 +231,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x1_1s_ena
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x1_1s_enable)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -251,7 +240,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x1_1s_enable
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 60 display 4x1 test 1s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -262,7 +251,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x1_1s_enable
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x10_7s_enable)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -271,7 +260,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x10_7s_en
 
     CtiCommandParser        parse( "putconfig emetcon centron display 4x10 test 7s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    2 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -281,7 +270,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_4x10_7s_en
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x10_7s_enable)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -290,7 +279,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x10_7s_enabl
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 200 display 4x10 test 7s errors enable" );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    3 , om->Buffer.BSt.Length );
     BOOST_CHECK_EQUAL( 0xFF , om->Buffer.BSt.Message[0] );
@@ -301,7 +290,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_4x10_7s_enabl
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_display)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -312,7 +301,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_di
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -327,7 +316,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_di
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_display)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -338,7 +327,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_displ
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -353,7 +342,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_displ
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_test)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -364,7 +353,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_te
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -379,7 +368,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_without_ratio_invalid_te
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -390,7 +379,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -405,7 +394,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_invalid_test)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -416,7 +405,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds
 
     BOOST_CHECK_EQUAL(    0 , retList.size() );
 
-    BOOST_CHECK_EQUAL( NoError , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoError , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    1 , retList.size() );
 
@@ -431,7 +420,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_good_with_ratio_out_of_bounds
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -440,7 +429,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
 
     CtiCommandParser        parse( "putconfig emetcon centron display 5x1 test 0s" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -448,7 +437,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_errors)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_test)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -457,7 +446,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_test)
 
     CtiCommandParser        parse( "putconfig emetcon centron display 5x1 errors enable" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -465,7 +454,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_test)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_display)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -474,7 +463,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_display)
 
     CtiCommandParser        parse( "putconfig emetcon centron test 0 errors enable" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -482,7 +471,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_display)
 
 BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_all_with_ratio)
 {
-    test_CtiDeviceMCT410    mct410;
+    test_Mct410Device    mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;
@@ -491,7 +480,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_all_with_ratio)
 
     CtiCommandParser        parse( "putconfig emetcon centron ratio 40" );
 
-    BOOST_CHECK_EQUAL( NoMethod , mct410.test_executePutConfig(&request, parse, om, vgList , retList, outList, false) );
+    BOOST_CHECK_EQUAL( NoMethod , mct410.executePutConfig(&request, parse, om, vgList , retList, outList, false) );
 
     BOOST_CHECK_EQUAL(    0 , om->Buffer.BSt.Length );
 }
@@ -500,7 +489,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct410_centron_parse_bad_missing_all_with_ratio)
 // These commands are errors and should only return a single error. See YUK-5059
 BOOST_AUTO_TEST_CASE(test_dev_mct410_single_error_executor)
 {
-    test_CtiDeviceMCT410   mct410;
+    test_Mct410Device   mct410;
 
     CtiRequestMsg           request;
     OUTMESS                *om = new OUTMESS;

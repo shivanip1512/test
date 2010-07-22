@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dct501
-*
-* Date:   2002-feb-19
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.36.2.2 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "devicetypes.h"
@@ -24,23 +9,24 @@
 #include "numstr.h"
 
 using std::make_pair;
+using Cti::Protocols::EmetconProtocol;
 
-using Cti::Protocol::Emetcon;
+namespace Cti {
+namespace Devices {
+
+const Dct501Device::CommandSet Dct501Device::_commandStore = Dct501Device::initCommandStore();
 
 
-const CtiDeviceDCT501::CommandSet CtiDeviceDCT501::_commandStore = CtiDeviceDCT501::initCommandStore();
+Dct501Device::Dct501Device( ) { }
 
-
-CtiDeviceDCT501::CtiDeviceDCT501( ) { }
-
-CtiDeviceDCT501::CtiDeviceDCT501( const CtiDeviceDCT501 &aRef )
+Dct501Device::Dct501Device( const Dct501Device &aRef )
 {
     *this = aRef;
 }
 
-CtiDeviceDCT501::~CtiDeviceDCT501( ) { }
+Dct501Device::~Dct501Device( ) { }
 
-CtiDeviceDCT501& CtiDeviceDCT501::operator=(const CtiDeviceDCT501& aRef)
+Dct501Device& Dct501Device::operator=(const Dct501Device& aRef)
 {
     if( this != &aRef )
     {
@@ -51,18 +37,18 @@ CtiDeviceDCT501& CtiDeviceDCT501::operator=(const CtiDeviceDCT501& aRef)
 }
 
 
-CtiDeviceDCT501::CommandSet CtiDeviceDCT501::initCommandStore()
+Dct501Device::CommandSet Dct501Device::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,  Emetcon::IO_Read, DCT_AnalogsPos, DCT_AnalogsLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand, Emetcon::IO_Read, DCT_AnalogsPos, DCT_AnalogsLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,  EmetconProtocol::IO_Read, DCT_AnalogsPos, DCT_AnalogsLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Demand, EmetconProtocol::IO_Read, DCT_AnalogsPos, DCT_AnalogsLen));
 
     return cs;
 }
 
 
-bool CtiDeviceDCT501::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Dct501Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -85,7 +71,7 @@ bool CtiDeviceDCT501::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
+ULONG Dct501Device::calcNextLPScanTime( void )
 {
     CtiTime        Now, channelTime, blockStart;
     unsigned long midnightOffset;
@@ -190,7 +176,7 @@ ULONG CtiDeviceDCT501::calcNextLPScanTime( void )
 }
 
 
-INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
+INT Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS* > &outList)
 {
     int nRet = NoError;
 
@@ -295,7 +281,7 @@ INT CtiDeviceDCT501::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
 }
 
 
-bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
+bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
     bool retVal = false;
     int lpBlockAddress, lpChannel;
@@ -326,7 +312,7 @@ bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
 
         OutMessage->Buffer.BSt.Function = lpBlockAddress;
         OutMessage->Buffer.BSt.Length   = 12;  //  2 bytes per interval
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Read;
 
         retVal = true;
     }
@@ -349,27 +335,27 @@ bool CtiDeviceDCT501::calcLPRequestLocation( const CtiCommandParser &parse, OUTM
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceDCT501::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
 
     switch(InMessage->Sequence)
     {
-    case (Emetcon::Scan_Integrity):
-    case (Emetcon::GetValue_Demand):
+    case (EmetconProtocol::Scan_Integrity):
+    case (EmetconProtocol::GetValue_Demand):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-    case (Emetcon::Scan_LoadProfile):
+    case (EmetconProtocol::Scan_LoadProfile):
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-    case (Emetcon::GetConfig_Model):
+    case (EmetconProtocol::GetConfig_Model):
         {
             status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -393,7 +379,7 @@ INT CtiDeviceDCT501::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
     INT pnt_offset, byte_offset;
@@ -521,7 +507,7 @@ INT CtiDeviceDCT501::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 }
 
 
-INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     int status = NORMAL;
 
@@ -715,7 +701,7 @@ INT CtiDeviceDCT501::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Dct501Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -805,3 +791,5 @@ INT CtiDeviceDCT501::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, l
     return status;
 }
 
+}
+}

@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_cbc6510
-*
-* Date:   5/22/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.23.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dsm2.h"
@@ -32,16 +19,19 @@
 #include "cparms.h"
 
 
-CtiDeviceCBC6510::CtiDeviceCBC6510() {}
+namespace Cti {
+namespace Devices {
 
-CtiDeviceCBC6510::CtiDeviceCBC6510(const CtiDeviceCBC6510 &aRef)
+Cbc6510Device::Cbc6510Device() {}
+
+Cbc6510Device::Cbc6510Device(const Cbc6510Device &aRef)
 {
    *this = aRef;
 }
 
-CtiDeviceCBC6510::~CtiDeviceCBC6510() {}
+Cbc6510Device::~Cbc6510Device() {}
 
-CtiDeviceCBC6510 &CtiDeviceCBC6510::operator=(const CtiDeviceCBC6510 &aRef)
+Cbc6510Device &Cbc6510Device::operator=(const Cbc6510Device &aRef)
 {
    if(this != &aRef)
    {
@@ -52,7 +42,7 @@ CtiDeviceCBC6510 &CtiDeviceCBC6510::operator=(const CtiDeviceCBC6510 &aRef)
 }
 
 
-INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Cbc6510Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NoMethod;
 
@@ -87,9 +77,9 @@ INT CtiDeviceCBC6510::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pars
 
 
 //  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
-void CtiDeviceCBC6510::processPoints( Cti::Protocol::Interface::pointlist_t &points )
+void Cbc6510Device::processPoints( Protocol::Interface::pointlist_t &points )
 {
-    Cti::Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
+    Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
     int last_offset;
 
     CtiPointDataMsg *pt_msg;
@@ -169,12 +159,15 @@ void CtiDeviceCBC6510::processPoints( Cti::Protocol::Interface::pointlist_t &poi
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-string CtiDeviceCBC6510::getDescription(const CtiCommandParser &parse) const
+string Cbc6510Device::getDescription(const CtiCommandParser &parse) const
 {
    string tmp;
 
    tmp = "CBC Device: " + getName();
 
    return tmp;
+}
+
+}
 }
 

@@ -80,16 +80,16 @@ deps:
 id:
             @build -nologo -f $(_InputFile) id_sgdll.obj
 
-id_sgdll.obj:    id_sgdll.cpp include\id_sgdll.h id_vinfo.h
+id_sgdll.obj:    id_sgdll.cpp include\id_sgdll.h
 
 
 #UPDATE#
 id_scanner.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h id_scanner.h id_vinfo.h
+		sorted_vector.h id_scanner.h
 id_sgdll.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h id_sgdll.h id_vinfo.h
+		sorted_vector.h id_sgdll.h
 mgr_device_scannable.obj:	yukon.h precompiled.h ctidbgmem.h \
 		mgr_device_scannable.h mgr_device.h dlldefs.h rtdb.h \
 		hashkey.h hash_functions.h utility.h ctitime.h queues.h \

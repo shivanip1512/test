@@ -1,36 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct_broadcast
-*
-* Class:  CtiDeviceMCTBroadcast
-* Date:   2/7/2003
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/10/28 19:21:44 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT_BROADCAST_H__
-#define __DEV_MCT_BROADCAST_H__
-#pragma warning( disable : 4786)
-
-
-#include <set>
-#include <utility>
-using std::set;
-
-#include <rw\thr\mutex.h>
+#pragma once
 
 #include "dev_dlcbase.h"
 
-class IM_EX_DEVDB CtiDeviceMCTBroadcast : public CtiDeviceDLCBase
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB MctBroadcastDevice : public DlcBaseDevice
 {
 private:
 
-    typedef CtiDeviceDLCBase Inherited;
+    typedef DlcBaseDevice Inherited;
 
     int _last_freeze;
 
@@ -55,8 +34,8 @@ protected:
 
 public:
 
-    CtiDeviceMCTBroadcast();
-    virtual ~CtiDeviceMCTBroadcast();
+    MctBroadcastDevice();
+    virtual ~MctBroadcastDevice();
 
     virtual INT ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
     virtual INT ResultDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList );
@@ -69,4 +48,6 @@ public:
     virtual LONG getAddress() const;
 };
 
-#endif // #ifndef __DEV_MCT_BROADCAST_H__
+}
+}
+

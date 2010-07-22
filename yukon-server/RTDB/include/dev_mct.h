@@ -1,33 +1,17 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct
-*
-* Class:  CtiDeviceMCT
-* Date:   12/21/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.68.2.1 $
-* DATE         :  $Date: 2008/11/19 15:21:28 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT_H__
-#define __DEV_MCT_H__
-#pragma warning( disable : 4786)
+#pragma once
 
 #include "dev_carrier.h"
 #include "pt_numeric.h"
 #include "prot_emetcon.h"
 
+namespace Cti {
+namespace Devices {
 
-class IM_EX_DEVDB CtiDeviceMCT : public CtiDeviceCarrier
+class IM_EX_DEVDB MctDevice : public CarrierDevice
 {
 private:
 
-    typedef CtiDeviceCarrier Inherited;
+    typedef CarrierDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -191,12 +175,12 @@ public:
         Memory_TSyncLen =    5,
     };
 
-    CtiDeviceMCT( );
-    CtiDeviceMCT( const CtiDeviceMCT &aRef );
+    MctDevice( );
+    MctDevice( const MctDevice &aRef );
 
-    virtual ~CtiDeviceMCT( );
+    virtual ~MctDevice( );
 
-    CtiDeviceMCT& operator=( const CtiDeviceMCT &aRef );
+    MctDevice& operator=( const MctDevice &aRef );
 
     virtual CtiTime adjustNextScanTime( const INT scanType=ScanRateGeneral );
     // CtiTime setNextInterval(CtiTime &aTime, ULONG scanrate);
@@ -266,4 +250,6 @@ public:
     static  INT verifyAlphaBuffer( const DSTRUCT &DSt );
 };
 
-#endif // #ifndef __DEV_MCT_H__
+}
+}
+

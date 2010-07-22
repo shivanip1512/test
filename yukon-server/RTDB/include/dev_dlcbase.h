@@ -1,22 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dlcbase
-*
-* Class:  CtiDeviceDLCBase
-* Date:   8/19/1999
-*
-* Author: Corey Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dlcbase.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_DLCBASE_H__
-#define __DEV_DLCBASE_H__
-
+#pragma once
 
 #include "dev_single.h"
 #include "tbl_route.h"
@@ -31,7 +13,10 @@
 using std::set;
 
 
-class IM_EX_DEVDB CtiDeviceDLCBase : public CtiDeviceSingle
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB DlcBaseDevice : public CtiDeviceSingle
 {
 private:
 
@@ -39,7 +24,7 @@ private:
 
     CtiTableDeviceRoute  getDeviceRoute() const;
     CtiTableDeviceRoute &getDeviceRoute();
-    CtiDeviceDLCBase    &setDeviceRoute(const CtiTableDeviceRoute& aRoute);
+    DlcBaseDevice           &setDeviceRoute(const CtiTableDeviceRoute& aRoute);
 
     static unsigned int _lpRetryMultiplier;
     static unsigned int _lpRetryMinimum;
@@ -124,15 +109,15 @@ public:
         BroadcastAddress = 0x3fffff
     };
 
-    CtiDeviceDLCBase();
-    CtiDeviceDLCBase(const CtiDeviceDLCBase& aRef);
-    virtual ~CtiDeviceDLCBase();
+    DlcBaseDevice();
+    DlcBaseDevice(const DlcBaseDevice& aRef);
+    virtual ~DlcBaseDevice();
 
-    CtiDeviceDLCBase& operator=(const CtiDeviceDLCBase& aRef);
+    DlcBaseDevice& operator=(const DlcBaseDevice& aRef);
 
     CtiTableDeviceCarrier  getCarrierSettings() const;
     CtiTableDeviceCarrier &getCarrierSettings();
-    CtiDeviceDLCBase      &setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
+    DlcBaseDevice      &setCarrierSettings( const CtiTableDeviceCarrier & aCarrierSettings );
 
     virtual string getSQLCoreStatement() const;
 
@@ -148,4 +133,6 @@ public:
     virtual ULONG selectInitialMacroRouteOffset(LONG routeid = 0) const;
 };
 
-#endif // #ifndef __DEV_DLCBASE_H__
+}
+}
+

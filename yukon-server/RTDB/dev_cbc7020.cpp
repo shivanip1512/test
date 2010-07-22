@@ -1,62 +1,50 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_cbc7020
-*
-* Date:   4/6/2006
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.4.6.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <limits.h>
-
-#include "numstr.h"
-#include <boost/regex.hpp>
-#include "ctistring.h"
 #include "dev_cbc7020.h"
 
+#include "numstr.h"
+
 using namespace std;
-using namespace Cti::Devices;
-using namespace Cti::Config;
 
-const char *CBC7020::PutConfigPart_all             = "all";
-const char *CBC7020::PutConfigPart_comms_lost      = "commslost";
-const char *CBC7020::PutConfigPart_control_times   = "controltimes";
-const char *CBC7020::PutConfigPart_data_logging    = "logging";
-const char *CBC7020::PutConfigPart_dnp             = "dnp";
-const char *CBC7020::PutConfigPart_fault_detection = "faultdetection";
-const char *CBC7020::PutConfigPart_neutral_current = "neutralcurrent";
-const char *CBC7020::PutConfigPart_time_temp_1     = "timeandtemp1";
-const char *CBC7020::PutConfigPart_time_temp_2     = "timeandtemp2";
-const char *CBC7020::PutConfigPart_udp             = "udp";
-const char *CBC7020::PutConfigPart_voltage         = "voltage";
+namespace Cti {
 
-const CBC7020::ConfigPartsList CBC7020::_config_parts = CBC7020::initConfigParts();
+using namespace Config;
 
-CBC7020::ConfigPartsList CBC7020::initConfigParts()
+namespace Devices {
+
+const char *Cbc7020Device::PutConfigPart_all             = "all";
+const char *Cbc7020Device::PutConfigPart_comms_lost      = "commslost";
+const char *Cbc7020Device::PutConfigPart_control_times   = "controltimes";
+const char *Cbc7020Device::PutConfigPart_data_logging    = "logging";
+const char *Cbc7020Device::PutConfigPart_dnp             = "dnp";
+const char *Cbc7020Device::PutConfigPart_fault_detection = "faultdetection";
+const char *Cbc7020Device::PutConfigPart_neutral_current = "neutralcurrent";
+const char *Cbc7020Device::PutConfigPart_time_temp_1     = "timeandtemp1";
+const char *Cbc7020Device::PutConfigPart_time_temp_2     = "timeandtemp2";
+const char *Cbc7020Device::PutConfigPart_udp             = "udp";
+const char *Cbc7020Device::PutConfigPart_voltage         = "voltage";
+
+const Cbc7020Device::ConfigPartsList Cbc7020Device::_config_parts = Cbc7020Device::initConfigParts();
+
+Cbc7020Device::ConfigPartsList Cbc7020Device::initConfigParts()
 {
-    CBC7020::ConfigPartsList tempList;
-    tempList.push_back(CBC7020::PutConfigPart_all);
-    tempList.push_back(CBC7020::PutConfigPart_comms_lost);
-    tempList.push_back(CBC7020::PutConfigPart_control_times);
-    tempList.push_back(CBC7020::PutConfigPart_data_logging);
-    tempList.push_back(CBC7020::PutConfigPart_dnp);
-    tempList.push_back(CBC7020::PutConfigPart_fault_detection);
-    tempList.push_back(CBC7020::PutConfigPart_neutral_current);
-    tempList.push_back(CBC7020::PutConfigPart_time_temp_1);
-    tempList.push_back(CBC7020::PutConfigPart_time_temp_2);
-    tempList.push_back(CBC7020::PutConfigPart_udp);
-    tempList.push_back(CBC7020::PutConfigPart_voltage);
+    Cbc7020Device::ConfigPartsList tempList;
+    tempList.push_back(Cbc7020Device::PutConfigPart_all);
+    tempList.push_back(Cbc7020Device::PutConfigPart_comms_lost);
+    tempList.push_back(Cbc7020Device::PutConfigPart_control_times);
+    tempList.push_back(Cbc7020Device::PutConfigPart_data_logging);
+    tempList.push_back(Cbc7020Device::PutConfigPart_dnp);
+    tempList.push_back(Cbc7020Device::PutConfigPart_fault_detection);
+    tempList.push_back(Cbc7020Device::PutConfigPart_neutral_current);
+    tempList.push_back(Cbc7020Device::PutConfigPart_time_temp_1);
+    tempList.push_back(Cbc7020Device::PutConfigPart_time_temp_2);
+    tempList.push_back(Cbc7020Device::PutConfigPart_udp);
+    tempList.push_back(Cbc7020Device::PutConfigPart_voltage);
 
     return tempList;
 }
 
-INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NoMethod;
     bool didExecute = false;
@@ -94,9 +82,9 @@ INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
 
 
 //  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
-void CBC7020::processPoints( Cti::Protocol::Interface::pointlist_t &points )
+void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
 {
-    Cti::Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
+    Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
 
     last_pos    = points.end();
 
@@ -124,7 +112,7 @@ void CBC7020::processPoints( Cti::Protocol::Interface::pointlist_t &points )
     Inherited::processPoints(points);
 }
 
-/*INT CBC7020::executePutConfig(CtiRequestMsg                  *pReq,
+/*INT Cbc7020Device::executePutConfig(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
                                    list< CtiMessage* >      &vgList,
@@ -153,7 +141,7 @@ void CBC7020::processPoints( Cti::Protocol::Interface::pointlist_t &points )
                 OutMessage->Retry     = 2;
                 OutMessage->Request.RouteID   = getRouteID();
 
-                for(CBC7020::ConfigPartsList::const_iterator tempItr = _config_parts.begin(); tempItr != _config_parts.end(); tempItr++)
+                for(Cbc7020Device::ConfigPartsList::const_iterator tempItr = _config_parts.begin(); tempItr != _config_parts.end(); tempItr++)
                 {
                     if( *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
                     {
@@ -219,7 +207,7 @@ void CBC7020::processPoints( Cti::Protocol::Interface::pointlist_t &points )
 
 }
 
-int CBC7020::executePutConfigSingle(CtiRequestMsg         *pReq,
+int Cbc7020Device::executePutConfigSingle(CtiRequestMsg         *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
                                    list< CtiMessage* >      &vgList,
@@ -320,7 +308,7 @@ int CBC7020::executePutConfigSingle(CtiRequestMsg         *pReq,
 
 // ExecutePutConfigVoltage
 // Put the voltage configuration on the device. Simple.
-/*int CBC7020::executePutConfigVoltage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+/*int Cbc7020Device::executePutConfigVoltage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
 
@@ -446,7 +434,7 @@ int CBC7020::executePutConfigSingle(CtiRequestMsg         *pReq,
 
 }
 
-int CBC7020::executePutConfigCommsLost(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigCommsLost(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -503,7 +491,7 @@ int CBC7020::executePutConfigCommsLost(CtiRequestMsg *pReq,CtiCommandParser &par
     return nRet;
 }
 
-int CBC7020::executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -557,7 +545,7 @@ int CBC7020::executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser
     return nRet;
 }
 
-int CBC7020::executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -695,7 +683,7 @@ int CBC7020::executePutConfigFaultDetection(CtiRequestMsg *pReq,CtiCommandParser
     return nRet;
 }
 
-int CBC7020::executePutConfigTimeAndTemp1(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigTimeAndTemp1(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -794,7 +782,7 @@ int CBC7020::executePutConfigTimeAndTemp1(CtiRequestMsg *pReq,CtiCommandParser &
     return nRet;
 }
 
-int CBC7020::executePutConfigTimeAndTemp2(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigTimeAndTemp2(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -894,7 +882,7 @@ int CBC7020::executePutConfigTimeAndTemp2(CtiRequestMsg *pReq,CtiCommandParser &
     return nRet;
 }
 
-int CBC7020::executePutConfigControlTimes(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigControlTimes(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -950,7 +938,7 @@ int CBC7020::executePutConfigControlTimes(CtiRequestMsg *pReq,CtiCommandParser &
     return nRet;
 }
 
-int CBC7020::executePutConfigDataLogging(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigDataLogging(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -1000,7 +988,7 @@ int CBC7020::executePutConfigDataLogging(CtiRequestMsg *pReq,CtiCommandParser &p
     return nRet;
 }
 
-int CBC7020::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -1053,7 +1041,7 @@ int CBC7020::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUT
     return nRet;
 }
 
-int CBC7020::executePutConfigUDP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Cbc7020Device::executePutConfigUDP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     CtiCommandParser *parseSingle;
@@ -1103,7 +1091,7 @@ int CBC7020::executePutConfigUDP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUT
     return nRet;
 }*/
 
-int CBC7020::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >   &outList)
+int Cbc7020Device::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >   &outList)
 {
     string tempStr = "putvalue analog " + CtiNumStr(outputPt) + " " + CtiNumStr(value);
     OUTMESS *tempOutMess = CTIDBG_new OUTMESS(*OutMessage);
@@ -1111,3 +1099,7 @@ int CBC7020::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq,
     CtiCommandParser parseSingle(tempOutMess->Request.CommandStr);
     return Inherited::ExecuteRequest(pReq, parseSingle, tempOutMess, vgList, retList, outList);
 }
+
+}
+}
+

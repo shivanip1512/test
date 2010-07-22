@@ -6,7 +6,7 @@
 #include "tbl_direct.h"
 
 // THIS DEVICE SHOULD INHERIT FROM CTIDEVICEREMOTE
-class IM_EX_DEVDB CtiDeviceGridAdvisor : public Cti::Devices::DNP
+class IM_EX_DEVDB CtiDeviceGridAdvisor : public Cti::Devices::DnpDevice
 {
 private:
 

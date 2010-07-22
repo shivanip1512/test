@@ -13,7 +13,7 @@ INCLPATHS+= \
 -I$(SQLAPI)\include \
 -I$(RW) \
 -I$(ACTIVEMQ) \
--I$(DBGHELP)\include 
+-I$(DBGHELP)\include
 
 .PATH.H = \
 .\include \
@@ -156,10 +156,10 @@ allclean:   clean all
 
 # The lines below accomplish the ID'ing of the project!
 id:
-            # @cid .\include\id_ctibase.h id_vinfo.h
+            # @cid .\include\id_ctibase.h
             @build -nologo -f $(_InputFile) id_ctibase.obj
 
-id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h id_vinfo.h
+id_ctibase.obj:    id_ctibase.cpp include\id_ctibase.h
 
 
 
@@ -312,7 +312,7 @@ hash_functions.obj:	yukon.h precompiled.h ctidbgmem.h hash_functions.h \
 		dlldefs.h
 id_ctibase.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h id_ctibase.h id_vinfo.h
+		sorted_vector.h id_ctibase.h
 litepoint.obj:	yukon.h precompiled.h ctidbgmem.h LitePoint.h dlldefs.h \
 		pointtypes.h
 logger.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \

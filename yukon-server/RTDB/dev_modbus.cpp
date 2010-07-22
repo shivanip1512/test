@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_modbus
-*
-* Date:   7/19/2005
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.14.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:42 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 #include <map>
 #include <string>
@@ -45,21 +29,23 @@
 #include "numstr.h"
 #include "cparms.h"
 
-namespace Cti       {
-namespace Devices    {
+using Cti::Protocols::ModbusProtocol;
 
-Modbus::Modbus(void)
+namespace Cti {
+namespace Devices {
+
+ModbusDevice::ModbusDevice(void)
 {
 }
 
-Modbus::Modbus(const Modbus &aRef)
+ModbusDevice::ModbusDevice(const ModbusDevice &aRef)
 {
    *this = aRef;
 }
 
-Modbus::~Modbus() {}
+ModbusDevice::~ModbusDevice() {}
 
-Modbus &Modbus::operator=(const Modbus &aRef)
+ModbusDevice &ModbusDevice::operator=(const ModbusDevice &aRef)
 {
    if(this != &aRef)
    {
@@ -68,7 +54,7 @@ Modbus &Modbus::operator=(const Modbus &aRef)
    return *this;
 }
 
-INT Modbus::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -94,7 +80,7 @@ INT Modbus::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 }
 
 
-INT Modbus::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -120,12 +106,12 @@ INT Modbus::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS 
 }
 
 
-INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NoMethod;
 
-    Protocol::Modbus::Command command = Protocol::Modbus::Command_Error;
-    Protocol::Modbus::output_point controlout;
+    ModbusProtocol::Command command = ModbusProtocol::Command_Error;
+    ModbusProtocol::output_point controlout;
     pseudo_info p_i = {false, -1, -1};
 
     switch( parse.getCommand() )
@@ -158,7 +144,7 @@ INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
 
                 case ScanRateIntegrity:
                 {
-                    command = Protocol::Modbus::Command_ScanALL;
+                    command = ModbusProtocol::Command_ScanALL;
 
                     break;
                 }
@@ -183,7 +169,7 @@ INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
         }
     }
 
-    if( command != Protocol::Modbus::Command_Invalid )
+    if( command != ModbusProtocol::Command_Invalid )
     {
         _pil_info.protocol_command   = command;
  //       _pil_info.protocol_parameter = controlout;
@@ -209,19 +195,19 @@ INT Modbus::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS
 }
 
 
-Protocol::Interface *Modbus::getProtocol()
+Protocol::Interface *ModbusDevice::getProtocol()
 {
     return &_modbus;
 }
 
 
-int Modbus::generate(CtiXfer &xfer)
+int ModbusDevice::generate(CtiXfer &xfer)
 {
     return _modbus.generate(xfer);
 }
 
 
-int Modbus::decode(CtiXfer &xfer, int status)
+int ModbusDevice::decode(CtiXfer &xfer, int status)
 {
     int retval = NoError;
 
@@ -229,14 +215,14 @@ int Modbus::decode(CtiXfer &xfer, int status)
 
     if( _modbus.isTransactionComplete() )
     {
-        const Protocol::Modbus::output_point &op = _porter_info.protocol_parameter;
+        const ModbusProtocol::output_point &op = _porter_info.protocol_parameter;
     }
 
     return retval;
 }
 
 
-int Modbus::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+int ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 
@@ -256,7 +242,7 @@ int Modbus::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
         OutMessage->OutLength    = sizeof(om_buf) + strlen(buf) + 1;  //  plus null
         OutMessage->Destination  = _modbus_address.getSlaveAddress();
         OutMessage->EventCode    = RESULT;
-        OutMessage->Retry        = Protocol::Modbus::Retries_Default;
+        OutMessage->Retry        = ModbusProtocol::Retries_Default;
 
         outList.push_back(OutMessage);
         OutMessage = 0;
@@ -275,7 +261,7 @@ int Modbus::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 }
 
 
-int Modbus::recvCommRequest( OUTMESS *OutMessage )
+int ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 {
     int retVal = NoError;
 
@@ -298,7 +284,7 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
 
         switch(_porter_info.protocol_command)
         {
-            case Protocol::Modbus::Command_ScanALL:
+            case ModbusProtocol::Command_ScanALL:
             {
                 try
                 {
@@ -380,13 +366,13 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-int Modbus::sendCommResult(INMESS *InMessage)
+int ModbusDevice::sendCommResult(INMESS *InMessage)
 {
     char *buf;
     int offset;
     string result_string;
-    Protocol::Modbus::stringlist_t strings;
-    Protocol::Modbus::stringlist_t::iterator itr;
+    ModbusProtocol::stringlist_t strings;
+    ModbusProtocol::stringlist_t::iterator itr;
 
     buf = reinterpret_cast<char *>(InMessage->Buffer.InMessage);
     offset = 0;
@@ -451,7 +437,7 @@ int Modbus::sendCommResult(INMESS *InMessage)
 }
 
 
-void Modbus::sendDispatchResults(CtiConnection &vg_connection)
+void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
 {
     CtiReturnMsg                *vgMsg;
     CtiPointDataMsg             *pt_msg;
@@ -515,7 +501,7 @@ void Modbus::sendDispatchResults(CtiConnection &vg_connection)
 }
 
 
-void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
+void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
 {
     Protocol::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
@@ -564,7 +550,7 @@ void Modbus::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT ModbusDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -626,7 +612,7 @@ INT Modbus::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* 
 }
 
 
-INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT ModbusDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL;
 
@@ -686,12 +672,12 @@ INT Modbus::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* >
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-string Modbus::getDescription(const CtiCommandParser &parse) const
+string ModbusDevice::getDescription(const CtiCommandParser &parse) const
 {
    return getName();
 }
 
-void Modbus::DecodeDatabaseReader(Cti::RowReader &rdr)
+void ModbusDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _modbus_address.DecodeDatabaseReader(rdr);

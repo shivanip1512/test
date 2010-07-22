@@ -1,6 +1,6 @@
 
 /*
- * test Cti::Devices::LCR3102
+ * test Cti::Devices::Lcr3102Device
  *
  */
 
@@ -15,32 +15,27 @@ using boost::unit_test_framework::test_suite;
 namespace Cti {
 namespace Devices {
 
-class test_LCR3102 : public LCR3102
+struct test_Lcr3102Device : Lcr3102Device
 {
-public:
-
     typedef CtiDeviceSingle::point_info point_info;
 
-    using LCR3102::decodeMessageAddress;
-    using LCR3102::decodeMessageSubstation;
-    using LCR3102::decodeMessageTime;
-    using LCR3102::decodeMessageTransmitPower;
-    using LCR3102::decodeMessageSoftspec;
-    using LCR3102::decodeMessageTemperature;
-    using LCR3102::getSixBitValueFromBuffer;
-    using LCR3102::decodeGetValueIntervalLast;
-    using LCR3102::decodeGetValuePropCount;
-    using LCR3102::decodeGetValueHistoricalTime;
-    using LCR3102::decodeGetValueControlTime;
-    using LCR3102::decodeXfmrHistoricalRuntimeMessage;
-    using LCR3102::decodeMessageDutyCycle;
+    using Lcr3102Device::decodeMessageAddress;
+    using Lcr3102Device::decodeMessageSubstation;
+    using Lcr3102Device::decodeMessageTime;
+    using Lcr3102Device::decodeMessageTransmitPower;
+    using Lcr3102Device::decodeMessageSoftspec;
+    using Lcr3102Device::decodeMessageTemperature;
+    using Lcr3102Device::getSixBitValueFromBuffer;
+    using Lcr3102Device::decodeGetValueIntervalLast;
+    using Lcr3102Device::decodeGetValuePropCount;
+    using Lcr3102Device::decodeGetValueHistoricalTime;
+    using Lcr3102Device::decodeGetValueControlTime;
+    using Lcr3102Device::decodeXfmrHistoricalRuntimeMessage;
+    using Lcr3102Device::decodeMessageDutyCycle;
 
-private:
     typedef std::map< int, point_info > point_results_map;
     typedef std::map< int, point_info >::iterator point_results_map_iter;
     point_results_map point_results;
-
-public:
 
     // Note that this always overwrites
     virtual void insertPointDataReport(CtiPointType_t type, int offset, CtiReturnMsg *rm, point_info pi, const string &default_pointname="", const CtiTime &timestamp=CtiTime(), double default_multiplier=1.0, int tags=0)
@@ -68,8 +63,8 @@ public:
 
 BOOST_AUTO_TEST_CASE(test_dev_lcr3102_get6BitData)
 {
-    test_LCR3102::point_info result;
-    test_LCR3102 device;
+    test_Lcr3102Device::point_info result;
+    test_Lcr3102Device device;
     static const int BUFFER_SIZE = 7;
     unsigned char buffer[BUFFER_SIZE] = {0x10, 0x03, 0xCF, 0x3C, 0xF3, 0xCF, 0x01};
 
@@ -146,7 +141,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     list< CtiMessage* > retList;
     list< OUTMESS* > outList;
 
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
 
     unsigned char flags = 0x33; // Relay 1, multiplier 1/1000 kw. Relay 2, multiplier 1 kw
     unsigned short relay_1_watts = 11; // 11/1000 kw
@@ -168,7 +163,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
 
     test_device.decodeGetValueIntervalLast(&InMessage, now, vgList, retList, outList);
 
-    test_LCR3102::point_info pi;
+    test_Lcr3102Device::point_info pi;
 
     pi = test_device.test_getPointResults(9876448);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
@@ -208,7 +203,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_interval_last)
     // I create a new test device so I dont have to clear out data, ect...
 
     // Test with only 1 relay!
-    test_LCR3102 test_device_2;
+    test_Lcr3102Device test_device_2;
     flags = 0x61; // 1, multiplier 1/100
     relay_1_watts = 0x124;
 
@@ -255,7 +250,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
     list< CtiMessage* > retList;
     list< OUTMESS* > outList;
 
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
 
     unsigned char propcount = 0x33; // Relay 1, multiplier 1/1000 kw. Relay 2, multiplier 1 kw
 
@@ -271,7 +266,7 @@ BOOST_AUTO_TEST_CASE(test_decode_get_propcount)
 
     test_device.decodeGetValuePropCount(&InMessage, now, vgList, retList, outList);
 
-    test_LCR3102::point_info pi;
+    test_Lcr3102Device::point_info pi;
 
     pi = test_device.test_getPointResults(9876448);
     BOOST_CHECK_EQUAL(pi.quality, InvalidQuality);
@@ -305,7 +300,7 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
     const int relay1_controlTime = 590;
     const int expected_controlTime = 295;
 
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
 
     InMessage.Buffer.DSt.Address = 10;
     InMessage.Buffer.DSt.Alarm   = 0;
@@ -324,7 +319,7 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
 
     test_device.decodeGetValueControlTime(&InMessage, now, vgList, retList, outList);
 
-    test_LCR3102::point_info pi = test_device.test_getPointResults(PointOffest_controltime_relay_1);
+    test_Lcr3102Device::point_info pi = test_device.test_getPointResults(PointOffest_controltime_relay_1);
 
     BOOST_CHECK_EQUAL(pi.value, expected_controlTime); // We are expecting the half seconds to be converted to seconds here!
     BOOST_CHECK_EQUAL(pi.quality, NormalQuality);
@@ -333,7 +328,7 @@ BOOST_AUTO_TEST_CASE(test_decode_control_time)
 BOOST_AUTO_TEST_CASE(test_data_read_address)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
     int prgAddr1, prgAddr2, prgAddr3, prgAddr4, splAddr1, splAddr2, splAddr3, splAddr4;
 
     InMessage.Buffer.DSt.Message[0] = 0x04;
@@ -346,7 +341,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_address)
     InMessage.Buffer.DSt.Message[7] = 0x44;
 
     test_device.decodeMessageAddress(InMessage.Buffer.DSt.Message,
-                                     prgAddr1, prgAddr2, prgAddr3, prgAddr4, 
+                                     prgAddr1, prgAddr2, prgAddr3, prgAddr4,
                                      splAddr1, splAddr2, splAddr3, splAddr4);
 
     BOOST_CHECK_EQUAL(prgAddr1,  4);
@@ -362,7 +357,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_address)
 BOOST_AUTO_TEST_CASE(test_data_read_sspec)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
     int sspec, rev, serial, spid, geo;
 
     InMessage.Buffer.DSt.Message[0]  = 0xb0;
@@ -391,7 +386,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_sspec)
 BOOST_AUTO_TEST_CASE(test_data_read_substation)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
     int substation, feeder, zip, uda;
 
     InMessage.Buffer.DSt.Message[0]  = 0x03;
@@ -415,7 +410,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_substation)
 BOOST_AUTO_TEST_CASE(test_data_read_time)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
     CtiTime time;
 
     InMessage.Buffer.DSt.Message[0]  = 0x49;
@@ -431,7 +426,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_time)
 BOOST_AUTO_TEST_CASE(test_data_read_power)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
     int transmitPower;
 
     InMessage.Buffer.DSt.Message[0]  = 0x0a;
@@ -444,7 +439,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_power)
 BOOST_AUTO_TEST_CASE(test_data_read_temperature)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
     int txTemp, boxTemp;
 
     InMessage.Buffer.DSt.Message[0]  = 0x0f;
@@ -461,7 +456,7 @@ BOOST_AUTO_TEST_CASE(test_data_read_temperature)
 BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
 
     InMessage.Buffer.DSt.Message[0] = 0x04;
     InMessage.Buffer.DSt.Message[1] = 0x08;
@@ -485,7 +480,7 @@ BOOST_AUTO_TEST_CASE(test_decode_xfmr_historical)
 BOOST_AUTO_TEST_CASE(test_duty_cycle)
 {
     INMESS InMessage;
-    test_LCR3102 test_device;
+    test_Lcr3102Device test_device;
 
     InMessage.Buffer.DSt.Message[0]  = 0x02;
     InMessage.Buffer.DSt.Message[1]  = 0x2a;

@@ -211,6 +211,10 @@ struct timeSyncCCU710
 
                     if( OutMessage )
                     {
+                        using Cti::Devices::DlcBaseDevice;
+                        using Cti::Devices::MctDevice;
+                        using Cti::Protocols::EmetconProtocol;
+
                         //  load up all of the port/route specific items
                         OutMessage->DeviceID  = RemoteRecord->getID();
                         OutMessage->Port      = RemoteRecord->getPortID();
@@ -229,10 +233,10 @@ struct timeSyncCCU710
 
                         OutMessage->Buffer.BSt.Port     = RemoteRecord->getPortID();
                         OutMessage->Buffer.BSt.Remote   = RemoteRecord->getAddress();
-                        OutMessage->Buffer.BSt.Address  = CtiDeviceDLCBase::BroadcastAddress;
-                        OutMessage->Buffer.BSt.Function = CtiDeviceMCT::Memory_TSyncPos;
-                        OutMessage->Buffer.BSt.Length   = CtiDeviceMCT::Memory_TSyncLen;
-                        OutMessage->Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Write;
+                        OutMessage->Buffer.BSt.Address  = DlcBaseDevice::BroadcastAddress;
+                        OutMessage->Buffer.BSt.Function = MctDevice::Memory_TSyncPos;
+                        OutMessage->Buffer.BSt.Length   = MctDevice::Memory_TSyncLen;
+                        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Write;
                         //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
 
                         //  this should all be filled in by the route's ExecuteRequest
@@ -245,7 +249,7 @@ struct timeSyncCCU710
                         //  Ideally, use something like this instead of the above code...
                         //RouteRecord->ExecuteRequest();
                         //  ... but because we're not executing on the route, we have to do this manually
-                        Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
+                        EmetconProtocol::buildBWordMessage(OutMessage);
 
                         if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                         {
@@ -535,10 +539,10 @@ struct timeSyncCCU721
             return;
         }
 
-        using Cti::Devices::CCU721;
-        boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(RemoteRecord);
+        using Cti::Devices::Ccu721Device;
+        boost::shared_ptr<Ccu721Device> ccu = boost::static_pointer_cast<Ccu721Device>(RemoteRecord);
 
-        ccu->buildCommand(OutMessage, CCU721::Command_Timesync);
+        ccu->buildCommand(OutMessage, Ccu721Device::Command_Timesync);
 
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
         OutMessage->ExpirationTime = getNextTimeSync();
@@ -578,8 +582,8 @@ struct timeSyncDNPDevices
             return;
         }
 
-        using Cti::Devices::DNP;
-        boost::shared_ptr<DNP> dnp_device = boost::static_pointer_cast<DNP>(RemoteRecord);
+        using Cti::Devices::DnpDevice;
+        boost::shared_ptr<DnpDevice> dnp_device = boost::static_pointer_cast<DnpDevice>(RemoteRecord);
 
         CtiRequestMsg request(RemoteRecord->getID(), "putconfig timesync");
 
@@ -637,6 +641,9 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
 
             if( OutMessage )
             {
+                using Cti::Devices::Mct4xxDevice;
+                using Cti::Protocols::EmetconProtocol;
+
                 //  load up all of the port/route specific items
                 OutMessage->DeviceID  = pRoute->getTrxDeviceID();
                 OutMessage->Port      = portid;
@@ -656,10 +663,10 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->Buffer.BSt.Port    = RemoteRecord->getPortID();
                 OutMessage->Buffer.BSt.Remote  = RemoteRecord->getAddress();
                 //  this is key - this, and the TSYNC flag, are what get the 400-series time loaded into the message
-                OutMessage->Buffer.BSt.Address  = CtiDeviceMCT4xx::UniversalAddress;
-                OutMessage->Buffer.BSt.Function = CtiDeviceMCT4xx::FuncWrite_TSyncPos;
-                OutMessage->Buffer.BSt.Length   = CtiDeviceMCT4xx::FuncWrite_TSyncLen;
-                OutMessage->Buffer.BSt.IO       = Cti::Protocol::Emetcon::IO_Function_Write;
+                OutMessage->Buffer.BSt.Address  = Mct4xxDevice::UniversalAddress;
+                OutMessage->Buffer.BSt.Function = Mct4xxDevice::FuncWrite_TSyncPos;
+                OutMessage->Buffer.BSt.Length   = Mct4xxDevice::FuncWrite_TSyncLen;
+                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
                 //  we don't fill in the data because it's filled in by RefreshMCTTimeSync() later on
 
                 OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
@@ -669,7 +676,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->Buffer.BSt.DlcRoute.Stages     = (stages_supported)?(pRoute->getStages()):(0);  //  must set stages to 0 or the timesync will fail on the 700/710
 
                 //  because we're not executing on the route, we have to do this manually
-                Cti::Protocol::Emetcon::buildBWordMessage(OutMessage);
+                EmetconProtocol::buildBWordMessage(OutMessage);
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -975,16 +982,21 @@ INT RefreshMCTTimeSync(OUTMESS *OutMessage)
 
     io        = (b_word[5] & 0x0c) >> 2;
 
-    if( address == CtiDeviceMCT4xx::UniversalAddress
-          || (io == Cti::Protocol::Emetcon::IO_Function_Write
-                && function  == CtiDeviceMCT4xx::FuncWrite_TSyncPos
+    using Cti::Devices::DlcBaseDevice;
+    using Cti::Devices::MctDevice;
+    using Cti::Devices::Mct4xxDevice;
+    using Cti::Protocols::EmetconProtocol;
+
+    if( address == Mct4xxDevice::UniversalAddress
+          || (io == EmetconProtocol::IO_Function_Write
+                && function  == Mct4xxDevice::FuncWrite_TSyncPos
                 && wordcount == 2) )  //  the 4xx has 6 bytes to write - two C words
     {
-        length = CtiDeviceMCT4xx::loadTimeSync(timesync_message);
+        length = Mct4xxDevice::loadTimeSync(timesync_message);
     }
-    else if( address == CtiDeviceDLCBase::BroadcastAddress
-               || (io == Cti::Protocol::Emetcon::IO_Write
-                     && function  == CtiDeviceMCT::Memory_TSyncPos
+    else if( address == DlcBaseDevice::BroadcastAddress
+               || (io == EmetconProtocol::IO_Write
+                     && function  == MctDevice::Memory_TSyncPos
                      && wordcount == 1) )  //  non-400-series MCT timesyncs have 5 bytes to write - one C word
     {
         //  this is the normal MCT timesync

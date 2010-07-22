@@ -14,18 +14,12 @@ namespace Simulator {
 const CtiTime Mct410Sim::DawnOfTime = CtiTime::CtiTime(CtiDate::CtiDate(1, 1, 2005),0, 0, 0);
 const double Mct410Sim::randomReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_RANDOM_READING_CHANCE_PERCENT");
 
-//  Temporary class to access protected functions in CtiDeviceMct410 and CtiDeviceMct4xx.
+//  Temporary class to access protected functions in Mct410Device and Mct4xxDevice.
 //  To be deleted when we move functions to a shared location.
-struct mct410_utility : private CtiDeviceMCT410
+struct mct410_utility : private Devices::Mct410Device
 {
-    static int makeDynamicDemand(double d)
-    {
-        return CtiDeviceMCT410::makeDynamicDemand(d);
-    };
-    static unsigned char crc8(unsigned char *buf, unsigned int len)
-    {
-        return CtiDeviceMCT410::crc8(buf,len);
-    };
+    using Mct410Device::makeDynamicDemand;
+    using Mct410Device::crc8;
 };
 
 const Mct410Sim::function_reads_t  Mct410Sim::_function_reads  = Mct410Sim::initFunctionReads();
@@ -42,8 +36,8 @@ Mct410Sim::Mct410Sim(int address)
 
     _address = address;
     _memory_map = bytes(20, 0x00);  // Initialize the memory map to have 20 bytes of 0s for data.
-                                    
-    // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order 
+
+    // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order
     // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
     // Refer to section 4.10 of the MCT-410 SSPEC doc for more information.
     _memory_map[MM_EventFlags1AlarmMask]= EF1_TamperFlag;
@@ -153,7 +147,7 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         double value = rand() / double(RAND_MAX + 1);
 
         if( value < 0.50 )
-        {    
+        {
             // Only set the zero usage flag to true if it isn't already set...
             if ( (_memory_map[MM_EventFlags2] & EF2_ZeroUsage) == 0 )
             {
@@ -206,7 +200,7 @@ bool Mct410Sim::read(const words_t &request_words, words_t &response_words)
         return true;
     }
 
-    // Check to see if the alarm bit needs to be set! If the tamper flag has 
+    // Check to see if the alarm bit needs to be set! If the tamper flag has
     // previously been set, then the general alarm bit needs to be as well.
     bool alarm = false;
     if( _memory_map.size() >= MM_EventFlags1AlarmMask )
@@ -392,7 +386,7 @@ bytes Mct410Sim::getAllCurrentPeakDemandReadings()
     const unsigned char *byte_ptr = reinterpret_cast<const unsigned char *>(&consumption_Wh);
 
     // Function Read 0x93 contains the consumption read at
-    // positions 6-8 of the 13 byte data response. 
+    // positions 6-8 of the 13 byte data response.
     reverse_copy(byte_ptr, byte_ptr + 3, data.begin() + 6);
 
     return data;
@@ -469,7 +463,7 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
     {                                       //  the multiplier of the consumption used by a household
         return 1.0;                         //  based on the address of the meter. The following scale
     }                                       //  shows how these multipliers are determined:
-    else if( address_range < 600 )          // 
+    else if( address_range < 600 )          //
     {                                       //  Address % 1000:
         return 2.0;                         //     Range 000-399: 1x Consumption Multiplier - 40% of Households
     }                                       //
@@ -485,7 +479,7 @@ double Mct410Sim::getConsumptionMultiplier(const unsigned address)
     {                                       //
         return 10.0;                        //  This scale was made in order to represent more real-world
     }                                       //  readings and model the fact that some households consume
-    else                                    //  drastically more than other households do. The consumption 
+    else                                    //  drastically more than other households do. The consumption
     {
         return 20.0;
     }
@@ -527,7 +521,7 @@ double Mct410Sim::makeValue_consumption(const unsigned address, const CtiTime &c
         distinguishing.                                                     */
     const double offset = (address % 1000) * 7.35 * 3600000;
 
-    /*  These multipliers affect the amplification of the curve for the 
+    /*  These multipliers affect the amplification of the curve for the
         consumption. amp_year being set at 700.0 gives a normalized
         curve for the meter which results in a 1x Consumption Multiplier
         calculating to about 775-875 kWh per month, as desired.             */

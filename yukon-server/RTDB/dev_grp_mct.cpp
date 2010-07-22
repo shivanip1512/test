@@ -20,7 +20,7 @@
 #include "numstr.h"
 #include "prot_emetcon.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
 
 CtiDeviceGroupMCT::CtiDeviceGroupMCT()
@@ -333,11 +333,11 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
                 //  this will obviously need to be changed if we ever need to control more than 4 relays
                 if( _lmGroupMCT.getRelays() & 0x0f )
                 {
-                    function = Emetcon::Control_Shed;
+                    function = EmetconProtocol::Control_Shed;
 
                     OutMessage->Buffer.BSt.Function = shed_function | (_lmGroupMCT.getRelays() & 0x0f);
                     OutMessage->Buffer.BSt.Length   = 0;
-                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
+                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Write;
                     OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt(GROUP_CONTROL_EXPIRATION, 1200);
 
                     found = true;
@@ -355,11 +355,11 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
     }
     else if( parse.getFlags() & CMD_FLAG_CTL_RESTORE )
     {
-        function = Emetcon::Control_Restore;
+        function = EmetconProtocol::Control_Restore;
 
         OutMessage->Buffer.BSt.Function = Command_Restore;
         OutMessage->Buffer.BSt.Length   = 0;
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
+        OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Write;
 
         found = true;
     }

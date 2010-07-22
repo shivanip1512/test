@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mgr_device
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.101.2.1 $
-* DATE         :  $Date: 2008/11/21 17:55:24 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
@@ -691,19 +678,19 @@ string CtiDeviceManager::createIdSqlClause(const Cti::Database::id_set &paoids, 
         if( paoids.size() == 1 )
         {
             //  special single id case
-    
+
             in_list << *(paoids.begin());
 
             sqlIDs += table + "." + attrib + " = " + in_list.str();
-    
+
             return sqlIDs;
         }
         else
         {
             in_list << "(";
-        
+
             copy(paoids.begin(), paoids.end(), csv_output_iterator<long, ostringstream>(in_list));
-        
+
             in_list << ")";
 
             sqlIDs += table + "." + attrib + " IN " + in_list.str();
@@ -814,7 +801,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                 }
                 else
                 {
-                    rowFound |= loadDeviceType(paoid_subset, "DLC devices", CtiDeviceCarrier());
+                    rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice());
 
                     if( deviceType != TYPEMCT410 )
                     {
@@ -824,7 +811,7 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                         rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
 
                         //  prevent the LMI from being loaded twice
-                        rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DNP(),          "RTU-LMI", false);
+                        rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
                         rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
                         rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
 
@@ -833,16 +820,16 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
 
                         //  exclude the CCU 721
                         rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
-                        rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::CCU721());
+                        rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::Ccu721Device());
 
-                        rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  CtiDeviceMCTBroadcast());
+                        rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  Devices::MctBroadcastDevice());
 
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   CtiDeviceDLCBase(),     "REPEATER 800");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   CtiDeviceDLCBase(),     "REPEATER 801");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   CtiDeviceDLCBase(),     "REPEATER 850");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   CtiDeviceDLCBase(),     "REPEATER");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   CtiDeviceDLCBase(),     "REPEATER 902");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   CtiDeviceDLCBase(),     "REPEATER 921");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   Devices::DlcBaseDevice(),     "REPEATER 800");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   Devices::DlcBaseDevice(),     "REPEATER 801");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   Devices::DlcBaseDevice(),     "REPEATER 850");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   Devices::DlcBaseDevice(),     "REPEATER");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   Devices::DlcBaseDevice(),     "REPEATER 902");
+                        rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   Devices::DlcBaseDevice(),     "REPEATER 921");
 
                         rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
                         rowFound |= loadDeviceType(paoid_subset, "FMU devices",            CtiDeviceIED(),         "FMU");
@@ -1401,10 +1388,10 @@ void CtiDeviceManager::refreshDeviceParameters(Cti::Database::id_set &paoids, in
         {
             sql += " ";
             sql += orderBy;
-        }     
-        
+        }
+
         Cti::Database::DatabaseConnection connection;
-        Cti::Database::DatabaseReader rdr(connection, sql);                        
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
         rdr.execute();
 
@@ -1627,7 +1614,7 @@ void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
 
                 if(pTempCtiDevice)
                 {
-                    boost::static_pointer_cast<CtiDeviceMCT>(pTempCtiDevice)->setConfigData(tmpconfigname, tmpconfigtype, tmpconfigmode, tmpwire, tmpmpkh);
+                    boost::static_pointer_cast<Devices::MctDevice>(pTempCtiDevice)->setConfigData(tmpconfigname, tmpconfigtype, tmpconfigmode, tmpwire, tmpmpkh);
                 }
             }
         }
@@ -1685,8 +1672,11 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 
         if(rdr.isValid())
         {
+            using Cti::Devices::Mct410Device;
+            using Cti::Devices::Mct410DeviceSPtr;
+
             CtiDeviceSPtr       tmpDevice;
-            CtiDeviceMCT410SPtr tmpMCT410;
+            Mct410DeviceSPtr tmpMCT410;
 
             while( rdr() )
             {
@@ -1695,7 +1685,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
                 rdr["deviceid"]          >> tmpmctid;
                 rdr["disconnectaddress"] >> tmpdisconnectaddress;
 
-                tmpMCT410 = boost::static_pointer_cast<CtiDeviceMCT410>(getDeviceByID(tmpmctid));
+                tmpMCT410 = boost::static_pointer_cast<Mct410Device>(getDeviceByID(tmpmctid));
 
                 if( tmpMCT410 )
                 {
@@ -1725,7 +1715,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 
                     if( tmpDevice && tmpDevice->getType() == TYPEMCT410 )
                     {
-                        boost::static_pointer_cast<CtiDeviceMCT410>(tmpDevice)->setDisconnectAddress(0);
+                        boost::static_pointer_cast<Mct410Device>(tmpDevice)->setDisconnectAddress(0);
                     }
                 }
             }
@@ -1762,18 +1752,18 @@ void CtiDeviceManager::refreshDynamicPaoInfo(Cti::Database::id_set &paoids)
         Cti::Database::DatabaseReader rdr(connection);
 
         string sql = CtiTableDynamicPaoInfo::getSQLCoreStatement(_app_id);
-        
+
         if( !sql.empty() )
         {
             sql += createIdSqlClause(paoids, "DPI", "paobjectid");
             rdr.setCommandText(sql);
-            rdr.execute(); 
+            rdr.execute();
         }
         else
         {
             return;
         }
-                       
+
         if(DebugLevel & 0x00020000 || !rdr.isValid())
         {
             string loggedSQLstring = rdr.asString();

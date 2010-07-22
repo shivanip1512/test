@@ -1,20 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct22X
-*
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct22X.cpp-arc  $
-* REVISION     :  $Revision: 1.28.10.1 $
-* DATE         :  $Date: 2008/11/20 16:49:25 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
 
 #include "devicetypes.h"
 #include "dev_mct22X.h"
@@ -23,21 +7,23 @@
 #include "pt_numeric.h"
 #include "numstr.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
+namespace Cti {
+namespace Devices {
 
-const CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::_commandStore = CtiDeviceMCT22X::initCommandStore();
+const Mct22xDevice::CommandSet Mct22xDevice::_commandStore = Mct22xDevice::initCommandStore();
 
-CtiDeviceMCT22X::CtiDeviceMCT22X() {}
+Mct22xDevice::Mct22xDevice() {}
 
-CtiDeviceMCT22X::CtiDeviceMCT22X(const CtiDeviceMCT22X &aRef)
+Mct22xDevice::Mct22xDevice(const Mct22xDevice &aRef)
 {
    *this = aRef;
 }
 
-CtiDeviceMCT22X::~CtiDeviceMCT22X() {}
+Mct22xDevice::~Mct22xDevice() {}
 
-CtiDeviceMCT22X& CtiDeviceMCT22X::operator=(const CtiDeviceMCT22X &aRef)
+Mct22xDevice& Mct22xDevice::operator=(const Mct22xDevice &aRef)
 {
    if(this != &aRef)
    {
@@ -47,27 +33,27 @@ CtiDeviceMCT22X& CtiDeviceMCT22X::operator=(const CtiDeviceMCT22X &aRef)
 }
 
 
-CtiDeviceMCT22X::CommandSet CtiDeviceMCT22X::initCommandStore()
+Mct22xDevice::CommandSet Mct22xDevice::initCommandStore()
 {
    CommandSet cs;
 
-   cs.insert(CommandStore(Emetcon::GetConfig_GroupAddress,            Emetcon::IO_Read,  MCT2XX_GroupAddressPos,            MCT2XX_GroupAddressLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_GoldSilver, Emetcon::IO_Write, MCT2XX_GroupAddressGoldSilverPos,  MCT2XX_GroupAddressGoldSilverLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Bronze,     Emetcon::IO_Write, MCT2XX_GroupAddressBronzePos,      MCT2XX_GroupAddressBronzeLen));
-   cs.insert(CommandStore(Emetcon::PutConfig_GroupAddress_Lead,       Emetcon::IO_Write, MCT2XX_GroupAddressLeadPos,        MCT2XX_GroupAddressLeadLen));
+   cs.insert(CommandStore(EmetconProtocol::GetConfig_GroupAddress,            EmetconProtocol::IO_Read,  MCT2XX_GroupAddressPos,            MCT2XX_GroupAddressLen));
+   cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_GoldSilver, EmetconProtocol::IO_Write, MCT2XX_GroupAddressGoldSilverPos,  MCT2XX_GroupAddressGoldSilverLen));
+   cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_Bronze,     EmetconProtocol::IO_Write, MCT2XX_GroupAddressBronzePos,      MCT2XX_GroupAddressBronzeLen));
+   cs.insert(CommandStore(EmetconProtocol::PutConfig_GroupAddress_Lead,       EmetconProtocol::IO_Write, MCT2XX_GroupAddressLeadPos,        MCT2XX_GroupAddressLeadLen));
 
-   cs.insert(CommandStore(Emetcon::GetValue_KWH,        Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
-   cs.insert(CommandStore(Emetcon::Scan_Accum,          Emetcon::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
+   cs.insert(CommandStore(EmetconProtocol::GetValue_KWH,        EmetconProtocol::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
+   cs.insert(CommandStore(EmetconProtocol::Scan_Accum,          EmetconProtocol::IO_Read,   MCT22X_MReadPos,    MCT22X_MReadLen));
 
    //  this meter requires you to subtract the current and previous meter readings to get a 5-minute demand value
-   cs.insert(CommandStore(Emetcon::GetValue_Demand,     Emetcon::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
-   cs.insert(CommandStore(Emetcon::Scan_Integrity,      Emetcon::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
+   cs.insert(CommandStore(EmetconProtocol::GetValue_Demand,     EmetconProtocol::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
+   cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,      EmetconProtocol::IO_Read,   MCT22X_DemandPos,   MCT22X_DemandLen));
 
    return cs;
 }
 
 
-bool CtiDeviceMCT22X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct22xDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
    bool found = false;
 
@@ -79,7 +65,7 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
       bst.Length   = itr->length;       // Copy over the found length
       bst.IO       = itr->io;           // Copy over the found io indicator
 
-      if( bst.IO == Emetcon::IO_Write )
+      if( bst.IO == EmetconProtocol::IO_Write )
       {
           bst.IO |= Q_ARMC;
       }
@@ -99,14 +85,14 @@ bool CtiDeviceMCT22X::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT22X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct22xDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::GetValue_Demand):
-        case (Emetcon::Scan_Integrity):
+        case (EmetconProtocol::GetValue_Demand):
+        case (EmetconProtocol::Scan_Integrity):
         {
             status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -131,7 +117,7 @@ INT CtiDeviceMCT22X::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
 
 
-INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct22xDevice::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -221,5 +207,5 @@ INT CtiDeviceMCT22X::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
    return status;
 }
 
-
-
+}
+}

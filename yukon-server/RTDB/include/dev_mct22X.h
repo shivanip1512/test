@@ -1,31 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct22X
-*
-* Class:  CtiDeviceMCT22X
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct22X.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/12/26 15:43:42 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT22X_H__
-#define __DEV_MCT22X_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct2xx.h"
 
-class CtiDeviceMCT22X : public CtiDeviceMCT2XX
+namespace Cti {
+namespace Devices {
+
+class Mct22xDevice : public Mct2xxDevice
 {
 private:
 
-    typedef CtiDeviceMCT2XX Inherited;
+    typedef Mct2xxDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -52,12 +36,14 @@ protected:
 
 public:
 
-    CtiDeviceMCT22X();
-    CtiDeviceMCT22X(const CtiDeviceMCT22X& aRef);
+    Mct22xDevice();
+    Mct22xDevice(const Mct22xDevice& aRef);
 
-    virtual ~CtiDeviceMCT22X();
+    virtual ~Mct22xDevice();
 
-    CtiDeviceMCT22X& operator=(const CtiDeviceMCT22X& aRef);
+    Mct22xDevice& operator=(const Mct22xDevice& aRef);
 };
 
-#endif // #ifndef __DEV_MCT22X_H__
+}
+}
+

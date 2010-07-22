@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct210
-*
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct210.cpp-arc  $
-* REVISION     :  $Revision: 1.33.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:25 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "devicetypes.h"
@@ -23,26 +8,28 @@
 #include "pt_numeric.h"
 #include "utility.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
+
+namespace Cti {
+namespace Devices {
+
+const Mct210Device::CommandSet Mct210Device::_commandStore = Mct210Device::initCommandStore();
 
 
-const CtiDeviceMCT210::CommandSet CtiDeviceMCT210::_commandStore = CtiDeviceMCT210::initCommandStore();
-
-
-CtiDeviceMCT210::CtiDeviceMCT210()
+Mct210Device::Mct210Device()
 {
 }
 
-CtiDeviceMCT210::CtiDeviceMCT210(const CtiDeviceMCT210 &aRef)
+Mct210Device::Mct210Device(const Mct210Device &aRef)
 {
     *this = aRef;
 }
 
-CtiDeviceMCT210::~CtiDeviceMCT210()
+Mct210Device::~Mct210Device()
 {
 }
 
-CtiDeviceMCT210& CtiDeviceMCT210::operator=(const CtiDeviceMCT210 &aRef)
+Mct210Device& Mct210Device::operator=(const Mct210Device &aRef)
 {
     if(this != &aRef)
     {
@@ -52,31 +39,31 @@ CtiDeviceMCT210& CtiDeviceMCT210::operator=(const CtiDeviceMCT210 &aRef)
 }
 
 
-CtiDeviceMCT210::CommandSet CtiDeviceMCT210::initCommandStore()
+Mct210Device::CommandSet Mct210Device::initCommandStore()
 {
     CommandSet cs;
 
     //  MCT 210 commands
-    cs.insert(CommandStore(Emetcon::GetValue_KWH,           Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
-    cs.insert(CommandStore(Emetcon::Scan_Accum,             Emetcon::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_KWH,           EmetconProtocol::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Accum,             EmetconProtocol::IO_Read,  MCT210_MReadPos,    MCT210_MReadLen));
 
-    cs.insert(CommandStore(Emetcon::PutValue_KYZ,           Emetcon::IO_Write, MCT210_PutMReadPos, MCT210_PutMReadLen));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_KYZ,           EmetconProtocol::IO_Write, MCT210_PutMReadPos, MCT210_PutMReadLen));
 
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,        Emetcon::IO_Read,  MCT210_DemandPos,   MCT210_DemandLen));
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,         Emetcon::IO_Read,  MCT210_DemandPos,   MCT210_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_Disconnect,   Emetcon::IO_Read,  MCT210_StatusPos,   MCT210_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,     Emetcon::IO_Read,  MCT210_GenStatPos,  MCT210_GenStatLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_Demand,        EmetconProtocol::IO_Read,  MCT210_DemandPos,   MCT210_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_Integrity,         EmetconProtocol::IO_Read,  MCT210_DemandPos,   MCT210_DemandLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_Disconnect,   EmetconProtocol::IO_Read,  MCT210_StatusPos,   MCT210_StatusLen));
+    cs.insert(CommandStore(EmetconProtocol::GetStatus_Internal,     EmetconProtocol::IO_Read,  MCT210_GenStatPos,  MCT210_GenStatLen));
 
-    cs.insert(CommandStore(Emetcon::PutStatus_Reset,        Emetcon::IO_Write, MCT210_ResetPos,    MCT210_ResetLen));
+    cs.insert(CommandStore(EmetconProtocol::PutStatus_Reset,        EmetconProtocol::IO_Write, MCT210_ResetPos,    MCT210_ResetLen));
 
-    cs.insert(CommandStore(Emetcon::GetConfig_Multiplier,   Emetcon::IO_Read,  MCT210_MultPos,     MCT210_MultLen));
-    cs.insert(CommandStore(Emetcon::PutConfig_Multiplier,   Emetcon::IO_Write, MCT210_MultPos,     MCT210_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Multiplier,   EmetconProtocol::IO_Read,  MCT210_MultPos,     MCT210_MultLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Multiplier,   EmetconProtocol::IO_Write, MCT210_MultPos,     MCT210_MultLen));
 
     return cs;
 }
 
 
-bool CtiDeviceMCT210::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct210Device::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -88,7 +75,7 @@ bool CtiDeviceMCT210::getOperation( const UINT &cmd, BSTRUCT &bst ) const
         bst.Length   = itr->length;
         bst.IO       = itr->io;
 
-        if( bst.IO == Emetcon::IO_Write )
+        if( bst.IO == EmetconProtocol::IO_Write )
         {
             bst.IO |= Q_ARMC;
         }
@@ -109,13 +96,13 @@ bool CtiDeviceMCT210::getOperation( const UINT &cmd, BSTRUCT &bst ) const
  *  would be a child whose decode was identical to the parent, but whose request was done differently..
  *  This MAY be the case for example in an IED scan.
  */
-INT CtiDeviceMCT210::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct210Device::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::GetStatus_Disconnect):
+        case (EmetconProtocol::GetStatus_Disconnect):
         {
             status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -136,5 +123,8 @@ INT CtiDeviceMCT210::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     }
 
     return status;
+}
+
+}
 }
 

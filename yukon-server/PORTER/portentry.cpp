@@ -582,7 +582,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
             return BADCCU;
         }
 
-        if(OutMessage->Sequence == Cti::Protocol::Emetcon::Scan_LoadProfile)
+        if(OutMessage->Sequence == Cti::Protocols::EmetconProtocol::Scan_LoadProfile)
         {
             if( isDebugLudicrous() )
             {

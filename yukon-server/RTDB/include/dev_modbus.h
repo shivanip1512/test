@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dnp
-*
-* Class:  CtiDeviceDNP
-* Date:   7/18/2005
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.8.2.1 $
-* DATE         :  $Date: 2008/11/20 16:49:28 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MODBUS_H__
-#define __DEV_MODBUS_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_remote.h"
 #include "prot_modbus.h"
@@ -26,15 +7,15 @@
 #include <map>
 #include <string>
 
-namespace Cti       {
-namespace Devices    {
+namespace Cti {
+namespace Devices {
 
-class IM_EX_DEVDB Modbus : public CtiDeviceRemote
+class IM_EX_DEVDB ModbusDevice : public CtiDeviceRemote
 {
 private:
 
     typedef CtiDeviceRemote Inherited;
- 
+
     struct pseudo_info
     {
         bool is_pseudo;
@@ -44,15 +25,15 @@ private:
 
     struct outmess_header
     {
-        Protocol::Modbus::Command      command;
-        Protocol::Modbus::output_point parameter;
+        Protocols::ModbusProtocol::Command      command;
+        Protocols::ModbusProtocol::output_point parameter;
         pseudo_info                          pseudo_info;
     };
 
     struct info_struct
     {
-        Protocol::Modbus::Command      protocol_command;
-        Protocol::Modbus::output_point protocol_parameter;
+        Protocols::ModbusProtocol::Command      protocol_command;
+        Protocols::ModbusProtocol::output_point protocol_parameter;
         pseudo_info pseudo_info;
         string      user;
     };
@@ -62,7 +43,7 @@ private:
 
 protected:
 
-    Protocol::Modbus _modbus;
+    Protocols::ModbusProtocol _modbus;
     CtiTableDeviceAddress  _modbus_address;
 
     Protocol::Interface::stringlist_t _string_results;
@@ -74,11 +55,11 @@ protected:
 
 public:
 
-    Modbus(void);
-    Modbus(const Modbus& aRef);
-    virtual ~Modbus();
+    ModbusDevice(void);
+    ModbusDevice(const ModbusDevice& aRef);
+    virtual ~ModbusDevice();
 
-    Modbus& operator=(const Modbus& aRef);
+    ModbusDevice& operator=(const ModbusDevice& aRef);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
@@ -105,4 +86,3 @@ public:
 }
 }
 
-#endif // #ifndef __DEV_MODBUS_H__

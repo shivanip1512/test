@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct4xx
-*
-* Date:   10/5/2005
-*
-* Author: Jess M. Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.93.2.3 $
-* DATE         :  $Date: 2008/11/20 16:49:21 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <boost/regex.hpp>
@@ -29,37 +14,40 @@
 
 #include "ctidate.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
-const char *CtiDeviceMCT4xx::PutConfigPart_basic           = "basic";
-const char *CtiDeviceMCT4xx::PutConfigPart_all             = "all";
-const char *CtiDeviceMCT4xx::PutConfigPart_tou             = "tou";
-const char *CtiDeviceMCT4xx::PutConfigPart_dst             = "dst";
-const char *CtiDeviceMCT4xx::PutConfigPart_timezone        = "timezone";
-const char *CtiDeviceMCT4xx::PutConfigPart_vthreshold      = "vthreshold";
-const char *CtiDeviceMCT4xx::PutConfigPart_demand_lp       = "demandlp";
-const char *CtiDeviceMCT4xx::PutConfigPart_options         = "options";
-const char *CtiDeviceMCT4xx::PutConfigPart_configbyte      = "configbyte";
-const char *CtiDeviceMCT4xx::PutConfigPart_time_adjust_tolerance  = "timeadjusttolerance";
-const char *CtiDeviceMCT4xx::PutConfigPart_addressing      = "addressing";
-const char *CtiDeviceMCT4xx::PutConfigPart_disconnect      = "disconnect";
-const char *CtiDeviceMCT4xx::PutConfigPart_holiday         = "holiday";
-const char *CtiDeviceMCT4xx::PutConfigPart_usage           = "usage";
-const char *CtiDeviceMCT4xx::PutConfigPart_llp             = "llp";
-const char *CtiDeviceMCT4xx::PutConfigPart_lpchannel       = "lpchannel";
-const char *CtiDeviceMCT4xx::PutConfigPart_relays          = "relays";
-const char *CtiDeviceMCT4xx::PutConfigPart_precanned_table = "precannedtable";
-const char *CtiDeviceMCT4xx::PutConfidPart_spid            = "spid";
-const char *CtiDeviceMCT4xx::PutConfigPart_centron         = "centron";
-const char *CtiDeviceMCT4xx::PutConfigPart_dnp             = "dnp";
+namespace Cti {
+namespace Devices {
 
-const CtiDeviceMCT4xx::CommandSet      CtiDeviceMCT4xx::_commandStore = CtiDeviceMCT4xx::initCommandStore();
+const char *Mct4xxDevice::PutConfigPart_basic           = "basic";
+const char *Mct4xxDevice::PutConfigPart_all             = "all";
+const char *Mct4xxDevice::PutConfigPart_tou             = "tou";
+const char *Mct4xxDevice::PutConfigPart_dst             = "dst";
+const char *Mct4xxDevice::PutConfigPart_timezone        = "timezone";
+const char *Mct4xxDevice::PutConfigPart_vthreshold      = "vthreshold";
+const char *Mct4xxDevice::PutConfigPart_demand_lp       = "demandlp";
+const char *Mct4xxDevice::PutConfigPart_options         = "options";
+const char *Mct4xxDevice::PutConfigPart_configbyte      = "configbyte";
+const char *Mct4xxDevice::PutConfigPart_time_adjust_tolerance  = "timeadjusttolerance";
+const char *Mct4xxDevice::PutConfigPart_addressing      = "addressing";
+const char *Mct4xxDevice::PutConfigPart_disconnect      = "disconnect";
+const char *Mct4xxDevice::PutConfigPart_holiday         = "holiday";
+const char *Mct4xxDevice::PutConfigPart_usage           = "usage";
+const char *Mct4xxDevice::PutConfigPart_llp             = "llp";
+const char *Mct4xxDevice::PutConfigPart_lpchannel       = "lpchannel";
+const char *Mct4xxDevice::PutConfigPart_relays          = "relays";
+const char *Mct4xxDevice::PutConfigPart_precanned_table = "precannedtable";
+const char *Mct4xxDevice::PutConfidPart_spid            = "spid";
+const char *Mct4xxDevice::PutConfigPart_centron         = "centron";
+const char *Mct4xxDevice::PutConfigPart_dnp             = "dnp";
 
-const CtiDeviceMCT4xx::error_set       CtiDeviceMCT4xx::_mct_error_info = initErrorInfo();
+const Mct4xxDevice::CommandSet Mct4xxDevice::_commandStore = Mct4xxDevice::initCommandStore();
 
-const CtiDate                          CtiDeviceMCT4xx::DawnOfTime_Date = CtiDate(CtiTime(CtiDeviceMCT4xx::DawnOfTime_UtcSeconds));
+const Mct4xxDevice::error_set  Mct4xxDevice::_mct_error_info = initErrorInfo();
 
-CtiDeviceMCT4xx::CtiDeviceMCT4xx()
+const CtiDate                  Mct4xxDevice::DawnOfTime_Date = CtiDate(CtiTime(Mct4xxDevice::DawnOfTime_UtcSeconds));
+
+Mct4xxDevice::Mct4xxDevice()
 {
     _llpInterest.time        = 0;
     _llpInterest.time_end    = 0;
@@ -83,16 +71,16 @@ CtiDeviceMCT4xx::CtiDeviceMCT4xx()
     }
 }
 
-CtiDeviceMCT4xx::CtiDeviceMCT4xx(const CtiDeviceMCT4xx& aRef)
+Mct4xxDevice::Mct4xxDevice(const Mct4xxDevice& aRef)
 {
     *this = aRef;
 }
 
-CtiDeviceMCT4xx::~CtiDeviceMCT4xx()
+Mct4xxDevice::~Mct4xxDevice()
 {
 }
 
-CtiDeviceMCT4xx &CtiDeviceMCT4xx::operator=(const CtiDeviceMCT4xx &aRef)
+Mct4xxDevice &Mct4xxDevice::operator=(const Mct4xxDevice &aRef)
 {
     if(this != &aRef)
     {
@@ -102,7 +90,7 @@ CtiDeviceMCT4xx &CtiDeviceMCT4xx::operator=(const CtiDeviceMCT4xx &aRef)
     return *this;
 }
 
-CtiDeviceMCT4xx::error_set CtiDeviceMCT4xx::initErrorInfo( void )
+Mct4xxDevice::error_set Mct4xxDevice::initErrorInfo( void )
 {
     error_set es;
 
@@ -125,27 +113,27 @@ CtiDeviceMCT4xx::error_set CtiDeviceMCT4xx::initErrorInfo( void )
     return es;
 }
 
-CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
+Mct4xxDevice::CommandSet Mct4xxDevice::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::GetValue_TOUPeak,       Emetcon::IO_Function_Read,  FuncRead_TOUBasePos,        FuncRead_TOULen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_TOUPeak,       EmetconProtocol::IO_Function_Read,  FuncRead_TOUBasePos,        FuncRead_TOULen));
 
     //  This is the default TOU reset command - the command that zeroes the rates (Command_TOUResetZero) is assigned
     //    in executePutValue() if needed
-    cs.insert(CommandStore(Emetcon::PutValue_TOUReset,      Emetcon::IO_Write,          Command_TOUReset,           0));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_TOUReset,      EmetconProtocol::IO_Write,          Command_TOUReset,           0));
 
-    cs.insert(CommandStore(Emetcon::PutValue_ResetPFCount,  Emetcon::IO_Write,          Command_PowerfailReset,     0));
+    cs.insert(CommandStore(EmetconProtocol::PutValue_ResetPFCount,  EmetconProtocol::IO_Write,          Command_PowerfailReset,     0));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TSync,        Emetcon::IO_Function_Write, FuncWrite_TSyncPos,         FuncWrite_TSyncLen));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_TSync,        EmetconProtocol::IO_Function_Write, FuncWrite_TSyncPos,         FuncWrite_TSyncLen));
 
-    cs.insert(CommandStore(Emetcon::PutConfig_TOUEnable,    Emetcon::IO_Write,          Command_TOUEnable,          0));
-    cs.insert(CommandStore(Emetcon::PutConfig_TOUDisable,   Emetcon::IO_Write,          Command_TOUDisable,         0));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_TOUEnable,    EmetconProtocol::IO_Write,          Command_TOUEnable,          0));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_TOUDisable,   EmetconProtocol::IO_Write,          Command_TOUDisable,         0));
 
     return cs;
 }
 
-string CtiDeviceMCT4xx::printable_time(unsigned long timestamp)
+string Mct4xxDevice::printable_time(unsigned long timestamp)
 {
     string retval;
 
@@ -161,7 +149,7 @@ string CtiDeviceMCT4xx::printable_time(unsigned long timestamp)
     return retval;
 }
 
-string CtiDeviceMCT4xx::printable_date(const CtiDate &dt)
+string Mct4xxDevice::printable_date(const CtiDate &dt)
 {
     string retval;
 
@@ -177,7 +165,7 @@ string CtiDeviceMCT4xx::printable_date(const CtiDate &dt)
     return retval;
 }
 
-string CtiDeviceMCT4xx::printable_date(unsigned long timestamp)
+string Mct4xxDevice::printable_date(unsigned long timestamp)
 {
     string retval;
 
@@ -204,7 +192,7 @@ string CtiDeviceMCT4xx::printable_date(unsigned long timestamp)
 }
 
 
-bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
+bool Mct4xxDevice::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
 
@@ -227,7 +215,7 @@ bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 }
 
 
-bool CtiDeviceMCT4xx::sspecAtLeast(const int rev_desired) const
+bool Mct4xxDevice::sspecAtLeast(const int rev_desired) const
 {
     int sspec = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec);
     int rev   = getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision);
@@ -236,7 +224,7 @@ bool CtiDeviceMCT4xx::sspecAtLeast(const int rev_desired) const
 }
 
 
-unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len )
+unsigned char Mct4xxDevice::crc8( const unsigned char *buf, unsigned int len )
 {
     const unsigned char llpcrc_poly = 0x07;
 
@@ -291,7 +279,7 @@ unsigned char CtiDeviceMCT4xx::crc8( const unsigned char *buf, unsigned int len 
 }
 
 
-CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const
+Mct4xxDevice::point_info Mct4xxDevice::getAccumulatorData(unsigned char *buf, int len, bool is_frozen_data) const
 {
     return is_frozen_data ?
         getData(buf, len, ValueType_FrozenAccumulator) :
@@ -299,7 +287,7 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getAccumulatorData(unsigned char *b
 }
 
 
-CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( const unsigned char *buf, int len, ValueType4xx vt ) const
+Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, int len, ValueType4xx vt ) const
 {
     PointQuality_t quality = NormalQuality;
     unsigned long error_code = 0xffffffff,  //  filled with 0xff because some data types are less than 32 bits
@@ -358,7 +346,7 @@ CtiDeviceMCT4xx::point_info CtiDeviceMCT4xx::getData( const unsigned char *buf, 
 }
 
 
-INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
+INT Mct4xxDevice::executeGetValue( CtiRequestMsg        *pReq,
                                       CtiCommandParser     &parse,
                                       OUTMESS             *&OutMessage,
                                       list< CtiMessage* >  &vgList,
@@ -525,7 +513,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                     {
                         CtiTime time_start, time_end;
 
-                        function = Emetcon::GetValue_LoadProfile;
+                        function = EmetconProtocol::GetValue_LoadProfile;
                         found = getOperation(function, OutMessage->Buffer.BSt);
 
                         //  grab the beginning time, if available
@@ -667,10 +655,10 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 _llpInterest.offset = relative_time;
 
                                 OutMessage->Buffer.BSt.Function = function;
-                                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                                 OutMessage->Buffer.BSt.Length   = 13;
 
-                                function = Emetcon::GetValue_LoadProfile;
+                                function = EmetconProtocol::GetValue_LoadProfile;
                             }
                             else if( !strstr(OutMessage->Request.CommandStr, " read") )
                             {
@@ -679,10 +667,10 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 _llpInterest.offset  = 0;
                                 _llpInterest.channel = request_channel;
 
-                                function = Emetcon::PutConfig_LoadProfileInterest;
+                                function = EmetconProtocol::PutConfig_LoadProfileInterest;
 
                                 OutMessage->Buffer.BSt.Function = FuncWrite_LLPInterestPos;
-                                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
+                                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
                                 OutMessage->Buffer.BSt.Length   = FuncWrite_LLPInterestLen;
                                 OutMessage->MessageFlags |= MessageFlag_ExpectMore;
 
@@ -765,7 +753,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                         }
                         else
                         {
-                            function = Emetcon::GetValue_LoadProfilePeakReport;
+                            function = EmetconProtocol::GetValue_LoadProfilePeakReport;
                             found = getOperation(function, OutMessage->Buffer.BSt);
                         }
 
@@ -807,10 +795,10 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                     _llpPeakInterest.channel = request_channel;
                                     _llpPeakInterest.period  = request_range;
 
-                                    function = Emetcon::PutConfig_LoadProfileReportPeriod;
+                                    function = EmetconProtocol::PutConfig_LoadProfileReportPeriod;
 
                                     OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-                                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
+                                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
                                     OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
                                     OutMessage->MessageFlags |= MessageFlag_ExpectMore;
 
@@ -842,10 +830,10 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                 }
                                 else
                                 {
-                                    function = Emetcon::GetValue_LoadProfilePeakReport;
+                                    function = EmetconProtocol::GetValue_LoadProfilePeakReport;
 
                                     OutMessage->Buffer.BSt.Function = _llpPeakInterest.command;
-                                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
                                     OutMessage->Buffer.BSt.Length   = 13;
                                 }
 
@@ -894,7 +882,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
     return nRet;
 }
 
-INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
+INT Mct4xxDevice::executeGetConfig( CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,
                                        OUTMESS                   *&OutMessage,
                                        list< CtiMessage* >  &vgList,
@@ -932,13 +920,13 @@ INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
             {
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule12Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule12Len;
-                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
             }
             else if( schedulenum == 3 || schedulenum == 4 )
             {
                 OutMessage->Buffer.BSt.Function = FuncRead_TOUSwitchSchedule34Pos;
                 OutMessage->Buffer.BSt.Length   = FuncRead_TOUSwitchSchedule34Len;
-                OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
             }
             else
             {
@@ -953,10 +941,10 @@ INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
         {
             OutMessage->Buffer.BSt.Function = FuncRead_TOUStatusPos;
             OutMessage->Buffer.BSt.Length   = FuncRead_TOUStatusLen;
-            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+            OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Read;
         }
 
-        OutMessage->Sequence = Emetcon::GetConfig_TOU;
+        OutMessage->Sequence = EmetconProtocol::GetConfig_TOU;
     }
     else
     {
@@ -991,7 +979,7 @@ INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
 }
 
 
-INT CtiDeviceMCT4xx::executeGetStatus( CtiRequestMsg              *pReq,
+INT Mct4xxDevice::executeGetStatus( CtiRequestMsg              *pReq,
                                        CtiCommandParser           &parse,
                                        OUTMESS                   *&OutMessage,
                                        list< CtiMessage* >  &vgList,
@@ -1017,9 +1005,9 @@ INT CtiDeviceMCT4xx::executeGetStatus( CtiRequestMsg              *pReq,
 
     if(parse.isKeyValid("freeze"))
     {
-        found = getOperation(Emetcon::GetStatus_Freeze, OutMessage->Buffer.BSt);
+        found = getOperation(EmetconProtocol::GetStatus_Freeze, OutMessage->Buffer.BSt);
 
-        OutMessage->Sequence = Emetcon::GetStatus_Freeze;
+        OutMessage->Sequence = EmetconProtocol::GetStatus_Freeze;
     }
     else
     {
@@ -1076,7 +1064,7 @@ struct ratechange_t
 
 
 
-INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
+INT Mct4xxDevice::executePutConfig(CtiRequestMsg         *pReq,
                                       CtiCommandParser      &parse,
                                       OUTMESS              *&OutMessage,
                                       list< CtiMessage * >  &vgList,
@@ -1140,7 +1128,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     }
     else if( parse.isKeyValid("holiday_offset") )
     {
-        function = Emetcon::PutConfig_Holiday;
+        function = EmetconProtocol::PutConfig_Holiday;
 
         if( found = getOperation(function, OutMessage->Buffer.BSt) )
         {
@@ -1149,7 +1137,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
 
             int holiday_offset = parse.getiValue("holiday_offset");
 
-            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Holiday;
+            OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Holiday;
 
             //  grab up to three potential dates
             for( int i = 0; i < 3 && parse.isKeyValid("holiday_date" + CtiNumStr(i)); i++ )
@@ -1227,13 +1215,13 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     {
         if( parse.isKeyValid("tou_enable") )
         {
-            function = Emetcon::PutConfig_TOUEnable;
+            function = EmetconProtocol::PutConfig_TOUEnable;
             found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Sequence = function;
         }
         else if( parse.isKeyValid("tou_disable") )
         {
-            function = Emetcon::PutConfig_TOUDisable;
+            function = EmetconProtocol::PutConfig_TOUDisable;
             found = getOperation(function, OutMessage->Buffer.BSt);
             OutMessage->Sequence = function;
         }
@@ -1350,8 +1338,8 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                     OUTMESS *TOU_OutMessage1 = CTIDBG_new OUTMESS(*OutMessage),
                             *TOU_OutMessage2 = CTIDBG_new OUTMESS(*OutMessage);
 
-                    TOU_OutMessage1->Sequence = Cti::Protocol::Emetcon::PutConfig_TOU;
-                    TOU_OutMessage2->Sequence = Cti::Protocol::Emetcon::PutConfig_TOU;
+                    TOU_OutMessage1->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
+                    TOU_OutMessage2->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_TOU;
 
                     TOU_OutMessage1->Buffer.BSt.Function = FuncWrite_TOUSchedule1Pos;
                     TOU_OutMessage1->Buffer.BSt.Length   = FuncWrite_TOUSchedule1Len;
@@ -1359,8 +1347,8 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                     TOU_OutMessage2->Buffer.BSt.Function = FuncWrite_TOUSchedule2Pos;
                     TOU_OutMessage2->Buffer.BSt.Length   = FuncWrite_TOUSchedule2Len;
 
-                    TOU_OutMessage1->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
-                    TOU_OutMessage2->Buffer.BSt.IO = Cti::Protocol::Emetcon::IO_Function_Write;
+                    TOU_OutMessage1->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
+                    TOU_OutMessage2->Buffer.BSt.IO = Cti::Protocols::EmetconProtocol::IO_Function_Write;
 
                     std::set< ratechange_t >::iterator itr;
 
@@ -1522,7 +1510,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
     else if( parse.isKeyValid("timezone_offset") ||
              parse.isKeyValid("timezone_name") )
     {
-        if( found = getOperation(Emetcon::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
+        if( found = getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
         {
             int timezone_blocks = 0;
 
@@ -1557,7 +1545,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
                 }
             }
 
-            OutMessage->Sequence = Emetcon::PutConfig_TimeZoneOffset;
+            OutMessage->Sequence = EmetconProtocol::PutConfig_TimeZoneOffset;
             OutMessage->Buffer.BSt.Message[0] = timezone_blocks;
         }
         else
@@ -1581,7 +1569,7 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
 
 }
 
-INT CtiDeviceMCT4xx::executePutValue(CtiRequestMsg         *pReq,
+INT Mct4xxDevice::executePutValue(CtiRequestMsg         *pReq,
                                      CtiCommandParser      &parse,
                                      OUTMESS              *&OutMessage,
                                      list< CtiMessage * >  &vgList,
@@ -1593,14 +1581,14 @@ INT CtiDeviceMCT4xx::executePutValue(CtiRequestMsg         *pReq,
 
     if( parse.isKeyValid("reset") && parse.isKeyValid("tou") )
     {
-        found = getOperation(Emetcon::PutValue_TOUReset, OutMessage->Buffer.BSt);
+        found = getOperation(EmetconProtocol::PutValue_TOUReset, OutMessage->Buffer.BSt);
 
         if( parse.isKeyValid("tou_zero") )
         {
             OutMessage->Buffer.BSt.Function = Command_TOUResetZero;
         }
 
-        OutMessage->Sequence = Emetcon::PutValue_TOUReset;
+        OutMessage->Sequence = EmetconProtocol::PutValue_TOUReset;
 
         if( !found )
         {
@@ -1616,7 +1604,7 @@ INT CtiDeviceMCT4xx::executePutValue(CtiRequestMsg         *pReq,
 
 }
 
-int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
+int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList       &partsList,
                                               CtiRequestMsg         *pReq,
                                               CtiCommandParser      &parse,
                                               OUTMESS               *&OutMessage,
@@ -1642,10 +1630,10 @@ int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
             OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
             OutMessage->TimeOut   = 2;
             OutMessage->Retry     = 2;
-            OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
+            OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
             OutMessage->Request.RouteID   = getRouteID();
 
-            for(CtiDeviceMCT4xx::ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
+            for(Mct4xxDevice::ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
             {
                 if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
                 {
@@ -1707,7 +1695,7 @@ int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
     return ret;
 }
 
-int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg *pReq,
+int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
                                    CtiCommandParser &parse,
                                    OUTMESS *&OutMessage,
                                    list< CtiMessage* > &vgList,
@@ -1723,7 +1711,7 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg *pReq,
     OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
     OutMessage->TimeOut   = 2;
     OutMessage->Retry     = 2;
-    OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
+    OutMessage->Sequence = Cti::Protocols::EmetconProtocol::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
     OutMessage->Request.RouteID   = getRouteID();
 
     string installValue = parse.getsValue("installvalue");
@@ -1819,7 +1807,7 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg *pReq,
 }
 
 
-INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct4xxDevice::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT   status = NORMAL,
           j;
@@ -1836,7 +1824,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
     {
         switch( InMessage->Sequence )
         {
-            case Emetcon::PutConfig_Install:
+            case EmetconProtocol::PutConfig_Install:
             {
                 if(InMessage->Buffer.DSt.Length>0)
                 {
@@ -1861,7 +1849,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 break;
             }
 
-            case Emetcon::PutConfig_LoadProfileReportPeriod:
+            case EmetconProtocol::PutConfig_LoadProfileReportPeriod:
             {
                 int variable_delay,
                     fixed_delay;
@@ -1897,7 +1885,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 break;
             }
 
-            case Emetcon::PutConfig_LoadProfileInterest:
+            case EmetconProtocol::PutConfig_LoadProfileInterest:
             {
                 //  now do the actual read
                 CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
@@ -1951,25 +1939,24 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 }
 
 
-using namespace Cti;
 using namespace Config;
 
-int CtiDeviceMCT4xx::executePutConfigRelays (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigRelays (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigDemandLP (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigDemandLP (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigLoadProfileChannel (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     return NoMethod;
 }
 
-int CtiDeviceMCT4xx::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -1978,7 +1965,7 @@ int CtiDeviceMCT4xx::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandPar
     {
         char timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
 
-        if (!getOperation(Emetcon::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
+        if (!getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2017,7 +2004,7 @@ int CtiDeviceMCT4xx::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandPar
         //Either we sent the put ok, or we are doing a read to get into here.
         if (nRet == NORMAL || readsOnly == true)
         {
-            OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
             OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
             outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
             OutMessage->Priority             += 1;//return to normal
@@ -2030,7 +2017,7 @@ int CtiDeviceMCT4xx::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandPar
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -2039,7 +2026,7 @@ int CtiDeviceMCT4xx::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser 
     {
         long spid = deviceConfig->getLongValueFromKey(MCTStrings::ServiceProviderID);
 
-        if(!getOperation(Emetcon::PutConfig_SPID, OutMessage->Buffer.BSt))
+        if(!getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2078,7 +2065,7 @@ int CtiDeviceMCT4xx::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser 
         //Either we sent the put ok, or we are doing a read to get into here.
         if (nRet == NORMAL || readsOnly == true)
         {
-            OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
             OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
             outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
             OutMessage->Priority             += 1;//return to normal
@@ -2092,7 +2079,7 @@ int CtiDeviceMCT4xx::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandParser 
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -2128,7 +2115,7 @@ int CtiDeviceMCT4xx::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiC
                     OutMessage->Buffer.BSt.Message[0] = configuration;
                     OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
                     OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
-                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
+                    OutMessage->Buffer.BSt.IO       = EmetconProtocol::IO_Function_Write;
                     outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
                     nRet = NORMAL;
@@ -2146,7 +2133,7 @@ int CtiDeviceMCT4xx::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiC
         //Either we sent the put ok, or we are doing a read to get into here.
         if (nRet == NORMAL || readsOnly == true)
         {
-            OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
             OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
             OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
             OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
@@ -2162,7 +2149,7 @@ int CtiDeviceMCT4xx::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiC
     return nRet;
 }
 
-int CtiDeviceMCT4xx::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     int nRet = NORMAL;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -2171,7 +2158,7 @@ int CtiDeviceMCT4xx::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, Ct
     {
         long timeAdjustTolerance = deviceConfig->getLongValueFromKey(MCTStrings::TimeAdjustTolerance);
 
-        if(!getOperation(Emetcon::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
+        if(!getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -2209,7 +2196,7 @@ int CtiDeviceMCT4xx::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, Ct
         //Either we sent the put ok, or we are doing a read to get into here.
         if (nRet == NORMAL || readsOnly == true)
         {
-            OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
             OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
             outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
             OutMessage->Priority             += 1;//return to normal
@@ -2226,7 +2213,7 @@ int CtiDeviceMCT4xx::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pReq, Ct
 /*
     This is only configured under 470.
 */
-int CtiDeviceMCT4xx::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool readsOnly)
 {
     return NoMethod;
 }
@@ -2234,20 +2221,20 @@ int CtiDeviceMCT4xx::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, Cti
 /*
     This is only configured under 470 for now.
 */
-int CtiDeviceMCT4xx::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* > &outList, bool readsOnly)
+int Mct4xxDevice::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* > &outList, bool readsOnly)
 {
     return NoMethod;
 }
 
 /*
 //Sounds like this will not be supported.
-int CtiDeviceMCT4xx::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+int Mct4xxDevice::executePutConfigDNP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     return NoMethod;
 }
 */
 
-INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT Mct4xxDevice::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
 
@@ -2263,7 +2250,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
         unsigned long timestamp;
         char timezone_offset;
 
-        if( InMessage->Sequence == Emetcon::GetConfig_Time )
+        if( InMessage->Sequence == EmetconProtocol::GetConfig_Time )
         {
             timezone_offset = InMessage->Buffer.DSt.Message[0];
 
@@ -2290,7 +2277,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
                 resultString += "(invalid [" + CtiNumStr(timezone_offset).xhex(2) + "])\n";
             }
         }
-        else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
+        else if( InMessage->Sequence == EmetconProtocol::GetConfig_TSync )
         {
             timestamp = InMessage->Buffer.DSt.Message[0] << 24 |
                         InMessage->Buffer.DSt.Message[1] << 16 |
@@ -2318,7 +2305,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
 }
 
 
-INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT Mct4xxDevice::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
 
@@ -2545,7 +2532,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Mct4xxDevice::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -2728,7 +2715,7 @@ INT CtiDeviceMCT4xx::decodeGetConfigTOU(INMESS *InMessage, CtiTime &TimeNow, lis
 }
 
 
-INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT Mct4xxDevice::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
 
@@ -2784,7 +2771,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - no load profile point defined for \"" << getName() << "\" in CtiDeviceMCT4xx::decodeScanLoadProfile() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " **** Checkpoint - no load profile point defined for \"" << getName() << "\" in Mct4xxDevice::decodeScanLoadProfile() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
                     ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
@@ -2831,7 +2818,7 @@ INT CtiDeviceMCT4xx::decodeScanLoadProfile(INMESS *InMessage, CtiTime &TimeNow, 
 }
 
 
-INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT Mct4xxDevice::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     int        status = NORMAL,
                channel,
@@ -2946,7 +2933,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
         }
 
         //  turn raw pulses into a demand reading - TOU reads use LP interval
-        if( InMessage->Sequence == Emetcon::GetValue_TOUPeak )
+        if( InMessage->Sequence == EmetconProtocol::GetValue_TOUPeak )
         {
             pi_kw.value *= double(3600 / getLoadProfileInterval(channel));
         }
@@ -3099,45 +3086,45 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT Mct4xxDevice::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     INT status = NORMAL;
 
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::GetConfig_Time):
-        case (Emetcon::GetConfig_TSync):
+        case (EmetconProtocol::GetConfig_Time):
+        case (EmetconProtocol::GetConfig_TSync):
         {
             status = decodeGetConfigTime(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case (Emetcon::GetConfig_TOU):
+        case (EmetconProtocol::GetConfig_TOU):
         {
             status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::GetStatus_Freeze:
+        case EmetconProtocol::GetStatus_Freeze:
         {
             status = decodeGetStatusFreeze(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::GetValue_TOUPeak:
+        case EmetconProtocol::GetValue_TOUPeak:
         {
             status = decodeGetValuePeakDemand(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::GetValue_LoadProfile:
+        case EmetconProtocol::GetValue_LoadProfile:
         {
             status = decodeGetValueLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
-        case Emetcon::Scan_LoadProfile:
+        case EmetconProtocol::Scan_LoadProfile:
         {
             status = decodeScanLoadProfile(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -3162,13 +3149,13 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
+INT Mct4xxDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
 {
     int retVal = NoError;
 
     switch( InMessage->Sequence )
     {
-        case Emetcon::GetValue_LoadProfile:
+        case EmetconProtocol::GetValue_LoadProfile:
         {
             int interval_len, block_len;
 
@@ -3229,7 +3216,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
             break;
         }
-        case Emetcon::GetValue_LoadProfilePeakReport:
+        case EmetconProtocol::GetValue_LoadProfilePeakReport:
         {
             _llpPeakInterest.time = 0;  //  force a resubmit next time
             InterlockedExchange(&_llpPeakInterest.in_progress, false);
@@ -3248,7 +3235,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-void CtiDeviceMCT4xx::deviceInitialization( list< CtiRequestMsg * > &request_list )
+void Mct4xxDevice::deviceInitialization( list< CtiRequestMsg * > &request_list )
 {
     if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time) )
     {
@@ -3291,7 +3278,7 @@ void CtiDeviceMCT4xx::deviceInitialization( list< CtiRequestMsg * > &request_lis
 }
 
 
-unsigned CtiDeviceMCT4xx::loadTimeSync(unsigned char *buf)
+unsigned Mct4xxDevice::loadTimeSync(unsigned char *buf)
 {
     CtiTime now;
     unsigned long time = now.seconds();
@@ -3307,7 +3294,7 @@ unsigned CtiDeviceMCT4xx::loadTimeSync(unsigned char *buf)
 }
 
 
-void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6])
+void Mct4xxDevice::createTOUDayScheduleString(string &schedule, long (&times)[5], long (&rates)[6])
 {
     for( int i=0; i<5; i++ )
     {
@@ -3323,7 +3310,7 @@ void CtiDeviceMCT4xx::createTOUDayScheduleString(string &schedule, long (&times)
 }
 
 
-bool CtiDeviceMCT4xx::is_valid_time( const CtiTime timestamp ) const
+bool Mct4xxDevice::is_valid_time( const CtiTime timestamp ) const
 {
     bool retval = false;
 
@@ -3332,5 +3319,8 @@ bool CtiDeviceMCT4xx::is_valid_time( const CtiTime timestamp ) const
              (timestamp < (CtiTime::now() + 86400));
 
     return retval;
+}
+
+}
 }
 

@@ -2,11 +2,14 @@
 
 #include "dev_mct4xx.h"
 
-class IM_EX_DEVDB CtiDeviceMCT470 : public CtiDeviceMCT4xx
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct470Device : public Mct4xxDevice
 {
 private:
 
-    typedef CtiDeviceMCT4xx Inherited;
+    typedef Mct4xxDevice Inherited;
 
     static const CommandSet       _commandStore;
     static       CommandSet       initCommandStore();
@@ -126,7 +129,7 @@ private:
         SspecRev_IED_Precanned11     = 42,  //  rev 4.2
     };
 
-    virtual bool isSupported(const CtiDeviceMCT4xx::Features feature) const  {  return true;  };
+    virtual bool isSupported(const Mct4xxDevice::Features feature) const  {  return true;  };
     virtual bool sspecValid(const unsigned sspec, const unsigned rev) const  {  return true;  };  //  not checking SSPECs yet
 
     bool hasIedInputs()   const;
@@ -329,7 +332,7 @@ protected:
         Memory_ModelLen             =    5,
 
         //  lengths are different for these
-        Memory_StatusPos            = 0x05, // CtiDeviceMCT410::Memory_StatusPos,
+        Memory_StatusPos            = 0x05, // Mct410Device::Memory_StatusPos,
         Memory_StatusLen            =    3,
 
     };
@@ -338,7 +341,7 @@ protected:
     {
         FuncWrite_ConfigAlarmMaskLen    =   3,  //  func write 0x01
 
-        FuncWrite_IntervalsPos          = 0x03, // CtiDeviceMCT410::FuncWrite_IntervalsPos,
+        FuncWrite_IntervalsPos          = 0x03, // Mct410Device::FuncWrite_IntervalsPos,
         FuncWrite_IntervalsLen          =    3,
 
         FuncWrite_RelaysPos             = 0x08,
@@ -431,7 +434,7 @@ protected:
     virtual INT executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly = false);
 
-    CtiDeviceMCT4xx::ConfigPartsList getPartsList();
+    Mct4xxDevice::ConfigPartsList getPartsList();
 
     int executePutConfigLoadProfileChannel   (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly = false);
     int executePutConfigRelays               (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool readsOnly = false);
@@ -485,15 +488,18 @@ public:
         FuncWrite_IEDCommandWithData    = 0xd1,
     };
 
-    CtiDeviceMCT470( );
-    CtiDeviceMCT470( const CtiDeviceMCT470 &aRef );
-    virtual ~CtiDeviceMCT470( );
+    Mct470Device( );
+    Mct470Device( const Mct470Device &aRef );
+    virtual ~Mct470Device( );
 
-    CtiDeviceMCT470 &operator=( const CtiDeviceMCT470 &aRef );
+    Mct470Device &operator=( const Mct470Device &aRef );
 
     virtual ULONG calcNextLPScanTime( void );
     virtual void changeDeviceConfig(Cti::Config::CtiConfigDeviceSPtr config);
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
+
+}
+}
 

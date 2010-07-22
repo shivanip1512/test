@@ -97,7 +97,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                     // MCT_410_BASE came from the deviceDefinition.xml file.
                     if (stringCompareIgnoreCase(broadcastType,"MCT_410_BASE") == 0)
                     {
-                        bool found = CtiDeviceMCT410::buildPhaseDetectOutMessage(parse,OutMessage);
+                        bool found = Cti::Devices::Mct410Device::buildPhaseDetectOutMessage(parse,OutMessage);
 
                         if (found)
                         {
@@ -115,7 +115,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
                                 OutMessage->EventCode = BWORD | WAIT | RESULT;
 
                                 // BroadcastAddress
-                                OutMessage->Buffer.BSt.Address = CtiDeviceMCT4xx::UniversalAddress;
+                                OutMessage->Buffer.BSt.Address = Cti::Devices::Mct4xxDevice::UniversalAddress;
 
                                 // Store the request info for later use
                                 OutMessage->Request.ProtocolInfo.Emetcon.Function = OutMessage->Buffer.BSt.Function;
@@ -792,10 +792,10 @@ INT CtiDeviceSystem::ProcessResult(INMESS* InMessage, CtiTime& TimeNow, list< Ct
 
     switch (InMessage->Sequence)
     {
-        case Cti::Protocol::Emetcon::PutConfig_PhaseDetectClear:
+        case Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear:
             commandType = "Broadcast / Phase Detect flag clear";
             break;
-        case Cti::Protocol::Emetcon::PutConfig_PhaseDetect:
+        case Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetect:
             commandType = "Broadcast / Phase Detect test settings";
             break;
         default:

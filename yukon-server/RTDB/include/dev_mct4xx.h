@@ -7,7 +7,10 @@
 
 #include <vector>
 
-class IM_EX_DEVDB CtiDeviceMCT4xx : public CtiDeviceMCT
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct4xxDevice : public MctDevice
 {
 protected:
 
@@ -15,7 +18,7 @@ protected:
 
 private:
 
-    typedef CtiDeviceMCT Inherited;
+    typedef MctDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -287,12 +290,12 @@ protected:
 
 public:
 
-    CtiDeviceMCT4xx();
-    CtiDeviceMCT4xx(const CtiDeviceMCT4xx &aRef);
+    Mct4xxDevice();
+    Mct4xxDevice(const Mct4xxDevice &aRef);
 
-    virtual ~CtiDeviceMCT4xx();
+    virtual ~Mct4xxDevice();
 
-    CtiDeviceMCT4xx &operator=(const CtiDeviceMCT4xx &aRef);
+    Mct4xxDevice &operator=(const Mct4xxDevice &aRef);
 
     enum
     {
@@ -319,4 +322,7 @@ public:
     INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore);
 
 };
+
+}
+}
 

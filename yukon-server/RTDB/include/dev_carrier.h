@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_carrier
-*
-* Class:  CtiDeviceCarrier
-* Date:   8/19/1999
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_carrier.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_CARRIER_H__
-#define __DEV_CARRIER_H__
-
-
-#include <rw\thr\mutex.h>
+#pragma once
 
 #include "dev_dlcbase.h"
 #include "tbl_carrier.h"
@@ -27,11 +7,14 @@
 #include "tbl_dv_mctiedport.h"
 #include "da_load_profile.h"
 
-class IM_EX_DEVDB CtiDeviceCarrier : public CtiDeviceDLCBase
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB CarrierDevice : public DlcBaseDevice
 {
 private:
 
-    typedef CtiDeviceDLCBase Inherited;
+    typedef DlcBaseDevice Inherited;
 
 protected:
 
@@ -39,12 +22,12 @@ protected:
 
 public:
 
-   CtiDeviceCarrier();
-   CtiDeviceCarrier(const CtiDeviceCarrier &aRef);
+   CarrierDevice();
+   CarrierDevice(const CarrierDevice &aRef);
 
-   virtual ~CtiDeviceCarrier();
+   virtual ~CarrierDevice();
 
-   CtiDeviceCarrier &operator=(const CtiDeviceCarrier &aRef);
+   CarrierDevice &operator=(const CarrierDevice &aRef);
 
    virtual boost::shared_ptr<Cti::DataAccessLoadProfile> getLoadProfile();
 
@@ -57,5 +40,6 @@ public:
    virtual bool isMeter() const;
 };
 
+}
+}
 
-#endif // #ifndef __DEV_CARRIER_H__

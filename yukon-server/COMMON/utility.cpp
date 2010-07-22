@@ -17,6 +17,7 @@ using namespace std;
 
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using Cti::Database::DatabaseWriter;
 
 LONG GetMaxLMControl(long pao)
 {
@@ -68,7 +69,7 @@ LONG LMControlHistoryIdGen(bool force)
             DatabaseConnection conn;
             DatabaseReader rdr(conn, sql);
             rdr.execute();
-        
+
             if(rdr())
             {
                 rdr >> tempid;
@@ -128,7 +129,7 @@ LONG CommErrorHistoryIdGen(bool force)
                 DatabaseConnection conn;
                 DatabaseReader rdr(conn, sql);
                 rdr.execute();
-            
+
                 if(rdr())
                 {
                     rdr >> tempid;
@@ -217,7 +218,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
                     DatabaseConnection conn;
                     DatabaseReader rdr(conn, sql);
                     rdr.execute();
-                
+
                     if(rdr())
                     {
                         rdr >> tempid;
@@ -268,7 +269,7 @@ INT ChangeIdGen(bool force)
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         if(rdr())
         {
             rdr >> tempid;
@@ -303,7 +304,7 @@ INT SystemLogIdGen()
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         if(rdr())
         {
             rdr >> id;
@@ -364,7 +365,7 @@ INT CCEventLogIdGen()
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         if(rdr())
         {
             rdr >> id;
@@ -395,7 +396,7 @@ INT CCEventSeqIdGen()
         DatabaseConnection conn;
         DatabaseReader rdr(conn, sql);
         rdr.execute();
-    
+
         if(rdr())
         {
             rdr >> id;
@@ -422,22 +423,22 @@ INT SynchronizedIdGen(string name, int values_needed)
     if(values_needed > 0 && name.length() > 1)
     {
         // In this case, we poke at the PAO table
-        Cti::Database::DatabaseConnection connection;
+        DatabaseConnection connection;
         connection.beginTransaction();
 
         static const string updaterSql = "update sequencenumber set lastvalue = lastvalue + ?"
                                          " where sequencename = ?";
-        Cti::Database::DatabaseWriter updater(connection, updaterSql);
+        DatabaseWriter updater(connection, updaterSql);
 
         updater << values_needed << name;
-        
+
         status = updater.execute();
 
         if(status)
         {
             static const string readerSql = "select lastvalue from sequencenumber where sequencename = ?";
-            
-            Cti::Database::DatabaseReader rdr(connection, readerSql);
+
+            DatabaseReader rdr(connection, readerSql);
             rdr << name;
 
             rdr.execute();
@@ -2040,7 +2041,7 @@ LONG ResetBreakAlloc()
     return allocReqNum;
 }
 
-#define LOADPROFILESEQUENCE 4  //  Cti::Protocol::Emetcon::Scan_LoadProfile
+#define LOADPROFILESEQUENCE 4  //  Protocols::EmetconProtocol::Scan_LoadProfile
 
 
 bool findLPRequestEntries(void *om, void *d)

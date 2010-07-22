@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_repeater.cpp
-*
-* Date:   8/24/2001
-*
-* Author: Matthew Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.45.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:20 $
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-#include <rw\ctoken.h>
 
 #include "devicetypes.h"
 #include "dev_repeater.h"
@@ -24,22 +7,25 @@
 #include "utility.h"
 #include "numstr.h"
 #include "ctistring.h"
-using Cti::Protocol::Emetcon;
+
+using Cti::Protocols::EmetconProtocol;
+
+namespace Cti {
+namespace Devices {
+
+const Repeater900Device::CommandSet Repeater900Device::_commandStore = Repeater900Device::initCommandStore();
 
 
-const CtiDeviceRepeater900::CommandSet CtiDeviceRepeater900::_commandStore = CtiDeviceRepeater900::initCommandStore();
+Repeater900Device::Repeater900Device() { }
 
-
-CtiDeviceRepeater900::CtiDeviceRepeater900() { }
-
-CtiDeviceRepeater900::CtiDeviceRepeater900(const CtiDeviceRepeater900& aRef)
+Repeater900Device::Repeater900Device(const Repeater900Device& aRef)
 {
    *this = aRef;
 }
 
-CtiDeviceRepeater900::~CtiDeviceRepeater900() { }
+Repeater900Device::~Repeater900Device() { }
 
-CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900& aRef)
+Repeater900Device& Repeater900Device::operator=(const Repeater900Device& aRef)
 {
     if(this != &aRef)
     {
@@ -49,21 +35,21 @@ CtiDeviceRepeater900& CtiDeviceRepeater900::operator=(const CtiDeviceRepeater900
 }
 
 
-CtiDeviceRepeater900::CommandSet CtiDeviceRepeater900::initCommandStore()
+Repeater900Device::CommandSet Repeater900Device::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_General,       Emetcon::IO_Read,   ModelPos,       1));
-    cs.insert(CommandStore(Emetcon::Command_Loop,       Emetcon::IO_Read,   ModelPos,       1));
-    cs.insert(CommandStore(Emetcon::PutConfig_Role,     Emetcon::IO_Write,  RoleBasePos,    RoleLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Role,     Emetcon::IO_Read,   RoleBasePos,    RoleLen));
-    cs.insert(CommandStore(Emetcon::GetConfig_Model,    Emetcon::IO_Read,   ModelPos,       ModelLen));
+    cs.insert(CommandStore(EmetconProtocol::Scan_General,       EmetconProtocol::IO_Read,   ModelPos,       1));
+    cs.insert(CommandStore(EmetconProtocol::Command_Loop,       EmetconProtocol::IO_Read,   ModelPos,       1));
+    cs.insert(CommandStore(EmetconProtocol::PutConfig_Role,     EmetconProtocol::IO_Write,  RoleBasePos,    RoleLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Role,     EmetconProtocol::IO_Read,   RoleBasePos,    RoleLen));
+    cs.insert(CommandStore(EmetconProtocol::GetConfig_Model,    EmetconProtocol::IO_Read,   ModelPos,       ModelLen));
 
     return cs;
 }
 
 
-bool CtiDeviceRepeater900::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool Repeater900Device::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
     bool found = false;
 
@@ -82,7 +68,7 @@ bool CtiDeviceRepeater900::getOperation( const UINT &cmd, USHORT &function, USHO
 }
 
 
-INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
+INT Repeater900Device::ExecuteRequest(CtiRequestMsg                  *pReq,
                                          CtiCommandParser               &parse,
                                          OUTMESS                        *&OutMessage,
                                          list< CtiMessage* >      &vgList,
@@ -173,7 +159,7 @@ INT CtiDeviceRepeater900::ExecuteRequest(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
 
@@ -186,7 +172,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
         }
 
 
-        if(getOperation(Emetcon::Command_Loop, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
+        if(getOperation(EmetconProtocol::Command_Loop, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO))
         {
             // Load all the other stuff that is needed
             OutMessage->DeviceID  = getID();
@@ -195,7 +181,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
             OutMessage->Remote    = getAddress();
             EstablishOutMessagePriority( OutMessage, ScanPriority );
             OutMessage->TimeOut   = 2;
-            OutMessage->Sequence  = Emetcon::Scan_General;     // Helps us figure it out later!
+            OutMessage->Sequence  = EmetconProtocol::Scan_General;     // Helps us figure it out later!
             OutMessage->Retry     = 3;
 
             // Tell the porter side to complete the assembly of the message.
@@ -220,7 +206,7 @@ INT CtiDeviceRepeater900::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &par
 }
 
 
-INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
+INT Repeater900Device::executeLoopback(CtiRequestMsg                  *pReq,
                                           CtiCommandParser               &parse,
                                           OUTMESS                        *&OutMessage,
                                           list< CtiMessage* >      &vgList,
@@ -233,7 +219,7 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
 
     INT function;
 
-    function = Emetcon::Command_Loop;
+    function = EmetconProtocol::Command_Loop;
     found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
     if(!found)
@@ -259,7 +245,7 @@ INT CtiDeviceRepeater900::executeLoopback(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
+INT Repeater900Device::executeGetConfig(CtiRequestMsg                  *pReq,
                                            CtiCommandParser               &parse,
                                            OUTMESS                        *&OutMessage,
                                            list< CtiMessage* >      &vgList,
@@ -280,7 +266,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
         //  correct for 1-based numbering (C++ and repeater's memory want 0-based)
         int rolenum = parse.getiValue("rolenum") - 1;
 
-        function = Emetcon::GetConfig_Role;
+        function = EmetconProtocol::GetConfig_Role;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
         //  add on offset if it's role 2-24, else default to role 1 (no offset)
@@ -295,7 +281,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
     }
     else if(parse.isKeyValid("model"))
     {
-        function = Emetcon::GetConfig_Model;
+        function = EmetconProtocol::GetConfig_Model;
         found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
     }
 
@@ -322,7 +308,7 @@ INT CtiDeviceRepeater900::executeGetConfig(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
+INT Repeater900Device::executePutConfig(CtiRequestMsg          *pReq,
                                            CtiCommandParser               &parse,
                                            OUTMESS                        *&OutMessage,
                                            list< CtiMessage* >      &vgList,
@@ -348,7 +334,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        //  check that the offset is valid - otherwise we should fail
        if( rolenum >= 0 && rolenum < 24 )
        {
-           function = Emetcon::PutConfig_Role;
+           function = EmetconProtocol::PutConfig_Role;
            found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
            //  add on offset if it's role 2-24, else default to role 1 (no offset)
@@ -374,7 +360,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
     }
     else if(parse.isKeyValid("multi_rolenum"))
     {
-       function = Emetcon::PutConfig_Role;
+       function = EmetconProtocol::PutConfig_Role;
        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
 
        int fixbits;
@@ -526,7 +512,7 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 }
 
 
-INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
+INT Repeater900Device::executeGetValue(CtiRequestMsg                  *pReq,
                                           CtiCommandParser               &parse,
                                           OUTMESS                        *&OutMessage,
                                           list< CtiMessage* >      &vgList,
@@ -542,7 +528,7 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
    //  for the rpt 800
    if(parse.getFlags() & CMD_FLAG_GV_PFCOUNT)
    {
-       function = Emetcon::GetValue_PFCount;
+       function = EmetconProtocol::GetValue_PFCount;
        found = getOperation(function, OutMessage->Buffer.BSt.Function, OutMessage->Buffer.BSt.Length, OutMessage->Buffer.BSt.IO);
    }
 
@@ -570,33 +556,33 @@ INT CtiDeviceRepeater900::executeGetValue(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
 
    switch(InMessage->Sequence)
    {
-   case (Emetcon::Scan_General):
-   case (Emetcon::Command_Loop):
+   case (EmetconProtocol::Scan_General):
+   case (EmetconProtocol::Command_Loop):
       {
          status = decodeLoopback(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
 
-   case (Emetcon::GetConfig_Model):
+   case (EmetconProtocol::GetConfig_Model):
       {
          status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
 
-   case (Emetcon::PutConfig_Role):
+   case (EmetconProtocol::PutConfig_Role):
       {
          status = decodePutConfigRole(InMessage, TimeNow, vgList, retList, outList);
          break;
       }
 
-   case (Emetcon::GetConfig_Role):
+   case (EmetconProtocol::GetConfig_Role):
       {
          status = decodeGetConfigRole(InMessage, TimeNow, vgList, retList, outList);
          break;
@@ -617,7 +603,7 @@ INT CtiDeviceRepeater900::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -654,7 +640,7 @@ INT CtiDeviceRepeater900::decodeLoopback(INMESS *InMessage, CtiTime &TimeNow, li
 }
 
 
-INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -701,7 +687,7 @@ INT CtiDeviceRepeater900::decodeGetConfigModel(INMESS *InMessage, CtiTime &TimeN
 }
 
 
-INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -757,7 +743,7 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNo
 }
 
 
-INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater900Device::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
    INT status = NORMAL;
 
@@ -831,9 +817,11 @@ INT CtiDeviceRepeater900::decodePutConfigRole(INMESS *InMessage, CtiTime &TimeNo
 
 
 
-INT CtiDeviceRepeater900::getSSpec() const
+INT Repeater900Device::getSSpec() const
 {
    return 0;
 }
 
+}
+}
 

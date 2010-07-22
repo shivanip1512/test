@@ -5,15 +5,15 @@
 #include "dsm2.h"
 
 namespace Cti       {
-namespace Protocol  {
+namespace Protocols {
 
-class IM_EX_PROT Emetcon  //  note that we do NOT inherit from the Protocol::Interface class - Emetcon doesn't fit the generate/decode paradigm
+class IM_EX_PROT EmetconProtocol  //  note that we do NOT inherit from the Protocol::Interface class - Emetcon doesn't fit the generate/decode paradigm
 {
 private:
-    Emetcon();
-    Emetcon(const Emetcon& aRef);
-    Emetcon& operator=(const Emetcon& aRef);
-    virtual ~Emetcon();
+    EmetconProtocol();
+    EmetconProtocol(const EmetconProtocol& aRef);
+    EmetconProtocol& operator=(const EmetconProtocol& aRef);
+    virtual ~EmetconProtocol();
 
 public:
 
@@ -31,7 +31,7 @@ public:
         IO_Function_Read  = 3
     };
 
-    enum CtiDLCCommand_t
+    enum Commands
     {
         DLCCmd_Invalid = 0,
 

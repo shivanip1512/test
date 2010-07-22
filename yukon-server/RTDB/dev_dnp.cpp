@@ -46,19 +46,19 @@ using namespace std;
 namespace Cti       {
 namespace Devices    {
 
-DNP::DNP()
+DnpDevice::DnpDevice()
 {
     resetDNPScansPending();
 }
 
-DNP::DNP(const DNP &aRef)
+DnpDevice::DnpDevice(const DnpDevice &aRef)
 {
    *this = aRef;
 }
 
-DNP::~DNP() {}
+DnpDevice::~DnpDevice() {}
 
-DNP &DNP::operator=(const DNP &aRef)
+DnpDevice &DnpDevice::operator=(const DnpDevice &aRef)
 {
    if(this != &aRef)
    {
@@ -69,26 +69,26 @@ DNP &DNP::operator=(const DNP &aRef)
 
 
 
-LONG DNP::getAddress() const
+LONG DnpDevice::getAddress() const
 {
     return _dnp_address.getSlaveAddress();
 }
 
 
-LONG DNP::getMasterAddress() const
+LONG DnpDevice::getMasterAddress() const
 {
     return _dnp_address.getMasterAddress();
 }
 
 
-void DNP::resetDNPScansPending( void )
+void DnpDevice::resetDNPScansPending( void )
 {
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
     setScanFlag(ScanRateAccum, false);
 }
 
-bool DNP::clearedForScan(int scantype)
+bool DnpDevice::clearedForScan(int scantype)
 {
     bool status = false;
 
@@ -129,7 +129,7 @@ bool DNP::clearedForScan(int scantype)
 }
 
 
-INT DNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -157,7 +157,7 @@ INT DNP::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&Out
 }
 
 
-INT DNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
+INT DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage,  list< CtiMessage* > &vgList,list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority)
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan integrity");
@@ -185,7 +185,7 @@ INT DNP::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&O
 }
 
 
-INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT nRet = NoMethod;
 
@@ -550,19 +550,19 @@ INT DNP::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 }
 
 
-Protocol::Interface *DNP::getProtocol()
+Protocol::Interface *DnpDevice::getProtocol()
 {
     return &_dnp;
 }
 
 
-int DNP::generate(CtiXfer &xfer)
+int DnpDevice::generate(CtiXfer &xfer)
 {
     return _dnp.generate(xfer);
 }
 
 
-int DNP::decode(CtiXfer &xfer, int status)
+int DnpDevice::decode(CtiXfer &xfer, int status)
 {
     int retval = NoError;
 
@@ -577,7 +577,7 @@ int DNP::decode(CtiXfer &xfer, int status)
 }
 
 
-int DNP::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
+int DnpDevice::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 {
     int retVal = NoError;
 
@@ -633,7 +633,7 @@ int DNP::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
 }
 
 
-int DNP::recvCommRequest( OUTMESS *OutMessage )
+int DnpDevice::recvCommRequest( OUTMESS *OutMessage )
 {
     int retVal = NoError;
 
@@ -666,13 +666,13 @@ int DNP::recvCommRequest( OUTMESS *OutMessage )
 }
 
 
-void DNP::initUnsolicited()
+void DnpDevice::initUnsolicited()
 {
     _dnp.setCommand(Protocol::DNPInterface::Command_UnsolicitedInbound);
 }
 
 
-int DNP::sendCommResult(INMESS *InMessage)
+int DnpDevice::sendCommResult(INMESS *InMessage)
 {
     char *buf;
     string result_string;
@@ -738,7 +738,7 @@ int DNP::sendCommResult(INMESS *InMessage)
 }
 
 
-void DNP::sendDispatchResults(CtiConnection &vg_connection)
+void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
 {
     CtiReturnMsg                *vgMsg;
     CtiPointDataMsg             *pt_msg;
@@ -800,7 +800,7 @@ void DNP::sendDispatchResults(CtiConnection &vg_connection)
 }
 
 
-void DNP::processPoints( Protocol::Interface::pointlist_t &points )
+void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
 {
     Protocol::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
@@ -951,7 +951,7 @@ void DNP::processPoints( Protocol::Interface::pointlist_t &points )
 }
 
 
-INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT DnpDevice::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -1024,7 +1024,7 @@ INT DNP::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &
 }
 
 
-INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
+INT DnpDevice::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL;
 
@@ -1080,12 +1080,12 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
  * This method determines what should be displayed in the "Description" column
  * of the systemlog table when something happens to this device
  *****************************************************************************/
-string DNP::getDescription(const CtiCommandParser &parse) const
+string DnpDevice::getDescription(const CtiCommandParser &parse) const
 {
    return getName();
 }
 
-string DNP::getSQLCoreStatement() const
+string DnpDevice::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
                                      "DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, DUS.phonenumber, "
@@ -1099,7 +1099,7 @@ string DNP::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void DNP::DecodeDatabaseReader(Cti::RowReader &rdr)
+void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
    _dnp_address.DecodeDatabaseReader(rdr);

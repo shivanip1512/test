@@ -1,27 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dct501
-*
-* Class:  CtiDeviceDCT501
-* Date:   2002-feb-19
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dct501.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/12/26 15:42:07 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_DCT501_H__
-#define __DEV_DCT501_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct24x.h"
 
-class IM_EX_DEVDB CtiDeviceDCT501 : public CtiDeviceMCT24X
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Dct501Device : public Mct24xDevice
 {
 protected:
 
@@ -35,7 +19,7 @@ protected:
 
 private:
 
-    typedef CtiDeviceMCT24X Inherited;
+    typedef Mct24xDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore( );
@@ -56,15 +40,18 @@ protected:
 
 public:
 
-   CtiDeviceDCT501( );
-   CtiDeviceDCT501( const CtiDeviceDCT501 &aRef );
-   virtual ~CtiDeviceDCT501( );
+   Dct501Device( );
+   Dct501Device( const Dct501Device &aRef );
+   virtual ~Dct501Device( );
 
-   CtiDeviceDCT501 &operator=( const CtiDeviceDCT501 &aRef );
+   Dct501Device &operator=( const Dct501Device &aRef );
 
    virtual ULONG calcNextLPScanTime( void );
    virtual INT   calcAndInsertLPRequests( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
    virtual bool  calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage );
 
 };
-#endif // #ifndef __DEV_DCT501_H__
+
+}
+}
+

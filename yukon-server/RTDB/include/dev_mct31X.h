@@ -1,28 +1,12 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct31X
-*
-* Class:  CtiDeviceMCT31X
-* Date:   4/24/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct31X.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/12/26 15:49:30 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT31X_H__
-#define __DEV_MCT31X_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct310.h"
 #include "tbl_dv_mctiedport.h"
 
-class IM_EX_DEVDB CtiDeviceMCT31X : public CtiDeviceMCT310
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct31xDevice : public Mct310Device
 {
 public:
 
@@ -33,7 +17,7 @@ public:
 
 private:
 
-    typedef CtiDeviceMCT310 Inherited;
+    typedef Mct310Device Inherited;
 
     CtiTime _lastLPTime[ChannelCount],
             _nextLPTime[ChannelCount],
@@ -114,12 +98,12 @@ public:
         MCT360_IED_VoltsNeutralCurrent_PointOffset = 44
     };
 
-    CtiDeviceMCT31X( );
-    CtiDeviceMCT31X( const CtiDeviceMCT31X &aRef );
+    Mct31xDevice( );
+    Mct31xDevice( const Mct31xDevice &aRef );
 
-    virtual ~CtiDeviceMCT31X( );
+    virtual ~Mct31xDevice( );
 
-    CtiDeviceMCT31X &operator=( const CtiDeviceMCT31X &aRef );
+    Mct31xDevice &operator=( const Mct31xDevice &aRef );
 
     CtiTableDeviceMCTIEDPort &getIEDPort( void );
 
@@ -129,4 +113,7 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };
-#endif // #ifndef __DEV_MCT31X_H__
+
+}
+}
+

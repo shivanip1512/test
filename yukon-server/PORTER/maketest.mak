@@ -90,7 +90,8 @@ deps:
 
 ######################################################################################
 #UPDATE#
-test_lantronixencryption.obj:	yukon.h precompiled.h ctidbgmem.h \
-		encryption_lantronix.h EncodingFilter.h numstr.h dlldefs.h
+test_lantronixencryption.obj:	yukon.h precompiled.h types.h \
+		ctidbgmem.h encryption_lantronix.h EncodingFilter.h numstr.h \
+		dlldefs.h
 #ENDUPDATE#
 

@@ -117,7 +117,7 @@ exe_reg.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		readers_writer_lock.h
 id_svr.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h id_svr.h id_vinfo.h
+		sorted_vector.h id_svr.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 server_b.obj:	yukon.h precompiled.h ctidbgmem.h server_b.h con_mgr.h \
 		connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \

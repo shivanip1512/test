@@ -1,31 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct210
-*
-* Class:  CtiDeviceMCT210
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct210.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/12/26 15:43:21 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT210_H__
-#define __DEV_MCT210_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct2xx.h"
 
-class IM_EX_DEVDB CtiDeviceMCT210 : public CtiDeviceMCT2XX
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct210Device : public Mct2xxDevice
 {
 private:
 
-    typedef CtiDeviceMCT2XX Inherited;
+    typedef Mct2xxDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -67,11 +51,14 @@ public:
         MCT210_StatusDisconnected = 0x40
     };
 
-    CtiDeviceMCT210();
-    CtiDeviceMCT210(const CtiDeviceMCT210& aRef);
+    Mct210Device();
+    Mct210Device(const Mct210Device& aRef);
 
-    virtual ~CtiDeviceMCT210();
+    virtual ~Mct210Device();
 
-    CtiDeviceMCT210& operator=(const CtiDeviceMCT210 &aRef);
+    Mct210Device& operator=(const Mct210Device &aRef);
 };
-#endif // #ifndef __DEV_MCT210_H__
+
+}
+}
+

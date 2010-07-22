@@ -79,7 +79,7 @@ copy:
 id:
             @build -nologo -f $(_InputFile) id_ctiprot.obj
 
-id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h id_vinfo.h
+id_ctiprot.obj:    id_ctiprot.cpp include\id_ctiprot.h
 
 
 
@@ -286,7 +286,7 @@ fmu_datalink.obj:	yukon.h precompiled.h ctidbgmem.h guard.h utility.h \
 		CtiPCPtrQueue.h
 id_ctiprot.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h id_ctiprot.h id_vinfo.h
+		sorted_vector.h id_ctiprot.h
 ion_datastream.obj:	yukon.h precompiled.h ctidbgmem.h guard.h \
 		utility.h ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h \
 		types.h numstr.h sorted_vector.h logger.h thread.h mutex.h \

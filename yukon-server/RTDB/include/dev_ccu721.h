@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_ccu721
-*
-* Namespace:  Cannon::Device
-* Class:      CCU721
-* Date:       2006-aug-08
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_CCU721_H__
-#define __DEV_CCU721_H__
-#pragma warning( disable : 4786 )
+#pragma once
 
 #include "dev_remote.h"
 #include "tbl_dv_address.h"
@@ -27,7 +8,7 @@
 namespace Cti       {
 namespace Devices   {
 
-class IM_EX_DEVDB CCU721 : public CtiDeviceRemote
+class IM_EX_DEVDB Ccu721Device : public CtiDeviceRemote
 {
 private:
 
@@ -70,8 +51,8 @@ protected:
 
 public:
 
-    CCU721();
-    virtual ~CCU721();
+    Ccu721Device();
+    virtual ~Ccu721Device();
 
     enum Commands
     {
@@ -119,9 +100,8 @@ public:
     int processInbound(const OUTMESS *om, INMESS *im);
 };
 
-typedef boost::shared_ptr<CCU721> CCU721SPtr;
+typedef boost::shared_ptr<Ccu721Device> CCU721SPtr;
 
 }
 }
 
-#endif // #ifndef __DEV_LMI_H__

@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_repeater800
-*
-* Date:   8/24/2001
-*
-* Author: Matthew Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   $
-* REVISION     :  $Revision: 1.22.2.2 $
-* DATE         :  $Date: 2008/11/20 16:49:21 $
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "devicetypes.h"
@@ -23,23 +8,25 @@
 #include "utility.h"
 #include "numstr.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 using std::string;
 
+namespace Cti {
+namespace Devices {
 
-const CtiDeviceRepeater800::CommandSet CtiDeviceRepeater800::_commandStore = CtiDeviceRepeater800::initCommandStore();
+const Repeater800Device::CommandSet Repeater800Device::_commandStore = Repeater800Device::initCommandStore();
 
 
-CtiDeviceRepeater800::CtiDeviceRepeater800() {}
+Repeater800Device::Repeater800Device() {}
 
-CtiDeviceRepeater800::CtiDeviceRepeater800(const CtiDeviceRepeater800& aRef)
+Repeater800Device::Repeater800Device(const Repeater800Device& aRef)
 {
     *this = aRef;
 }
 
-CtiDeviceRepeater800::~CtiDeviceRepeater800() {}
+Repeater800Device::~Repeater800Device() {}
 
-CtiDeviceRepeater800& CtiDeviceRepeater800::operator=(const CtiDeviceRepeater800& aRef)
+Repeater800Device& Repeater800Device::operator=(const Repeater800Device& aRef)
 {
     if(this != &aRef)
     {
@@ -49,17 +36,17 @@ CtiDeviceRepeater800& CtiDeviceRepeater800::operator=(const CtiDeviceRepeater800
     return *this;
 }
 
-CtiDeviceRepeater800::CommandSet CtiDeviceRepeater800::initCommandStore()
+Repeater800Device::CommandSet Repeater800Device::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::GetValue_PFCount,    Emetcon::IO_Read,   Rpt800_PFCountPos,  Rpt800_PFCountLen));
+    cs.insert(CommandStore(EmetconProtocol::GetValue_PFCount,    EmetconProtocol::IO_Read,   Rpt800_PFCountPos,  Rpt800_PFCountLen));
 
     return cs;
 }
 
 
-bool CtiDeviceRepeater800::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
+bool Repeater800Device::getOperation( const UINT &cmd, USHORT &function, USHORT &length, USHORT &io )
 {
     bool found = false;
 
@@ -83,14 +70,14 @@ bool CtiDeviceRepeater800::getOperation( const UINT &cmd, USHORT &function, USHO
 }
 
 
-INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater800Device::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
 
     switch(InMessage->Sequence)
     {
-        case (Emetcon::GetValue_PFCount):
+        case (EmetconProtocol::GetValue_PFCount):
         {
             status = decodeGetValuePFCount(InMessage, TimeNow, vgList, retList, outList);
             break;
@@ -113,7 +100,7 @@ INT CtiDeviceRepeater800::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT Repeater800Device::decodeGetValuePFCount(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
 
@@ -178,5 +165,5 @@ INT CtiDeviceRepeater800::decodeGetValuePFCount(INMESS *InMessage, CtiTime &Time
     return status;
 }
 
-
-
+}
+}

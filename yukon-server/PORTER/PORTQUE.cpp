@@ -164,13 +164,13 @@ struct buildLGRPQ
 
                 case TYPE_CCU721:
                 {
-                    using Cti::Devices::CCU721;
-                    boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(ccu_device);
+                    using Cti::Devices::Ccu721Device;
+                    boost::shared_ptr<Ccu721Device> ccu = boost::static_pointer_cast<Ccu721Device>(ccu_device);
 
                     OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
                     if( ccu->hasWaitingWork()
-                        && ccu->buildCommand(OutMessage, CCU721::Command_LoadQueue) )
+                        && ccu->buildCommand(OutMessage, Ccu721Device::Command_LoadQueue) )
                     {
                         PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
                     }
@@ -1208,13 +1208,13 @@ struct kick
     {
         if( ccu_device->getType() == TYPE_CCU721 )
         {
-            using Cti::Devices::CCU721;
-            Cti::Devices::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(ccu_device);
+            using Cti::Devices::Ccu721Device;
+            Cti::Devices::CCU721SPtr ccu = boost::static_pointer_cast<Ccu721Device>(ccu_device);
 
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
             if( ccu->hasRemoteWork()
-                && ccu->buildCommand(OutMessage, CCU721::Command_ReadQueue) )
+                && ccu->buildCommand(OutMessage, Ccu721Device::Command_ReadQueue) )
             {
                 PortManager.writeQueue(OutMessage->Port, OutMessage->Request.GrpMsgID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
             }
@@ -1604,7 +1604,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                 OutMessage->Buffer.OutMessage[Offset++] = (UCHAR)MyOutMessage->Buffer.BSt.DlcRoute.Stages;
 
                 /* Load the number of functions that will be involved */
-                if(MyOutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read)
+                if(MyOutMessage->Buffer.BSt.IO & Cti::Protocols::EmetconProtocol::IO_Read)
                 {
                     //  we are going to ignore the arm request
                     OutMessage->Buffer.OutMessage[Offset++] = 1;

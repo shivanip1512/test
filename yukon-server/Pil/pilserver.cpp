@@ -295,7 +295,7 @@ void CtiPILServer::mainThread()
                 {
                     // This forces the listener thread to exit on shutdown.
                     _listenerSocket.close();
-                } 
+                }
                 catch(...)
                 {
                     // Dont really care, we are shutting down.
@@ -413,7 +413,7 @@ void CtiPILServer::connectionThread()
         NetAddr  = RWInetAddr(NetPort);           // This one for this server!
 
         _listenerSocket.listen(NetAddr);
-        
+
         if(!_listenerSocket.valid())
         {
             {
@@ -588,8 +588,8 @@ void CtiPILServer::resultThread()
                     LONG id = InMessage->TargetID;
 
                     // Checking the sequence since we will actually want the system device 0 for the Phase Detect cases
-                    if(id == 0 && !(InMessage->Sequence == Cti::Protocol::Emetcon::PutConfig_PhaseDetectClear ||
-                                    InMessage->Sequence == Cti::Protocol::Emetcon::PutConfig_PhaseDetect))
+                    if(id == 0 && !(InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetectClear ||
+                                    InMessage->Sequence == Cti::Protocols::EmetconProtocol::PutConfig_PhaseDetect))
                     {
                         id = InMessage->DeviceID;
                     }
@@ -1839,7 +1839,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         //    with what he expects to hear next
                         if( !next_freeze )
                         {
-                            shared_ptr<CtiDeviceMCT> mct = boost::static_pointer_cast<CtiDeviceMCT>(device);
+                            shared_ptr<Cti::Devices::MctDevice> mct = boost::static_pointer_cast<Cti::Devices::MctDevice>(device);
 
                             next_freeze = mct->getNextFreeze();
                         }

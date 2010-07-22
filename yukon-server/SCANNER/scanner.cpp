@@ -254,7 +254,7 @@ static void applyDLCLPScan(const long key, CtiDeviceSPtr pBase, void *d)
     //  only MCTs do DLC load profile scans
     if(isCarrierLPDevice(pBase))
     {
-        CtiDeviceMCT *pMCT = (CtiDeviceMCT *)pBase.get();
+        Cti::Devices::MctDevice *pMCT = (Cti::Devices::MctDevice *)pBase.get();
 
         if(pMCT->getNextLPScanTime() <= TimeNow)
         {
@@ -1088,7 +1088,7 @@ static void applyAnalyzeNextLPScan(const long key, CtiDeviceSPtr Device, void *d
 
         if(isCarrierLPDevice(Device))
         {
-                CtiDeviceMCT  *DeviceRecord = (CtiDeviceMCT *)Device.get();
+            Cti::Devices::MctDevice  *DeviceRecord = (Cti::Devices::MctDevice *)Device.get();
 
             if(!(DeviceRecord->isInhibited()) && (DeviceRecord->isWindowOpen()))
             {

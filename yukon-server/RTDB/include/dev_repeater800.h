@@ -1,32 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_repeater
-*
-* Class:  CtiDeviceRepeater
-* Date:   8/27/2001
-*
-* Author: Matthew Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :
-* REVISION     :
-* DATE         :
-*
-* Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_REPEATER800_H__
-#define __DEV_REPEATER800_H__
-#pragma warning( disable : 4786)
-
-
+#pragma once
 
 #include "dev_repeater.h"
 
-class IM_EX_DEVDB CtiDeviceRepeater800 : public CtiDeviceRepeater900
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Repeater800Device : public Repeater900Device
 {
 private:
 
-   typedef CtiDeviceRepeater900 Inherited;
+   typedef Repeater900Device Inherited;
 
    static const CommandSet _commandStore;
    static CommandSet initCommandStore();
@@ -45,15 +28,17 @@ protected:
 
 public:
 
-   CtiDeviceRepeater800();
-   CtiDeviceRepeater800(const CtiDeviceRepeater800& aRef);
+   Repeater800Device();
+   Repeater800Device(const Repeater800Device& aRef);
 
-   virtual ~CtiDeviceRepeater800();
+   virtual ~Repeater800Device();
 
-   CtiDeviceRepeater800& operator=(const CtiDeviceRepeater800& aRef);
+   Repeater800Device& operator=(const Repeater800Device& aRef);
 
    virtual INT ResultDecode(INMESS*InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
 };
 
-#endif // #ifndef __DEV_REPEATER800_H__
+}
+}
+

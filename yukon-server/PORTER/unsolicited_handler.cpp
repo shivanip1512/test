@@ -409,7 +409,7 @@ bool UnsolicitedHandler::handleDeviceRequests(void)
             if( gConfigParms.getValueAsULong("PORTER_DNPUDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Porter::DNPUDP::getOutMessages - no device found for device id (" << om->TargetID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             //  return an error - this deletes the OM
@@ -435,7 +435,7 @@ bool UnsolicitedHandler::handleDeviceRequests(void)
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Porter::UnsolicitedHandler::getOutMessages - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         dr->work.outbound.push(om);
@@ -591,8 +591,8 @@ bool UnsolicitedHandler::generateOutbounds( void )
                 if( isDnpDevice(*dr->device) )
                 {
                     //  there is no outmessage, so we don't call recvCommRequest -
-                    //    we have to call the Cti::Device::DNP-specific initUnsolicited
-                    shared_ptr<Devices::DNP> dnp_device = boost::static_pointer_cast<Devices::DNP>(dr->device);
+                    //    we have to call the Device::DNP-specific initUnsolicited
+                    shared_ptr<Devices::DnpDevice> dnp_device = boost::static_pointer_cast<Devices::DnpDevice>(dr->device);
 
                     dnp_device->initUnsolicited();
 
@@ -775,7 +775,7 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_queue &local_queue)
         if( !printed && entries && gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Porter::UnsolicitedHandler::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
 
             printed = true;
         }
@@ -822,7 +822,7 @@ bool UnsolicitedHandler::processInbounds( void )
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::processInbounds - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Porter::UnsolicitedHandler::processInbounds - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             continue;
@@ -857,7 +857,7 @@ bool UnsolicitedHandler::processDnpInbound(device_record &dr)
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::processDnpInbound() - status = READTIMEOUT (" << dr.work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Porter::UnsolicitedHandler::processDnpInbound() - status = READTIMEOUT (" << dr.work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
         status = READTIMEOUT;
@@ -875,7 +875,7 @@ bool UnsolicitedHandler::processDnpInbound(device_record &dr)
                 if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::processDnpInbound() - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr.work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Porter::UnsolicitedHandler::processDnpInbound() - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr.work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 status = READTIMEOUT;
@@ -1097,7 +1097,7 @@ bool UnsolicitedHandler::sendResults( void )
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UnsolicitedHandler::sendResults - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " Porter::UnsolicitedHandler::sendResults - dr == 0 || dr->device == 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             continue;

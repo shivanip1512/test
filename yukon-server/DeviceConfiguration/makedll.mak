@@ -93,7 +93,7 @@ deps:
 id:
             @build -nologo -f $(_InputFile) id_dcdll.obj
 
-id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
+id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h
 
 .SUFFIXES:      .cpp .obj
 
@@ -129,6 +129,6 @@ da_lp_deviceconfig.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_data_mct.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h os2_2w32.h types.h \
-		numstr.h sorted_vector.h id_vinfo.h
+		numstr.h sorted_vector.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 #ENDUPDATE#

@@ -38,7 +38,7 @@
 
 #include "cparms.h"
 
-using Cti::Protocol::Emetcon;
+using Cti::Protocols::EmetconProtocol;
 
 #define MAX_EXPRESSCOM_IN_EMETCON_LENGTH 18
 
@@ -354,8 +354,8 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
         OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
 
-        const bool isOneWayRequest = (OutMessage->Buffer.BSt.IO == Emetcon::IO_Write) ||
-                                     (OutMessage->Buffer.BSt.IO == Emetcon::IO_Function_Write);
+        const bool isOneWayRequest = (OutMessage->Buffer.BSt.IO == EmetconProtocol::IO_Write) ||
+                                     (OutMessage->Buffer.BSt.IO == EmetconProtocol::IO_Function_Write);
 
         const bool isCcu711Transmitter = _transmitterDevice->getType() == TYPE_CCU711;
 
@@ -374,7 +374,7 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.ASt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
 
         // Add these two items to the list for control accounting!
-        parse.setValue("control_interval", Emetcon::calculateControlInterval(parse.getiValue("shed", 0)));
+        parse.setValue("control_interval", EmetconProtocol::calculateControlInterval(parse.getiValue("shed", 0)));
         parse.setValue("control_reduction", 100 );
     }
 
@@ -403,11 +403,11 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
             {
                 if( OutMessage->EventCode & BWORD )
                 {
-                    Emetcon::buildBWordMessage(OutMessage);
+                    EmetconProtocol::buildBWordMessage(OutMessage);
                 }
                 else if( OutMessage->EventCode & AWORD )
                 {
-                    Emetcon::buildAWordMessage(OutMessage);
+                    EmetconProtocol::buildAWordMessage(OutMessage);
                 }
 
                 /* load the IDLC specific stuff for DTRAN */

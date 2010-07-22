@@ -23,15 +23,15 @@
 #include "mgr_route.h"
 
 
-using Cti::Protocol::Klondike;
-using Cti::Protocol::Emetcon;
 using namespace std;
 
+using Cti::Protocol::Klondike;
+using Cti::Protocols::EmetconProtocol;
 
-namespace Cti       {
-namespace Devices    {
+namespace Cti {
+namespace Devices {
 
-CCU721::CCU721() :
+Ccu721Device::Ccu721Device() :
     _initialized(false),
     _queueInterface(_klondike),
     _current_om(0)
@@ -39,19 +39,19 @@ CCU721::CCU721() :
 }
 
 
-CCU721::~CCU721()
+Ccu721Device::~Ccu721Device()
 {
     _current_om = 0;  //  owned by Porter, not us
 }
 
 
-Protocol::Interface *CCU721::getProtocol()
+Protocol::Interface *Ccu721Device::getProtocol()
 {
     return (Protocol::Interface *)&_klondike;
 }
 
 
-INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
+INT Ccu721Device::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     INT nRet = NoMethod;
 
@@ -121,7 +121,7 @@ INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
 }
 
 
-INT CCU721::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, INT ScanPriority )
+INT Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -146,13 +146,13 @@ INT CCU721::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 }
 
 
-INT CCU721::ErrorDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, bool &overrideExpectMore )
+INT Ccu721Device::ErrorDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, bool &overrideExpectMore )
 {
     return 0;
 }
 
 
-INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
+INT Ccu721Device::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
 
@@ -175,12 +175,12 @@ INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &v
 }
 
 
-bool CCU721::needsReset() const
+bool Ccu721Device::needsReset() const
 {
     return !_initialized;
 }
 
-string CCU721::getSQLCoreStatement() const
+string Ccu721Device::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CS.portid, "
@@ -194,7 +194,7 @@ string CCU721::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void CCU721::DecodeDatabaseReader(Cti::RowReader &rdr)
+void Ccu721Device::DecodeDatabaseReader(RowReader &rdr)
 {
     Inherited::DecodeDatabaseReader(rdr);
 
@@ -205,27 +205,27 @@ void CCU721::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-LONG CCU721::getAddress() const
+LONG Ccu721Device::getAddress() const
 {
     return _address.getSlaveAddress();
 }
 
 
-bool CCU721::hasQueuedWork()  const {  return _klondike.hasQueuedWork();    }
-bool CCU721::hasWaitingWork() const {  return _klondike.hasWaitingWork();   }
-bool CCU721::hasRemoteWork()  const {  return _klondike.hasRemoteWork();    }
+bool Ccu721Device::hasQueuedWork()  const {  return _klondike.hasQueuedWork();    }
+bool Ccu721Device::hasWaitingWork() const {  return _klondike.hasWaitingWork();   }
+bool Ccu721Device::hasRemoteWork()  const {  return _klondike.hasRemoteWork();    }
 
-INT CCU721::queuedWorkCount() const {  return _klondike.queuedWorkCount();  }
+INT Ccu721Device::queuedWorkCount() const {  return _klondike.queuedWorkCount();  }
 
-string CCU721::queueReport() const  {  return _klondike.queueReport();      }
+string Ccu721Device::queueReport() const  {  return _klondike.queueReport();      }
 
-DeviceQueueInterface *CCU721::getDeviceQueueHandler()
+DeviceQueueInterface *Ccu721Device::getDeviceQueueHandler()
 {
     return &_queueInterface;
 }
 
 
-INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
+INT Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     int retval = NORMAL;
 
@@ -257,7 +257,7 @@ INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 
 
 //  called by KickerThread() via applyKick() and by LoadRemoteRoutes()
-bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
+bool Ccu721Device::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 {
     bool command_built = false;
     CtiTime now;
@@ -353,7 +353,7 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 }
 
 
-int CCU721::recvCommRequest(OUTMESS *OutMessage)
+int Ccu721Device::recvCommRequest(OUTMESS *OutMessage)
 {
     if( !OutMessage )
     {
@@ -371,7 +371,7 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
 
         return _klondike.setCommand(Klondike::Command_DirectTransmission,
                                     dtran_message,
-                                    (_current_om->InLength)?(Cti::Protocol::Emetcon::determineDWordCount(_current_om->InLength) * DWORDLEN):(0),
+                                    (_current_om->InLength)?(EmetconProtocol::determineDWordCount(_current_om->InLength) * DWORDLEN):(0),
                                     _current_om->Priority,
                                     _current_om->Buffer.BSt.DlcRoute.Stages,
                                     Klondike::DLCParms_None | _current_om->Buffer.BSt.DlcRoute.Bus + 1);
@@ -390,7 +390,7 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
 }
 
 
-int CCU721::sendCommResult(INMESS *InMessage)
+int Ccu721Device::sendCommResult(INMESS *InMessage)
 {
     int status = translateKlondikeError(_klondike.errorCode());
 
@@ -511,7 +511,7 @@ int CCU721::sendCommResult(INMESS *InMessage)
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Error writing to nexus. Cti::Devices::CCU721::sendCommResult() on device \"" << getName() << "\".  "
+                                dout << CtiTime() << " Error writing to nexus. Ccu721Device::sendCommResult() on device \"" << getName() << "\".  "
                                      << "Wrote " << bytes_written << "/" << sizeof(INMESS) << " bytes" << endl;
                             }
 
@@ -534,7 +534,7 @@ int CCU721::sendCommResult(INMESS *InMessage)
 }
 
 
-int CCU721::translateKlondikeError(Klondike::Errors error)
+int Ccu721Device::translateKlondikeError(Klondike::Errors error)
 {
     switch( error )
     {
@@ -554,7 +554,7 @@ int CCU721::translateKlondikeError(Klondike::Errors error)
 }
 
 
-void CCU721::getTargetDeviceStatistics(std::vector< OUTMESS > &om_statistics)
+void Ccu721Device::getTargetDeviceStatistics(std::vector< OUTMESS > &om_statistics)
 {
     om_statistics.insert(om_statistics.end(),
                          _statistics.begin(),
@@ -564,7 +564,7 @@ void CCU721::getTargetDeviceStatistics(std::vector< OUTMESS > &om_statistics)
 }
 
 
-void CCU721::writeDLCMessage( byte_buffer_t &buf, const OUTMESS *om )
+void Ccu721Device::writeDLCMessage( byte_buffer_t &buf, const OUTMESS *om )
 {
     if( !om )   return;
 
@@ -577,20 +577,20 @@ void CCU721::writeDLCMessage( byte_buffer_t &buf, const OUTMESS *om )
         default:
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::writeDLCMessage() : unhandled word type (" << (om->EventCode & (AWORD | BWORD)) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** Checkpoint - Protocol::Klondike::writeDLCMessage() : unhandled word type (" << (om->EventCode & (AWORD | BWORD)) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
 
 
-void CCU721::writeDLCTimesync( byte_buffer_t &buf )
+void Ccu721Device::writeDLCTimesync( byte_buffer_t &buf )
 {
     BSTRUCT timesync_bst;
 
-    timesync_bst.Address           = CtiDeviceMCT4xx::UniversalAddress;
-    timesync_bst.IO                = Emetcon::IO_Function_Write;
-    timesync_bst.Function          = CtiDeviceMCT4xx::FuncWrite_TSyncPos;
-    timesync_bst.Length            = CtiDeviceMCT4xx::FuncWrite_TSyncLen;
+    timesync_bst.Address           = Mct4xxDevice::UniversalAddress;
+    timesync_bst.IO                = EmetconProtocol::IO_Function_Write;
+    timesync_bst.Function          = Mct4xxDevice::FuncWrite_TSyncPos;
+    timesync_bst.Length            = Mct4xxDevice::FuncWrite_TSyncLen;
 
     timesync_bst.DlcRoute.Amp      = 0;  //  filled in by the CCU
     timesync_bst.DlcRoute.Bus      = 0;  //
@@ -609,33 +609,33 @@ void CCU721::writeDLCTimesync( byte_buffer_t &buf )
 }
 
 
-void CCU721::writeAWord( byte_buffer_t &buf, const ASTRUCT &ASt )
+void Ccu721Device::writeAWord( byte_buffer_t &buf, const ASTRUCT &ASt )
 {
     buf.insert(buf.end(), AWORDLEN, 0);
 
     A_Word( &*(buf.end() - AWORDLEN), ASt);
 }
 
-void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
+void Ccu721Device::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 {
     int words;
 
-    if( BSt.IO == Emetcon::IO_Write ||
-        BSt.IO == Emetcon::IO_Function_Write )
+    if( BSt.IO == EmetconProtocol::IO_Write ||
+        BSt.IO == EmetconProtocol::IO_Function_Write )
     {
         words = (BSt.Length + 4) / 5;
     }
     else
     {
-        words = Emetcon::determineDWordCount(BSt.Length);
+        words = EmetconProtocol::determineDWordCount(BSt.Length);
     }
 
     //  we insert relative to the end so that we can append to any buffer given to us
     buf.insert(buf.end(), BWORDLEN, 0);
     B_Word( &* (buf.end() - BWORDLEN), BSt, words);
 
-    if( words && (BSt.IO == Emetcon::IO_Write ||
-                  BSt.IO == Emetcon::IO_Function_Write) )
+    if( words && (BSt.IO == EmetconProtocol::IO_Write ||
+                  BSt.IO == EmetconProtocol::IO_Function_Write) )
     {
         buf.insert(buf.end(), CWORDLEN * words, 0);
 
@@ -646,10 +646,10 @@ void CCU721::writeBWord( byte_buffer_t &buf, const BSTRUCT &BSt )
 }
 
 
-int CCU721::processInbound(const OUTMESS *om, INMESS *im)
+int Ccu721Device::processInbound(const OUTMESS *om, INMESS *im)
 {
     if( (om->EventCode & BWORD) &&
-        (om->Buffer.BSt.IO & Protocol::Emetcon::IO_Read ) )
+        (om->Buffer.BSt.IO & Protocols::EmetconProtocol::IO_Read ) )
     {
         DSTRUCT tmp_d_struct;
 
@@ -679,7 +679,7 @@ int CCU721::processInbound(const OUTMESS *om, INMESS *im)
 }
 
 
-int CCU721::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt) const
+int Ccu721Device::decodeDWords(const unsigned char *input, const unsigned input_length, const unsigned Remote, DSTRUCT *DSt) const
 {
     int status = NoError;
     unsigned short unused;
@@ -687,7 +687,7 @@ int CCU721::decodeDWords(const unsigned char *input, const unsigned input_length
     if( input_length % DWORDLEN )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Cti::Devices::CCU721::decodeDWords() : input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Devices::CCU721::decodeDWords() : input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     byte_buffer_t input_buffer(input, input + input_length);
@@ -716,7 +716,7 @@ int CCU721::decodeDWords(const unsigned char *input, const unsigned input_length
 }
 
 
-int CCU721::decodeEWord(const unsigned char *input, const unsigned input_length)
+int Ccu721Device::decodeEWord(const unsigned char *input, const unsigned input_length)
 {
     ESTRUCT ESt;
 

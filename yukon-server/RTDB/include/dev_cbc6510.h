@@ -1,33 +1,17 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_cbc6510
-*
-* Class:  CtiDeviceCBC6510
-* Date:   5/22/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_CBC6510_H__
-#define __DEV_CBC6510_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_remote.h"
 #include "dev_dnp.h"
 #include "tbl_dv_idlcremote.h"
 
-class IM_EX_DEVDB CtiDeviceCBC6510 : public Cti::Devices::DNP
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Cbc6510Device : public DnpDevice
 {
 private:
 
-    typedef Cti::Devices::DNP Inherited;
+    typedef DnpDevice Inherited;
 
     enum
     {
@@ -46,15 +30,15 @@ private:
 
 protected:
 
-    virtual void processPoints( Cti::Protocol::Interface::pointlist_t &points );
+    virtual void processPoints( Protocol::Interface::pointlist_t &points );
 
 public:
 
-    CtiDeviceCBC6510();
-    CtiDeviceCBC6510(const CtiDeviceCBC6510& aRef);
-    virtual ~CtiDeviceCBC6510();
+    Cbc6510Device();
+    Cbc6510Device(const Cbc6510Device& aRef);
+    virtual ~Cbc6510Device();
 
-    CtiDeviceCBC6510& operator=(const CtiDeviceCBC6510& aRef);
+    Cbc6510Device& operator=(const Cbc6510Device& aRef);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
 
@@ -62,5 +46,7 @@ public:
     INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 };
 
+}
+}
 
-#endif // #ifndef __DEV_CBC_H__
+

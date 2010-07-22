@@ -1,32 +1,13 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_dnp
-*
-* Class:  CBC7020
-* Date:   4/10/2006
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/01/28 22:34:20 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_CBC7020_H__
-#define __DEV_CBC7020_H__
-#pragma warning( disable : 4786)
-#include "yukon.h"
+#pragma once
 
 #include "dev_dnp.h"
 #include "config_data_cbc.h"
 #include "config_device.h"
 
-namespace Cti       {
-namespace Devices    {
+namespace Cti {
+namespace Devices {
 
-class IM_EX_DEVDB CBC7020 : public DNP
+class IM_EX_DEVDB Cbc7020Device : public DnpDevice
 {
 public:
 
@@ -49,7 +30,7 @@ protected:
 
 private:
 
-    typedef DNP Inherited;
+    typedef DnpDevice Inherited;
 
     static const ConfigPartsList _config_parts;
     static ConfigPartsList initConfigParts();
@@ -162,4 +143,3 @@ public:
 
 }
 }
-#endif //__DEV_CBC7020

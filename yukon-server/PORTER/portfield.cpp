@@ -3020,6 +3020,9 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
     struct timeb   TimeB;
     REMOTEPERF     RemotePerf;
 
+    using Cti::Protocols::EmetconProtocol;
+	using Cti::Devices::MctDevice;
+
     if( InMessage && OutMessage )
     {
         InMessage->EventCode = (USHORT)CommResult;
@@ -3029,14 +3032,14 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
         case TYPE_CCU721:
             {
                 if( (OutMessage->EventCode & BWORD) &&
-                    (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
+                    (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read ) )
                 {
                     CtiDeviceSPtr temDevice;
                     if( !CommResult && (temDevice = DeviceManager.getDeviceByID(InMessage->TargetID)) )
                     {
                         if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-                            temDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-                            temDevice->getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
+                            temDevice->getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+                            temDevice->getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
                             (temDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
                         {
                             //  Seems this should percolate to the device level, although setting status here kills the decode
@@ -3145,7 +3148,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         InMessage->InLength = OutMessage->InLength;
 
                         if( (OutMessage->EventCode & BWORD) &&
-                            (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
+                            (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read ) )
                         {
                             DSTRUCT        DSt;
 
@@ -3168,7 +3171,7 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                     else if( !status && nack2 )
                     {
                         if( (OutMessage->EventCode & BWORD) &&
-                            (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read) )
+                            (OutMessage->Buffer.BSt.IO & EmetconProtocol::IO_Read) )
                         {
                             status = NACKPAD1;
                         }
@@ -3187,8 +3190,8 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                         //  note that if D_Words() had an error, we'll never get here...
 
                         if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-                            temDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-                            temDevice->getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
+                            temDevice->getAddress() != MctDevice::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+                            temDevice->getAddress() != MctDevice::TestAddress2 &&  //    since it'll return its native address and not the test address
                             (temDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
                         {
                             //  Seems this should percolate to the device level, although setting status here kills the decode
@@ -3553,7 +3556,7 @@ INT ValidateDevice(CtiPortSPtr Port, CtiDeviceSPtr &Device, OUTMESS *&OutMessage
         else if( Device->getType() == TYPE_CCU721 )
         {
             /* Go Ahead an start this one up */
-            if( boost::static_pointer_cast<Cti::Devices::CCU721>(Device)->needsReset()
+            if( boost::static_pointer_cast<Cti::Devices::Ccu721Device>(Device)->needsReset()
                 && RemoteReset(Device, Port) )
             {
                 // This device probably sourced some OMs.  We should requeue the OM which got us here!

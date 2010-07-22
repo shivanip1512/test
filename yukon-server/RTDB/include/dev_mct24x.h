@@ -1,31 +1,15 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_mct2XX
-*
-* Class:  CtiDeviceMCT2XX
-* Date:   5/3/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct2xx.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/12/26 15:44:48 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __DEV_MCT24X_H__
-#define __DEV_MCT24X_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include "dev_mct2xx.h"
 
-class IM_EX_DEVDB CtiDeviceMCT24X : public CtiDeviceMCT2XX
+namespace Cti {
+namespace Devices {
+
+class IM_EX_DEVDB Mct24xDevice : public Mct2xxDevice
 {
 private:
 
-    typedef CtiDeviceMCT2XX Inherited;
+    typedef Mct2xxDevice Inherited;
 
     static const CommandSet _commandStore;
     static CommandSet initCommandStore();
@@ -77,12 +61,15 @@ protected:
 
 public:
 
-    CtiDeviceMCT24X( );
-    CtiDeviceMCT24X( const CtiDeviceMCT24X &aRef );
-    virtual ~CtiDeviceMCT24X( );
+    Mct24xDevice( );
+    Mct24xDevice( const Mct24xDevice &aRef );
+    virtual ~Mct24xDevice( );
 
-    CtiDeviceMCT24X &operator=( const CtiDeviceMCT24X &aRef );
+    Mct24xDevice &operator=( const Mct24xDevice &aRef );
 
     ULONG calcNextLPScanTime( void );
 };
-#endif // #ifndef __DEV_MCT24X_H__
+
+}
+}
+

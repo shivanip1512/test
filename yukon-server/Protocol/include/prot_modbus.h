@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_modbus
-*
-* Class:  Modbus
-* Date:   7/14/2005
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4.6.2 $
-* DATE         :  $Date: 2008/11/20 17:17:13 $
-*
-* Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-#ifndef __PROT_MODBUS_H__
-#define __PROT_MODBUS_H__
-#pragma warning( disable : 4786)
-
+#pragma once
 
 #include <list>
 
@@ -27,9 +8,9 @@
 #include "prot_base.h"
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
 
-class IM_EX_PROT Modbus : public Interface
+class IM_EX_PROT ModbusProtocol : public Protocol::Interface
 {
     enum   Functions;
     enum   Command;
@@ -102,12 +83,12 @@ protected:
 
 public:
 
-    Modbus();
-    Modbus(const Modbus &aRef);
+    ModbusProtocol();
+    ModbusProtocol(const ModbusProtocol &aRef);
 
-    virtual ~Modbus();
+    virtual ~ModbusProtocol();
 
-    Modbus &operator=(const Modbus &aRef);
+    ModbusProtocol &operator=(const ModbusProtocol &aRef);
 
     void setAddresses( unsigned short slaveAddress );
     void setCommand(Command newCommand);
@@ -208,5 +189,4 @@ public:
 }
 }
 
-#endif // #ifndef __PROT_MODBUS_H__
 

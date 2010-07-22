@@ -128,7 +128,7 @@ dll_msg.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		configkey.h configval.h
 id_ctimsg.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
-		sorted_vector.h id_ctimsg.h id_vinfo.h
+		sorted_vector.h id_ctimsg.h
 message.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		dlldefs.h dllbase.h os2_2w32.h types.h cticalls.h dsm2.h \
 		mutex.h guard.h utility.h ctitime.h queues.h numstr.h \

@@ -5,7 +5,9 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 
-class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
+using Cti::Devices::Mct4xxDevice;
+
+struct test_Mct4xxDevice : Mct4xxDevice
 {
     //  these placeholder pure-virtual overrides should never be called in our testing, so the BOOST_CHECK(0) call is there to alert us if they are
     const read_key_store_t & getReadKeyStore(void) const                               {  BOOST_CHECK(0);  return fake_key_store;  };
@@ -17,8 +19,7 @@ class test_CtiDeviceMCT4xx : public CtiDeviceMCT4xx
     bool isSupported(const Features feature) const                  {  BOOST_CHECK(0);  return false;  };
     bool sspecValid(const unsigned sspec, const unsigned rev) const {  BOOST_CHECK(0);  return false;  };
 
-public:
-    typedef CtiDeviceMCT4xx Inherited;
+    typedef Mct4xxDevice Inherited;
 
     typedef point_info test_point_info;  //  expose it publicly for our testing
 
@@ -35,7 +36,6 @@ public:
         return Inherited::getData(buf, len, static_cast<Inherited::ValueType4xx>(vt));
     }
 
-private:
     read_key_store_t fake_key_store;
 };
 
@@ -43,10 +43,10 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 {
     unsigned char kwh_read[3] = { 0x00, 0x01, 0x00 };
 
-    test_CtiDeviceMCT4xx dev;
-    test_CtiDeviceMCT4xx::test_point_info pi;
+    test_Mct4xxDevice dev;
+    test_Mct4xxDevice::test_point_info pi;
 
-    pi = dev.test_getData(kwh_read, 3, test_CtiDeviceMCT4xx::ValueType_FrozenAccumulator);
+    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_FrozenAccumulator);
 
     BOOST_CHECK_EQUAL( pi.value,      256 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, false );
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_dev_mct4xx_getdata)
 
     kwh_read[2] = 0x01;
 
-    pi = dev.test_getData(kwh_read, 3, test_CtiDeviceMCT4xx::ValueType_FrozenAccumulator);
+    pi = dev.test_getData(kwh_read, 3, test_Mct4xxDevice::ValueType_FrozenAccumulator);
 
     BOOST_CHECK_EQUAL( pi.value,      256 );
     BOOST_CHECK_EQUAL( pi.freeze_bit, true );

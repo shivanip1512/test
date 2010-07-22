@@ -1,37 +1,23 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_carrier
-*
-* Date:   5/20/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11.2.1 $
-* DATE         :  $Date: 2008/11/18 20:11:28 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "dev_carrier.h"
 
-using namespace Cti;
+namespace Cti {
+namespace Devices {
 
-CtiDeviceCarrier::CtiDeviceCarrier()
+CarrierDevice::CarrierDevice()
 {
     loadProfile.reset(new CtiTableDeviceLoadProfile());
 }
 
-CtiDeviceCarrier::CtiDeviceCarrier(const CtiDeviceCarrier &aRef)
+CarrierDevice::CarrierDevice(const CarrierDevice &aRef)
 {
     *this = aRef;
 }
 
-CtiDeviceCarrier::~CtiDeviceCarrier() {}
+CarrierDevice::~CarrierDevice() {}
 
-CtiDeviceCarrier &CtiDeviceCarrier::operator=(const CtiDeviceCarrier &aRef)
+CarrierDevice &CarrierDevice::operator=(const CarrierDevice &aRef)
 {
     if(this != &aRef)
     {
@@ -45,13 +31,13 @@ CtiDeviceCarrier &CtiDeviceCarrier::operator=(const CtiDeviceCarrier &aRef)
     return *this;
 }
 
-boost::shared_ptr<DataAccessLoadProfile> CtiDeviceCarrier::getLoadProfile()
+boost::shared_ptr<DataAccessLoadProfile> CarrierDevice::getLoadProfile()
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
     return boost::static_pointer_cast<DataAccessLoadProfile>(loadProfile);
 }
 
-string CtiDeviceCarrier::getSQLCoreStatement() const
+string CarrierDevice::getSQLCoreStatement() const
 {
     static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
                                      "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, DCS.address, "
@@ -68,7 +54,7 @@ string CtiDeviceCarrier::getSQLCoreStatement() const
     return sqlCore;
 }
 
-void CtiDeviceCarrier::DecodeDatabaseReader(Cti::RowReader &rdr)
+void CarrierDevice::DecodeDatabaseReader(RowReader &rdr)
 {
     INT iTemp;
 
@@ -81,13 +67,17 @@ void CtiDeviceCarrier::DecodeDatabaseReader(Cti::RowReader &rdr)
     loadProfile->DecodeDatabaseReader(rdr);
 }
 
-LONG CtiDeviceCarrier::getLastIntervalDemandRate()
+LONG CarrierDevice::getLastIntervalDemandRate()
 {
     return getLoadProfile()->getLastIntervalDemandRate();
 }
 
-inline bool CtiDeviceCarrier::isMeter() const
+inline bool CarrierDevice::isMeter() const
 {
     return true;
 }
+
+}
+}
+
 

@@ -1,4 +1,4 @@
-/***********************************************************  * 
+/***********************************************************  *
 * TimePeriod class encapsulates a start and end time. Useful for
 * a single object to hold a known span of time and functionality
 * to work with spans of time
@@ -14,8 +14,6 @@ using boost::posix_time::ptime;
 using boost::posix_time::time_period;
 
 namespace Cti {
-
-    using Cti::TimePeriod;
 
 TimePeriod::TimePeriod(const CtiTime &timeBegin, const CtiTime &timeEnd) :
 _period(boost::posix_time::from_time_t(timeBegin.seconds()), boost::posix_time::from_time_t(timeEnd.seconds()))
@@ -70,7 +68,7 @@ TimePeriod& TimePeriod::addDays(const int days, bool DSTflag)
         // ptime add Days does not allow for dst flag checking.
         CtiTime start = begin();
         CtiTime finish = end();
-    
+
         start.addDays(days, DSTflag);
         finish.addDays(days, DSTflag);
         _period = time_period(boost::posix_time::from_time_t(start.seconds()), boost::posix_time::from_time_t(finish.seconds()));
