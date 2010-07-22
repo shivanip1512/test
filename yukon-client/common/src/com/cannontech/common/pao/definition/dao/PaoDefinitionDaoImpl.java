@@ -84,9 +84,9 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 
 /**
@@ -392,7 +392,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
         this.paoTypeMap = new LinkedHashMap<PaoType, PaoDefinition>();
         this.paoAllPointTemplateMap = new HashMap<PaoType, Set<PointTemplate>>();
         this.paoInitPointTemplateMap = new HashMap<PaoType, Set<PointTemplate>>();
-        this.paoDisplayGroupMap = ArrayListMultimap.create();
+        this.paoDisplayGroupMap = LinkedListMultimap.create();
         this.changeGroupPaosMap = new HashMap<String, Set<PaoDefinition>>();
         this.paoAttributeAttrDefinitionMap = new HashMap<PaoType, Map<Attribute, AttributeDefinition>>();
         this.paoCommandMap = new HashMap<PaoType, Set<CommandDefinition>>();

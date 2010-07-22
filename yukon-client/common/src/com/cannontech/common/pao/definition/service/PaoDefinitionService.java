@@ -11,7 +11,7 @@ import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
 import com.cannontech.database.data.point.PointBase;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.ListMultimap;
 
 /**
  * Class which provides functionality for manipulating paos based on their
@@ -89,7 +89,7 @@ public interface PaoDefinitionService {
      * @return An immutable map with key: display group name, value: list of
      *         pao display
      */
-    public Multimap<String, PaoDefinition> getPaoDisplayGroupMap();
+    public ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap();
     
     /**
      * Method to get a map of pao display groups and their associated creatable pao
@@ -97,7 +97,7 @@ public interface PaoDefinitionService {
      * @return An immutable map with key: display group name, value: list of creatable
      *         pao display
      */
-    public Multimap<String, PaoDefinition> getCreatablePaoDisplayGroupMap();
+    public ListMultimap<String, PaoDefinition> getCreatablePaoDisplayGroupMap();
 
     /**
      * Method used to determine if a pao can have its type changed

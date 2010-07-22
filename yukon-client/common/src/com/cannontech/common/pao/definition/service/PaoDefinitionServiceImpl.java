@@ -74,7 +74,7 @@ public class PaoDefinitionServiceImpl implements PaoDefinitionService {
 
     private ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap(Predicate<PaoDefinition> predicate) {
         ListMultimap<String, PaoDefinition> paoDisplayGroupMap = paoDefinitionDao.getPaoDisplayGroupMap();
-        return MapUtil.filterMultimap(paoDisplayGroupMap, predicate); 
+        return MapUtil.filterLinkedListMultimap(paoDisplayGroupMap, predicate); 
     }
 
     @Override
