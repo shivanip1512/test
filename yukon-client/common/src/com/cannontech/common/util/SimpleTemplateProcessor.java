@@ -140,15 +140,17 @@ public class SimpleTemplateProcessor {
         try {
             // see if custom format method exists
             // split extra on last "."
-        	int endIndex = extra.lastIndexOf(".");
-        	String className = extra.substring(0, endIndex);
-            Class<?> theClassPart = getClass().forName(className);
-            String methodName = extra.substring(endIndex+1);
-            Method method = theClassPart.getMethod(methodName, value.getClass());
-            Object formattedOuput = method.invoke(null, value);
-            CharSequence result = formattedOuput.toString();
-            
-            return result;
+            int endIndex = extra.lastIndexOf(".");
+            if (endIndex > 0) {
+                String className = extra.substring(0, endIndex);
+                Class<?> theClassPart = Class.forName(className);
+                String methodName = extra.substring(endIndex+1);
+                Method method = theClassPart.getMethod(methodName, value.getClass());
+                Object formattedOuput = method.invoke(null, value);
+                CharSequence result = formattedOuput.toString();
+
+                return result;
+            }
         } catch (Exception e) {
             //Not a valid method name, fall through to type-based formatters
         }

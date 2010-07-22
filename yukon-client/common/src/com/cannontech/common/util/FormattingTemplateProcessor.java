@@ -1,22 +1,24 @@
 package com.cannontech.common.util;
 
 import java.awt.Color;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.joda.time.Instant;
+import org.joda.time.ReadableInstant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
 
 public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
-    private Map<String, DateFormat> dateFormatCache = new HashMap<String, DateFormat>();
+    private Map<String, DateTimeFormatter> dateFormatCache = new HashMap<String, DateTimeFormatter>();
     private final YukonUserContext userContext;
     private final DateFormattingService dateFormattingService;
     
@@ -31,15 +33,14 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
      * @param format
      * @return
      */
-    private DateFormat getDateFormatter(String format) {
-        DateFormat dateFormat = dateFormatCache.get(format);
+    private DateTimeFormatter getDateFormatter(String format) {
+        DateTimeFormatter dateFormat = dateFormatCache.get(format);
         if (dateFormat == null) {
             try {
                 DateFormatEnum formatEnum = DateFormatEnum.valueOf(format);
-                dateFormat = dateFormattingService.getDateFormatter(formatEnum, userContext);
+                dateFormat = dateFormattingService.getDateTimeFormatter(formatEnum, userContext);
             } catch (IllegalArgumentException e) {
-                dateFormat = new SimpleDateFormat(format, userContext.getLocale());
-                dateFormat.setTimeZone(userContext.getTimeZone());
+                DateTimeFormat.forPattern(format).withLocale(userContext.getLocale()).withZone(userContext.getJodaTimeZone());
             }
             dateFormatCache.put(format, dateFormat);
         }
@@ -63,10 +64,11 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
             }
             result = format.format(value);
         } else if (value instanceof Date) {
-            synchronized (this) {
-                DateFormat format = getDateFormatter(extra);
-                result = format.format(value);
-            }
+            DateTimeFormatter format = getDateFormatter(extra);
+            result = format.print(new Instant(value));
+        } else if (value instanceof ReadableInstant) {
+            DateTimeFormatter format = getDateFormatter(extra);
+            result = format.print((ReadableInstant) value);
         } else if (value instanceof Color) {
             Color color = (Color) value;
             result = String.format(extra, color.getRed(), color.getGreen(), color.getBlue());

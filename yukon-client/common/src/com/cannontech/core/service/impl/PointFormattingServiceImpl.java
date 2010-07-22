@@ -71,7 +71,6 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     	CachingPointFormattingService impl = new CachingPointFormattingService() {
             
             private Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
-            private Map<Integer, LiteUnitMeasure> unitCache = new HashMap<Integer, LiteUnitMeasure>();
             private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
             
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
@@ -111,33 +110,26 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                     
                 } else {
                     value = data.getValue();
-                    if (templateProcessor.contains(format, "unit")) {
-                        
-                        // unit of measure
-                        LiteUnitMeasure unitOfMeasure = unitCache.get(data.getId());
-                        if (unitOfMeasure == null) {
-                            unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(data.getId());
-                            unitCache.put(data.getId(), unitOfMeasure);
+                    if (templateProcessor.contains(format, "unit") || templateProcessor.contains(format, "default")) {
+                        // point unit
+                        LitePointUnit pointUnit = pointUnitCache.get(data.getId());
+                        if (pointUnit == null) {
+                            pointUnit = pointDao.getPointUnit(data.getId());
+                            pointUnitCache.put(data.getId(), pointUnit);
                         }
-                        
+
+                        // unit of measure
+                        int uOfMId = pointUnit.getUomID();
+                        // unitMeasureDao caches internally
+                        LiteUnitMeasure unitOfMeasure = unitMeasureDao.getLiteUnitMeasure(uOfMId);
+
                         if (unitOfMeasure != null) {
                             unitString = unitOfMeasure.getUnitMeasureName();
                         } else {
                             log.debug("Couldn't load LiteUnitMeasure for point " + data.getId());
                         }
-                        
-                    }
 
-                    if (templateProcessor.contains(format, "default")) {
                         try {
-                            
-                            // point unit
-                            LitePointUnit pointUnit = pointUnitCache.get(data.getId());
-                            if (pointUnit == null) {
-                                pointUnit = pointDao.getPointUnit(data.getId());
-                                pointUnitCache.put(data.getId(), pointUnit);
-                            }
-                            
                             decimalDigits = pointUnit.getDecimalPlaces();
                         } catch (NotFoundException e) {
                             log.debug("Couldn't load LitePointUnit for point " + data.getId() + ", using default");
