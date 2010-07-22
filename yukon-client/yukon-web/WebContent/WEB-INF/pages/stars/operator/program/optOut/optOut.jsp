@@ -9,6 +9,9 @@
 
 <cti:standardPage module="operator" page="optOut.main">
 
+<cti:msg2 var="confirmDialogTitle" key=".confirmDialogTitle"/>
+<tags:simpleDialog id="confirmDialog" title="${confirmDialogTitle}"/>
+
 <!-- Helper Popup -->
 <c:url var="help" value="/WebConfig/yukon/Icons/help.gif"/>
 <c:url var="helpOver" value="/WebConfig/yukon/Icons/help_over.gif"/>
@@ -124,23 +127,22 @@
                     </td>
                     <td valign="top">
 
-                        <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/cancelOptOut">
+                        <cti:url var="cancelOptOutUrl" value="/spring/stars/operator/program/optOut/confirmCancelOptOut">
                             <cti:param name="accountId" value="${accountId}"/>
-                            <cti:param name="eventId" value="${optOut.eventId}" />
+                            <cti:param name="eventId" value="${optOut.eventId}"/>
+                            <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}"/>
                         </cti:url>
-                        <i:simpleLink actionUrl="${cancelOptOutUrl}" 
-                                      logoKey="cancelOptOut"/>
+                        <cti:img key="cancelOptOut"
+                            href="javascript:openSimpleDialog('confirmDialog', '${cancelOptOutUrl}')"/>                        
 
                         <c:choose>
                             <c:when test="${optOut.state == 'START_OPT_OUT_SENT'}">
-                                <cti:url var="resendOptOutUrl" value="/spring/stars/operator/program/optOut/repeat">
+                                <cti:url var="resendUrl" value="/spring/stars/operator/program/optOut/confirmResend">
                                     <cti:param name="accountId" value="${accountId}"/>
                                     <cti:param name="inventoryId" value="${optOut.inventory.inventoryId}" />
-                                    <cti:param name="eventId" value="${optOut.eventId}" />
                                 </cti:url>
-
-                                <i:simpleLink actionUrl="${resendOptOutUrl}" 
-                                              logoKey="resendOptOut"/>
+                                <cti:img key="resendOptOut"
+                                    href="javascript:openSimpleDialog('confirmDialog', '${resendUrl}')"/>                        
                             </c:when>
                             <c:otherwise>
                                 <cti:img key="resendOptOutDisabled"/>
@@ -194,25 +196,24 @@
                     </td>
                     <td>
                         <c:if test="${!noOptOutLimits}">
-                    
-                            <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/allowAnother">
+                            <cti:url var="allowAnotherUrl" value="/spring/stars/operator/program/optOut/confirmAllowAnother">
                                 <cti:param name="accountId" value="${accountId}"/>
                                 <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                             </cti:url>
-        
-                            <i:simpleLink actionUrl="${allowAnotherUrl}" logoKey="allowOne"/>
+                            <cti:img key="allowOne"
+                                href="javascript:openSimpleDialog('confirmDialog', '${allowAnotherUrl}')"/>                        
+
                             <c:choose>
         	                    <c:when test="${optOutLimit <= optOutCounts[inventory.inventoryId].remainingOptOuts}">
                                     <cti:img key="resetToLimitDisabled"/>
         	                    </c:when>
         	                    <c:otherwise> 
-        
-                                    <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/resetToLimit">
+                                    <cti:url var="resetToLimitUrl" value="/spring/stars/operator/program/optOut/confirmResetToLimit">
                                         <cti:param name="accountId" value="${accountId}"/>
                                         <cti:param name="inventoryId" value="${inventory.inventoryId}" />
                                     </cti:url>
-        
-                                    <i:simpleLink actionUrl="${resetToLimitUrl}" logoKey="resetToLimit"/>
+                                    <cti:img key="resetToLimit"
+                                        href="javascript:openSimpleDialog('confirmDialog', '${resetToLimitUrl}')"/>                        
           	                   </c:otherwise>
         	                </c:choose>
                                              
