@@ -433,9 +433,6 @@ public class OperatorProgramOptOutOperatorController {
     public String confirmCancelOptOut(int eventId, int inventoryId,
             ModelMap model, YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-
         CustomerAccount customerAccount =
             customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkEventAgainstAccount(eventId, customerAccount);
@@ -470,9 +467,6 @@ public class OperatorProgramOptOutOperatorController {
     public String confirmDecrementAllowances(int inventoryId, ModelMap model,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-
         CustomerAccount customerAccount =
             customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
@@ -488,9 +482,6 @@ public class OperatorProgramOptOutOperatorController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment)
             throws ServletRequestBindingException {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -510,9 +501,6 @@ public class OperatorProgramOptOutOperatorController {
     public String confirmAllowAnother(int inventoryId, ModelMap model,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-        
         CustomerAccount customerAccount =
             customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
@@ -549,9 +537,6 @@ public class OperatorProgramOptOutOperatorController {
     public String confirmResend(int inventoryId, ModelMap model,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-
         CustomerAccount customerAccount =
             customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
@@ -589,9 +574,6 @@ public class OperatorProgramOptOutOperatorController {
     public String confirmResetToLimit(int inventoryId, ModelMap model,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
-        rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
-                                       userContext.getYukonUser());
-
         CustomerAccount customerAccount =
             customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
