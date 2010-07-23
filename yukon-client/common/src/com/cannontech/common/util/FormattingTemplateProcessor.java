@@ -40,7 +40,7 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
                 DateFormatEnum formatEnum = DateFormatEnum.valueOf(format);
                 dateFormat = dateFormattingService.getDateTimeFormatter(formatEnum, userContext);
             } catch (IllegalArgumentException e) {
-                DateTimeFormat.forPattern(format).withLocale(userContext.getLocale()).withZone(userContext.getJodaTimeZone());
+                dateFormat = DateTimeFormat.forPattern(format).withLocale(userContext.getLocale()).withZone(userContext.getJodaTimeZone());
             }
             dateFormatCache.put(format, dateFormat);
         }
