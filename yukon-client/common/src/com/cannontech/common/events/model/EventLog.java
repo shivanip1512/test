@@ -15,11 +15,10 @@ public class EventLog {
     private Date dateTime;
     
     private Object[] arguments;
-
+    
     public Integer getEventLogId() {
         return eventLogId;
     }
-
     public void setEventLogId(Integer eventLogId) {
         this.eventLogId = eventLogId;
     }
@@ -27,7 +26,6 @@ public class EventLog {
     public String getEventType() {
         return eventType;
     }
-
     public void setEventType(String eventType) {
         this.eventType = eventType;
         this.eventCategory = createCategoryForFullType(eventType);
@@ -71,5 +69,6 @@ public class EventLog {
     public String toString() {
         return eventType + " @ " + new DateTime(dateTime) + " " + Arrays.toString(arguments);
     }
+    
 
 }
