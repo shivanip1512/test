@@ -8,20 +8,20 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface SystemEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
-    public void loginWeb(@Arg(value="username") LiteYukonUser user, 
-                         @Arg(value="remoteAddress") String remoteAddress);
+    public void loginWeb(@Arg(EventLogArgEnum.username) LiteYukonUser user, 
+                         @Arg(EventLogArgEnum.remoteAddress) String remoteAddress);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
-    public void loginClient(@Arg(value="username") LiteYukonUser user,
-                            @Arg(value="remoteAddress") String remoteAddress);
+    public void loginClient(@Arg(EventLogArgEnum.username) LiteYukonUser user,
+                            @Arg(EventLogArgEnum.remoteAddress) String remoteAddress);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
-    public void loginInboundVoice(@Arg(value="username") LiteYukonUser user,
-                                  @Arg(value="remoteAddress") String remoteAddress);
+    public void loginInboundVoice(@Arg(EventLogArgEnum.username) LiteYukonUser user,
+                                  @Arg(EventLogArgEnum.remoteAddress) String remoteAddress);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.login")
-    public void loginOutboundVoice(@Arg(value="username") LiteYukonUser user,
-                                   @Arg(value="remoteAddress") String remoteAddress);    
+    public void loginOutboundVoice(@Arg(EventLogArgEnum.username) LiteYukonUser user,
+                                   @Arg(EventLogArgEnum.remoteAddress) String remoteAddress);    
     
 
 }

@@ -902,8 +902,12 @@ public class AccountServiceImpl implements AccountService {
          * Update Login
          */
         
-        
         log.info("Account: " +accountNumber + " updated successfully.");
+
+        if  (updatableAccount.getAccountNumber().equalsIgnoreCase(account.getAccountNumber())) {
+            accountEventLogService.accountNumberChanged(user, account.getAccountNumber(), 
+                                                        updatableAccount.getAccountNumber());
+        }
         
         accountEventLogService.accountUpdated(user, accountNumber);
     }

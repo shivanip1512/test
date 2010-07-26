@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
@@ -28,6 +29,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class UpdateAccountsRequestEndpoint {
 
+    private AccountEventLogService accountEventLogService;
     private AccountService accountService;
     private AccountServiceHelper accountServiceHelper;
     private Namespace ns = YukonXml.getYukonNamespace();
@@ -50,6 +52,8 @@ public class UpdateAccountsRequestEndpoint {
         updateAccountsResponse.addContent(updateAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
+            accountEventLogService.accountUpdateAttemptedThroughAPI(user,account.getAccountNumber());
+            
             Element updateAccountResult = addAccountResponse(ns, updateAccountsResultList, account);
             try {
                 UpdatableAccount filledAccount = accountServiceHelper.buildFullDto(account, user);
@@ -57,6 +61,8 @@ public class UpdateAccountsRequestEndpoint {
                 updateAccountResult.addContent(new Element("success", ns));
             } catch(InvalidAccountNumberException e) {
                 if(add) {
+                    accountEventLogService.accountCreationAttemptedThroughAPI(user,account.getAccountNumber());
+                    
                     // Update didn't work, try to add it.
                     try {
                         accountService.addAccount(account, user);
@@ -97,6 +103,11 @@ public class UpdateAccountsRequestEndpoint {
         updateAccountsResultList.addContent(customerAccountResult);
         customerAccountResult.addContent(XmlUtils.createStringElement("accountNumber", ns, account.getAccountNumber()));
         return customerAccountResult;
+    }
+    
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
     }
     
     @Autowired

@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import net.sf.json.JSONArray;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.joda.time.DateTime;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -36,6 +39,8 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
@@ -53,8 +58,10 @@ public class OptOutController extends AbstractConsumerController {
 	
 	private static int MAX_NUMBER_OF_OPT_OUT_HISTORY = 6;
 	
+	private AccountEventLogService accountEventLogService;
     private RolePropertyDao rolePropertyDao;
     private DateFormattingService dateFormattingService;
+    private LMHardwareBaseDao lmHardwareBaseDao;
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
     private OptOutStatusService optOutStatusService;
@@ -218,28 +225,35 @@ public class OptOutController extends AbstractConsumerController {
     
     @RequestMapping("/consumer/optout/update")
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            YukonUserContext yukonUserContext, String startDate, int durationInDays,
+            YukonUserContext userContext, String startDate, int durationInDays,
             String jsonInventoryIds, HttpServletRequest request, ModelMap map) throws Exception {
+
+
+        Date startDateObj = parseDate(startDate, userContext);
+        DateTime optOutStartDate = new LocalDate(startDateObj, userContext.getJodaTimeZone()).toDateTimeAtStartOfDay();
+        List<Integer> inventoryIds = getInventoryIds(userContext, jsonInventoryIds);
+        for (int inventoryId : inventoryIds) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            accountEventLogService.optOutAttemptedByConsumer(userContext.getYukonUser(), 
+                                                             customerAccount.getAccountNumber(), 
+                                                             lmHardwareBase.getManufacturerSerialNumber(),
+                                                             optOutStartDate);
+        }
         
-    	LiteYukonUser user = yukonUserContext.getYukonUser();
-        if (!optOutStatusService.getOptOutEnabled(user)) {
+    	if (!optOutStatusService.getOptOutEnabled(userContext.getYukonUser())) {
             return "consumer/optout/optOutDisabled.jsp";
         }
-
-    	List<Integer> inventoryIds = getInventoryIds(yukonUserContext, jsonInventoryIds);
     	validateInventoryIds(inventoryIds, customerAccount);
-
-        Date startDateObj = parseDate(startDate, yukonUserContext);
 
         MessageSourceResolvable result = new YukonMessageSourceResolvable(
 			"yukon.dr.consumer.optoutresult.success");
         
         // Validate the start date
-        TimeZone userTimeZone = yukonUserContext.getTimeZone();
+        TimeZone userTimeZone = userContext.getTimeZone();
         final Date now = new Date();
 		final Date today = TimeUtil.getMidnight(now, userTimeZone);
 		try {
-		    validateStartDate(startDateObj, today, yukonUserContext, customerAccount);
+		    validateStartDate(startDateObj, today, userContext, customerAccount);
         } catch (StartDateException exception) {
         	result = new YukonMessageSourceResolvable(
         			"yukon.dr.consumer.optoutresult.invalidStartDate");
@@ -250,7 +264,7 @@ public class OptOutController extends AbstractConsumerController {
 
         boolean isSameDay = TimeUtil.isSameDay(startDateObj,
                                                today,
-                                               yukonUserContext.getTimeZone());
+                                               userContext.getTimeZone());
 
         String jsonQuestions = ServletRequestUtils.getStringParameter(request,
                                                                       "jsonQuestions");
@@ -282,7 +296,7 @@ public class OptOutController extends AbstractConsumerController {
         optOutRequest.setInventoryIdList(inventoryIds);
         optOutRequest.setQuestions(questionList);
 
-        optOutService.optOut(customerAccount, optOutRequest, user);
+        optOutService.optOut(customerAccount, optOutRequest, userContext.getYukonUser());
 
         map.addAttribute("result", result);
         return "consumer/optout/optOutResult.jsp";
@@ -316,10 +330,19 @@ public class OptOutController extends AbstractConsumerController {
 
     @RequestMapping(value = "/consumer/optout/cancel", method = RequestMethod.POST)
     public String cancel(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-    		Integer eventId, YukonUserContext yukonUserContext, ModelMap map) throws Exception {
+    		Integer eventId, YukonUserContext userContext, ModelMap map) throws Exception {
 
+        // Log consumer opt out cancel attempt
+        OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(optOutEvent.getInventoryId());
+        accountEventLogService.optOutCancelAtteptedByConsumer(userContext.getYukonUser(), 
+                                                              customerAccount.getAccountNumber(),
+                                                              lmHardwareBase.getManufacturerSerialNumber(),
+                                                              optOutEvent.getStartDate(),
+                                                              optOutEvent.getStopDate());
+        
     	// Make sure opt outs are enabled for the user
-    	LiteYukonUser user = yukonUserContext.getYukonUser();
+    	LiteYukonUser user = userContext.getYukonUser();
         if (!optOutStatusService.getOptOutEnabled(user)) {
             return "consumer/optout/optOutDisabled.jsp";
         }
@@ -445,14 +468,23 @@ public class OptOutController extends AbstractConsumerController {
     }
 
     @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
     }
 
     @Autowired
-    public void setDateFormattingService(
-            DateFormattingService dateFormattingService) {
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     
     @Autowired

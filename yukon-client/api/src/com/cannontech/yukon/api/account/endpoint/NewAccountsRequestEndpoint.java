@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
@@ -27,6 +28,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class NewAccountsRequestEndpoint {
 
+    private AccountEventLogService accountEventLogService;
     private AccountService accountService;
     private Namespace ns = YukonXml.getYukonNamespace();
     
@@ -46,6 +48,8 @@ public class NewAccountsRequestEndpoint {
         newAccountsResponse.addContent(newAccountsResultList);
         
         for (UpdatableAccount account : customerAccounts) {
+            accountEventLogService.accountCreationAttemptedThroughAPI(user,account.getAccountNumber());
+            
             Element newAccountResult = addAccountResponse(ns, newAccountsResultList, account);
             try {
                 accountService.addAccount(account, user);
@@ -78,6 +82,11 @@ public class NewAccountsRequestEndpoint {
         customerAccountResult.addContent(XmlUtils.createStringElement("accountNumber", ns, account.getAccountNumber()));
         newAccountsResultList.addContent(customerAccountResult);
         return customerAccountResult;
+    }
+    
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
     }
     
     @Autowired

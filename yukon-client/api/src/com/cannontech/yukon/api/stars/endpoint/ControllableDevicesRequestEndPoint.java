@@ -12,6 +12,7 @@ import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -35,6 +36,8 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class ControllableDevicesRequestEndPoint {
     private static Logger log = YukonLogManager.getLogger(ControllableDevicesRequestEndPoint.class);
+
+    private HardwareEventLogService hardwareEventLogService;
     private StarsControllableDeviceHelper starsControllableDeviceHelper;
     private AuthDao authDao;    
 
@@ -92,6 +95,10 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
+                hardwareEventLogService.hardwareAdditionAttemptedThroughAPI(user,
+                                                                            device.getAccountNumber(),
+                                                                            device.getSerialNumber());
+                
                 starsControllableDeviceHelper.addDeviceToAccount(device, user);
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
@@ -123,6 +130,11 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
+                hardwareEventLogService.hardwareUpdateAttemptedThroughAPI(user,
+                                                                          device.getAccountNumber(),
+                                                                          device.getSerialNumber());
+
+                
                 starsControllableDeviceHelper.updateDeviceOnAccount(device, user);
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
@@ -154,6 +166,11 @@ public class ControllableDevicesRequestEndPoint {
         // run service
         for (StarsControllableDeviceDTO device : devices) {
             try {
+                hardwareEventLogService.hardwareRemovalAttemptedThroughAPI(user,
+                                                                           device.getAccountNumber(),
+                                                                           device.getSerialNumber());
+
+                
                 starsControllableDeviceHelper.removeDeviceFromAccount(device, user);
             } catch (StarsClientRequestException e) {
                 // store error and continue to process all devices
@@ -278,6 +295,11 @@ public class ControllableDevicesRequestEndPoint {
     @Autowired
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
+    }
+    
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
     }
     
 }

@@ -29,6 +29,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.events.loggers.AccountEventLogService;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -68,6 +70,9 @@ import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 public class AccountImportService {
     
     private PrintWriter importLog;
+    
+    private AccountEventLogService accountEventLogService;
+    private HardwareEventLogService hardwareEventLogService;
     
     private StarsCustAccountInformationDao starsCustAccountInformationDao; 
     private StarsSearchDao starsSearchDao;
@@ -532,7 +537,8 @@ public class AccountImportService {
                                 LiteInventoryBase liteInv = null;
                                 
                                 // IMPORT HARDWARE
-                                liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, result );
+                                liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, 
+                                                          result, userContext);
 
                                 if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
                                         && !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
@@ -810,7 +816,7 @@ public class AccountImportService {
                     if (!preScan) {
                         LiteInventoryBase liteInv;
                         try {
-                            liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, result );                            
+                            liteInv = importHardware( hwFields, liteAcctInfo, energyCompany, result, userContext );                            
 
                             if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
                                     && !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
@@ -957,9 +963,11 @@ public class AccountImportService {
         }
     }
     
-    private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, AccountImportResult result) throws WebClientException {
+    private LiteInventoryBase importHardware(String[] hwFields, LiteStarsCustAccountInformation liteAcctInfo, 
+                                             LiteStarsEnergyCompany energyCompany, AccountImportResult result, 
+                                             YukonUserContext userContext) throws WebClientException {
         LiteInventoryBase liteInv = null;
-        
+
         for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
             int invID = liteAcctInfo.getInventories().get(i);
             LiteInventoryBase lInv = starsInventoryBaseDao.getByInventoryId(invID);
@@ -972,6 +980,9 @@ public class AccountImportService {
         try {
             
             if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase( "REMOVE" )) {
+                hardwareEventLogService.hardwareRemovalAttemptedThroughAccountImporter(userContext.getYukonUser(),
+                                                                                       hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
+                
                 if (liteInv == null)
                     throw new WebClientException("Cannot remove hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " not found in the customer account");
                 
@@ -993,6 +1004,8 @@ public class AccountImportService {
                 result.setNumHwRemoved(result.getNumHwRemoved() + 1);
             }
             else if (liteInv == null) {
+                hardwareEventLogService.hardwareCreationAttemptedThroughAccountImporter(userContext.getYukonUser(),
+                                                                                        hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
                 
                 // ADD HARDWARE
                 StarsControllableDeviceDTO dto = starsControllableDeviceDTOConverter.createNewDto(liteAcctInfo.getCustomerAccount()
@@ -1000,8 +1013,9 @@ public class AccountImportService {
                 liteInv = starsControllableDeviceHelper.addDeviceToAccount(dto, result.getCurrentUser());
                 
                 result.setNumHwAdded(result.getNumHwAdded() + 1);
-            }
-            else if (!result.isInsertSpecified()) {
+            } else if (!result.isInsertSpecified()) {
+                hardwareEventLogService.hardwareUpdateAttemptedThroughAccountImporter(userContext.getYukonUser(),
+                                                                                      hwFields[ImportManagerUtil.IDX_SERIAL_NO]);
                 
                 // UPDATE HARDWARE
                 StarsControllableDeviceDTO dto = starsControllableDeviceDTOConverter
@@ -1032,6 +1046,9 @@ public class AccountImportService {
         try {
             
             if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase( "REMOVE" )) {
+                accountEventLogService.accountDeletionAttemptedThroughAccountImporter(userContext.getYukonUser(),
+                                                                                      custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
+                // deletion 
                 if (liteAcctInfo == null) {
                     String errorStr = "Cannot delete customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist";
                     automationCheck(errorStr, result.isAutomatedImport());
@@ -1049,7 +1066,9 @@ public class AccountImportService {
             }
             
             if (liteAcctInfo == null) {
-    
+                accountEventLogService.accountCreationAttemptedThroughAccountImporter(userContext.getYukonUser(),
+                                                                                      custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
+                
                 // Validates the IVR fields and throws a web client exception if they don't
                 ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
                 ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_PIN]);
@@ -1060,8 +1079,9 @@ public class AccountImportService {
                 liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
                 
                 result.setNumAcctAdded(result.getNumAcctAdded() + 1);
-            }
-            else if (!result.isInsertSpecified()) {
+            } else if (!result.isInsertSpecified()) {
+                accountEventLogService.accountUpdateAttemptedThroughAccountImporter(userContext.getYukonUser(),
+                                                                                    custFields[ImportManagerUtil.IDX_ACCOUNT_NO]);
     
                 // Validates the IVR fields and throws a web client exception if they don't
                 ServletUtils.formatPin(custFields[ImportManagerUtil.IDX_IVR_USERNAME]);
@@ -1268,6 +1288,16 @@ public class AccountImportService {
         emailMsg.send();
     }
 
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
+    }
+    
     @Autowired
     public void setStarsCustAccountInformationDao(StarsCustAccountInformationDao starsCustAccountInformationDao) {
         this.starsCustAccountInformationDao = starsCustAccountInformationDao;

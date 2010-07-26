@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.StringUtils;
@@ -47,7 +48,9 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
@@ -77,12 +80,14 @@ import com.google.common.collect.Multimap;
 @RequestMapping(value = "/operator/program/optOut/*")
 public class OperatorProgramOptOutOperatorController {
     
+    private AccountEventLogService accountEventLogService;
     private CustomerAccountDao customerAccountDao;
     private DatePropertyEditorFactory datePropertyEditorFactory;
     private DisplayableInventoryDao displayableInventoryDao;
     private OptOutEventDao optOutEventDao;
     private OptOutService optOutService; 
     private OptOutValidatorFactory optOutValidatorFactory;
+    private LMHardwareBaseDao lmHardwareBaseDao;
     private RolePropertyDao rolePropertyDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -375,6 +380,15 @@ public class OperatorProgramOptOutOperatorController {
                                 AccountInfoFragment accountInfoFragment,
                                 List<Integer> inventoryIds,
                                 CustomerAccount customerAccount) throws ServletRequestBindingException, CommandCompletionException {
+        
+        for (int inventoryId : inventoryIds) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            accountEventLogService.optOutAttemptedByOperator(userContext.getYukonUser(),
+                                                             accountInfoFragment.getAccountNumber(),
+                                                             lmHardwareBase.getManufacturerSerialNumber(),
+                                                             optOutBackingBean.getStartDate().toDateTimeAtStartOfDay());
+        }
+        
         this.checkInventoryAgainstAccount(inventoryIds, customerAccount);
         
         // validate/update
@@ -445,21 +459,30 @@ public class OperatorProgramOptOutOperatorController {
     public String cancelOptOut(Integer eventId,
                                 FlashScope flashScope,
                                 ModelMap modelMap,
-                                YukonUserContext yukonUserContext,
+                                YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) throws Exception {
+
+        // Log consumer opt out cancel attempt
+        OptOutEvent optOutEvent = optOutEventDao.getOptOutEventById(eventId);
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(optOutEvent.getInventoryId());
+        accountEventLogService.optOutCancelAtteptedByOperator(userContext.getYukonUser(), 
+                                                              accountInfoFragment.getAccountNumber(),
+                                                              lmHardwareBase.getManufacturerSerialNumber(),
+                                                              optOutEvent.getStartDate(),
+                                                              optOutEvent.getStopDate());
 
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkEventAgainstAccount(eventId, customerAccount);
         
-        LiteYukonUser user = yukonUserContext.getYukonUser();
+        LiteYukonUser user = userContext.getYukonUser();
         optOutService.cancelOptOut(Collections.singletonList(eventId), user);
         
         flashScope.setConfirm(
                        new YukonMessageSourceResolvable(
                               "yukon.web.modules.operator.optOut.main.cancelOptOut.successText"));
         
-        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return closeDialog(modelMap);
     }
 
@@ -482,6 +505,9 @@ public class OperatorProgramOptOutOperatorController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment)
             throws ServletRequestBindingException {
+        
+        
+        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -517,6 +543,12 @@ public class OperatorProgramOptOutOperatorController {
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
+        // Log opt out addition attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        accountEventLogService.optOutLimitIncreaseAttemptedByOperator(userContext.getYukonUser(),
+                                                                      accountInfoFragment.getAccountNumber(), 
+                                                                      lmHardwareBase.getManufacturerSerialNumber());
+        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -525,8 +557,7 @@ public class OperatorProgramOptOutOperatorController {
         optOutService.allowAdditionalOptOuts(customerAccount.getAccountId(), inventoryId, 1, 
                                              userContext.getYukonUser());
         
-        flashScope.setConfirm(
-                              new YukonMessageSourceResolvable(
+        flashScope.setConfirm(new YukonMessageSourceResolvable(
                               "yukon.web.modules.operator.optOut.main.allowOne.successText"));
         
         setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
@@ -550,9 +581,15 @@ public class OperatorProgramOptOutOperatorController {
     public String resend(Integer inventoryId,
                           FlashScope flashScope,
                           ModelMap modelMap,
-                          YukonUserContext yukonUserContext,
+                          YukonUserContext userContext,
                           AccountInfoFragment accountInfoFragment) throws Exception {
 
+        // Log command resend attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        accountEventLogService.optOutResendAttemptedByOperator(userContext.getYukonUser(),
+                                                               accountInfoFragment.getAccountNumber(),
+                                                               lmHardwareBase.getManufacturerSerialNumber());
+        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         this.checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -560,13 +597,13 @@ public class OperatorProgramOptOutOperatorController {
         optOutService.resendOptOut(
                 inventoryId, 
                 customerAccount.getAccountId(), 
-                yukonUserContext.getYukonUser());
+                userContext.getYukonUser());
         
         flashScope.setConfirm(
                        new YukonMessageSourceResolvable(
                                "yukon.web.modules.operator.optOut.main.resendOptOut.successText"));
                
-        setupOptOutModelMapBasics(accountInfoFragment, modelMap, yukonUserContext);
+        setupOptOutModelMapBasics(accountInfoFragment, modelMap, userContext);
         return closeDialog(modelMap);
     }
 
@@ -574,6 +611,7 @@ public class OperatorProgramOptOutOperatorController {
     public String confirmResetToLimit(int inventoryId, ModelMap model,
             YukonUserContext userContext,
             AccountInfoFragment accountInfoFragment) {
+        
         CustomerAccount customerAccount =
             customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId),
@@ -590,6 +628,12 @@ public class OperatorProgramOptOutOperatorController {
                                 YukonUserContext userContext,
                                 AccountInfoFragment accountInfoFragment) {
 
+        // Log opt out reset attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        accountEventLogService.optOutLimitResetAttemptedByOperator(userContext.getYukonUser(),
+                                                                   accountInfoFragment.getAccountNumber(),
+                                                                   lmHardwareBase.getManufacturerSerialNumber());
+        
         // Check that the inventory we're working with belongs to the current account
         CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         checkInventoryAgainstAccount(Collections.singletonList(inventoryId), customerAccount);
@@ -686,6 +730,11 @@ public class OperatorProgramOptOutOperatorController {
     }
 
     @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
     public void setOptOutService(OptOutService optOutService) {
         this.optOutService = optOutService;
     }
@@ -722,9 +771,13 @@ public class OperatorProgramOptOutOperatorController {
     }
     
     @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
         this.messageSourceResolver = messageSourceResolver;
+    }
+    
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     
     @Autowired

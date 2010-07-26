@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
@@ -22,6 +23,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class ResetOverrideCountBySerialNumberRequestEndpoint {
 
+    private AccountEventLogService accountEventLogService;
 	private OptOutService optOutService;
     private Namespace ns = YukonXml.getYukonNamespace();
 	private RolePropertyDao rolePropertyDao;
@@ -45,6 +47,10 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
         // run service
         Element resultElement;
         try {
+            // Log opt out limit reset attempt
+            accountEventLogService.optOutLimitResetAttemptedThroughAPI(user, 
+                                                                       accountNumber, 
+                                                                       serialNumber);
             
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_PROGRAMS_OPT_OUT, user);
         	
@@ -67,6 +73,11 @@ public class ResetOverrideCountBySerialNumberRequestEndpoint {
         // build response
         resp.addContent(resultElement);
         return resp;
+    }
+    
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
     }
     
     @Autowired

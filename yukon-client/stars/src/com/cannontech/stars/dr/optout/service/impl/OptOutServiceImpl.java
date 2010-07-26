@@ -595,6 +595,14 @@ public class OptOutServiceImpl implements OptOutService {
 		if(optOutsToAdd > 0) {
 		    allowAdditionalOptOuts(accountId, inventoryId, optOutsToAdd, user);
 		}
+		
+        // Log opt out reset
+		CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        accountEventLogService.optOutLimitReset(user,
+                                                customerAccount.getAccountNumber(),
+                                                lmHardwareBase.getManufacturerSerialNumber());
+
 	}
 	
 	@Override

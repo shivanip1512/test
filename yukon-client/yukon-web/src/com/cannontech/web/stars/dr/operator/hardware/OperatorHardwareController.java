@@ -26,6 +26,7 @@ import org.springframework.web.servlet.View;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ServiceCompanyDto;
@@ -56,9 +57,11 @@ import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.core.dao.WarehouseDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsTwoWayLcrYukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareClass;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -87,6 +90,8 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 public class OperatorHardwareController {
     public StarsDatabaseCache starsDatabaseCache;
+    
+    private HardwareEventLogService hardwareEventLogService;
     private HardwareService hardwareService;
     private EnergyCompanyDao energyCompanyDao;
     private PaoDao paoDao;
@@ -102,6 +107,7 @@ public class OperatorHardwareController {
     private CustomerAccountDao customerAccountDao;
     private ContactDao contactDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
+    private LMHardwareBaseDao lmHardwareBaseDao;
     
     /* HARDWARE LIST PAGE*/
     @RequestMapping
@@ -283,6 +289,9 @@ public class OperatorHardwareController {
         
         /* Validate and Update*/
         try {
+            hardwareEventLogService.hardwareUpdateAttemptedByOperator(userContext.getYukonUser(),
+                                                                      hardwareDto.getSerialNumber());
+            
             hardwareDtoValidator.validate(hardwareDto, bindingResult);
             
             if(!bindingResult.hasErrors()) {
@@ -339,6 +348,10 @@ public class OperatorHardwareController {
             return "redirect:hardwareList";
         }
         
+        hardwareEventLogService.hardwareCreationAttemptedByOperator(userContext.getYukonUser(),
+                                                                    accountInfoFragment.getAccountNumber(),
+                                                                    hardwareDto.getSerialNumber());
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES_CREATE, userContext.getYukonUser());
         int inventoryId = -1;
@@ -384,6 +397,10 @@ public class OperatorHardwareController {
     public String deleteHardware(ModelMap modelMap, YukonUserContext userContext, HttpServletRequest request, FlashScope flashScope, AccountInfoFragment accountInfoFragment,
                                  int inventoryId, String deleteOption) throws Exception {
         
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareDeletionAttemptedByOperator(userContext.getYukonUser(),
+                                                                    lmHardwareBase.getManufacturerSerialNumber());
+        
         hardwareService.validateInventoryAgainstAccount(Collections.singletonList(inventoryId), accountInfoFragment.getAccountId());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
@@ -406,6 +423,10 @@ public class OperatorHardwareController {
     @RequestMapping
     public View createYukonDevice(ModelMap modelMap, String deviceName, HttpServletResponse response, YukonUserContext userContext,
                                   int inventoryId) throws ServletRequestBindingException {
+        
+        hardwareEventLogService.twoWayHardwareCreationAttemptedByOperator(userContext.getYukonUser(), 
+                                                                          deviceName);
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         int deviceId = -1;
         try {
@@ -439,6 +460,12 @@ public class OperatorHardwareController {
     public String addDeviceToAccount(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope, 
                                      boolean fromAccount, 
                                      int inventoryId) {
+        
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.assigningHardwareAttemptedByOperator(userContext.getYukonUser(),
+                                                                     accountInfoFragment.getAccountNumber(),
+                                                                     lmHardwareBase.getManufacturerSerialNumber());
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
@@ -503,6 +530,10 @@ public class OperatorHardwareController {
     
     @RequestMapping
     public String addMeter(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope, int meterId) {
+        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(meterId);
+        hardwareEventLogService.hardwareMeterCreationAttemptedByOperator(userContext.getYukonUser(),
+                                                                         liteYukonPAO.getPaoName());
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         hardwareService.addYukonMeter(meterId, accountInfoFragment.getAccountId(), userContext);
         
@@ -514,7 +545,23 @@ public class OperatorHardwareController {
     }
 
     @RequestMapping
-    public String changeOut(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, FlashScope flashScope, int changeOutId, int oldInventoryId, boolean isMeter) {
+    public String changeOut(ModelMap modelMap, YukonUserContext userContext, AccountInfoFragment accountInfoFragment, 
+                            FlashScope flashScope, int changeOutId, int oldInventoryId, boolean isMeter) {
+
+        // Log change out attempt
+        LMHardwareBase oldInventory = lmHardwareBaseDao.getById(oldInventoryId);
+        if(isMeter) {
+            LiteInventoryBase changeOutInventory = starsInventoryBaseDao.getByDeviceId(changeOutId);
+            hardwareEventLogService.hardwareChangeOutForMeterAttemptedByOperator(userContext.getYukonUser(),
+                                                                                 oldInventory.getManufacturerSerialNumber(),
+                                                                                 changeOutInventory.getDeviceLabel());
+        } else {
+            LMHardwareBase changeOutInventory = lmHardwareBaseDao.getById(changeOutId);
+            hardwareEventLogService.hardwareChangeOutAttemptedByOperator(userContext.getYukonUser(), 
+                                                                         oldInventory.getManufacturerSerialNumber(), 
+                                                                         changeOutInventory.getManufacturerSerialNumber());
+        }
+
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
         hardwareService.changeOutInventory(oldInventoryId, changeOutId, userContext, isMeter);
         
@@ -764,5 +811,10 @@ public class OperatorHardwareController {
     @Autowired
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
+    }
+    
+    @Autowired
+    public void setLmHardwareBasedao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
 }

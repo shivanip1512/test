@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
@@ -67,6 +68,7 @@ import com.google.common.collect.Lists;
 @RequestMapping(value = "/operator/account/*")
 public class OperatorAccountController {
 
+    private AccountEventLogService accountEventLogService;
 	private OperatorGeneralSearchService operatorGeneralSearchService;
 	private OperatorAccountService operatorAccountService;
 	private StarsDatabaseCache starsDatabaseCache;
@@ -288,6 +290,9 @@ public class OperatorAccountController {
 		updatableAccount.setAccountNumber(currentAccountNumber);
 		updatableAccount.setAccountDto(accountGeneral.getAccountDto());
 		
+		accountEventLogService.accountUpdateAttemptedByOperator(userContext.getYukonUser(),
+		                                                        updatableAccount.getAccountNumber());
+		
 		// validate/update
 		try {
 			
@@ -326,7 +331,11 @@ public class OperatorAccountController {
     							ModelMap modelMap, 
     							YukonUserContext userContext,
     							FlashScope flashScope) throws ServletRequestBindingException {
-		
+	    CustomerAccount customerAccount = customerAccountDao.getById(accountId);
+	    
+	    accountEventLogService.accountDeletionAttemptedByOperator(userContext.getYukonUser(),
+	                                                              customerAccount.getAccountNumber());
+	    
 		accountService.deleteAccount(accountId, userContext.getYukonUser());
 		
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.accountEdit.accountDeleted"));
@@ -401,6 +410,11 @@ public class OperatorAccountController {
         model.addAttribute("accountImportData", data);
         model.addAttribute("accountFields", AccountImportFields.values());
         model.addAttribute("hardwareFields", HardwareImportFields.values());
+    }
+	
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
     }
 	
 	@Autowired

@@ -630,7 +630,6 @@ public class HardwareServiceImpl implements HardwareService {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(userContext.getYukonUser());
         LiteInventoryBase old = starsInventoryBaseDao.getByInventoryId(oldInventoryId);
         
-        
         /* If this is a meter change out the changeOutId will be a pao id */
         if(isMeter) {
             int accountId = old.getAccountID();

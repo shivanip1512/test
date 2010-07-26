@@ -10,6 +10,7 @@ import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
@@ -24,6 +25,7 @@ import com.cannontech.yukon.api.util.YukonXml;
 @Endpoint
 public class RemoveAccountsRequestEndpoint {
 
+    private AccountEventLogService accountEventLogService;
     private AccountService accountService;
     private Namespace ns = YukonXml.getYukonNamespace();
     
@@ -42,10 +44,12 @@ public class RemoveAccountsRequestEndpoint {
         Element removeAccountsResultList = new Element("accountResultList", ns);
         removeAccountsResponse.addContent(removeAccountsResultList);
         
-        for (String account : accountNumbers) {
-            Element removeAccountResult = addAccountResponse(ns, removeAccountsResultList, account);
+        for (String accountNumber : accountNumbers) {
+            accountEventLogService.accountDeletionAttemptedThroughAPI(user, accountNumber);
+            
+            Element removeAccountResult = addAccountResponse(ns, removeAccountsResultList, accountNumber);
             try {
-                accountService.deleteAccount(account, user);
+                accountService.deleteAccount(accountNumber, user);
             } catch(InvalidAccountNumberException e) {
                 Element fe = XMLFailureGenerator.generateFailure(removeAccountsRequest, e, "InvalidAccountNumber", e.getMessage());
                 removeAccountResult.addContent(fe);
@@ -77,6 +81,11 @@ public class RemoveAccountsRequestEndpoint {
 	    }
 	}
 
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+	
 	@Autowired
 	public void setAccountService(AccountService accountService) {
 		this.accountService = accountService;
