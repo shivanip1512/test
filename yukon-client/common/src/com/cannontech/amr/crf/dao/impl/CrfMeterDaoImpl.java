@@ -3,6 +3,7 @@ package com.cannontech.amr.crf.dao.impl;
 import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.crf.dao.CrfMeterDao;
@@ -66,22 +67,48 @@ public class CrfMeterDaoImpl implements CrfMeterDao {
             CrfMeter crfMeter = new CrfMeter(pao, crfMeterIdentifier);
             return crfMeter;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("no meter matches " + pao);
+            CrfMeter crfMeter = new CrfMeter(pao, CrfMeterIdentifier.createBlank());
+            return crfMeter;
         }
     }
 
     @Override
     public void updateMeter(CrfMeter meter) {
+        if(meter.getMeterIdentifier().isBlank()) {
+            /* When someone has blanked out the three fields of the crf meter address, delete that row from CrfAddress. */
+            deleteCrfAddress(meter);
+            return;
+        }
+        /* If there is a row in CrfAddress for this meter, update it, otherwise insert it. */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("update CrfAddress");
-        sql.append("set SerialNumber").eq(meter.getMeterIdentifier().getSensorSerialNumber());
-        sql.append(  ", Manufacturer").eq(meter.getMeterIdentifier().getSensorManufacturer());
-        sql.append(  ", Model").eq(meter.getMeterIdentifier().getSensorModel());
+        sql.append("INSERT INTO CrfAddress");
+        sql.values(meter.getPaoIdentifier().getPaoId(), meter.getMeterIdentifier().getSensorSerialNumber(), meter.getMeterIdentifier().getSensorManufacturer(), meter.getMeterIdentifier().getSensorModel());
+
+        try{
+            jdbcTemplate.update(sql);
+            return;
+        } catch (DataIntegrityViolationException e) {
+
+        }
+
+        /* Row is there, update it. */
+        SqlStatementBuilder updateSql = new SqlStatementBuilder();
+        updateSql.append("update CrfAddress");
+        updateSql.append("set SerialNumber").eq(meter.getMeterIdentifier().getSensorSerialNumber());
+        updateSql.append(  ", Manufacturer").eq(meter.getMeterIdentifier().getSensorManufacturer());
+        updateSql.append(  ", Model").eq(meter.getMeterIdentifier().getSensorModel());
+        updateSql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
+        jdbcTemplate.update(updateSql);
+
+    }
+    
+    private void deleteCrfAddress(CrfMeter meter) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM CrfAddress");
         sql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
         
         jdbcTemplate.update(sql);
     }
-    
     
     public String getFormattedDeviceName(CrfMeter device) throws IllegalArgumentException{
         return device.getName();

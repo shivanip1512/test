@@ -11,6 +11,10 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.ReadableInstant;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 /**
  * A helper class for building SQL statements.
  *   SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -189,6 +193,16 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     
     public SqlStatementBuilder in(Iterable<?> list) {
         statement.append("in (");
+        appendArgumentList(list);
+        statement.append(") ");
+        return this;
+    }
+    
+    public SqlStatementBuilder values(Object first, Object... remaining) {
+        statement.append("values (");
+        List<Object> list = Lists.newArrayListWithCapacity(1 + remaining.length);
+        list.add(first);
+        list.addAll(Arrays.asList(remaining));
         appendArgumentList(list);
         statement.append(") ");
         return this;

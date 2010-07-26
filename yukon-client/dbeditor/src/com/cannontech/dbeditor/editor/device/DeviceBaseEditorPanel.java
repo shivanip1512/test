@@ -19,6 +19,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
@@ -1853,9 +1854,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
             } else if(val instanceof CrfBase) {
                 CrfBase crfBase = (CrfBase)val;
-                crfBase.getCrfAddress().setSerialNumber(getSerialNumberTextField().getText());
-                crfBase.getCrfAddress().setManufacturer(getManufacturerTextField().getText());
-                crfBase.getCrfAddress().setModel(getModelTextField().getText());
+                crfBase.getCrfAddress().setSerialNumber(StringUtils.isBlank(getSerialNumberTextField().getText()) ? null : getSerialNumberTextField().getText());
+                crfBase.getCrfAddress().setManufacturer(StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText());
+                crfBase.getCrfAddress().setModel(StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText());
             }
         }
 
@@ -2025,6 +2026,28 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 return false;
             }
         }
+    	
+    	/* Check CRF Address settings */
+    	if(deviceBase instanceof CrfBase) {
+    	    String serialNumber = getSerialNumberTextField().getText();
+    	    String manufacturer = getManufacturerTextField().getText();
+    	    String model = getModelTextField().getText();
+    	    
+    	    /* Valid: 
+    	     *     1. All fields are blank.
+    	     *     2. All fields are filled in.
+    	     * Invalid: 
+    	     *     1. One or two of the three fields are blank.
+    	     */
+    	    if(StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model)) {
+    	        return true;
+    	    } else if(StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model)) {
+    	        return true;
+    	    } else {
+    	        setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+    	        return false;
+    	    }
+    	}
     	
     	String deviceName = getNameTextField().getText();
     	if( !isUniquePao(deviceName, deviceBase.getPAOCategory(), deviceBase.getPAOClass(), deviceBase.getPAObjectID())) {

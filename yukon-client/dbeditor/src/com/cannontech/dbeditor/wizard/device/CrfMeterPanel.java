@@ -15,6 +15,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -115,7 +117,24 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
     
     @Override
     public boolean isInputValid() {
-        return true;
+        String serialNumber = getSerialNumberTextField().getText();
+        String manufacturer = getManufacturerTextField().getText();
+        String model = getModelTextField().getText();
+        
+        /* Valid: 
+         *     1. All fields are blank.
+         *     2. All fields are filled in.
+         * Invalid: 
+         *     1. One or two of the three fields are blank.
+         */
+        if(StringUtils.isBlank(serialNumber) && StringUtils.isBlank(manufacturer) && StringUtils.isBlank(model)) {
+            return true;
+        } else if(StringUtils.isNotBlank(serialNumber) && StringUtils.isNotBlank(manufacturer) && StringUtils.isNotBlank(model)) {
+            return true;
+        } else {
+            setErrorString("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.");
+            return false;
+        }
     }
 
     public void caretUpdate(CaretEvent e) {
@@ -126,9 +145,9 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
     public Object getValue(Object o) throws EditorInputValidationException {
         CrfBase crfMeter = (CrfBase)o;
         
-        crfMeter.getCrfAddress().setManufacturer(getManufacturerTextField().getText());
-        crfMeter.getCrfAddress().setModel(getModelTextField().getText());
-        crfMeter.getCrfAddress().setSerialNumber(getSerialNumberTextField().getText());
+        crfMeter.getCrfAddress().setManufacturer(StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText());
+        crfMeter.getCrfAddress().setModel(StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText());
+        crfMeter.getCrfAddress().setSerialNumber(StringUtils.isBlank(getSerialNumberTextField().getText()) ? null : getSerialNumberTextField().getText());
         
         if (createPointsCheckBox.isSelected()) {
             PaoDao paoDao = (PaoDao) YukonSpringHook.getBean("paoDao");

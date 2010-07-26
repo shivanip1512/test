@@ -2,6 +2,8 @@ package com.cannontech.database.db.device;
 
 import java.sql.SQLException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.database.db.DBPersistent;
 
 public class CrfAddress extends DBPersistent  {
@@ -77,5 +79,12 @@ public class CrfAddress extends DBPersistent  {
 
     public void setModel(String model) {
         this.model = model;
+    }
+    
+    
+    public boolean isBlank() {
+        return StringUtils.isBlank(manufacturer) 
+            && StringUtils.isBlank(model)
+            && StringUtils.isBlank(serialNumber);
     }
 }
