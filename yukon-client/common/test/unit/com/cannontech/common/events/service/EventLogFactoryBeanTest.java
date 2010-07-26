@@ -11,14 +11,17 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
+import com.cannontech.common.bulk.filter.service.impl.FilterServiceImpl;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
+import com.cannontech.common.events.service.impl.EventLogServiceImpl;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.TransactionExecutor;
 import com.cannontech.core.dao.impl.LoginStatusEnum;
+import com.cannontech.core.service.impl.DateFormattingServiceImpl;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -53,7 +56,8 @@ public class EventLogFactoryBeanTest {
         eventLogFactoryBean.setServiceInterface(TestEventLogInterface.class);
         eventLogFactoryBean.setBeanClassLoader(this.getClass().getClassLoader());
         eventLogFactoryBean.setTransactionExecutor(new CurrentThreadExecutor());
-        eventLogFactoryBean.setEventLogDao(new EventLogDao() {
+        
+        EventLogDao eventLogDaoMock = new EventLogDao() {
             @Override
             public List<ArgumentColumn> getArgumentColumns() {
                 return argumentColumns;
@@ -104,8 +108,16 @@ public class EventLogFactoryBeanTest {
             public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
                 return null;
             }
-        });
+        };
         
+        eventLogFactoryBean.setEventLogDao(eventLogDaoMock);
+
+        EventLogServiceImpl eventLogService = new EventLogServiceImpl();
+        eventLogService.setDateFormattingService(new DateFormattingServiceImpl());
+        eventLogService.setFilterService(new FilterServiceImpl());
+        eventLogService.setEventLogDao(eventLogDaoMock);
+
+        eventLogFactoryBean.setEventLogService(eventLogService);
         eventLogFactoryBean.afterPropertiesSet();
         testEventLog = (TestEventLogInterface) eventLogFactoryBean.getObject();
     }
@@ -145,7 +157,8 @@ public class EventLogFactoryBeanTest {
         eventLogFactoryBean.setServiceInterface(BadTestEventLogInterface.class);
         eventLogFactoryBean.setBeanClassLoader(this.getClass().getClassLoader());
         eventLogFactoryBean.setTransactionExecutor(new CurrentThreadExecutor());
-        eventLogFactoryBean.setEventLogDao(new EventLogDao() {
+        
+        EventLogDao eventLogDaoMock = new EventLogDao() {
             @Override
             public List<ArgumentColumn> getArgumentColumns() {
                 return argumentColumns;
@@ -196,7 +209,15 @@ public class EventLogFactoryBeanTest {
             public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
                 return null;
             }
-        });
+        };
+        
+        eventLogFactoryBean.setEventLogDao(eventLogDaoMock);
+        
+        EventLogServiceImpl eventLogService = new EventLogServiceImpl();
+        eventLogService.setDateFormattingService(new DateFormattingServiceImpl());
+        eventLogService.setFilterService(new FilterServiceImpl());
+        eventLogService.setEventLogDao(eventLogDaoMock);
+        eventLogFactoryBean.setEventLogService(eventLogService);
         
         eventLogFactoryBean.afterPropertiesSet();
         eventLogFactoryBean.getObject();
