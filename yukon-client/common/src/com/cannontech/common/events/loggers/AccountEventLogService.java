@@ -227,6 +227,27 @@ public interface AccountEventLogService {
     
 /* Appliances */
     // Appliance
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.appliance")
+    public void applianceAdditionAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                     @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                     @Arg(EventLogArgEnum.applianceType) String applianceType,
+                                                     @Arg(EventLogArgEnum.deviceName) String deviceName,
+                                                     @Arg(EventLogArgEnum.programName) String programName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.appliance")
+    public void applianceUpdateAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                   @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                   @Arg(EventLogArgEnum.applianceType) String applianceType,
+                                                   @Arg(EventLogArgEnum.deviceName) String deviceName,
+                                                   @Arg(EventLogArgEnum.programName) String programName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.appliance")
+    public void applianceDelettionAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                      @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                      @Arg(EventLogArgEnum.applianceType) String applianceType,
+                                                      @Arg(EventLogArgEnum.deviceName) String deviceName,
+                                                      @Arg(EventLogArgEnum.programName) String programName);
+
     
     // Appliance Service Level
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.appliance")

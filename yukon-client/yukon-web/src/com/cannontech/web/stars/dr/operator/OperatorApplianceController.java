@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -32,6 +33,10 @@ import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.service.StarsApplianceService;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
+import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.user.YukonUserContext;
@@ -52,11 +57,14 @@ import com.cannontech.web.stars.dr.operator.validator.ApplianceValidator;
 @RequestMapping(value = "/operator/appliances/*")
 public class OperatorApplianceController {
 
+    private AccountEventLogService accountEventLogService;
     private ApplianceValidator applianceValidator;
     private ApplianceCategoryDao applianceCategoryDao;
     private DisplayableApplianceService displayableApplianceService;
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
     private HardwareService hardwareService;
+    private LMHardwareBaseDao lmHardwareBaseDao;
+    private ProgramDao programDao;
     private RolePropertyDao rolePropertyDao;
     private StarsApplianceDao starsApplianceDao;
     private StarsApplianceService starsApplianceService;
@@ -123,6 +131,25 @@ public class OperatorApplianceController {
                                   HttpSession session, FlashScope flashScope,
                                   AccountInfoFragment accountInfoFragment) {
         
+        // Log appliance deletion attempt
+        int inventoryId = starsAppliance.getInventoryID();
+        String serialNumber = "";
+        String programName = "";
+        if (inventoryId != 0) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            serialNumber = lmHardwareBase != null ? lmHardwareBase.getManufacturerSerialNumber() : "";
+            int programId = starsAppliance.getProgramID();
+            Program program = programDao.getByProgramId(programId);
+            programName = program != null ? program.getProgramName() : "";
+        }
+
+        accountEventLogService.applianceAdditionAttemptedByOperator(userContext.getYukonUser(), 
+                                                                    accountInfoFragment.getAccountNumber(), 
+                                                                    starsAppliance.getApplianceCategory().getName(), 
+                                                                    serialNumber, 
+                                                                    programName);
+        
+        // Check permissions
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
                                        userContext.getYukonUser());
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_APPLIANCES_CREATE, 
@@ -228,6 +255,25 @@ public class OperatorApplianceController {
                                    HttpSession session, FlashScope flashScope,
                                    AccountInfoFragment accountInfoFragment) {
 
+        // Log appliance deletion attempt
+        int inventoryId = starsAppliance.getInventoryID();
+        String serialNumber = "";
+        String programName = "";
+        if (inventoryId != 0) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            serialNumber = lmHardwareBase != null ? lmHardwareBase.getManufacturerSerialNumber() : "";
+            int programId = starsAppliance.getProgramID();
+            Program program = programDao.getByProgramId(programId);
+            programName = program != null ? program.getProgramName() : "";
+        }
+
+        accountEventLogService.applianceUpdateAttemptedByOperator(userContext.getYukonUser(), 
+                                                                  accountInfoFragment.getAccountNumber(), 
+                                                                  starsAppliance.getApplianceCategory().getName(), 
+                                                                  serialNumber, 
+                                                                  programName);
+        
+        // Check permissions
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
                                        userContext.getYukonUser());
         
@@ -284,6 +330,30 @@ public class OperatorApplianceController {
                                    HttpSession session)
             throws ServletRequestBindingException {
 
+        
+        
+        // Log appliance deletion attempt
+        LiteStarsAppliance liteStarsAppliance = 
+            starsApplianceDao.getByApplianceIdAndEnergyCompanyId(applianceId,
+                                                                 accountInfoFragment.getEnergyCompanyId());
+        int inventoryId = liteStarsAppliance.getInventoryID();
+        String serialNumber = "";
+        String programName = "";
+        if (inventoryId != 0) {
+            LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+            serialNumber = lmHardwareBase != null ? lmHardwareBase.getManufacturerSerialNumber() : "";
+            int programId = liteStarsAppliance.getProgramID();
+            Program program = programDao.getByProgramId(programId);
+            programName = program != null ? program.getProgramName() : "";
+        }
+
+        accountEventLogService.applianceAdditionAttemptedByOperator(userContext.getYukonUser(), 
+                                                                    accountInfoFragment.getAccountNumber(), 
+                                                                    liteStarsAppliance.getApplianceCategory().getName(), 
+                                                                    serialNumber, 
+                                                                    programName);
+        
+        // Check permissions
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, 
                                        userContext.getYukonUser());
 
@@ -336,6 +406,11 @@ public class OperatorApplianceController {
     }
 
     @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
+    @Autowired
     public void setApplianceValidator(ApplianceValidator applianceValidator) {
         this.applianceValidator = applianceValidator;
     }
@@ -351,8 +426,7 @@ public class OperatorApplianceController {
     }
 
     @Autowired
-    public void setDisplayableApplianceService(
-                      DisplayableApplianceService displayableApplianceService) {
+    public void setDisplayableApplianceService(DisplayableApplianceService displayableApplianceService) {
         this.displayableApplianceService = displayableApplianceService;
     }
 
@@ -362,6 +436,11 @@ public class OperatorApplianceController {
         this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
     }
 
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
+    }
+    
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
         this.rolePropertyDao = rolePropertyDao;
