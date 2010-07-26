@@ -10,8 +10,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.dao.EventLogDao;
-import com.cannontech.common.events.dao.EventLogDao.ArgumentColumn;
+import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.exception.BadConfigurationException;
@@ -42,10 +43,10 @@ public class EventLogFactoryBeanTest {
         insertedEventLogs = Lists.newArrayList();
         
         Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Number3", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
+        builder.add(new ArgumentColumn("String1", 1, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", 2, Types.VARCHAR));
+        builder.add(new ArgumentColumn("Number3", 3, Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number4", 4, Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
         EventLogFactoryBean eventLogFactoryBean = new EventLogFactoryBean();
@@ -99,6 +100,10 @@ public class EventLogFactoryBeanTest {
                                                                                    ReadableInstant filterInstant) {
                 return null;
             }
+            @Override
+            public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
+                return null;
+            }
         });
         
         eventLogFactoryBean.afterPropertiesSet();
@@ -129,10 +134,10 @@ public class EventLogFactoryBeanTest {
     @Test(expected=BadConfigurationException.class)
     public void testBadInterfaceThrowsException() throws Exception {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Number3", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Number4", Types.NUMERIC));
+        builder.add(new ArgumentColumn("String1", 1, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", 2, Types.VARCHAR));
+        builder.add(new ArgumentColumn("Number3", 3, Types.NUMERIC));
+        builder.add(new ArgumentColumn("Number4", 4, Types.NUMERIC));
         final List<ArgumentColumn> argumentColumns = builder.build();
         
         
@@ -185,6 +190,10 @@ public class EventLogFactoryBeanTest {
                                                                                    String filterString,
                                                                                    Double filterNumber,
                                                                                    ReadableInstant filterInstant) {
+                return null;
+            }
+            @Override
+            public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
                 return null;
             }
         });

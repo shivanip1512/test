@@ -62,4 +62,17 @@ public class YukonValidationUtils extends ValidationUtils {
 
         return retVal;
 	}
+
+    /**
+     * This method allows you to use one error key for multiple fields. 
+     * A good example of this would be a date range.  If the startDate is after the stopDate
+     *  both fields should be flagged as having an error.
+     */
+    public static void rejectValues(Errors errors, String errorMessageKey, String... fields) {
+        for (int i = 0; i < fields.length-1; i++) {
+            String fieldName = fields[i];
+            errors.rejectValue(fieldName, null, "");
+        } 
+        errors.rejectValue(fields[fields.length-1], errorMessageKey);
+    }
 }

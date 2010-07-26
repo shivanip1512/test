@@ -878,11 +878,9 @@
             <option name="byCategory">
               <link>/spring/common/eventLog/viewByCategory</link>
             </option>
-            <!--
             <option name="byType">
               <link>/spring/common/eventLog/viewByType</link>
             </option>
-            -->
           </options>
         </option>
         <option name="other">

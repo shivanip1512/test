@@ -1310,6 +1310,9 @@
     <bean id="contactNotificationDtoValidator" class="com.cannontech.web.stars.dr.operator.validator.ContactNotificationDtoValidator"/>
     <bean id="customerResidenceValidator" class="com.cannontech.web.stars.dr.operator.validator.CustomerResidenceValidator"/>
     <bean id="callReportValidator" class="com.cannontech.web.stars.dr.operator.validator.CallReportValidator"/>
+
+    <bean id="eventLogCategoryValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogCategoryValidator"/>
+    <bean id="eventLogTypeValidator" class="com.cannontech.web.stars.dr.operator.validator.EventLogTypeValidator"/>
     
   	<bean id="changeLoginValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.ChangeLoginValidatorFactoryImpl" />
   	<bean id="optOutValidatorFactory" class="com.cannontech.web.stars.dr.operator.validator.impl.OptOutValidatorFactoryImpl" />

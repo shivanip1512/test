@@ -5,6 +5,8 @@ import java.util.Set;
 
 import org.joda.time.ReadableInstant;
 
+import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
+import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.search.SearchResult;
@@ -21,20 +23,6 @@ public interface EventLogDao {
 
     public Set<EventCategory> getAllCategories();
     
-    public static class ArgumentColumn {
-        public ArgumentColumn(String columnName, int sqlType) {
-            this.columnName = columnName;
-            this.sqlType = sqlType;
-        }
-        public final String columnName;
-        public final int sqlType;
-        
-        @Override
-        public String toString() {
-            return columnName;
-        }
-    }
-
     /**
      * This method gets all the event logs between the start and stop date for the given set
      * of event categories.
@@ -72,4 +60,7 @@ public interface EventLogDao {
                                                          String filterString,
                                                          Double filterNumber,
                                                          ReadableInstant filterInstant);
+    
+    public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper();
+
 }

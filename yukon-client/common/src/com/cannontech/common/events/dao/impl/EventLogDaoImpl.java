@@ -12,15 +12,18 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.stereotype.Repository;
 
+import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
+import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.events.dao.EventLogDao;
+import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventLog;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.util.SqlFragmentCollection;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PagingResultSetExtractor;
 import com.cannontech.database.StringRowMapper;
@@ -43,18 +46,18 @@ public class EventLogDaoImpl implements EventLogDao {
     private int[] totalArgumentTypes;
     {
         Builder<ArgumentColumn> builder = ImmutableList.builder();
-        builder.add(new ArgumentColumn("String1", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String2", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String3", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String4", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String5", Types.VARCHAR));
-        builder.add(new ArgumentColumn("String6", Types.VARCHAR));
-        builder.add(new ArgumentColumn("Int7", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int8", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int9", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Int10", Types.NUMERIC));
-        builder.add(new ArgumentColumn("Date11", Types.TIMESTAMP));
-        builder.add(new ArgumentColumn("Date12", Types.TIMESTAMP));
+        builder.add(new ArgumentColumn("String1", 1, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String2", 2, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String3", 3, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String4", 4, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String5", 5, Types.VARCHAR));
+        builder.add(new ArgumentColumn("String6", 6, Types.VARCHAR));
+        builder.add(new ArgumentColumn("Int7", 7, Types.NUMERIC));
+        builder.add(new ArgumentColumn("Int8", 8, Types.NUMERIC));
+        builder.add(new ArgumentColumn("Int9", 9, Types.NUMERIC));
+        builder.add(new ArgumentColumn("Int10", 10, Types.NUMERIC));
+        builder.add(new ArgumentColumn("Date11", 11, Types.TIMESTAMP));
+        builder.add(new ArgumentColumn("Date12", 12, Types.TIMESTAMP));
         argumentColumns = builder.build();
 
         countOfTotalArguments = argumentColumns.size() + countOfNonVariableColumns; 
@@ -76,7 +79,21 @@ public class EventLogDaoImpl implements EventLogDao {
         insertSql += ")";
     }
     
-    private ParameterizedRowMapper<EventLog> eventLogRowMapper = new ParameterizedRowMapper<EventLog>() {
+    private RowMapperWithBaseQuery<EventLog> eventLogRowMapper = new AbstractRowMapperWithBaseQuery<EventLog>() {
+
+        @Override
+        public SqlFragmentSource getBaseQuery() {
+            SqlStatementBuilder retVal = new SqlStatementBuilder();
+            retVal.append("SELECT * ");
+            retVal.append("FROM EventLog");
+            return retVal;
+        }
+
+        @Override
+        public boolean needsWhere() {
+            return true;
+        }
+        
         public EventLog mapRow(ResultSet rs, int rowNum) throws java.sql.SQLException {
             EventLog eventLog = new EventLog();
             eventLog.setEventLogId(rs.getInt(1));
@@ -92,6 +109,11 @@ public class EventLogDaoImpl implements EventLogDao {
             return eventLog;
         };
     };
+    
+    @Override
+    public RowMapperWithBaseQuery<EventLog> getEventLogRowMapper() {
+        return eventLogRowMapper;
+    }
     
     @Override
     public void insert(EventLog eventLog) {
@@ -111,7 +133,7 @@ public class EventLogDaoImpl implements EventLogDao {
      * This doesn't really get all types.  
      * This only gets the types that have already been logged.
      */
-    public Set<String> getAllTypes() {
+    public Set<String> getAllLoggedTypes() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct EventType from EventLog");
         
@@ -121,7 +143,7 @@ public class EventLogDaoImpl implements EventLogDao {
     }
     
     public Set<EventCategory> getAllCategoryLeafs() {
-        Set<String> allTypes = getAllTypes();
+        Set<String> allTypes = getAllLoggedTypes();
         
         Set<EventCategory> allCategories = Sets.newHashSet();
         
@@ -223,7 +245,7 @@ public class EventLogDaoImpl implements EventLogDao {
                                                                  Integer start,
                                                                  Integer pageCount) {
         SearchResult<EventLog> result = new SearchResult<EventLog>();
-//        Set<String> slimEventCategories = removeDuplicates(eventLogTypes);
+
         Iterator<String> iterator = eventLogTypes.iterator();
         if (!iterator.hasNext()){
             result.setBounds(0, pageCount, 0);
@@ -234,7 +256,7 @@ public class EventLogDaoImpl implements EventLogDao {
         /* Get row count. */
         SqlStatementBuilder countSql = new SqlStatementBuilder();
         countSql.append("select count(*) from EventLog");
-        countSql.append("where EventType IN (",eventLogTypes.iterator(),")");
+        countSql.append("where EventType").in(eventLogTypes);
         countSql.append(  "and EventTime").lt(stopDate);
         countSql.append(  "and EventTime").gte(startDate);
         
@@ -349,9 +371,20 @@ public class EventLogDaoImpl implements EventLogDao {
                                                                ReadableInstant filterDate) {
         SqlFragmentCollection sqlFragmentCollection = SqlFragmentCollection.newOrCollection();
         
-        sqlFragmentCollection.add(getColumnsSql(filterString, Types.VARCHAR));
-        sqlFragmentCollection.add(getColumnsSql(filterDouble, Types.NUMERIC));
-        sqlFragmentCollection.add(getColumnsSql(filterDate, Types.TIMESTAMP));
+        SqlFragmentCollection varcharColumnsSql = getColumnsSql(filterString, Types.VARCHAR);
+        if (varcharColumnsSql != null) {
+            sqlFragmentCollection.add(varcharColumnsSql);
+        }
+
+        SqlFragmentCollection doubleColumnsSql = getColumnsSql(filterDouble, Types.NUMERIC);
+        if (doubleColumnsSql != null) {
+            sqlFragmentCollection.add(doubleColumnsSql);
+        }
+        
+        SqlFragmentCollection timestampColumnSql = getColumnsSql(filterDate, Types.TIMESTAMP);
+        if (timestampColumnSql != null) {
+            sqlFragmentCollection.add(getColumnsSql(filterDate, Types.TIMESTAMP));
+        }
         
         return sqlFragmentCollection;
     }
@@ -384,7 +417,7 @@ public class EventLogDaoImpl implements EventLogDao {
             // Removes case sensitivity for strings.
             SqlStatementBuilder sql = new SqlStatementBuilder();
             if (type == Types.VARCHAR) {
-                sql.append("UPPER("+argumentColumn.columnName+")").eqUppercase(String.valueOf(filter));
+                sql.append("UPPER("+argumentColumn.columnName+")").eq(String.valueOf(filter).toUpperCase());
                 sqlFragmentCollection.add(sql);
             } else {
                 sql.append(argumentColumn.columnName).eq(filter);
@@ -401,7 +434,7 @@ public class EventLogDaoImpl implements EventLogDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM EventLog EL");
-        sql.append("WHERE EL.EventType IN ('",eventLogTypes,"')");
+        sql.append("WHERE EL.EventType").in(eventLogTypes);
         sql.append("AND EL.EventTime").lt(stopDate);
         sql.append("AND EL.EventTime").gte(startDate);
 
@@ -444,7 +477,7 @@ public class EventLogDaoImpl implements EventLogDao {
     }
 
     @Override
-    public List<com.cannontech.common.events.dao.EventLogDao.ArgumentColumn> getArgumentColumns() {
+    public List<com.cannontech.common.events.model.ArgumentColumn> getArgumentColumns() {
         return argumentColumns;
     }
     
