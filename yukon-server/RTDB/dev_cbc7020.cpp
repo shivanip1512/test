@@ -6,8 +6,6 @@
 
 using namespace std;
 
-using namespace Cti::Config;
-
 namespace Cti {
 namespace Devices {
 
