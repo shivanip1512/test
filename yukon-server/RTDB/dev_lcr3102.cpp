@@ -574,7 +574,6 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
 
         // Assuming this is not a point, let's just dump the data to the screen for now.
 
-        const int NumHours = 8;
         std::vector<point_info> runtimeHours;
 
         decodeMessageXfmrHistoricalRuntime(InMessage->Buffer.DSt, runtimeHours);
@@ -584,22 +583,40 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
         if(currentTransformer == 1 || currentTransformer == 2)
         {
             string results;
+            int counter = 1;
 
-            for(int i = 1; i <= NumHours; i++)
+            for each(const point_info &pi in runtimeHours)
             {
-                int runtimeMins = runtimeHours.front().value;
+                int runtimeMins = pi.value;
 
-                if( runtimeMins <= 60 )
+                results += getName() + " / Historical Runtime CT " + CtiNumStr(currentTransformer) + ": Hour -"
+                         + CtiNumStr(counter) + ": " + CtiNumStr((double)runtimeMins / 60.0, 1) + " percent";
+
+                if( runtimeMins < 0x3f)
                 {
-                    results += getName() + " / Historical Runtime CT " + CtiNumStr(currentTransformer) + ": Hour -"
-                             + CtiNumStr(i) + ": " + CtiNumStr((double)runtimeMins / 60.0, 1) + " percent";
-                    if(i != NumHours)
+                    // This is strange. The 'invalid data' return should give us 0x3F, so this returned a number higher
+                    // than the 60 minutes in an hour but less than the 0x3F case.
                     {
-                        results += "\n";
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << "The data returned was outside the valid range: " << runtimeMins << endl;
                     }
+
+                    results += " - Data outside valid range";
+
+                }
+                else if( runtimeMins == 0x3f)
+                {
+                    // Invalid data
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << "Invalid data returned: " << runtimeMins << endl;
+                    }
+
+                    results += " - Invalid data";
                 }
 
-                runtimeHours.erase(runtimeHours.begin());
+                results += "\n";
+                counter++;
             }
 
             ReturnMsg->setResultString(results);
@@ -1016,10 +1033,11 @@ void Lcr3102Device::decodeMessageXfmrHistoricalRuntime( DSTRUCT DSt, std::vector
 
     point_info pi;
     const int NumHours = 8;
+    const int bufferSize = std::min(DSt.Length - 1, 36 - 1);
 
     for(int i = 0; i < NumHours; i++)
     {
-        pi = getSixBitValueFromBuffer(DSt.Message, i, std::min(DSt.Length - 1, 36 - 1));
+        pi = getSixBitValueFromBuffer(DSt.Message, i, bufferSize);
 
         runtimeHours.push_back(pi);
     }

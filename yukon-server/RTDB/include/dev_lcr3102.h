@@ -34,7 +34,6 @@ protected:
         FuncRead_ControlTimeLen  = 5,
 
         FuncRead_XfmrHistoricalCT1Pos  = 0x88,
-        FuncRead_XfmrHistoricalCT2Pos  = 0x89,
         FuncRead_XfmrHistoricalLen     = 6,
 
         FuncRead_DutyCyclePos    = 0x90,
