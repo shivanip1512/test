@@ -47,7 +47,7 @@ public interface SqlBuilder {
      */
     public SqlBuilder appendArgument(Object argument);
 
-    public SqlBuilder appendArgumentList(Collection<?> list);
+    public SqlBuilder appendArgumentList(Iterable<?> list);
 
     /**
      * Appends the SQL from the fragment to the output and the argument list
@@ -71,7 +71,7 @@ public interface SqlBuilder {
     
     public SqlBuilder lte(Object argument);
     
-    public SqlBuilder in(Collection<?> list);
+    public SqlBuilder in(Iterable<?> list);
     
     public SqlBuilder in(SqlFragmentSource sqlFragmentSource);
     

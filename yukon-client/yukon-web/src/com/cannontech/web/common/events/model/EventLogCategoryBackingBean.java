@@ -2,7 +2,7 @@ package com.cannontech.web.common.events.model;
 
 import org.joda.time.LocalDate;
 
-public class ByCategoryBackingBean {
+public class EventLogCategoryBackingBean {
     private String[] categories;
     private String filterValue;
     private LocalDate startDate;
@@ -14,6 +14,7 @@ public class ByCategoryBackingBean {
         return categories;
     }
     public void setCategories(String[] categories) {
+        System.out.println("accessing setter");
         this.categories = categories;
     }
     

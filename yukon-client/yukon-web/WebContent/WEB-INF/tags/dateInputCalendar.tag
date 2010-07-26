@@ -3,6 +3,7 @@
 <%@ attribute name="fieldValue" required="false" type="java.lang.String"%>
 <%@ attribute name="disabled" required="false" type="java.lang.Boolean"%>
 <%@ attribute name="springInput" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="showErrorOnNextLine" type="java.lang.Boolean" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -58,7 +59,11 @@
 	            </span>
 	            
 	            <c:if test="${status.error}">
-	                <br>
+                    <c:if test="${empty pageScope.showErrorOnNextLine or
+                                  pageScope.showErrorOnNextLine eq true}">
+    	                <br>
+                    </c:if>
+                    
 	                <form:errors path="${fieldName}" cssClass="errorMessage"/>
 	            </c:if>
 	            

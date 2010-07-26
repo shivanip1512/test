@@ -10,9 +10,10 @@
     <cti:standardMenu menuSelection="events|byCategory" />
     <c:set var="baseUrl" value="/spring/common/eventLog/viewByCategory"/>
     
+    <%-- Filter Options --%>
     <tags:sectionContainer title="Filter Options">
         <form:form id="byCategoryForm" action="/spring/common/eventLog/viewByCategory" 
-                   commandName="byCategoryBackingBean">
+                   commandName="eventLogCategoryBackingBean">
             <tags:hidden path="itemsPerPage"/>
  
             <tags:nameValueContainer2>
@@ -31,9 +32,10 @@
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".dateRange">
-                    <tags:dateInputCalendar fieldName="startDate" springInput="true" />
-
-                    <tags:dateInputCalendar fieldName="stopDate" springInput="true" />
+                    <span class="nowrapping">
+                        <tags:dateInputCalendar fieldName="startDate" springInput="true" showErrorOnNextLine="false"/> - 
+                        <tags:dateInputCalendar fieldName="stopDate" springInput="true"/>
+                    </span>
                 </tags:nameValue2>
                 
             </tags:nameValueContainer2>
@@ -43,6 +45,7 @@
     </tags:sectionContainer>
     <br>
 
+    <%-- Event Log Results --%>
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
     <tags:pagedBox title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
         <table class="compactResultsTable rowHighlighting" style="width: 100%;">

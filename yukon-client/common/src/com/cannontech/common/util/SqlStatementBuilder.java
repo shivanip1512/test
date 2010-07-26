@@ -157,13 +157,6 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
-    public SqlStatementBuilder eqUppercase(String argument) {
-        statement.append("= UPPER(" );
-        appendArgument(argument);
-        statement.append(") ");
-        return this;
-    }
-    
     public SqlStatementBuilder neq(Object argument) {
         statement.append("!= ");
         appendArgument(argument);
@@ -194,7 +187,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
-    public SqlStatementBuilder in(Collection<?> list) {
+    public SqlStatementBuilder in(Iterable<?> list) {
         statement.append("in (");
         appendArgumentList(list);
         statement.append(") ");
@@ -238,12 +231,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     /* (non-Javadoc)
      * @see com.cannontech.common.util.SqlBuilder#appendArgumentList(java.util.Collection)
      */
-    public SqlStatementBuilder appendArgumentList(Collection<?> list) {
-        if(list.isEmpty()) {
+    public SqlStatementBuilder appendArgumentList(Iterable<?> objects) {
+        Iterator<?> iter = objects.iterator();
+        if(!iter.hasNext()) {
             statement.append("null");
             return this;
         } 
-        Iterator<?> iter = list.iterator();
+
         while(iter.hasNext()) {
             Object argument = iter.next();
             if(iter.hasNext()) {

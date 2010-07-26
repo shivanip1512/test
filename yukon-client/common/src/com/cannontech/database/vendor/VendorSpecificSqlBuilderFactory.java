@@ -94,7 +94,7 @@ public class VendorSpecificSqlBuilderFactory implements InitializingBean {
         }
 
         @Override
-        public SqlBuilder appendArgumentList(Collection<?> list) {
+        public SqlBuilder appendArgumentList(Iterable<?> list) {
             return this;
         }
 
@@ -134,7 +134,7 @@ public class VendorSpecificSqlBuilderFactory implements InitializingBean {
         }
 
         @Override
-        public SqlBuilder in(Collection<?> list) {
+        public SqlBuilder in(Iterable<?> list) {
             return this;
         }
 
