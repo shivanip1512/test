@@ -139,7 +139,7 @@ bool CtiFDRManager::loadPointList()
             }
             else
             {
-                ss << " AND FDR.DIRECTIONTYPE = '" << getWhereSelectStr();
+                ss << " AND FDR.DIRECTIONTYPE = '" << getWhereSelectStr() << "'";
             }
         }
 
