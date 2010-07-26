@@ -6,10 +6,9 @@
 
 using namespace std;
 
+using namespace Cti::Config;
+
 namespace Cti {
-
-using namespace Config;
-
 namespace Devices {
 
 const char *Cbc7020Device::PutConfigPart_all             = "all";
