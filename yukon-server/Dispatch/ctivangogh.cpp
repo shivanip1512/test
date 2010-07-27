@@ -7738,6 +7738,8 @@ void CtiVanGogh::stopDispatch()
 {
     RWWaitStatus rwwait;
 
+    bGCtrlC = TRUE;     // set this flag so vangogh main thread signals the rest to shutdown.  YUK-8884
+
     try
     {
         // This forces the listener thread to exit on shutdown.
