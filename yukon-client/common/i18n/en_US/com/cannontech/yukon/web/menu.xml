@@ -114,21 +114,6 @@
 <!-- Energy Company Admin module -->
 <entry key="yukon.web.menu.config.energyCompanyAdmin.configEnergyCompany">Config Energy Company</entry>
 
-<!-- Account Administration module -->
-<entry key="yukon.web.menu.config.accountAdmin.account">Account</entry>
-<entry key="yukon.web.menu.config.accountAdmin.account.general">General</entry>
-<entry key="yukon.web.menu.config.accountAdmin.account.contacts">Contacts</entry>
-<entry key="yukon.web.menu.config.accountAdmin.programs">Programs</entry>
-<entry key="yukon.web.menu.config.accountAdmin.programs.controlHistory">Control History</entry>
-<entry key="yukon.web.menu.config.accountAdmin.programs.enrollment">Enrollment</entry>
-<entry key="yukon.web.menu.config.accountAdmin.programs.optOut">Opt Out</entry>
-
-<entry key="yukon.web.menu.config.accountAdmin.appliances">Appliances</entry>
-<entry key="yukon.web.menu.config.accountAdmin.hardware">Hardware</entry>
-<entry key="yukon.web.menu.config.accountAdmin.workOrders">Work Orders</entry>
-<entry key="yukon.web.menu.config.accountAdmin.administration">Admin</entry>
-<entry key="yukon.web.menu.config.accountAdmin.eventLogging">Event Logging</entry>
-
 <!-- Capcontrol Module -->
 <entry key="yukon.web.menu.config.capcontrol.create">Create</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.area">Area</entry>
