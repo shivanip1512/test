@@ -73,6 +73,7 @@
     <entry key="yukon.common.events.commandRequestExecutionContextId">Command Request Execution Context Id</entry>
     <entry key="yukon.common.events.commandRequestExecutionId">Command Request Execution Id</entry>
     <entry key="yukon.common.events.commandRequestExecutionType">Command Request Execution Type</entry>
+    <entry key="yukon.common.events.contactName">Contact Name</entry>
     <entry key="yukon.common.events.controlAreaName">Control Area Name</entry>
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
@@ -95,8 +96,8 @@
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
     <entry key="yukon.common.events.tagSet">Tag Set</entry>
+    <entry key="yukon.common.events.thermostatLabel">Thermostat Label</entry>
     <entry key="yukon.common.events.username">Username</entry>
-    
 
 <!-- Event log message text and column names -->
     <!-- Account -->
