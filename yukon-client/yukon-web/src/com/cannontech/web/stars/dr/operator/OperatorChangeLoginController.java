@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -65,6 +66,7 @@ public class OperatorChangeLoginController {
     private ContactDao contactDao;
     private RolePropertyDao rolePropertyDao;
     private StarsDatabaseCache starsDatabaseCache;
+    private SystemEventLogService systemEventLogService;
     private TransactionOperations transactionTemplate;
     private YukonUserDao yukonUserDao;
     private YukonGroupDao yukonGroupDao;
@@ -141,6 +143,11 @@ public class OperatorChangeLoginController {
                                FlashScope flashScope,
                                AccountInfoFragment accountInfoFragment) throws ServletRequestBindingException {
         
+        LiteYukonUser residentialUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
+
+        systemEventLogService.loginChangeAttemptedByOperator(userContext.getYukonUser(),
+                                                             residentialUser.getUsername());
+
         String loginMode = ServletRequestUtils.getStringParameter(request, "loginMode");
         modelMap.addAttribute("loginMode", loginMode);
         
@@ -150,7 +157,6 @@ public class OperatorChangeLoginController {
         modelMap.addAttribute("mode", PageEditMode.EDIT);
         
         // validate/update
-        LiteYukonUser residentialUser = getYukonUserByAccountId(accountInfoFragment.getAccountId());
         ChangeLoginValidator changeLoginValidator = 
             changeLoginValidatorFactory.getChangeLoginValidator(residentialUser);
         
@@ -288,7 +294,8 @@ public class OperatorChangeLoginController {
                     rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_ADMIN_CHANGE_LOGIN_USERNAME, 
                                                    userContext.getYukonUser());
 
-                    yukonUserDao.changeUsername(residentialUser.getUserID(), 
+                    yukonUserDao.changeUsername(userContext.getYukonUser(),
+                                                residentialUser.getUserID(), 
                                                 changeLoginBackingBean.getUsername());
                 }
         
@@ -503,6 +510,11 @@ public class OperatorChangeLoginController {
         this.starsDatabaseCache = starsDatabaseCache;
     }
 
+    @Autowired
+    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
+        this.systemEventLogService = systemEventLogService;
+    }
+    
     @Autowired
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         this.transactionTemplate = transactionTemplate;

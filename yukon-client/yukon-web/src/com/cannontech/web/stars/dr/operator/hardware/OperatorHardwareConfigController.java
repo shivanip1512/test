@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -46,8 +47,10 @@ import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigType;
 import com.cannontech.stars.dr.hardware.model.HardwareSummary;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardwareConfig.service.HardwareConfigService;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.action.HardwareAction;
@@ -78,6 +81,8 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_HARDWARES)
 @RequestMapping("/operator/hardware/config/*")
 public class OperatorHardwareConfigController {
+    private HardwareEventLogService hardwareEventLogService;
+    
     private DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao;
     private InventoryDao inventoryDao;
     private LoadGroupDao loadGroupDao;
@@ -89,6 +94,7 @@ public class OperatorHardwareConfigController {
     private ApplianceCategoryDao applianceCategoryDao;
     private MeterDao meterDao;
     private MeterConfigValidator meterConfigValidator;
+    private LMHardwareBaseDao lmHardwareBaseDao;
     private PaoDao paoDao;
     private ColdLoadPickupValidator coldLoadPickupValidator = new ColdLoadPickupValidator();
     private TamperDetectValidator tamperDetectValidator = new TamperDetectValidator();
@@ -211,6 +217,13 @@ public class OperatorHardwareConfigController {
     public String commit(ModelMap model, HttpServletRequest request,
             int inventoryId, YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
+
+        // Log hardware configuration attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareConfigAttemptedByOperator(userContext.getYukonUser(),
+                                                                  lmHardwareBase.getManufacturerSerialNumber(),
+                                                                  accountInfo.getAccountNumber());
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING,
                                        userContext.getYukonUser());
 
@@ -282,6 +295,14 @@ public class OperatorHardwareConfigController {
     public String disable(ModelMap model, int inventoryId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
+        
+        // Log hardware disable attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareDisableAttemptedByOperator(userContext.getYukonUser(),
+                                                                   lmHardwareBase.getManufacturerSerialNumber(),
+                                                                   accountInfo.getAccountNumber());
+        
+        // Validate request
         verifyHardwareIsForAccount(inventoryId, accountInfo);
         model.addAttribute("accountId", accountInfo.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
@@ -309,6 +330,14 @@ public class OperatorHardwareConfigController {
     public String enable(ModelMap model, int inventoryId,
             YukonUserContext userContext,
             AccountInfoFragment accountInfo, FlashScope flashScope) {
+
+        // Log hardware disable attempt
+        LMHardwareBase lmHardwareBase = lmHardwareBaseDao.getById(inventoryId);
+        hardwareEventLogService.hardwareEnableAttemptedByOperator(userContext.getYukonUser(),
+                                                                  lmHardwareBase.getManufacturerSerialNumber(),
+                                                                  accountInfo.getAccountNumber());
+        
+        // Validate request
         verifyHardwareIsForAccount(inventoryId, accountInfo);
         model.addAttribute("accountId", accountInfo.getAccountId());
         model.addAttribute("inventoryId", inventoryId);
@@ -423,6 +452,11 @@ public class OperatorHardwareConfigController {
     }
 
     @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
+    }
+    
+    @Autowired
     public void setDisplayableInventoryEnrollmentDao(
             DisplayableInventoryEnrollmentDao displayableInventoryEnrollmentDao) {
         this.displayableInventoryEnrollmentDao = displayableInventoryEnrollmentDao;
@@ -481,5 +515,10 @@ public class OperatorHardwareConfigController {
     @Autowired
     public void setMeterConfigValidator(MeterConfigValidator meterConfigValidator) {
         this.meterConfigValidator = meterConfigValidator;
+    }
+    
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
 }

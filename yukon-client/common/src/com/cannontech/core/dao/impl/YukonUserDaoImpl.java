@@ -9,6 +9,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -38,6 +39,8 @@ public class YukonUserDaoImpl implements YukonUserDao {
     private static final String selectByIdSql;
     private static final String selectByUsernameSql;
     private static final ParameterizedRowMapper<LiteYukonUser> rowMapper;
+    
+    private SystemEventLogService systemEventLogService;
     private YukonJdbcOperations yukonJdbcOperations;
     private IDatabaseCache databaseCache;
     private NextValueHelper nextValueHelper;
@@ -62,17 +65,23 @@ public class YukonUserDaoImpl implements YukonUserDao {
 	}
 	
 	@Override
-	public void changeUsername(final int userId, final String username) throws NotAuthorizedException {
-	    LiteYukonUser existingUser = getLiteYukonUser(username); 
+	public void changeUsername(LiteYukonUser changingUser, int modifiedUserId, String newUsername) 
+	throws NotAuthorizedException {
+	    
+	    LiteYukonUser existingUser = getLiteYukonUser(newUsername); 
 	    if (existingUser != null) {
-	        throw new NotAuthorizedException("Username with " + username + " already exists");
+	        throw new NotAuthorizedException("Username with " + newUsername + " already exists");
 	    }
 	    
-	    final LiteYukonUser user = getLiteYukonUser(userId);
-	    user.setUsername(username);
+	    final LiteYukonUser modifiedUser = getLiteYukonUser(modifiedUserId);
+	    modifiedUser.setUsername(newUsername);
 	    
 	    final String sql = "UPDATE YukonUser SET UserName = ? WHERE UserID = ?";
-	    yukonJdbcOperations.update(sql, username, userId);
+	    yukonJdbcOperations.update(sql, newUsername, modifiedUserId);
+
+	    systemEventLogService.usernameChanged(changingUser,
+	                                          modifiedUser.getUsername(),
+	                                          newUsername);
 	}
 	
 	@Override
@@ -309,5 +318,10 @@ public class YukonUserDaoImpl implements YukonUserDao {
     @Autowired
     public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
         this.dbPersistantDao = dbPersistantDao;
+    }
+    
+    @Autowired
+    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
+        this.systemEventLogService = systemEventLogService;
     }
 }

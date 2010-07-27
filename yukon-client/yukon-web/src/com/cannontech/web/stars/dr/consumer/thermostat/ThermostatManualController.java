@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -42,6 +43,8 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @Controller
 public class ThermostatManualController extends AbstractThermostatController {
 
+    private AccountEventLogService accountEventLogService;
+    
     private InventoryDao inventoryDao;
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
@@ -88,19 +91,26 @@ public class ThermostatManualController extends AbstractThermostatController {
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
     public String saveLabel(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
-            String displayLabel, LiteYukonUser user, ModelMap map) throws Exception {
+            String newDisplayLabel, LiteYukonUser user, ModelMap map) throws Exception {
 
-        accountCheckerService.checkInventory(user, 
-                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
-        
         if (thermostatIds.size() != 1) {
             throw new IllegalArgumentException("You can only change the label of 1 thermostat at a time.");
         }
-
+        
         int thermostatId = thermostatIds.get(0);
-
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        thermostat.setDeviceLabel(displayLabel);
+
+        accountEventLogService.thermostatLabelChangeAttemptedByConsumer(user,
+                                                                        thermostat.getSerialNumber(),
+                                                                        thermostat.getDeviceLabel(),
+                                                                        newDisplayLabel);
+        
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
+
+
+        thermostat.setDeviceLabel(newDisplayLabel);
 
         inventoryDao.save(thermostat);
 
@@ -114,13 +124,24 @@ public class ThermostatManualController extends AbstractThermostatController {
             String mode, String fan, String temperatureUnit, YukonUserContext userContext,
             HttpServletRequest request, ModelMap map) throws Exception {
 
+        CustomerAccount account = getCustomerAccount(request);
+
+        // Log thermostat manual event save attempt
+        for (int thermostatId : thermostatIds) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            
+            accountEventLogService.thermostatManualSetAttemptedByOperator(userContext.getYukonUser(),
+                                                                          account.getAccountNumber(),
+                                                                          thermostat.getSerialNumber());
+        }
+
+        
         accountCheckerService.checkInventory(userContext.getYukonUser(), 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
         ThermostatManualEventResult message = null;
         boolean failed = false;
         
-        CustomerAccount account = getCustomerAccount(request);
         
         //Update the temperature unit for this customer
         String escapedTempUnit = StringEscapeUtils.escapeHtml(temperatureUnit);
@@ -221,6 +242,11 @@ public class ThermostatManualController extends AbstractThermostatController {
         return "consumer/actionComplete.jsp";
     }
 
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;

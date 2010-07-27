@@ -14,6 +14,7 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.SystemDateFormattingService;
@@ -39,10 +40,8 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
-import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
@@ -55,6 +54,8 @@ import com.cannontech.user.YukonUserContext;
 public class ThermostatServiceImpl implements ThermostatService {
 
     private Logger logger = YukonLogManager.getLogger(ThermostatServiceImpl.class);
+    private AccountEventLogService accountEventLogService;
+    
     private CustomerEventDao customerEventDao;
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
@@ -64,6 +65,11 @@ public class ThermostatServiceImpl implements ThermostatService {
     private SystemDateFormattingService systemDateFormattingService;
     private AccountThermostatScheduleDao accountThermostatScheduleDao;
 
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
     @Autowired
     public void setCustomerEventDao(CustomerEventDao customerEventDao) {
         this.customerEventDao = customerEventDao;
@@ -163,6 +169,11 @@ public class ThermostatServiceImpl implements ThermostatService {
         }
 
         // Log manual event into activity log
+        accountEventLogService.thermostatManuallySet(yukonUser,
+                                                     account.getAccountNumber(),
+                                                     thermostat.getSerialNumber());
+
+        
         this.logManualEventActivity(thermostat,
                                     event,
                                     yukonUser.getUserID(),

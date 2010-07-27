@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -21,8 +22,10 @@ import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.user.YukonUserContext;
 
 public class HardwareConfigServiceImpl implements HardwareConfigService {
-    private StarsInventoryBaseDao starsInventoryBaseDao;
+
+    private HardwareEventLogService hardwareEventLogService;
     private CustomerAccountDao customerAccountDao;
+    private StarsInventoryBaseDao starsInventoryBaseDao;
 
     private static Logger log = YukonLogManager.getLogger(HardwareConfigServiceImpl.class);
     
@@ -82,15 +85,33 @@ public class HardwareConfigServiceImpl implements HardwareConfigService {
                                 customerAccount.getCustomerId(),
                                 action,
                                 "Serial #:" + serialNumber);
-    }
-
-    @Autowired
-    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
-        this.starsInventoryBaseDao = starsInventoryBaseDao;
+                                
+        if (ActivityLogActions.HARDWARE_DISABLE_ACTION.equals(action)) {
+            hardwareEventLogService.hardwareDisabled(userContext.getYukonUser(),
+                                                     serialNumber,
+                                                     customerAccount.getAccountNumber());
+        } else if (ActivityLogActions.HARDWARE_ENABLE_ACTION.equals(action)) {
+            hardwareEventLogService.hardwareEnabled(userContext.getYukonUser(),
+                                                    serialNumber,
+                                                    customerAccount.getAccountNumber());
+        }
+        
+        
     }
 
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;
     }
+
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
+    }
+    
+    @Autowired
+    public void setStarsInventoryBaseDao(StarsInventoryBaseDao starsInventoryBaseDao) {
+        this.starsInventoryBaseDao = starsInventoryBaseDao;
+    }
+
 }

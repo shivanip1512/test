@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -51,6 +52,8 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @Controller
 public class ThermostatScheduleController extends AbstractThermostatController {
 
+    private AccountEventLogService accountEventLogService;
+    
     private InventoryDao inventoryDao;
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
@@ -250,6 +253,18 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 			ModelMap map) throws ServletRequestBindingException {
 
         LiteYukonUser user = yukonUserContext.getYukonUser();
+        AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
+        
+        // Log thermostat schedule save attempt
+        for (int thermostatId : thermostatIds) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            
+            accountEventLogService.thermostatScheduleSavingAttemptedByConsumer(user,
+                                                                               account.getAccountNumber(),
+                                                                               thermostat.getSerialNumber(),
+                                                                               scheduleName);
+        }
+
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
         accountCheckerService.checkInventory(user, thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
@@ -292,6 +307,14 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIds, ats.getAccountThermostatScheduleId());
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
 
+        // Log schedule name change
+        if (!oldAts.getScheduleName().equalsIgnoreCase(ats.getScheduleName())) {
+            accountEventLogService.thermostatScheduleNameChanged(user,
+                                                                 oldAts.getScheduleName(),
+                                                                 ats.getScheduleName());
+        }
+
+        
         // SEND
         if (sendAndSave) {
         	
@@ -407,6 +430,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     	return "redirect:/spring/stars/consumer/thermostat/schedule/view";
     }
 
+    @Autowired
+    public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+    
     @Autowired
     public void setInventoryDao(InventoryDao inventoryDao) {
         this.inventoryDao = inventoryDao;

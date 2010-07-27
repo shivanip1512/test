@@ -8,6 +8,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -378,6 +379,8 @@ public class HardwareAction {
             throws WebClientException {
         LiteStarsCustAccountInformation liteAcctInfo = null;
         List<LiteStarsLMHardware> hwsToConfig = null;
+
+        LiteYukonUser currentUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
     
         // save configuration first, so its available to compute groupID later
         // on
@@ -388,11 +391,11 @@ public class HardwareAction {
             hwsToConfig.add(liteHw);
         }
     
+        CustomerAccount customerAccount = null;
         if (liteHw.getAccountID() > 0) {
-            CustomerAccountDao customerAccountDao = YukonSpringHook.getBean(
-                                                                            "customerAccountDao",
+            CustomerAccountDao customerAccountDao = YukonSpringHook.getBean("customerAccountDao",
                                                                             CustomerAccountDao.class);
-            CustomerAccount customerAccount = customerAccountDao.getById(liteHw.getAccountID());
+            customerAccount = customerAccountDao.getById(liteHw.getAccountID());
     
             List<ProgramEnrollment> requests = new ArrayList<ProgramEnrollment>();
             for (int i = 0; i < updateHwConfig.getStarsLMHardwareConfigCount(); i++) {
@@ -406,7 +409,6 @@ public class HardwareAction {
                 requests.add(enrollment);
             }
     
-            LiteYukonUser currentUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
     
             ProgramEnrollmentService programEnrollmentService = YukonSpringHook.getBean(
                                                                                         "starsProgramEnrollmentService",
@@ -457,10 +459,23 @@ public class HardwareAction {
         }
     
         // Log activity
+        HardwareEventLogService hardwareEventLogService = 
+            YukonSpringHook.getBean("hardwareEventLogService", HardwareEventLogService.class);
+        
+        String accountNumber = null;
+        if (customerAccount != null) {
+            accountNumber = customerAccount.getAccountNumber();
+        }
+        
         String logMsg = "Serial #:" + liteHw.getManufacturerSerialNumber();
         if (!disabled) {
             for (int i = 0; i < hwsToConfig.size(); i++) {
                 LiteStarsLMHardware lHw = hwsToConfig.get(i);
+                
+                hardwareEventLogService.hardwareConfigUpdated(currentUser,
+                                                              lHw.getManufacturerSerialNumber(),
+                                                              accountNumber);
+                
                 if (!lHw.equals(liteHw)) {
                     logMsg += "," + lHw.getManufacturerSerialNumber();
                 }

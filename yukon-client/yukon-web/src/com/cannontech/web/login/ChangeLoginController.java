@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.exception.AuthenticationThrottleException;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
@@ -28,9 +29,11 @@ import com.cannontech.util.ServletUtil;
 public class ChangeLoginController {
     public static final String LOGIN_CHANGE_MESSAGE_PARAM = "loginChangeMsg";
     public static final String LOGIN_CHANGE_SUCCESS_PARAM = "success";
-    private YukonUserDao yukonUserDao;
-    private RolePropertyDao rolePropertyDao;
+    
     private AuthenticationService authenticationService;
+    private RolePropertyDao rolePropertyDao;
+    private SystemEventLogService systemEventLogService;
+    private YukonUserDao yukonUserDao;
     
     @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
     public String view(String redirectUrl, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
@@ -53,6 +56,9 @@ public class ChangeLoginController {
                 throws Exception {
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
+        
+        systemEventLogService.loginPasswordChangeAttemptedByConsumer(user);
+        
         final AuthType type = user.getAuthType();
         rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_PASSWORD, user);
         
@@ -93,11 +99,13 @@ public class ChangeLoginController {
     @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
     public String updateUsername(String username, String oldPassword,
             String redirectUrl, HttpServletRequest request) throws Exception {
-        
+
         final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
-        rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, user);
+
+        systemEventLogService.loginUsernameChangeAttemptedByConsumer(user, username);
         
+        rolePropertyDao.verifyProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME, user);
         boolean isValidPassword = false;
         boolean success = false;
         long retrySeconds = 0;
@@ -152,7 +160,7 @@ public class ChangeLoginController {
         throws NotAuthorizedException {
         
         user.setUsername(username);
-        yukonUserDao.changeUsername(user.getUserID(), username);
+        yukonUserDao.changeUsername(user, user.getUserID(), username);
 
         HttpSession session = request.getSession(false);
         session.setAttribute(LoginController.YUKON_USER, user);
@@ -186,11 +194,6 @@ public class ChangeLoginController {
     }
     
     @Autowired
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-
-    @Autowired
     public void setAuthenticationService(
             AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
@@ -199,5 +202,15 @@ public class ChangeLoginController {
     @Autowired
     public void setRolePropertyDao(RolePropertyDao rolePropertyDao) {
     	this.rolePropertyDao = rolePropertyDao;
+    }
+
+    @Autowired
+    public void setSystemEventLogService(SystemEventLogService systemEventLogService) {
+        this.systemEventLogService = systemEventLogService;
+    }
+    
+    @Autowired
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
     }
 }

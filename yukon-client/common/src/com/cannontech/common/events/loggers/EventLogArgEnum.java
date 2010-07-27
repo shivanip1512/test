@@ -6,6 +6,7 @@ public enum EventLogArgEnum {
     commandRequestExecutionContextId, 
     commandRequestExecutionId, 
     commandRequestExecutionType, 
+    contactName, 
     controlAreaName, 
     deviceLabel, 
     deviceName, 
@@ -28,7 +29,8 @@ public enum EventLogArgEnum {
     serialNumber, 
     shedDuration, 
     tagSet, 
-    username 
+    thermostatLabel,
+    username
     ;
 
 }

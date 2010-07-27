@@ -14,6 +14,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.IntegerRowMapper;
@@ -24,6 +25,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.model.SchedulableThermostatType;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleEntryDao;
@@ -37,6 +40,8 @@ import com.google.common.collect.Lists;
 
 public class AccountThermostatScheduleDaoImpl implements AccountThermostatScheduleDao {
 
+    private AccountEventLogService accountEventLogService;
+    private CustomerAccountDao customerAccountDao;
 	private NextValueHelper nextValueHelper;
     private YukonJdbcTemplate yukonJdbcTemplate;
     private AccountThermostatScheduleEntryDao accountThermostatScheduleEntryDao;
@@ -61,6 +66,11 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
     		atsEntry.setAccountThermostatScheduleEntryId(0); // these entries may already have an id if they were pulled from db. reset to 0 so they inserted (otherwise it'll try to update a now-non-existent entry)
     		accountThermostatScheduleEntryDao.save(atsEntry);
     	}
+    	
+    	// Logging
+    	CustomerAccount customerAccount = customerAccountDao.getById(ats.getAccountId());
+    	accountEventLogService.thermostatScheduleSaved(customerAccount.getAccountNumber(),
+    	                                               ats.getScheduleName());
     }
     
     // GET BY ID
@@ -409,6 +419,16 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	};
     
     
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
+	
+	@Autowired
+	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
+        this.customerAccountDao = customerAccountDao;
+    }
+	
     @Autowired
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
 		this.nextValueHelper = nextValueHelper;

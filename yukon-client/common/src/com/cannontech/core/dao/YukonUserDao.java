@@ -12,7 +12,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface YukonUserDao {
 
-    public void changeUsername(int userId, String username);
+    public void changeUsername(LiteYukonUser changingUser, int modifiedUserId, String newUsername);
 
     public LiteYukonUser getLiteYukonUser(int userId);
 

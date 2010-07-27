@@ -64,7 +64,50 @@ public interface AccountEventLogService {
                                      @Arg(EventLogArgEnum.accountNumber) String oldAccountNumber,
                                      @Arg(EventLogArgEnum.accountNumber) String newAccountNumber);
     
+/* CONTACT INFO */
+    // Contact Info
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.contactInfo")
+    public void contact(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                              @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                              @Arg(EventLogArgEnum.deviceName) String deviceName, 
+                                              @Arg(EventLogArgEnum.programName) String programName, 
+                                              @Arg(EventLogArgEnum.loadGroupName) String loadGroupName);
+    
+    // Contact Info Service Level
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.contactInfo")
+    public void contactAdded(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                              @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                              @Arg(EventLogArgEnum.contactName) String contactName);
 
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.contactInfo")
+    public void contactUpdated(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                               @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                               @Arg(EventLogArgEnum.contactName) String contactName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.contactInfo")
+    public void contactRemoved(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                               @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                               @Arg(EventLogArgEnum.contactName) String contactName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.contactInfo")
+    public void contactNameChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                   @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                   @Arg(EventLogArgEnum.contactName) String oldContactName,
+                                   @Arg(EventLogArgEnum.contactName) String newContactName);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.contactInfo")
+    public void customerTypeChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                    @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                    String oldCustomerType,
+                                    String newcustomerType);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.contactInfo")
+    public void companyNameChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                   @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                   String oldCompanyName,
+                                   String newCompanyName);
+
+    
 /* ENROLLMENTS */
     // Enrollment
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.enrollment")
@@ -272,5 +315,68 @@ public interface AccountEventLogService {
                                  @Arg(EventLogArgEnum.programName) String programName);
 
 
+/* THERMOSTAT SCHEDULES */
+    // Thermostat Schedule
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.thermostat")
+    public void thermostatScheduleSavingAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                                            @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                            @Arg(EventLogArgEnum.serialNumber) String serialNumber,
+                                                            @Arg(EventLogArgEnum.scheduleName) String scheduleName);
 
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.thermostat")
+    public void thermostatScheduleSavingAttemptedByConsumer(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                                            @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                            @Arg(EventLogArgEnum.serialNumber) String serialNumber,
+                                                            @Arg(EventLogArgEnum.scheduleName) String scheduleName);
+    
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.thermostat")
+    public void thermostatManualSetAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                       @Arg(EventLogArgEnum.serialNumber) String serialNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.thermostat")
+    public void thermostatManualSetAttemptedByConsumer(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                                       @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                       @Arg(EventLogArgEnum.serialNumber) String serialNumber);
+    
+
+    /////////
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.thermostat")
+    public void thermostatLabelChangeAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                                         @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                                         @Arg(EventLogArgEnum.serialNumber) String serialNumber,
+                                                         @Arg(EventLogArgEnum.thermostatLabel) String oldThermostatLabel,
+                                                         @Arg(EventLogArgEnum.thermostatLabel) String newThermostatLabel);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="account.thermostat")
+    public void thermostatLabelChangeAttemptedByConsumer(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                                         @Arg(EventLogArgEnum.serialNumber) String serialNumber,
+                                                         @Arg(EventLogArgEnum.thermostatLabel) String oldThermostatLabel,
+                                                         @Arg(EventLogArgEnum.thermostatLabel) String newThermostatLabel);
+
+    
+    // Thermostat Schedule Service Level
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.thermostat")
+    public void thermostatScheduleSaved(@Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                        @Arg(EventLogArgEnum.scheduleName) String scheduleName);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.thermostat")
+    public void thermostatManuallySet(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                      @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                      @Arg(EventLogArgEnum.serialNumber) String serialNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.thermostat")
+    public void thermostatLabelChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                       @Arg(EventLogArgEnum.accountNumber) String accountNumber, 
+                                       @Arg(EventLogArgEnum.serialNumber) String serialNumber,
+                                       @Arg(EventLogArgEnum.thermostatLabel) String oldThermostatLabel,
+                                       @Arg(EventLogArgEnum.thermostatLabel) String newThermostatLabel);
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="account.thermostat")
+    public void thermostatScheduleNameChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
+                                              @Arg(EventLogArgEnum.scheduleName) String oldScheduleName,
+                                              @Arg(EventLogArgEnum.scheduleName) String newScheduleName);
+
+    ////////////////
 }

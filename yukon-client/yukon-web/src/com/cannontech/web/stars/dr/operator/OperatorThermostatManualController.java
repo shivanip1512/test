@@ -13,6 +13,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -42,6 +43,8 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @RequestMapping(value = "/operator/thermostatManual/*")
 public class OperatorThermostatManualController {
 	
+    private AccountEventLogService accountEventLogService;
+    
 	private InventoryDao inventoryDao;
 	private CustomerEventDao customerEventDao;
 	private CustomerDao customerDao;
@@ -99,6 +102,16 @@ public class OperatorThermostatManualController {
 		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
         
+        // Log thermostat manual event save attempt
+		for (int thermostatId : thermostatIdsList) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            
+            accountEventLogService.thermostatManualSetAttemptedByOperator(userContext.getYukonUser(),
+                                                                          accountInfoFragment.getAccountNumber(),
+                                                                          thermostat.getSerialNumber());
+        }
+
+		
         ThermostatManualEventResult message = null;
         boolean failed = false;
 
@@ -172,7 +185,10 @@ public class OperatorThermostatManualController {
         return "redirect:view";
     }
 	
-	
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
     
 	@Autowired
 	public void setInventoryDao(InventoryDao inventoryDao) {

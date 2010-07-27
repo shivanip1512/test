@@ -11,6 +11,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -40,6 +41,8 @@ import com.google.common.collect.Lists;
 @RequestMapping(value = "/operator/contacts/*")
 public class OperatorContactsController {
 
+    private AccountEventLogService accountEventLogService;
+    
 	private OperatorAccountService operatorAccountService;
 	private CustomerAccountDao customerAccountDao;
 	private CustomerDao customerDao;
@@ -135,9 +138,29 @@ public class OperatorContactsController {
 			return "operator/contacts/contactEdit.jsp";
 		}
 		
+		String newContactName = contactDto.getFirstName()+" "+contactDto.getLastName();
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactUpdated"));
 		if (newContact) {
 			flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactCreated"));
+			
+			accountEventLogService.contactAdded(userContext.getYukonUser(), 
+			                                    accountInfoFragment.getAccountNumber(), 
+			                                    newContactName);
+		} else {
+		    LiteContact contact = contactDao.getContact(contactDto.getContactId());
+		    String oldContactName = contact.getContFirstName()+" "+contact.getContLastName();
+		    accountEventLogService.contactUpdated(userContext.getYukonUser(), 
+                                                accountInfoFragment.getAccountNumber(), 
+                                                contactDto.getFirstName()+" "+contactDto.getLastName());
+		    
+		    // Log contact name change
+		    if (!oldContactName.equalsIgnoreCase(newContactName)) {
+		        accountEventLogService.contactNameChanged(userContext.getYukonUser(), 
+		                                                  accountInfoFragment.getAccountNumber(),
+		                                                  oldContactName,
+		                                                  newContactName);
+		    }
+        
 		}
 		
 		return "redirect:contactList";
@@ -171,6 +194,13 @@ public class OperatorContactsController {
 		rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, userContext.getYukonUser());
 		
 		contactDao.deleteContact(deleteAdditionalContactId);
+		
+		// Log contact removal
+		LiteContact contact = contactDao.getContact(deleteAdditionalContactId);
+		String contactName = contact.getContFirstName()+" "+contact.getContLastName();
+		accountEventLogService.contactRemoved(userContext.getYukonUser(),
+		                                      accountInfoFragment.getAccountNumber(),
+		                                      contactName);
 		
 		setupContactBasicModelMap(null, accountInfoFragment, modelMap);
 		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.contact.contactDeleted"));
@@ -210,6 +240,11 @@ public class OperatorContactsController {
 		
 		AccountInfoFragmentHelper.setupModelMapBasics(accountInfoFragment, modelMap);
 	}
+	
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
 	
 	@Autowired
 	public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {

@@ -818,15 +818,27 @@ public class AccountServiceImpl implements AccountService {
                 customerDao.deleteCICustomer(liteCustomer.getCustomerID());
                 liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
                 customerDao.updateCustomer(liteCustomer);
+                
+                // Log customer type change
+                accountEventLogService.customerTypeChanged(user, accountNumber, 
+                                                           CustomerTypes.STRING_CI_CUSTOMER, 
+                                                           CustomerTypes.STRING_RES_CUSTOMER);
             }else {
                 // was commercial and still is
                 LiteCICustomer liteCICustomer = customerDao.getLiteCICustomer(liteCustomer.getCustomerID());
+                String oldCompanyName = liteCICustomer.getCompanyName();
                 liteCICustomer.setCompanyName(accountDto.getCompanyName());
                 if (accountDto.getCommercialTypeEntryId() != null) {
                 	liteCICustomer.setCICustType(accountDto.getCommercialTypeEntryId());
                 }
                 customerDao.updateCICustomer(liteCICustomer);
                 customerDao.updateCustomer(liteCustomer);
+                
+                if (!oldCompanyName.equalsIgnoreCase(accountDto.getCompanyName())) {
+                    accountEventLogService.companyNameChanged(user, accountNumber, 
+                                                              oldCompanyName, 
+                                                              accountDto.getCompanyName());
+                }
             }
         }else {
             if(accountDto.getIsCommercial()) {
@@ -853,10 +865,16 @@ public class AccountServiceImpl implements AccountService {
                 liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
                 liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
                 customerDao.addCICustomer(liteCICustomer);
+                
+                // Log customer type change
+                accountEventLogService.customerTypeChanged(user, accountNumber, 
+                                                           CustomerTypes.STRING_RES_CUSTOMER,
+                                                           CustomerTypes.STRING_CI_CUSTOMER); 
             }else {
                 customerDao.updateCustomer(liteCustomer);
             }
         }
+        
         dbPersistantDao.processDBChange(new DBChangeMsg(liteCustomer.getLiteID(),
                                                         DBChangeMsg.CHANGE_CUSTOMER_DB,
                                                         DBChangeMsg.CAT_CUSTOMER,

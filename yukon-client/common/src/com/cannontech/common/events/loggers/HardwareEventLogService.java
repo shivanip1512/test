@@ -109,5 +109,38 @@ public interface HardwareEventLogService {
                                     @Arg(EventLogArgEnum.serialNumber) String newSerialNumber);
 
     
+/* HARDWARE CONFIGURATION */
+    // hardware configuration
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware.config")
+    public void hardwareConfigAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                     @Arg(EventLogArgEnum.serialNumber) String serialNumber, 
+                                                     @Arg(EventLogArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware.config")
+    public void hardwareDisableAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                     @Arg(EventLogArgEnum.serialNumber) String serialNumber, 
+                                                     @Arg(EventLogArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="hardware.config")
+    public void hardwareEnableAttemptedByOperator(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                  @Arg(EventLogArgEnum.serialNumber) String serialNumber, 
+                                                  @Arg(EventLogArgEnum.accountNumber) String accountNumber);
+
     
+    // hardware configuration Service Level
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="hardware.config")
+    public void hardwareConfigUpdated(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                                  @Arg(EventLogArgEnum.serialNumber) String serialNumber, 
+                                                  @Arg(EventLogArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="hardware.config")
+    public void hardwareDisabled(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                 @Arg(EventLogArgEnum.serialNumber) String serialNumber, 
+                                 @Arg(EventLogArgEnum.accountNumber) String accountNumber);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="hardware.config")
+    public void hardwareEnabled(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser, 
+                                @Arg(EventLogArgEnum.serialNumber) String serialNumber, 
+                                @Arg(EventLogArgEnum.accountNumber) String accountNumber);
+
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -55,6 +56,8 @@ import com.cannontech.web.stars.dr.operator.service.OperatorThermostatHelper;
 @RequestMapping(value = "/operator/thermostatSchedule/*")
 public class OperatorThermostatScheduleController {
 	
+    private AccountEventLogService accountEventLogService;
+    
 	private InventoryDao inventoryDao;
 	private CustomerDao customerDao;
 	private CustomerAccountDao customerAccountDao;
@@ -280,14 +283,26 @@ public class OperatorThermostatScheduleController {
 	@RequestMapping
     public String save(String thermostatIds,
     							String type, String scheduleMode, String temperatureUnit, Integer scheduleId,
-					            String scheduleName, String saveAction, YukonUserContext yukonUserContext,
+					            String scheduleName, String saveAction, YukonUserContext userContext,
 					            String schedules,
 					            HttpServletRequest request, ModelMap modelMap,
 					            FlashScope flashScope,
 					            AccountInfoFragment accountInfoFragment) {
 
-		List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
-		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+	    List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
+	    CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
+	    AccountThermostatSchedule oldAts = accountThermostatScheduleDao.getById(scheduleId);
+	    
+	    // Log thermostat schedule save attempt
+	    for (int thermostatId : thermostatIdsList) {
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+	        
+            accountEventLogService.thermostatScheduleSavingAttemptedByOperator(userContext.getYukonUser(),
+                                                                               accountInfoFragment.getAccountNumber(),
+                                                                               thermostat.getSerialNumber(),
+                                                                               oldAts.getScheduleName());
+        }
+	    
 		ThermostatScheduleMode thermostatScheduleMode = ThermostatScheduleMode.valueOf(scheduleMode);
 		
         boolean sendAndSave = "saveApply".equals(saveAction);
@@ -332,6 +347,13 @@ public class OperatorThermostatScheduleController {
         accountThermostatScheduleDao.mapThermostatsToSchedule(thermostatIdsList, ats.getAccountThermostatScheduleId());
         ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
 
+        // Log schedule name change
+        if (!oldAts.getScheduleName().equalsIgnoreCase(ats.getScheduleName())) {
+            accountEventLogService.thermostatScheduleNameChanged(userContext.getYukonUser(),
+                                                                 oldAts.getScheduleName(),
+                                                                 ats.getScheduleName());
+        }
+        
         // SEND
         if (sendAndSave) {
         	
@@ -340,7 +362,7 @@ public class OperatorThermostatScheduleController {
         		
         		for (TimeOfWeek timeOfWeek : thermostatScheduleMode.getAssociatedTimeOfWeeks()) {
         			
-        			message = thermostatService.sendSchedule(customerAccount, ats, thermostatId, timeOfWeek, thermostatScheduleMode, yukonUserContext);
+        			message = thermostatService.sendSchedule(customerAccount, ats, thermostatId, timeOfWeek, thermostatScheduleMode, userContext);
                 	
             		if (message.isFailed()) {
                         failed = true;
