@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MockConfigurationSource;
 import com.cannontech.common.config.UnknownKeyException;
 import com.cannontech.web.cayenta.model.CayentaLocationInfo;
 import com.cannontech.web.cayenta.model.CayentaMeterInfo;
@@ -20,22 +20,11 @@ public class CayentaApiServiceTest {
 		
 		cayentaApiService = new CayentaApiServiceImpl();
 		cayentaApiService.setSimpleHttpPostServiceFactory(new MockSimpleHttpPostServiceFactory());
-		cayentaApiService.setConfigurationSource(new MockConfigurationSource());
+		cayentaApiService.setConfigurationSource(new CayentaApiMockConfigurationSource());
     }
 	
-	class MockConfigurationSource implements ConfigurationSource {
+	class CayentaApiMockConfigurationSource extends MockConfigurationSource {
 
-		@Override
-		public boolean getBoolean(String key, boolean defaultValue) {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public int getInteger(String key, int defaultValue) {
-			throw new UnsupportedOperationException();
-		}
-		public long getLong(String key, long defaultValue) {
-		    throw new UnsupportedOperationException();
-		}
 		@Override
 		public int getRequiredInteger(String key) throws UnknownKeyException {
 			return 0;
@@ -43,14 +32,6 @@ public class CayentaApiServiceTest {
 		@Override
 		public String getRequiredString(String key) throws UnknownKeyException {
 			return "";
-		}
-		@Override
-		public String getString(String key, String defaultValue) {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public String getString(String key) {
-			throw new UnsupportedOperationException();
 		}
 	}
 	
