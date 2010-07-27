@@ -30,7 +30,6 @@ import com.cannontech.common.bulk.filter.service.UiFilterList;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.mapper.PassThroughMapper;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.device.commands.CommandRequestExecutionType;
 import com.cannontech.common.events.Arg;
 import com.cannontech.common.events.YukonEventLog;
@@ -66,29 +65,11 @@ import com.google.common.collect.ImmutableList.Builder;
 public class EventLogServiceImpl implements EventLogService {
     private static final Logger log = YukonLogManager.getLogger(EventLogServiceImpl.class);
 
+    private ConfigurationSource configurationSource;
     private DateFormattingService dateFormattingService;
     private EventLogDao eventLogDao;
     private FilterService filterService;
-    
-    private final static ImmutableList<String> excludedEventLogPaths;
-    static {
-        // Gets the value from the cparm if it exists
-        ConfigurationSource configSource = MasterConfigHelper.getConfiguration();
-        String excludedEventLogPathsStr = configSource.getString("EVENT_LOG_EXCLUSION_LIST");
 
-        // Builds up the list of excluded event log paths.
-        Builder<String> excludedEventLogPathsBuilder = ImmutableList.builder();
-        if (excludedEventLogPathsStr != null) {
-            String[] excludedEventLogPathArray = StringUtils.split(excludedEventLogPathsStr, ",");
-
-            for (String excludedEventLogPathStr : excludedEventLogPathArray) {
-                excludedEventLogPathsBuilder.add(excludedEventLogPathStr.trim());
-            }
-        }
-        
-        excludedEventLogPaths = excludedEventLogPathsBuilder.build();
-    }
-    
     private Map<Method, MethodLogDetail> methodLogDetailLookup = Maps.newHashMap();
     private Map<String, MethodLogDetail> methodLogDetailCatalog = Maps.newHashMap();
     
@@ -147,7 +128,6 @@ public class EventLogServiceImpl implements EventLogService {
         argumentMappers = builder.build();
     }
 
-    
     @Override
     public void setupLoggerForMethod(final Method method) throws BadConfigurationException {
         MethodLogDetail methodLogDetail = new MethodLogDetail();
@@ -262,19 +242,41 @@ public class EventLogServiceImpl implements EventLogService {
             }
         };
         methodLogDetail.setValueMapper(argumentValueMapper); 
-        log.debug("Created mapping: " + methodLogDetail);
         
         // Checks to see if the event log is in the exclusion list.
+        ImmutableList<String> excludedEventLogPaths = getExcludedEventLogPaths();
         for (String excludedEventLogPath : excludedEventLogPaths) {
             if (methodLogDetail.getFullPath().startsWith(excludedEventLogPath)) {
                 methodLogDetail.setLogging(false);
-                log.debug("Adding "+methodLogDetail.getFullPath()+" to the logging exclusion list");
+                log.debug(methodLogDetail.getFullPath()+" was added to the logging exclusion list because of the ["+
+                          excludedEventLogPath+"] entry being excluded through the master.cfg");
             }
+        }
+        if (methodLogDetail.isLogging()) {
+            log.debug("Created mapping: " + methodLogDetail);
         }
         
         methodLogDetailLookup.put(method, methodLogDetail);
         methodLogDetailCatalog.put(methodLogDetail.getEventType(), methodLogDetail);
     }
+    
+    private ImmutableList<String> getExcludedEventLogPaths() {
+        // Gets the value from the cparm if it exists
+        String excludedEventLogPathsStr = configurationSource.getString("EVENT_LOG_EXCLUSION_LIST");
+
+        // Builds up the list of excluded event log paths.
+        Builder<String> excludedEventLogPathsBuilder = ImmutableList.builder();
+        if (excludedEventLogPathsStr != null) {
+            String[] excludedEventLogPathArray = StringUtils.split(excludedEventLogPathsStr, ",");
+
+            for (String excludedEventLogPathStr : excludedEventLogPathArray) {
+                excludedEventLogPathsBuilder.add(excludedEventLogPathStr.trim());
+            }
+        }
+        
+        return excludedEventLogPathsBuilder.build();
+    }
+    
     
     /**
      * This method doesn't do much work, but it is broken out to preserve
@@ -520,6 +522,11 @@ public class EventLogServiceImpl implements EventLogService {
         }
     };
     
+    @Autowired
+    public void setConfigurationSource(ConfigurationSource configurationSource) {
+        this.configurationSource = configurationSource;
+    }
+
     @Autowired
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
