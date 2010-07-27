@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.bulk.filter.service.impl.FilterServiceImpl;
+import com.cannontech.common.config.MockConfigurationSource;
 import com.cannontech.common.events.dao.EventLogDao;
 import com.cannontech.common.events.model.ArgumentColumn;
 import com.cannontech.common.events.model.EventCategory;
@@ -38,9 +39,15 @@ public class EventLogFactoryBeanTest {
     }
     
     private List<EventLog> insertedEventLogs;
-    
     private TestEventLogInterface testEventLog;
 
+    private static class EventLogMockConfigurationService extends MockConfigurationSource{
+        @Override
+        public String getString(String key) {
+            return "";
+        }
+    }
+    
     @Before
     public void setUp() throws Exception {
         insertedEventLogs = Lists.newArrayList();
@@ -116,6 +123,7 @@ public class EventLogFactoryBeanTest {
         eventLogService.setDateFormattingService(new DateFormattingServiceImpl());
         eventLogService.setFilterService(new FilterServiceImpl());
         eventLogService.setEventLogDao(eventLogDaoMock);
+        eventLogService.setConfigurationSource(new EventLogMockConfigurationService());
 
         eventLogFactoryBean.setEventLogService(eventLogService);
         eventLogFactoryBean.afterPropertiesSet();
@@ -217,6 +225,7 @@ public class EventLogFactoryBeanTest {
         eventLogService.setDateFormattingService(new DateFormattingServiceImpl());
         eventLogService.setFilterService(new FilterServiceImpl());
         eventLogService.setEventLogDao(eventLogDaoMock);
+        eventLogService.setConfigurationSource(new EventLogMockConfigurationService());
         eventLogFactoryBean.setEventLogService(eventLogService);
         
         eventLogFactoryBean.afterPropertiesSet();
