@@ -699,6 +699,12 @@ void CtiDeviceSnppPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
     _table.DecodeDatabaseReader(rdr);
 }
 
+int CtiDeviceSnppPagingTerminal::sendCommResult(INMESS *InMessage)
+{
+    // We are not interested in changing this return value here!
+    // Must override base as we have no protocol.
+    return NoError;
+}
 
 void CtiDeviceSnppPagingTerminal::getVerificationObjects(queue< CtiVerificationBase * > &work_queue)
 {

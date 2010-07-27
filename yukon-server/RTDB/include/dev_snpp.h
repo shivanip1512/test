@@ -62,6 +62,7 @@ public:
                           list< CtiMessage* >      &vgList,
                           list< CtiMessage* >      &retList,
                           list< OUTMESS* >         &outList);
+   virtual int sendCommResult(INMESS *InMessage);
 
    bool isTransactionComplete();
 
