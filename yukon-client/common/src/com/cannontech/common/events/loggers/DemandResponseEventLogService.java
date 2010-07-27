@@ -28,22 +28,19 @@ public interface DemandResponseEventLogService {
                                    Date stopDate);
 
     
-    /////////////
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void threeTierControlAreaTriggersChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,
-                                                    @Arg(EventLogArgEnum.username) String name,
-                                                    @Arg(EventLogArgEnum.username) Double threshold1,
-                                                    @Arg(EventLogArgEnum.username) Double offset1,
-                                                    @Arg(EventLogArgEnum.username) Double threshold2,
-                                                    @Arg(EventLogArgEnum.username) Double offset2);
+                                                    @Arg(EventLogArgEnum.controlAreaName) String controlAreaName,
+                                                    Double threshold1,
+                                                    Double offset1,
+                                                    Double threshold2,
+                                                    Double offset2);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void controlAreaTriggersChanged(@Arg(EventLogArgEnum.controlAreaName) String controlAreaName, 
-                                           @Arg(EventLogArgEnum.username) Double threshold1, 
-                                           @Arg(EventLogArgEnum.username) Double offset1, 
-                                           @Arg(EventLogArgEnum.username) Double threshold2, 
-                                           @Arg(EventLogArgEnum.username) Double offset2);
-////////////////
+                                           Double threshold1, Double offset1, 
+                                           Double threshold2, Double offset2);
+
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="dr.controlArea")
     public void threeTierControlAreaTimeWindowChanged(@Arg(EventLogArgEnum.username) LiteYukonUser yukonUser,

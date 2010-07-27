@@ -474,6 +474,10 @@ public class OperatorThermostatScheduleController {
     	return "redirect:savedSchedules";
     }
     
+	@Autowired
+	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
+        this.accountEventLogService = accountEventLogService;
+    }
 	
 	@Autowired
 	public void setInventoryDao(InventoryDao inventoryDao) {
