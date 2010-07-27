@@ -104,7 +104,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
     };
     
     private List<DisplayableProgram> getForAccount(int accountId, YukonUserContext userContext, ControlPeriod controlPeriod, boolean applyFilters, boolean past) {
-        List<Program> programList = Lists.newArrayList(); //TODO Get for account: probably based on whether previous or current
+        List<Program> programList = Lists.newArrayList();
         
         if(!past) {
             List<Appliance> applianceList = applianceDao.getAssignedAppliancesByAccountId(accountId);
