@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.UiFilterList;
@@ -77,7 +78,7 @@ import com.google.common.collect.Ordering;
 @Controller
 @RequestMapping("/eventLog/*")
 @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
-@SessionAttributes("eventLogTypeBackingBean")
+@SessionAttributes(value="eventLogTypeBackingBean")
 public class EventLogViewerController {
 
     private final String eventLogResolvablePrefix ="yukon.common.events.";
@@ -96,7 +97,8 @@ public class EventLogViewerController {
                                FlashScope flashScope,
                                YukonUserContext userContext, 
                                ModelMap model) throws ServletException, ParseException {
-
+        model.addAttribute("eventLogTypeBackingBean", new EventLogTypeBackingBean());
+        
         if (eventLogCategoryBackingBean.getStartDate() == null) {
             eventLogCategoryBackingBean.setStartDate(new LocalDate(userContext.getJodaTimeZone()).minusDays(1));
         }
@@ -144,9 +146,10 @@ public class EventLogViewerController {
     }
 
     @RequestMapping
-    public void viewByType(ModelMap model) {
+    public void viewByType(ModelMap model,
+                           SessionStatus sessionStatus) {
         // Clear Session Attribute
-        model.addAttribute("eventLogTypeBackingBean", "");
+        sessionStatus.setComplete();
 
         buildTreeModelData(model);
         
@@ -158,8 +161,7 @@ public class EventLogViewerController {
     }
     
     @RequestMapping(params="eventLogType", method=RequestMethod.GET)
-    public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
-                           HttpServletRequest request,
+    public void viewByType(HttpServletRequest request,
                            YukonUserContext userContext, 
                            ModelMap model) throws ServletRequestBindingException{
         buildTreeModelData(model);
@@ -169,6 +171,7 @@ public class EventLogViewerController {
         eventLogType = StringUtils.removeStart(eventLogType, "Categories.");
 
         // Create event log type backing bean
+        EventLogTypeBackingBean eventLogTypeBackingBean = null;
         if (eventLogTypeBackingBean == null ||
             !eventLogType.equalsIgnoreCase(eventLogTypeBackingBean.getEventLogType())) {
             List<EventLogFilter> eventLogFilters = getEveltLogFilter(eventLogType, userContext);
@@ -197,7 +200,7 @@ public class EventLogViewerController {
         
     }
 
-    @RequestMapping(method=RequestMethod.POST)
+    @RequestMapping(value="viewByType",method=RequestMethod.POST)
     public void viewByType(@ModelAttribute("eventLogTypeBackingBean") EventLogTypeBackingBean eventLogTypeBackingBean,
                            BindingResult bindingResult,
                            FlashScope flashScope,
