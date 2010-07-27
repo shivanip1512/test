@@ -26,6 +26,8 @@
 #include "msg_signal.h"
 #include "porter.h"
 #include "utility.h"
+#include "database_connection.h"
+#include "database_writer.h"
 
 CtiMutex CtiDeviceBase::_configMux;
 
@@ -432,6 +434,24 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
         _exclusion = aRef.exclusion();
     }
     return *this;
+}
+
+void CtiDeviceBase::purgeDynamicInfo(const int &paoid)
+{
+    // Purge the dynamic info from memory. 
+    _paoInfo.clear();
+
+    // Purge the dynamic info from the database.
+    static const string sqlPurge = "DELETE "
+                                   "FROM dynamicpaoinfo "
+                                   "WHERE paobjectid = ? AND owner = 'scanner'";
+
+    Cti::Database::DatabaseConnection   connection;
+    Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
+
+    deleter << paoid;
+
+    deleter.execute();
 }
 
 string CtiDeviceBase::getSQLCoreStatement() const

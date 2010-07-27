@@ -1755,7 +1755,10 @@ void CtiDeviceManager::refreshDynamicPaoInfo(Cti::Database::id_set &paoids)
 
         if( !sql.empty() )
         {
-            sql += createIdSqlClause(paoids, "DPI", "paobjectid");
+            if(!paoids.empty())
+            {
+                sql += " AND " + createIdSqlClause(paoids, "DPI", "paobjectid");
+            }
             rdr.setCommandText(sql);
             rdr.execute();
         }

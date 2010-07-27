@@ -119,6 +119,8 @@ protected:
 
 public:
 
+    void purgeDynamicInfo(const int &paoid);
+
     typedef vector< CtiTablePaoExclusion > exclusions;
     typedef vector< pair< unsigned long, CtiTime > > prohibitions;
 
