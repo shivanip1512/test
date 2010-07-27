@@ -10,8 +10,9 @@
 <%@ taglib tagdir="/WEB-INF/tags/i18n" prefix="i" %>
 
 <cti:standardPage title="Event Log" module="support" page="byType">
-<cti:standardMenu menuSelection="events|byType" />
-
+    <cti:standardMenu menuSelection="events|byType" />
+    <c:set var="baseUrl" value="/spring/common/eventLog/viewByType"/>
+    
     <%-- Filtering popup --%>
     <cti:msg2 var="eventLogFiltersTitle" key=".eventLogFilters" />
     <tags:simplePopup id="filterPopup" title="${eventLogFiltersTitle}">
@@ -101,12 +102,12 @@
         <cti:url var="csvExportUrl" value="/spring/common/eventLog/viewByType">
             <cti:param name="export" value="CSV"/>
         </cti:url>
-        <cti:img key="csvExport" href="${csvExportUrl}"/>
+        <cti:labeledImg key="csvExport" href="${csvExportUrl}"/>
 
     </div>
 
     <cti:msg var="eventsTitle" key="yukon.common.events.title"/>
-    <tags:pagedBox filterDialog="filterPopup" title="${eventsTitle}" searchResult="${searchResults}" baseUrl="${baseUrl}" pageByHundereds="true">
+    <tags:pagedBox filterDialog="filterPopup" title="${eventsTitle}" searchResult="${searchResult}" baseUrl="${baseUrl}" pageByHundereds="true">
     
         <c:choose>
             <c:when test="${empty dataGrid}">

@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -162,6 +163,7 @@ public class EventLogViewerController {
     
     @RequestMapping(params="eventLogType", method=RequestMethod.GET)
     public void viewByType(HttpServletRequest request,
+                           HttpSession session,
                            YukonUserContext userContext, 
                            ModelMap model) throws ServletRequestBindingException{
         buildTreeModelData(model);
@@ -171,7 +173,7 @@ public class EventLogViewerController {
         eventLogType = StringUtils.removeStart(eventLogType, "Categories.");
 
         // Create event log type backing bean
-        EventLogTypeBackingBean eventLogTypeBackingBean = null;
+        EventLogTypeBackingBean eventLogTypeBackingBean = (EventLogTypeBackingBean)session.getAttribute("eventLogTypeBackingBean");
         if (eventLogTypeBackingBean == null ||
             !eventLogType.equalsIgnoreCase(eventLogTypeBackingBean.getEventLogType())) {
             List<EventLogFilter> eventLogFilters = getEveltLogFilter(eventLogType, userContext);
@@ -181,6 +183,7 @@ public class EventLogViewerController {
                                             eventLogFilters);
         }
         eventLogTypeBackingBean.setItemsPerPage(ServletRequestUtils.getIntParameter(request, "itemsPerPage", 10));
+        eventLogTypeBackingBean.setPage(ServletRequestUtils.getIntParameter(request, "page", 1));
         model.addAttribute("eventLogTypeBackingBean", eventLogTypeBackingBean);
 
         // Get default search results
