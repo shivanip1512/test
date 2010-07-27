@@ -89,7 +89,11 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 	{
 		//Reset all objects, new data being collected!
 		setData(null);
-				
+
+		if( !isValid()) {
+		    return;
+		}
+		
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());
 				
@@ -160,7 +164,6 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		" AND AC.APPLIANCECATEGORYID = GM.ITEMID "+
 		" AND GM.MAPPINGCATEGORY = 'ApplianceCategory' " +
 		" ORDER BY EC.NAME, YWC.ALTERNATEDISPLAYNAME, CA.ACCOUNTNUMBER ");
-
 		return sql;
 		
 	}
@@ -389,6 +392,17 @@ public class ProgramDetailModel extends ReportModelBase<ProgramDetail>
 		if( acctProgPairs == null)
 			acctProgPairs = new HashMap<String, ProgramDetail>(10);
 		return acctProgPairs;
+	}
+
+	/**
+	 * Return true if all parameters used for collecting data are available, else return false.
+	 * @return
+	 */
+	private boolean isValid() {
+        if (getPaoIDs() == null || getPaoIDs().length < 1) {
+            return false;
+        }
+        return true;
 	}
 	
 	@Override
