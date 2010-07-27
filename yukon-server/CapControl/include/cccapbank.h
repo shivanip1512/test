@@ -270,6 +270,7 @@ public:
     BOOL isDirty() const;
     BOOL getInsertDynamicDataFlag() const;
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
+    void dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 
     void setDynamicData(Cti::RowReader& rdr);
 

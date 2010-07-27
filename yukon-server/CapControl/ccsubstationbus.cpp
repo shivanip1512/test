@@ -7539,6 +7539,14 @@ void CtiCCSubstationBus::updatePointResponseDeltas(std::set<long> pointIds)
                 capBank->updatePointResponseDeltas(point);
             }
         }
+
+        // Update the point response deltas in the DB immediately for IVVC.  See YUK-8929
+        {
+            Cti::Database::DatabaseConnection   connection;
+            CtiTime now;
+
+            capBank->dumpDynamicPointResponseData(connection, now);
+        }
     }
     catch(...)
     {

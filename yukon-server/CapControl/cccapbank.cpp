@@ -2558,13 +2558,23 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
             if (monPoint->isDirty())
                 monPoint->dumpDynamicData(conn,currentDateTime);
         }
-        for each (CtiCCPointResponsePtr ptResponse in getPointResponse())
+
+        dumpDynamicPointResponseData(conn,currentDateTime);
+
+    }
+}
+
+void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime)
+{
+    for each (CtiCCPointResponsePtr ptResponse in getPointResponse())
+    {
+        if (ptResponse->isDirty())
         {
-            if (ptResponse->isDirty())
-                ptResponse->dumpDynamicData(conn,currentDateTime);
+            ptResponse->dumpDynamicData(conn,currentDateTime);
         }
     }
 }
+
 const string& CtiCCCapBank::convertOperationalState( int num )
 {
     switch( num )
