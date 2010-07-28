@@ -88,17 +88,20 @@ public class CrfMeterDaoImpl implements CrfMeterDao {
             jdbcTemplate.update(sql);
             return;
         } catch (DataIntegrityViolationException e) {
-
+            /* Row is there, try update it. */
+            SqlStatementBuilder updateSql = new SqlStatementBuilder();
+            updateSql.append("update CrfAddress");
+            updateSql.append("set SerialNumber").eq(meter.getMeterIdentifier().getSensorSerialNumber());
+            updateSql.append(  ", Manufacturer").eq(meter.getMeterIdentifier().getSensorManufacturer());
+            updateSql.append(  ", Model").eq(meter.getMeterIdentifier().getSensorModel());
+            updateSql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
+            int rowsAffected = jdbcTemplate.update(updateSql);
+            
+            if(rowsAffected == 0) {
+                /* The initial insert failed because a different meter is using this SN, Manufacturer, Model combination. */
+                throw new DataIntegrityViolationException("Serial Number, Manufacturer, and Model must be unique.");
+            }
         }
-
-        /* Row is there, update it. */
-        SqlStatementBuilder updateSql = new SqlStatementBuilder();
-        updateSql.append("update CrfAddress");
-        updateSql.append("set SerialNumber").eq(meter.getMeterIdentifier().getSensorSerialNumber());
-        updateSql.append(  ", Manufacturer").eq(meter.getMeterIdentifier().getSensorManufacturer());
-        updateSql.append(  ", Model").eq(meter.getMeterIdentifier().getSensorModel());
-        updateSql.append("where DeviceId").eq(meter.getPaoIdentifier().getPaoId());
-        jdbcTemplate.update(updateSql);
 
     }
     

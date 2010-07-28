@@ -49,14 +49,27 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
         setPreferredSize(new Dimension(350, 260));
         setBorder(new TitledBorder("CRF Meter Settings"));
 
+        GridBagConstraints serialNumberLabelConstraint = new GridBagConstraints();
+        serialNumberLabelConstraint.gridx = 0; serialNumberLabelConstraint.gridy = 0;
+        serialNumberLabelConstraint.anchor = GridBagConstraints.WEST;
+        serialNumberLabelConstraint.insets = new Insets(3, 3, 3, 3);
+        add(getSerialNumberLabel(), serialNumberLabelConstraint);
+        
+        GridBagConstraints serialNumberTextFieldConstraint = new GridBagConstraints();
+        serialNumberTextFieldConstraint.gridx = 1; serialNumberTextFieldConstraint.gridy = 0;
+        serialNumberTextFieldConstraint.fill = GridBagConstraints.BOTH;
+        serialNumberTextFieldConstraint.anchor = GridBagConstraints.WEST;
+        serialNumberTextFieldConstraint.insets = new Insets(3, 3, 3, 3);
+        add(getSerialNumberTextField(), serialNumberTextFieldConstraint);
+
         GridBagConstraints manufacturerLabelConstraint = new GridBagConstraints();
-        manufacturerLabelConstraint.gridx = 0; manufacturerLabelConstraint.gridy = 0;
+        manufacturerLabelConstraint.gridx = 0; manufacturerLabelConstraint.gridy = 1;
         manufacturerLabelConstraint.anchor = GridBagConstraints.WEST;
         manufacturerLabelConstraint.insets = new Insets(3, 3, 3, 3);
         add(getManufacturerLabel(), manufacturerLabelConstraint);
         
         GridBagConstraints manufacturerTextFieldConstraint = new GridBagConstraints();
-        manufacturerTextFieldConstraint.gridx = 1; manufacturerTextFieldConstraint.gridy = 0;
+        manufacturerTextFieldConstraint.gridx = 1; manufacturerTextFieldConstraint.gridy = 1;
         manufacturerTextFieldConstraint.weightx = 1.0;
         manufacturerTextFieldConstraint.fill = GridBagConstraints.BOTH;
         manufacturerTextFieldConstraint.anchor = GridBagConstraints.WEST;
@@ -64,30 +77,17 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
         add(getManufacturerTextField(), manufacturerTextFieldConstraint);
         
         GridBagConstraints modelLabelConstraint = new GridBagConstraints();
-        modelLabelConstraint.gridx = 0; modelLabelConstraint.gridy = 1;
+        modelLabelConstraint.gridx = 0; modelLabelConstraint.gridy = 2;
         modelLabelConstraint.anchor = GridBagConstraints.WEST;
         modelLabelConstraint.insets = new Insets(3, 3, 3, 3);
         add(getModelLabel(), modelLabelConstraint);
         
         GridBagConstraints modelTextFieldConstraint = new GridBagConstraints();
-        modelTextFieldConstraint.gridx = 1; modelTextFieldConstraint.gridy = 1;
+        modelTextFieldConstraint.gridx = 1; modelTextFieldConstraint.gridy = 2;
         modelTextFieldConstraint.fill = GridBagConstraints.BOTH;
         modelTextFieldConstraint.anchor = GridBagConstraints.WEST;
         modelTextFieldConstraint.insets = new Insets(3, 3, 3, 3);
         add(getModelTextField(), modelTextFieldConstraint);
-        
-        GridBagConstraints serialNumberLabelConstraint = new GridBagConstraints();
-        serialNumberLabelConstraint.gridx = 0; serialNumberLabelConstraint.gridy = 2;
-        serialNumberLabelConstraint.anchor = GridBagConstraints.WEST;
-        serialNumberLabelConstraint.insets = new Insets(3, 3, 3, 3);
-        add(getSerialNumberLabel(), serialNumberLabelConstraint);
-        
-        GridBagConstraints serialNumberTextFieldConstraint = new GridBagConstraints();
-        serialNumberTextFieldConstraint.gridx = 1; serialNumberTextFieldConstraint.gridy = 2;
-        serialNumberTextFieldConstraint.fill = GridBagConstraints.BOTH;
-        serialNumberTextFieldConstraint.anchor = GridBagConstraints.WEST;
-        serialNumberTextFieldConstraint.insets = new Insets(3, 3, 3, 3);
-        add(getSerialNumberTextField(), serialNumberTextFieldConstraint);
         
         GridBagConstraints createPointsCheckBoxConstraint = new GridBagConstraints();
         createPointsCheckBoxConstraint.gridx = 0; createPointsCheckBoxConstraint.gridy = 3;
@@ -110,7 +110,7 @@ public class CrfMeterPanel extends DataInputPanel implements CaretListener {
         /* Make sure that when its time to display this panel, the focus starts in the top component */
         SwingUtilities.invokeLater( new Runnable() {
             public void run() {
-                getManufacturerTextField().requestFocus();
+                getSerialNumberTextField().requestFocus();
             }
         });
     }

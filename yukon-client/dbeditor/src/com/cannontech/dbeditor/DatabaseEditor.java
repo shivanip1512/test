@@ -38,7 +38,10 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataAccessException;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.editor.EditorInputValidationException;
 import com.cannontech.common.editor.PropertyPanel;
@@ -61,6 +64,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -125,6 +129,8 @@ public class DatabaseEditor
    public static final URL DBEDITOR_IMG_32 = DatabaseEditor.class.getResource("/DatabaseEditor32.gif");
    public static final URL DBEDITOR_IMG_48 = DatabaseEditor.class.getResource("/DatabaseEditor48.gif");
    public static final URL DBEDITOR_IMG_64 = DatabaseEditor.class.getResource("/DatabaseEditor64.gif");
+   
+   private static final Logger log = YukonLogManager.getLogger(DatabaseEditor.class);
    
    public static List<Image> getIconsImages() {
        
@@ -292,7 +298,7 @@ public void actionPerformed(ActionEvent event)
 			currentDatabase = DatabaseTypes.CORE_DB;
 			setDatabase(currentDatabase);
 		} catch(Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 		} finally {
 			f.setCursor(savedCursor);
 		}
@@ -308,7 +314,7 @@ public void actionPerformed(ActionEvent event)
 			currentDatabase = DatabaseTypes.LM_DB;
 			setDatabase(currentDatabase);
 		} catch(Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 		} finally {
 			f.setCursor(savedCursor);
 		}
@@ -324,7 +330,7 @@ public void actionPerformed(ActionEvent event)
 			currentDatabase = DatabaseTypes.SYSTEM_DB;
 			setDatabase(currentDatabase);
 		} catch(Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 		} finally {
 			f.setCursor(savedCursor);
 		}
@@ -400,7 +406,7 @@ public void viewMenuRefreshAction() {
     }
     catch(Exception e)
     {
-    	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    	log.error( e.getMessage(), e );
     }
     finally
     {
@@ -691,7 +697,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 	}
 	catch (Exception e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 	}
 	
 	boolean changeType = true;
@@ -816,7 +822,7 @@ private boolean executeChangeObjectType(WizardPanelEvent event)
 		}
 		catch (com.cannontech.database.TransactionException e)
 		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 
 			String messageString =
 				"Error changing type of " + selectedObject + " in the database.  Error received:  " + e.getMessage();
@@ -851,7 +857,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 	  }
 	  catch (Exception e)
 	  {
-		 com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		 log.error( e.getMessage(), e );
 		 
 		 fireMessage( new MessageEvent(
 				this,
@@ -908,7 +914,7 @@ public void executeChangeTypeButton_ActionPerformed(ActionEvent event)
 		 }
 		 catch (java.sql.SQLException e)
 		 {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+			log.error( e.getMessage(), e );
 			confirm =
 			   javax.swing.JOptionPane.showConfirmDialog(
 				  getParentFrame(),
@@ -1013,7 +1019,7 @@ private void deleteDBPersistent( DBPersistent deletable )
 	}
 	catch (com.cannontech.database.TransactionException e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 		fireMessage(
 			new MessageEvent(
 				this,
@@ -1117,7 +1123,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         }
 	         catch (Exception e)
 	         {
-	            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+	            log.error( e.getMessage(), e );
 
 					fireMessage( new MessageEvent(
 							this,
@@ -1149,7 +1155,7 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
 	         }
 	         catch (java.beans.PropertyVetoException e)
 	         {
-	            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e ); //when does this happen??
+	            log.error( e.getMessage(), e ); //when does this happen??
 	         }
 
 			}
@@ -1186,7 +1192,7 @@ private void showEditor(DBPersistent userObject) {
         Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
         userObject = t.execute();   
     } catch (Exception e) {
-        CTILogger.error( e.getMessage(), e );
+        log.error( e.getMessage(), e );
         fireMessage( new MessageEvent(this, "Error retrieving " + liteBase + " from the database.  Error received:  " + e.getMessage(), MessageEvent.ERROR_MESSAGE));
     }
     PropertyPanel panel = EditorPanelFactory.createEditorPanel( userObject );
@@ -1204,7 +1210,7 @@ private void showEditor(DBPersistent userObject) {
        frame.setSelected(true);
     }
     catch (java.beans.PropertyVetoException e) {
-       CTILogger.error( e.getMessage(), e ); //when does this happen??
+       log.error( e.getMessage(), e ); //when does this happen??
     }
     finally{
         owner.setCursor(savedCursor);
@@ -1839,7 +1845,7 @@ public void handleDBChangeMsg( final DBChangeMsg msg, final LiteBase liteBase ) 
         		    + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
         		
         		if (!SwingUtilities.isEventDispatchThread()) {
-        		    CTILogger.error("oops");
+        		    log.error("oops");
         		}
         
         		synchronized( getInternalEditorFrames() ) {
@@ -2061,7 +2067,7 @@ public static void main(String[] args) {
     }
     catch( Throwable t )
     {
-        CTILogger.error("Unable to startup", t);
+        log.error("Unable to startup", t);
         System.exit(-1);		
     }
 
@@ -2218,7 +2224,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 		decimalPlaces = 3;
 	}
 
@@ -2233,7 +2239,7 @@ private void readConfigParameters()
 
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 	}
 		
 	if( !activateBilling )
@@ -2250,7 +2256,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 	}
 	
 	try
@@ -2260,7 +2266,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 	}
 
 	//check whether the user should be able to see anything regarding logins in the dbeditor
@@ -2271,7 +2277,7 @@ private void readConfigParameters()
 	}
 	catch( Exception e )
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 	}
 	
 	//shouldn't be allowed to see login stuff
@@ -2463,7 +2469,7 @@ public boolean insertDBPersistent( DBPersistent newItem )
 	try
 	{
 		//insert the newly created item into the DB
-		Transaction t = Transaction.createTransaction(Transaction.INSERT, newItem);
+		Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.INSERT, newItem);
 		newItem = t.execute();
 	
 		String messageString = newItem + " inserted successfully into the database.";
@@ -2477,15 +2483,20 @@ public boolean insertDBPersistent( DBPersistent newItem )
 	catch( com.cannontech.common.wizard.CancelInsertException ci )
 	{
 		//inside the getValue(), this exception was thrown
-	}
-	catch (com.cannontech.database.TransactionException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-
-		String messageString =
-			"Error Inserting " + newItem + " into the database.  Error received:  " + e.getMessage().trim();
+	} catch (TransactionException e) {
+		log.error( e.getMessage(), e );
+		String cause = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+		String messageString = "Error inserting " + newItem + " into the database.  Error received:  " + cause.trim();
 		fireMessage(new MessageEvent(this, messageString, MessageEvent.ERROR_MESSAGE));
-	}
+	} catch( DataAccessException e ) {
+        /* Handle the DataAccessExceptions that daos might throw. */
+        /* Usually catching DataAccessException is bad practice, but in 
+            this case we want to catch all problems occuring due to dao method failures. */
+        log.error( e.getMessage(), e );
+        String messageString = " Error inserting " + newItem + " in the database.  Error received: " + e.getMessage();
+        fireMessage( new MessageEvent( this, messageString, MessageEvent.ERROR_MESSAGE) );
+        return false;
+    }
 
 	return success;
 }
@@ -2782,7 +2793,7 @@ public void showEditorSelectedObject()
 	}
 	catch (Exception e)
 	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		log.error( e.getMessage(), e );
 	}
 	finally
 	{
@@ -2872,35 +2883,42 @@ private void updateConnectionStatus(IServerConnection conn) {
 		}
 	}
 }
-/**
- * This method was created in VisualAge.
- * @param object DBPersistent
- */
- /* Returns of the DB transaction executed successfully, else returns false. */
-private boolean updateDBPersistent(com.cannontech.database.db.DBPersistent object) 
-{
 
-	try
-	{
-		Transaction t = Transaction.createTransaction( Transaction.UPDATE, object );
-		object = t.execute();
-
-		//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-		generateDBChangeMsg( object, DBChangeMsg.CHANGE_TYPE_UPDATE );
-		
-		String messageString = object + " updated successfully in the database.";
-		fireMessage( new MessageEvent( this, messageString) );
-	}
-	catch( com.cannontech.database.TransactionException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		String messageString = " Error updating " + object + " in the database.  Error received: " + e.getMessage() ;
-		fireMessage( new MessageEvent( this, messageString, MessageEvent.ERROR_MESSAGE) );
-		return false;
-	}
-
-	return true;
-}
+    /**
+     * 
+     * @param DBPersistent The DBPersistent to update.
+     * @return true if transaction is successful, otherwise false.
+     */
+    private boolean updateDBPersistent(DBPersistent dbPersistent) {
+    	try {
+    	    
+    		Transaction<DBPersistent> t = Transaction.createTransaction( Transaction.UPDATE, dbPersistent );
+    		dbPersistent = t.execute();
+    
+    		//write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
+    		generateDBChangeMsg( dbPersistent, DBChangeMsg.CHANGE_TYPE_UPDATE );
+    		
+    		String messageString = dbPersistent + " updated successfully in the database.";
+    		fireMessage( new MessageEvent( this, messageString) );
+    		
+    	} catch( TransactionException e ) {
+    	    /* Handle the normal Transaction exceptions that dbpersistence throw. */
+    		log.error( e.getMessage(), e );
+    		String messageString = " Error updating " + dbPersistent + " in the database.  Error received: " + e.getMessage();
+    		fireMessage( new MessageEvent( this, messageString, MessageEvent.ERROR_MESSAGE) );
+    		return false;
+    	} catch( DataAccessException e ) {
+    	    /* Handle the DataAccessExceptions that daos might throw. */
+    	    /* Usually catching DataAccessException is bad practice, but in 
+    	        this case we want to catch all problems occuring due to dao method failures. */
+    	    log.error( e.getMessage(), e );
+    	    String messageString = " Error updating " + dbPersistent + " in the database.  Error received: " + e.getMessage();
+    	    fireMessage( new MessageEvent( this, messageString, MessageEvent.ERROR_MESSAGE) );
+    	    return false;
+    	}
+    
+    	return true;
+    }
 
     /**
      * Helper method to update the tree 
