@@ -88,12 +88,6 @@
             <requireRoleProperty value="ODDS_FOR_CONTROL" />
           </option>
 
-          <option name="threeTierDirect">
-            <link>/loadmgmt/controlareas.jsp</link>
-            <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
-            <requireRoleProperty value="THREE_TIER_DIRECT" />
-          </option>
-
           <option name="demandResponse">
             <link>/spring/dr/home</link>
             <requireRoleProperty value="LM_DIRECT_LOADCONTROL" />
