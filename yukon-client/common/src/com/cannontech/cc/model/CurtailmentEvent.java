@@ -4,8 +4,9 @@ import java.util.Date;
 
 import com.cannontech.cc.service.enums.CurtailmentEventState;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.dao.support.Identifiable;
 
-public class CurtailmentEvent extends BaseEvent {
+public class CurtailmentEvent extends BaseEvent implements Identifiable{
     private Program program;
     private Date startTime;
     private Date notificationTime;

@@ -8,13 +8,14 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.db.customer.CICustomerPointType;
 
-public class CICustomerStub implements Comparable<CICustomerStub> {
+public class CICustomerStub implements Comparable<CICustomerStub>, Identifiable {
     private Integer id;
     private String companyName;
     private Map<CICustomerPointType, CICustomerPointData> pointData = new HashMap<CICustomerPointType, CICustomerPointData>();

@@ -6,9 +6,10 @@ import java.util.Comparator;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.util.NaturalOrderComparator;
 
-public class Program implements Serializable, Comparable<Program> {
+public class Program implements Identifiable, Serializable, Comparable<Program> {
     private String name = "";
     private ProgramType programType;
     private Integer id;

@@ -1,6 +1,5 @@
 package com.cannontech.cc.model;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -9,8 +8,10 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.cannontech.core.dao.support.Identifiable;
 
-public class EconomicEventPricing {
+
+public class EconomicEventPricing implements Identifiable{
     private Date creationTime;
     private EconomicEvent event;
     private Integer id;
@@ -65,8 +66,8 @@ public class EconomicEventPricing {
         return windows;
     }
 
-    public void setWindows(Collection<EconomicEventPricingWindow> windowCol) {
-        for (EconomicEventPricingWindow window : windowCol) {
+    public void setWindows(Iterable<EconomicEventPricingWindow> iterable) {
+        for (EconomicEventPricingWindow window : iterable) {
             windows.put(window.getOffset(), window);
         }
     }

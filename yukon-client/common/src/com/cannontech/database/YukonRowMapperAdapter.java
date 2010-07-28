@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.cannontech.database;
 
 import java.sql.ResultSet;

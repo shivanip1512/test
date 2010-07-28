@@ -5,7 +5,9 @@ import java.math.BigDecimal;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class EconomicEventParticipantSelectionWindow implements Comparable<EconomicEventParticipantSelectionWindow>{
+import com.cannontech.core.dao.support.Identifiable;
+
+public class EconomicEventParticipantSelectionWindow implements Identifiable, Comparable<EconomicEventParticipantSelectionWindow>{
     private BigDecimal energyToBuy;
     private Integer id;
     private EconomicEventParticipantSelection selection;

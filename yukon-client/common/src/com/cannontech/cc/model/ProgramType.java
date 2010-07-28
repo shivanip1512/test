@@ -5,7 +5,9 @@ import java.io.Serializable;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class ProgramType implements Serializable {
+import com.cannontech.core.dao.support.Identifiable;
+
+public class ProgramType implements Identifiable, Serializable {
     private String name;
     private String strategy;
     private Integer id;

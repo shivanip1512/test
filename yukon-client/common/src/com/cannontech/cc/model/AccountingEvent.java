@@ -3,8 +3,9 @@ package com.cannontech.cc.model;
 import java.util.Date;
 
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.dao.support.Identifiable;
 
-public class AccountingEvent extends BaseEvent {
+public class AccountingEvent extends BaseEvent implements Identifiable {
     private Integer id;
     private Program program;
     private Date startTime;

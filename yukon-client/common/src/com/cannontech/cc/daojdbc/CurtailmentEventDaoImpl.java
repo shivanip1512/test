@@ -15,6 +15,7 @@ import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.enums.CurtailmentEventState;
+import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -24,8 +25,7 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class CurtailmentEventDaoImpl implements InitializingBean,
-        CurtailmentEventDao {
+public class CurtailmentEventDaoImpl implements InitializingBean, CurtailmentEventDao {
     
     private YukonJdbcTemplate yukonJdbcTemplate;
     private ProgramDao programDao;
@@ -36,43 +36,47 @@ public class CurtailmentEventDaoImpl implements InitializingBean,
     @Override
     public CurtailmentEvent getForId(Integer id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtCurtailmentEvent");
+        sql.append("select *");
+        sql.append("from CCurtCurtailmentEvent");
         sql.append("where CCurtCurtailmentEventID").eq(id);
         
-        CurtailmentEvent result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        CurtailmentEvent result = yukonJdbcTemplate.queryForObject(sql, new CurtailmentEventRowMapper());
         return result;
     }
 
     @Override
     public List<CurtailmentEvent> getAllForCustomer(CICustomerStub customer) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ce.* from CCurtCurtailmentEvent ce");
+        sql.append("select ce.*");
+        sql.append("from CCurtCurtailmentEvent ce");
         sql.append(  "join CCurtCEParticipant cep on cep.CCurtCurtailmentEventID = ce.CCurtCurtailmentEventID");
         sql.append("where cep.CustomerID").eq(customer.getId());
         
-        List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql,rowMapper);
+        List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql, new CurtailmentEventRowMapper());
         return result;
     }
 
     @Override
     public List<CurtailmentEvent> getAllForEnergyCompany(LiteEnergyCompany energyCompany) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ce.* from CCurtCurtailmentEvent ce");
+        sql.append("select ce.*");
+        sql.append("from CCurtCurtailmentEvent ce");
         sql.append(  "join CCurtProgram p on ce.CCurtProgramID = p.CCurtProgramID");
         sql.append(  "join CCurtProgramType pt on pt.CCurtProgramTypeID = p.CCurtProgramTypeID");
         sql.append("where pt.EnergyCompanyID").eq(energyCompany.getEnergyCompanyID());
         
-        List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql,rowMapper);
+        List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql, new CurtailmentEventRowMapper());
         return result;
     }
 
     @Override
     public List<CurtailmentEvent> getAllForProgram(Program program) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtCurtailmentEvent");
+        sql.append("select *");
+        sql.append("from CCurtCurtailmentEvent");
         sql.append("where CCurtProgramID").eq(program.getId());
         
-        List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<CurtailmentEvent> result = yukonJdbcTemplate.query(sql, new CurtailmentEventRowMapper(program));
         return result;
     }
 
@@ -83,33 +87,16 @@ public class CurtailmentEventDaoImpl implements InitializingBean,
 
     @Override
     public void delete(CurtailmentEvent curtailmentEvent) {
+        curtailmentEventParticipantDao.deleteForEvent(curtailmentEvent);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtCurtailmentEvent");
+        sql.append("delete");
+        sql.append("from CCurtCurtailmentEvent");
         sql.append("where CCurtCurtailmentEventID").eq(curtailmentEvent.getId());
         
-        curtailmentEventParticipantDao.deleteForEvent(curtailmentEvent);
         yukonJdbcTemplate.update(sql);
     }
 
-    private YukonRowMapper<CurtailmentEvent> rowMapper = new YukonRowMapper<CurtailmentEvent>() {
-        public CurtailmentEvent mapRow(YukonResultSet rs) throws SQLException {
-            CurtailmentEvent curtailmentEvent = new CurtailmentEvent();
-            curtailmentEvent.setId(rs.getInt("CCurtCurtailmentEventID"));
-            Program program = programDao.getForId(rs.getInt("CCurtProgramID"));
-            curtailmentEvent.setProgram(program);
-            Date notificationTime = rs.getTimestamp("NotificationTime");
-            curtailmentEvent.setNotificationTime(notificationTime);
-            curtailmentEvent.setDuration(rs.getInt("Duration"));
-            curtailmentEvent.setMessage(rs.getString("Message"));
-            curtailmentEvent.setState(CurtailmentEventState.valueOf(rs.getString("State")));
-            Date startTime = rs.getTimestamp("StartTime");
-            curtailmentEvent.setStartTime(startTime);
-            curtailmentEvent.setIdentifier(rs.getInt("IDENTIFIER"));
-            
-            return curtailmentEvent;
-        }
-    };
-    
     private FieldMapper<CurtailmentEvent> curtailmentEventFieldMapper = new FieldMapper<CurtailmentEvent>() {
         public void extractValues(MapSqlParameterSource p, CurtailmentEvent curtailmentEvent) {
             p.addValue("CCurtProgramID", curtailmentEvent.getProgram().getId());
@@ -153,5 +140,30 @@ public class CurtailmentEventDaoImpl implements InitializingBean,
     
     public void setCurtailmentEventParticipantDao(CurtailmentEventParticipantDao curtailmentEventParticipantDao) {
       this.curtailmentEventParticipantDao = curtailmentEventParticipantDao;
-  }
+    }
+
+    private class CurtailmentEventRowMapper implements YukonRowMapper<CurtailmentEvent> {
+        private CachingDaoWrapper<Program> cachingProgramDao;
+        
+        public CurtailmentEventRowMapper(Program... initialItems) {
+            cachingProgramDao = new CachingDaoWrapper<Program>(programDao, initialItems);
+        }
+        
+        public CurtailmentEvent mapRow(YukonResultSet rs) throws SQLException {
+            CurtailmentEvent curtailmentEvent = new CurtailmentEvent();
+            curtailmentEvent.setId(rs.getInt("CCurtCurtailmentEventID"));
+            Program program = cachingProgramDao.getForId(rs.getInt("CCurtProgramID"));
+            curtailmentEvent.setProgram(program);
+            Date notificationTime = rs.getDate("NotificationTime");
+            curtailmentEvent.setNotificationTime(notificationTime);
+            curtailmentEvent.setDuration(rs.getInt("Duration"));
+            curtailmentEvent.setMessage(rs.getString("Message"));
+            curtailmentEvent.setState(CurtailmentEventState.valueOf(rs.getString("State")));
+            Date startTime = rs.getDate("StartTime");
+            curtailmentEvent.setStartTime(startTime);
+            curtailmentEvent.setIdentifier(rs.getInt("IDENTIFIER"));
+            
+            return curtailmentEvent;
+        }
+    }
 }

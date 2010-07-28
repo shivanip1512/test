@@ -2,8 +2,11 @@ package com.cannontech.cc.daojdbc;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,7 @@ import com.cannontech.cc.model.EconomicEventNotif;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.support.IdentifiableUtils;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -24,77 +28,68 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao,
-        InitializingBean {
+public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao, InitializingBean {
 
-    YukonJdbcTemplate yukonJdbcTemplate;
-    EconomicEventParticipantDao economicEventParticipantDao;
-    SimpleTableAccessTemplate<EconomicEventNotif> template;
-    NextValueHelper nextValueHelper;
-    
-    @Override
-    public EconomicEventNotif getForId(Integer id) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEconomicEventNotif");
-        sql.append("where CCurtEconomicEventNotifID").eq(id);
-        
-        List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
-        List<EconomicEventParticipant> participantList = economicEventParticipantDao.getForNotifs(result);
-        
-        setParticipantAndRevision(result, participantList.get(0).getEvent());
-        return result.get(0);
-    }
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private EconomicEventParticipantDao economicEventParticipantDao;
+    private SimpleTableAccessTemplate<EconomicEventNotif> template;
+    private NextValueHelper nextValueHelper;
     
     @Override
     public List<EconomicEventNotif> getForEvent(EconomicEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select een.* from CCurtEconomicEventNotif een");
+        sql.append("select een.*");
+        sql.append("from CCurtEconomicEventNotif een");
         sql.append(  "join CCurtEconomicParticipant eep on eep.CCurtEconomicParticipantID = een.CCurtEconomicParticipantID");
         sql.append("where eep.CustomerID").eq(event.getId());
         
         List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
-        setParticipantAndRevision(result, event);
+        setParticipantAndRevisionForNotifsAndEvents(result, event);
         return result;
     }
 
     @Override
     public List<EconomicEventNotif> getForEventAndReason(EconomicEvent event, NotificationReason reason) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEconomicEventNotif een");
+        sql.append("select *");
+        sql.append("from CCurtEconomicEventNotif een");
         sql.append(  "join CCurtEEParticipant eep on eep.CCurtEEParticipantID = een.CCurtEconomicParticipantID");
         sql.append("where eep.CustomerID").eq(event.getId());
         sql.append(  "and een.Reason").eq(reason);
         
         List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
-        setParticipantAndRevision(result, event);
+        setParticipantAndRevisionForNotifsAndEvents(result, event);
         return result;
     }
 
     @Override
     public List<EconomicEventNotif> getForParticipant(EconomicEventParticipant participant) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEconomicEventNotif");
+        sql.append("select *");
+        sql.append("from CCurtEconomicEventNotif");
         sql.append("where CCurtEconomicParticipantID").eq(participant.getId());
         
         List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
-        setParticipantAndRevision(result, participant.getEvent());
+        setParticipantAndRevisionForNotifsAndParticipants(result, Collections.singletonList(participant));
         return result;
     }
 
     @Override
     public List<EconomicEventNotif> getScheduledNotifs() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEconomicEventNotif");
+        sql.append("select *");
+        sql.append("from CCurtEconomicEventNotif");
         sql.append("where State").eq(NotificationState.SCHEDULED);
         
         List<EconomicEventNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
         if(result.size() > 0) {
             List<EconomicEventParticipant> participantList = economicEventParticipantDao.getForNotifs(result);
             
-            for (EconomicEventParticipant participant : participantList) {
-                setParticipantAndRevision(result, participant.getEvent());
-            }
+            setParticipantAndRevisionForNotifsAndParticipants(result, participantList);
         }
         return result;
     }
@@ -107,7 +102,8 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao,
     @Override
     public void delete(EconomicEventNotif notif) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtEconomicEventNotif");
+        sql.append("delete");
+        sql.append("from CCurtEconomicEventNotif");
         sql.append("where CCurtEconomicEventNotifID").eq(notif.getId());
         
         yukonJdbcTemplate.update(sql);
@@ -116,10 +112,11 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao,
     @Override
     public void deleteForEvent(EconomicEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtEconomicEventNotif");
+        sql.append("delete");
+        sql.append("from CCurtEconomicEventNotif");
         sql.append("where CCurtEconomicParticipantID in (");
-        sql.append(    "select CCurtEconomicParticipantID from CCurtEEParticipant");
-        sql.append(    "where CCurtEconomicEventID").eq(event.getId());
+        sql.append(  "select CCurtEconomicParticipantID from CCurtEEParticipant");
+        sql.append(  "where CCurtEconomicEventID").eq(event.getId());
         sql.append(")");
         
         yukonJdbcTemplate.update(sql);
@@ -128,34 +125,12 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao,
     @Override
     public void deleteForParticipant(EconomicEventParticipant participant) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtEconomicEventNotif");
+        sql.append("delete");
+        sql.append("from CCurtEconomicEventNotif");
         sql.append("where CCurtEconomicParticipantID").eq(participant.getId());
         
         yukonJdbcTemplate.update(sql);
     }
-
-    private YukonRowMapper<EconomicEventNotif> rowMapper = new YukonRowMapper<EconomicEventNotif>() {
-        public EconomicEventNotif mapRow(YukonResultSet rs) throws SQLException {
-            EconomicEventNotif notif = new EconomicEventNotif();
-            notif.setId(rs.getInt("CCurtEconomicEventNotifID"));
-            Date notificationTime = rs.getTimestamp("NotificationTime");
-            notif.setNotificationTime(notificationTime);
-            notif.setNotifTypeId(rs.getInt("NotifTypeID"));
-            NotificationState state = NotificationState.valueOf(rs.getString("State"));
-            notif.setState(state);
-            NotificationReason reason = NotificationReason.valueOf(rs.getString("Reason"));
-            notif.setReason(reason);
-            //dummy participant
-            EconomicEventParticipant participant = new EconomicEventParticipant();
-            participant.setId(rs.getInt("CCurtEconomicParticipantID"));
-            notif.setParticipant(participant);
-            //dummy pricing
-            EconomicEventPricing revision = new EconomicEventPricing();
-            revision.setId(rs.getInt("CCurtEEPricingID"));
-            notif.setRevision(revision);
-            return notif;
-        }
-    };
     
     private FieldMapper<EconomicEventNotif> economicEventNotifFieldMapper = 
         new FieldMapper<EconomicEventNotif>() {
@@ -185,24 +160,35 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao,
         template.withFieldMapper(economicEventNotifFieldMapper);
     }
     
-    private void setParticipantAndRevision(List<EconomicEventNotif> notifList, EconomicEvent event) {
+    private void setParticipantAndRevisionForNotifsAndEvents(List<EconomicEventNotif> notifList, EconomicEvent event) {
         List<EconomicEventParticipant> participantList = economicEventParticipantDao.getForEvent(event);
         Collection<EconomicEventPricing> pricingCol = event.getRevisions().values();
+        
+        ImmutableMap<Integer, EconomicEventParticipant> participantLookup = IdentifiableUtils.getMap(participantList);
+        ImmutableMap<Integer, EconomicEventPricing> pricingLookup = IdentifiableUtils.getMap(pricingCol);
+        setParticipantAndRevision(notifList, pricingLookup, participantLookup);
+    }
+    
+    private void setParticipantAndRevisionForNotifsAndParticipants(List<EconomicEventNotif> notifList, Iterable<EconomicEventParticipant> participants) {
+        Set<EconomicEventPricing> pricingSet = Sets.newHashSet();
+        for (EconomicEventParticipant participant : participants) {
+            pricingSet.addAll(participant.getEvent().getRevisions().values());
+        }
+        
+        ImmutableMap<Integer, EconomicEventPricing> pricingLookup = IdentifiableUtils.getMap(pricingSet);
+        ImmutableMap<Integer, EconomicEventParticipant> participantLookup = IdentifiableUtils.getMap(participants);
+        setParticipantAndRevision(notifList, pricingLookup, participantLookup);
+    }
+    
+    private void setParticipantAndRevision(List<EconomicEventNotif> notifList, 
+                                           Map<Integer, EconomicEventPricing> pricingLookup, 
+                                           Map<Integer, EconomicEventParticipant> participantLookup) {
         for (EconomicEventNotif notif : notifList) {
-            //set participant
-            for (EconomicEventParticipant participant : participantList) {
-                if(participant.getId().intValue() == notif.getParticipant().getId().intValue()){
-                    notif.setParticipant(participant);
-                    continue;
-                }
-            }
-            //set revision
-            for (EconomicEventPricing revision : pricingCol) {
-                if(revision.getId().intValue() == notif.getRevision().getId().intValue()) {
-                    notif.setRevision(revision);
-                    continue;
-                }
-            }
+            EconomicEventParticipant participant = participantLookup.get(notif.getParticipant().getId());
+            notif.setParticipant(participant);
+            
+            EconomicEventPricing revision = pricingLookup.get(notif.getRevision().getId());
+            notif.setRevision(revision);
         }
     }
 
@@ -221,4 +207,24 @@ public class EconomicEventNotifDaoImpl implements EconomicEventNotifDao,
         this.nextValueHelper = nextValueHelper;
     }
 
+    private YukonRowMapper<EconomicEventNotif> rowMapper = new YukonRowMapper<EconomicEventNotif>() {
+        public EconomicEventNotif mapRow(YukonResultSet rs) throws SQLException {
+            EconomicEventNotif notif = new EconomicEventNotif();
+            notif.setId(rs.getInt("CCurtEconomicEventNotifID"));
+            Date notificationTime = rs.getDate("NotificationTime");
+            notif.setNotificationTime(notificationTime);
+            notif.setNotifTypeId(rs.getInt("NotifTypeID"));
+            NotificationState state = rs.getEnum("State", NotificationState.class);
+            notif.setState(state);
+            NotificationReason reason = rs.getEnum("Reason", NotificationReason.class);
+            notif.setReason(reason);
+            EconomicEventParticipant participant = new EconomicEventParticipant();
+            participant.setId(rs.getInt("CCurtEconomicParticipantID"));
+            notif.setParticipant(participant);
+            EconomicEventPricing revision = new EconomicEventPricing();
+            revision.setId(rs.getInt("CCurtEEPricingID"));
+            notif.setRevision(revision);
+            return notif;
+        }
+    };
 }

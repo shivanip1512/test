@@ -14,6 +14,7 @@ import com.cannontech.cc.dao.ProgramNotificationGroupDao;
 import com.cannontech.cc.dao.ProgramParameterDao;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.model.ProgramType;
+import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -36,31 +37,34 @@ public class ProgramDaoImpl implements ProgramDao, InitializingBean {
     @Override
     public Program getForId(Integer id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtProgram");
+        sql.append("select *");
+        sql.append("from CCurtProgram");
         sql.append("where CCurtProgramID").eq(id);
         
-        Program result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        Program result = yukonJdbcTemplate.queryForObject(sql, new ProgramRowMapper());
         return result;
     }
 
     @Override
     public List<Program> getProgramsForEnergyCompany(Integer energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select p.* from CCurtProgram p");
+        sql.append("select p.*");
+        sql.append("from CCurtProgram p");
         sql.append(  "join CCurtProgramType pt on pt.CCurtProgramTypeID=p.CCurtProgramTypeID");
         sql.append("where pt.EnergyCompanyID").eq(energyCompanyId);
         
-        List<Program> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<Program> result = yukonJdbcTemplate.query(sql, new ProgramRowMapper());
         return result;
     }
 
     @Override
     public List<Program> getProgramsForType(ProgramType programType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtProgram");
+        sql.append("select *");
+        sql.append("from CCurtProgram");
         sql.append("where CCurtProgramTypeID").eq(programType.getId());
         
-        List<Program> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<Program> result = yukonJdbcTemplate.query(sql, new ProgramRowMapper(programType));
         return result;
     }
 
@@ -72,12 +76,14 @@ public class ProgramDaoImpl implements ProgramDao, InitializingBean {
     @Override
     @Transactional(propagation=Propagation.MANDATORY)
     public void delete(Program program) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtProgram");
-        sql.append("where CCurtProgramID").eq(program.getId());
         programGroupDao.deleteFor(program);
         programNotificationGroupDao.deleteForProgram(program);
         programParameterDao.deleteAllForProgram(program);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete");
+        sql.append("from CCurtProgram");
+        sql.append("where CCurtProgramID").eq(program.getId());
         
         yukonJdbcTemplate.update(sql);
     }
@@ -90,18 +96,6 @@ public class ProgramDaoImpl implements ProgramDao, InitializingBean {
         template.save(program);
         return result;
     }
-
-    private YukonRowMapper<Program> rowMapper = new YukonRowMapper<Program>() {
-        public Program mapRow(YukonResultSet rs) throws SQLException {
-            Program program = new Program();
-            program.setId(rs.getInt("CCurtProgramID"));
-            program.setName(rs.getString("CCurtProgramName"));
-            program.setProgramType(programTypeDao.getForId(rs.getInt("CCurtProgramTypeID")));
-            program.setLastIdentifier(rs.getInt("LastIdentifier"));
-            program.setIdentifierPrefix(rs.getString("IdentifierPrefix"));
-            return program;
-        }
-    };
     
     private FieldMapper<Program> programFieldMapper = new FieldMapper<Program>() {
         public void extractValues(MapSqlParameterSource p, Program program) {
@@ -157,4 +151,22 @@ public class ProgramDaoImpl implements ProgramDao, InitializingBean {
         this.nextValueHelper = nextValueHelper;
     }
 
+    private class ProgramRowMapper implements YukonRowMapper<Program> {
+        CachingDaoWrapper<ProgramType> cachingProgramTypeDao;
+        
+        public ProgramRowMapper(ProgramType... initialItems) {
+            cachingProgramTypeDao = new CachingDaoWrapper<ProgramType>(programTypeDao, initialItems);
+        }
+        
+        public Program mapRow(YukonResultSet rs) throws SQLException {
+            Program program = new Program();
+            program.setId(rs.getInt("CCurtProgramID"));
+            program.setName(rs.getString("CCurtProgramName"));
+            ProgramType programType = cachingProgramTypeDao.getForId(rs.getInt("CCurtProgramTypeID"));
+            program.setProgramType(programType);
+            program.setLastIdentifier(rs.getInt("LastIdentifier"));
+            program.setIdentifierPrefix(rs.getString("IdentifierPrefix"));
+            return program;
+        }
+    }
 }

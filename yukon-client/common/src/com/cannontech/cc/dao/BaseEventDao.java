@@ -6,13 +6,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Program;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.google.common.collect.Sets;
 
 /**
  * This class attempts to abstract some operations that affect all events (i.e. BaseEvents).
@@ -20,7 +20,7 @@ import com.cannontech.database.data.lite.LiteEnergyCompany;
  * probably be sped up if that was changed.
  */
 public class BaseEventDao implements CommonEventOperations<BaseEvent> {
-    private Set<CommonEventOperations<?>> childDaos = new TreeSet<CommonEventOperations<?>>();
+    private Set<CommonEventOperations<?>> childDaos = Sets.newHashSet();
 
     public BaseEventDao() {
     }

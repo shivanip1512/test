@@ -5,11 +5,12 @@ import java.util.Date;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.database.data.notification.NotifType;
 import com.cannontech.enums.NotificationReason;
 import com.cannontech.enums.NotificationState;
 
-public class CurtailmentEventNotif implements EventNotif {
+public class CurtailmentEventNotif implements Identifiable, EventNotif {
     private Integer id;
     private Integer notifTypeId;
     private Date notificationTime;

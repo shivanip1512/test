@@ -23,16 +23,17 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class GroupDaoImpl implements GroupDao, InitializingBean {
 
-    YukonJdbcTemplate yukonJdbcTemplate;
-    SimpleTableAccessTemplate<Group> template;
-    NextValueHelper nextValueHelper;
-    AvailableProgramGroupDao programGroupDao;
-    GroupCustomerNotifDao groupCustomerNotifDao;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private SimpleTableAccessTemplate<Group> template;
+    private NextValueHelper nextValueHelper;
+    private AvailableProgramGroupDao programGroupDao;
+    private GroupCustomerNotifDao groupCustomerNotifDao;
 
     @Override
     public Group getForId(Integer id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtGroup");
+        sql.append("select *");
+        sql.append("from CCurtGroup");
         sql.append("where CCurtGroupID").eq(id);
         
         Group result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
@@ -42,7 +43,8 @@ public class GroupDaoImpl implements GroupDao, InitializingBean {
     @Override
     public List<Group> getGroupsForEnergyCompany(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtGroup");
+        sql.append("select *");
+        sql.append("from CCurtGroup");
         sql.append("where EnergyCompanyID").eq(energyCompanyId);
         
         List<Group> result = yukonJdbcTemplate.query(sql, rowMapper);
@@ -57,25 +59,16 @@ public class GroupDaoImpl implements GroupDao, InitializingBean {
     @Override
     @Transactional(propagation=Propagation.MANDATORY)
     public void delete(Group group) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtGroup");
-        sql.append("where CCurtGroupID").eq(group.getId());
-        
         programGroupDao.deleteFor(group);
         groupCustomerNotifDao.deleteFor(group);
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("delete");
+        sql.append("from CCurtGroup");
+        sql.append("where CCurtGroupID").eq(group.getId());
+        
         yukonJdbcTemplate.update(sql);
     }
-
-    private YukonRowMapper<Group> rowMapper = new YukonRowMapper<Group>() {
-        public Group mapRow(YukonResultSet rs) throws SQLException {
-            Group group = new Group();
-            group.setId(rs.getInt("CCurtGroupID"));
-            group.setName(rs.getString("CCurtGroupName"));
-            group.setEnergyCompanyId(rs.getInt("EnergyCompanyID"));
-            
-            return group;
-        }
-    };
     
     private FieldMapper<Group> groupFieldMapper = new FieldMapper<Group>() {
         public void extractValues(MapSqlParameterSource p, Group group) {
@@ -115,4 +108,15 @@ public class GroupDaoImpl implements GroupDao, InitializingBean {
     public void setGroupCustomerNotifDao(GroupCustomerNotifDao groupCustomerNotifDao) {
         this.groupCustomerNotifDao = groupCustomerNotifDao;
     }
+
+    private YukonRowMapper<Group> rowMapper = new YukonRowMapper<Group>() {
+        public Group mapRow(YukonResultSet rs) throws SQLException {
+            Group group = new Group();
+            group.setId(rs.getInt("CCurtGroupID"));
+            group.setName(rs.getString("CCurtGroupName"));
+            group.setEnergyCompanyId(rs.getInt("EnergyCompanyID"));
+            
+            return group;
+        }
+    };
 }

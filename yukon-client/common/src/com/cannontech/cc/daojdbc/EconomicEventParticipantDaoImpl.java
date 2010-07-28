@@ -2,7 +2,9 @@ package com.cannontech.cc.daojdbc;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +27,12 @@ import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
 import com.cannontech.cc.model.EconomicEventPricingWindow;
 import com.cannontech.cc.model.EconomicEventParticipantSelection.SelectionState;
+import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.support.IdentifiableUtils;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -37,62 +41,51 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 
-public class EconomicEventParticipantDaoImpl implements
-        EconomicEventParticipantDao, InitializingBean {
+public class EconomicEventParticipantDaoImpl implements EconomicEventParticipantDao, InitializingBean {
 
-    YukonJdbcTemplate yukonJdbcTemplate;
-    EconomicEventNotifDao economicEventNotifDao;
-    CustomerStubDao customerStubDao;
-    EconomicEventDao economicEventDao;
-    SimpleTableAccessTemplate<EconomicEventParticipant> participantTemplate;
-    SimpleTableAccessTemplate<EconomicEventParticipantSelection> selectionTemplate;
-    SimpleTableAccessTemplate<EconomicEventParticipantSelectionWindow> windowTemplate;
-    NextValueHelper nextValueHelper;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private EconomicEventNotifDao economicEventNotifDao;
+    private CustomerStubDao customerStubDao;
+    private EconomicEventDao economicEventDao;
+    private SimpleTableAccessTemplate<EconomicEventParticipant> participantTemplate;
+    private SimpleTableAccessTemplate<EconomicEventParticipantSelection> selectionTemplate;
+    private SimpleTableAccessTemplate<EconomicEventParticipantSelectionWindow> windowTemplate;
+    private NextValueHelper nextValueHelper;
     
-    @Override
-    public EconomicEventParticipant getForId(Integer id) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEEParticipant");
-        sql.append("where CCurtEEParticipantID").eq(id);
-        
-        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
-        if(result.size() == 0) {
-            return null;
-        }
-        EconomicEvent event = economicEventDao.getForId(result.get(0).getId());
-        result.get(0).setEvent(event);
-        
-        setSelectionsForParticipants(result);
-        return result.get(0);
-    }
-
     @Override
     public EconomicEventParticipant getForCustomerAndEvent(CICustomerStub customer, EconomicEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEEParticipant");
+        sql.append("select *");
+        sql.append("from CCurtEEParticipant");
         sql.append("where CustomerID").eq(customer.getId());
         sql.append(  "and CCurtEconomicEventID").eq(event.getId());
         
-        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, new EconomicEventParticipantRowMapper(customer));
         if(result.size() == 0) {
             return null;
         }
-        result.get(0).setEvent(event);
+        EconomicEventParticipant participant = Iterables.getOnlyElement(result);
         
-        setSelectionsForParticipants(result);
-        return result.get(0);
+        participant.setEvent(event);
+        
+        setSelectionsForParticipants(Collections.singletonList(participant));
+        return participant;
     }
 
     @Override
     public List<EconomicEventParticipant> getForEvent(EconomicEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEEParticipant");
+        sql.append("select *");
+        sql.append("from CCurtEEParticipant");
         sql.append("where CCurtEconomicEventID").eq(event.getId());
         
-        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, new EconomicEventParticipantRowMapper());
         for (EconomicEventParticipant participant : result) {
             participant.setEvent(event);
         }
@@ -104,10 +97,11 @@ public class EconomicEventParticipantDaoImpl implements
     @Override
     public List<EconomicEventParticipant> getForCustomer(CICustomerStub customer) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEEParticipant");
+        sql.append("select *");
+        sql.append("from CCurtEEParticipant");
         sql.append("where CustomerID").eq(customer.getId());
         
-        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, new EconomicEventParticipantRowMapper(customer));
         if(!result.isEmpty()) {
             List<EconomicEvent> eventList = economicEventDao.getAllForParticipants(result);
             setEventsForParticipants(result, eventList);
@@ -117,16 +111,17 @@ public class EconomicEventParticipantDaoImpl implements
     }
 
     public List<EconomicEventParticipant> getForNotifs(List<EconomicEventNotif> notifList) {
-        List<Integer> participantIdList = new LinkedList<Integer>();
+        HashSet<Object> participantIdSet = Sets.newHashSet();
         for (EconomicEventNotif notif : notifList) {
-            participantIdList.add(notif.getParticipant().getId());
+            participantIdSet.add(notif.getParticipant().getId());
         }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtEEParticipant");
-        sql.append("where CCurtEEParticipantID").in(participantIdList);
+        sql.append("select *");
+        sql.append("from CCurtEEParticipant");
+        sql.append("where CCurtEEParticipantID").in(participantIdSet);
         
-        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<EconomicEventParticipant> result = yukonJdbcTemplate.query(sql, new EconomicEventParticipantRowMapper());
         if(!result.isEmpty()) {
             List<EconomicEvent> eventList = economicEventDao.getAllForParticipants(result);
             setEventsForParticipants(result, eventList);
@@ -149,44 +144,16 @@ public class EconomicEventParticipantDaoImpl implements
 
     @Override
     @Transactional
-    public void delete(EconomicEventParticipant participant) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtEEParticipant");
-        sql.append("where CCurtEEParticipantID").eq(participant.getId());
-        
-        economicEventNotifDao.deleteForParticipant(participant);
-        yukonJdbcTemplate.update(sql);
-    }
-    
-    @Override
-    @Transactional
     public void deleteForEvent(EconomicEvent event) {
+        economicEventNotifDao.deleteForEvent(event);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtEEparticipant");
+        sql.append("delete");
+        sql.append("from CCurtEEparticipant");
         sql.append("where CCurtEconomicEventID").eq(event.getId());
         
-        economicEventNotifDao.deleteForEvent(event);
         yukonJdbcTemplate.update(sql);
     }
-
-    private YukonRowMapper<EconomicEventParticipant> rowMapper = 
-        new YukonRowMapper<EconomicEventParticipant>() {
-        public EconomicEventParticipant mapRow(YukonResultSet rs) throws SQLException {
-            EconomicEventParticipant participant = new EconomicEventParticipant();
-            participant.setId(rs.getInt("CCurtEEParticipantID"));
-            participant.setNotifAttribs(rs.getString("NotifAttribs"));
-            CICustomerStub customer = customerStubDao.getForId(rs.getInt("CustomerID"));
-            participant.setCustomer(customer);
-            //set dummy event
-            EconomicEvent event = new EconomicEvent();
-            event.setId(rs.getInt("CCurtEconomicEventID"));
-            participant.setEvent(event);
-                //EconomicEvent event = economicEventDao.getForId(rs.getInt("CCurtEconomicEventID"));
-                //participant.setEvent(event);
-            //selections left unset
-            return participant;
-        }
-    };
     
     private FieldMapper<EconomicEventParticipant> economicEventParticipantFieldMapper = 
         new FieldMapper<EconomicEventParticipant>() {
@@ -259,13 +226,12 @@ public class EconomicEventParticipantDaoImpl implements
         windowTemplate.withFieldMapper(economicEventParticipantSelectionWindowFieldMapper);
     }
 
-    private void setEventsForParticipants(List<EconomicEventParticipant> participantList, List<EconomicEvent> eventList) {
+    private void setEventsForParticipants(List<EconomicEventParticipant> participantList, Iterable<EconomicEvent> eventList) {
+        Map<Integer, EconomicEvent> map = IdentifiableUtils.getMap(eventList);
+        
         for (EconomicEventParticipant participant : participantList) {
-            for (EconomicEvent event : eventList) {
-                if(event.getId().intValue() == participant.getEvent().getId().intValue()) {
-                    participant.setEvent(event);
-                } 
-            }
+            EconomicEvent event = (EconomicEvent) map.get(participant.getEvent().getId());
+            participant.setEvent(event);
         }
     }
 
@@ -285,15 +251,13 @@ public class EconomicEventParticipantDaoImpl implements
                 EconomicEventParticipantSelection selection = new EconomicEventParticipantSelection();
                 selection.setId(rs.getInt("CCurtEEParticipantSelectionID"));
                 selection.setConnectionAudit(rs.getString("ConnectionAudit"));
-                Date submitTime = rs.getTimestamp("SubmitTime");
+                Date submitTime = rs.getDate("SubmitTime");
                 selection.setSubmitTime(submitTime);
                 SelectionState state = SelectionState.valueOf(rs.getString("State"));
                 selection.setState(state);
-                // dummy eventPricing
                 EconomicEventPricing pricingRevision = new EconomicEventPricing();
                 pricingRevision.setId(rs.getInt("CCurtEEPricingID"));
                 selection.setPricingRevision(pricingRevision);
-                // selectionWindow left unset
                 Integer participantId = rs.getInt("CCurtEEParticipantID");
                 return Maps.immutableEntry(participantId, selection);
             }
@@ -310,27 +274,19 @@ public class EconomicEventParticipantDaoImpl implements
 
         Collection<EconomicEventParticipantSelection> allSelections = new LinkedList<EconomicEventParticipantSelection>();
         for (EconomicEventParticipant participant : participantCol) {
-            //set the proper list of EEParticipantSelections to each EEParticipant
             Collection<EconomicEventParticipantSelection> selectionCol = pointLookup.get(participant);
             participant.setSelections(selectionCol);
             allSelections.addAll(selectionCol);
             
             Collection<EconomicEventPricing> pricingCol = participant.getEvent().getRevisions().values();
+            ImmutableMap<Integer, EconomicEventPricing> pricingLookup = IdentifiableUtils.getMap(pricingCol);
             for (EconomicEventParticipantSelection selection : selectionCol) {
-                //map the proper EEParticipant to each EEParticipantSelection
                 selection.setParticipant(participant);
-            
-                for (EconomicEventPricing pricing : pricingCol) {
-                    //map the proper EEPricing to each EEParticipantSelection
-                    if(pricing.getId().intValue() == selection.getPricingRevision().getId().intValue()){
-                        selection.setPricingRevision(pricing);
-                        continue;
-                    }
-                }
+                
+                EconomicEventPricing pricing = pricingLookup.get(selection.getPricingRevision().getId());
+                selection.setPricingRevision(pricing);
             }
         }
-        
-        //find all EEParticipantSelectionWindows for each EEParticipantSelection we just handled
         setSelectionWindowsForSelections(allSelections);
     }
 
@@ -350,8 +306,6 @@ public class EconomicEventParticipantDaoImpl implements
                 EconomicEventParticipantSelectionWindow selectionWindow = new EconomicEventParticipantSelectionWindow();
                 selectionWindow.setId(rs.getInt("CCurtEEParticipantWindowID"));
                 selectionWindow.setEnergyToBuy(rs.getBigDecimal("EnergyToBuy"));
-                // eventParticipantSelection left unset
-                // dummy eventPricingWindow
                 EconomicEventPricingWindow pricingWindow = new EconomicEventPricingWindow();
                 pricingWindow.setId(rs.getInt("CCurtEEPricingWindowID"));
                 selectionWindow.setWindow(pricingWindow);
@@ -370,24 +324,17 @@ public class EconomicEventParticipantDaoImpl implements
             mappedSqlTemplate.multimappedQuery(sqlGenerator, selectionCol, new YukonRowMapperAdapter<Map.Entry<Integer, EconomicEventParticipantSelectionWindow>>(selectionWindowRowMapper), func);
 
         for (EconomicEventParticipantSelection selection : selectionCol) {
-            //map the proper list of EEParticipantSelectionWindows to each EEParticipantSelection
             Collection<EconomicEventParticipantSelectionWindow> selectionWindowCol = pointLookup.get(selection);
 
             Collection<EconomicEventPricingWindow> pricingWindowCol = selection.getPricingRevision().getWindows().values();
+            ImmutableMap<Integer,EconomicEventPricingWindow> pricingWindowLookup = IdentifiableUtils.getMap(pricingWindowCol);
             for (EconomicEventParticipantSelectionWindow window : selectionWindowCol) {
-                //map the proper EEParticipantSelection to each EEParticipantSelectionWindow
                 window.setSelection(selection);
                 
-                for (EconomicEventPricingWindow pricingWindow : pricingWindowCol) {
-                    //map the proper EEPricingWindow to each EEParticipantSelectionWindow 
-                    if(pricingWindow.getId().intValue() == window.getWindow().getId().intValue()) {
-                        window.setWindow(pricingWindow);
-                        continue;
-                    }
-                }
+                EconomicEventPricingWindow pricingWindow = pricingWindowLookup.get(window.getWindow().getId());
+                window.setWindow(pricingWindow);
+
             }
-            //must map selectionWindows before adding them to selection
-            //otherwise set will read the nulls and declare them equal.
             selection.setSelectionWindows(selectionWindowCol);
         }
     }
@@ -414,5 +361,25 @@ public class EconomicEventParticipantDaoImpl implements
     
     public void setEconomicEventNotifDao(EconomicEventNotifDao economicEventNotifDao) {
         this.economicEventNotifDao = economicEventNotifDao;
+    }
+
+    private class EconomicEventParticipantRowMapper implements YukonRowMapper<EconomicEventParticipant> {
+        CachingDaoWrapper<CICustomerStub> cachingCustomerStubDao;
+        
+        public EconomicEventParticipantRowMapper(CICustomerStub... initialItems) {
+            cachingCustomerStubDao = new CachingDaoWrapper<CICustomerStub>(customerStubDao, initialItems);
+        }
+        
+        public EconomicEventParticipant mapRow(YukonResultSet rs) throws SQLException {
+            EconomicEventParticipant participant = new EconomicEventParticipant();
+            participant.setId(rs.getInt("CCurtEEParticipantID"));
+            participant.setNotifAttribs(rs.getString("NotifAttribs"));
+            CICustomerStub customer = cachingCustomerStubDao.getForId(rs.getInt("CustomerID"));
+            participant.setCustomer(customer);
+            EconomicEvent event = new EconomicEvent();
+            event.setId(rs.getInt("CCurtEconomicEventID"));
+            participant.setEvent(event);
+            return participant;
+        }
     }
 }

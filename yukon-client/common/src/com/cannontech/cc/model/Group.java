@@ -6,9 +6,10 @@ import java.util.Comparator;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.util.NaturalOrderComparator;
 
-public class Group implements Serializable, Comparable<Group> {
+public class Group implements Identifiable, Serializable, Comparable<Group> {
     private String name;
     private Integer id;
     private Integer energyCompanyId;

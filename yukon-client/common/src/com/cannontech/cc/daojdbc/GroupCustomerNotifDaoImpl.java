@@ -13,6 +13,7 @@ import com.cannontech.cc.dao.GroupDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.Group;
 import com.cannontech.cc.model.GroupCustomerNotif;
+import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -21,32 +22,22 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao,
-        InitializingBean {
+public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao, InitializingBean {
     
-    YukonJdbcTemplate yukonJdbcTemplate;
-    SimpleTableAccessTemplate<GroupCustomerNotif> template;
-    NextValueHelper nextValueHelper;
-    CustomerStubDao customerStubDao;
-    GroupDao groupDao;
-
-    @Override
-    public GroupCustomerNotif getForId(Integer id) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtGroupCustomerNotif");
-        sql.append("where CCurtGroupCustomerNotifID").eq(id);
-        
-        GroupCustomerNotif result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
-        return result;
-    }
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private SimpleTableAccessTemplate<GroupCustomerNotif> template;
+    private NextValueHelper nextValueHelper;
+    private CustomerStubDao customerStubDao;
+    private GroupDao groupDao;
 
     @Override
     public List<GroupCustomerNotif> getAllForGroup(Group group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtGroupCustomerNotif");
+        sql.append("select *");
+        sql.append("from CCurtGroupCustomerNotif");
         sql.append("where CCurtGroupID").eq(group.getId());
         
-        List<GroupCustomerNotif> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<GroupCustomerNotif> result = yukonJdbcTemplate.query(sql, new GroupCustomerNotifRowMapper());
         return result;
     }
 
@@ -70,7 +61,8 @@ public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao,
     @Override
     public void delete(GroupCustomerNotif notif) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtGroupCustomerNotif");
+        sql.append("delete");
+        sql.append("from CCurtGroupCustomerNotif");
         sql.append("where CCurtGroupCustomerNotifID").eq(notif.getId());
         
         yukonJdbcTemplate.update(sql);
@@ -79,7 +71,8 @@ public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao,
     @Override
     public void deleteFor(Group group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtGroupCustomerNotif");
+        sql.append("delete");
+        sql.append("from CCurtGroupCustomerNotif");
         sql.append("where CCurtGroupID").eq(group.getId());
         
        yukonJdbcTemplate.update(sql);
@@ -88,25 +81,12 @@ public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao,
     @Override
     public void deleteFor(CICustomerStub customer) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtGroupCustomerNotif");
+        sql.append("delete");
+        sql.append("from CCurtGroupCustomerNotif");
         sql.append("where CustomerID").eq(customer.getId());
         
        yukonJdbcTemplate.update(sql);
     }
-
-    private YukonRowMapper<GroupCustomerNotif> rowMapper = new YukonRowMapper<GroupCustomerNotif>() {
-        public GroupCustomerNotif mapRow(YukonResultSet rs) throws SQLException {
-            GroupCustomerNotif notif = new GroupCustomerNotif();
-            notif.setId(rs.getInt("CCurtGroupCustomerNotifID"));
-            notif.setAttribs(rs.getString("Attribs"));
-            CICustomerStub customer = customerStubDao.getForId(rs.getInt("CustomerID"));
-            notif.setCustomer(customer);
-            Group group = groupDao.getForId(rs.getInt("CCurtGroupID"));
-            notif.setGroup(group);
-            
-            return notif;
-        }
-    };
     
     private FieldMapper<GroupCustomerNotif> groupCustomerNotifFieldMapper = new FieldMapper<GroupCustomerNotif>() {
         public void extractValues(MapSqlParameterSource p, GroupCustomerNotif notif) {
@@ -148,5 +128,25 @@ public class GroupCustomerNotifDaoImpl implements GroupCustomerNotifDao,
     @Autowired
     public void setGroupDao(GroupDao groupDao) {
         this.groupDao = groupDao;
+    }
+
+    private class GroupCustomerNotifRowMapper implements YukonRowMapper<GroupCustomerNotif> {
+        CachingDaoWrapper<CICustomerStub> cachingCustomerStubDao;
+        
+        public GroupCustomerNotifRowMapper(CICustomerStub... initialItems) {
+            cachingCustomerStubDao = new CachingDaoWrapper<CICustomerStub>(customerStubDao, initialItems);
+        }
+        
+        public GroupCustomerNotif mapRow(YukonResultSet rs) throws SQLException {
+            GroupCustomerNotif notif = new GroupCustomerNotif();
+            notif.setId(rs.getInt("CCurtGroupCustomerNotifID"));
+            notif.setAttribs(rs.getString("Attribs"));
+            CICustomerStub customer = cachingCustomerStubDao.getForId(rs.getInt("CustomerID"));
+            notif.setCustomer(customer);
+            Group group = groupDao.getForId(rs.getInt("CCurtGroupID"));
+            notif.setGroup(group);
+            
+            return notif;
+        }
     }
 }

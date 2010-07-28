@@ -7,8 +7,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.dao.support.Identifiable;
 
-public class EconomicEventPricingWindow implements Comparable<EconomicEventPricingWindow> {
+public class EconomicEventPricingWindow implements Identifiable, Comparable<EconomicEventPricingWindow> {
     private BigDecimal energyPrice = new BigDecimal(0);
     private Integer id;
     private Integer offset = 0;

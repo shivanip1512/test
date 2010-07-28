@@ -1,6 +1,5 @@
 package com.cannontech.cc.model;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,8 +10,9 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import com.cannontech.cc.service.enums.EconomicEventState;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.dao.support.Identifiable;
 
-public class EconomicEvent extends BaseEvent {
+public class EconomicEvent extends BaseEvent implements Identifiable {
     private Integer id;
     private Program program;
     private Date startTime;
@@ -94,8 +94,8 @@ public class EconomicEvent extends BaseEvent {
         return revisions;
     }
     
-    public void setRevisions(Collection<EconomicEventPricing> collection) {
-        for (EconomicEventPricing pricing : collection) {
+    public void setRevisions(Iterable<EconomicEventPricing> iterable) {
+        for (EconomicEventPricing pricing : iterable) {
             revisions.put(pricing.getRevision(), pricing);
         }
     }

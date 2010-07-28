@@ -32,9 +32,9 @@ import com.google.common.collect.Multimap;
 
 public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
     
-   YukonJdbcTemplate yukonJdbcTemplate;
-   SimpleTableAccessTemplate<CICustomerPointData> template;
-   NextValueHelper nextValueHelper;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private SimpleTableAccessTemplate<CICustomerPointData> template;
+    private NextValueHelper nextValueHelper;
 
     @Override
     public CICustomerStub getForId(Integer id) {
@@ -57,7 +57,7 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
         
         List<CICustomerStub> result = yukonJdbcTemplate.query(sql, rowMapper);
         setPointDataForCustomers(result);
-    return result.get(0);
+        return result.get(0);
     }
 
     @Override
@@ -82,9 +82,9 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
         sql.append(  "join CustomerAccount ca on ca.CustomerID = cust.CustomerID");
         sql.append(  "join ECToAccountMapping eta on eta.AccountID = ca.AccountID");
         sql.append("where cust.CustomerID not in (");
-        sql.append(    "select gcn.CustomerID");
-        sql.append(    "from CCurtGroupCustomerNotif gcn");
-        sql.append(    "where gcn.CCurtGroupID").eq(group.getId());
+        sql.append(  "select gcn.CustomerID");
+        sql.append(  "from CCurtGroupCustomerNotif gcn");
+        sql.append(  "where gcn.CCurtGroupID").eq(group.getId());
         sql.append(")");
         sql.append(  "and eta.EnergyCompanyID").eq(group.getEnergyCompanyId());
 
@@ -95,18 +95,8 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
 
     @Override
     public void save(CICustomerPointData customerPoint) {
-        //this is only used when modifying the CICustomerPointData table
         template.insert(customerPoint);
     }
-    
-    private YukonRowMapper<CICustomerStub> rowMapper = new YukonRowMapper<CICustomerStub>() {
-        public CICustomerStub mapRow(YukonResultSet rs) throws SQLException {
-            CICustomerStub customer = new CICustomerStub();
-            customer.setId(rs.getInt("CustomerID"));
-            customer.setCompanyName(rs.getString("CompanyName"));
-            return customer;
-        }
-    };
     
     private FieldMapper<CICustomerPointData> pointDataFieldMapper = new FieldMapper<CICustomerPointData>() {
         public void extractValues(MapSqlParameterSource p, CICustomerPointData pointData) {
@@ -131,7 +121,6 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
     }
 
     private void setPointDataForCustomers(List<CICustomerStub> customerList) {
-        // now need to get point data
         ChunkingMappedSqlTemplate mappedSqlTemplate = new ChunkingMappedSqlTemplate(yukonJdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -177,4 +166,13 @@ public class CustomerStubDaoImpl implements CustomerStubDao, InitializingBean {
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+    
+    private YukonRowMapper<CICustomerStub> rowMapper = new YukonRowMapper<CICustomerStub>() {
+        public CICustomerStub mapRow(YukonResultSet rs) throws SQLException {
+            CICustomerStub customer = new CICustomerStub();
+            customer.setId(rs.getInt("CustomerID"));
+            customer.setCompanyName(rs.getString("CompanyName"));
+            return customer;
+        }
+    };
 }

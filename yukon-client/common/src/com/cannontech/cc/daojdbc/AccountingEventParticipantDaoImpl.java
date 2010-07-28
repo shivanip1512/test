@@ -13,6 +13,7 @@ import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.AccountingEventParticipant;
 import com.cannontech.cc.model.CICustomerStub;
+import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -21,22 +22,22 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class AccountingEventParticipantDaoImpl implements InitializingBean,
-        AccountingEventParticipantDao {
+public class AccountingEventParticipantDaoImpl implements InitializingBean, AccountingEventParticipantDao {
     
-    YukonJdbcTemplate yukonJdbcTemplate;
-    SimpleTableAccessTemplate<AccountingEventParticipant> template;
-    NextValueHelper nextValueHelper;
-    CustomerStubDao customerStubDao;
-    AccountingEventDao accountingEventDao;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private SimpleTableAccessTemplate<AccountingEventParticipant> template;
+    private NextValueHelper nextValueHelper;
+    private CustomerStubDao customerStubDao;
+    private AccountingEventDao accountingEventDao;
 
     @Override
     public AccountingEventParticipant getForId(Integer id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtAcctEventParticipant");
+        sql.append("select *");
+        sql.append("from CCurtAcctEventParticipant");
         sql.append("where CCurtAcctEventParticipantID").eq(id);
         
-        AccountingEventParticipant result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        AccountingEventParticipant result = yukonJdbcTemplate.queryForObject(sql, new AccountingEventParticipantRowMapper());
         return result;
     }
 
@@ -46,7 +47,7 @@ public class AccountingEventParticipantDaoImpl implements InitializingBean,
         sql.append("select * from CCurtAcctEventParticipant");
         sql.append("where CCurtAcctEventID").eq(event.getId());
         
-        List<AccountingEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<AccountingEventParticipant> result = yukonJdbcTemplate.query(sql, new AccountingEventParticipantRowMapper(event));
         return result;
     }
 
@@ -56,36 +57,15 @@ public class AccountingEventParticipantDaoImpl implements InitializingBean,
     }
 
     @Override
-    public void delete(AccountingEventParticipant participant) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtAcctEventParticipant");
-        sql.append("where CCurtAcctEventParticipantID").eq(participant.getId());
-        
-        yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
     public void deleteForEvent(AccountingEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtAcctEventParticipant");
+        sql.append("delete");
+        sql.append("from CCurtAcctEventParticipant");
         sql.append("where CCurtAcctEventID").eq(event.getId());
         
         yukonJdbcTemplate.update(sql);
     }
 
-    private YukonRowMapper<AccountingEventParticipant> rowMapper = new YukonRowMapper<AccountingEventParticipant>() {
-        public AccountingEventParticipant mapRow(YukonResultSet rs) throws SQLException {
-            AccountingEventParticipant participant = new AccountingEventParticipant();
-            participant.setId(rs.getInt("CCurtAcctEventParticipantID"));
-            CICustomerStub customer = customerStubDao.getForId(rs.getInt("CustomerID"));
-            participant.setCustomer(customer);
-            AccountingEvent event = accountingEventDao.getForId(rs.getInt("CCurtAcctEventID"));
-            participant.setEvent(event);
-
-            return participant;
-        }
-    };
-    
     private FieldMapper<AccountingEventParticipant> accountingEventParticipantFieldMapper = new FieldMapper<AccountingEventParticipant>() {
         public void extractValues(MapSqlParameterSource p, AccountingEventParticipant participant) {
             p.addValue("CustomerID", participant.getCustomer().getId());
@@ -127,4 +107,24 @@ public class AccountingEventParticipantDaoImpl implements InitializingBean,
         this.customerStubDao = customerStubDao;
     }
 
+    private class AccountingEventParticipantRowMapper implements YukonRowMapper<AccountingEventParticipant> {
+        private CachingDaoWrapper<AccountingEvent> cachingAccountingEventDao;
+        private CachingDaoWrapper<CICustomerStub> cachingCustomerStubDao;
+        
+        public AccountingEventParticipantRowMapper(AccountingEvent... initialItems) {
+            cachingAccountingEventDao = new CachingDaoWrapper<AccountingEvent>(accountingEventDao, initialItems);
+            cachingCustomerStubDao = new CachingDaoWrapper<CICustomerStub>(customerStubDao);
+        }
+        
+        public AccountingEventParticipant mapRow(YukonResultSet rs) throws SQLException {
+            AccountingEventParticipant participant = new AccountingEventParticipant();
+            participant.setId(rs.getInt("CCurtAcctEventParticipantID"));
+            CICustomerStub customer = cachingCustomerStubDao.getForId(rs.getInt("CustomerID"));
+            participant.setCustomer(customer);
+            AccountingEvent event = cachingAccountingEventDao.getForId(rs.getInt("CCurtAcctEventID"));
+            participant.setEvent(event);
+            
+            return participant;
+        }
+    }
 }

@@ -26,7 +26,8 @@ public class ProgramTypeDaoImpl implements ProgramTypeDao, InitializingBean{
     @Override
     public ProgramType getForId(Integer id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtProgramType");
+        sql.append("select *");
+        sql.append("from CCurtProgramType");
         sql.append("where CCurtProgramTypeID").eq(id);
         
         return yukonJdbcTemplate.queryForObject(sql, rowMapper);
@@ -35,36 +36,12 @@ public class ProgramTypeDaoImpl implements ProgramTypeDao, InitializingBean{
     @Override
     public List<ProgramType> getAllProgramTypes(Integer energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtProgramType");
+        sql.append("select *");
+        sql.append("from CCurtProgramType");
         sql.append("where EnergyCompanyID").eq(energyCompanyId);
         
         return yukonJdbcTemplate.query(sql, rowMapper);
     }
-
-    @Override
-    public void save(ProgramType programType) {
-        template.save(programType);
-    }
-
-    @Override
-    public void delete(ProgramType programType) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtProgramType");
-        sql.append("where CCurtProgramTypeID").eq(programType.getId());
-        
-        yukonJdbcTemplate.update(sql);
-    }
-
-    private YukonRowMapper<ProgramType> rowMapper = new YukonRowMapper<ProgramType>() {
-        public ProgramType mapRow(YukonResultSet rs) throws SQLException {
-            ProgramType programType = new ProgramType();
-            programType.setName(rs.getString("CCurtProgramTypeName"));
-            programType.setStrategy(rs.getString("CCurtProgramTypeStrategy"));
-            programType.setId(rs.getInt("CCurtProgramTypeID"));
-            programType.setEnergyCompanyId(rs.getInt("EnergyCompanyID"));
-            return programType;
-        }
-    };
     
     private FieldMapper<ProgramType> programTypeFieldMapper = new FieldMapper<ProgramType>() {
         public void extractValues(MapSqlParameterSource p, ProgramType programType) {
@@ -98,4 +75,15 @@ public class ProgramTypeDaoImpl implements ProgramTypeDao, InitializingBean{
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+
+    private YukonRowMapper<ProgramType> rowMapper = new YukonRowMapper<ProgramType>() {
+        public ProgramType mapRow(YukonResultSet rs) throws SQLException {
+            ProgramType programType = new ProgramType();
+            programType.setName(rs.getString("CCurtProgramTypeName"));
+            programType.setStrategy(rs.getString("CCurtProgramTypeStrategy"));
+            programType.setId(rs.getInt("CCurtProgramTypeID"));
+            programType.setEnergyCompanyId(rs.getInt("EnergyCompanyID"));
+            return programType;
+        }
+    };
 }

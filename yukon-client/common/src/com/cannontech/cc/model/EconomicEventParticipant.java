@@ -7,9 +7,10 @@ import java.util.List;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.database.data.notification.NotifMap;
 
-public class EconomicEventParticipant implements BaseParticipant {
+public class EconomicEventParticipant implements Identifiable, BaseParticipant {
     private CICustomerStub customer;
     private EconomicEvent event;
     private Integer id;

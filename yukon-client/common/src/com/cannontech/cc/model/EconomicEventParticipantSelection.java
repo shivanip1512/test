@@ -11,7 +11,9 @@ import java.util.Set;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-public class EconomicEventParticipantSelection {
+import com.cannontech.core.dao.support.Identifiable;
+
+public class EconomicEventParticipantSelection implements Identifiable{
     public enum SelectionState {DEFAULT, MANUAL};
     private String connectionAudit;
     private Integer id;

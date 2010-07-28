@@ -150,8 +150,6 @@ public class CustomerPointTypeHelper {
         customerPoint.setOptionalLabel(type.getLabel());
         customerPoint.setPointId(pointId);
         customer.addPoint(customerPoint);
-        
-        //customerPointDataDao.save(customer, customerPoint);
         customerStubDao.save(customerPoint);
     }
     

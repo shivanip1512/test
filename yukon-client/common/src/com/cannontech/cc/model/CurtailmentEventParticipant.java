@@ -3,9 +3,10 @@ package com.cannontech.cc.model;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import com.cannontech.core.dao.support.Identifiable;
 import com.cannontech.database.data.notification.NotifMap;
 
-public class CurtailmentEventParticipant implements BaseParticipant {
+public class CurtailmentEventParticipant implements Identifiable, BaseParticipant {
     private Integer id;
     private CICustomerStub customer;
     private CurtailmentEvent event;

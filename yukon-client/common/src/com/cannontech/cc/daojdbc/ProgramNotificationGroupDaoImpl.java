@@ -20,6 +20,7 @@ import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.spring.CollectionResultSetExtractor;
 
 public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements ProgramNotificationGroupDao {
+    
     private NotificationGroupDao notificationGroupDao;
     
     public ProgramNotificationGroupDaoImpl() {
@@ -28,7 +29,8 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
 
     public Set<LiteNotificationGroup> getNotificationGroupsForProgram(Program program) {
         SqlStatementBuilder query = new SqlStatementBuilder();
-        query.append("select NotificationGroupId from CCurtProgramNotifGroup");
+        query.append("select NotificationGroupId");
+        query.append("from CCurtProgramNotifGroup");
         query.append("where CCurtProgramId = ?");
         Object[] args = new Object[] {program.getId()};
         RowMapper rowMapper = new RowMapper() {
@@ -74,7 +76,8 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
             toDeleteInts.add(lng.getLiteID());
         }
         SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("delete from CCurtProgramNotifGroup");
+        deleteSql.append("delete");
+        deleteSql.append("from CCurtProgramNotifGroup");
         deleteSql.append("where NotificationGroupId in (", toDeleteInts, ")");
         deleteSql.append("and CCurtProgramId = ", program.getId());
         getJdbcTemplate().execute(deleteSql.toString());
@@ -83,7 +86,8 @@ public class ProgramNotificationGroupDaoImpl extends YukonBaseJdbcDao implements
     public void deleteForProgram(Program program) {
         Object[] args = new Object[] {program.getId()};
         SqlStatementBuilder query = new SqlStatementBuilder();
-        query.append("delete from CCurtProgramNotifGroup");
+        query.append("delete");
+        query.append("from CCurtProgramNotifGroup");
         query.append("where CCurtProgramId = ?");
         
         getJdbcTemplate().update(query.toString(), args);

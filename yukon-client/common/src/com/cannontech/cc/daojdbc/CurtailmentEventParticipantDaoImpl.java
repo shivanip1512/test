@@ -14,6 +14,7 @@ import com.cannontech.cc.dao.CustomerStubDao;
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.CurtailmentEvent;
 import com.cannontech.cc.model.CurtailmentEventParticipant;
+import com.cannontech.common.util.CachingDaoWrapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
@@ -22,34 +23,35 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class CurtailmentEventParticipantDaoImpl implements
-        CurtailmentEventParticipantDao, InitializingBean {
+public class CurtailmentEventParticipantDaoImpl implements CurtailmentEventParticipantDao, InitializingBean {
     
-    YukonJdbcTemplate yukonJdbcTemplate;
-    SimpleTableAccessTemplate<CurtailmentEventParticipant> template;
-    NextValueHelper nextValueHelper;
-    CustomerStubDao customerStubDao;
-    CurtailmentEventDao curtailmentEventDao;
-    CurtailmentEventNotifDao curtailmentEventNotifDao;
+    private YukonJdbcTemplate yukonJdbcTemplate;
+    private SimpleTableAccessTemplate<CurtailmentEventParticipant> template;
+    private NextValueHelper nextValueHelper;
+    private CustomerStubDao customerStubDao;
+    private CurtailmentEventDao curtailmentEventDao;
+    private CurtailmentEventNotifDao curtailmentEventNotifDao;
     
     
     @Override
     public CurtailmentEventParticipant getForId(Integer id) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtCEParticipant");
+        sql.append("select *");
+        sql.append("from CCurtCEParticipant");
         sql.append("where CCurtCEParticipantID").eq(id);
         
-        CurtailmentEventParticipant result = yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        CurtailmentEventParticipant result = yukonJdbcTemplate.queryForObject(sql, new CurtailmentEventParticipantRowMapper());
         return result;
     }
 
     @Override
     public List<CurtailmentEventParticipant> getForEvent(CurtailmentEvent event) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select * from CCurtCEParticipant");
+        sql.append("select *");
+        sql.append("from CCurtCEParticipant");
         sql.append("where CCurtCurtailmentEventID").eq(event.getId());
         
-        List<CurtailmentEventParticipant> result = yukonJdbcTemplate.query(sql, rowMapper);
+        List<CurtailmentEventParticipant> result = yukonJdbcTemplate.query(sql, new CurtailmentEventParticipantRowMapper(event));
         return result;
     }
 
@@ -60,37 +62,27 @@ public class CurtailmentEventParticipantDaoImpl implements
 
     @Override
     public void delete(CurtailmentEventParticipant participant) {
+        curtailmentEventNotifDao.deleteForParticipant(participant);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtCEParticipant");
+        sql.append("delete");
+        sql.append("from CCurtCEParticipant");
         sql.append("where CCurtCEParticipantID").eq(participant.getId());
         
-        curtailmentEventNotifDao.deleteForParticipant(participant);
         yukonJdbcTemplate.update(sql);
     }
    
     @Override
     public void deleteForEvent(CurtailmentEvent event) {
+        curtailmentEventNotifDao.deleteForEvent(event);
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from CCurtCEParticipant");
+        sql.append("delete");
+        sql.append("from CCurtCEParticipant");
         sql.append("where CCurtCurtailmentEventID").eq(event.getId());
         
-        curtailmentEventNotifDao.deleteForEvent(event);
         yukonJdbcTemplate.update(sql);
     }
-
-    private YukonRowMapper<CurtailmentEventParticipant> rowMapper = new YukonRowMapper<CurtailmentEventParticipant>() {
-        public CurtailmentEventParticipant mapRow(YukonResultSet rs) throws SQLException {
-            CurtailmentEventParticipant curtailmentEventParticipant = new CurtailmentEventParticipant();
-            curtailmentEventParticipant.setId(rs.getInt("CCurtCEParticipantID"));
-            curtailmentEventParticipant.setNotifAttribs(rs.getString("NotifAttribs"));
-            CICustomerStub customer = customerStubDao.getForId(rs.getInt("CustomerID")); 
-            curtailmentEventParticipant.setCustomer(customer);
-            CurtailmentEvent event = curtailmentEventDao.getForId(rs.getInt("CCurtCurtailmentEventID"));
-            curtailmentEventParticipant.setEvent(event);
-            
-            return curtailmentEventParticipant;
-        }
-    };
     
     private FieldMapper<CurtailmentEventParticipant> curtailmentEventParticipantFieldMapper = new FieldMapper<CurtailmentEventParticipant>() {
         public void extractValues(MapSqlParameterSource p, CurtailmentEventParticipant participant) {
@@ -136,5 +128,27 @@ public class CurtailmentEventParticipantDaoImpl implements
     
     public void setCurtailmentEventNotifDao(CurtailmentEventNotifDao curtailmentEventNotifDao) {
         this.curtailmentEventNotifDao = curtailmentEventNotifDao;
+    }
+
+    private class CurtailmentEventParticipantRowMapper implements YukonRowMapper<CurtailmentEventParticipant> {
+        private CachingDaoWrapper<CICustomerStub> cachingCustomerStubDao;
+        private CachingDaoWrapper<CurtailmentEvent> cachingCurtailmentEventDao;
+        
+        public CurtailmentEventParticipantRowMapper(CurtailmentEvent... initialItems) {
+            cachingCurtailmentEventDao = new CachingDaoWrapper<CurtailmentEvent>(curtailmentEventDao, initialItems);
+            cachingCustomerStubDao = new CachingDaoWrapper<CICustomerStub>(customerStubDao);
+        }
+        
+        public CurtailmentEventParticipant mapRow(YukonResultSet rs) throws SQLException {
+            CurtailmentEventParticipant curtailmentEventParticipant = new CurtailmentEventParticipant();
+            curtailmentEventParticipant.setId(rs.getInt("CCurtCEParticipantID"));
+            curtailmentEventParticipant.setNotifAttribs(rs.getString("NotifAttribs"));
+            CICustomerStub customer = cachingCustomerStubDao.getForId(rs.getInt("CustomerID")); 
+            curtailmentEventParticipant.setCustomer(customer);
+            CurtailmentEvent event = cachingCurtailmentEventDao.getForId(rs.getInt("CCurtCurtailmentEventID"));
+            curtailmentEventParticipant.setEvent(event);
+            
+            return curtailmentEventParticipant;
+        }
     }
 }

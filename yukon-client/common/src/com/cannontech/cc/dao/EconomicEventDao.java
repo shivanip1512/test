@@ -5,15 +5,14 @@ import java.util.List;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.Program;
-import com.cannontech.core.dao.support.StandardDaoOperations;
+import com.cannontech.core.dao.support.IdAccessible;
 
-public interface EconomicEventDao extends StandardDaoOperations<EconomicEvent>, CommonEventOperations<EconomicEvent> {
+public interface EconomicEventDao extends IdAccessible<EconomicEvent>, CommonEventOperations<EconomicEvent> {
 
     List<EconomicEvent> getAllForProgram(Program program);
     List<EconomicEvent> getAllForParticipants(List<EconomicEventParticipant> participantList);
-    /**
-     * @return the child even or null if one doesn't exist
-     */
     EconomicEvent getChildEvent(EconomicEvent event);
-
+    public void save(EconomicEvent object);
+    public void delete(EconomicEvent object);
+    public EconomicEvent getForId(Integer id);
 }
