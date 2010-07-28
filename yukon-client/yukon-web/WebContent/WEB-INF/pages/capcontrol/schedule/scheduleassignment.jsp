@@ -5,11 +5,6 @@
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
-<cti:includeScript link="/JavaScript/itemPicker.js" />
-<cti:includeScript link="/JavaScript/tableCreation.js" />
-<cti:includeScript link="/JavaScript/paoPicker.js" />
-<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
-
 <cti:uniqueIdentifier  prefix="addPao" var="addPao"/>
 <cti:uniqueIdentifier var="addPaoSpanId" prefix="addPaoSpan_"/>
 <c:set var="notAuthorizedText" value="User is not authorized to perform this action" />
@@ -17,19 +12,25 @@
 <c:set value="Send Time Syncs" var="sendTimeSyncsCommand" />
 
 <cti:standardPage title="Schedule Assignment" module="capcontrol">
+	<cti:includeScript link="/JavaScript/itemPicker.js" />
+	<cti:includeScript link="/JavaScript/tableCreation.js" />
+	<cti:includeScript link="/JavaScript/paoPicker.js" />
+	<cti:includeScript link="/JavaScript/simpleDialog.js"/>
+	<cti:includeScript link="/JavaScript/picker.js" />
+	<cti:includeCss link="/WebConfig/yukon/styles/itemPicker.css" />
 	<cti:standardMenu menuSelection="view|scheduleassignment"/>
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/spring/capcontrol/tier/areas" title="Home" />
 		<cti:crumbLink title="Schedule Assignments"/>
 	</cti:breadCrumbs>
 	
-	<%@include file="scheduleassignmentpopups.jsp" %>
+	<%@include file="scheduleAssignmentFilterPopup.jsp" %>
 	<%@include file="/capcontrol/cbc_inc.jspf" %>
 	
 	<cti:url var="baseUrl" value="/spring/capcontrol/schedule/scheduleAssignments" />
 	<cti:url var="startMultiUrl" value="/spring/capcontrol/schedule/startMultiple" />
 	
-	<script type="text/javascript" language="JavaScript">
+	<script type="text/javascript">
 		function removeScheduleCommand(eventId) {
 			var url = "/spring/capcontrol/schedule/removePao";
 		    new Ajax.Request(url, {'parameters': {'eventId': eventId}, 
@@ -87,6 +88,28 @@
 		function clearFilter() {
 			window.location = '${baseUrl}';
 		}
+		
+		function startMultiScheduleAssignmentPopup(schedule, command){
+			var url = '/spring/capcontrol/schedule/startMultiScheduleAssignmentPopup';
+			var title = 'Run Multiple Schedule Assignment Commands';
+			var parameters = {'schedule': schedule, 'command': command};
+			openSimpleDialog('tierContentPopup', url, title, parameters, null, 'get');
+			$('tierContentPopup').toggle(); 
+		}
+
+		function stopMultiScheduleAssignmentPopup(schedule, command){
+			var url = '/spring/capcontrol/schedule/stopMultiScheduleAssignmentPopup';
+			var title = 'Stop Multiple Schedule Assignment Commands';
+			var parameters = {'schedule': schedule, 'command': command};
+			openSimpleDialog('tierContentPopup', url, title, parameters, null, 'get'); 
+		}
+
+		function newScheduleAssignmentPopup(schedule, command){
+			var url = '/spring/capcontrol/schedule/newScheduleAssignmentPopup';
+			var title = 'New Schedule Assignment';
+			var parameters = {'schedule': schedule, 'command': command};
+			openSimpleDialog('tierContentPopup', url, title, parameters, null, 'get'); 
+		}
 	</script>
 	
 	<!-- Display success or failure message if a command was submitted -->
@@ -114,41 +137,47 @@
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="tierImg pointer" title="Run multiple commands" 
-												onclick="$('startMultipleSchedulesPopup').toggle();">
+											<a href="javascript:void(0)" class="simpleLink" onclick="startMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');">
+												<img src="/WebConfig/yukon/Icons/control_play_blue.gif" class="tierImg" title="Run multiple commands"/>
+												Run Multiple Schedule Assignment Commands
+											</a>
 										</c:when>
 										<c:otherwise>
 											<img src="/WebConfig/yukon/Icons/control_play_blue_disabled.gif" class="tierImg" 
 											title="${notAuthorizedText}">
+											Run Multiple Schedule Assignment Commands
 										</c:otherwise>
 									</c:choose>
-									Run Multiple Schedule Assignment Commands
 								</div>
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasActionRoles == true}">
-												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="tierImg pointer" title="Stop multiple commands" 
-												onclick="$('stopMultipleSchedulesPopup').toggle();">
+											<a href="javascript:void(0);" class="simpleLink" onclick="stopMultiScheduleAssignmentPopup('${param.schedule}', '${param.command}');">
+												<img src="/WebConfig/yukon/Icons/control_stop_blue.gif" class="tierImg" title="Stop multiple commands"/> 
+												Stop Multiple Schedule Assignment Commands
+											</a>
 										</c:when>
 										<c:otherwise>
 											<img src="/WebConfig/yukon/Icons/control_stop_blue_disabled.gif" class="tierImg" 
 											title="${notAuthorizedText}">
+											Stop Multiple Schedule Assignment Commands
 										</c:otherwise>
 									</c:choose>
-									Stop Multiple Schedule Assignment Commands
 								</div>
 								<div style="padding: 1px">
 									<c:choose>
 										<c:when test="${hasEditingRole == true}">
-												<img src="/WebConfig/yukon/Icons/add.gif" class="tierImg pointer" title="Create a new schedule assignment" 
-												onclick="$('newScheduleAssignmentPopup').toggle();">
+											<a href="javascript:void(0);" class="simpleLink" onclick="newScheduleAssignmentPopup('${param.schedule}', '${param.command}');">
+												<img src="/WebConfig/yukon/Icons/add.gif" class="tierImg" title="Create a new schedule assignment"/> 
+												New Schedule Assignment
+											</a>
 										</c:when>
 										<c:otherwise>
 											<img src="/WebConfig/yukon/Icons/add_disabled_gray.gif" class="tierImg" 
 											title="${notAuthorizedText}">
+											New Schedule Assignment
 										</c:otherwise>
 									</c:choose>
-									New Schedule Assignment
 								</div>
 					</tags:abstractContainer>
 				</div>

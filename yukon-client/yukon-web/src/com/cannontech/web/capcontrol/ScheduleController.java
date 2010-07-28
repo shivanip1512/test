@@ -450,12 +450,66 @@ public class ScheduleController {
 		return "redirect:scheduleAssignments";
 	}
 	
+	/**
+     * Returns the "Run Multiple Schedule Assignment Commands" popup form.
+     */
+    @RequestMapping
+    public String startMultiScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
+        String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
+        String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
+        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
+        Collections.sort(schedList);
+        
+        map.addAttribute("schedule", schedule);
+        map.addAttribute("command", command);
+        map.addAttribute("commandList", ScheduleCommand.values());
+        map.addAttribute("scheduleList", schedList);
+        
+        return "schedule/startMultiScheduleAssignmentPopup.jsp";
+    }
+    
+    /**
+     * Returns the "Stop Multiple Schedule Assignment Commands" popup form.
+     */
+    @RequestMapping
+    public String stopMultiScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
+        String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
+        String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
+        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
+        Collections.sort(schedList);
+        
+        map.addAttribute("schedule", schedule);
+        map.addAttribute("command", command);
+        map.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
+        map.addAttribute("scheduleList", schedList);
+        
+        return "schedule/stopMultiScheduleAssignmentPopup.jsp";
+    }
+    
+    /**
+     * Returns the "Run Multiple Schedule Assignment Commands" popup form.
+     */
+    @RequestMapping
+    public String newScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
+        String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
+        String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
+        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
+        Collections.sort(schedList);
+        
+        map.addAttribute("schedule", schedule);
+        map.addAttribute("command", command);
+        map.addAttribute("commandList", ScheduleCommand.values());
+        map.addAttribute("scheduleList", schedList);
+        
+        return "schedule/newScheduleAssignmentPopup.jsp";
+    }
+	
 	/*
 	 * Helper method to parse the time variables out of a
 	 * "verify not operated in..." command
 	 */
 	private long parseSecondsNotOperatedIn(PaoScheduleAssignment assignment){
-        String timeString = assignment.getCommandName().replaceAll("Verify CapBanks that have not operated in ", "");
+        String timeString = assignment.getCommandName().replaceAll(ScheduleCommand.VerifyNotOperatedIn.getCommandName() + " ", "");
     
         //parse min/hr/day/wk value from command string
         Period period = periodFormatter.parsePeriod(timeString);
@@ -492,7 +546,7 @@ public class ScheduleController {
         
         return searchResult;
     }
-	
+    
 	@Autowired
 	public void setPaoScheduleDao(PaoScheduleDao paoScheduleDao) {
 		this.paoScheduleDao = paoScheduleDao;

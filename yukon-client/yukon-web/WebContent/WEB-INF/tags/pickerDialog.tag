@@ -24,7 +24,7 @@
 
 <script type="text/javascript">
 
-    var ${pageScope.id} = new Picker('${pageScope.type}', '${pageScope.destinationFieldName}', '${pageScope.id}', '${pageScope.extraDestinationFields}');
+    ${pageScope.id} = new Picker('${pageScope.type}', '${pageScope.destinationFieldName}', '${pageScope.id}', '${pageScope.extraDestinationFields}');
 
     <c:if test="${pageScope.multiSelectMode}">
         ${pageScope.id}.multiSelectMode = true;
