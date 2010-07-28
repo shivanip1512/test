@@ -90,16 +90,21 @@
     <tr>
     
         <td>
+        
+            <cti:msg var="SelectDevicesLabel" key="yukon.common.device.bulk.deviceSelection.selectDevices" />
+
+            <input type="button" id="selectDevicesButton" value="${SelectDevicesLabel}" onclick="javascript:selectDevicesPicker.show()" style="width:140px;" />
+            
+
             <form id="selectDevicesForm" method="get" action="${action}">
                 <input type="hidden" id="deviceIds" name="idList.ids" />
                 <input type="hidden" name="collectionType" value="idList" />
                 <tags:mapToHiddenInputs values="${pageScope.extraInputs}"/>
             </form>
             
-            <cti:msg var="selectDevicesLabel" key="yukon.common.device.bulk.deviceSelection.selectDevices" />
 		    <tags:pickerDialog id="selectDevicesPicker" type="${pageScope.pickerType}"
 		        destinationFieldId="deviceIds" multiSelectMode="true"
-		        endAction="selectDevices" asButton="true">${selectDevicesLabel}</tags:pickerDialog>
+		        endAction="selectDevices" asButton="false">${selectDevicesLabel}</tags:pickerDialog>
         </td>
         
         <td>
