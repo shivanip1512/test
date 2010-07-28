@@ -5,10 +5,13 @@
 <%@ attribute name="nameKey" required="true" %>
 <%@ attribute name="labelForId" required="false" %>
 <%@ attribute name="excludeColon" required="false" %>
+<%@ attribute name="rowId" %>
+<%@ attribute name="rowClass" %>
 
 <c:choose>
 	<c:when test="${nameValueContainter2}">
-        <tr class="${trClass}" id="${trId}">
+        <tr <c:if test="${!empty rowId}"> id="${rowId}"</c:if>
+            <c:if test="${!empty rowClass}"> class="${rowClass}"</c:if>>
 			<td class="name" style="white-space:nowrap;">
 			
 				<c:set var="colonSuffix" value=":"/>

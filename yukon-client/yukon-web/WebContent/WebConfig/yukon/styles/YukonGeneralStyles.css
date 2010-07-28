@@ -899,6 +899,14 @@ table.actionArea td.leftActions {
 	width: auto;
 }
 
+#ajaxDialog, #ajaxDialog .nameValueTable {
+    width: auto;
+}
+
+#ajaxDialog .nameValueTable td.name {
+	white-space: nowrap;
+}
+
 a.simpleLink, span.simpleLink a {
     text-decoration: none;
     color: black;
@@ -1036,7 +1044,6 @@ div.userMessage {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-left: 30px;
-	width: 95%;	
 	margin-bottom: 12px;
 	background-position: 8px 5px;
 	background-repeat:no-repeat;

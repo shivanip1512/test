@@ -404,6 +404,35 @@
     <search bean="drSearchProducer" />	
   </module>
 
+  <module name="survey">
+    <skin name="STANDARD"/>
+    <menu>
+      <options>
+        <option name="list">
+          <link>/spring/stars/survey/list</link>
+        </option>
+      </options>
+    </menu>
+
+    <pages>
+      <page name="list" type="BASIC">
+        <menu>list</menu>
+        <link>/spring/stars/survey/list</link>
+        <pages>
+          <page name="add" type="BASIC">
+            <menu>survey</menu>
+            <link>/spring/stars/survey/create</link>
+          </page>
+          <page name="edit" type="DETAIL">
+            <menu>survey</menu>
+            <link>/spring/stars/survey/edit?surveyId=${survey.surveyId}</link>
+            <labelArgument>${survey.surveyName}</labelArgument>
+          </page>
+        </pages>
+      </page>
+    </pages>
+  </module>
+
   <module name="energyCompanyAdmin">
     <skin name="STANDARD" />
     <menu>

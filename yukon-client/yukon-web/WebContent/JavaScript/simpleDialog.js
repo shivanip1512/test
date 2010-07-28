@@ -4,12 +4,21 @@ function adjustDialogSizeAndPosition(dialogId) {
     var dialogDiv = $(dialogId);
     var dialogDimensions = naturalDialogSizes[dialogId];
     if (!dialogDimensions) {
-        dialogDimensions = dialogDiv.getDimensions();
+        dialogDimensions = {
+        		'width' : dialogDiv.getStyle('width'),
+        		'height' : dialogDiv.getStyle('height')
+        };
+        if (dialogDimensions.width == null) {
+        	dialogDimensions.width = 'auto';
+        }
+        if (dialogDimensions.height == null) {
+        	dialogDimensions.height = 'auto';
+        }
         naturalDialogSizes[dialogId] = dialogDimensions;
     }
     dialogDiv.setStyle({
-        'width': dialogDimensions.width + "px",
-		'height': "auto"
+        'width': dialogDimensions.width,
+		'height': dialogDimensions.height
     });
 
     var viewportDimensions = getViewportDimensions();
@@ -71,4 +80,28 @@ function submitFormViaAjax(dialogId, formId, url, title, method) {
 	}
 	openSimpleDialog(dialogId, url, title, $(formId).serialize(true), true, method);
     return false; // useful if we want to use this for "onsubmit" on a form
+}
+
+function simpleAJAXRequest(url) {
+    var successCallback = function(transport, json) {
+        hideBusy();
+        if (json.action === 'reload') {
+            window.location = window.location;
+        }
+    };
+
+    var errorCallback = function(transport) {
+        hideBusy();
+        alert('error making request');
+    };
+
+    var options = {
+            'evalScript': true,
+            'method': 'post',
+            'onSuccess': successCallback,
+            'onFailure': errorCallback
+            };
+    // 'parameters'
+    showBusy();
+    new Ajax.Request(url, options);
 }

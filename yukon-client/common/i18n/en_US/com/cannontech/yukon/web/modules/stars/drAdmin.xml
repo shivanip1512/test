@@ -82,16 +82,6 @@
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.unassignProgram.hoverText">Remove Program from Appliance Category</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.unassignProgram.title">Remove Program</entry>
 
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.up.imageUrl">/WebConfig/yukon/Icons/green_arrow_up.gif</entry>
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.up.hoverUrl">/WebConfig/yukon/Icons/green_arrow_up_over.gif</entry>
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.up.hoverText">Move Program Up</entry>
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.up.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_up_disabled.gif</entry>
-
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.down.imageUrl">/WebConfig/yukon/Icons/green_arrow_down.gif</entry>
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.down.hoverUrl">/WebConfig/yukon/Icons/green_arrow_down_over.gif</entry>
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.down.hoverText">Move Program Down</entry>
-<entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.down.disabled.imageUrl">/WebConfig/yukon/Icons/green_arrow_down_disabled.gif</entry>
-
 <!-- validation errors -->
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.empty.name">Name cannot be empty.</entry>
 <entry key="yukon.web.modules.energyCompanyAdmin.editApplianceCategory.empty.displayName">Display name cannot be empty.</entry>

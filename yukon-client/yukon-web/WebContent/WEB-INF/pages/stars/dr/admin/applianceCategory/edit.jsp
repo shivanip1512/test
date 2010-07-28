@@ -71,32 +71,6 @@
         </form:form>
     </i:simplePopup>
 
-    <script type="text/javascript">
-        function simpleAJAXRequest(url) {
-            var successCallback = function(transport, json) {
-                hideBusy();
-                if (json.action === 'reload') {
-                    window.location = window.location;
-                }
-            };
-
-            var errorCallback = function(transport) {
-                hideBusy();
-                alert('error making request');
-            };
-
-            var options = {
-                    'evalScript': true,
-                    'method': 'post',
-                    'onSuccess': successCallback,
-                    'onFailure': errorCallback
-                    };
-            // 'parameters'
-            showBusy();
-            new Ajax.Request(url, options);
-        }
-    </script>
-
     <table class="widgetColumns">
         <tr>
             <td class="widgetColumnCell" valign="top">

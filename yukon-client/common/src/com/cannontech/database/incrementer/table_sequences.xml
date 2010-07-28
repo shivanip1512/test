@@ -212,6 +212,15 @@
       <sequence name="GraphCustomerList">
         <table name="GraphCustomerList" identitycolumn="GraphDefinitionId"/>
       </sequence>
+      <sequence name="survey">
+        <table name="survey" identitycolumn="surveyId"/>
+      </sequence>
+      <sequence name="surveyQuestion">
+        <table name="surveyQuestion" identitycolumn="surveyQuestionId"/>
+      </sequence>
+      <sequence name="surveyQuestionAnswer">
+        <table name="surveyQuestionAnswer" identitycolumn="surveyQuestionAnswerId"/>
+      </sequence>
       <sequence name="AcctThermostatSchedule">
         <table name="AcctThermostatSchedule" identitycolumn="AcctThermostatScheduleId" initsequence="true"/>
       </sequence>

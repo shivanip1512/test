@@ -320,6 +320,9 @@
             	<a href="/spring/multispeak/visualDisplays/loadManagement/home"><cti:msg key="yukon.web.menu.portal.analysis.visualDisplays" /></a>
             </tags:sectionLink>
         </cti:checkProperty>
+            <tags:sectionLink>
+                <a href="/spring/stars/survey/list"><cti:msg key="yukon.web.menu.portal.analysis.surveys" /></a>
+            </tags:sectionLink>
 	</tags:operationSection>
 
 </cti:checkRolesAndProperties>
