@@ -342,6 +342,7 @@ void CtiCapController::messageSender()
                 {
                     if( currentSubstationBus->getBusUpdatedFlag())
                     {
+                        currentStation->checkAndUpdateRecentlyControlledFlag();
 
                         if (currentStation->getStationUpdatedFlag())
                         {
