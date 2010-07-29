@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/28/2010 5:10:22 PM                         */
+/* Created on:     7/29/2010 11:10:08 AM                        */
 /*==============================================================*/
 
 
@@ -9561,7 +9561,7 @@ go
 /*==============================================================*/
 create table MACSimpleSchedule (
    ScheduleID           numeric              not null,
-   TargetSelect         varchar(40)          null,
+   TargetPAObjectId     numeric              null,
    StartCommand         varchar(120)         null,
    StopCommand          varchar(120)         null,
    RepeatInterval       numeric              null,
@@ -15436,6 +15436,11 @@ go
 
 alter table MACSchedule
    add constraint FK_SchdID_PAOID foreign key (ScheduleID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table MACSimpleSchedule
+   add constraint FK_MACSimpSch_PAO foreign key (TargetPAObjectId)
       references YukonPAObject (PAObjectID)
 go
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/28/2010 1:53:50 PM                         */
+/* Created on:     7/29/2010 11:12:40 AM                        */
 /*==============================================================*/
 
 
@@ -6645,7 +6645,7 @@ create table MACSchedule  (
 /*==============================================================*/
 create table MACSimpleSchedule  (
    ScheduleID           NUMBER                          not null,
-   TargetSelect         VARCHAR2(40),
+   TargetPAObjectId     NUMBER,
    StartCommand         VARCHAR2(120),
    StopCommand          VARCHAR2(120),
    RepeatInterval       NUMBER,
@@ -11927,6 +11927,10 @@ alter table MACSchedule
 
 alter table MACSchedule
    add constraint FK_SchdID_PAOID foreign key (ScheduleID)
+      references YukonPAObject (PAObjectID);
+
+alter table MACSimpleSchedule
+   add constraint FK_MACSimpSch_PAO foreign key (TargetPAObjectId)
       references YukonPAObject (PAObjectID);
 
 alter table MACSimpleSchedule
