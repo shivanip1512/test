@@ -403,8 +403,8 @@ public Object getValue(Object val)
 			
 	javax.swing.tree.DefaultMutableTreeNode node = getCTITreeViewPanel().getSelectedNode();
     if (node != null) {
-        command.setPAObjectId(((com.cannontech.database.data.lite.LiteYukonPAObject) 
-                                 node.getUserObject()).getLiteID());
+        command.setTargetPAObjectId(((com.cannontech.database.data.lite.LiteYukonPAObject) 
+                                     node.getUserObject()).getLiteID());
     }
 
 	command.setRepeatInterval( ((Number)getJCSpinFieldInterval().getValue()).intValue() * 60 );
@@ -690,7 +690,7 @@ public void setValue(Object o)
 			if( node != null )
 			{
 				if( ((com.cannontech.database.data.lite.LiteYukonPAObject)
-				      node.getUserObject()).getLiteID() == sched.getPAObjectId()) {
+				      node.getUserObject()).getLiteID() == sched.getTargetPAObjectId()) {
 					getCTITreeViewPanel().selectLiteObject( (com.cannontech.database.data.lite.LiteYukonPAObject)node.getUserObject() );
 					getCTITreeViewPanel().getTree().setSelectionRow( index );
 					break;
