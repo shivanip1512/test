@@ -24,7 +24,7 @@ SELECT LMTS.ScheduleId, LMTS.AccountId, LMTS.ScheduleName, null, null
 FROM LMThermostatSchedule LMTS
 WHERE LMTS.ThermostatTypeId IN (SELECT YLE.EntryId
                                 FROM YukonListEntry YLE
-                                WHERE YLE.YukonDefinitionId IN (1301, 1304, 1314));
+                                WHERE YLE.YukonDefinitionId IN (1301, 1304, 1314, 1313, 3100));
 
 /* update ThermostatTypes */
 UPDATE AcctThermostatSchedule
@@ -51,6 +51,22 @@ WHERE EXISTS (SELECT * FROM LMThermostatSchedule LMTS
                                               WHERE YLE.YukonDefinitionId = 1314)
               AND LMTS.ScheduleId = AcctThermostatScheduleId);
 
+UPDATE AcctThermostatSchedule
+SET ThermostatType = 'HEAT_PUMP_EXPRESSSTAT'
+WHERE EXISTS (SELECT * FROM LMThermostatSchedule LMTS
+                WHERE LMTS.ThermostatTypeId IN (SELECT YLE.EntryId
+                                                 FROM YukonListEntry YLE
+                                                 WHERE YLE.YukonDefinitionId = 1313)
+                AND LMTS.ScheduleId = AcctThermostatScheduleId);
+
+UPDATE AcctThermostatSchedule
+SET ThermostatType = 'ENERGY_PRO'
+WHERE EXISTS (SELECT * FROM LMThermostatSchedule LMTS
+                WHERE LMTS.ThermostatTypeId IN (SELECT YLE.EntryId
+                                                 FROM YukonListEntry YLE
+                                                 WHERE YLE.YukonDefinitionId = 3100)
+                AND LMTS.ScheduleId = AcctThermostatScheduleId);
+              
 /* make ThermostatType column not allow nulls now */
 ALTER TABLE AcctThermostatSchedule
    ALTER COLUMN ThermostatType VARCHAR(60)   NOT NULL;
@@ -91,7 +107,7 @@ JOIN YukonSelectionList ysl ON (YLE.ListId = ysl.ListId)
 JOIN AcctThermostatSchedule ats ON (LMTS.ScheduleId = ats.AcctThermostatScheduleId)
 JOIN ECToGenericMapping ectgm ON (ectgm.ItemId = ats.AcctThermostatScheduleId)
 WHERE ectgm.MappingCategory = 'LMThermostatSchedule'
-AND YLE.YukonDefinitionId IN (1301, 1304, 1314);
+AND YLE.YukonDefinitionId IN (1301, 1304, 1314, 1313, 3100);
 
 CREATE TABLE AcctThermostatScheduleEntry  (
    AcctThermostatScheduleEntryId  NUMERIC                          NOT NULL,
