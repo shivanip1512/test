@@ -97,7 +97,7 @@ CREATE TABLE AcctThermostatScheduleEntry  (
    AcctThermostatScheduleEntryId  NUMBER                          NOT NULL,
    AcctThermostatScheduleId       NUMBER                          NOT NULL,
    StartTime                      NUMBER                          NOT NULL,
-   TimeOfWeek                     VARCHAR2(60)                    NOT NULL,
+   TimeOfWeek                     VARCHAR2(60)                    NULL,
    CoolTemp                       NUMBER                          NULL,
    HeatTemp                       NUMBER                          NULL,
    CONSTRAINT PK_AcctThermSchEntry PRIMARY KEY (AcctThermostatScheduleEntryId)
@@ -248,7 +248,6 @@ WHERE JobId IN (SELECT JobId
 DELETE FROM Job 
 WHERE BeanName = 'importCustAccountsSchedulerJob';
 /* End YUK-8880 */
-
 
 /**************************************************************/ 
 /* VERSION INFO                                               */ 

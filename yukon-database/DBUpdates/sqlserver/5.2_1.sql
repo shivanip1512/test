@@ -5,12 +5,6 @@
 /* Start YUK-8881 */
 ALTER TABLE SequenceNumber ALTER COLUMN SequenceName VARCHAR(30) NOT NULL;
 
-ALTER TABLE SequenceNumber
-   DROP CONSTRAINT SequenceName VARCHAR(30); 
-
-ALTER TABLE SequenceNumber
-   ALTER COLUMN SequenceName VARCHAR(30); 
-   
 CREATE TABLE AcctThermostatSchedule  (
    AcctThermostatScheduleId  NUMERIC     NOT NULL,
    AccountId                 NUMERIC     NOT NULL,
@@ -103,7 +97,7 @@ CREATE TABLE AcctThermostatScheduleEntry  (
    AcctThermostatScheduleEntryId  NUMERIC                          NOT NULL,
    AcctThermostatScheduleId       NUMERIC                          NOT NULL,
    StartTime                      NUMERIC                          NOT NULL,
-   TimeOfWeek                     VARCHAR(60)                    NOT NULL,
+   TimeOfWeek                     VARCHAR(60)                      NULL,
    CoolTemp                       NUMERIC                          NULL,
    HeatTemp                       NUMERIC                          NULL,
    CONSTRAINT PK_AcctThermSchEntry PRIMARY KEY (AcctThermostatScheduleEntryId)
