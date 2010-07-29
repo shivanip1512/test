@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/21/2010 11:36:55 PM                        */
+/* Created on:     7/28/2010 1:53:50 PM                         */
 /*==============================================================*/
 
 
@@ -266,6 +266,10 @@ drop index Indx_YSL_ListName_ECId_UNQ;
 drop index Indx_YkUsIDNm;
 
 drop table AccountSite cascade constraints;
+
+drop table AcctThermostatSchedule cascade constraints;
+
+drop table AcctThermostatScheduleEntry cascade constraints;
 
 drop table ActivityLog cascade constraints;
 
@@ -577,6 +581,8 @@ drop table DynamicVerification cascade constraints;
 
 drop table ECToAccountMapping cascade constraints;
 
+drop table ECToAcctThermostatSchedule cascade constraints;
+
 drop table ECToCallReportMapping cascade constraints;
 
 drop table ECToGenericMapping cascade constraints;
@@ -636,6 +642,8 @@ drop table ImportPendingComm cascade constraints;
 drop table InterviewQuestion cascade constraints;
 
 drop table InventoryBase cascade constraints;
+
+drop table InventoryToAcctThermostatSch cascade constraints;
 
 drop table InventoryToWarehouseMapping cascade constraints;
 
@@ -976,6 +984,31 @@ INSERT INTO AccountSite VALUES (0,0,'(none)',0,'(none)',' ','N');
 /*==============================================================*/
 create index CstSrvCstProp_FK on AccountSite (
    SiteInformationID ASC
+);
+
+/*==============================================================*/
+/* Table: AcctThermostatSchedule                                */
+/*==============================================================*/
+create table AcctThermostatSchedule  (
+   AcctThermostatScheduleId NUMBER                          not null,
+   AccountId            NUMBER                          not null,
+   ScheduleName         VARCHAR2(60)                    not null,
+   ThermostatType       VARCHAR2(60)                    not null,
+   ScheduleMode         VARCHAR2(60),
+   constraint PK_AcctThermSch primary key (AcctThermostatScheduleId)
+);
+
+/*==============================================================*/
+/* Table: AcctThermostatScheduleEntry                           */
+/*==============================================================*/
+create table AcctThermostatScheduleEntry  (
+   AcctThermostatScheduleEntryId NUMBER                          not null,
+   AcctThermostatScheduleId NUMBER                          not null,
+   StartTime            NUMBER                          not null,
+   TimeOfWeek           VARCHAR2(60)                    not null,
+   CoolTemp             NUMBER                          not null,
+   HeatTemp             NUMBER                          not null,
+   constraint PK_AcctThermSchEntry primary key (AcctThermostatScheduleEntryId)
 );
 
 /*==============================================================*/
@@ -4974,6 +5007,15 @@ create table ECToAccountMapping  (
 );
 
 /*==============================================================*/
+/* Table: ECToAcctThermostatSchedule                            */
+/*==============================================================*/
+create table ECToAcctThermostatSchedule  (
+   EnergyCompanyId      NUMBER                          not null,
+   AcctThermostatScheduleId NUMBER                          not null,
+   constraint PK_ECToAcctThermSch primary key (EnergyCompanyId, AcctThermostatScheduleId)
+);
+
+/*==============================================================*/
 /* Table: ECToCallReportMapping                                 */
 /*==============================================================*/
 create table ECToCallReportMapping  (
@@ -5518,6 +5560,15 @@ create index CstAccCstHrdB_FK on InventoryBase (
 /*==============================================================*/
 create index HrdInst_CstHrdBs_FK on InventoryBase (
    InstallationCompanyID ASC
+);
+
+/*==============================================================*/
+/* Table: InventoryToAcctThermostatSch                          */
+/*==============================================================*/
+create table InventoryToAcctThermostatSch  (
+   InventoryId          NUMBER                          not null,
+   AcctThermostatScheduleId NUMBER                          not null,
+   constraint PK_InvToAcctThermSch primary key (InventoryId)
 );
 
 /*==============================================================*/
@@ -7559,7 +7610,7 @@ insert into seasonSchedule values (-1,'No Season');
 /*==============================================================*/
 create table SequenceNumber  (
    LastValue            NUMBER                          not null,
-   SequenceName         VARCHAR2(20)                    not null,
+   SequenceName         VARCHAR2(30)                    not null,
    constraint PK_SEQUENCENUMBER primary key (SequenceName)
 );
 
@@ -10191,6 +10242,14 @@ alter table AccountSite
    add constraint FK_AccS_CstAd foreign key (StreetAddressID)
       references Address (AddressID);
 
+alter table AcctThermostatSchedule
+   add constraint FK_AcctThermSch_CustAcct foreign key (AccountId)
+      references CustomerAccount (AccountID);
+
+alter table AcctThermostatScheduleEntry
+   add constraint FK_AccThermSchEnt_AccThermSch foreign key (AcctThermostatScheduleId)
+      references AcctThermostatSchedule (AcctThermostatScheduleId);
+
 alter table AlarmCategory
    add constraint FK_ALRMCAT_NOTIFGRP foreign key (NotificationGroupID)
       references NotificationGroup (NotificationGroupID);
@@ -11196,6 +11255,14 @@ alter table ECToAccountMapping
    add constraint FK_ECTAcc_Enc foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID);
 
+alter table ECToAcctThermostatSchedule
+   add constraint FK_ECToAccThermSch_AccThermSch foreign key (AcctThermostatScheduleId)
+      references AcctThermostatSchedule (AcctThermostatScheduleId);
+
+alter table ECToAcctThermostatSchedule
+   add constraint FK_ECToAccThermSch_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID);
+
 alter table ECToCallReportMapping
    add constraint FK_ECTSrv_Call foreign key (CallReportID)
       references CallReportBase (CallID);
@@ -11369,6 +11436,14 @@ alter table InventoryBase
 alter table InventoryBase
    add constraint FK_InvB_YkLstEvlt foreign key (VoltageID)
       references YukonListEntry (EntryID);
+
+alter table InventoryToAcctThermostatSch
+   add constraint FK_InvToAccThermSch_AccThermSc foreign key (AcctThermostatScheduleId)
+      references AcctThermostatSchedule (AcctThermostatScheduleId);
+
+alter table InventoryToAcctThermostatSch
+   add constraint FK_InvToAcctThermSch_InvBase foreign key (InventoryId)
+      references InventoryBase (InventoryID);
 
 alter table InventoryToWarehouseMapping
    add constraint FK_INVTOWAREMAP_INVENBASE foreign key (InventoryID)
