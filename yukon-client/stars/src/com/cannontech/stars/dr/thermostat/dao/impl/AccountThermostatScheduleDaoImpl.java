@@ -110,8 +110,8 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		SqlStatementBuilder sql = new SqlStatementBuilder();
     	sql.append("SELECT ats.*");
     	sql.append("FROM AcctThermostatSchedule ats");
-    	sql.append("JOIN AcctThermostatScheduleToInv atsti ON (ats.AcctThermostatScheduleId = atsti.AcctThermostatScheduleId)");
-    	sql.append("WHERE atsti.InventoryId").eq(inventoryId);
+    	sql.append("JOIN InventoryToAcctThermostatSch ITATS ON (ats.AcctThermostatScheduleId = ITATS.AcctThermostatScheduleId)");
+    	sql.append("WHERE ITATS.InventoryId").eq(inventoryId);
     	
     	try {
     		return getPopulatedAccountThermostatSchedule(sql);
@@ -147,11 +147,11 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	@Transactional
 	public void deleteById(int atsId) {
 		
-		// delete AcctThermostatScheduleToInv
-		SqlStatementBuilder deleteAcctThermostatScheduleToInv = new SqlStatementBuilder();
-		deleteAcctThermostatScheduleToInv.append("DELETE FROM AcctThermostatScheduleToInv");
-		deleteAcctThermostatScheduleToInv.append("WHERE AcctThermostatScheduleId").eq(atsId);
-		yukonJdbcTemplate.update(deleteAcctThermostatScheduleToInv);
+		// delete InventoryToAcctThermostatSch
+		SqlStatementBuilder deleteInventoryToAcctThermostatSch = new SqlStatementBuilder();
+		deleteInventoryToAcctThermostatSch.append("DELETE FROM InventoryToAcctThermostatSch");
+		deleteInventoryToAcctThermostatSch.append("WHERE AcctThermostatScheduleId").eq(atsId);
+		yukonJdbcTemplate.update(deleteInventoryToAcctThermostatSch);
 		
 		// delete AcctThermostatScheduleEntry
 		accountThermostatScheduleEntryDao.removeAllEntriesForScheduleId(atsId);
@@ -195,7 +195,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			SqlStatementBuilder sql = new SqlStatementBuilder();
 	    	sql.append("SELECT ats.AcctThermostatScheduleId");
 			sql.append("FROM AcctThermostatSchedule ats");
-			sql.append("JOIN AcctThermostatScheduleToEc atstec ON (ats.AcctThermostatScheduleId = atstec.AcctThermostatScheduleId)");
+			sql.append("JOIN ECToAcctThermostatSchedule ECTATS ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
 			sql.append("WHERE atstec.EnergyCompanyId").eq(ecId);
 			sql.append("AND ats.ThermostatType").eq(type);
 			
@@ -242,9 +242,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 			ats.setScheduleEntries(atsEntries);
 			save(ats);
 			
-			// insert AcctThermostatScheduleToEc record
+			// insert ECToAcctThermostatSchedule record
 			SqlStatementBuilder sql = new SqlStatementBuilder();
-			sql.append("INSERT INTO AcctThermostatScheduleToEc(EnergyCompanyId, AcctThermostatScheduleId)");
+			sql.append("INSERT INTO ECToAcctThermostatSchedule(EnergyCompanyId, AcctThermostatScheduleId)");
 			sql.append("VALUES(").appendArgumentList(Lists.newArrayList(ecId, ats.getAccountThermostatScheduleId())).append(")");
 			yukonJdbcTemplate.update(sql);
 			
@@ -264,7 +264,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		
 		// delete existing mappings
 		SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-		deleteSql.append("DELETE FROM AcctThermostatScheduleToInv");
+		deleteSql.append("DELETE FROM InventoryToAcctThermostatSch");
 		deleteSql.append("WHERE InventoryId").in(thermostatIds);
 		yukonJdbcTemplate.update(deleteSql);
 			
@@ -272,7 +272,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 		for (int thermostatId : thermostatIds) {
 			
 			SqlStatementBuilder insertSql = new SqlStatementBuilder();
-			insertSql.append("INSERT INTO AcctThermostatScheduleToInv (AcctThermostatScheduleId, InventoryId)");
+			insertSql.append("INSERT INTO InventoryToAcctThermostatSch (InventoryId, AcctThermostatScheduleId)");
 			insertSql.append("VALUES (").appendArgumentList(Lists.newArrayList(atsId, thermostatId)).append(")");
 			yukonJdbcTemplate.update(insertSql);
 		}
@@ -299,9 +299,9 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	public List<Integer> getThermostatIdsUsingSchedule(int atsId) {
 		
 		SqlStatementBuilder sql = new SqlStatementBuilder();
-		sql.append("SELECT atsti.InventoryId");
-		sql.append("FROM AcctThermostatScheduleToInv atsti");
-		sql.append("WHERE atsti.AcctThermostatScheduleId").eq(atsId);
+		sql.append("SELECT ITATS.InventoryId");
+		sql.append("FROM InventoryToAcctThermostatSch ITATS");
+		sql.append("WHERE ITATS.AcctThermostatScheduleId").eq(atsId);
 		
 		return yukonJdbcTemplate.query(sql, new IntegerRowMapper());
 	}

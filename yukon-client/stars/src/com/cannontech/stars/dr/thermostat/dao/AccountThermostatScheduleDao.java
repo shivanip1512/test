@@ -67,7 +67,7 @@ public interface AccountThermostatScheduleDao {
 	public void save(AccountThermostatSchedule ats);
 	
 	/**
-	 * Creates mapping in the AcctThermostatScheduleToInv table to associated given thermostat inventoryIds to the given accountThermostatScheduleId.
+	 * Creates mapping in the InventoryToAcctThermostatSch table to associated given thermostat inventoryIds to the given accountThermostatScheduleId.
 	 */
 	public void mapThermostatsToSchedule(List<Integer> thermostatIds, int atsId);
 	
