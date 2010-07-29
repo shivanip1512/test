@@ -236,6 +236,27 @@ ALTER TABLE MACSimpleSchedule
 DROP TABLE MACSimpleScheduleTemp;
 /* End YUK-8773 */ 
 
+/* Start YUK-8880 */
+DELETE FROM JobProperty
+WHERE JobId IN (SELECT JobId 
+                 FROM Job 
+                 WHERE BeanName = 'importCustAccountsSchedulerJob');
+DELETE FROM JobScheduledOneTime
+WHERE JobId IN (SELECT JobId 
+                 FROM Job 
+                 WHERE BeanName = 'importCustAccountsSchedulerJob');
+DELETE FROM JobScheduledRepeating
+WHERE JobId IN (SELECT JobId 
+                 FROM Job 
+                 WHERE BeanName = 'importCustAccountsSchedulerJob');
+DELETE FROM JobStatus 
+WHERE JobId IN (SELECT JobId 
+                 FROM Job 
+                 WHERE BeanName = 'importCustAccountsSchedulerJob');
+DELETE FROM Job 
+WHERE BeanName = 'importCustAccountsSchedulerJob';
+/* End YUK-8880 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
