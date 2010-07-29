@@ -231,7 +231,11 @@ Picker.prototype = {
 					extraDestinationField = this.extraDestinationFields[index];
 					
 					// support for both innerHTML and value setting
-					$(extraDestinationField.fieldId).innerHTML = hit[extraDestinationField.property];
+					try {
+						$(extraDestinationField.fieldId).innerHTML = hit[extraDestinationField.property];
+					} catch (Exception) {
+						// ignore.  IE8 breaks when you try to set innerHTML to a hidden field.
+					}
 					$(extraDestinationField.fieldId).value = hit[extraDestinationField.property];
 				}
 				this.hide();

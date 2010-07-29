@@ -7,6 +7,7 @@
 		<project>common</project>
 		<project>resource</project>
 		<project>stars</project>
+		<project>third-party</project>
 		<project>yukonappserver</project>
 	</projects>
 	<buildSpec>

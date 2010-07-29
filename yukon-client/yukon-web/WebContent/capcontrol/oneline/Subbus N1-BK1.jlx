@@ -1,0 +1,1202 @@
+JLoox 3.0.0
+"UTF8"
+A "NCS" 0 1 0 0 ffffffff 1 ! 0
+!
+"Default" 0 32
+0 0 001
+1
+"0" 1
+
+167
+
+com.cannontech.esub.element.DrawingMetaElement
+! 111101100 0;0;18.640625;2.03125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"Default" 0 32 "_"
+2 1200 740 0 -1
+
+com.cannontech.esub.element.StaticImage
+! 111101100 23.4375;18.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 1180;18.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 !
+
+com.cannontech.esub.element.StaticText
+"AlertsPopup" 111101100 53.4375;28.5;63.854492;13.140625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffff0000 0 0
+0 0
+"arial" 1 14 "Alerts(18)"
+1 "Arial Bold" 14 255 0 0 "javascript:void(0)"
+
+com.cannontech.cbc.oneline.elements.SubDynamicImage
+"OnelineSub_2271" 111101100 20;296;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 -1 0 "javascript:void(0)" 0
+
+com.cannontech.esub.element.StaticText
+! 111101100 23.4375;48.5;117.71875;11.859375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
+0 0
+"arial" 1 16 "Subbus N1-BK1"
+1 "Arial Bold" 16 255 255 255 !
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"Sub_Injection_2271" 111101100 50;326;150;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ff01bcff 1 C ffffffff 0 0
+2
+0 -75;0
+1 75;0
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"Sub_Distribution_2271" 111101100 200;68.5;0;335.75 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffff00 1 C ffffffff 0 0
+2
+0 0;-167.875
+1 0;167.875
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2271" 111101100 18;271;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;69;32.702148;9.265625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Target:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Target: " 111101100 65;69;55.051758;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 to 0 OffPk"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;88;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Updated: " 111101100 74;88;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;107;28.362305;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "kVAR:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_kVAR: " 111101100 61;107;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_EXTRA_100001" 111101100 83;107;5.703125;0.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"arial" 1 10 "_"
+1 "Arial Bold" 10 0 0 0 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;124;61.087891;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Phase A/B/C:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Phase A/B/C: " 111101100 94;124;21.320312;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0/0/0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;141;16.6875;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "kW:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_kW: " 111101100 49;141;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_EXTRA_100005" 111101100 71;141;5.703125;0.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"arial" 1 10 "_"
+1 "Arial Bold" 10 0 0 0 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;158;26.807617;7.28125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Volts:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Volts: " 111101100 59;158;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_EXTRA_100006" 111101100 81;158;5.703125;0.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"arial" 1 10 "_"
+1 "Arial Bold" 10 0 0 0 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;175;46.639648;7.28125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Est kVAR:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Est kVAR: " 111101100 79;175;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;192;14.40332;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "PF:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_PF: " 111101100 47;192;32.649414;7.5625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "100.0%"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;209;35.521484;7.28125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Est. PF:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Est. PF: " 111101100 68;209;32.649414;7.5625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "100.0%"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 23;226;75.556641;9.390625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Daily / Max Ops:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubStat_2271_Daily / Max Ops: " 111101100 108;226;27.883789;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / NA"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"SubTag_2271" 111101100 35;276;16.213867;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::"
+1 "Arial Bold" 14 159 187 172 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 20;540;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "http://127.0.0.1:8080/spring/capcontrol/tier/feeders?isSpecialArea=false&subStationId=2255&areaId=2251"
+
+com.cannontech.esub.element.StaticImage
+! 111101100 20;590;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/capcontrol/oneline/OnelineCBCServlet?id=2271&redirectURL=http://127.0.0.1:8080/spring/capcontrol/tier/feeders?isSpecialArea=false&subStationId=2255&areaId=2251"
+
+com.cannontech.esub.element.StaticText
+"legend" 111101100 20;650;68.318359;18.515625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 20 "Legend"
+1 "Arial Bold" 20 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"print" 111101100 20;690;135.246094;14.546875 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 20 "Printable View"
+1 "Arial Bold" 20 192 192 192 "javascript:togglePrintableView();"
+
+com.cannontech.esub.element.StaticText
+"OnelineFeeder_2275" 111101100 205;73.5;93.837891;10.234375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffafaf 0 0
+0 0
+"arial" 1 14 "Feeder N1-1-A"
+1 "Arial Bold" 14 255 175 175 "javascript:void(0)"
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2275" 111101100 200;68.5;1000;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffff00 1 C ffffffff 0 0
+2
+0 -500;0
+1 500;0
+0 2
+2 255 255 255 -1 0 1 -1 0 2 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 306;73.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2275"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2275" 111101100 203;48;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;93;32.702148;9.265625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Target:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_Target: " 111101100 247;93;29.513672;9.390625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "(none)"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;112;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_Updated: " 111101100 256;112;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;131;28.362305;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "kVAR:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_kVAR: " 111101100 243;131;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_EXTRA_100100" 111101100 265;131;5.703125;0.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"arial" 1 10 "_"
+1 "Arial Bold" 10 0 0 0 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;148;61.087891;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Phase A/B/C:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_Phase A/B/C: " 111101100 276;148;21.320312;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0/0/0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;165;38.352539;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "kW/Volt:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_kW/Volt: " 111101100 253;165;22.116211;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "---/---"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;182;14.40332;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "PF:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_PF: " 111101100 229;182;36.4375;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "NA / NA"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;199;75.556641;9.390625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Daily / Max Ops:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2275_Daily / Max Ops: " 111101100 290;199;27.883789;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / NA"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederTag_2275" 111101100 220;53;16.213867;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StateImage
+"CapBank_2279" 111101100 470;98.5;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 19699 0 "javascript:void(0)" 1
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2275" 111101100 480;68.5;0;30 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffffff 1 C ffffffff 0 0
+2
+0 0;-15
+1 0;15
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 450;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2279"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2279" 111101100 490;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticImage
+"CapInfo_2279" 111101100 430;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapBank_2279_TempMoveBank_C543244" 111101100 490;78.5;47.878906;8.875 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff734fb6 0 0
+0 0
+"arial" 1 12 "C543244"
+1 "Arial Bold" 12 115 79 182 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;139;46.132812;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Bank Size"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2279_Bank Size" 111101100 526;139;15.763672;7.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "600"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;156;45.522461;9.25 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "D/M/T Op:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2279_D/M/T Op:" 111101100 525;156;32.433594;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / 0 / 0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;175;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"varChangePopup_2279" 111101100 521;175;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;194;23.555664;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "CBC:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CBCNAME_----" 111101100 503;194;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapTag_2279" 111101100 505;98;25.538086;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StateImage
+"CapBank_2280" 111101100 600;98.5;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 19701 0 "javascript:void(0)" 1
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2275" 111101100 610;68.5;0;30 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffffff 1 C ffffffff 0 0
+2
+0 0;-15
+1 0;15
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 580;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2280"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2280" 111101100 620;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticImage
+"CapInfo_2280" 111101100 560;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapBank_2280_TempMoveBank_C543245" 111101100 620;78.5;47.785156;8.875 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff734fb6 0 0
+0 0
+"arial" 1 12 "C543245"
+1 "Arial Bold" 12 115 79 182 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;139;46.132812;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Bank Size"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2280_Bank Size" 111101100 656;139;15.763672;7.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "600"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;156;45.522461;9.25 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "D/M/T Op:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2280_D/M/T Op:" 111101100 655;156;32.433594;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / 0 / 0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;175;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"varChangePopup_2280" 111101100 651;175;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;194;23.555664;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "CBC:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CBCNAME_----" 111101100 633;194;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapTag_2280" 111101100 635;98;25.538086;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StateImage
+"CapBank_2281" 111101100 730;98.5;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 19703 0 "javascript:void(0)" 1
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2275" 111101100 740;68.5;0;30 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffffff 1 C ffffffff 0 0
+2
+0 0;-15
+1 0;15
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 710;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2281"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2281" 111101100 750;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticImage
+"CapInfo_2281" 111101100 690;98.5;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapBank_2281_TempMoveBank_C543246" 111101100 750;78.5;47.722656;8.875 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff734fb6 0 0
+0 0
+"arial" 1 12 "C543246"
+1 "Arial Bold" 12 115 79 182 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;139;46.132812;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Bank Size"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2281_Bank Size" 111101100 786;139;15.763672;7.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "600"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;156;45.522461;9.25 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "D/M/T Op:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2281_D/M/T Op:" 111101100 785;156;32.433594;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / 0 / 0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;175;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"varChangePopup_2281" 111101100 781;175;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;194;23.555664;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "CBC:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CBCNAME_----" 111101100 763;194;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapTag_2281" 111101100 765;98;25.538086;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StaticText
+"OnelineFeeder_2276" 111101100 205;409.25;93.197266;10.234375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffffafaf 0 0
+0 0
+"arial" 1 14 "Feeder N1-1-B"
+1 "Arial Bold" 14 255 175 175 "javascript:void(0)"
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2276" 111101100 200;404.25;1000;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffff00 1 C ffffffff 0 0
+2
+0 -500;0
+1 500;0
+0 2
+2 255 255 255 -1 0 1 -1 0 2 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 306;409.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2276"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2276" 111101100 203;384;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;429;32.702148;9.265625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Target:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_Target: " 111101100 247;429;29.513672;9.390625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "(none)"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;448;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_Updated: " 111101100 256;448;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;467;28.362305;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "kVAR:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_kVAR: " 111101100 243;467;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_EXTRA_100100" 111101100 265;467;5.703125;0.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C $ 0 0
+0 0
+"arial" 1 10 "_"
+1 "Arial Bold" 10 0 0 0 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;484;61.087891;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Phase A/B/C:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_Phase A/B/C: " 111101100 276;484;21.320312;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0/0/0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;501;38.352539;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "kW/Volt:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_kW/Volt: " 111101100 253;501;22.116211;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "---/---"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;518;14.40332;7.15625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "PF:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_PF: " 111101100 229;518;36.4375;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "NA / NA"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 205;535;75.556641;9.390625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Daily / Max Ops:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederStat_2276_Daily / Max Ops: " 111101100 290;535;27.883789;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / NA"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"FeederTag_2276" 111101100 220;389;16.213867;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StateImage
+"CapBank_2282" 111101100 470;434.25;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 19705 0 "javascript:void(0)" 1
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2276" 111101100 480;404.25;0;30 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffffff 1 C ffffffff 0 0
+2
+0 0;-15
+1 0;15
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 450;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2282"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2282" 111101100 490;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticImage
+"CapInfo_2282" 111101100 430;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapBank_2282_TempMoveBank_C543247" 111101100 490;414.25;47.613281;8.875 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff734fb6 0 0
+0 0
+"arial" 1 12 "C543247"
+1 "Arial Bold" 12 115 79 182 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;475;46.132812;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Bank Size"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2282_Bank Size" 111101100 526;475;15.763672;7.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "600"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;492;45.522461;9.25 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "D/M/T Op:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2282_D/M/T Op:" 111101100 525;492;32.433594;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / 0 / 0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;511;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"varChangePopup_2282" 111101100 521;511;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 470;530;23.555664;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "CBC:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CBCNAME_----" 111101100 503;530;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapTag_2282" 111101100 505;434;25.538086;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StateImage
+"CapBank_2283" 111101100 600;434.25;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 19707 0 "javascript:void(0)" 1
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2276" 111101100 610;404.25;0;30 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffffff 1 C ffffffff 0 0
+2
+0 0;-15
+1 0;15
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 580;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2283"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2283" 111101100 620;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticImage
+"CapInfo_2283" 111101100 560;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapBank_2283_TempMoveBank_C543248" 111101100 620;414.25;47.613281;8.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff734fb6 0 0
+0 0
+"arial" 1 12 "C543248"
+1 "Arial Bold" 12 115 79 182 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;475;46.132812;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Bank Size"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2283_Bank Size" 111101100 656;475;15.763672;7.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "600"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;492;45.522461;9.25 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "D/M/T Op:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2283_D/M/T Op:" 111101100 655;492;32.433594;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / 0 / 0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;511;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"varChangePopup_2283" 111101100 651;511;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 600;530;23.555664;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "CBC:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CBCNAME_----" 111101100 633;530;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapTag_2283" 111101100 635;434;25.538086;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+com.cannontech.esub.element.StateImage
+"CapBank_2284" 111101100 730;434.25;0;0 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+3 19709 0 "javascript:void(0)" 1
+
+com.cannontech.cbc.oneline.elements.DynamicLineElement
+"OnelineFeeder_2276" 111101100 740;404.25;0;30 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 ffffffff 1 C ffffffff 0 0
+2
+0 0;-15
+1 0;15
+0 0
+2 255 255 255 -1 0 1 -1 0 0 -1 0 1 -1 0 0 -1 0 !
+
+com.cannontech.esub.element.StaticImage
+! 111101100 710;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "/spring/capcontrol//onelineBookmark?itemid=2284"
+
+com.cannontech.esub.element.StaticImage
+"WarningPopup_2284" 111101100 750;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticImage
+"CapInfo_2284" 111101100 690;434.25;20;20 5 0 $ ! ! 0 0
+A "NCS" 0 1 0 0 $ 1 ! 0 0
+0 0 0 0 0
+!
+1 0 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapBank_2284_TempMoveBank_C543249" 111101100 750;414.25;47.597656;8.890625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff734fb6 0 0
+0 0
+"arial" 1 12 "C543249"
+1 "Arial Bold" 12 115 79 182 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;475;46.132812;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Bank Size"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2284_Bank Size" 111101100 786;475;15.763672;7.3125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "600"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;492;45.522461;9.25 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "D/M/T Op:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CapStat_2284_D/M/T Op:" 111101100 785;492;32.433594;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "0 / 0 / 0"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;511;41.640625;9.125 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "Updated:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"varChangePopup_2284" 111101100 781;511;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+! 111101100 730;530;23.555664;7.40625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "CBC:"
+1 "Arial Bold" 10 192 192 192 !
+
+com.cannontech.esub.element.StaticText
+"CBCNAME_----" 111101100 763;530;12.677734;1.375 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ffc0c0c0 0 0
+0 0
+"arial" 1 10 "----"
+1 "Arial Bold" 10 192 192 192 "javascript:void(0)"
+
+com.cannontech.esub.element.StaticText
+"CapTag_2284" 111101100 765;434;25.538086;10.015625 5 0 $ ! ! 0 0
+A "NCS" 0 0 0 0 $ 1 C ff9fbbac 0 0
+0 0
+"arial" 1 14 "T::::"
+1 "Arial Bold" 14 159 187 172 "javascript: void(0)"
+
+
+0
