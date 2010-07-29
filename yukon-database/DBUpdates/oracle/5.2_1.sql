@@ -249,6 +249,11 @@ DELETE FROM Job
 WHERE BeanName = 'importCustAccountsSchedulerJob';
 /* End YUK-8880 */
 
+/* Start YUK-8724 */
+INSERT INTO YukonRoleProperty VALUES(-20120,-201,'Web Service LM Data Access','true','Controls access to web services that retrieve LM data.');
+INSERT INTO YukonRoleProperty VALUES(-20121,-201,'Web Service LM Control Access','true','Controls access to web services that perform LM control.');
+/* End YUK-8724 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
