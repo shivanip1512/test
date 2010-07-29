@@ -3,31 +3,25 @@ package com.cannontech.dbeditor.wizard.copy.device;
 /**
  * This type was created in VisualAge.
  */
- import java.awt.Dimension;
-import java.awt.Font;
+ import java.awt.Font;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JTextArea;
 
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.device.MCTBase;
-import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.common.gui.util.DataInputPanel;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceGroupMember;
-import com.cannontech.database.db.device.DeviceMeterGroup;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
  
-public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataInputPanel {
+@SuppressWarnings("deprecation")
+public class DeviceMeterGroupPanel extends DataInputPanel {
     
     private javax.swing.JLabel ivjAreaCodeGroupLabel = null;
     private javax.swing.JLabel ivjCycleGroupLabel = null;
@@ -302,21 +296,18 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     }
     
     
-    @SuppressWarnings({ "deprecation", "unchecked" })
     public Object getValue(Object val) {
-        MCTBase pao = null;
+        DeviceBase device = null;
         
         SimpleDevice yd = null;
-        if (val instanceof MultiDBPersistent)
-        {
-            if ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof MCTBase)
-            {
-                pao = (MCTBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0));
+        if (val instanceof MultiDBPersistent) {
+            if ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0) instanceof DeviceBase) {
+                device = (DeviceBase) ((DBPersistent) ((MultiDBPersistent) val).getDBPersistentVector().get(0));
             }
         } else {
-            pao = (MCTBase) val;
+            device = (DeviceBase) val;
         }
-        yd = new SimpleDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
+        yd = new SimpleDevice(device.getPAObjectID(),PAOGroups.getDeviceType(device.getPAOType()));
         String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
         String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
         String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
@@ -327,25 +318,20 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         return val;
         
     }
-
     
-    @SuppressWarnings("deprecation")
-    public void setValue(Object o) 
-    {
-        MCTBase pao = null;
-        
+    public void setValue(Object o) {
+        DeviceBase device = null;
         SimpleDevice yd = null;
-        if (o instanceof MultiDBPersistent)
-        {
-            if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof MCTBase)
-            {
-                pao = (MCTBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0));
+        
+        if (o instanceof MultiDBPersistent) {
+            if ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0) instanceof DeviceBase) {
+                device = (DeviceBase) ((DBPersistent) ((MultiDBPersistent) o).getDBPersistentVector().get(0));
             }
         } else {
-            pao = (MCTBase) o;
+            device = (DeviceBase) o;
         }
         
-        yd = new SimpleDevice(pao.getPAObjectID(),PAOGroups.getDeviceType(pao.getPAOType()));
+        yd = new SimpleDevice(device.getPAObjectID(),PAOGroups.getDeviceType(device.getPAOType()));
         String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yd);
         String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yd);
         String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yd);

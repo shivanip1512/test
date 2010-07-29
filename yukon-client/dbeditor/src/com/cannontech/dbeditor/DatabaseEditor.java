@@ -989,16 +989,12 @@ public DefaultMutableTreeNode getDefaultTreeNode() {
 	DefaultMutableTreeNode node = getTreeViewPanel().getSelectedNode();
 	return node;
 }
-/**
- * @param toCopy
- */
-public void showCopyWizardPanel(com.cannontech.database.db.DBPersistent toCopy) {
-	DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((com.cannontech.database.data.device.DeviceBase)toCopy);
+
+public void showCopyWizardPanel(DBPersistent toCopy) {
+	DeviceCopyWizardPanel devicePanel = new DeviceCopyWizardPanel((DeviceBase)toCopy);
 	devicePanel.setDeviceType( toCopy );
 	showCopyWizardPanel( devicePanel, toCopy );
 }
-
-
 
 private void deleteDBPersistent( DBPersistent deletable )
 {
