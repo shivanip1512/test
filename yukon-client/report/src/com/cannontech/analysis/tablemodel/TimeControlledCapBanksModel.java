@@ -39,7 +39,7 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         public String substationbus;
         public String strategyName;
         public String controlMethod;
-        public String startTime;
+        public String startTimeSeconds;
         public Integer percentOfBanksToClose;
     }
     
@@ -88,7 +88,17 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
                     row.substationbus = rs.getString("substationbus");
                     row.strategyName = rs.getString("strategyname");
                     row.controlMethod = rs.getString("controlmethod");
-                    row.startTime = rs.getString("starttime");
+                    long secondsSinceMidnight = rs.getLong("starttimeseconds");
+                    // do what julie does
+                    long minutes = secondsSinceMidnight / 60;
+                    long hours = minutes / 60;
+                    minutes = minutes % 60;
+                    String minuteString = Long.toString(minutes);
+                    if(minuteString.length() < 2) {
+                        minuteString = "0"+minuteString;
+                    }
+
+                    row.startTimeSeconds = hours + ":" + minuteString;
                     row.percentOfBanksToClose = rs.getInt("percentOfBanksToClose");
 
                     data.add(row);
@@ -107,8 +117,8 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         sql.append(", yp.paoname as substationbus ");
         sql.append(", strat.strategyname ");
         sql.append(", strat.controlmethod ");
-        sql.append(", sts.settingname as starttime");
-        sql.append(", sts.settingvalue as PercentOfBanksToClose");
+        sql.append(", tod.starttimeseconds ");
+        sql.append(", tod.percentClose as PercentOfBanksToClose ");
         sql.append(", dos.seasonname ");
         sql.append(", dos.seasonstartmonth ");
         sql.append(", dos.seasonstartday ");
@@ -117,7 +127,7 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         sql.append("from capcontrolstrategy strat ");
         sql.append(", ccseasonstrategyassignment strata ");
         sql.append(", dateofseason dos ");
-        sql.append(", ccstrategyTargetSettings sts ");
+        sql.append(", ccstrategytimeofday tod ");
         sql.append(", yukonpaobject ypa ");
         sql.append(", yukonpaobject yps ");
         sql.append(", yukonpaobject yp ");
@@ -127,9 +137,8 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         sql.append("and strat.strategyid = strata.strategyid ");
         sql.append("and dos.seasonscheduleid = strata.seasonscheduleid ");
         sql.append("and dos.seasonname = strata.seasonname ");
-        sql.append("and sts.strategyid = strat.strategyid ");
-        sql.append("and sts.settingvalue > 0 ");
-        sql.append("and sts.settingtype = 'WEEKDAY' ");
+        sql.append("and tod.strategyid = strat.strategyid ");
+        sql.append("and tod.percentClose > 0 ");
         sql.append("and yp.paobjectid = strata.paobjectid ");
         sql.append("and yp.paobjectid = ss.substationbusid ");
         sql.append("and yps.paobjectid = ss.substationid ");

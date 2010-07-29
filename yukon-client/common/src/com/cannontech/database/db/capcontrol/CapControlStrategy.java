@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
@@ -418,12 +419,7 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
 	}
 	
 	public static boolean todExists(Integer strategyId) {
-	    String sql = "Select ts.* ";
-	    sql += "from CCStrategyTargetSettings ts, ";
-	    sql +=   "capcontrolstrategy strat ";
-	    sql += "where ts.strategyId = strat.strategyId ";
-	    sql +=   "and strat.controlmethod = 'timeofday ";
-	    sql +=   "and strategyid = ?";
+	    String sql = "Select strategyId from ccstrategytimeofday where strategyId = ?";
 	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
 	    todExists = false;
 	    yukonTemplate.query(sql, new Integer[] {strategyId}, new RowCallbackHandler() {
@@ -435,7 +431,7 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
 	}
 	
 	public static void deleteTod(Integer strategyId) {
-        String sql = "delete from CCStrategyTargetSettings where strategyId = ?";
+        String sql = "delete from ccstrategytimeofday where strategyId = ?";
         SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations) YukonSpringHook.getBean("simpleJdbcTemplate");
         jdbcTemplate.update(sql, strategyId);
     }
