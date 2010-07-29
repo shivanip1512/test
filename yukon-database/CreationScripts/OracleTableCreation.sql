@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/29/2010 1:11:43 PM                         */
+/* Created on:     7/29/2010 1:47:24 PM                         */
 /*==============================================================*/
 
 
@@ -10647,11 +10647,13 @@ alter table CCurtEEParticipantSelection
 
 alter table CCurtEEParticipantSelection
    add constraint FK_CCURTEEPARTSEL_CCURTPART foreign key (CCurtEEParticipantID)
-      references CCurtEEParticipant (CCurtEEParticipantID);
+      references CCurtEEParticipant (CCurtEEParticipantID)
+      on delete cascade;
 
 alter table CCurtEEParticipantWindow
    add constraint FK_CCRTEEPRTWIN_CCRTEEPRTSEL foreign key (CCurtEEParticipantSelectionID)
-      references CCurtEEParticipantSelection (CCurtEEParticipantSelectionID);
+      references CCurtEEParticipantSelection (CCurtEEParticipantSelectionID)
+      on delete cascade;
 
 alter table CCurtEEParticipantWindow
    add constraint FK_CCRTEEPRTWN_CCRTEEPRIWN foreign key (CCurtEEPricingWindowID)
@@ -10659,11 +10661,13 @@ alter table CCurtEEParticipantWindow
 
 alter table CCurtEEPricing
    add constraint FK_CCURTEEPR_CCURTECONEVT foreign key (CCurtEconomicEventID)
-      references CCurtEconomicEvent (CCurtEconomicEventID);
+      references CCurtEconomicEvent (CCurtEconomicEventID)
+      on delete cascade;
 
 alter table CCurtEEPricingWindow
    add constraint FK_CCURTEEPRWIN_CCURTEEPR foreign key (CCurtEEPricingID)
-      references CCurtEEPricing (CCurtEEPricingID);
+      references CCurtEEPricing (CCurtEEPricingID)
+      on delete cascade;
 
 alter table CCurtEconomicEvent
    add constraint FK_CCURTEEVT_CCURTPGM foreign key (CCurtProgramID)

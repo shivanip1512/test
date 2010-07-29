@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/29/2010 1:13:36 PM                         */
+/* Created on:     7/29/2010 1:42:19 PM                         */
 /*==============================================================*/
 
 
@@ -13843,11 +13843,13 @@ go
 alter table CCurtEEParticipantSelection
    add constraint FK_CCURTEEPARTSEL_CCURTPART foreign key (CCurtEEParticipantID)
       references CCurtEEParticipant (CCurtEEParticipantID)
+         on delete cascade
 go
 
 alter table CCurtEEParticipantWindow
    add constraint FK_CCRTEEPRTWIN_CCRTEEPRTSEL foreign key (CCurtEEParticipantSelectionID)
       references CCurtEEParticipantSelection (CCurtEEParticipantSelectionID)
+         on delete cascade
 go
 
 alter table CCurtEEParticipantWindow
@@ -13858,11 +13860,13 @@ go
 alter table CCurtEEPricing
    add constraint FK_CCURTEEPR_CCURTECONEVT foreign key (CCurtEconomicEventID)
       references CCurtEconomicEvent (CCurtEconomicEventID)
+         on delete cascade
 go
 
 alter table CCurtEEPricingWindow
    add constraint FK_CCURTEEPRWIN_CCURTEEPR foreign key (CCurtEEPricingID)
       references CCurtEEPricing (CCurtEEPricingID)
+         on delete cascade
 go
 
 alter table CCurtEconomicEvent

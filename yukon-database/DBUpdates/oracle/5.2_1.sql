@@ -254,6 +254,34 @@ INSERT INTO YukonRoleProperty VALUES(-20120,-201,'Web Service LM Data Access','t
 INSERT INTO YukonRoleProperty VALUES(-20121,-201,'Web Service LM Control Access','true','Controls access to web services that perform LM control.');
 /* End YUK-8724 */
 
+/* Start YUK-8849 */
+ALTER TABLE CCurtEEParticipantSelection
+   DROP CONSTRAINT FK_CCURTEEPARTSEL_CCURTPART;
+ALTER TABLE CCurtEEParticipantWindow
+   DROP CONSTRAINT FK_CCRTEEPRTWIN_CCRTEEPRTSEL;
+ALTER TABLE CCurtEEPricing
+   DROP CONSTRAINT FK_CCURTEEPR_CCURTECONEVT;
+ALTER TABLE CCurtEEPricingWindow
+   DROP CONSTRAINT FK_CCURTEEPRWIN_CCURTEEPR;
+
+ALTER TABLE CCurtEEParticipantSelection
+   ADD CONSTRAINT FK_CCURTEEPARTSEL_CCURTPART FOREIGN KEY (CCurtEEParticipantID)
+      REFERENCES CCurtEEParticipant (CCurtEEParticipantID)
+         ON DELETE CASCADE;
+ALTER TABLE CCurtEEParticipantWindow
+   ADD CONSTRAINT FK_CCRTEEPRTWIN_CCRTEEPRTSEL FOREIGN KEY (CCurtEEParticipantSelectionID)
+      REFERENCES CCurtEEParticipantSelection (CCurtEEParticipantSelectionID)
+         ON DELETE CASCADE;
+ALTER TABLE CCurtEEPricing
+   ADD CONSTRAINT FK_CCURTEEPR_CCURTECONEVT FOREIGN KEY (CCurtEconomicEventID)
+      REFERENCES CCurtEconomicEvent (CCurtEconomicEventID)
+         ON DELETE CASCADE;
+ALTER TABLE CCurtEEPricingWindow
+   ADD CONSTRAINT FK_CCURTEEPRWIN_CCURTEEPR FOREIGN KEY (CCurtEEPricingID)
+      REFERENCES CCurtEEPricing (CCurtEEPricingID)
+         ON DELETE CASCADE;
+/* End YUK-8849 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 
