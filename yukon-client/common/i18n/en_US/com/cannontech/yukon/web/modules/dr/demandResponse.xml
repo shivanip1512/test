@@ -434,6 +434,8 @@
 <entry key="yukon.web.modules.dr.controlAreaDetail.heading.actions">Actions</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noControl">You do not have permission to control this control area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.noAssignedPrograms">There are currently no programs assigned to this control area.</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.inactive">This control area is not active.</entry>
+<entry key="yukon.web.modules.dr.controlAreaDetail.fullyActive">This control area is not active.</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.alreadyFullyActive">This control area is already fully active.</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.start">Start Control Area</entry>
 <entry key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon">/WebConfig/yukon/Icons/control_play_blue.gif</entry>
