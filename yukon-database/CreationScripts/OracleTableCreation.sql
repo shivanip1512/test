@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/29/2010 1:47:24 PM                         */
+/* Created on:     7/29/2010 3:20:55 PM                         */
 /*==============================================================*/
 
 
@@ -170,6 +170,8 @@ drop index CstAccCstHrdB_FK;
 drop index HrdInst_CstHrdBs_FK;
 
 drop index INDX_UNQ_LMCNTRTR_TRID;
+
+drop index Indx_LMContHist_SOE_Tag;
 
 drop index Indx_Start;
 
@@ -5818,6 +5820,13 @@ create table LMControlHistory  (
 /*==============================================================*/
 create index Indx_Start on LMControlHistory (
    StartDateTime ASC
+);
+
+/*==============================================================*/
+/* Index: Indx_LMContHist_SOE_Tag                               */
+/*==============================================================*/
+create index Indx_LMContHist_SOE_Tag on LMControlHistory (
+   SOE_Tag ASC
 );
 
 /*==============================================================*/

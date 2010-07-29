@@ -299,6 +299,14 @@ ALTER TABLE CCurtEEPricingWindow
          ON DELETE CASCADE;
 /* End YUK-8849 */
 
+/* Start YUK-8833 */
+/* @error ignore-begin */
+CREATE INDEX Indx_LMContHist_SOE_Tag ON LMControlHistory (
+   SOE_Tag ASC
+);
+/* @error ignore-end */
+/* End YUK-8833 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

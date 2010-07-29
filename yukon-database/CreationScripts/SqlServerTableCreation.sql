@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/29/2010 1:42:19 PM                         */
+/* Created on:     7/29/2010 3:38:40 PM                         */
 /*==============================================================*/
 
 
@@ -678,6 +678,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMCONTROLAREATRIGGER.INDX_UNQ_LMCNTRTR_TRID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMControlHistory')
+            and   name  = 'Indx_LMContHist_SOE_Tag'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMControlHistory.Indx_LMContHist_SOE_Tag
 go
 
 if exists (select 1
@@ -8667,6 +8676,14 @@ go
 /*==============================================================*/
 create index Indx_Start on LMControlHistory (
 StartDateTime ASC
+)
+go
+
+/*==============================================================*/
+/* Index: Indx_LMContHist_SOE_Tag                               */
+/*==============================================================*/
+create index Indx_LMContHist_SOE_Tag on LMControlHistory (
+SOE_Tag ASC
 )
 go
 
