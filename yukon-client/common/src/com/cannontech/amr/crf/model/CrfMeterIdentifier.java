@@ -1,14 +1,18 @@
 package com.cannontech.amr.crf.model;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.StringUtils;
 
-public class CrfMeterIdentifier {
+public class CrfMeterIdentifier implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
+    
     private String sensorManufacturer;
     private String sensorModel;
     private String sensorSerialNumber;
     
-    public CrfMeterIdentifier(String sensorSerialNumber, String sensorManufacturer,
-            String sensorModel) {
+    public CrfMeterIdentifier(String sensorSerialNumber, String sensorManufacturer, String sensorModel) {
         this.sensorSerialNumber = sensorSerialNumber;
         this.sensorManufacturer = sensorManufacturer;
         this.sensorModel = sensorModel;

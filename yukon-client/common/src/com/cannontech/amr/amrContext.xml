@@ -346,5 +346,9 @@
         <property name="phaseDetectResultsCache" ref="phaseDetectResultsCache"/>
     </bean>
     
+    <!-- CRF Meter Read Service -->
+    <bean id="crfMeterReadService" class="com.cannontech.amr.crf.service.CrfMeterReadService">
+        <property name="connectionFactory" ref="connectionFactoryTarget"/>
+    </bean>
+    
 </beans>
-

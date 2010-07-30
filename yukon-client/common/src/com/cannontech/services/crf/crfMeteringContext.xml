@@ -22,9 +22,9 @@
     <!-- Enabling @AspectJ Support -->
     <aop:aspectj-autoproxy/>
       
-    <bean id="defaultMessageListener" class="com.cannontech.amr.crf.endpoint.MeterReadingDataMessageListener" />
+    <bean id="defaultMessageListener" class="com.cannontech.amr.crf.endpoint.MeterReadingArchiveRequestListener" />
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="helloMessages" />
+        <property name="destinationName" value="yukon.notif.obj.amr.crf.message.MeterReadingArchiveRequest" />
         <property name="pubSubDomain" value="false"/>
         <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory" />

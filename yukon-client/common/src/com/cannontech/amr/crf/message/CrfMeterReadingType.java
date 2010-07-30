@@ -1,6 +1,6 @@
 package com.cannontech.amr.crf.message;
 
-public enum MeterReadingType {
+public enum CrfMeterReadingType {
     CURRENT,
     BILLING,
     INTERVAL,

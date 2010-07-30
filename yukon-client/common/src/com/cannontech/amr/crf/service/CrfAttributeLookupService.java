@@ -1,6 +1,6 @@
 package com.cannontech.amr.crf.service;
 
-import static com.cannontech.amr.crf.message.MeterReadingType.*;
+import static com.cannontech.amr.crf.message.CrfMeterReadingType.*;
 import static com.cannontech.common.pao.PaoType.CRF_AL;
 import static com.cannontech.common.pao.PaoType.CRF_AX;
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.BLINK_COUNT;
@@ -12,7 +12,7 @@ import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.VOLTAGE
 
 import java.util.Set;
 
-import com.cannontech.amr.crf.message.MeterReadingType;
+import com.cannontech.amr.crf.message.CrfMeterReadingType;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.google.common.collect.ImmutableMap;
@@ -54,7 +54,7 @@ public class CrfAttributeLookupService {
         map = b.build();
     }
 
-    public AttributeConverter findMatch(PaoType paoType, MeterReadingType readingType, String unitOfMeasure, Set<String> unitOfMeasureModifiers) {
+    public AttributeConverter findMatch(PaoType paoType, CrfMeterReadingType readingType, String unitOfMeasure, Set<String> unitOfMeasureModifiers) {
         LookupKey lookupKey = new LookupKey();
         lookupKey.paoType = paoType;
         lookupKey.readingType = readingType;
@@ -64,7 +64,7 @@ public class CrfAttributeLookupService {
         return map.get(lookupKey);
     }
 
-    private static void add(Builder<LookupKey, AttributeConverter> builder, PaoType type, MeterReadingType readingType, final BuiltInAttribute attribute, String unitOfMeasure, final double multiplier, String... modifiers) {
+    private static void add(Builder<LookupKey, AttributeConverter> builder, PaoType type, CrfMeterReadingType readingType, final BuiltInAttribute attribute, String unitOfMeasure, final double multiplier, String... modifiers) {
         LookupKey lookupKey = new LookupKey();
         lookupKey.paoType = type;
         lookupKey.readingType = readingType;
@@ -90,7 +90,7 @@ public class CrfAttributeLookupService {
         PaoType paoType;
         String unitOfMeasure;
         Set<String> unitOfMeasureModifiers;
-        MeterReadingType readingType;
+        CrfMeterReadingType readingType;
         @Override
         public int hashCode() {
             final int prime = 31;

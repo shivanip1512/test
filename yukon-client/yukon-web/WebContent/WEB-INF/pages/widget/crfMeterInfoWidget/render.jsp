@@ -5,5 +5,5 @@
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
 <div style="text-align: right">
-	<tags:widgetActionUpdate method="read" label="Read Now" labelBusy="Reading" container="${widgetParameters.widgetId}_results" hide="true"/>
+	<tags:widgetActionUpdate method="read" label="Read Now" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
 </div>

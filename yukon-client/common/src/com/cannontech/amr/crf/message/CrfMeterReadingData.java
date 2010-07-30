@@ -1,16 +1,15 @@
 package com.cannontech.amr.crf.message;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 
-public class MeterReadingDataMessage implements Serializable {
+public class CrfMeterReadingData implements Serializable {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
 
     private List<ChannelData> channelDataList;
-    private MeterReadingType meterReadingType;
+    private CrfMeterReadingType crfMeterReadingType;
     private String sensorManufacturer;
     private String sensorModel;
     private String sensorSerialNumber;
@@ -21,8 +20,8 @@ public class MeterReadingDataMessage implements Serializable {
         return channelDataList;
     }
 
-    public MeterReadingType getMeterReadingType() {
-        return meterReadingType;
+    public CrfMeterReadingType getMeterReadingType() {
+        return crfMeterReadingType;
     }
 
     public String getSensorManufacturer() {
@@ -45,8 +44,8 @@ public class MeterReadingDataMessage implements Serializable {
         this.channelDataList = channelDataList;
     }
 
-    public void setMeterReadingType(MeterReadingType meterReadingType) {
-        this.meterReadingType = meterReadingType;
+    public void setMeterReadingType(CrfMeterReadingType crfMeterReadingType) {
+        this.crfMeterReadingType = crfMeterReadingType;
     }
 
     public void setSensorManufacturer(String sensorManufacturer) {
@@ -70,7 +69,7 @@ public class MeterReadingDataMessage implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((channelDataList == null) ? 0 : channelDataList.hashCode());
-        result = prime * result + ((meterReadingType == null) ? 0 : meterReadingType.hashCode());
+        result = prime * result + ((crfMeterReadingType == null) ? 0 : crfMeterReadingType.hashCode());
         result = prime * result + ((sensorManufacturer == null) ? 0 : sensorManufacturer.hashCode());
         result = prime * result + ((sensorModel == null) ? 0 : sensorModel.hashCode());
         result = prime * result + ((sensorSerialNumber == null) ? 0 : sensorSerialNumber.hashCode());
@@ -86,16 +85,16 @@ public class MeterReadingDataMessage implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        MeterReadingDataMessage other = (MeterReadingDataMessage) obj;
+        CrfMeterReadingData other = (CrfMeterReadingData) obj;
         if (channelDataList == null) {
             if (other.channelDataList != null)
                 return false;
         } else if (!channelDataList.equals(other.channelDataList))
             return false;
-        if (meterReadingType == null) {
-            if (other.meterReadingType != null)
+        if (crfMeterReadingType == null) {
+            if (other.crfMeterReadingType != null)
                 return false;
-        } else if (!meterReadingType.equals(other.meterReadingType))
+        } else if (!crfMeterReadingType.equals(other.crfMeterReadingType))
             return false;
         if (sensorManufacturer == null) {
             if (other.sensorManufacturer != null)
@@ -121,7 +120,7 @@ public class MeterReadingDataMessage implements Serializable {
     public String toString() {
         return String.format("MeterReadingDataMessage [channelDataList=%s, meterReadingType=%s, sensorManufacturer=%s, sensorModel=%s, sensorSerialNumber=%s, timeStamp=%tc]",
                              channelDataList,
-                             meterReadingType,
+                             crfMeterReadingType,
                              sensorManufacturer,
                              sensorModel,
                              sensorSerialNumber,
