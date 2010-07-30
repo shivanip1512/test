@@ -307,6 +307,120 @@ CREATE INDEX Indx_LMContHist_SOE_Tag ON LMControlHistory (
 /* @error ignore-end */
 /* End YUK-8833 */
 
+/* Start YUK-8932 */
+CREATE TABLE OptOutSurvey  (
+   GroupId              NUMBER                          NOT NULL,
+   SurveyId             NUMBER,
+   StartDate            DATE                            NOT NULL,
+   StopDate             DATE                            NOT NULL,
+   CONSTRAINT PK_OptOutSurvey PRIMARY KEY (GroupId)
+);
+
+CREATE TABLE OptOutSurveyResult  (
+   SurveyResultId       NUMBER                          NOT NULL,
+   OptOutEventLogId     NUMBER                          NOT NULL,
+   CONSTRAINT PK_OptOutSurvRes PRIMARY KEY (SurveyResultId, OptOutEventLogId)
+);
+
+CREATE TABLE Survey  (
+   SurveyId             NUMBER                          NOT NULL,
+   EnergyCompanyId      NUMBER,
+   SurveyName           VARCHAR2(64)                    NOT NULL,
+   SurveyKey            VARCHAR2(64)                    NOT NULL,
+   CONSTRAINT PK_Surv PRIMARY KEY (SurveyId)
+);
+
+CREATE TABLE SurveyQuestion  (
+   SurveyQuestionId     NUMBER                          NOT NULL,
+   SurveyId             NUMBER                          NOT NULL,
+   QuestionKey          VARCHAR2(64)                    NOT NULL,
+   AnswerRequired       CHAR(1)                         NOT NULL,
+   QuestionType         VARCHAR2(32)                    NOT NULL,
+   TextAnswerAllowed    CHAR(1)                         NOT NULL,
+   DisplayOrder         NUMBER                          NOT NULL,
+   CONSTRAINT PK_SurvQuest PRIMARY KEY (SurveyQuestionId)
+);
+
+CREATE UNIQUE INDEX Indx_SurvId_DispOrder_UNQ ON SurveyQuestion (
+   SurveyId ASC,
+   DisplayOrder ASC
+);
+
+CREATE TABLE SurveyQuestionAnswer  (
+   SurveyQuestionAnswerId NUMBER                          NOT NULL,
+   SurveyQuestionId     NUMBER                          NOT NULL,
+   AnswerKey            VARCHAR2(64)                    NOT NULL,
+   DisplayOrder         NUMBER                          NOT NULL,
+   CONSTRAINT PK_SurvQuestAns PRIMARY KEY (SurveyQuestionAnswerId)
+);
+
+CREATE UNIQUE INDEX Indx_SurvQuestId_dispOrder_UNQ ON SurveyQuestionAnswer (
+   SurveyQuestionId ASC,
+   DisplayOrder ASC
+);
+
+CREATE TABLE SurveyResult  (
+   SurveyResultId       NUMBER                          NOT NULL,
+   SurveyId             NUMBER                          NOT NULL,
+   TakenByAccountId     NUMBER                          NOT NULL,
+   WhenTaken            DATE                            NOT NULL,
+   CONSTRAINT PK_SurvRes PRIMARY KEY (SurveyResultId)
+);
+
+CREATE TABLE SurveyResultAnswer  (
+   SurveyResultAnswerId NUMBER                          NOT NULL,
+   SurveyResultId       NUMBER                          NOT NULL,
+   surveyQuestion       VARCHAR2(255)                   NOT NULL,
+   SurveyAnswer         VARCHAR2(255)                   NOT NULL,
+   CONSTRAINT PK_SurvResAns PRIMARY KEY (SurveyResultAnswerId)
+);
+
+ALTER TABLE OptOutSurvey
+    ADD CONSTRAINT FK_OptOutSurv_Surv FOREIGN KEY (SurveyId)
+        REFERENCES Survey (SurveyId)
+            ON DELETE CASCADE;
+
+ALTER TABLE OptOutSurvey
+    ADD CONSTRAINT FK_OptOutSurv_YukonGroup FOREIGN KEY (GroupId)
+        REFERENCES YukonGroup (GroupID)
+            ON DELETE CASCADE;
+
+ALTER TABLE OptOutSurveyResult
+    ADD CONSTRAINT FK_OptOutSurvRes_OptOutEventLo FOREIGN KEY (OptOutEventLogId)
+        REFERENCES OptOutEventLog (OptOutEventLogId)
+            ON DELETE CASCADE;
+
+ALTER TABLE OptOutSurveyResult
+    ADD CONSTRAINT FK_OptOutSurvRes_SurvRes FOREIGN KEY (SurveyResultId)
+        REFERENCES SurveyResult (SurveyResultId)
+            ON DELETE CASCADE;
+
+ALTER TABLE Survey
+    ADD CONSTRAINT FK_Surv_EC FOREIGN KEY (EnergyCompanyId)
+        REFERENCES EnergyCompany (EnergyCompanyID)
+            ON DELETE CASCADE;
+
+ALTER TABLE SurveyQuestion
+    ADD CONSTRAINT FK_SurvQuest_Surv FOREIGN KEY (SurveyId)
+        REFERENCES Survey (SurveyId)
+            ON DELETE CASCADE;
+
+ALTER TABLE SurveyQuestionAnswer
+    ADD CONSTRAINT FK_SurvQuestAns_SurvQuest FOREIGN KEY (SurveyQuestionId)
+        REFERENCES SurveyQuestion (SurveyQuestionId)
+            ON DELETE CASCADE;
+
+ALTER TABLE SurveyResult
+    ADD CONSTRAINT FK_SurvRes_Surv FOREIGN KEY (SurveyId)
+        REFERENCES Survey (SurveyId)
+            ON DELETE CASCADE;
+
+ALTER TABLE SurveyResultAnswer
+    ADD CONSTRAINT FK_SurvResAns_SurvRes FOREIGN KEY (SurveyResultId)
+        REFERENCES SurveyResult (SurveyResultId)
+            ON DELETE CASCADE;
+/* End YUK-8932 */
+
 /**************************************************************/ 
 /* VERSION INFO                                               */ 
 /*   Automatically gets inserted from build script            */ 

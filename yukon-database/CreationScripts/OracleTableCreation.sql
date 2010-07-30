@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/29/2010 3:20:55 PM                         */
+/* Created on:     7/30/2010 12:22:02 AM                        */
 /*==============================================================*/
 
 
@@ -250,6 +250,10 @@ drop index INDX_SYSLG_PTID_TS;
 drop index Indx_SYSLG_Date;
 
 drop index Indx_SYSLG_PtId;
+
+drop index Indx_SurvId_DispOrder_UNQ;
+
+drop index Indx_SurvQuestId_dispOrder_UNQ;
 
 drop index Indx_todsw_idoff;
 
@@ -813,6 +817,10 @@ drop table OptOutEvent cascade constraints;
 
 drop table OptOutEventLog cascade constraints;
 
+drop table OptOutSurvey cascade constraints;
+
+drop table OptOutSurveyResult cascade constraints;
+
 drop table OptOutTemporaryOverride cascade constraints;
 
 drop table OutageMonitor cascade constraints;
@@ -906,6 +914,16 @@ drop table SiteInformation cascade constraints;
 drop table Substation cascade constraints;
 
 drop table SubstationToRouteMapping cascade constraints;
+
+drop table Survey cascade constraints;
+
+drop table SurveyQuestion cascade constraints;
+
+drop table SurveyQuestionAnswer cascade constraints;
+
+drop table SurveyResult cascade constraints;
+
+drop table SurveyResultAnswer cascade constraints;
 
 drop table TEMPLATE cascade constraints;
 
@@ -6851,6 +6869,26 @@ create table OptOutEventLog  (
 );
 
 /*==============================================================*/
+/* Table: OptOutSurvey                                          */
+/*==============================================================*/
+create table OptOutSurvey  (
+   GroupId              NUMBER                          not null,
+   SurveyId             NUMBER,
+   StartDate            DATE                            not null,
+   StopDate             DATE                            not null,
+   constraint PK_OptOutSurvey primary key (GroupId)
+);
+
+/*==============================================================*/
+/* Table: OptOutSurveyResult                                    */
+/*==============================================================*/
+create table OptOutSurveyResult  (
+   SurveyResultId       NUMBER                          not null,
+   OptOutEventLogId     NUMBER                          not null,
+   constraint PK_OptOutSurvRes primary key (SurveyResultId, OptOutEventLogId)
+);
+
+/*==============================================================*/
 /* Table: OptOutTemporaryOverride                               */
 /*==============================================================*/
 create table OptOutTemporaryOverride  (
@@ -7732,6 +7770,80 @@ create table SubstationToRouteMapping  (
    RouteID              NUMBER                          not null,
    Ordering             NUMBER                          not null,
    constraint PK_SUBSTATIONTOROUTEMAPPING primary key (SubstationID, RouteID)
+);
+
+/*==============================================================*/
+/* Table: Survey                                                */
+/*==============================================================*/
+create table Survey  (
+   SurveyId             NUMBER                          not null,
+   EnergyCompanyId      NUMBER,
+   SurveyName           VARCHAR2(64)                    not null,
+   SurveyKey            VARCHAR2(64)                    not null,
+   constraint PK_Surv primary key (SurveyId)
+);
+
+/*==============================================================*/
+/* Table: SurveyQuestion                                        */
+/*==============================================================*/
+create table SurveyQuestion  (
+   SurveyQuestionId     NUMBER                          not null,
+   SurveyId             NUMBER                          not null,
+   QuestionKey          VARCHAR2(64)                    not null,
+   AnswerRequired       CHAR(1)                         not null,
+   QuestionType         VARCHAR2(32)                    not null,
+   TextAnswerAllowed    CHAR(1)                         not null,
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_SurvQuest primary key (SurveyQuestionId)
+);
+
+/*==============================================================*/
+/* Index: Indx_SurvId_DispOrder_UNQ                             */
+/*==============================================================*/
+create unique index Indx_SurvId_DispOrder_UNQ on SurveyQuestion (
+   SurveyId ASC,
+   DisplayOrder ASC
+);
+
+/*==============================================================*/
+/* Table: SurveyQuestionAnswer                                  */
+/*==============================================================*/
+create table SurveyQuestionAnswer  (
+   SurveyQuestionAnswerId NUMBER                          not null,
+   SurveyQuestionId     NUMBER                          not null,
+   AnswerKey            VARCHAR2(64)                    not null,
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_SurvQuestAns primary key (SurveyQuestionAnswerId)
+);
+
+/*==============================================================*/
+/* Index: Indx_SurvQuestId_dispOrder_UNQ                        */
+/*==============================================================*/
+create unique index Indx_SurvQuestId_dispOrder_UNQ on SurveyQuestionAnswer (
+   SurveyQuestionId ASC,
+   DisplayOrder ASC
+);
+
+/*==============================================================*/
+/* Table: SurveyResult                                          */
+/*==============================================================*/
+create table SurveyResult  (
+   SurveyResultId       NUMBER                          not null,
+   SurveyId             NUMBER                          not null,
+   TakenByAccountId     NUMBER                          not null,
+   WhenTaken            DATE                            not null,
+   constraint PK_SurvRes primary key (SurveyResultId)
+);
+
+/*==============================================================*/
+/* Table: SurveyResultAnswer                                    */
+/*==============================================================*/
+create table SurveyResultAnswer  (
+   SurveyResultAnswerId NUMBER                          not null,
+   SurveyResultId       NUMBER                          not null,
+   surveyQuestion       VARCHAR2(255)                   not null,
+   SurveyAnswer         VARCHAR2(255)                   not null,
+   constraint PK_SurvResAns primary key (SurveyResultAnswerId)
 );
 
 /*==============================================================*/
@@ -12008,6 +12120,26 @@ alter table OptOutEvent
       references CustomerAccount (AccountID)
       on delete cascade;
 
+alter table OptOutSurvey
+   add constraint FK_OptOutSurv_Surv foreign key (SurveyId)
+      references Survey (SurveyId)
+      on delete cascade;
+
+alter table OptOutSurvey
+   add constraint FK_OptOutSurv_YukonGroup foreign key (GroupId)
+      references YukonGroup (GroupID)
+      on delete cascade;
+
+alter table OptOutSurveyResult
+   add constraint FK_OptOutSurvRes_OptOutEventLo foreign key (OptOutEventLogId)
+      references OptOutEventLog (OptOutEventLogId)
+      on delete cascade;
+
+alter table OptOutSurveyResult
+   add constraint FK_OptOutSurvRes_SurvRes foreign key (SurveyResultId)
+      references SurveyResult (SurveyResultId)
+      on delete cascade;
+
 alter table OptOutTemporaryOverride
    add constraint FK_OptOutTempOver_LMProgWebPub foreign key (ProgramId)
       references LMProgramWebPublishing (ProgramID)
@@ -12227,6 +12359,31 @@ alter table SubstationToRouteMapping
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_SubID foreign key (SubstationID)
       references Substation (SubstationID);
+
+alter table Survey
+   add constraint FK_Surv_EC foreign key (EnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
+      on delete cascade;
+
+alter table SurveyQuestion
+   add constraint FK_SurvQuest_Surv foreign key (SurveyId)
+      references Survey (SurveyId)
+      on delete cascade;
+
+alter table SurveyQuestionAnswer
+   add constraint FK_SurvQuestAns_SurvQuest foreign key (SurveyQuestionId)
+      references SurveyQuestion (SurveyQuestionId)
+      on delete cascade;
+
+alter table SurveyResult
+   add constraint FK_SurvRes_Surv foreign key (SurveyId)
+      references Survey (SurveyId)
+      on delete cascade;
+
+alter table SurveyResultAnswer
+   add constraint FK_SurvResAns_SurvRes foreign key (SurveyResultId)
+      references SurveyResult (SurveyResultId)
+      on delete cascade;
 
 alter table TEMPLATECOLUMNS
    add constraint SYS_C0013429 foreign key (TEMPLATENUM)
