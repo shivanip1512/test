@@ -18,7 +18,7 @@
   <text_size>11</text_size>                                   <!-- [11] (Number) text size of all texts. Every text size can be set individually in the settings below -->
   <text_color>#000000</text_color>                            <!-- [#000000] (hex color code) main text color. Every text color can be set individually in the settings below-->
   <decimals_separator>.</decimals_separator>                  <!-- [,] (string) decimal separator. Note, that this is for displaying data only. Decimals in data xml file must be separated with a dot -->
-  <thousands_separator> </thousands_separator>                <!-- [ ] (string) thousand separator -->
+  <thousands_separator>,</thousands_separator>                <!-- [ ] (string) thousand separator -->
   <redraw>false</redraw>                                      <!-- [false] (true / false) if your chart's width or height is set in percents, and redraw is set to true, the chart will be redrawn then screen size changes -->
                                                               <!-- this function is beta, be careful. Legend, buttons labels will not be repositioned if you set your x and y values for these objects -->
   <reload_data_interval>0</reload_data_interval>              <!-- [0] (Number) how often data should be reloaded (time in seconds) -->
@@ -49,7 +49,7 @@
     <data_labels_position>above</data_labels_position>             <!-- [] (inside, outside, above). This setting is only for clustered chart. --> 
                                                               <!-- if you set "above" for column chart, the data label will be displayed inside column, rotated  by 90 degrees -->
     <balloon_text>                                                    
-     <![CDATA[<b>{value}</b>]]>                <!-- [] ({title} {value} {series} {percents} {start} {difference} {total}) You can format any data label: {title} will be replaced with real title, {value} - with value and so on. You can add your own text or html code too. -->
+     <![CDATA[<b>{value}<br>{description}</b>]]>                <!-- [] ({title} {value} {series} {percents} {start} {difference} {total}) You can format any data label: {title} will be replaced with real title, {value} - with value and so on. You can add your own text or html code too. -->
     </balloon_text>    
     <link_target></link_target>                               <!-- [] (_blank, _top ...) -->
     <gradient></gradient>                                     <!-- [vertical] (horizontal / vertical) Direction of column gradient. Gradient colors are defined in graph settings below. -->                         

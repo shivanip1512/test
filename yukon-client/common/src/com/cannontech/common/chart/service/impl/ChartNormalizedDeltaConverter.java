@@ -22,6 +22,8 @@ public class ChartNormalizedDeltaConverter implements ChartDataConverter {
     
     public List<ChartValue<Double>> convertValues(List<ChartValue<Double>> chartValues,
             ChartInterval interval) {
+        
+        pointValueFormat.setGroupingUsed(false);
 
         List<ChartValue<Double>> chartValuesCopy = new ArrayList<ChartValue<Double>>(chartValues);
         List<ChartValue<Double>> convertedValues = new ArrayList<ChartValue<Double>>();
