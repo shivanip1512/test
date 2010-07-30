@@ -7,10 +7,9 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.core.dao.support.IdAccessible;
 import com.cannontech.core.service.impl.PaoLoader;
 
-public interface MeterDao extends IdAccessible<Meter>{
+public interface MeterDao {
     public String getFormattedDeviceName(Meter device);
     
     public Meter getForMeterNumber(String meterNumber);
@@ -20,6 +19,8 @@ public interface MeterDao extends IdAccessible<Meter>{
     public Meter getForPaoName(String paoName);
 
     public Meter getForYukonDevice(YukonDevice yukonDevice);
+    
+    public Meter getForId(Integer id);
     
     public List<Meter> getMetersForMeterNumbers(List<String> meterNumbers);
     

@@ -5,9 +5,9 @@ import java.util.List;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.Program;
-import com.cannontech.core.dao.support.IdAccessible;
+import com.cannontech.core.dao.support.IdentifiableObjectProvider;
 
-public interface EconomicEventDao extends IdAccessible<EconomicEvent>, CommonEventOperations<EconomicEvent> {
+public interface EconomicEventDao extends IdentifiableObjectProvider<EconomicEvent>, CommonEventOperations<EconomicEvent> {
 
     List<EconomicEvent> getAllForProgram(Program program);
     List<EconomicEvent> getAllForParticipants(List<EconomicEventParticipant> participantList);

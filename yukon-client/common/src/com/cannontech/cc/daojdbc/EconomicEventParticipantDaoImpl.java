@@ -230,7 +230,7 @@ public class EconomicEventParticipantDaoImpl implements EconomicEventParticipant
         Map<Integer, EconomicEvent> map = IdentifiableUtils.getMap(eventList);
         
         for (EconomicEventParticipant participant : participantList) {
-            EconomicEvent event = (EconomicEvent) map.get(participant.getEvent().getId());
+            EconomicEvent event = map.get(participant.getEvent().getId());
             participant.setEvent(event);
         }
     }

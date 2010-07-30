@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.cannontech.cc.model.AccountingEvent;
 import com.cannontech.cc.model.Program;
-import com.cannontech.core.dao.support.IdAccessible;
+import com.cannontech.core.dao.support.IdentifiableObjectProvider;
 
-public interface AccountingEventDao extends IdAccessible<AccountingEvent>, CommonEventOperations<AccountingEvent> {
+public interface AccountingEventDao extends IdentifiableObjectProvider<AccountingEvent>, CommonEventOperations<AccountingEvent> {
 
     List<AccountingEvent> getAllForProgram(Program program);
     public void save(AccountingEvent object);
