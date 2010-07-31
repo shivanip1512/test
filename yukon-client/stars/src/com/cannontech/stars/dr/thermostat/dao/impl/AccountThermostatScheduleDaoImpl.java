@@ -196,7 +196,7 @@ public class AccountThermostatScheduleDaoImpl implements AccountThermostatSchedu
 	    	sql.append("SELECT ats.AcctThermostatScheduleId");
 			sql.append("FROM AcctThermostatSchedule ats");
 			sql.append("JOIN ECToAcctThermostatSchedule ECTATS ON (ats.AcctThermostatScheduleId = ECTATS.AcctThermostatScheduleId)");
-			sql.append("WHERE atstec.EnergyCompanyId").eq(ecId);
+			sql.append("WHERE ECTATS.EnergyCompanyId").eq(ecId);
 			sql.append("AND ats.ThermostatType").eq(type);
 			
 			int atsId = yukonJdbcTemplate.queryForInt(sql);
