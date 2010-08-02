@@ -100,28 +100,8 @@
     					
     				</form>
                 </cti:checkRolesAndProperties>
-
-				<!-- HIDE SEARCH BOX INTO OLD STARS OPERATOR PAGES 	-->	
-				<cti:checkRolesAndProperties value="DEVELOPMENT_MODE">
-				<br>
-				<form name="custSearchForm" method="POST" action="<cti:url value="/servlet/SOAPClient"/>">
-					<input type="hidden" name="action" value="SearchCustAccount" />
-					<div class="sectionFormLabel">Search for existing customer:</div>
-					<div>
-						<select name="SearchBy" onchange="document.custSearchForm.SearchValue.value=''">
-							<c:forEach items="${customerSearchList}" var="entry">
-								<option value="${entry.entryID}" >${entry.content}</option>
-							</c:forEach>
-						</select>
-			
-						<input type="text" name="SearchValue" size="15" value=''>
-						<img class="cssicon" src="<cti:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
-					</div>
-				</form>
-				</cti:checkRolesAndProperties>
-				
+                
 			</div>
-			
         </c:if>
 	</tags:operationSection>
 	

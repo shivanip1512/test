@@ -6,26 +6,28 @@
 <cti:standardPage module="operator" page="accountList">
 
 	<%-- SEACRH WIDGET --%>
-	<form id="searchForm" action="/spring/stars/operator/account/search" method="get">
-		
-		<div style="padding-top:8px;padding-bottom:8px;">
-			
-			<select name="searchBy" onchange="$('accountSearchValue').value = ''">
-				<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
-					<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
-						<i:inline key="${operatorAccountSearchBy.formatKey}"/>
-					</option>
-				</c:forEach>
-			</select>
-			
-			<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
-			
-			<tags:slowInput2 formId="searchForm" key="search"/>
-		
-		</div>
-		
-	</form>
-	<br>
+    <cti:checkRolesAndProperties value="OPERATOR_ACCOUNT_SEARCH">
+    	<form id="searchForm" action="/spring/stars/operator/account/search" method="get">
+    		
+    		<div style="padding-top:8px;padding-bottom:8px;">
+    			
+    			<select name="searchBy" onchange="$('accountSearchValue').value = ''">
+    				<c:forEach var="operatorAccountSearchBy" items="${operatorAccountSearchBys}" >
+    					<option value="${operatorAccountSearchBy}" <c:if test="${operatorAccountSearchBy == accountSearchResultHolder.searchBy}">selected</c:if>>
+    						<i:inline key="${operatorAccountSearchBy.formatKey}"/>
+    					</option>
+    				</c:forEach>
+    			</select>
+    			
+    			<input type="text" name="searchValue" id="accountSearchValue" value="${accountSearchResultHolder.searchValue}">
+    			
+    			<tags:slowInput2 formId="searchForm" key="search"/>
+    		
+    		</div>
+    		
+    	</form>
+    	<br>
+    </cti:checkRolesAndProperties>
 
 	<%-- RESULTS --%>
 	<c:if test="${accountSearchResultHolder.accountSearchResults.hitCount > 0}">

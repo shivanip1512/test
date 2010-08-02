@@ -1,15 +1,11 @@
 package com.cannontech.web.menu.option.producer;
 
+import com.cannontech.user.YukonUserContext;
 
-public class DrSearchProducer extends SearchProducerBase {
-
-	@Override
-	public String getFormAction() {
-		return "/spring/dr/search";
-	}
-	
-	@Override
-	public String getFieldName() {
-		return "name";
-	}
+public class DrSearchProducer implements SearchProducer {
+    
+    public SearchFormData getSearchProducer(YukonUserContext userContext) {
+        return new SearchFormData("/spring/dr/search", "name");
+    }
 }
+

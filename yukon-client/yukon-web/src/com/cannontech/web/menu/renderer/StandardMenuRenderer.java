@@ -33,6 +33,7 @@ import com.cannontech.web.menu.PageInfo;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
+import com.cannontech.web.menu.option.producer.SearchFormData;
 import com.cannontech.web.menu.option.producer.SearchProducer;
 import com.cannontech.web.menu.option.producer.SearchType;
 
@@ -316,45 +317,49 @@ public class StandardMenuRenderer implements MenuRenderer {
             wrapper.addElement(left);
         }
         
-        if (moduleBase.getSearchProducer() != null && features.showSearch && (currentPage == null || !currentPage.isHideSearch())) {
-        	
-        	SearchProducer searchProducer = moduleBase.getSearchProducer();
-        	
+        SearchProducer searchProducer = moduleBase.getSearchProducer();
+        SearchFormData formData = null;
+        if (searchProducer != null) {
+            formData = searchProducer.getSearchProducer(userContext);
+        }
+        if (formData != null && features.showSearch && (currentPage == null || !currentPage.isHideSearch())) {
+            
+            
             Div right = new Div();
             right.setClass("stdhdr_rightSide");
-            Form searchForm = new Form(searchProducer.getFormAction(), searchProducer.getFormMethod());
+            Form searchForm = new Form(formData.getFormAction(), formData.getFormMethod());
             searchForm.setAcceptCharset("ISO-8859-1");
             
             Div searchDiv = new Div();
             searchDiv.setID("findForm");
             
             // search types?
-            if (searchProducer.getTypeOptions() != null) {
-            	
-            	Select select = new Select();
-            	select.setName(searchProducer.getTypeName());
-            	select.setOnChange("$('textInput').value = ''");
-            	
-            	for (SearchType searchType : searchProducer.getTypeOptions()) {
-            		
-            		Option option = new Option();
-            		option.setValue(searchType.getSearchTypeValue());
-            		option.addElement(messageSource.getMessage(searchType.getDisplayKey()));
-            		
-            		select.addElement(option);
-            	}
-            	
-            	searchDiv.addElement(select);
+            if (formData.getTypeOptions() != null) {
+                
+                Select select = new Select();
+                select.setName(formData.getTypeName());
+                select.setOnChange("$('textInput').value = ''");
+                
+                for (SearchType searchType : formData.getTypeOptions()) {
+                    
+                    Option option = new Option();
+                    option.setValue(searchType.getSearchTypeValue());
+                    option.addElement(messageSource.getMessage(searchType.getDisplayKey()));
+                    
+                    select.addElement(option);
+                }
+                
+                searchDiv.addElement(select);
             } else {
-            	searchDiv.addElement("Find: ");
+                searchDiv.addElement("Find: ");
             }
             
             
             // search box
-            Input textInput = new Input(Input.text, searchProducer.getFieldName(), "");
+            Input textInput = new Input(Input.text, formData.getFieldName(), "");
             textInput.setID("textInput");
             
-			searchDiv.addElement(textInput);
+            searchDiv.addElement(textInput);
             searchDiv.addElement(new Input(Input.image, "Go")
                                   .setSrc(buildUrl("/WebConfig/yukon/Buttons/GoButtonGray.gif"))
                                   .setAlt("Go")
@@ -367,6 +372,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         wrapper.addElement(new Div().setStyle("clear: both"));
         return wrapper;
     }
+
     
     public void renderMenu(Writer out) throws IOException {
         Div menuDiv = buildMenu();

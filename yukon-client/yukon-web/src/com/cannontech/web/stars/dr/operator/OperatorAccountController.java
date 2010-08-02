@@ -202,6 +202,8 @@ public class OperatorAccountController {
     					YukonUserContext userContext,
     					FlashScope flashScope) throws ServletRequestBindingException {
 		
+	    rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_ACCOUNT_SEARCH, userContext.getYukonUser());
+	    
 		String searchByStr = ServletRequestUtils.getStringParameter(request, "searchBy", null);
 		
 		// no search

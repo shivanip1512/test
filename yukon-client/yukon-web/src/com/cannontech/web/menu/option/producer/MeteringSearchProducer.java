@@ -1,15 +1,12 @@
 package com.cannontech.web.menu.option.producer;
 
+import com.cannontech.user.YukonUserContext;
 
-public class MeteringSearchProducer extends SearchProducerBase {
 
-	@Override
-	public String getFormAction() {
-		return "/spring/meter/search";
-	}
-	
-	@Override
-	public String getFieldName() {
-		return "Quick Search";
-	}
+public class MeteringSearchProducer implements SearchProducer {
+
+    @Override
+    public SearchFormData getSearchProducer(YukonUserContext userContext) {
+        return new SearchFormData("/spring/meter/search", "Quick Search");
+    }
 }
