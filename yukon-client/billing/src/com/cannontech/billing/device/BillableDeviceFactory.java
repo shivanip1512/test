@@ -70,6 +70,14 @@ public class BillableDeviceFactory {
             device = new Focus();
             break;
 
+        case DeviceTypes.CRF_AL:
+            device = new CRF_AL();
+            break;
+        
+        case DeviceTypes.CRF_AX:
+            device = new CRF_AX();
+            break;
+
         default:
             device = new GenericMCT();
             break;

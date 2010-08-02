@@ -15,7 +15,6 @@ import com.cannontech.billing.format.simple.SimpleBillingFormatBase;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.user.SystemUserContext;
 
 public abstract class BillingFormatterBase extends SimpleBillingFormatBase {
 
