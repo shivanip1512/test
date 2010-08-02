@@ -52,7 +52,7 @@
                                    logoKey="yukon.web.modules.dr.controlAreaDetail.actions.stopIcon"/>
         </tags:dynamicChooseOption>
         <tags:dynamicChooseOption optionId="fullyActiveEnabled">
-            <cti:msg var="controlAreaFullyActive" key="yukon.web.modules.dr.controlAreaDetail.alreadyFullyActive"/>
+            <cti:msg var="controlAreaFullyActive" key="yukon.web.modules.dr.controlAreaDetail.fullyActive"/>
             <span class="disabledAction" title="${controlAreaFullyActive}">
                 <cti:logo key="yukon.web.modules.dr.controlAreaDetail.actions.startIcon.disabled"/>
             </span>
