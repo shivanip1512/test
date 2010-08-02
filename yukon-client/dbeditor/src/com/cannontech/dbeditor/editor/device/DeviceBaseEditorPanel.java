@@ -1854,9 +1854,9 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 carrierBase.getDeviceRoutes().setRouteID(routeId);
             } else if(val instanceof CrfBase) {
                 CrfBase crfBase = (CrfBase)val;
-                crfBase.getCrfAddress().setSerialNumber(StringUtils.isBlank(getSerialNumberTextField().getText()) ? null : getSerialNumberTextField().getText());
-                crfBase.getCrfAddress().setManufacturer(StringUtils.isBlank(getManufacturerTextField().getText()) ? null : getManufacturerTextField().getText());
-                crfBase.getCrfAddress().setModel(StringUtils.isBlank(getModelTextField().getText()) ? null : getModelTextField().getText());
+                crfBase.getCrfAddress().setSerialNumber(StringUtils.trimToNull(getSerialNumberTextField().getText()));
+                crfBase.getCrfAddress().setManufacturer(StringUtils.trimToNull(getManufacturerTextField().getText()));
+                crfBase.getCrfAddress().setModel(StringUtils.trimToNull(getModelTextField().getText()));
             }
         }
 

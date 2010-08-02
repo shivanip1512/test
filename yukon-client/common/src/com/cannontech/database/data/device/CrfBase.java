@@ -6,10 +6,10 @@ import java.sql.SQLException;
 import com.cannontech.amr.crf.dao.CrfMeterDao;
 import com.cannontech.amr.crf.model.CrfMeter;
 import com.cannontech.amr.crf.model.CrfMeterIdentifier;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.db.device.DeviceMeterGroup;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.db.device.CrfAddress;
+import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CrfBase extends DeviceBase implements IDeviceMeterGroup {
@@ -53,9 +53,8 @@ public class CrfBase extends DeviceBase implements IDeviceMeterGroup {
         /* Use the crf meter dao to do updating since depending on the address arguments
          * we will either be doing a delete, and insert or an update. */
         CrfMeterDao crfMeterDao = YukonSpringHook.getBean("crfMeterDao", CrfMeterDao.class);
-        PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
-        YukonPao meterPao = paoDao.getYukonPao(getPAObjectID());
-        CrfMeter meter = new CrfMeter(meterPao, new CrfMeterIdentifier(getCrfAddress().getSerialNumber(), getCrfAddress().getManufacturer(), getCrfAddress().getModel()));
+        CrfMeter meter = new CrfMeter(new PaoIdentifier(getPAObjectID(), PaoType.getForDbString(getPAOType())), 
+                                      new CrfMeterIdentifier(getCrfAddress().getSerialNumber(), getCrfAddress().getManufacturer(), getCrfAddress().getModel()));
         crfMeterDao.updateMeter(meter);
     }
     
