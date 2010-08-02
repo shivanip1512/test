@@ -75,9 +75,11 @@ public interface RawPointHistoryDao {
      * @param startDate The lower limit for the timestamp of the values to return, may be null
      * @param stopDate The upper limit for the timestamp of the values to return, may be null
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @param startInclusive When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
+     * @param reverseOrder When true, results are returned from query in timestamp DESC (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, boolean excludeDisabledPaos, boolean startInclusive, boolean reverseOrder);
     
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned as a ListMultimap
@@ -92,13 +94,15 @@ public interface RawPointHistoryDao {
      * @param stopDate The upper limit for the timestamp of the values to return, may be null
      * @param maxRows The maximum number of rows to return for each PAO
      * @param excludeDisabledPaos True if disabled PAOs should be omitted from the result
+     * @param startInclusive When true, startDate is inclusive, stopDate is exclusive.  When false, startDate is exclusive, stopDate is inclusive
+     * @param reverseOrder When true, results are returned from query in timestamp DESC (only affects the iteration order of the values)
      * @return
      */
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos);
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> paos, Attribute attribute, Date startDate, Date stopDate, int maxRows, boolean excludeDisabledPaos, boolean startInclusive, boolean reverseOrder);
     
     /**
      * Equivalent to calling
-     *   getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices);
+     *   getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices, false, true);
      *   
      * and converting the Multimap into a Map (because there will only be one value per key).
      */

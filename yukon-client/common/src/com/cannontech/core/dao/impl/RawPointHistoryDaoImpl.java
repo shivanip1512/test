@@ -155,7 +155,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final boolean excludeDisabledPaos) {
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff = getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledPaos, false, true);
         
         return Maps.transformValues(limitedStuff.asMap(), new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
             public PointValueQualityHolder apply(Collection<PointValueQualityHolder> from) {
@@ -164,7 +164,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         });
     }
     
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getLimitedAttributeData(Iterable<? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final int maxRows, final boolean excludeDisabledPaos, final boolean startInclusive, final boolean reverseOrder) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
@@ -175,14 +175,15 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append("SELECT DISTINCT yp.paobjectid, rph.pointid, rph.timestamp,");
                         sql.append(  "rph.value, rph.quality, p.pointtype");
                         sql.append(    ", ROW_NUMBER() OVER (");
-                        sql.append(      "PARTITION BY rph.pointid ORDER BY rph.timestamp DESC");
+                        sql.append(      "PARTITION BY rph.pointid");
+                        appendOrderByClause(sql, reverseOrder);
                         sql.append(    ") rn");
                         sql.append("FROM rawpointhistory rph");
                         sql.append(  "JOIN point p ON rph.pointId = p.pointId");
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
-                        appendTimeStampClause(sql, startDate, stopDate, false);
+                        appendTimeStampClause(sql, startDate, stopDate, startInclusive);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append(  "AND yp.DisableFlag = 'N'");
@@ -200,7 +201,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         return loadValuesForGeneratorFactory(factory, displayableDevices, attribute, maxRows, excludeDisabledPaos);
     }
 
-    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos) {
+    public ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable <? extends YukonPao> displayableDevices, Attribute attribute, final Date startDate, final Date stopDate, final boolean excludeDisabledPaos, final boolean startInclusive, final boolean reverseOrder) {
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
             public SqlFragmentGenerator<Integer> create(final PointIdentifier pointIdentifier) {
                 return new SqlFragmentGenerator<Integer>() {
@@ -214,12 +215,12 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                         sql.append(  "JOIN YukonPaobject yp ON p.paobjectid = yp.paobjectid");
                         sql.append("WHERE p.PointOffset").eq(pointIdentifier.getOffset());
                         sql.append(  "AND p.PointType").eq(pointIdentifier.getPointType());
-                        appendTimeStampClause(sql, startDate, stopDate, false);
+                        appendTimeStampClause(sql, startDate, stopDate, startInclusive);
                         sql.append(  "AND yp.PAObjectID").in(subList);
                         if (excludeDisabledPaos) {
                             sql.append(  "AND yp.DisableFlag = 'N'");
                         }
-                        appendOrderByClause(sql, true);
+                        appendOrderByClause(sql, reverseOrder);
                         
                         return sql;
                     }

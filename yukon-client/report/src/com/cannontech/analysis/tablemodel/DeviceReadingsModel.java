@@ -88,9 +88,9 @@ public class DeviceReadingsModel extends BareDatedReportModelBase<DeviceReadings
         ListMultimap<PaoIdentifier, PointValueQualityHolder> intermediateResults;
         
         if (getAll) {
-            intermediateResults = rawPointHistoryDao.getAttributeData(displayableDevices, attribute, getStartDate(), getStopDate(), excludeDisabledDevices);
+            intermediateResults = rawPointHistoryDao.getAttributeData(displayableDevices, attribute, getStartDate(), getStopDate(), excludeDisabledDevices, false, true);
         } else {
-            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices);
+            intermediateResults = rawPointHistoryDao.getLimitedAttributeData(displayableDevices, attribute, null, null, 1, excludeDisabledDevices, false, true);
         }
         CachingPointFormattingService cachingPointFormattingService = pointFormattingService.getCachedInstance();            
         for (DisplayablePao displayablePao : displayableDevices) {
