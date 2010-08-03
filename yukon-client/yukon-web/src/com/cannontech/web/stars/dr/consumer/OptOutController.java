@@ -24,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DirectFieldBindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +54,10 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
+import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
+import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
+import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @Controller
@@ -65,6 +72,7 @@ public class OptOutController extends AbstractConsumerController {
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
     private OptOutStatusService optOutStatusService;
+    private OptOutValidatorFactory optOutValidatorFactory;
 
     private static class StartDateException extends Exception {
         private final static long serialVersionUID = 1L;
@@ -148,7 +156,7 @@ public class OptOutController extends AbstractConsumerController {
         TimeZone userTimeZone = yukonUserContext.getTimeZone();
         final Date today = TimeUtil.getMidnight(new Date(), userTimeZone);
         try {
-            validateStartDate(startDateObj, today, yukonUserContext, customerAccount);
+            validateStartDate(startDateObj, today, durationInDays, yukonUserContext, customerAccount);
         } catch (StartDateException exception) {
             MessageSourceResolvable message = new YukonMessageSourceResolvable(
                     exception.getMessage());
@@ -253,7 +261,7 @@ public class OptOutController extends AbstractConsumerController {
         final Date now = new Date();
 		final Date today = TimeUtil.getMidnight(now, userTimeZone);
 		try {
-		    validateStartDate(startDateObj, today, userContext, customerAccount);
+		    validateStartDate(startDateObj, today, durationInDays, userContext, customerAccount);
         } catch (StartDateException exception) {
         	result = new YukonMessageSourceResolvable(
         			"yukon.dr.consumer.optoutresult.invalidStartDate");
@@ -364,59 +372,30 @@ public class OptOutController extends AbstractConsumerController {
         return null;
     }
 
-    private void validateStartDate(Date startDate, Date todayDate, YukonUserContext userContext, 
-                                   CustomerAccount customerAccount) throws StartDateException {
-        // this shouldn't happen unless the user is hacking the UI
-        if (startDate == null)
-            throw new StartDateException("yukon.dr.consumer.optout.invalidStartDate");
-
-        long startTime = startDate.getTime();
-        long todayTime = todayDate.getTime();
-
-        if (startTime < todayTime) {
-            throw new StartDateException("yukon.dr.consumer.optout.startDateTooEarly");
-        }
-
-        Calendar cal = dateFormattingService.getCalendar(userContext);
-        cal.setTime(todayDate);
-        cal.add(Calendar.YEAR, 1);
-        long yearInFuture = cal.getTimeInMillis();
-        if (startTime > yearInFuture) {
-            throw new StartDateException("yukon.dr.consumer.optout.startDateTooLate");
-        }
+    private void validateStartDate(Date startDate, Date todayDate, int durationInDays,
+                                   YukonUserContext userContext, CustomerAccount customerAccount) 
+    throws StartDateException {
         
-        // Check if all opt out devices are already opted out for today.
-        if (startDate.equals(todayDate)) {
-            
-            boolean hasADeviceAvailableForOptOut = false;
-            
-            List<DisplayableInventory> displayableInventories =
-                displayableInventoryDao.getDisplayableInventory(customerAccount.getAccountId());
-            
-            for (DisplayableInventory displayableInventory : displayableInventories) {
-                if (!displayableInventory.isCurrentlyOptedOut()) {
-                    hasADeviceAvailableForOptOut = true;
-                }
-            }
+        OptOutBackingBean optOutBackingBean = new OptOutBackingBean();
+        optOutBackingBean.setStartDate(new LocalDate(startDate));
+        optOutBackingBean.setDurationInDays(durationInDays);
+        BindingResult bindingResult = new DirectFieldBindingResult(optOutBackingBean,
+                                                                   "optOutBackingBean");
 
-            if (!hasADeviceAvailableForOptOut) {
-                throw new StartDateException("yukon.dr.consumer.optout.allDevicesCurrentlyOptedOut");
-            }
+        // Energy company doesn't matter in this case.  The validator only uses accountId
+        AccountInfoFragment accountInfoFragment = new AccountInfoFragment(customerAccount.getAccountId(),
+                                                                          0);
+        // Validate data
+        OptOutValidator optOutValidator = 
+            optOutValidatorFactory.getOptOutValidator(userContext, false, accountInfoFragment);
+        optOutValidator.validate(optOutBackingBean, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            @SuppressWarnings("unchecked")
+            List<FieldError> errors = bindingResult.getAllErrors();
+            throw new StartDateException(String.valueOf(errors.get(0).getCode()));
         }
-        
-        boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(
-        		YukonRoleProperty.RESIDENTIAL_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
-        if(optOutTodayOnly) {
-        	cal.setTime(todayDate);
-            cal.add(Calendar.DAY_OF_YEAR, 1);
-        	long dayInFuture = cal.getTimeInMillis();
-        	
-        	if (startTime > dayInFuture) {
-                throw new IllegalArgumentException("Start date must be today");
-            }
-        }
-        
-}
+    }
 
     /**
      * Helper method to make sure the event being updated belongs to the current account
@@ -502,4 +481,8 @@ public class OptOutController extends AbstractConsumerController {
 		this.optOutStatusService = optOutStatusService;
 	}
     
+    @Autowired
+    public void setOptOutValidatorFactory(OptOutValidatorFactory optOutValidatorFactory) {
+        this.optOutValidatorFactory = optOutValidatorFactory;
+    }
 }

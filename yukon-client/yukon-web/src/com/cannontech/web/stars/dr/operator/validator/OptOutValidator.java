@@ -16,6 +16,7 @@ import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
 
 public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
 
+    private boolean isOperator;
     private YukonUserContext userContext;
     private AccountInfoFragment accountInfoFragment;
     private RolePropertyDao rolePropertyDao;
@@ -26,12 +27,14 @@ public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
     }
     
     public OptOutValidator(YukonUserContext userContext,
+                           boolean isOperator,
                            AccountInfoFragment accountInfoFragment,
                            RolePropertyDao rolePropertyDao,
                            DisplayableInventoryDao displayableInventoryDao) {
 
         super(OptOutBackingBean.class);
         this.userContext = userContext;
+        this.isOperator = isOperator;
         this.accountInfoFragment = accountInfoFragment;
         this.rolePropertyDao = rolePropertyDao;
         this.displayableInventoryDao = displayableInventoryDao;
@@ -66,6 +69,7 @@ public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
             for (DisplayableInventory displayableInventory : displayableInventories) {
                 if (!displayableInventory.isCurrentlyOptedOut()) {
                     hasADeviceAvailableForOptOut = true;
+                    break;
                 }
             }
 
@@ -74,8 +78,12 @@ public class OptOutValidator extends SimpleValidator<OptOutBackingBean> {
             }
         }
 
-        
-        boolean optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        boolean optOutTodayOnly;
+        if (isOperator) {
+            optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        } else {
+            optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        }
         if(optOutTodayOnly) {
             final LocalDate dayFromToday = today.plusDays(1);
             

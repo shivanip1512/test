@@ -14,10 +14,11 @@ public class OptOutValidatorFactoryImpl implements OptOutValidatorFactory {
     private RolePropertyDao rolePropertyDao;
     private DisplayableInventoryDao displayableInventoryDao;
     
-    public OptOutValidator getOptOutValidator(YukonUserContext userContext, 
+    public OptOutValidator getOptOutValidator(YukonUserContext userContext,
+                                              boolean isOperator,
                                               AccountInfoFragment accountInfoFragment) {
 
-        return new OptOutValidator(userContext, accountInfoFragment, rolePropertyDao, displayableInventoryDao);
+        return new OptOutValidator(userContext, isOperator, accountInfoFragment, rolePropertyDao, displayableInventoryDao);
         
     }
     
