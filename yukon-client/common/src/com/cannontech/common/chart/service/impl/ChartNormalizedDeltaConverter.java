@@ -17,12 +17,11 @@ import com.cannontech.common.chart.service.ChartDataConverter;
  * have normalized value/formattedValue.
  */
 public class ChartNormalizedDeltaConverter implements ChartDataConverter {
-
-    private NumberFormat pointValueFormat = new DecimalFormat();
     
     public List<ChartValue<Double>> convertValues(List<ChartValue<Double>> chartValues,
             ChartInterval interval) {
         
+        NumberFormat pointValueFormat = new DecimalFormat();
         pointValueFormat.setGroupingUsed(false);
 
         List<ChartValue<Double>> chartValuesCopy = new ArrayList<ChartValue<Double>>(chartValues);
