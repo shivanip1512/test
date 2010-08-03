@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.StringRowMapper;
+import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
@@ -25,6 +29,7 @@ import com.google.common.collect.Lists;
 public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     private EnrollmentDao enrollmentDao;
     private LoadGroupDao loadGroupDao;
+    private YukonJdbcTemplate yukonJdbcTemplate;
 
     protected static class Holder {
         int groupId;
@@ -44,7 +49,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
 
             removeInvalidEnrollmentControlHistory(starsLMControlHistory, holder, past);
             
-            List<ControlHistoryEvent> controlHistoryEventList = toEventList(starsLMControlHistory);
+            List<ControlHistoryEvent> controlHistoryEventList = toEventList(programId, starsLMControlHistory);
             for (ControlHistoryEvent controlHistoryEvent : controlHistoryEventList) {
                 if (lastControlHistoryEvent == null ||
                     controlHistoryEvent.getEndDate().isAfter(lastControlHistoryEvent.getEndDate())) {
@@ -165,7 +170,7 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     }
 
     @Override
-    public List<ControlHistoryEvent> toEventList(StarsLMControlHistory controlHistory) {
+    public List<ControlHistoryEvent> toEventList(Integer programId, StarsLMControlHistory controlHistory) {
         if (controlHistory == null) return Collections.emptyList();
 
         final List<ControlHistoryEvent> eventList = new ArrayList<ControlHistoryEvent>();
@@ -180,6 +185,39 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
             event.setDuration(history.getControlDuration());
             event.setStartDate(startDateTime);
             event.setEndDate(endDateTime);
+            
+            String gears;
+            if(programId != null) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT DISTINCT gh.GearName");
+                sql.append("FROM LMProgramGearHistory gh");
+                sql.append("  JOIN LMProgramHistory h on h.LMProgramHistoryId = gh.LMProgramHistoryId");
+                sql.append("WHERE h.ProgramId").eq(programId);
+                sql.append("  AND gh.EventTime").gte(startDateTime);
+                sql.append("  AND gh.EventTime").lt(endDateTime);
+                sql.append("  AND (gh.Action").eq("Start").append("OR gh.Action").eq("Gear Change").append(")");
+                
+                List<String> gearNames = yukonJdbcTemplate.query(sql, new StringRowMapper());
+                
+                if(gearNames.isEmpty()){
+                    sql = new SqlStatementBuilder();
+                    sql.append("SELECT gh.GearName");
+                    sql.append("FROM LMProgramGearHistory gh");
+                    sql.append("  JOIN LMProgramHistory h on h.LMProgramHistoryId = gh.LMProgramHistoryId");
+                    sql.append("WHERE h.ProgramId").eq(programId);
+                    sql.append("  AND gh.EventTime").lt(startDateTime);
+                    sql.append("ORDER BY gh.EventTime desc");
+                    
+                    gearNames = yukonJdbcTemplate.query(sql, new StringRowMapper());
+                    gears = gearNames.isEmpty() ? "NA" : gearNames.get(0);
+                } else {
+                    gears = StringUtils.join(gearNames, ",");  
+                }
+            } else {
+                gears = "NA";
+            }
+            
+            event.setGears(gears);
             eventList.add(event);
         }  
 
@@ -195,5 +233,9 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
     public void setLoadGroupDao(LoadGroupDao loadGroupDao) {
         this.loadGroupDao = loadGroupDao;
     }
-
+    
+    @Autowired
+    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
+        this.yukonJdbcTemplate = yukonJdbcTemplate;
+    }
 }

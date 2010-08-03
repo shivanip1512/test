@@ -64,7 +64,7 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
                 ControlHistory controlHistory = new ControlHistory();
 
                 StarsLMControlHistory starsLMControlHistory = controlHistoryEventDao.getEventsByGroup(accountId, holder.groupId, holder.inventoryId, controlPeriod, userContext, past);
-                List<ControlHistoryEvent> controlHistoryEventList = controlHistoryEventDao.toEventList(starsLMControlHistory);
+                List<ControlHistoryEvent> controlHistoryEventList = controlHistoryEventDao.toEventList(enrollment.getProgramId(), starsLMControlHistory);
                 controlHistory.setCurrentHistory(controlHistoryEventList);
                 
                 controlHistory.setInventory(inventory);

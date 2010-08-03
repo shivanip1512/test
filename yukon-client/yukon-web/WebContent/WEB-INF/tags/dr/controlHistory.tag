@@ -1,4 +1,5 @@
 <%@ attribute name="displayableControlHistoryMap" required="true" type="java.util.List"%>
+<%@ attribute name="consumer" required="false" type="java.lang.Boolean"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
@@ -15,8 +16,7 @@
                not (lastControlHistoryEntry eq controlHistory.displayName)}">
 
         <tags:sectionContainer title="${controlHistory.displayName}" escapeTitle="true">
-            <dr:controlHistoryEvents controlHistoryEventList="${eventList}" 
-                                     showControlSummary="true" />
+            <dr:controlHistoryEvents controlHistoryEventList="${eventList}" showControlSummary="true" consumer="${consumer}"/>
         </tags:sectionContainer>
         <br />
 

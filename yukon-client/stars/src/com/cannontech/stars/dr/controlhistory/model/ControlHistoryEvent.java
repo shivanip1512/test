@@ -6,6 +6,7 @@ import org.joda.time.Instant;
 public class ControlHistoryEvent {
     private Instant startDate;
     private Instant endDate;
+    private String gears;
     private Duration duration;
     
     public ControlHistoryEvent() {
@@ -37,6 +38,14 @@ public class ControlHistoryEvent {
 
     public void setDuration(Duration duration) {
         this.duration = duration;
+    }
+    
+    public String getGears() {
+        return gears;
+    }
+
+    public void setGears(String gears) {
+        this.gears = gears;
     }
 
     @Override
@@ -77,4 +86,5 @@ public class ControlHistoryEvent {
             return false;
         return true;
     }
+
 }

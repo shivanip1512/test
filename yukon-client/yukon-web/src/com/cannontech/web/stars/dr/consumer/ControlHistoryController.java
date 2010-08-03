@@ -99,6 +99,8 @@ public class ControlHistoryController extends AbstractConsumerController {
             displayableProgramDao.getDisplayableProgram(customerAccount.getAccountId(), yukonUserContext, program, controlPeriodEnum, false);
         map.addAttribute("displayableControlHistoryMap", displayableProgram.getDisplayableControlHistoryList());
         
+        map.addAttribute("consumer", true);
+        
         return "consumer/controlhistory/innerCompleteControlHistory.jsp";
     }
     

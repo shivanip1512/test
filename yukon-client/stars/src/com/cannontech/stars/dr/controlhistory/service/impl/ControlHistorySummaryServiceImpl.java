@@ -49,7 +49,7 @@ public class ControlHistorySummaryServiceImpl implements ControlHistorySummarySe
         
         
         List<ControlHistoryEvent> controlHistoryEventList = 
-            controlHistoryEventDao.toEventList(controlHistoryEventDao.getEventsByGroup(customerAccountId, 
+            controlHistoryEventDao.toEventList(null, controlHistoryEventDao.getEventsByGroup(customerAccountId, 
                                                                                        groupId,
                                                                                        inventoryId,
                                                                                        period, 

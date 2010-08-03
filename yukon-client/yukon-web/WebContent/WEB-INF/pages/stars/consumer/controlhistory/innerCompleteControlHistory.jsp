@@ -2,5 +2,5 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
 <cti:msgScope paths="modules.operator.controlHistory">
-	<dr:controlHistory displayableControlHistoryMap="${displayableControlHistoryMap}" />
+	<dr:controlHistory displayableControlHistoryMap="${displayableControlHistoryMap}" consumer="${consumer}"/>
 </cti:msgScope>
