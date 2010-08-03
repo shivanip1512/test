@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
-public class EventCategoryHierarchy implements Cloneable {
+public class EventCategoryHierarchy {
     private EventCategory eventCategory = null;
     private List<String> eventLogTypes = Lists.newArrayList();
     private List<EventCategoryHierarchy> childEventCategoryHierarchyList = Lists.newArrayList();
@@ -23,7 +23,7 @@ public class EventCategoryHierarchy implements Cloneable {
         this.eventLogTypes = eventLogTypes;
     }
 
-    public void addChildEventCategoryHierarchyList(EventCategoryHierarchy childEventCategoryHierarchy) {
+    public void addChildEventCategoryHierarchy(EventCategoryHierarchy childEventCategoryHierarchy) {
         this.childEventCategoryHierarchyList.add(childEventCategoryHierarchy);
     }
     public List<EventCategoryHierarchy> getChildEventCategoryHierarchyList() {
@@ -32,8 +32,4 @@ public class EventCategoryHierarchy implements Cloneable {
     public void setChildEventCategoryHierarchyList(List<EventCategoryHierarchy> childEventCategoryHierarchyList) {
         this.childEventCategoryHierarchyList = childEventCategoryHierarchyList;
     }
-    public boolean isChildEventCategoryHierarchyList() {
-        return childEventCategoryHierarchyList.size() > 0;
-    }
-
 }

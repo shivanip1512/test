@@ -5,6 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupPredicateEnum;
+import com.cannontech.common.util.predicate.AggregateAndPredicate;
+import com.cannontech.common.util.predicate.Predicate;
+
 public class ExtTreeNode {
 
     private Map<String, Object> attributes;
@@ -90,4 +97,46 @@ public class ExtTreeNode {
 		this.nodePath = nodePath;
 	}
     
+	
+    /**
+     * To be called on node after tree hierarchy has been constructed
+     * @param node
+     */
+    public static void setLeaf(ExtTreeNode node) {
+        
+        // leaf? (must be after child groups are added)
+        if (node.hasChildren()) {
+            node.setAttribute("leaf", false);
+        }
+        else {
+            node.setAttribute("leaf", true);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static void addToNodeInfo(ExtTreeNode node, String key, String data) {
+        
+        Map<String, String> info = new HashMap<String, String>(); 
+        
+        if (node.getAttributes().keySet().contains("info")) {
+            info = (Map<String, String>)node.getAttributes().get("info");
+        }
+        
+        info.put(key, data);
+        node.setAttribute("info", info);
+    }
+    
+    public static AggregateAndPredicate<DeviceGroup> getAggregratePredicateFromString(String predicatesStr) {
+        
+        String[] predicateStrs = StringUtils.split(predicatesStr, ",");
+        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
+        for (String predicateStr : predicateStrs) {
+            Predicate<DeviceGroup> predicate = DeviceGroupPredicateEnum.valueOf(predicateStr.trim()).getPredicate();
+            predicates.add(predicate);
+        }
+        AggregateAndPredicate<DeviceGroup> aggregatePredicate = new AggregateAndPredicate<DeviceGroup>(predicates);
+        
+        return aggregatePredicate;
+    }
+	
 }

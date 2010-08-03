@@ -509,7 +509,7 @@ public class EventLogViewerController {
             EventCategory childEventCategory = 
                 EventCategory.createCategory(eventCategoryHierarchy.getEventCategory().getFullName()+"."+remainingEventCategories[0]);
             echChild.setEventCategory(childEventCategory);
-            eventCategoryHierarchy.addChildEventCategoryHierarchyList(echChild);
+            eventCategoryHierarchy.addChildEventCategoryHierarchy(echChild);
             
             buildEventCategoryHierarchy(echChild, eventCategory, eventLogTypes);
         } else {

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
+import com.cannontech.util.ExtTreeBuilderUtil;
 import com.cannontech.web.util.ExtTreeNode;
 
 public class DeviceGroupExtTreeBuilder {
@@ -22,7 +23,7 @@ public class DeviceGroupExtTreeBuilder {
         ExtTreeNode node = new ExtTreeNode();
         
         // node id
-        String nodeId = createUniqueNodeId(deviceGroup.getFullName());
+        String nodeId = ExtTreeBuilderUtil.createUniqueNodeId(deviceGroup.getFullName(), nodeIdHistory);
         if (rootName != null) {
         	nodeId = rootName;
         }
@@ -36,7 +37,7 @@ public class DeviceGroupExtTreeBuilder {
         DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName, "javascript:void(0);");
         
         // add group name to the list of items in the node's "info" attribute
-        DeviceGroupTreeUtils.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
+        ExtTreeNode.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
@@ -49,27 +50,9 @@ public class DeviceGroupExtTreeBuilder {
         }
         
         // leaf attribute should only be set after possible child groups have been added
-        DeviceGroupTreeUtils.setLeaf(node);
+        ExtTreeNode.setLeaf(node);
         
         return node;
     }
     
-    private String createUniqueNodeId(String groupName) {
-        
-        String simpleNodeIdChoice = groupName.replaceAll("[^a-zA-Z0-9]","");
-        
-        if (nodeIdHistory.containsKey(simpleNodeIdChoice)) {
-            
-            // find out the last number
-            int lastSuffix = nodeIdHistory.get(simpleNodeIdChoice);
-            int newSuffix = lastSuffix + 1;
-            nodeIdHistory.put(simpleNodeIdChoice, newSuffix);
-            return simpleNodeIdChoice + "_" + newSuffix;
-            
-        } else {
-            
-            nodeIdHistory.put(simpleNodeIdChoice, 1);
-            return simpleNodeIdChoice;
-        }
-    }
 }

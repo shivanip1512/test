@@ -45,7 +45,7 @@
     <!--  Result Exports -->
     <entry key="yukon.web.modules.support.byType.csvExport.label">CSV</entry>
     <entry key="yukon.web.modules.support.byType.csvExport.imageUrl">/WebConfig/yukon/Icons/excel.gif</entry>
-    <entry key="yukon.web.modules.support.byType.csvExport.hoverText">Export an excel representation of your current results.</entry>
+    <entry key="yukon.web.modules.support.byType.csvExport.hoverText">Export results to a CSV formatted file.</entry>
 
 <!--
     <entry key="yukon.web.modules.operator.optOut.main.allowOneIconText">Adds an extra opt out to the device. This is not restricted by the system opt out limit.</entry>

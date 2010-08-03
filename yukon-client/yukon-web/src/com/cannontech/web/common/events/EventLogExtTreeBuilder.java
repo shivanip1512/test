@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventCategoryHierarchy;
+import com.cannontech.util.ExtTreeBuilderUtil;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.ExtTreeNode;
 
@@ -23,7 +24,7 @@ public class EventLogExtTreeBuilder {
         
         // node id
         String fullEventTypeName = eventCategory.getFullName();
-        String nodeId = createUniqueNodeId(fullEventTypeName);
+        String nodeId = ExtTreeBuilderUtil.createUniqueNodeId(fullEventTypeName, nodeIdHistory);
         if (rootName != null) {
         	nodeId = rootName;
         }
@@ -37,7 +38,7 @@ public class EventLogExtTreeBuilder {
         EventLogTreeUtils.setupNodeAttributes(node, eventCategory, eventLogTypes, nodeId, rootName, "javascript:void(0);");
         
         // add group name to the list of items in the node's "info" attribute
-        EventLogTreeUtils.addToNodeInfo(node, "categoryName", fullEventTypeName);
+        ExtTreeNode.addToNodeInfo(node, "categoryName", fullEventTypeName);
         
         // recursively add child groups
         for (EventCategoryHierarchy e : elh.getChildEventCategoryHierarchyList()) {
@@ -50,27 +51,14 @@ public class EventLogExtTreeBuilder {
         }
         
         // leaf attribute should only be set after possible child groups have been added
-        EventLogTreeUtils.setLeaf(node);
+        ExtTreeNode.setLeaf(node);
         
         return node;
     }
+
     
-    public static String createUniqueNodeId(String groupName) {
-        
-        String simpleNodeIdChoice = groupName.replaceAll("[^a-zA-Z0-9]","");
-        
-        if (nodeIdHistory.containsKey(simpleNodeIdChoice)) {
-            
-            // find out the last number
-            int lastSuffix = nodeIdHistory.get(simpleNodeIdChoice);
-            int newSuffix = lastSuffix + 1;
-            nodeIdHistory.put(simpleNodeIdChoice, newSuffix);
-            return simpleNodeIdChoice + "_" + newSuffix;
-            
-        } else {
-            
-            nodeIdHistory.put(simpleNodeIdChoice, 1);
-            return simpleNodeIdChoice;
-        }
+    public static String createUniqueNodeId(String nodeName) {
+        return ExtTreeBuilderUtil.createUniqueNodeId(nodeName, nodeIdHistory);
     }
+    
 }

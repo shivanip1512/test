@@ -33,7 +33,7 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport{
     @Override
     public void doTag() throws JspException, IOException {
         
-        AggregateAndPredicate<DeviceGroup> aggregatePredicate = DeviceGroupTreeUtils.getAggregratePredicateFromString(predicates);
+        AggregateAndPredicate<DeviceGroup> aggregatePredicate = ExtTreeNode.getAggregratePredicateFromString(predicates);
 
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, aggregatePredicate);

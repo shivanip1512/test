@@ -88,7 +88,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             public void setAdditionalAttributes(ExtTreeNode node, DeviceGroup deviceGroup) {
                 
                 String groupId = ((Integer)((StoredDeviceGroup)deviceGroup).getId()).toString();
-                DeviceGroupTreeUtils.addToNodeInfo(node, "groupId", groupId);
+                ExtTreeNode.addToNodeInfo(node, "groupId", groupId);
                 
                 if (currentGroups.contains(deviceGroup)) {
                     node.setAttribute("disabled", true);

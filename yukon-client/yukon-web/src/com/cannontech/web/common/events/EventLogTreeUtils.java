@@ -1,18 +1,11 @@
 package com.cannontech.web.common.events;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.common.events.model.EventCategory;
 import com.cannontech.common.events.model.EventCategoryHierarchy;
-import com.cannontech.common.events.model.EventLog;
-import com.cannontech.common.events.model.EventLogPredicateEnum;
-import com.cannontech.common.util.predicate.AggregateAndPredicate;
-import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.util.ExtTreeNode;
 
@@ -83,54 +76,11 @@ public class EventLogTreeUtils {
         eventLogtypeNode.setAttribute("href", "?eventLogType="+eventLogTypeStr);
 
         // add group name to the list of items in the node's "info" attribute
-        EventLogTreeUtils.addToNodeInfo(eventLogtypeNode, "categoryName", fullEventLogTypeName);
+        ExtTreeNode.addToNodeInfo(eventLogtypeNode, "categoryName", fullEventLogTypeName);
         
         // leaf attribute should only be set after possible child groups have been added
         eventLogtypeNode.setAttribute("leaf", true);
         return eventLogtypeNode;
     }
-    
-    /**
-     * To be called on node after tree hierarchy has been constructed
-     * @param node
-     */
-    public static void setLeaf(ExtTreeNode node) {
-        
-        // leaf? (must be after child groups are added)
-        if (node.hasChildren()) {
-            node.setAttribute("leaf", false);
-        }
-        else {
-            node.setAttribute("leaf", true);
-        }
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static void addToNodeInfo(ExtTreeNode node, String key, String data) {
-        
-        Map<String, String> info = new HashMap<String, String>(); 
-        
-        if (node.getAttributes().keySet().contains("info")) {
-            info = (Map<String, String>)node.getAttributes().get("info");
-        }
-        
-        info.put(key, data);
-        node.setAttribute("info", info);
-    }
-    
-    public static AggregateAndPredicate<EventLog> getAggregratePredicateFromString(String predicatesStr) {
-        
-        String[] predicateStrs = StringUtils.split(predicatesStr, ",");
-        List<Predicate<EventLog>> predicates = new ArrayList<Predicate<EventLog>>();
-        for (String predicateStr : predicateStrs) {
-            Predicate<EventLog> predicate = EventLogPredicateEnum.valueOf(predicateStr.trim()).getPredicate();
-            predicates.add(predicate);
-        }
-        AggregateAndPredicate<EventLog> aggregatePredicate = new AggregateAndPredicate<EventLog>(predicates);
-        
-        return aggregatePredicate;
-    }
-    
-    
     
 }
