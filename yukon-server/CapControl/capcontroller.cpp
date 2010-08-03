@@ -163,6 +163,10 @@ void CtiCapController::start()
     RWThreadFunction threadfunc4 = rwMakeThreadFunction( *this, &CtiCapController::messageSender );
     _messageSenderThread = threadfunc4;
     threadfunc4.start();
+
+    RWThreadFunction incomingMessageProcessorThread = rwMakeThreadFunction( *this, &CtiCapController::incomingMessageProcessor );
+    _incomingMessageProcessorThread = incomingMessageProcessorThread;
+    incomingMessageProcessorThread.start();
 }
 
 /*---------------------------------------------------------------------------
@@ -174,6 +178,7 @@ void CtiCapController::stop()
 {
     try
     {
+        //Shutdown control loop
         if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
         {
             _substationBusThread.terminate();
@@ -189,6 +194,7 @@ void CtiCapController::stop()
             _substationBusThread.join();
         }
 
+        //Shutdown outClientMsgThread
         if ( _outClientMsgThread.isValid() && _outClientMsgThread.requestCancellation() == RW_THR_ABORTED )
         {
             {
@@ -204,6 +210,7 @@ void CtiCapController::stop()
             _outClientMsgThread.join();
         }
 
+        //Shutdown messageSenderThread
         if ( _messageSenderThread.isValid() && _messageSenderThread.requestCancellation() == RW_THR_ABORTED )
         {
             {
@@ -218,6 +225,23 @@ void CtiCapController::stop()
             _messageSenderThread.requestCancellation();
             _messageSenderThread.join();
         }
+
+        //Shutdown incomingMessageProcessorThread
+        if ( _incomingMessageProcessorThread.isValid() && _incomingMessageProcessorThread.requestCancellation() == RW_THR_ABORTED )
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - incomingMessageProcessorThread Thread forced to terminate." << endl;
+            }
+
+            _incomingMessageProcessorThread.terminate();
+        }
+        else
+        {
+            _incomingMessageProcessorThread.requestCancellation();
+            _incomingMessageProcessorThread.join();
+        }
+
     }
     catch(...)
     {
@@ -227,7 +251,6 @@ void CtiCapController::stop()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
         if( _dispatchConnection != NULL && _dispatchConnection->valid() )
         {
             _dispatchConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
@@ -242,7 +265,6 @@ void CtiCapController::stop()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
         if( _pilConnection!=NULL && _pilConnection->valid() )
         {
             _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
@@ -412,18 +434,67 @@ void CtiCapController::messageSender()
 
 }
 
+void CtiCapController::incomingMessageProcessor()
+{
+
+    CtiTime timeNow;
+    CtiTime announceTime((unsigned long) 0);
+    CtiTime tickleTime((unsigned long) 0);
+
+    while(TRUE)
+    {
+        CtiMessage* msg = NULL;
+        bool retVal = _incomingMessageQueue.read(msg,5000);
+
+        if (retVal)
+        {
+            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Processing New Message" << endl;
+            }
+
+            parseMessage(msg);
+            delete msg;
+        }
+
+        try
+        {
+            rwRunnable().serviceCancellation();
+        }
+        catch(RWCancellation& )
+        {
+            throw;
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+
+        timeNow = timeNow.now();
+        if(timeNow.seconds() > tickleTime.seconds())
+        {
+            tickleTime = nextScheduledTimeAlignedOnRate( timeNow, CtiThreadMonitor::StandardTickleTime );
+            if( timeNow.seconds() > announceTime.seconds() )
+            {
+                announceTime = nextScheduledTimeAlignedOnRate( timeNow, CtiThreadMonitor::StandardMonitorTime );
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CapControl Incoming Message Thread. TID: " << rwThreadId() << endl;
+            }
+
+           ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl Incoming Message Thread", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+        }
+    };
+
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl Incoming Message Thread", CtiThreadRegData::LogOut ) );
+}
+
 void CtiCapController::processNewMessage(CtiMessage* message)
 {
     if (message != NULL)
     {
-
-        if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Processing New Message" << endl;
-        }
-        parseMessage(message);
-        delete message;
+        _incomingMessageQueue.write(message);
     }
 }
 
@@ -1496,9 +1567,10 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
                 CtiRegistrationMsg* registrationMsg = new CtiRegistrationMsg("CapController", 0, FALSE );
                 _dispatchConnection->WriteConnQue( registrationMsg );
             }
+            _dispatchConnection->addMessageListener(this);
         }
 
-        _dispatchConnection->addMessageListener(this);
+
         return _dispatchConnection;
     }
     catch(...)
@@ -4286,8 +4358,6 @@ void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text
 ---------------------------------------------------------------------------*/
 void CtiCapController::sendMessageToDispatch( CtiMessage* message )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-
     try
     {
         getDispatchConnection()->WriteConnQue(message);
@@ -4306,7 +4376,6 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message )
 ---------------------------------------------------------------------------*/
 void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMultiMsg* multiMsg )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
         if (pilRequest != NULL)
@@ -4342,7 +4411,6 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
 ---------------------------------------------------------------------------*/
 void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMultiMsg* multiMsg )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
     try
     {
         if (pilMultiMsg != NULL)

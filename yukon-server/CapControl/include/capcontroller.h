@@ -100,6 +100,7 @@ class CtiCapController : public MessageListener
         void messageSender();
         void outClientMsgs();
         void processCCEventMsgs();
+        void incomingMessageProcessor();
 
         void checkDispatch();
         void checkPIL();
@@ -122,11 +123,12 @@ class CtiCapController : public MessageListener
         RWThread _substationBusThread;
         RWThread _outClientMsgThread;
         RWThread _messageSenderThread;
+        RWThread _incomingMessageProcessorThread;
 
         CtiConnectionPtr _pilConnection;
         DispatchConnectionPtr _dispatchConnection;
 
-        mutable RWRecursiveLock<RWMutexLock> _mutex;
+        CtiPCPtrQueue< CtiMessage > _incomingMessageQueue;
         CtiPCPtrQueue< RWCollectable > _inClientMsgQueue;
         CtiPCPtrQueue< RWCollectable > _outClientMsgQueue;
 
