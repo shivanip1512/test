@@ -3,6 +3,8 @@ package com.cannontech.stars.dr.optout.service;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.LocalDate;
+
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
@@ -15,6 +17,7 @@ import com.cannontech.stars.dr.optout.model.OptOutCountHolder;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Interface for service which handles opt outs and canceling of opt outs
@@ -233,4 +236,12 @@ public interface OptOutService {
 			LiteStarsEnergyCompany energyCompany, OptOutEvent event,
 			CustomerAccount customerAccount, LiteYukonUser user)
 			throws CommandCompletionException;
+
+
+	/**
+     * @param localDate
+     * @param errors
+     */
+    public String checkOptOutStartDate(int accountId, LocalDate startDate, 
+                                       YukonUserContext userContext, boolean isOperator);
 }

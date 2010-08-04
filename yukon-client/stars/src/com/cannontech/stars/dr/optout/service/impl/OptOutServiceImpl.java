@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.LocalDate;
 import org.joda.time.ReadableInstant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -58,7 +59,9 @@ import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsSearchDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.stars.dr.displayable.dao.DisplayableInventoryEnrollmentDao;
+import com.cannontech.stars.dr.displayable.model.DisplayableInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableInventoryEnrollment;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
@@ -91,6 +94,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 
@@ -100,6 +104,7 @@ public class OptOutServiceImpl implements OptOutService {
 	
 	private LMHardwareBaseDao lmHardwareBaseDao;
 	private AccountEventLogService accountEventLogService;
+	private DisplayableInventoryDao displayableInventoryDao;
     private StarsInventoryBaseDao starsInventoryBaseDao;
 	private OptOutEventDao optOutEventDao;
 	private OptOutAdditionalDao optOutAdditionalDao;
@@ -1128,9 +1133,67 @@ public class OptOutServiceImpl implements OptOutService {
 		commandRequestHardwareExecutor.execute(inventory, commandString, user);
 	}
 	
+	
+    public String checkOptOutStartDate(int accountId, LocalDate startDate, 
+                                       YukonUserContext userContext, boolean isOperator) {
+
+        // Opt Out Start Date
+        final LocalDate today = new LocalDate(userContext.getJodaTimeZone());
+        final LocalDate yearFromToday = today.plusYears(1);
+        
+        if (startDate == null) {
+            return "invalidStartDate";
+        }
+        if (startDate.isBefore(today)) {
+            return "startDateTooEarly";
+        }
+        if (startDate.isAfter(yearFromToday)) {
+            return "startDateTooLate";
+        }
+
+        // Check if all opt out devices are already opted out for today.
+        if (startDate.equals(today)) {
+            
+            boolean hasADeviceAvailableForOptOut = false;
+            
+            List<DisplayableInventory> displayableInventories =
+                displayableInventoryDao.getDisplayableInventory(accountId);
+            
+            for (DisplayableInventory displayableInventory : displayableInventories) {
+                if (!displayableInventory.isCurrentlyOptedOut()) {
+                    hasADeviceAvailableForOptOut = true;
+                    break;
+                }
+            }
+
+            if (!hasADeviceAvailableForOptOut) {
+                return "allDevicesCurrentlyOptedOut";
+            }
+        }
+
+        boolean optOutTodayOnly;
+        if (isOperator) {
+            optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.OPERATOR_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        } else {
+            optOutTodayOnly = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.RESIDENTIAL_OPT_OUT_TODAY_ONLY, userContext.getYukonUser());
+        }
+        if(optOutTodayOnly) {
+            if (startDate.isAfter(today)) {
+                return "startDateToday";
+            }
+        }
+        
+        return null;
+    }
+	
 	@Autowired
 	public void setAccountEventLogService(AccountEventLogService accountEventLogService) {
         this.accountEventLogService = accountEventLogService;
+    }
+	
+	@Autowired
+	public void setDisplayableInventoryDao(DisplayableInventoryDao displayableInventoryDao) {
+        this.displayableInventoryDao = displayableInventoryDao;
     }
 	
 	@Autowired

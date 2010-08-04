@@ -24,9 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.DirectFieldBindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,10 +51,6 @@ import com.cannontech.stars.dr.optout.service.OptOutService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
-import com.cannontech.web.stars.dr.operator.model.OptOutBackingBean;
-import com.cannontech.web.stars.dr.operator.validator.OptOutValidator;
-import com.cannontech.web.stars.dr.operator.validator.OptOutValidatorFactory;
 
 @CheckRoleProperty(YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_OPT_OUT)
 @Controller
@@ -72,7 +65,6 @@ public class OptOutController extends AbstractConsumerController {
     private OptOutService optOutService; 
     private OptOutEventDao optOutEventDao;
     private OptOutStatusService optOutStatusService;
-    private OptOutValidatorFactory optOutValidatorFactory;
 
     private static class StartDateException extends Exception {
         private final static long serialVersionUID = 1L;
@@ -376,24 +368,14 @@ public class OptOutController extends AbstractConsumerController {
                                    YukonUserContext userContext, CustomerAccount customerAccount) 
     throws StartDateException {
         
-        OptOutBackingBean optOutBackingBean = new OptOutBackingBean();
-        optOutBackingBean.setStartDate(new LocalDate(startDate));
-        optOutBackingBean.setDurationInDays(durationInDays);
-        BindingResult bindingResult = new DirectFieldBindingResult(optOutBackingBean,
-                                                                   "optOutBackingBean");
+        LocalDate startLocalDate = new LocalDate(startDate, userContext.getJodaTimeZone());
+        String startDateErrorCode = 
+            optOutService.checkOptOutStartDate(customerAccount.getAccountId(), startLocalDate, 
+                                               userContext, false);
 
-        // Energy company doesn't matter in this case.  The validator only uses accountId
-        AccountInfoFragment accountInfoFragment = new AccountInfoFragment(customerAccount.getAccountId(),
-                                                                          0);
-        // Validate data
-        OptOutValidator optOutValidator = 
-            optOutValidatorFactory.getOptOutValidator(userContext, false, accountInfoFragment);
-        optOutValidator.validate(optOutBackingBean, bindingResult);
-
-        if (bindingResult.hasErrors()) {
-            @SuppressWarnings("unchecked")
-            List<FieldError> errors = bindingResult.getAllErrors();
-            throw new StartDateException(String.valueOf(errors.get(0).getCode()));
+        // Error found while checking the start date
+        if (startDateErrorCode != null) {
+            throw new StartDateException("yukon.dr.consumer.optout."+startDateErrorCode);
         }
     }
 
@@ -481,8 +463,4 @@ public class OptOutController extends AbstractConsumerController {
 		this.optOutStatusService = optOutStatusService;
 	}
     
-    @Autowired
-    public void setOptOutValidatorFactory(OptOutValidatorFactory optOutValidatorFactory) {
-        this.optOutValidatorFactory = optOutValidatorFactory;
-    }
 }

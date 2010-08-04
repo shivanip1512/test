@@ -3,6 +3,8 @@ package com.cannontech.yukon.api.loadManagement;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.LocalDate;
+
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.dao.AccountNotFoundException;
 import com.cannontech.core.dao.InventoryNotFoundException;
@@ -18,6 +20,7 @@ import com.cannontech.stars.dr.optout.model.OptOutLimit;
 import com.cannontech.stars.dr.optout.model.OverrideHistory;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
 import com.cannontech.stars.dr.optout.service.OptOutService;
+import com.cannontech.user.YukonUserContext;
 
 public class OptOutServiceAdapter implements OptOutService {
 
@@ -143,6 +146,13 @@ public class OptOutServiceAdapter implements OptOutService {
     @Override
     public void allowAdditionalOptOuts(int accountId, int serialNumber,
                                        int additionalOptOuts, LiteYukonUser user) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public String checkOptOutStartDate(int accountId, LocalDate startDate,
+                                       YukonUserContext userContext,
+                                       boolean isOperator) {
         throw new UnsupportedOperationException("not implemented");
     }
 
