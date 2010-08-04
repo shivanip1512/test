@@ -192,7 +192,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                 sql.append("SELECT DISTINCT gh.GearName");
                 sql.append("FROM LMProgramGearHistory gh");
                 sql.append("  JOIN LMProgramHistory h on h.LMProgramHistoryId = gh.LMProgramHistoryId");
-                sql.append("WHERE h.ProgramId").eq(programId);
+                sql.append("  JOIN LMProgramWebPublishing wp on wp.DeviceID = h.ProgramId");
+                sql.append("WHERE wp.ProgramId").eq(programId);
                 sql.append("  AND gh.EventTime").gte(startDateTime);
                 sql.append("  AND gh.EventTime").lt(endDateTime);
                 sql.append("  AND (gh.Action").eq("Start").append("OR gh.Action").eq("Gear Change").append(")");
@@ -204,7 +205,8 @@ public class ControlHistoryEventDaoImpl implements ControlHistoryEventDao {
                     sql.append("SELECT gh.GearName");
                     sql.append("FROM LMProgramGearHistory gh");
                     sql.append("  JOIN LMProgramHistory h on h.LMProgramHistoryId = gh.LMProgramHistoryId");
-                    sql.append("WHERE h.ProgramId").eq(programId);
+                    sql.append("  JOIN LMProgramWebPublishing wp on wp.DeviceID = h.ProgramId");
+                    sql.append("WHERE wp.ProgramId").eq(programId);
                     sql.append("  AND gh.EventTime").lt(startDateTime);
                     sql.append("ORDER BY gh.EventTime desc");
                     
