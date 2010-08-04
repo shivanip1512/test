@@ -4504,9 +4504,6 @@ bool CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
                     ratioB = fabs((varBValue - varBValueBeforeControl) / banksize);
                     ratioC = fabs((varCValue - varCValueBeforeControl) / banksize);
                 }
-                ratioA *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
-                ratioB *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
-                ratioC *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
 
                 if( areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent) )
                 {
@@ -4534,7 +4531,6 @@ bool CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
                 }
 
                 ratio = change/banksize;
-                ratio *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
                 if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
