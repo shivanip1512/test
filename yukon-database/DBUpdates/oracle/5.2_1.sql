@@ -185,8 +185,11 @@ WHERE LMTS.InventoryId > 0;
 
 /* Start YUK-8773 */
 /* Remove Constraints */
+/* @error ignore-begin */
 ALTER TABLE MACSimpleSchedule DROP CONSTRAINT FK_MACSIMPLE_MACSCHED_ID;
 ALTER TABLE MACSimpleSchedule DROP CONSTRAINT PK_MACSIMPLESCHEDULE;
+ALTER TABLE MACSimpleSchedule DROP CONSTRAINT PK_MACSimpSch;
+/* @error ignore-end */
 
 /* Rename the current table to a temp table */
 ALTER TABLE MACSimpleSchedule RENAME TO MACSimpleScheduleTemp;
@@ -207,24 +210,28 @@ SELECT MSST.ScheduleId, PAO.PAObjectId, MSST.StartCommand,
        MSST.StopCommand, MSST.RepeatInterval
 FROM MACSimpleScheduleTemp MSST
 LEFT JOIN YukonPAObject PAO ON (MSST.TargetSelect = PAO.PAOName
-                                    /* Load Groups */
-                                AND ( (PAO.PAOClass = 'GROUP' AND
-                                       PAO.Category = 'DEVICE')
-                                      
-                                    /* Devices */
-                                      OR ( ( PAO.PAOClass = 'CARRIER' OR
-                                             PAO.PAOClass = 'IED' OR
-                                             PAO.PAOClass = 'METER' OR
-                                             PAO.PAOClass = 'RFMESH' OR
-                                             PAO.PAOClass = 'RTU' OR
-                                             PAO.PAOClass = 'TRANSMITTER' OR
-                                             PAO.PAOClass = 'VIRTUAL' OR
-                                             PAO.PAOClass = 'GRID'
-                                           )
-                                           AND PAO.Category = 'DEVICE'
-                                           AND PAO.Type != 'MCT Broadcast')
-                                         )
-                                );
+                                /* Load Groups */
+                                AND (PAO.PAOClass = 'GROUP' AND
+                                     PAO.Category = 'DEVICE'));
+
+INSERT INTO MACSimpleSchedule
+SELECT MSST.ScheduleId, PAO.PAObjectId, MSST.StartCommand,
+       MSST.StopCommand, MSST.RepeatInterval
+FROM MACSimpleScheduleTemp MSST
+LEFT JOIN YukonPAObject PAO ON (MSST.TargetSelect = PAO.PAOName
+                                 /* Devices */
+                                 AND ( PAO.PAOClass = 'CARRIER' OR
+                                       PAO.PAOClass = 'IED' OR
+                                       PAO.PAOClass = 'METER' OR
+                                       PAO.PAOClass = 'RFMESH' OR
+                                       PAO.PAOClass = 'RTU' OR
+                                       PAO.PAOClass = 'TRANSMITTER' OR
+                                       PAO.PAOClass = 'VIRTUAL' OR
+                                       PAO.PAOClass = 'GRID')
+                                 AND PAO.Category = 'DEVICE'
+                                 AND PAO.Type != 'MCT Broadcast')
+WHERE MSST.ScheduleId NOT IN (SELECT MACSS.ScheduleId
+                               FROM MACSimpleSchedule MACSS);
 
 UPDATE MACSimpleSchedule
 SET TargetPaobjectId = 0
@@ -236,7 +243,8 @@ MODIFY TargetPaobjectId NUMBER NOT NULL;
 /* Restore the removed constraints */
 ALTER TABLE MACSimpleSchedule
     ADD CONSTRAINT FK_MACSimpSch_PAO FOREIGN KEY (TargetPAObjectId)
-        REFERENCES YukonPAObject (PAObjectId);
+        REFERENCES YukonPAObject (PAObjectId)
+			ON DELETE CASCADE;
 
 ALTER TABLE MACSimpleSchedule
     ADD CONSTRAINT FK_MACSimpSch_MACSch FOREIGN KEY (ScheduleId)

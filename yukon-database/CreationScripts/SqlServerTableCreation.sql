@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/30/2010 12:15:36 AM                        */
+/* Created on:     8/4/2010 11:05:54 AM                         */
 /*==============================================================*/
 
 
@@ -9863,7 +9863,7 @@ go
 /*==============================================================*/
 create table OptOutSurvey (
    GroupId              numeric              not null,
-   SurveyId             numeric              null,
+   SurveyId             numeric              not null,
    StartDate            datetime             not null,
    StopDate             datetime             not null,
    constraint PK_OptOutSurvey primary key (GroupId)
@@ -10838,7 +10838,7 @@ go
 /*==============================================================*/
 create table Survey (
    SurveyId             numeric              not null,
-   EnergyCompanyId      numeric              null,
+   EnergyCompanyId      numeric              not null,
    SurveyName           varchar(64)          not null,
    SurveyKey            varchar(64)          not null,
    constraint PK_Surv primary key (SurveyId)
@@ -15635,6 +15635,7 @@ go
 alter table MACSimpleSchedule
    add constraint FK_MACSimpSch_PAO foreign key (TargetPAObjectId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table MACSimpleSchedule

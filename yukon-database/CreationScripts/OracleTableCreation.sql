@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/30/2010 12:22:02 AM                        */
+/* Created on:     8/4/2010 11:41:34 AM                         */
 /*==============================================================*/
 
 
@@ -6873,7 +6873,7 @@ create table OptOutEventLog  (
 /*==============================================================*/
 create table OptOutSurvey  (
    GroupId              NUMBER                          not null,
-   SurveyId             NUMBER,
+   SurveyId             NUMBER                          not null,
    StartDate            DATE                            not null,
    StopDate             DATE                            not null,
    constraint PK_OptOutSurvey primary key (GroupId)
@@ -7777,7 +7777,7 @@ create table SubstationToRouteMapping  (
 /*==============================================================*/
 create table Survey  (
    SurveyId             NUMBER                          not null,
-   EnergyCompanyId      NUMBER,
+   EnergyCompanyId      NUMBER                          not null,
    SurveyName           VARCHAR2(64)                    not null,
    SurveyKey            VARCHAR2(64)                    not null,
    constraint PK_Surv primary key (SurveyId)
@@ -12058,7 +12058,8 @@ alter table MACSchedule
 
 alter table MACSimpleSchedule
    add constraint FK_MACSimpSch_PAO foreign key (TargetPAObjectId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table MACSimpleSchedule
    add constraint FK_MACSIMPLE_MACSCHED_ID foreign key (ScheduleID)
