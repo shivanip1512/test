@@ -1087,7 +1087,6 @@ int CtiFDR_Inet::findClientInList(SOCKADDR_IN aAddr)
 void CtiFDR_Inet::threadFunctionMonitor( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    bool            foundFlag= false;
 
     try
     {
@@ -1109,7 +1108,6 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
             pSelf.sleep (250);
 
             CtiLockGuard<CtiMutex> guard(iConnectionListMux);
-            foundFlag = false;
 
             vector<CtiFDRSocketLayer*>::iterator connectionIt = iConnectionList.begin() ;
 
@@ -1119,7 +1117,7 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
             * the iterator before we can access the pointer
             *************************
             */
-            while ((connectionIt != iConnectionList.end()) && !foundFlag)
+            while (connectionIt != iConnectionList.end())
             {
                 // see if we failed
                 if ((*connectionIt)->getInBoundConnectionStatus() == CtiFDRSocketConnection::Failed ||
@@ -1135,24 +1133,24 @@ void CtiFDR_Inet::threadFunctionMonitor( void )
                     desc = (*connectionIt)->getName() + "'s link has failed";
                     logEvent (desc,action, true);
 
-                    // if its a server connection, the client will re-connect
-                    if ((*connectionIt)->getConnectionType() == CtiFDRSocketLayer::Client_Multiple)
-                    {
-                        delete (*connectionIt);
-                        iConnectionList.erase(connectionIt);
+                    CtiFDRSocketLayer::FDRConnectionType connectionType = (*connectionIt)->getConnectionType();
 
+                    delete (*connectionIt);
+                    connectionIt = iConnectionList.erase(connectionIt);
+
+                    // if its a server connection, the client will re-connect
+                    if (connectionType == CtiFDRSocketLayer::Client_Multiple)
+                    {
                         // this signals the client thread to spit out another
                         SetEvent (iClientConnectionSemaphore);
                     }
-                    else
-                    {
-                        delete (*connectionIt);
-                        iConnectionList.erase(connectionIt);
-                    }
 
-                    foundFlag = true;
+                    break;
                 }
-                connectionIt++;
+                else
+                {
+                    connectionIt++;
+                }
             }
         }
     }
