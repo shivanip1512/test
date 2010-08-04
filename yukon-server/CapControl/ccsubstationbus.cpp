@@ -2156,7 +2156,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPowerFactorValue(DOUBLE pfval)
 
 void CtiCCSubstationBus::figureAndSetPowerFactorByFeederValues( )
 {
-    if (_currentvarloadpointid == 0 && _currentwattloadpointid == 0)
+    if (_currentvarloadpointid == 0 || _currentwattloadpointid == 0)
     {
         //sum the var/watt values from the feeders and set as the pf for the substation.
         LONG varTotal = 0;

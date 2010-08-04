@@ -197,7 +197,7 @@ public:
     CtiCCSubstationBusPtr findSubBusByLtcId(long ltcId);
 
     long findAreaIDbySubstationID(long substationId);
-    long findSpecialAreaIDbySubstationID(long substationId);
+    bool findSpecialAreaIDbySubstationID(long substationId, multimap< long, long>::iterator &begin, multimap< long, long >::iterator &end);
     long findSubstationIDbySubBusID(long subBusId);
     long findSubBusIDbyFeederID(long feederId);
     long findSubBusIDbyCapBankID(long capBankId);
@@ -248,7 +248,7 @@ public:
                                       map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
                                       multimap< long, CtiCCSubstationPtr > *pointid_station_map,
                                       map< long, long> *substation_area_map,
-                                      map< long, long> *substation_specialarea_map,
+                                      multimap< long, long> *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
     void reloadAreaFromDatabase(long areaId,
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
@@ -607,7 +607,7 @@ private:
 
     StrategyManager _strategyManager;
 
-    map< long, long > _substation_specialarea_map;
+    multimap< long, long > _substation_specialarea_map;
     map< long, long > _substation_area_map;
     map< long, long > _subbus_substation_map;
     map< long, long > _feeder_subbus_map;

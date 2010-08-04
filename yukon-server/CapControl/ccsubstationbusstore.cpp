@@ -476,10 +476,11 @@ long CtiCCSubstationBusStore::findAreaIDbySubstationID(long substationId)
     map< long, long >::iterator iter = _substation_area_map.find(substationId);
     return (iter == _substation_area_map.end() ? NULL : iter->second);
 }
-long CtiCCSubstationBusStore::findSpecialAreaIDbySubstationID(long substationId)
+bool CtiCCSubstationBusStore::findSpecialAreaIDbySubstationID(long substationId, multimap< long, long>::iterator &begin, multimap< long, long >::iterator &end)
 {
-    map< long, long >::iterator iter = _substation_specialarea_map.find(substationId);
-    return (iter == _substation_specialarea_map.end() ? NULL : iter->second);
+    begin = _substation_specialarea_map.lower_bound(substationId);
+    end   = _substation_specialarea_map.upper_bound(substationId);
+    return begin != end;
 }
 
 long CtiCCSubstationBusStore::findSubstationIDbySubBusID(long subBusId)
@@ -4344,7 +4345,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                   map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
                                   multimap< long, CtiCCSubstationPtr > *pointid_station_map,
                                   map< long, long> *substation_area_map,
-                                  map< long, long> *substation_specialarea_map,
+                                  multimap< long, long> *substation_specialarea_map,
                                   CtiCCSubstation_vec *ccSubstations)
 {
     CtiCCSubstationPtr substationToUpdate = NULL;
@@ -5734,7 +5735,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 LONG altBusId; 
                 rdr["paobjectid"] >> busId;  
                 rdr["AltSubID"] >> altBusId;    
-                if (subBusId > 0 && busId != subBusId && altBusId == subBusId)
+                if (subBusId > 0 && busId != subBusId && altBusId == subBusId && paobject_subbus_map->find(busId) != paobject_subbus_map->end() )
                 {
                     currentCCSubstationBus = paobject_subbus_map->find( busId )->second;
                 }
@@ -10387,9 +10388,12 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                 }
             }
         }
-        LONG spAreaId = findSpecialAreaIDbySubstationID(stationId);
-        if (spAreaId != NULL)
+        std::multimap< long, long >::iterator spAreaIter, end;
+        findSpecialAreaIDbySubstationID(stationId, spAreaIter, end);
+
+        while (spAreaIter != end)
         {
+            LONG spAreaId = spAreaIter->second;
             CtiCCSpecial* spArea = findSpecialAreaByPAObjectID(spAreaId);
             if (spArea != NULL)
             {
@@ -10415,6 +10419,7 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
                     spArea->setEstPFactor( epf/numStations );
                 }
             }
+            spAreaIter++;
         }
     }
 
