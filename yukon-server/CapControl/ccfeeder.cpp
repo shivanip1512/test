@@ -1627,14 +1627,21 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution,  CtiMult
         {
             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)banks[i];
 
-            if (!currentCapBank->getRetryCloseFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
+            if (!currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
                 (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail ||
                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenFail))
             {
-                returnCapBank = currentCapBank;
-                currentCapBank->setRetryCloseFailedFlag(TRUE);
-                break;
+                if( solution == Close && !currentCapBank->getRetryCloseFailedFlag() )
+                {
+                    currentCapBank->setRetryCloseFailedFlag(TRUE);
+                    return currentCapBank;
+                }
+                if( solution == Open && !currentCapBank->getRetryOpenFailedFlag() )
+                {
+                    currentCapBank->setRetryOpenFailedFlag(TRUE);
+                    return currentCapBank;
+                }
             }
         }
     }
