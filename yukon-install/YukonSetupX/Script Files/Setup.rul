@@ -657,6 +657,7 @@ Dlg_ObjDialogs:
 			Enable(BACKBUTTON);
 			Dialog_UninstServices:
 			if (AreYukonServicesRunning()) then
+				StopYukonServices();
 				MessageBox("Setup detected a Yukon service running."
 						+ " Please stop all Yukon services before continuing.", WARNING);	
 			endif;
@@ -682,17 +683,16 @@ Dlg_ObjDialogs:
 			if(nResult = BACK) then
 				goto Dialog_UninstBackup;
 			endif;
-			StopYukonServices();
 			// Ensure that all previously installed features are removed.
 			FeatureRemoveAllInMediaAndLog();
             // Added in 11.0 - Set appropriate StatusEx static text.
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REMOVEALL ) );
         case REPAIR:	
 			if (AreYukonServicesRunning()) then
+				StopYukonServices();
 				MessageBox("Setup detected a Yukon service still running."
 				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
 			endif;
-			StopYukonServices();
 			// Changed for DevStudio 9, Disk1 files are now always updated when installed
 			// so when running from ADDREMOVE we need to prevent these files from being
 			// updated since this will result in files being updated that are locked by the setup.
@@ -710,10 +710,10 @@ Dlg_ObjDialogs:
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_REPAIR ) );
         case MODIFY:
             if (AreYukonServicesRunning()) then
+				StopYukonServices();
 				MessageBox("Setup detected a Yukon service still running."
 				+ "\nPlease stop all Yukon services before continuing.", WARNING);	
 			endif;
-			StopYukonServices();
             // Added in 11.0 - Set appropriate StatusEx static text.
             SetStatusExStaticText( SdLoadString( IDS_IFX_STATUSEX_STATICTEXT_MAINTUI_MODIFY ) );
     endswitch;
