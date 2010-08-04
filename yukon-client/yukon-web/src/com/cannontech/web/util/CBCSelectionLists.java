@@ -7,6 +7,7 @@ import java.util.TimeZone;
 
 import javax.faces.model.SelectItem;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -153,16 +154,16 @@ public class CBCSelectionLists {
 
 	private static final SelectItem[] cbcControlMethods =  {
 		//value, label
-		new SelectItem(CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER)),
-		new SelectItem(CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER)),		
-		new SelectItem(CapControlStrategy.CNTRL_MANUAL_ONLY,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_MANUAL_ONLY)),		
-		new SelectItem(CapControlStrategy.CNTRL_SUBSTATION_BUS,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS)),
-		new SelectItem(CapControlStrategy.CNTRL_TIME_OF_DAY,
-		        StringUtils.addCharBetweenWords(' ', CapControlStrategy.CNTRL_TIME_OF_DAY))
+		new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDbName(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDbName())),
+		new SelectItem(ControlMethod.BUSOPTIMIZED_FEEDER.getDbName(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.BUSOPTIMIZED_FEEDER.getDbName())),		
+		new SelectItem(ControlMethod.MANUAL_ONLY.getDbName(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.MANUAL_ONLY.getDbName())),		
+		new SelectItem(ControlMethod.SUBSTATION_BUS.getDbName(),
+				StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDbName())),
+		new SelectItem(ControlMethod.TIME_OF_DAY.getDbName(),
+		        StringUtils.addCharBetweenWords(' ', ControlMethod.TIME_OF_DAY.getDbName()))
 	};
 
 

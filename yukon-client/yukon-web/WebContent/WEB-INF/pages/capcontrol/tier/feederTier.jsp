@@ -235,8 +235,7 @@
     				<td>
                         <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                         <c:choose>
-                            <c:when test="${viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_SUBSTATION_BUS') ||
-                                                    viewableSubBus.subBus.controlMethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_BUSOPTIMIZED_FEEDER')}">
+                            <c:when test="${viewableSubBus.busControlled}">
     		                    <a onmouseover="showDynamicPopupAbove($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
     								onmouseout="nd();">
 									<c:choose>
@@ -464,7 +463,7 @@
 					<td>
                         <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                         <c:choose>
-                            <c:when test="${viewfeeder.feeder.controlmethod == cti:constantValue('com.cannontech.database.db.capcontrol.CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER') || viewfeeder.ivvcControlled}">
+                            <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
 		                        <a onmouseover="showDynamicPopupAbove($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
 								   onmouseout="nd();">
 								   	<c:choose>

@@ -24,6 +24,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapbankControllerDao;
 import com.cannontech.cbc.dao.CapbankDao;
@@ -1738,8 +1739,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     	String algorithm = getCbcStrategiesMap().get( new Integer ( getCurrentStrategyID() )).getControlUnits();
     	if (algorithm.equalsIgnoreCase(CalcComponentTypes.LABEL_MULTI_VOLT)) {
     		controlMethods = new SelectItem [2];
-    		controlMethods[0] = new SelectItem(CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER, StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_INDIVIDUAL_FEEDER));
-    		controlMethods[1] = new SelectItem(CapControlStrategy.CNTRL_SUBSTATION_BUS, StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS));
+    		controlMethods[0] = new SelectItem(ControlMethod.INDIVIDUAL_FEEDER.getDbName(), StringUtils.addCharBetweenWords( ' ', ControlMethod.INDIVIDUAL_FEEDER.getDbName()));
+    		controlMethods[1] = new SelectItem(ControlMethod.SUBSTATION_BUS.getDbName(), StringUtils.addCharBetweenWords( ' ', ControlMethod.SUBSTATION_BUS.getDbName()));
     	} else {
     		controlMethods = new CBCSelectionLists().getCbcControlMethods();
         }
@@ -1938,7 +1939,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public boolean isTimeOfDay() {
         String strat = getStrategy().getControlMethod();
-        if( strat.equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)){
+        if( strat.equalsIgnoreCase(ControlMethod.TIME_OF_DAY.getDbName())){
             return true;
         }
         return false;
@@ -1969,7 +1970,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public List<SelectItem> getControlAlgorithims(){
         List<SelectItem> items = Lists.newArrayList(selectionLists.getCbcControlAlgorithim());
         String currentMethod = getStrategy().getControlMethod();
-        if(currentMethod.equalsIgnoreCase(CapControlStrategy.CNTRL_SUBSTATION_BUS)) {
+        if(currentMethod.equalsIgnoreCase(ControlMethod.SUBSTATION_BUS.getDbName())) {
             items.add(new SelectItem(CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR, CalcComponentTypes.LABEL_INTEGRATED_VOLT_VAR));
         }
         return items;

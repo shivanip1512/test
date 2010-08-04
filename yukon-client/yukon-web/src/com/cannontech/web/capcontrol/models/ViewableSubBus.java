@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -99,4 +100,13 @@ public class ViewableSubBus {
         this.ivvcControlled = ivvcControlled;
     }
     
+    public boolean isBusControlled() {
+    	try {
+	    	ControlMethod method = ControlMethod.getForDbString(getSubBus().getControlMethod());
+	    	return method == ControlMethod.BUSOPTIMIZED_FEEDER
+	    		|| method == ControlMethod.SUBSTATION_BUS;
+    	} catch (IllegalArgumentException e) {
+			return false;
+		}
+    }
 }

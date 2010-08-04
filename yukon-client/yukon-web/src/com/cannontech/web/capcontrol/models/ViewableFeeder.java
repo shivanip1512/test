@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol.models;
 
 import java.util.List;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.yukon.cbc.Feeder;
 
 public class ViewableFeeder {
@@ -50,5 +51,14 @@ public class ViewableFeeder {
 
     public void setIvvcControlled(boolean ivvcControlled) {
         this.ivvcControlled = ivvcControlled;
+    }
+    
+    public boolean isIndividualFeederControlled() {
+    	try {
+	    	ControlMethod method = ControlMethod.getForDbString(getFeeder().getControlmethod());
+	    	return method == ControlMethod.INDIVIDUAL_FEEDER;
+    	} catch (IllegalArgumentException e) {
+			return false;
+		}
     }
 }

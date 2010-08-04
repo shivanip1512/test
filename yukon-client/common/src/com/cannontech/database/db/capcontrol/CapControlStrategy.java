@@ -10,9 +10,9 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
+import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.dao.StrategyDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
@@ -30,10 +30,11 @@ import com.cannontech.spring.YukonSpringHook;
  *  No .data. object for this DBPersistent at this time.
  * 
  */
-public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
+public class CapControlStrategy extends DBPersistent implements CTIDbChange {
+	
 	private Integer strategyID = null;
 	private String strategyName = null;
-	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;
+	private String controlMethod = ControlMethod.INDIVIDUAL_FEEDER.getDbName();
 	private Integer maxDailyOperation = new Integer(0);
 	private Character maxOperationDisableFlag = new Character('N');
 	private Integer peakStartTime = new Integer(0);
@@ -51,11 +52,6 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
     private String likeDayFallBack = "N";
     private String endDaySettings = CtiUtilities.STRING_NONE;
     private List<PeakTargetSetting> targetSettings;
-	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
-	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
-	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
-	public static final String CNTRL_MANUAL_ONLY= "ManualOnly";
-	public static final String CNTRL_TIME_OF_DAY= "TimeOfDay";
 	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
 		"MaxOperationDisableFlag",
@@ -287,12 +283,16 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
 	}
 	
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (11/9/2001 1:42:02 PM)
-	 * @param newControlMethod java.lang.String
+	 * Sets the control method for this strategy, if the control method is 
+	 * time of day, we also set the control units to time of day since the
+	 * UI no longer has the ability to touch that field.
 	 */
-	public void setControlMethod(java.lang.String newControlMethod) {
+	public void setControlMethod(String newControlMethod) {
 		controlMethod = newControlMethod;
+		ControlMethod method = ControlMethod.getForDbString(newControlMethod);
+		if(method == ControlMethod.TIME_OF_DAY) {
+			setControlUnits(ControlAlgorithm.TIME_OF_DAY.getDisplayName());
+		}
 	}
 	
 	/**
@@ -419,7 +419,12 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
 	}
 	
 	public static boolean todExists(Integer strategyId) {
-	    String sql = "Select strategyId from ccstrategytimeofday where strategyId = ?";
+	    String sql = "Select ts.* ";
+	    sql += "from CCStrategyTargetSettings ts, ";
+	    sql +=   "capcontrolstrategy strat ";
+	    sql += "where ts.strategyId = strat.strategyId ";
+	    sql +=   "and strat.controlmethod = 'timeofday ";
+	    sql +=   "and strategyid = ?";
 	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
 	    todExists = false;
 	    yukonTemplate.query(sql, new Integer[] {strategyId}, new RowCallbackHandler() {
@@ -431,7 +436,7 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
 	}
 	
 	public static void deleteTod(Integer strategyId) {
-        String sql = "delete from ccstrategytimeofday where strategyId = ?";
+        String sql = "delete from CCStrategyTargetSettings where strategyId = ?";
         SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations) YukonSpringHook.getBean("simpleJdbcTemplate");
         jdbcTemplate.update(sql, strategyId);
     }
@@ -661,7 +666,7 @@ public class CapControlStrategy extends DBPersistent  implements CTIDbChange {
     }
     
     public boolean isTimeOfDay(){
-        return getControlUnits().equalsIgnoreCase(ControlAlgorithm.TIME_OF_DAY.getDisplayName());
+        return getControlMethod().equalsIgnoreCase(ControlMethod.TIME_OF_DAY.getDbName());
     }
     
     public void controlUnitsChanged(String newValue) {
