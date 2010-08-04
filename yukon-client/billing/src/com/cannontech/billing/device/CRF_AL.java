@@ -21,9 +21,23 @@ public class CRF_AL extends BillingDeviceBase {
         data.setValue(value);
         data.setUnitOfMeasure(unitOfMeasure);
         data.setTimestamp(timestamp);
-
+        
         ReadingType readingType = getReadingType(unitOfMeasure);
-        addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
+
+        switch (pointIdentifier.getPointType()) {
+
+        case Analog:
+
+            switch (pointIdentifier.getOffset()) {
+
+            case 1: // KWh
+                addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
+                break;
+                
+            }
+            
+        }
+
     }
 
     @Override
