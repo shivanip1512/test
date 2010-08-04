@@ -56,6 +56,8 @@ public:
 
    static string getTableName();
 
+   bool isInitialized();
+
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
    virtual bool Insert();
    virtual bool Update();

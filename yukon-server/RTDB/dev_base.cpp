@@ -436,20 +436,28 @@ CtiDeviceBase& CtiDeviceBase::operator=(const CtiDeviceBase& aRef)
     return *this;
 }
 
-void CtiDeviceBase::purgeDynamicInfo(const int &paoid)
+void CtiDeviceBase::purgeDynamicPaoInfo()
 {
+    set<CtiTableDynamicPaoInfo>::iterator itr = _paoInfo.begin();
+
+    if(itr == _paoInfo.end()) // Nothing to purge, let's get out of here!
+        return; 
+
+    const string owner = (*itr).getOwnerString();
+
     // Purge the dynamic info from memory. 
     _paoInfo.clear();
 
     // Purge the dynamic info from the database.
     static const string sqlPurge = "DELETE "
                                    "FROM dynamicpaoinfo "
-                                   "WHERE paobjectid = ? AND owner = 'scanner'";
+                                   "WHERE paobjectid = ? AND owner = ?";
 
     Cti::Database::DatabaseConnection   connection;
     Cti::Database::DatabaseWriter       deleter(connection, sqlPurge);
 
-    deleter << paoid;
+    deleter << getID()
+            << owner;
 
     deleter.execute();
 }

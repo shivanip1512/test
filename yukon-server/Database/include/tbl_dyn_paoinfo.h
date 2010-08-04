@@ -394,11 +394,12 @@ public:
 
     void DecodeDatabaseReader(Cti::RowReader& rdr);
 
-    long             getPaoID()   const;
-    long             getEntryID() const;
-    CtiApplication_t getOwner()   const;
-    PaoInfoKeys      getKey()     const;
-    string           getValue()   const;
+    long             getPaoID()       const;
+    long             getEntryID()     const;
+    CtiApplication_t getOwnerID()     const;
+    string           getOwnerString() const;
+    PaoInfoKeys      getKey()         const;
+    string           getValue()       const;
 
     void             getValue(int           &destination) const;
     void             getValue(long          &destination) const;

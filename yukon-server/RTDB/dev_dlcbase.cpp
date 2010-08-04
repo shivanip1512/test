@@ -93,8 +93,14 @@ string DlcBaseDevice::getSQLCoreStatement() const
 
 void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    int preAddress = CarrierSettings.getAddress(), postAddress;
-    INT iTemp;
+    bool validInitAddress = false;
+    int preAddress, postAddress;
+
+    if( CarrierSettings.isInitialized() )
+    {
+        preAddress = CarrierSettings.getAddress();
+        validInitAddress = true;
+    }
 
     Inherited::DecodeDatabaseReader(rdr);       //  get the base class handled
 
@@ -107,12 +113,12 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
     CtiLockGuard<CtiMutex> guard(_classMutex);
     CarrierSettings.DecodeDatabaseReader(rdr);
 
-    if( preAddress != -1 )
+    if( validInitAddress )
     {
         postAddress = CarrierSettings.getAddress();
         if( preAddress != postAddress )
         {
-            purgeDynamicInfo(CarrierSettings.getDeviceID());
+            purgeDynamicPaoInfo();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Device address has been updated. Purging dynamic PAObject"

@@ -357,7 +357,7 @@ CtiTableDynamicPaoInfo& CtiTableDynamicPaoInfo::operator=(const CtiTableDynamicP
 
         _entry_id = aRef.getEntryID();
         _pao_id   = aRef.getPaoID();
-        _owner_id = aRef.getOwner();
+        _owner_id = aRef.getOwnerID();
         _key      = aRef.getKey();
         _value    = aRef.getValue();
     }
@@ -410,9 +410,9 @@ bool CtiTableDynamicPaoInfo::Insert(Cti::Database::DatabaseConnection &conn)
     const string *tmp_owner = 0, *tmp_key = 0;
     string tmp_value;
 
-    if( _owner_map.find(getOwner()) != _owner_map.end() )
+    if( _owner_map.find(getOwnerID()) != _owner_map.end() )
     {
-        tmp_owner = (_owner_map.find(getOwner()))->second;
+        tmp_owner = (_owner_map.find(getOwnerID()))->second;
     }
 
     if( _key_map.find(getKey()) != _key_map.end() )
@@ -481,9 +481,9 @@ bool CtiTableDynamicPaoInfo::Update(Cti::Database::DatabaseConnection &conn, lon
     const string *tmp_owner = 0, *tmp_key = 0;
     string tmp_value;
 
-    if( _owner_map.find(getOwner()) != _owner_map.end() )
+    if( _owner_map.find(getOwnerID()) != _owner_map.end() )
     {
-        tmp_owner = (_owner_map.find(getOwner()))->second;
+        tmp_owner = (_owner_map.find(getOwnerID()))->second;
     }
 
     if( _key_map.find(getKey()) != _key_map.end() )
@@ -636,7 +636,7 @@ long CtiTableDynamicPaoInfo::getPaoID() const
 {
     return _pao_id;
 }
-CtiApplication_t CtiTableDynamicPaoInfo::getOwner() const
+CtiApplication_t CtiTableDynamicPaoInfo::getOwnerID() const
 {
     return _owner_id;
 }
@@ -645,10 +645,18 @@ CtiTableDynamicPaoInfo::PaoInfoKeys CtiTableDynamicPaoInfo::getKey() const
     return _key;
 }
 
-
 string CtiTableDynamicPaoInfo::getValue() const
 {
     return _value;
+}
+
+string CtiTableDynamicPaoInfo::getOwnerString() const
+{
+    const string *ownerString = 0;
+
+    ownerString = (_owner_map.find(getOwnerID()))->second;
+
+    return *ownerString;
 }
 
 //  these may need to become individually named get functions, if the assignment idiom doesn't work out
@@ -766,7 +774,7 @@ void CtiTableDynamicPaoInfo::dump()
 
         dout << "getEntryID() " << getEntryID() << endl;
         dout << "getPaoID()   " << getPaoID() << endl;
-        dout << "getOwner()   " << getOwner() << endl;
+        dout << "getOwnerID() " << getOwnerID() << endl;
         dout << "getKey()     " << getKey() << endl;
         dout << "getValue()   " << getValue() << endl;
     }

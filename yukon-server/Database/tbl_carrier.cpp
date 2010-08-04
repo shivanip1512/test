@@ -141,3 +141,7 @@ bool CtiTableDeviceCarrier::Delete()
     return deleter.execute();
 }
 
+bool CtiTableDeviceCarrier::isInitialized()
+{
+    return ( (getAddress() >= 0) && (getDeviceID() >= 0) );
+}
