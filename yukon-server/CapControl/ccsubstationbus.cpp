@@ -2607,9 +2607,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                     if (!getDualBusEnable() || getPrimaryBusFlag())
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
+                        dout << CtiTime() << " " << getPaoName() <<" USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
                                 getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl;
-                        dout << CtiTime() << " - USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
+                        dout << CtiTime() << " " << getPaoName() <<" USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
                                 getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
                     }
                     //resetting integration total...
@@ -3630,7 +3630,10 @@ BOOL CtiCCSubstationBus::isControlPoint(LONG pointid)
 void CtiCCSubstationBus::updateIntegrationVPoint(const CtiTime &currentDateTime)
 {
     DOUBLE controlVvalue = 0;
-
+    if (getDisableFlag())
+    {
+        return;
+    }
     if (stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
@@ -3670,15 +3673,20 @@ void CtiCCSubstationBus::updateIntegrationVPoint(const CtiTime &currentDateTime)
             setIVCount( 1 );
         }
     }
+    if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;
+        dout << CtiTime() << " " << getPaoName() <<": iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;
     }
 }
 
 void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
 {
     DOUBLE controlWvalue = 0;
+    if (getDisableFlag())
+    {
+        return;
+    }
 
     if (stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
@@ -3709,9 +3717,10 @@ void CtiCCSubstationBus::updateIntegrationWPoint(const CtiTime &currentDateTime)
             setIWCount( 1 );
         }
     }
+    if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
+        dout << CtiTime() << " " << getPaoName() <<": iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
     }
 
 }

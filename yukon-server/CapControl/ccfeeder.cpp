@@ -2306,6 +2306,11 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
 {
     DOUBLE controlVvalue = 0;
 
+    if( getDisableFlag() )
+    {
+        return;
+    }
+
     if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
         if (!stringCompareIgnoreCase(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
@@ -2354,15 +2359,21 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
             setIVCount( 1 );
         }
     }
+    if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;
+        dout << CtiTime() << " " << getPaoName() <<": iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;
     }
 }
 
 void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime)
 {
     DOUBLE controlWvalue = 0;
+
+    if( getDisableFlag() )
+    {
+        return;
+    }
 
     if (!stringCompareIgnoreCase(getStrategy()->getControlMethod(),ControlStrategy::IndividualFeederControlMethod) )
     {
@@ -2393,9 +2404,10 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
             setIWCount( 1 );
         }
     }
+    if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
+        dout << CtiTime() << " " << getPaoName() <<":  iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
     }
 }
 
@@ -2512,11 +2524,12 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         if (getIWCount() > 0)
             setIWControl(getIWControlTot() / getIWCount());
 
+        if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
+            dout << CtiTime() << " " << getPaoName() <<"  USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
                     getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl;
-            dout << CtiTime() << " - USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
+            dout << CtiTime()  << " " << getPaoName() <<" USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
                     getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
         }
      //resetting integration total...
@@ -4491,6 +4504,9 @@ bool CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
                     ratioB = fabs((varBValue - varBValueBeforeControl) / banksize);
                     ratioC = fabs((varCValue - varCValueBeforeControl) / banksize);
                 }
+                ratioA *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
+                ratioB *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
+                ratioC *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
 
                 if( areAllPhasesSuccess(ratioA, ratioB, ratioC, minConfirmPercent) )
                 {
@@ -4518,6 +4534,7 @@ bool CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent, LONG currentVarPoi
                 }
 
                 ratio = change/banksize;
+                ratio *= (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ? -1.0 : 1.0);
                 if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
