@@ -102,12 +102,18 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         }
     }
     
-    public List<DistinctEnrollment> getDistinctEnrollments(int accountId) {
+    public List<DistinctEnrollment> getDistinctEnrollments(int accountId, boolean past) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT InventoryId, LMGroupId, AccountId, ProgramId");
         sql.append("FROM LMHardwareControlGroup");
         sql.append("WHERE AccountID").eq(accountId);
         sql.append("  AND Type").eq(1);
+        
+        if(!past) {
+            sql.append("AND GroupEnrollStop IS NULL");
+        } else {
+            sql.append("AND GroupEnrollStop IS NOT NULL");
+        }
         
         return yukonJdbcTemplate.query(sql, new ParameterizedRowMapper<DistinctEnrollment> () {
             @Override

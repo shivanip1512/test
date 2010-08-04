@@ -817,4 +817,10 @@ public class OperatorHardwareController {
     public void setLmHardwareBasedao(LMHardwareBaseDao lmHardwareBaseDao) {
         this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
+    
+    @Autowired
+    public void setHardwareEventLogService(HardwareEventLogService hardwareEventLogService) {
+        this.hardwareEventLogService = hardwareEventLogService;
+    }
+    
 }

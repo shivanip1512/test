@@ -93,7 +93,8 @@ public interface LMHardwareControlGroupDao {
      * IE: If an account has had a hardware that has been enrolled,  unenrolled and re-enrolled
      * in the same program, this will only return one object, not two.
      * @param accountId
+     * @param past if false only current enrollments will be returned.
      * @return
      */
-    public List<DistinctEnrollment> getDistinctEnrollments(int accountId);
+    public List<DistinctEnrollment> getDistinctEnrollments(int accountId, boolean past);
 }

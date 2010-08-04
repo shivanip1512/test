@@ -13,7 +13,8 @@ public interface DisplayableProgramDao {
     public DisplayableProgram getDisplayableProgram(Program program, 
                                                     List<ControlHistory> controlHistoryList, 
                                                     ControlPeriod controlPeriod,
-                                                    boolean applyFilters);
+                                                    boolean applyFilters,
+                                                    boolean past);
 
     /**
      * This method returns a list of displayablePrograms that contain one control history

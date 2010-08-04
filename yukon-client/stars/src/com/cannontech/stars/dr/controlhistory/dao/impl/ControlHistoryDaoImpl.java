@@ -45,7 +45,7 @@ public class ControlHistoryDaoImpl implements ControlHistoryDao {
     public ListMultimap<Integer, ControlHistory> getControlHistory(int accountId, YukonUserContext userContext, ControlPeriod controlPeriod, boolean past) {
  
         ListMultimap<Integer, ControlHistory> programControlHistoryMultimap = ArrayListMultimap.create();
-        List<DistinctEnrollment> enrollments = lmHardwareControlGroupDao.getDistinctEnrollments(accountId);
+        List<DistinctEnrollment> enrollments = lmHardwareControlGroupDao.getDistinctEnrollments(accountId, past);
         
         for (DistinctEnrollment enrollment : enrollments) {
             

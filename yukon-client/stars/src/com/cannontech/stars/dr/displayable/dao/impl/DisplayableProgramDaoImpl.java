@@ -59,13 +59,14 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
     public DisplayableProgram getDisplayableProgram(Program program,
                                                     final List<ControlHistory> controlHistoryList,
                                                     ControlPeriod controlPeriod,
-                                                    final boolean applyFilters) {
+                                                    final boolean applyFilters,
+                                                    boolean past) {
         // Filter Rule #1
         if (applyFilters && controlHistoryList.isEmpty()) return null;
         
         // Filter Rule #2
         boolean containsOnlyNotEnrolledHistory = controlHistoryService.containsOnlyNotEnrolledHistory(controlHistoryList);
-        if (applyFilters && containsOnlyNotEnrolledHistory) return null;
+        if (!past &&applyFilters && containsOnlyNotEnrolledHistory) return null;
         
         List<DisplayableControlHistory> displayableControlHistoryList = new ArrayList<DisplayableControlHistory>(controlHistoryList.size());
 
@@ -133,7 +134,7 @@ public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements
             List<ControlHistory> controlHistoryList = new ArrayList<ControlHistory>(controlHistoryMap.get(programId));
             if (controlHistoryList == null) controlHistoryList = Collections.emptyList();
 
-            DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, controlPeriod, applyFilters);
+            DisplayableProgram displayableProgram = getDisplayableProgram(program, controlHistoryList, controlPeriod, applyFilters, past);
             if (displayableProgram != null) displayableProgramList.add(displayableProgram);
         }
 
