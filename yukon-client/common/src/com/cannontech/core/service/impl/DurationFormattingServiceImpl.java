@@ -11,6 +11,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.Chronology;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.DurationField;
 import org.joda.time.DurationFieldType;
@@ -213,10 +214,52 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
 		}
 	}
     
-    private static Period adjustPeriod(Period period, Duration duration, PeriodType periodType, RoundingMode roundingMode) {
+    private static Period periodGenerate(Duration duration, PeriodType periodType, RoundingMode roundingMode, YukonUserContext yukonUserContext) {
     	
+    	Duration adjustedDuration = roundDuration(duration, periodType, roundingMode, yukonUserContext);
+        Period result = new Period(adjustedDuration, periodType, getChronologyForUser(yukonUserContext)).normalizedStandard(periodType);
+        return result;
+    }
+    
+    private static Period periodGenerate(ReadableInstant startTime, Duration duration, PeriodType periodType, RoundingMode roundingMode, YukonUserContext yukonUserContext) {
+        // Note that this method essentially rounds the endTime while fixing in time the startTime. This is
+        // somewhat of an arbitrary choice (it could work the other way).
+    	
+        Duration adjustedDuration = roundDuration(duration,
+                                                   periodType,
+                                                   roundingMode,
+                                                   yukonUserContext);
+        
+        DateTime startWithFixedChronology = new DateTime(startTime, yukonUserContext.getJodaTimeZone());
+        Period result = new Period(startWithFixedChronology, adjustedDuration, periodType);
+        return result;
+    }
+
+    /**
+     * Will round a Duration according to the last field of the PeriodType and the
+     * indicated RoundingMode. 
+     * 
+     * The duration is rounded by dividing it by the number of milliseconds in the
+     * last field of the PeriodType. For example, the last field of day-hour type
+     * is hour. There are 3,600,000ms in an hour. So, rounding a duration
+     * of 1 hour 10 minutes would look like:
+     * 
+     * 4,200,000 (ms)/ 3,600,000 (ms/hour) = 1 1/6 (hours)
+     * 
+     * This value then be rounded according to the rounding mode:
+     * 
+     * HALF_UP would give 1 (hour)
+     * FLOOR would give 1 (hour)
+     * CEILING would give 2 (hour)
+     * 
+     * This rounded value is then converted back into a millisecond based Duration and returned.
+     * 
+     * @return
+     */
+    private static Duration roundDuration(Duration duration, PeriodType periodType,
+            RoundingMode roundingMode, YukonUserContext yukonUserContext) {
         DurationFieldType lastFieldType = periodType.getFieldType(periodType.size() - 1);
-        ISOChronology chrono = ISOChronology.getInstanceUTC(); // probably want to pass this in too
+        ISOChronology chrono = ISOChronology.getInstance(yukonUserContext.getJodaTimeZone());
         DurationField lastField = lastFieldType.getField(chrono);
         long lastUnitMillis = lastField.getUnitMillis();
         
@@ -225,26 +268,10 @@ public strictfp class DurationFormattingServiceImpl implements DurationFormattin
         
         BigDecimal remainder = bigDuration.remainder(bigMillis);
         BigDecimal adjustment = remainder.divide(bigMillis, 0, roundingMode);
+        long milliAdjustment = adjustment.longValueExact() * lastUnitMillis;
         
-        // the normalize on here deals with redistribution of millis after rounding. Ex: 59s 500ms -> 1m 0s 0m 0ms
-        Period result = period.withFieldAdded(lastFieldType, adjustment.toBigIntegerExact().intValue()).normalizedStandard(periodType);
-        return result;
-    }
-    
-    private static Period periodGenerate(Duration duration, PeriodType periodType, RoundingMode roundingMode, YukonUserContext yukonUserContext) {
-    	
-    	// normalizing is only useful here because it gives us days and weeks, no other benefit
-        Period normalizedStandard = new Period(duration, periodType, getChronologyForUser(yukonUserContext)).normalizedStandard(periodType);
-        Period result = adjustPeriod(normalizedStandard, duration, periodType, roundingMode);
-        return result;
-    }
-    
-    private static Period periodGenerate(ReadableInstant startTime, Duration duration, PeriodType periodType, RoundingMode roundingMode, YukonUserContext yukonUserContext) {
-    	
-    	Interval interval = new Interval(startTime, duration);
-        Period period = new Period(interval, periodType, getChronologyForUser(yukonUserContext));
-        Period result = adjustPeriod(period, duration, periodType, roundingMode);
-        return result;
+        Duration adjustedDuration = duration.plus(milliAdjustment);
+        return adjustedDuration;
     }
 
     

@@ -373,6 +373,170 @@ public class DurationFormattingServiceImplTest {
     }
     
     @Test
+    public void test_dh_special_rounding_fall_1() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 11, 6, 7, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 7, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_fall_2() {
+        String expected = "1 day 1 hour";
+        DateTime start = new DateTime(2010, 11, 6, 7, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 7, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_fall_3() {
+        String expected = "0 days 24 hours";
+        DateTime start = new DateTime(2010, 11, 6, 8, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 7, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_fall_4() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 11, 13, 8, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_spring_1() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 3, 13, 7, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_spring_2() {
+        String expected = "1 day 1 hour";
+        DateTime start = new DateTime(2010, 3, 13, 7, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_spring_3() {
+        String expected = "0 days 22 hours";
+        DateTime start = new DateTime(2010, 3, 13, 8, 50, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special_rounding_spring_4() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 3, 13, 8, 10, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 0,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_fall_1() {
+        String expected = "1 day 1 hour";
+        DateTime start = new DateTime(2010, 11, 6, 7, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 7, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_fall_2() {
+        String expected = "1 day 1 hour";
+        DateTime start = new DateTime(2010, 11, 6, 7, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 7, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_fall_3() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 11, 6, 8, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 7, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_fall_4() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 11, 13, 8, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 11, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_spring_1() {
+        String expected = "1 day 1 hour";
+        DateTime start = new DateTime(2010, 3, 13, 7, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_spring_2() {
+        String expected = "1 day 1 hour";
+        DateTime start = new DateTime(2010, 3, 13, 7, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_spring_3() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 3, 13, 8, 40, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_dh_special2_rounding_spring_4() {
+        String expected = "1 day 0 hours";
+        DateTime start = new DateTime(2010, 3, 13, 8, 20, 0, 0, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 3, 14, 8, 20,  0, 0, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DH, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_wdhm_rounding_1() {
+        String expected = "2 days 1 hour 2 minutes 1 second";
+        DateTime start = new DateTime(2010, 6, 1, 8, 10, 0, 100, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 6, 3, 9, 12,  0, 900, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DHMS, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
+    public void test_wdhm_rounding_2() {
+        // I think this is an interesting test case because it demonstrates that we are not
+        // rounding the start and end times, but rather the number of millis between them.
+        String expected = "1 day 1 hour 1 minute 0 seconds";
+        DateTime start = new DateTime(2010, 6, 1, 8, 10, 0, 400, DateTimeZone.forID("America/Chicago"));
+        DateTime end =   new DateTime(2010, 6, 2, 9, 11,  0, 600, DateTimeZone.forID("America/Chicago"));
+        String result = service.formatDuration(start, end, DurationFormat.DHMS, userContext);
+        Assert.assertEquals(expected, result);
+    }
+    
+    @Test
     public void test_d() {
     	
     	String expected;
