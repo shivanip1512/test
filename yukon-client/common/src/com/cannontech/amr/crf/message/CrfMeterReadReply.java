@@ -1,6 +1,10 @@
 package com.cannontech.amr.crf.message;
 
-public class CrfMeterReadReply {
+import java.io.Serializable;
+
+public class CrfMeterReadReply implements Serializable{
+    
+    private static final long serialVersionUID = 1L;
     private CrfMeterReadingReplyType replyType = CrfMeterReadingReplyType.TIMEOUT;
 
     public boolean isSuccess() {
