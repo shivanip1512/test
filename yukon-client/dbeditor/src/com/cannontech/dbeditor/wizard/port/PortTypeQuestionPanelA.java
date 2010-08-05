@@ -223,6 +223,9 @@ public class PortTypeQuestionPanelA extends com.cannontech.common.gui.util.DataI
         if (getUDPTerminalServerRadioButton().isSelected()) {
             return PortFactory.createPort(PortTypes.UDPPORT);
         }
+        else if (getTCPTerminalServerRadioButton().isSelected()) {
+            return PortFactory.createPort(PortTypes.TSERVER_SHARED);
+        }
         //If not UDP, we will decide what to create in the next panel.
         return null;
     }
