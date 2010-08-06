@@ -4,7 +4,7 @@
 
     <!-- enrollmentList -->
     <entry key="yukon.web.modules.operator.enrollmentList.pageName">Enrollment</entry>
-    <entry key="yukon.web.modules.operator.enrollmentList.pageDescription">Enrollment</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.pageDescription">{0}</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.enrolledPrograms.title">Enrolled Programs</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.noEnrolledPrograms">This account is not enrolled in any programs.</entry>
