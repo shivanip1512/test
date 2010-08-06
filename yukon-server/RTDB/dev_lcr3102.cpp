@@ -592,7 +592,7 @@ INT Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( INMESS *InMessage, CtiTi
                 results += getName() + " / Historical Runtime CT " + CtiNumStr(currentTransformer) + ": Hour -"
                          + CtiNumStr(counter) + ": " + CtiNumStr((double)runtimeMins / 60.0, 1) + " percent";
 
-                if( runtimeMins < 0x3f)
+                if( runtimeMins > 0x3c && runtimeMins < 0x3f)
                 {
                     // This is strange. The 'invalid data' return should give us 0x3F, so this returned a number higher
                     // than the 60 minutes in an hour but less than the 0x3F case.
