@@ -317,20 +317,38 @@ public static int differenceMinutes(Date from, Date to) {
     }    
     
     /**
-     * Method to get a date which represents midnight tonight (00:00:00.000 tomorrow)
+     * Method to get a date which represents numDays (+/-) from "now".toDateMidnight
+     * Example:
+     *      Now: Wed Aug 04 16:51:41 CDT 2010
+     *      NumDays=1: Thu Aug 05 00:00:00 CDT 2010
+     *      NumDays=0: Wed Aug 04 00:00:00 CDT 2010
+     *      NumDays=-3: Sun Aug 01 00:00:00 CDT 2010
      * @param timeZone - Time zone to get midnight for
      * @return Midnight date
      */
+    public static Date getMidnight(TimeZone timeZone, int numDays) {
+        
+        // Get midnight (this morning) using Joda
+        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+        DateTime date = new DateTime(dateTimeZone);
+        DateMidnight dateMidnight = date.toDateMidnight();
+
+        DateMidnight midnightTonight = dateMidnight.plusDays(numDays);
+        Date midnight = new Date(midnightTonight.getMillis());
+        
+        return midnight;
+    }
+    
+    /**
+     * Method to get a date which represents midnight tonight (00:00:00.000 tomorrow)
+     * @param timeZone - Time zone to get midnight for
+     * Example:
+     *      Now: Wed Aug 04 16:51:41 CDT 2010
+     *      MidnightTonight: Thu Aug 05 00:00:00 CDT 2010
+     * @return Midnight date
+     */
     public static Date getMidnightTonight(TimeZone timeZone) {
-    	
-    	// Get midnight tonight using Joda
-    	DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
-		DateTime date = new DateTime(dateTimeZone);
-		DateMidnight dateMidnight = date.toDateMidnight();
-		DateMidnight midnightTonight = dateMidnight.plusDays(1);
-		Date midnight = new Date(midnightTonight.getMillis());
-		
-		return midnight;
+        return getMidnight(timeZone, 1);
     }
 
     /**

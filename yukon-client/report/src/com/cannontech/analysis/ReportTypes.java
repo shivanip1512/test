@@ -17,7 +17,7 @@ public enum ReportTypes {
         "Summary report of archived point data values and timestamps; includes 6 peaks and lows per point."), //Peaks/Usage
     DEVICE_READINGS("Device Readings", DeviceReadingsController.class, ReportGroup.ADMINISTRATIVE,
         "Details report of archived point data values and timestamps, based on attribute selection."),
-    DEVICE_READ_STATISTICS_SUMMARY("Device Read Statistics Summary (31 day)", DeviceReadStatisticsSummaryController.class, ReportGroup.ADMINISTRATIVE,
+    DEVICE_READ_STATISTICS_SUMMARY("Device Read Statistics Summary", DeviceReadStatisticsSummaryController.class, ReportGroup.ADMINISTRATIVE,
         "Summary report of percentage of devices with archived readings over selected dates; aggregated by device group."),
         
     CARRIER_DATA("Carrier Data", CarrierDBModel.class, ReportGroup.DATABASE,

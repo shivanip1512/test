@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -17,8 +16,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
@@ -27,7 +26,6 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.data.point.PointTypes;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
 
@@ -40,12 +38,11 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
     private AttributeService attributeService;
     
     // member variables
-    private String title = "Device Read Statistics Summary Report (31 day)";
+    private String title = "Device Read Statistics Summary Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Attribute attribute;
     private List<String> groupNames;
     private DeviceGroupService deviceGroupService;
-    private DateTime lastMonth;
 
     static public class ModelRow {
         public String groupName;
@@ -145,8 +142,10 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
                     sql.append(", COUNT(rph.changeId) reads");
                     sql.append("from YukonPAObject ypo");
                     sql.append("  left outer join Point p on p.PAObjectID = ypo.PAObjectID and p.POINTOFFSET = ");
-                    sql.appendArgument(pointIdentifier.getOffset()).append(" and p.POINTTYPE = ").appendArgument(PointTypes.getType(pointIdentifier.getType()));
-                    sql.append("  left outer join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID and rph.TIMESTAMP >= ").appendArgument(lastMonth.toDate());
+                    sql.appendArgument(pointIdentifier.getOffset()).append(" and p.POINTTYPE = ").appendArgument(pointIdentifier.getPointType().getPointTypeString());
+                    sql.append("  left outer join RAWPOINTHISTORY rph on rph.POINTID = p.POINTID");
+                    sql.append("and rph.TIMESTAMP").gt(getStartDate());
+                    sql.append("and rph.TIMESTAMP").lte(getStopDate());
                     sql.append("where ypo.PAObjectID in ( ").appendArgumentList(subList).append(" ) "); 
                     sql.append("group by ypo.PAOName");
                     return sql;
@@ -165,10 +164,6 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
             groupResultRows.addAll(rows);
         }
         return groupResultRows;
-    }
-    
-    public void setLastMonthDate(DateTime lastMonth) {
-        this.lastMonth = lastMonth;
     }
     
     public void setAttribute(Attribute attribute) {
@@ -196,10 +191,5 @@ public class DeviceReadStatisticsSummaryModel extends BareDatedReportModelBase<D
     @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
-    }
-
-    @Override
-    public boolean useStartDate(){
-        return false;
     }
 }

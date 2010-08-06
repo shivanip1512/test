@@ -27,6 +27,7 @@ import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
+import com.google.common.collect.Iterables;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
     private DeviceGroupProviderDao deviceGroupDao;
@@ -79,7 +80,21 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     }
 
     public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups) {
-        return getDevices(groups, Integer.MAX_VALUE);
+        if (groups.isEmpty()) {
+            return Collections.emptySet();
+        } else if (groups.size() == 1) {
+            Set<SimpleDevice> result = deviceGroupDao.getDevices(Iterables.getOnlyElement(groups));
+            return result;
+        } else {
+            Set<SimpleDevice> result = new LinkedHashSet<SimpleDevice>();
+            groups = removeDuplicates(groups); // doesn't touch passed in collection
+            
+            for (DeviceGroup deviceGroup : groups) {
+                Set<SimpleDevice> devices = deviceGroupDao.getDevices(deviceGroup);
+                result.addAll(devices);
+            }
+            return result;
+        }
     }
     
     public Set<SimpleDevice> getDevices(Collection<? extends DeviceGroup> groups, int maxSize) {

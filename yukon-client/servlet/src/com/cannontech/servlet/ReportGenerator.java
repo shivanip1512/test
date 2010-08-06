@@ -26,6 +26,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.TimeZone;
 
 import javax.servlet.ServletException;
@@ -43,8 +44,10 @@ import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.gui.ReportBean;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
@@ -242,7 +245,19 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
                     bufferedTemp.write("\r\n".getBytes());
                 } 
                 bufferedTemp.close();
-            } else {
+            } 
+            else {
+                if ( action.equalsIgnoreCase("LoadParameters")) {
+                    if( reportBean.getReportType() == ReportTypes.DEVICE_READ_STATISTICS_SUMMARY) {
+                        // 20100804 - SN - (YUK-8940) Requirement for this report to default to startDate=3 days ago, stopDate=midnight tonight
+                        SystemUserContext systemUserContext = new SystemUserContext();
+                        Date midnightTonight = TimeUtil.getMidnightTonight(systemUserContext.getTimeZone());
+                        Date threeDaysAgo = TimeUtil.getMidnight(systemUserContext.getTimeZone(), -2); //use -2 because this method starts at 00:00 this morning
+                        reportBean.getStartDate().setTime(threeDaysAgo.getTime());
+                        reportBean.getStopDate().setTime(midnightTonight.getTime());
+                    }
+                }
+                
                 if( destURL!= null ) {
                     destURL = ServletUtil.createSafeRedirectUrl(req, destURL);
                     resp.sendRedirect(destURL);

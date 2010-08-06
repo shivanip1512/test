@@ -306,7 +306,7 @@ function makeFirstSelectedFilterValueVisible() {
 				<td valign="top" style="padding-left:5; padding-top:5">
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
-				      <td>
+				      <td valign="bottom">
                       
                         <tags:dateInputCalendar fieldId="startCal" 
                                                 fieldName="startDate" 
@@ -314,8 +314,9 @@ function makeFirstSelectedFilterValueVisible() {
                                                 fieldValue="<%= datePart.format(REPORT_BEAN.getStartDate()) %>"/>
 				   		
 					  </td>
+					  <td valign="bottom">&nbsp</td>
 			   		  <%if( controller != null && controller.useStartStopTimes() ){%>
-					  <td width="45" class="columnHeader" align="center">Hour<BR>
+					  <td class="columnHeader" align="center">Hour<BR>
 					    <select name="startHour" id="startHourID">
 					    <% for (int i = 0; i < 24; i++) {
 						    String iStr = String.valueOf(i);
@@ -324,7 +325,7 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="45" class="columnHeader" align="center">Min<BR>
+					  <td width="100%" class="columnHeader" align="center">Min<BR>
 					    <select name="startMinute" id="startMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);
@@ -341,7 +342,7 @@ function makeFirstSelectedFilterValueVisible() {
 				<td valign="top" style="padding-left:5; padding-top:5">
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
-					  <td>			
+					  <td valign="bottom">			
                       
                         <tags:dateInputCalendar fieldId="stopCal" 
                                                 fieldName="stopDate" 
@@ -349,9 +350,10 @@ function makeFirstSelectedFilterValueVisible() {
                                                 fieldValue="<%= datePart.format(REPORT_BEAN.getStopDate()) %>"/>
                                                 	
                 	  </td>
+					  <td valign="bottom">&nbsp</td>
 					  <% if( controller != null && controller.useStartStopTimes() ){%>
 
-					  <td width="45" class="columnHeader" align="center">Hour<BR>
+					  <td class="columnHeader" align="center">Hour<BR>
 					    <select name="stopHour" id="stopHourID">
 					    <% for (int i = 0; i < 24; i++) {
 						    String iStr = String.valueOf(i);
@@ -360,7 +362,7 @@ function makeFirstSelectedFilterValueVisible() {
 						  <%}%>
 						</select>
 					  </td>
-					  <td width="45" class="columnHeader" align="center">Min<BR>
+					  <td width="100%" class="columnHeader" align="center">Min<BR>
 					    <select name="stopMinute" id="stopMinuteID">
 					    <% for (int i = 0; i < 60; i=i+5) {
 						    String iStr = String.valueOf(i);

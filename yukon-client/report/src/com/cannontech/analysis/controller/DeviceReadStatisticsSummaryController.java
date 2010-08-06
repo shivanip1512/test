@@ -2,13 +2,10 @@ package com.cannontech.analysis.controller;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.DeviceReadStatisticsSummaryReport;
@@ -18,9 +15,7 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
@@ -65,19 +60,10 @@ public class DeviceReadStatisticsSummaryController extends ReportControllerBase{
             List<String> namesList = Arrays.asList(names); 
             deviceReadSummaryModel.setGroupsFilter(namesList);
         } 
-        
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        TimeZone timeZone = yukonUserContext.getTimeZone();
-        DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(timeZone);
-        DateTime stopDate = new DateTime(deviceReadSummaryModel.getStopDate(), dateTimeZone);
-        DateTime lastMonth = stopDate.minusDays(31);
-        deviceReadSummaryModel.setLastMonthDate(lastMonth);
-        deviceReadSummaryModel.setStartDate(lastMonth.toDate());
     }
     
     public String getHTMLOptionsTable() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("<div class='TitleHeader' style='padding-bottom: 10px;'>* Statistics will be retrieved for the 31 days previous to the stop date chosen above.</div>");
         sb.append("<table style='padding: 5px;' class='TableCell'>" + LINE_SEPARATOR);
         
         sb.append("    <tr>" + LINE_SEPARATOR);
