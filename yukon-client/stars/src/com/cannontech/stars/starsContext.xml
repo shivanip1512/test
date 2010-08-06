@@ -263,6 +263,9 @@
 
     <bean id="webConfigurationDao" class="com.cannontech.stars.webconfiguration.dao.impl.WebConfigurationDaoImpl"/>
 
+    <bean id="optOutSurveyDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutSurveyDaoImpl"/>
+    <bean id="optOutSurveyService" class="com.cannontech.stars.dr.optout.service.impl.OptOutSurveyServiceImpl"/>
+
     <!-- Device Reconfig -->
     <bean id="deviceReconfigDao" class="com.cannontech.stars.dr.deviceReconfig.dao.impl.DeviceReconfigDaoImpl"/>
 

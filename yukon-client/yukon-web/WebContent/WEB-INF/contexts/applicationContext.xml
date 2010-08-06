@@ -1550,6 +1550,8 @@
         </property>
     </bean>
 
+    <bean name="surveyPicker" class="com.cannontech.web.picker.v2.SurveyPicker"/>
+
     <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
         <property name="serviceLocatorInterface"
             value="com.cannontech.web.picker.v2.service.PickerFactory" />

@@ -6,7 +6,7 @@
 <%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>
 <%@ attribute name="endAction" description="Javascript function to call on picker close"%>
 <%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
-<%@ attribute name="asButton" type="java.lang.Boolean" description="If true, picker creates a button instead of a link"%>
+<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default), 'button' or 'none'"%>
 <%@ attribute name="styleClass" description="If provided, puts the styleClass provided on the picker link's span"%>
 <%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
 <%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
@@ -49,16 +49,20 @@
 <span id="picker_${pageScope.id}_inputArea"></span>
 
 <span <c:if test="${not empty pageScope.styleClass}">class="${pageScope.styleClass}"</c:if>>
-    <c:if test="${!pageScope.asButton}">
-        <c:set var="anchorAttributes" value=""/>
-        <c:if test="${!empty pageScope.anchorStyleClass}">
-            <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
-        </c:if>
-        <a href="javascript:${pageScope.id}.show()"${anchorAttributes}><jsp:doBody/></a>
-    </c:if>
-    <c:if test="${pageScope.asButton}">
-        <input type="button" value="<jsp:doBody/>" 
-            onclick="javascript:${pageScope.id}.show()" 
-            class="formSubmit <c:if test="${not empty pageScope.buttonStyleClass}">${pageScope.buttonStyleClass}</c:if>">
-    </c:if>
+    <c:choose>
+	    <c:when test="${!pageScope.linkType == 'none'}">
+	    </c:when>
+	    <c:when test="${pageScope.linkType == 'button'}">
+	        <input type="button" value="<jsp:doBody/>" 
+	            onclick="javascript:${pageScope.id}.show()" 
+	            class="formSubmit <c:if test="${not empty pageScope.buttonStyleClass}">${pageScope.buttonStyleClass}</c:if>">
+	    </c:when>
+	    <c:otherwise>
+            <c:set var="anchorAttributes" value=""/>
+            <c:if test="${!empty pageScope.anchorStyleClass}">
+                <c:set var="anchorAttributes" value=" class=\"${pageScope.anchorStyleClass}\""/>
+            </c:if>
+            <a href="javascript:${pageScope.id}.show()"${anchorAttributes}><jsp:doBody/></a>
+	    </c:otherwise>
+    </c:choose>
 </span>

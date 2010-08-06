@@ -104,7 +104,7 @@
             
 		    <tags:pickerDialog id="selectDevicesPicker" type="${pageScope.pickerType}"
 		        destinationFieldId="deviceIds" multiSelectMode="true"
-		        endAction="selectDevices" asButton="false">${selectDevicesLabel}</tags:pickerDialog>
+		        endAction="selectDevices">${selectDevicesLabel}</tags:pickerDialog>
         </td>
         
         <td>

@@ -303,6 +303,9 @@
             <tags:sectionLink>
                 <a href="/spring/stars/survey/list"><cti:msg key="yukon.web.menu.portal.analysis.surveys" /></a>
             </tags:sectionLink>
+            <tags:sectionLink>
+                <a href="/spring/stars/optOutSurvey/list"><cti:msg key="yukon.web.menu.portal.analysis.optOutSurveys" /></a>
+            </tags:sectionLink>
 	</tags:operationSection>
 
 </cti:checkRolesAndProperties>

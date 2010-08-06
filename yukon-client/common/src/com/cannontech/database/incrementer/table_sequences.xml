@@ -221,6 +221,9 @@
       <sequence name="surveyQuestionAnswer">
         <table name="surveyQuestionAnswer" identitycolumn="surveyQuestionAnswerId"/>
       </sequence>
+      <sequence name="optOutSurvey">
+        <table name="optOutSurvey" identitycolumn="optOutSurveyId"/>
+      </sequence>
       <sequence name="AcctThermostatSchedule">
         <table name="AcctThermostatSchedule" identitycolumn="AcctThermostatScheduleId" initsequence="true"/>
       </sequence>

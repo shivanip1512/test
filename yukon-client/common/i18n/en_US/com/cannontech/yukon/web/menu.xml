@@ -61,6 +61,7 @@
 <entry key="yukon.web.menu.portal.analysis.commander">Commander</entry>
 <entry key="yukon.web.menu.portal.analysis.visualDisplays">Power Supplier Loads</entry>
 <entry key="yukon.web.menu.portal.analysis.surveys">Surveys</entry>
+<entry key="yukon.web.menu.portal.analysis.optOutSurveys">Opt Out Surveys</entry>
 
 <!-- Administration -->
 <entry key="yukon.web.menu.portal.administration">Administration</entry>
@@ -113,6 +114,9 @@
 
 <!-- Survey module -->
 <entry key="yukon.web.menu.config.survey.list">Surveys</entry>
+
+<!-- Opt Out Survey module -->
+<entry key="yukon.web.menu.config.optOutSurvey.list">Opt Out Surveys</entry>
 
 <!-- Energy Company Admin module -->
 <entry key="yukon.web.menu.config.energyCompanyAdmin.configEnergyCompany">Config Energy Company</entry>

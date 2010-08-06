@@ -34,7 +34,8 @@ public class SurveyDaoImpl implements SurveyDao {
         new AnswerRowMapper();
 
     @Override
-    public Survey getSurveyById(Integer surveyId) {
+    @Transactional(readOnly = true)
+    public Survey getSurveyById(int surveyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(surveyRowMapper.getBaseQuery());
         sql.append("WHERE surveyId").eq(surveyId);
@@ -248,19 +249,27 @@ public class SurveyDaoImpl implements SurveyDao {
     @Override
     @Transactional
     public void moveQuestionUp(Question question) {
-        moveQuestion(question, question.getDisplayOrder() - 1);
+        swapQuestion(question, question.getDisplayOrder() - 1);
     }
 
     @Override
     @Transactional
     public void moveQuestionDown(Question question) {
-        moveQuestion(question, question.getDisplayOrder() + 1);
+        swapQuestion(question, question.getDisplayOrder() + 1);
     }
 
-    private void moveQuestion(Question question, int newDisplayOrder) {
+    /**
+     * Swap the passed in question with whatever question has the new display
+     * order.
+     * @param question The question which is to be swapped.
+     * @param newDisplayOrder The display order we want this question to have.
+     *            The question which currently has this display order will get
+     *            updated with question's display order.
+     */
+    private void swapQuestion(Question question, int newDisplayOrder) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE surveyQuestion");
-        sql.append("SET displayOrder = ").appendArgument(question.getDisplayOrder());
+        sql.append("SET displayOrder = ").appendArgument(0);
         sql.append("WHERE surveyId").eq(question.getSurveyId());
         sql.append("AND displayOrder").eq(newDisplayOrder);
         yukonJdbcTemplate.update(sql);
@@ -272,7 +281,24 @@ public class SurveyDaoImpl implements SurveyDao {
         sql.append("AND surveyQuestionId").eq(question.getSurveyQuestionId());
         yukonJdbcTemplate.update(sql);
 
+        sql = new SqlStatementBuilder();
+        sql.append("UPDATE surveyQuestion");
+        sql.append("SET displayOrder = ").appendArgument(question.getDisplayOrder());
+        sql.append("WHERE surveyId").eq(question.getSurveyId());
+        sql.append("AND displayOrder").eq(0);
+        yukonJdbcTemplate.update(sql);
+
         question.setDisplayOrder(newDisplayOrder);
+    }
+
+    @Override
+    @Transactional(readOnly=true)
+    public boolean isInUse(int surveyId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM optOutSurvey");
+        sql.append("WHERE surveyId").eq(surveyId);
+        int numUses = yukonJdbcTemplate.queryForInt(sql);
+        return numUses > 0;
     }
 
     @Override

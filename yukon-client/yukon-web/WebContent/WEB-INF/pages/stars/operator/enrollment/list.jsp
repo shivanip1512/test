@@ -129,7 +129,7 @@ var programIdsAlreadyEnrolled = [];
                     destinationFieldName="assignedProgramId"
                     endAction="addEnrollment" styleClass="simpleLink"
                     immediateSelectMode="true" extraArgs="${accountId}"
-                    asButton="true"><cti:msg2 key=".add"/></tags:pickerDialog>
+                    linkType="button"><cti:msg2 key=".add"/></tags:pickerDialog>
                 <script type="text/javascript">
                     programPicker.excludeIds = programIdsAlreadyEnrolled;
                 </script>

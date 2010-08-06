@@ -135,9 +135,12 @@ public class SurveyController {
 
     @RequestMapping
     public String confirmDelete(ModelMap model, int surveyId,
-            YukonUserContext userContext) {
+            FlashScope flashScope, YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
         model.addAttribute("survey", survey);
+        if (surveyDao.isInUse(surveyId)) {
+            return "survey/inUse.jsp";
+        }
         return "survey/confirmDelete.jsp";
     }
 
@@ -145,10 +148,13 @@ public class SurveyController {
     public String delete(ModelMap model, int surveyId, FlashScope flashScope,
             YukonUserContext userContext) {
         Survey survey = verifyEditable(surveyId, userContext);
+        if (surveyDao.isInUse(surveyId)) {
+            model.addAttribute("survey", survey);
+            return "survey/inUse.jsp";
+        }
         surveyDao.deleteSurvey(surveyId);
         MessageSourceResolvable confirmMsg =
-            new YukonMessageSourceResolvable(baseKey +
-                                             "list.surveyDeleted",
+            new YukonMessageSourceResolvable(baseKey + "list.surveyDeleted",
                                              survey.getSurveyName());
         flashScope.setConfirm(confirmMsg);
         return closeDialog(model);
@@ -194,6 +200,7 @@ public class SurveyController {
             BindingResult bindingResult, YukonUserContext userContext,
             FlashScope flashScope) {
         verifyEditable(survey, userContext);
+        boolean isNew = survey.getSurveyId() == 0;
         detailsValidator.validate(survey, bindingResult);
         String newLocation = null;
         if (!bindingResult.hasErrors()) {
@@ -215,6 +222,16 @@ public class SurveyController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return editDetails(model, survey, userContext);
         }
+
+        if (!isNew) {
+            // Creating a new survey redirects to the survey edit page so
+            // a confirmation message isn't desirable.
+            MessageSourceResolvable confirmMsg =
+                new YukonMessageSourceResolvable(baseKey + "list.surveySaved",
+                                                 survey.getSurveyName());
+            flashScope.setConfirm(confirmMsg);
+        }
+
         return closeDialog(model, newLocation);
     }
 
@@ -282,6 +299,13 @@ public class SurveyController {
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             return editQuestion(model, question, userContext);
         }
+
+        MessageSourceResolvable confirmMsg =
+            new YukonMessageSourceResolvable(baseKey +
+                                             "edit.surveyQuestionSaved",
+                                             question.getQuestionKey());
+        flashScope.setConfirm(confirmMsg);
+
         return closeDialog(model);
     }
 

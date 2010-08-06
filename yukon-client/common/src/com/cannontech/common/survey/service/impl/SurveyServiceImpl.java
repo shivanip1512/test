@@ -11,11 +11,10 @@ import com.cannontech.common.bulk.filter.SqlFilter;
 import com.cannontech.common.bulk.filter.UiFilter;
 import com.cannontech.common.bulk.filter.service.FilterService;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.common.survey.dao.impl.EnergyCompanyFilter;
 import com.cannontech.common.survey.dao.impl.SurveyRowMapper;
 import com.cannontech.common.survey.model.Survey;
 import com.cannontech.common.survey.service.SurveyService;
-import com.cannontech.common.util.SqlFragmentSource;
-import com.cannontech.common.util.SqlStatementBuilder;
 
 public class SurveyServiceImpl implements SurveyService {
     private FilterService filterService;
@@ -36,14 +35,7 @@ public class SurveyServiceImpl implements SurveyService {
             @Override
             public Iterable<SqlFilter> getSqlFilters() {
                 List<SqlFilter> retVal = new ArrayList<SqlFilter>(1);
-                retVal.add(new SqlFilter() {
-                    @Override
-                    public SqlFragmentSource getWhereClauseFragment() {
-                        SqlStatementBuilder sql = new SqlStatementBuilder();
-                        sql.append("energyCompanyId").eq(energyCompanyId);
-                        return sql;
-                    }
-                });
+                retVal.add(new EnergyCompanyFilter(energyCompanyId));
                 return retVal;
             }
         };

@@ -7,7 +7,7 @@ import com.cannontech.common.survey.model.Survey;
 import com.cannontech.core.dao.DuplicateException;
 
 public interface SurveyDao {
-    Survey getSurveyById(Integer surveyId);
+    Survey getSurveyById(int surveyId);
 
     Question getQuestionById(int surveyQuestionId);
     List<Question> getQuestionsBySurveyId(int surveyId);
@@ -46,6 +46,7 @@ public interface SurveyDao {
     void moveQuestionUp(Question question);
     void moveQuestionDown(Question question);
 
+    boolean isInUse(int surveyId);
     void deleteSurvey(int surveyId);
 
     void deleteQuestion(int surveyQuestionId);

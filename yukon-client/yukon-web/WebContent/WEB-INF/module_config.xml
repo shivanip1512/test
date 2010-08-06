@@ -427,6 +427,24 @@
     </pages>
   </module>
 
+  <module name="optOutSurvey">
+    <skin name="STANDARD"/>
+    <menu>
+      <options>
+        <option name="list">
+          <link>/spring/stars/optOutSurvey/list</link>
+        </option>
+      </options>
+    </menu>
+
+    <pages>
+      <page name="list" type="BASIC">
+        <menu>list</menu>
+        <link>/spring/stars/optOutSurvey/list</link>
+      </page>
+    </pages>
+  </module>
+
   <module name="energyCompanyAdmin">
     <skin name="STANDARD" />
     <menu>

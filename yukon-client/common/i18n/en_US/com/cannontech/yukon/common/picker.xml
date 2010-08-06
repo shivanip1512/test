@@ -91,4 +91,11 @@
 <entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.dialogTitle">Select Login Group</entry>
 <entry key="yukon.web.picker.databaseMigrationLOGIN_GROUPPicker.loginGroupName">Login Group Name</entry>
 
+<!-- Survey Picker -->
+
+<entry key="yukon.web.picker.survey.name">Name</entry>
+<entry key="yukon.web.picker.survey.key">Key</entry>
+
+<entry key="yukon.web.picker.surveyPicker.dialogTitle">Select Survey</entry>
+
 </properties>

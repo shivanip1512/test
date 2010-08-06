@@ -239,7 +239,7 @@
                                     </span> 
                                     <div>
                                         <cti:displayForPageEditModes modes="EDIT">
-                                            <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" asButton="true" immediateSelectMode="true"
+                                            <tags:pickerDialog type="twoWayLcrPicker" id="twoWayLcrPicker" linkType="button" immediateSelectMode="true"
                                                 destinationFieldId="chosenYukonDeviceId" 
                                                 destinationFieldName="chosenYukonDeviceId"
                                                 endAction="changeTwoWayDeviceName"><cti:msg2 key=".twoWayPickerButton"/></tags:pickerDialog>
